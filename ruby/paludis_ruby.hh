@@ -93,7 +93,6 @@ namespace paludis
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
         VALUE contents_entry_to_value(std::tr1::shared_ptr<const ContentsEntry>);
-        VALUE portage_repository_profiles_desc_line_to_value(const RepositoryPortageInterface::ProfilesDescLine &);
         VALUE dep_tag_to_value(std::tr1::shared_ptr<const DepTag>);
 
         VersionSpec value_to_version_spec(VALUE v);
@@ -104,7 +103,7 @@ namespace paludis
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         EnvironmentData* value_to_environment_data(VALUE v);
         NoConfigEnvironment* value_to_no_config_environment(VALUE v);
-        RepositoryPortageInterface::ProfilesDescLine value_to_portage_repository_profiles_desc_line(VALUE v);
+        RepositoryPortageInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
         std::tr1::shared_ptr<Repository> value_to_repository(VALUE);

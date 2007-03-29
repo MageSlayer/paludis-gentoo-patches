@@ -135,7 +135,7 @@ def do_check_package_dir(dir, env)
 
     unless fatal
         Dir["#{dir}/*.ebuild"].each do |d|
-            env.portage_repository.profiles.each do |profile|
+            env.main_repository.profiles.each do |profile|
                 unless @arches.empty?
                     next unless @arches.include? profile.arch
                 end
@@ -225,7 +225,7 @@ def do_check_profiles_dir(dir, env)
 
     ok, fatal = do_check_kind(ProfilesCheckMaker.instance, ok, fatal, dir)
 
-    env.portage_repository.profiles.each do |p|
+    env.main_repository.profiles.each do |p|
         break if fatal;
         set_entry_heading "QA checks for profile.desc entry #{p.path} #{p.arch} #{p.status}:"
 

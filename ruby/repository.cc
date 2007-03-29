@@ -33,6 +33,14 @@ namespace
     static VALUE c_repository;
     static VALUE c_repository_info;
     static VALUE c_repository_info_section;
+    static VALUE c_profiles_desc_line;
+
+    VALUE
+    profiles_desc_line_to_value(const RepositoryPortageInterface::ProfilesDescLine & v)
+    {
+        RepositoryPortageInterface::ProfilesDescLine * vv(new RepositoryPortageInterface::ProfilesDescLine(v));
+        return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryPortageInterface::ProfilesDescLine>::free, vv);
+    }
 
     /*
      * call-seq:
@@ -403,6 +411,22 @@ namespace
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
+    /*
+     * Document-method: contents_interface
+     *
+     * call-seq:
+     *     contents_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: portage_interface
+     *
+     * call-seq:
+     *     portage_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
     template <typename T_, T_ * RepositoryCapabilities::* m_>
     struct Interface
     {
@@ -756,6 +780,157 @@ namespace
             }
     }
 
+    /*
+     * call-seq:
+     *     profiles -> Array
+     *
+     * Fetch an array of our profiles, as PortageRepositoryProfilesDescLine.
+     */
+    VALUE
+    repository_profiles(VALUE self)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            if ((*self_ptr)->portage_interface) {
+                VALUE result(rb_ary_new());
+                for (RepositoryPortageInterface::ProfilesIterator i((*self_ptr)->portage_interface->begin_profiles()),
+                        i_end((*self_ptr)->portage_interface->end_profiles()) ; i != i_end ; ++i)
+                {
+                    rb_ary_push(result, profiles_desc_line_to_value(*i));
+                }
+                return result;
+            }
+            else
+            {
+                return Qnil;
+            }
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     find_profile(profile_location) -> PortageRepositoryProfilesDescLine
+     *
+     * Fetches the named profile.
+     */
+    VALUE
+    repository_find_profile(VALUE self, VALUE profile)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+
+            if ((*self_ptr)->portage_interface)
+            {
+                RepositoryPortageInterface::ProfilesIterator p((*self_ptr)->portage_interface->find_profile(FSEntry(StringValuePtr(profile))));
+
+                if (p == (*self_ptr)->portage_interface->end_profiles())
+                    return Qnil;
+
+                return profiles_desc_line_to_value(*p);
+            }
+            else
+            {
+                return Qnil;
+            }
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     set_profile(profile) -> Nil
+     *
+     * Sets the repository profile to the given profile.
+     */
+    VALUE
+    repository_set_profile(VALUE self, VALUE profile)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            if ((*self_ptr)->portage_interface)
+                (*self_ptr)->portage_interface->set_profile(
+                    (*self_ptr)->portage_interface->find_profile(
+                        value_to_profiles_desc_line(profile).path));
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     profile_variable(variable) -> String
+     *
+     * Fetches the named variable.
+     */
+    VALUE
+    repository_profile_variable(VALUE self, VALUE var)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            if ((*self_ptr)->portage_interface)
+                return rb_str_new2(((*self_ptr)->portage_interface->profile_variable(StringValuePtr(var))).c_str());
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * Document-method: arch
+     *
+     * call-seq:
+     *     arch -> String
+     *
+     * Fetch arch for this PortageRepositoryProfilesDescLine.
+     */
+    /*
+     * Document-method: status
+     *
+     * call-seq:
+     *     status -> String
+     *
+     * Fetch status for this PortageRepositoryProfilesDescLine.
+     */
+    /*
+     * Document-method: path
+     *
+     * call-seq:
+     *     path -> String
+     *
+     * Fetch path to this PortageRepositoryProfilesDescLine.
+     */
+    template <typename T_, T_ RepositoryPortageInterface::ProfilesDescLine::* m_>
+    struct DescLineValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            RepositoryPortageInterface::ProfilesDescLine * ptr;
+            Data_Get_Struct(self, RepositoryPortageInterface::ProfilesDescLine, ptr);
+            return rb_str_new2(stringify((*ptr).*m_).c_str());
+        }
+    };
+
     void do_register_repository()
     {
         /*
@@ -808,6 +983,8 @@ namespace
                         &Repository::virtuals_interface>::fetch)), 0);
         rb_define_method(c_repository, "contents_interface", RUBY_FUNC_CAST((&Interface<RepositoryContentsInterface,
                         &Repository::contents_interface>::fetch)), 0);
+        rb_define_method(c_repository, "portage_interface", RUBY_FUNC_CAST((&Interface<RepositoryPortageInterface,
+                        &Repository::portage_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "contents", RUBY_FUNC_CAST(&repository_contents), 2);
@@ -821,6 +998,11 @@ namespace
         rb_define_method(c_repository, "query_profile_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_profile_masks>::query), 2);
 
         rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag),-1);
+
+        rb_define_method(c_repository, "profiles", RUBY_FUNC_CAST(&repository_profiles),0);
+        rb_define_method(c_repository, "find_profile", RUBY_FUNC_CAST(&repository_find_profile),1);
+        rb_define_method(c_repository, "profile_variable", RUBY_FUNC_CAST(&repository_profile_variable),1);
+        rb_define_method(c_repository, "set_profile", RUBY_FUNC_CAST(&repository_set_profile),1);
 
         /*
          * Document-class: Paludis::RepositoryInfo
@@ -840,6 +1022,20 @@ namespace
         rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
         rb_define_method(c_repository_info_section, "header", RUBY_FUNC_CAST(&repository_info_section_header), 0);
+
+        /*
+         * Document-class: Paludis::ProfilesDescLine
+         *
+         *
+         */
+        c_profiles_desc_line = rb_define_class_under(paludis_module(), "ProfilesDescLine", rb_cObject);
+        rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_profiles_desc_line, "path",
+                RUBY_FUNC_CAST((&DescLineValue<FSEntry,&RepositoryPortageInterface::ProfilesDescLine::path>::fetch)), 0);
+        rb_define_method(c_profiles_desc_line, "arch",
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryPortageInterface::ProfilesDescLine::arch>::fetch)), 0);
+        rb_define_method(c_profiles_desc_line, "status",
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryPortageInterface::ProfilesDescLine::status>::fetch)), 0);
     }
 }
 
@@ -880,6 +1076,21 @@ paludis::ruby::value_to_repository(VALUE v)
     else
     {
         rb_raise(rb_eTypeError, "Can't convert %s into Repository", rb_obj_classname(v));
+    }
+}
+
+RepositoryPortageInterface::ProfilesDescLine
+paludis::ruby::value_to_profiles_desc_line(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_profiles_desc_line))
+    {
+        RepositoryPortageInterface::ProfilesDescLine * v_ptr;
+        Data_Get_Struct(v, RepositoryPortageInterface::ProfilesDescLine, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into ProfilesDescLine", rb_obj_classname(v));
     }
 }
 

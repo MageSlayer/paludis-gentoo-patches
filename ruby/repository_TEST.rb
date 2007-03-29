@@ -19,8 +19,6 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-exit 0
-
 ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/repository_TEST_dir/home";
 
 require 'test/unit'
@@ -33,55 +31,6 @@ module Paludis
         def test_no_create
             assert_raise NoMethodError do
                 p = Repository.new
-            end
-        end
-    end
-
-    class TestCase_PortageRepository < Test::Unit::TestCase
-        def no_config_testrepo
-            NoConfigEnvironment.new Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
-        end
-
-        def test_no_create
-            assert_raise NoMethodError do
-                p = PortageRepository.new
-            end
-        end
-
-        def test_responds
-            repo = no_config_testrepo.main_repository
-            [:profile_variable, :profiles, :find_profile, :set_profile].each do |sym|
-                assert_respond_to repo, sym
-            end
-        end
-
-        def test_profiles
-            repo = no_config_testrepo.main_repository
-            assert_kind_of Array, repo.profiles
-        end
-
-        def test_find_profile
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                profile = repo.find_profile(Dir.getwd().to_s + '/repository_TEST_dir/testrepo/profiles/testprofile')
-                assert_kind_of PortageRepositoryProfilesDescLine, profile
-                profile = repo.find_profile('broken')
-                assert profile.nil?
-            end
-        end
-
-        def test_set_profile
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                profile = repo.profiles.first
-                repo.set_profile(profile)
-            end
-        end
-
-        def test_profile_variable
-            repo = no_config_testrepo.main_repository
-            assert_nothing_raised do
-                assert_equal 'test', repo.profile_variable('ARCH')
             end
         end
     end
@@ -236,6 +185,16 @@ module Paludis
 
     class TestCase_RepositoryInterfaces < Test::Unit::TestCase
         include RepositoryTestCase
+
+        def test_responds
+            repo = no_config_testrepo.main_repository
+            [:installable_interface, :installed_interface, :mask_interface, :news_interface,
+                :sets_interface, :syncable_interface, :uninstallable_interface, :use_interface,
+                :world_interface, :mirrors_interface, :environment_variable_interface,
+                :provides_interface, :virtuals_interface, :contents_interface, :portage_interface].each do |sym|
+                assert_respond_to repo, sym
+            end
+        end
 
         def test_interfaces
             assert_equal repo.name, repo.installable_interface.name
@@ -501,7 +460,48 @@ module Paludis
         end
     end
 
-    class TestCase_PortageRepositoryProfilesDescLine < Test::Unit::TestCase
+    class TestCase_RepositoryPortageInterface < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_responds
+            repo = no_config_testrepo.main_repository
+            [:profile_variable, :profiles, :find_profile, :set_profile].each do |sym|
+                assert_respond_to repo, sym
+            end
+        end
+
+        def test_profiles
+            repo = no_config_testrepo.main_repository
+            assert_kind_of Array, repo.profiles
+        end
+
+        def test_find_profile
+            repo = no_config_testrepo.main_repository
+            assert_nothing_raised do
+                profile = repo.find_profile(Dir.getwd().to_s + '/repository_TEST_dir/testrepo/profiles/testprofile')
+                assert_kind_of ProfilesDescLine, profile
+                profile = repo.find_profile('broken')
+                assert profile.nil?
+            end
+        end
+
+        def test_set_profile
+            repo = no_config_testrepo.main_repository
+            assert_nothing_raised do
+                profile = repo.profiles.first
+                repo.set_profile(profile)
+            end
+        end
+
+        def test_profile_variable
+            repo = no_config_testrepo.main_repository
+            assert_nothing_raised do
+                assert_equal 'test', repo.profile_variable('ARCH')
+            end
+        end
+    end
+
+    class TestCase_ProfilesDescLine < Test::Unit::TestCase
         include RepositoryTestCase
 
         def profiles
@@ -511,7 +511,7 @@ module Paludis
         def test_profiles
             assert_kind_of Array, profiles
             assert_equal 1, profiles.length
-            assert_kind_of PortageRepositoryProfilesDescLine, profiles.first
+            assert_kind_of ProfilesDescLine, profiles.first
         end
 
         def test_respond

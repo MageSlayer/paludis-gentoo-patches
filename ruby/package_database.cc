@@ -103,20 +103,39 @@ namespace
             else if (2 == argc || 3 == argc)
             {
                 QueryOrder qo;
-                std::tr1::shared_ptr<const PackageDepSpec> pda(value_to_package_dep_spec(argv[0]));
+                Query q  = query::Matches(*value_to_package_dep_spec(argv[0]));
                 InstallState is = static_cast<InstallState>(NUM2INT(argv[1]));
+
+                switch (is)
+                {
+                    case is_installed_only:
+                        q = q & query::RepositoryHasInstalledInterface();
+                        break;
+
+                    case is_installable_only:
+                        q = q & query::RepositoryHasInstallableInterface();
+                        break;
+
+                    case is_any:
+                    case last_is:
+                        ;
+
+                }
                 if (2 ==argc)
                 {
                     qo = qo_order_by_version;
                     rb_warn("Calling query with (PackageDepSpec, InstallState) has been deprecated");
                 }
                 else
+                {
                     qo = static_cast<QueryOrder>(NUM2INT(argv[2]));
+                    rb_warn("Calling query with (PackageDepSpec, InstallState, QUeryOrder) has been deprecated");
+                }
 
                 std::tr1::shared_ptr<PackageDatabase> * self_ptr;
                 Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
-                items = ((*self_ptr)->query(*pda, is, qo));
+                items = ((*self_ptr)->query(q, qo));
 
             }
             else
