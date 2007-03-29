@@ -1605,9 +1605,11 @@ VDBRepository::merge(const MergeOptions & m)
     bool is_replace(has_version(m.package.name, m.package.version));
 
     FSEntry tmp_vdb_dir(_imp->params.location);
-    tmp_vdb_dir.mkdir();
+    if (! tmp_vdb_dir.exists())
+        tmp_vdb_dir.mkdir();
     tmp_vdb_dir /= stringify(m.package.name.category);
-    tmp_vdb_dir.mkdir();
+    if (! tmp_vdb_dir.exists())
+        tmp_vdb_dir.mkdir();
     tmp_vdb_dir /= ("-checking-" + stringify(m.package.name.package) + "-" + stringify(m.package.version));
     tmp_vdb_dir.mkdir();
 
