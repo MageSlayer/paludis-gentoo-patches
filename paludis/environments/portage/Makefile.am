@@ -29,19 +29,33 @@ paludis_environment_portage_include_HEADERS = \
 	portage_environment.hh
 
 EXTRA_DIST = \
-	$(BUILT_SOURCES)
+	$(BUILT_SOURCES) \
+	portage_environment_TEST_setup.sh \
+	portage_environment_TEST.cc \
+	portage_environment_TEST_cleanup.sh
 
-TESTS =
+TESTS = portage_environment_TEST
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	SYSCONFDIR="$(sysconfdir)" \
 	bash $(top_srcdir)/test/run_test.sh
 
+portage_environment_TEST_SOURCES = portage_environment_TEST.cc
+portage_environment_TEST_LDADD = \
+	libpaludisportageenvironment.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 check_PROGRAMS = $(TESTS)
-check_SCRIPTS =
+check_SCRIPTS = portage_environment_TEST_setup.sh portage_environment_TEST_cleanup.sh
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

@@ -27,6 +27,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
+#include <paludis/match_package.hh>
 #include <set>
 #include <vector>
 
@@ -84,7 +85,8 @@ namespace
             return true;
 
         std::set<std::string> use_expand;
-        WhitespaceTokeniser::get_instance()->tokenise(k.get("USE_EXPAND"), std::inserter(use_expand, use_expand.begin()));
+        WhitespaceTokeniser::get_instance()->tokenise(k.get("USE_EXPAND"),
+                std::inserter(use_expand, use_expand.begin()));
         if (use_expand.end() != use_expand.find(s))
             return true;
 
@@ -108,7 +110,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     if ((_imp->conf_dir / "make.globals").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", _imp->vars, &is_incremental));
     if ((_imp->conf_dir / "make.conf").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", _imp->vars, &is_incremental_excluding_use_expand));
+        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", _imp->vars,
+                    &is_incremental_excluding_use_expand));
 
     /* TODO: load USE etc from env? */
 
@@ -116,6 +119,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     _add_virtuals_repository();
     _add_installed_virtuals_repository();
+    if (_imp->vars->get("PORTDIR").empty())
+        throw PortageEnvironmentConfigurationError("PORTDIR empty or unset");
     _add_portdir_repository(FSEntry(_imp->vars->get("PORTDIR")));
     _add_vdb_repository();
     /* TODO: OVERLAY */
@@ -268,7 +273,8 @@ PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
-            ((_imp->conf_dir / "portage" / "profile").is_directory() ? stringify(_imp->conf_dir / "portage" / "profile") : ""));
+            ((_imp->conf_dir / "portage" / "profile").is_directory() ?
+             stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "ebuild");
     keys->insert("names_cache", "/var/empty");
     package_database()->add_repository(2,
@@ -315,6 +321,22 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     std::set<std::string>::const_iterator u(_imp->use_with_expands.find(stringify(f)));
     if (u != _imp->use_with_expands.end())
         state = use_enabled;
+
+    /* check use: per package config */
+    if (e)
+    {
+        for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
+                i != i_end ; ++i)
+        {
+            if (! match_package(*this, *i->first, *e))
+                continue;
+
+            if (i->second == stringify(f))
+                state = use_enabled;
+            else if (i->second == "-" + stringify(f))
+                state = use_disabled;
+        }
+    }
 
     switch (state)
     {
@@ -364,6 +386,25 @@ PortageEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseE
 
     if (_imp->accept_keywords.end() != _imp->accept_keywords.find(stringify(k)))
         result = true;
+
+    if (d)
+    {
+        for (PackageKeywords::const_iterator i(_imp->package_keywords.begin()), i_end(_imp->package_keywords.end()) ;
+                i != i_end ; ++i)
+        {
+            if (! match_package(*this, *i->first, *d))
+                continue;
+
+            if (i->second == stringify(k))
+                result = true;
+            else if (i->second == "-" + stringify(k))
+                result = false;
+            else if (i->second == "-*")
+                result = false;
+            else if (i->second == "**")
+                result = true;
+        }
+    }
 
     if ((! result) && override_tilde_keywords && ('~' == stringify(k).at(0)))
         result = accept_keyword(KeywordName(stringify(k).substr(1)), d, false);
