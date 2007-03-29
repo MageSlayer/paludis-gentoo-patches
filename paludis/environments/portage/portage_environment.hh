@@ -40,6 +40,7 @@ namespace paludis
             void _add_virtuals_repository();
             void _add_installed_virtuals_repository();
             void _add_portdir_repository(const FSEntry &);
+            void _add_portdir_overlay_repository(const FSEntry &);
             void _add_vdb_repository();
 
             template<typename I_>

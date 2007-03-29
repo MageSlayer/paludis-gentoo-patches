@@ -141,6 +141,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this))),
     PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(s))
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When creating PortageEnvironment using config root '" + s + "':");
 
     Log::get_instance()->message(ll_warning, lc_no_context,
@@ -149,7 +151,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
             "guaranteed; issues should be reported via trac. You are strongly encouraged "
             "to migrate to a Paludis configuration.");
 
-    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), &getenv_with_default, &is_incremental));
+    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null")));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
     if ((_imp->conf_dir / "make.globals").exists())
         _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", _imp->vars, &is_incremental));
@@ -167,7 +169,11 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         throw PortageEnvironmentConfigurationError("PORTDIR empty or unset");
     _add_portdir_repository(FSEntry(_imp->vars->get("PORTDIR")));
     _add_vdb_repository();
-    /* TODO: OVERLAY */
+    std::list<FSEntry> portdir_overlay;
+    WhitespaceTokeniser::get_instance()->tokenise(_imp->vars->get("PORTDIR_OVERLAY"),
+            create_inserter<FSEntry>(std::back_inserter(portdir_overlay)));
+    std::for_each(portdir_overlay.begin(), portdir_overlay.end(),
+            std::tr1::bind(std::tr1::mem_fn(&PortageEnvironment::_add_portdir_overlay_repository), this, _1));
 
     /* use etc */
 
@@ -321,6 +327,22 @@ PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "ebuild");
     keys->insert("names_cache", "/var/empty");
+    package_database()->add_repository(2,
+            RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
+}
+
+void
+PortageEnvironment::_add_portdir_overlay_repository(const FSEntry & portdir)
+{
+    Context context("When creating PORTDIR_OVERLAY repository '" + stringify(portdir) + "':");
+
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            new AssociativeCollection<std::string, std::string>::Concrete);
+    keys->insert("root", stringify(root()));
+    keys->insert("location", stringify(portdir));
+    keys->insert("format", "ebuild");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("master_repository", "gentoo");
     package_database()->add_repository(2,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
 }
