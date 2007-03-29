@@ -177,6 +177,8 @@ FSEntry::is_symbolic_link() const
 bool
 FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const
 {
+    Context context("When checking permissions on '" + stringify(_path) + "':");
+
     _stat();
 
     if (! _exists)
@@ -231,6 +233,8 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
 mode_t
 FSEntry::permissions() const
 {
+    Context context("When fetching permissions for '" + stringify(_path) + "':");
+
     _stat();
 
     if (! _exists)
@@ -283,6 +287,8 @@ FSEntry::_stat() const
     if (_checked)
         return;
 
+    Context context("When calling stat() on '" + stringify(_path) + "':");
+
     _stat_info.reset(new struct stat);
     if (0 != lstat(_path.c_str(), _stat_info.get()))
     {
@@ -332,6 +338,8 @@ FSEntry::dirname() const
 FSEntry
 FSEntry::realpath() const
 {
+    Context context("When fetching realpath of '" + stringify(_path) + "':");
+
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
     if (! ::realpath(_path.c_str(), r))
