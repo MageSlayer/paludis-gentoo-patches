@@ -10,28 +10,18 @@ DEFS= \
 
 paludis_compat_tr1dir = $(includedir)/paludis/compat/tr1
 
-paludis_compat_tr1_HEADERS = tr1_memory.hh tr1_type_traits.hh
+paludis_compat_tr1_HEADERS = tr1_memory.hh tr1_type_traits.hh tr1_functional.hh
 
 if NEED_POINTER_WRAPPERS
-if NEED_TYPE_TRAITS_WRAPPERS
-nodist_paludis_compat_tr1_HEADERS = memory type_traits
-else
-nodist_paludis_compat_tr1_HEADERS = memory
-endif
-else
-if NEED_TYPE_TRAITS_WRAPPERS
-nodist_paludis_compat_tr1_HEADERS = type_traits
-else
-nodist_paludis_compat_tr1_HEADERS =
-endif
-endif
 
-if NEED_POINTER_WRAPPERS
+pointer_wrappers = memory
 
 memory : tr1_memory.hh
 	cp $(srcdir)/tr1_memory.hh $@
 
 else
+
+pointer_wrappers =
 
 memory :
 	rm -f $@ || true
@@ -39,20 +29,43 @@ memory :
 endif
 
 if NEED_TYPE_TRAITS_WRAPPERS
+type_traits_wrappers = type_traits
 
 type_traits : tr1_type_traits.hh
 	cp $(srcdir)/tr1_type_traits.hh $@
 
 else
 
+type_traits_wrappers =
+
 type_traits :
 	rm -f $@ || true
 
 endif
 
+if NEED_BIND_WRAPPERS
 
-EXTRA_DIST = tr1_memory.hh tr1_type_traits.hh
-BUILT_SOURCES = memory type_traits
+bind_wrappers = functional
+
+functional : tr1_functional.hh
+	cp $(srcdir)/tr1_functional.hh $@
+
+else
+
+bind_wrappers =
+
+functional :
+	rm -f $@ || true
+
+endif
+
+nodist_paludis_compat_tr1_HEADERS = \
+	$(pointer_wrappers) \
+	$(type_traits_wrappers) \
+	$(bind_wrappers)
+
+EXTRA_DIST = tr1_memory.hh tr1_type_traits.hh tr1_functional.hh
+BUILT_SOURCES = memory type_traits functional
 SUBDIRS = .
 
 built-sources : $(BUILT_SOURCES)

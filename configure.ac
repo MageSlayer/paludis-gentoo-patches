@@ -259,6 +259,59 @@ int main(int, char *[])
 AM_CONDITIONAL([NEED_TYPE_TRAITS_WRAPPERS], test x$need_type_traits_wrappers = "xyes")
 dnl }}}
 
+dnl {{{ tr1 binders
+need_bind_wrappers=no
+AC_MSG_CHECKING([for std::tr1::bind<>])
+AC_COMPILE_IFELSE([
+#include <tr1/functional>
+#include <functional>
+#include <algorithm>
+#include <list>
+struct S
+{
+	void x(const int) const
+	{
+	}
+};
+int main(int, char *[])
+{
+	using namespace std::tr1::placeholders;
+	std::list<int> l;
+	S s;
+	std::for_each(l.begin(), l.end(),
+		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_CHECKING([for boost::bind<>])
+	 AC_COMPILE_IFELSE([
+#include <boost/bind.hpp>
+#include <boost/mem_fn.hpp>
+#include <functional>
+#include <algorithm>
+#include <list>
+struct S
+{
+	void x(const int) const
+	{
+	}
+};
+int main(int, char *[])
+{
+	std::list<int> l;
+	S s;
+	std::for_each(l.begin(), l.end(),
+		boost::bind(boost::mem_fn(&S::x), &s, _1));
+}
+],
+	[AC_MSG_RESULT([yes])
+	 need_bind_wrappers=yes],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
+AM_CONDITIONAL([NEED_BIND_WRAPPERS], test x$need_bind_wrappers = "xyes")
+dnl }}}
+
 need_xml_check=
 need_pcrepp_check=
 
