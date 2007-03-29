@@ -345,7 +345,8 @@ namespace paludis
         try
         {
             for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
-                load_entries_for(CategoryNamePart(cat_i->basename()));
+                if (cat_i->is_directory())
+                    load_entries_for(CategoryNamePart(cat_i->basename()));
 
             std::sort(entries.begin(), entries.end());
         }
