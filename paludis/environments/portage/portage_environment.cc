@@ -27,7 +27,11 @@
 #include <paludis/util/strip.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
+#include <paludis/hooker.hh>
 #include <paludis/match_package.hh>
+#include <algorithm>
+#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <vector>
 
@@ -62,11 +66,50 @@ namespace paludis
         PackageMask package_mask;
         PackageUnmask package_unmask;
 
+        mutable bool done_hooks;
+        mutable std::tr1::shared_ptr<Hooker> hooker;
+        mutable std::list<FSEntry> hook_dirs;
+
         Implementation(const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
-            paludis_command("paludis")
+            paludis_command("paludis"),
+            done_hooks(false)
         {
         }
+
+        void add_one_hook(const FSEntry & r) const
+        {
+            try
+            {
+                if (r.is_directory())
+                {
+                    Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
+                            + stringify(r) + "'");
+                    hook_dirs.push_back(r);
+                }
+                else
+                    Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
+                            + stringify(r) + "'");
+            }
+            catch (const FSError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
+                        e.message() + "' (" + e.what() + ") when checking hook "
+                        "directory '" + stringify(r) + "'");
+            }
+        }
+
+        void need_hook_dirs() const
+        {
+            if (! done_hooks)
+            {
+                if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks");
+
+                done_hooks = true;
+            }
+        }
+
     };
 }
 
@@ -101,9 +144,10 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     Context context("When creating PortageEnvironment using config root '" + s + "':");
 
     Log::get_instance()->message(ll_warning, lc_no_context,
-            "Use of PortageEnvironment will lead to sub-optimal performance and loss of "
+            "Use of Portage configuration files will lead to sub-optimal performance and loss of "
             "functionality. Full support for Portage configuration formats is not "
-            "guaranteed. You are strongly encouraged to migrate to PaludisEnvironment.");
+            "guaranteed; issues should be reported via trac. You are strongly encouraged "
+            "to migrate to a Paludis configuration.");
 
     _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), &getenv_with_default, &is_incremental));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
@@ -419,5 +463,86 @@ PortageEnvironment::root() const
         return FSEntry("/");
     else
         return FSEntry(_imp->vars->get("ROOT"));
+}
+
+bool
+PortageEnvironment::query_user_masks(const PackageDatabaseEntry & e) const
+{
+    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
+            i != i_end ; ++i)
+        if (match_package(*this, **i, e))
+            return true;
+
+    return false;
+}
+
+bool
+PortageEnvironment::query_user_unmasks(const PackageDatabaseEntry & e) const
+{
+    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
+            i != i_end ; ++i)
+        if (match_package(*this, **i, e))
+            return true;
+
+    return false;
+}
+
+std::tr1::shared_ptr<const UseFlagNameCollection>
+PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
+        const PackageDatabaseEntry * pde) const
+{
+    Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
+
+    std::tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    std::string prefix_lower;
+    std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
+
+    for (std::set<std::string>::const_iterator i(_imp->use_with_expands.begin()),
+            i_end(_imp->use_with_expands.end()) ; i != i_end ; ++i)
+        if (0 == i->compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+            result->insert(UseFlagName(*i));
+
+    if (pde)
+    {
+        for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
+                i != i_end ; ++i)
+        {
+            if (! match_package(*this, *i->first, *pde))
+                continue;
+
+            if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+                result->insert(UseFlagName(i->second));
+        }
+    }
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "PortageEnvironment::known_use_expand_names("
+            + stringify(prefix) + ", " + (pde ? stringify(*pde) : stringify("0")) + ") -> ("
+            + join(result->begin(), result->end(), ", ") + ")");
+
+    return result;
+}
+
+int
+PortageEnvironment::perform_hook(const Hook & hook) const
+{
+    using namespace std::tr1::placeholders;
+
+    if (! _imp->hooker)
+    {
+        _imp->need_hook_dirs();
+        _imp->hooker.reset(new Hooker(this));
+        std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
+                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1));
+    }
+
+    return _imp->hooker->perform_hook(hook);
+}
+
+
+std::string
+PortageEnvironment::hook_dirs() const
+{
+    _imp->need_hook_dirs();
+    return join(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), " ");
 }
 

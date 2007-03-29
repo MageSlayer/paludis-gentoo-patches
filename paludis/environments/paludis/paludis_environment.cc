@@ -17,9 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <list>
 #include <paludis/config_file.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/hooker.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/match_package.hh>
@@ -35,26 +34,69 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
+
+#include <list>
 #include <vector>
+#include <tr1/functional>
+#include <functional>
+#include <algorithm>
 
 using namespace paludis;
-
-typedef MakeHashedMap<std::string, bool>::Type HookPresentCache;
 
 namespace paludis
 {
     template<>
     struct Implementation<PaludisEnvironment>
     {
-        mutable HookPresentCache hook_cache;
+        mutable bool done_hooks;
+        mutable std::tr1::shared_ptr<Hooker> hooker;
+        mutable std::list<FSEntry> hook_dirs;
+
         std::tr1::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
         std::list<UseConfigEntry> forced_use;
 
         Implementation(std::tr1::shared_ptr<PaludisConfig> c) :
+            done_hooks(false),
             config(c),
             paludis_command("paludis")
         {
+        }
+
+        void add_one_hook(const FSEntry & r) const
+        {
+            try
+            {
+                if (r.is_directory())
+                {
+                    Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
+                            + stringify(r) + "'");
+                    hook_dirs.push_back(r);
+                }
+                else
+                    Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
+                            + stringify(r) + "'");
+            }
+            catch (const FSError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
+                        e.message() + "' (" + e.what() + ") when checking hook "
+                        "directory '" + stringify(r) + "'");
+            }
+        }
+
+        void need_hook_dirs(const FSEntry & c) const
+        {
+            if (! done_hooks)
+            {
+                add_one_hook(c / "hooks");
+                if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+                {
+                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks");
+                    add_one_hook(FSEntry(DATADIR) / "paludis" / "hooks");
+                }
+                done_hooks = true;
+            }
         }
     };
 }
@@ -543,146 +585,27 @@ PaludisEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
-namespace
-{
-    void add_one_hook(const std::string & base, std::list<FSEntry> & result)
-    {
-        try
-        {
-            FSEntry r(base);
-            if (r.is_directory())
-            {
-                Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
-                        + base + "'");
-                result.push_back(r);
-            }
-            else
-                Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
-                        + base + "'");
-        }
-        catch (const FSError & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
-                    e.message() + "' (" + e.what() + ") when checking hook "
-                    "directory '" + base + "'");
-        }
-    }
-
-    const std::list<FSEntry> & get_hook_dirs(const std::string & c)
-    {
-        static std::list<FSEntry> result;
-        static bool done_hooks(false);
-        if (! done_hooks)
-        {
-            add_one_hook(c + "/hooks", result);
-            if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
-            {
-                add_one_hook(LIBEXECDIR "/paludis/hooks", result);
-                add_one_hook(DATADIR "/paludis/hooks", result);
-            }
-            done_hooks = true;
-        }
-        return result;
-    }
-
-    struct Hooker
-    {
-        Hook hook;
-        std::string paludis_command;
-        std::string root;
-        std::string reduced_gid;
-        std::string reduced_uid;
-
-        Hooker(const Hook & h, const std::string & p, const std::string & r,
-                const std::string & g, const std::string & u) :
-            hook(h),
-            paludis_command(p),
-            root(r),
-            reduced_gid(g),
-            reduced_uid(u)
-        {
-        }
-
-        int operator() (const FSEntry & f) const;
-    };
-
-    int
-    Hooker::operator() (const FSEntry & f) const
-    {
-        Context context("When running hook script '" + stringify(f) +
-                "' for hook '" + hook.name() + "':");
-        Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
-                stringify(f) + "' for '" + hook.name() + "'");
-
-        Command cmd(Command("bash '" + stringify(f) + "'")
-                .with_setenv("ROOT", root)
-                .with_setenv("HOOK", hook.name())
-                .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .with_setenv("PALUDIS_REDUCED_GID", reduced_gid)
-                .with_setenv("PALUDIS_REDUCED_UID", reduced_uid)
-                .with_setenv("PALUDIS_COMMAND", paludis_command));
-
-        for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
-            cmd.with_setenv(h->first, h->second);
-
-        int exit_status(run_command(cmd));
-        if (0 == exit_status)
-            Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(f)
-                    + "' returned success '" + stringify(exit_status) + "'");
-        else
-            Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(f)
-                    + "' returned failure '" + stringify(exit_status) + "'");
-        return exit_status;
-    }
-}
-
 int
 PaludisEnvironment::perform_hook(const Hook & hook) const
 {
-    HookPresentCache::iterator cache_entry(_imp->hook_cache.end());
-    if (_imp->hook_cache.end() != ((cache_entry = _imp->hook_cache.find(hook.name()))))
-        if (! cache_entry->second)
-            return 0;
+    using namespace std::tr1::placeholders;
 
-    Context context("When triggering hook '" + hook.name() + "'");
-    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
-
-    const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs(_imp->config->config_dir()));
-
-    bool had_hook(false);
-    int max_exit_status(0);
-    for (std::list<FSEntry>::const_iterator h(hook_dirs_ref.begin()),
-            h_end(hook_dirs_ref.end()) ; h != h_end ; ++h)
+    if (! _imp->hooker)
     {
-        FSEntry hh(*h / hook.name());
-        if (! hh.is_directory())
-            continue;
-
-        std::list<FSEntry> hooks;
-        std::copy(DirIterator(hh), DirIterator(),
-                filter_inserter(std::back_inserter(hooks), IsFileWithExtension(".bash")));
-
-        if (! hooks.empty())
-            had_hook = true;
-
-        for (std::list<FSEntry>::const_iterator hk(hooks.begin()),
-                hk_end(hooks.end()) ; hk != hk_end ; ++hk)
-            max_exit_status = std::max(max_exit_status, Hooker(hook, paludis_command(),
-                        stringify(root()), stringify(reduced_gid()), stringify(reduced_uid()))(*hk));
+        _imp->need_hook_dirs(_imp->config->config_dir());
+        _imp->hooker.reset(new Hooker(this));
+        std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
+                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1));
     }
 
-    if (_imp->hook_cache.end() == cache_entry)
-        _imp->hook_cache.insert(std::make_pair(hook.name(), had_hook));
-
-    return max_exit_status;
+    return _imp->hooker->perform_hook(hook);
 }
 
 std::string
 PaludisEnvironment::hook_dirs() const
 {
-    const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs(_imp->config->config_dir()));
-    return join(hook_dirs_ref.begin(), hook_dirs_ref.end(), " ");
+    _imp->need_hook_dirs(_imp->config->config_dir());
+    return join(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), " ");
 }
 
 std::string

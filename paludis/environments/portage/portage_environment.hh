@@ -64,24 +64,15 @@ namespace paludis
                     const bool override_tilde_keywords = false) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-#if 0
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
                     const PackageDatabaseEntry *) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-#endif
-
-#if 0
 
             virtual bool query_user_masks(const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool query_user_unmasks(const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string bashrc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-#endif
 
             virtual std::string paludis_command() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -97,6 +88,11 @@ namespace paludis
 #endif
 
             virtual FSEntry root() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
