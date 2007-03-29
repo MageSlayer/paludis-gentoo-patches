@@ -140,7 +140,7 @@ namespace paludis
             virtual void clear_forced_use() = 0;
 
             /**
-             * Fetch any known use expand names (excluding prefix) that start with a
+             * Fetch any known use expand names (including prefix) that start with a
              * given prefix.
              *
              * Default behaviour: no names known.
