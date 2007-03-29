@@ -1192,6 +1192,14 @@ namespace paludis
 
     class PortageRepositoryParams;
 
+    /**
+     * Interface for handling PortageRepository specific functionality.
+     *
+     * \see Repository
+     * \see PortageRepository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
     class RepositoryPortageInterface
     {
         public:
