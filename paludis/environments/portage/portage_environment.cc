@@ -395,6 +395,7 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
+    keys->insert("world", "/var/lib/portage/world");
     package_database()->add_repository(1,
             RepositoryMaker::get_instance()->find_maker("vdb")(this, keys));
 }
@@ -621,5 +622,11 @@ PortageEnvironment::MirrorIterator
 PortageEnvironment::end_mirrors(const std::string & m) const
 {
     return MirrorIterator(_imp->mirrors.upper_bound(m));
+}
+
+bool
+PortageEnvironment::accept_breaks_portage() const
+{
+    return false;
 }
 

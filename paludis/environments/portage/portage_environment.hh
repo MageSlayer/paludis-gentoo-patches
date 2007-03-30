@@ -98,6 +98,8 @@ namespace paludis
 
             virtual std::string bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_breaks_portage() const;
     };
 }
 
