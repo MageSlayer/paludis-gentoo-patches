@@ -26,6 +26,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/environments/environment_maker.hh>
 
 #include <string>
 
@@ -63,6 +64,14 @@ namespace paludis
              * Constructor.
              */
             PaludisConfigError(const std::string & msg) throw ();
+    };
+
+    class PALUDIS_VISIBLE PaludisConfigNoDirectoryError :
+        public PaludisConfigError,
+        public FallBackToAnotherMakerError
+    {
+        public:
+            PaludisConfigNoDirectoryError(const std::string & msg) throw ();
     };
 
 #include <paludis/environments/paludis/use_config_entry-sr.hh>

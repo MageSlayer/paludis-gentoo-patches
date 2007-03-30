@@ -24,6 +24,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/about.hh>
 #include <list>
+#include <set>
 #include <dlfcn.h>
 #include <stdint.h>
 
@@ -141,7 +142,28 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     if (key.empty())
         key = "paludis";
 
-    return (*find_maker(key))(suffix);
+    try
+    {
+        return (*find_maker(key))(suffix);
+    }
+    catch (const FallBackToAnotherMakerError &)
+    {
+        if (s.empty())
+        {
+            std::set<std::string> keys;
+            copy_keys(std::inserter(keys, keys.begin()));
+            if (keys.end() != keys.find("portage"))
+                return make_from_spec("portage");
+            else
+                throw;
+        }
+        else
+            throw;
+    }
+}
+
+FallBackToAnotherMakerError::FallBackToAnotherMakerError()
+{
 }
 
 extern "C"

@@ -288,6 +288,11 @@ PaludisConfigError::PaludisConfigError(const std::string & msg) throw () :
 {
 }
 
+PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string & msg) throw () :
+    PaludisConfigError("Paludis configuration error: " + msg)
+{
+}
+
 PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & suffix) :
     PrivateImplementationPattern<PaludisConfig>(new Implementation<PaludisConfig>(e))
 {
@@ -312,7 +317,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     }
 
     if (! local_config_dir.exists())
-        throw PaludisConfigError("Can't find configuration directory (tried '"
+        throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
                 + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig initial directory is '"

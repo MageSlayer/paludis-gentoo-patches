@@ -21,6 +21,7 @@ libpaludispaludisenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@V
 if ! MONOLITHIC
 
 libpaludispaludisenvironment_la_LIBADD = \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la

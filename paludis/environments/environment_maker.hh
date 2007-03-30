@@ -80,6 +80,12 @@ namespace paludis
             const char * what() const throw ();
     };
 
+    class FallBackToAnotherMakerError
+    {
+        protected:
+            FallBackToAnotherMakerError();
+    };
+
     /**
      * Virtual constructor for environments.
      *
