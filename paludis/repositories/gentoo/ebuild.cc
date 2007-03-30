@@ -110,6 +110,8 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_FETCHERS_DIRS", params.environment->fetchers_dirs())
             .with_setenv("PALUDIS_SYNCERS_DIRS", params.environment->syncers_dirs())
             .with_setenv("PALUDIS_COMMAND", params.environment->paludis_command())
+            .with_setenv("PALUDIS_REDUCED_GID", stringify(params.environment->reduced_gid()))
+            .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment->reduced_uid()))
             .with_setenv("KV", kernel_version())
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));

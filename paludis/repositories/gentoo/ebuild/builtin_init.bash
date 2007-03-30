@@ -45,7 +45,7 @@ builtin_init()
 !!! automatically. Please create it by hand and give it appropriate
 !!! permissions. Typically you should use:
 !!!     mkdir ${!a}
-!!!     chgrp paludisbuild ${!a}
+!!!     chgrp ${PALUDIS_REDUCED_GID} ${!a}
 !!!     chmod g+rwx ${!a}
 !!!     chmod +s ${!a}
 !!! although other values may be more appropriate for your system.
