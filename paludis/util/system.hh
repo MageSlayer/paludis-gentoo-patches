@@ -110,12 +110,16 @@ namespace paludis
             Command & with_sandbox();
             Command & with_echo_to_stderr();
             Command & with_uid_gid(const uid_t, const gid_t);
+            Command & with_stdout_prefix(const std::string &);
+            Command & with_stderr_prefix(const std::string &);
 
             std::string command() const;
             std::string chdir() const;
             void echo_to_stderr() const;
             std::tr1::shared_ptr<const uid_t> uid() const;
             std::tr1::shared_ptr<const gid_t> gid() const;
+            std::string stdout_prefix() const;
+            std::string stderr_prefix() const;
 
             typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
             Iterator begin_setenvs() const;

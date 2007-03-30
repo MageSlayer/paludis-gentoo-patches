@@ -143,17 +143,23 @@ namespace paludis
         bool echo_to_stderr;
         std::tr1::shared_ptr<uid_t> uid;
         std::tr1::shared_ptr<gid_t> gid;
+        std::string stdout_prefix;
+        std::string stderr_prefix;
 
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
-                const std::string & d = "", bool e = false, std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
-                std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>()) :
+                const std::string & d = "", bool e = false,
+                std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
+                std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
+                const std::string & p = "", const std::string & q = "") :
             command(c),
             setenv_values(s),
             chdir(d),
             echo_to_stderr(e),
             uid(u),
-            gid(g)
+            gid(g),
+            stdout_prefix(p),
+            stderr_prefix(q)
         {
         }
     };
@@ -172,7 +178,7 @@ Command::Command(const char * const s) :
 Command::Command(const Command & other) :
     PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
                 other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
-                other._imp->uid, other._imp->gid))
+                other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix))
 {
 }
 
@@ -182,7 +188,11 @@ Command::operator= (const Command & other)
     if (this != &other)
     {
         _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
-                    other._imp->chdir, other._imp->echo_to_stderr));
+                    other._imp->chdir, other._imp->echo_to_stderr,
+                    std::tr1::shared_ptr<uid_t>(),
+                    std::tr1::shared_ptr<gid_t>(),
+                    other._imp->stdout_prefix,
+                    other._imp->stderr_prefix));
         if (other.uid() && other.gid())
             with_uid_gid(*other.uid(), *other.gid());
     }
@@ -308,11 +318,18 @@ paludis::run_command(const Command & cmd)
             extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
         }
 
+        std::string command(cmd.command());
+
+        if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
+            command = LIBEXECDIR "/paludis/utils/outputwrapper --stdout-prefix '"
+                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- "
+                + command;
+
         cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command()
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + command
                 + " " + extras);
-        execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
-        throw RunCommandError("execl /bin/sh -c '" + cmd.command() + "' failed:"
+        execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char *>(0));
+        throw RunCommandError("execl /bin/sh -c '" + command + "' failed:"
                 + stringify(strerror(errno)));
     }
     else if (-1 == child)
@@ -366,5 +383,31 @@ Command::with_echo_to_stderr()
 {
     _imp->echo_to_stderr = true;
     return *this;
+}
+
+Command &
+Command::with_stdout_prefix(const std::string & s)
+{
+    _imp->stdout_prefix = s;
+    return *this;
+}
+
+Command &
+Command::with_stderr_prefix(const std::string & s)
+{
+    _imp->stderr_prefix = s;
+    return *this;
+}
+
+std::string
+Command::stdout_prefix() const
+{
+    return _imp->stdout_prefix;
+}
+
+std::string
+Command::stderr_prefix() const
+{
+    return _imp->stderr_prefix;
 }
 
