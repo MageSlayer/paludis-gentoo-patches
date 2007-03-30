@@ -282,8 +282,8 @@ is best done on a per-package basis via <code>bashrc</code>:</p>
 <pre>
 case "${PN}" in
 
-    # These packages often fail src_test (not a complete list)
-    automake|glibc|e2fsprogs|neon|gettext|tar)
+    # Don't use src_test for these broken packages
+    foo|bar|baz)
         export SKIP_FUNCTIONS=test
         ;;
 
