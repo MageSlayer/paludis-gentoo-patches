@@ -216,7 +216,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
             std::back_inserter(gentoo_mirrors));
     for (std::list<std::string>::const_iterator m(gentoo_mirrors.begin()), m_end(gentoo_mirrors.end()) ;
             m != m_end ; ++m)
-        _imp->mirrors.insert(std::make_pair("*", *m));
+        _imp->mirrors.insert(std::make_pair("*", *m + "/distfiles/"));
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
