@@ -542,7 +542,7 @@ PortageEnvironment::query_user_masks(const PackageDatabaseEntry & e) const
 bool
 PortageEnvironment::query_user_unmasks(const PackageDatabaseEntry & e) const
 {
-    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
+    for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
         if (match_package(*this, **i, e))
             return true;
