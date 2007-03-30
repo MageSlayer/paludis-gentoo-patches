@@ -41,7 +41,8 @@ namespace paludis
             void _add_installed_virtuals_repository();
             void _add_portdir_repository(const FSEntry &);
             void _add_portdir_overlay_repository(const FSEntry &);
-            void _add_ebuild_repository(const FSEntry &, const std::string &);
+            void _add_ebuild_repository(const FSEntry &, const std::string &,
+                    const std::string &);
             void _add_vdb_repository();
 
             template<typename I_>
@@ -95,6 +96,9 @@ namespace paludis
             virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string hook_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

@@ -321,11 +321,12 @@ void
 PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR repository:");
-    _add_ebuild_repository(portdir, "");
+    _add_ebuild_repository(portdir, "", _imp->vars->get("SYNC"));
 }
 
 void
-PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master)
+PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
+        const std::string & sync)
 {
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
@@ -337,8 +338,12 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
     keys->insert("format", "ebuild");
     keys->insert("names_cache", "/var/empty");
     keys->insert("master_repository", master);
-
-    /* TODO: DISTDIR, BUILD_PREFIX, SYNC */
+    keys->insert("sync", sync);
+    keys->insert("distdir", stringify(_imp->vars->get("DISTDIR")));
+    std::string buildroot(_imp->vars->get("PORTAGE_TMPDIR"));
+    if (! buildroot.empty())
+        buildroot.append("/portage");
+    keys->insert("buildroot", buildroot);
 
     package_database()->add_repository(2,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
@@ -348,7 +353,7 @@ void
 PortageEnvironment::_add_portdir_overlay_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR_OVERLAY repository '" + stringify(portdir) + "':");
-    _add_ebuild_repository(portdir, "gentoo");
+    _add_ebuild_repository(portdir, "gentoo", "");
 }
 
 void
@@ -564,11 +569,18 @@ PortageEnvironment::perform_hook(const Hook & hook) const
     return _imp->hooker->perform_hook(hook);
 }
 
-
 std::string
 PortageEnvironment::hook_dirs() const
 {
     _imp->need_hook_dirs();
     return join(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), " ");
+}
+
+std::string
+PortageEnvironment::bashrc_files() const
+{
+    return stringify(_imp->conf_dir / "make.globals") + " " +
+        stringify(_imp->conf_dir / "make.conf") + " " +
+        stringify(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
 }
 

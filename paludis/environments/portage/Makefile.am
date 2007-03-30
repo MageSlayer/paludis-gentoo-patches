@@ -22,6 +22,9 @@ libpaludisportageenvironment_la_LIBADD = \
 
 libenvdir = $(libdir)/paludis/environments/
 
+libexecenvdir = $(libexecdir)/paludis/environments/portage/
+libexecenv_SCRIPTS = bashrc
+
 libenv_LTLIBRARIES = libpaludisportageenvironment.la
 
 paludis_environment_portage_includedir = $(includedir)/paludis/environments/portage
@@ -30,6 +33,7 @@ paludis_environment_portage_include_HEADERS = \
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
+	$(libexecenv_SCRIPTS) \
 	portage_environment_TEST_setup.sh \
 	portage_environment_TEST.cc \
 	portage_environment_TEST_cleanup.sh
