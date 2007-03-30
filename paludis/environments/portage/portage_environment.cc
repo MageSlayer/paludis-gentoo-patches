@@ -396,6 +396,10 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
     keys->insert("world", "/var/lib/portage/world");
+    std::string buildroot(_imp->vars->get("PORTAGE_TMPDIR"));
+    if (! buildroot.empty())
+        buildroot.append("/portage");
+    keys->insert("buildroot", buildroot);
     package_database()->add_repository(1,
             RepositoryMaker::get_instance()->find_maker("vdb")(this, keys));
 }
