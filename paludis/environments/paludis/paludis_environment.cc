@@ -50,7 +50,7 @@ namespace paludis
     {
         mutable bool done_hooks;
         mutable std::tr1::shared_ptr<Hooker> hooker;
-        mutable std::list<FSEntry> hook_dirs;
+        mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
 
         std::tr1::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
@@ -63,7 +63,7 @@ namespace paludis
         {
         }
 
-        void add_one_hook(const FSEntry & r) const
+        void add_one_hook(const FSEntry & r, const bool v) const
         {
             try
             {
@@ -71,7 +71,7 @@ namespace paludis
                 {
                     Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
                             + stringify(r) + "'");
-                    hook_dirs.push_back(r);
+                    hook_dirs.push_back(std::make_pair(r, v));
                 }
                 else
                     Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
@@ -89,11 +89,11 @@ namespace paludis
         {
             if (! done_hooks)
             {
-                add_one_hook(c / "hooks");
+                add_one_hook(c / "hooks", true);
                 if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
                 {
-                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks");
-                    add_one_hook(FSEntry(DATADIR) / "paludis" / "hooks");
+                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks", false);
+                    add_one_hook(FSEntry(DATADIR) / "paludis" / "hooks", true);
                 }
                 done_hooks = true;
             }
@@ -588,14 +588,13 @@ PaludisEnvironment::set_paludis_command(const std::string & s)
 int
 PaludisEnvironment::perform_hook(const Hook & hook) const
 {
-    using namespace std::tr1::placeholders;
-
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs(_imp->config->config_dir());
         _imp->hooker.reset(new Hooker(this));
-        std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
-                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1));
+        for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->hook_dirs.begin()),
+                h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
+            _imp->hooker->add_dir(h->first, h->second);
     }
 
     return _imp->hooker->perform_hook(hook);
@@ -605,7 +604,17 @@ std::string
 PaludisEnvironment::hook_dirs() const
 {
     _imp->need_hook_dirs(_imp->config->config_dir());
-    return join(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), " ");
+
+    std::string result;
+    for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->hook_dirs.begin()),
+            h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
+    {
+        if (! result.empty())
+            result.append(" ");
+        result.append(stringify(h->first));
+    }
+
+    return result;
 }
 
 std::string

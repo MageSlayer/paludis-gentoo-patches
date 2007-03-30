@@ -26,6 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/strip.hh>
 #include <list>
 
 using namespace paludis;
@@ -39,7 +40,7 @@ namespace paludis
     {
         const Environment * const env;
         mutable HookPresentCache hook_cache;
-        std::list<FSEntry> dirs;
+        std::list<std::pair<FSEntry, bool> > dirs;
 
         Implementation(const Environment * const e) :
             env(e)
@@ -58,10 +59,10 @@ Hooker::~Hooker()
 }
 
 void
-Hooker::add_dir(const FSEntry & dir)
+Hooker::add_dir(const FSEntry & dir, const bool v)
 {
     _imp->hook_cache.clear();
-    _imp->dirs.push_back(dir);
+    _imp->dirs.push_back(std::make_pair(dir, v));
 }
 
 int
@@ -78,10 +79,10 @@ Hooker::perform_hook(const Hook & hook) const
 
     bool had_hook(false);
     int max_exit_status(0);
-    for (std::list<FSEntry>::const_iterator h(_imp->dirs.begin()), h_end(_imp->dirs.end()) ;
+    for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->dirs.begin()), h_end(_imp->dirs.end()) ;
             h != h_end ; ++h)
     {
-        FSEntry hh(*h / hook.name());
+        FSEntry hh(h->first / hook.name());
         if (! hh.is_directory())
             continue;
 
@@ -95,7 +96,7 @@ Hooker::perform_hook(const Hook & hook) const
         for (std::list<FSEntry>::const_iterator hk(hooks.begin()),
                 hk_end(hooks.end()) ; hk != hk_end ; ++hk)
         {
-            Context c("When running hook script '" + stringify(hh) +
+            Context c("When running hook script '" + stringify(*hk) +
                     "' for hook '" + hook.name() + "':");
             Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
                     stringify(hh) + "' for '" + hook.name() + "'");
@@ -108,6 +109,11 @@ Hooker::perform_hook(const Hook & hook) const
                     .with_setenv("PALUDIS_REDUCED_GID", stringify(_imp->env->reduced_gid()))
                     .with_setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
                     .with_setenv("PALUDIS_COMMAND", _imp->env->paludis_command()));
+
+            if (h->second)
+                cmd
+                    .with_stdout_prefix(strip_trailing_string(hk->basename(), ".bash") + "> ")
+                    .with_stderr_prefix(strip_trailing_string(hk->basename(), ".bash") + "> ");
 
             for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
                 cmd.with_setenv(x->first, x->second);

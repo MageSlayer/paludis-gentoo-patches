@@ -38,7 +38,7 @@ namespace paludis
             ~Hooker();
 
             int perform_hook(const Hook &) const;
-            void add_dir(const FSEntry &);
+            void add_dir(const FSEntry &, const bool output_prefixed);
     };
 }
 

@@ -213,6 +213,8 @@ template<typename I_>
 void
 PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string & def_value)
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When loading '" + stringify(f) + "':");
 
     if (! f.exists())
@@ -220,8 +222,8 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
 
     if (f.is_directory())
     {
-        for (DirIterator d(f), d_end ; d != d_end ; ++d)
-            _load_atom_file(*d, i, def_value);
+        std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(std::tr1::mem_fn(
+                        &PortageEnvironment::_load_atom_file<I_>), this, _1, i, def_value));
     }
     else
     {
@@ -255,6 +257,8 @@ template<typename I_>
 void
 PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When loading '" + stringify(f) + "':");
 
     if (! f.exists())
@@ -262,8 +266,8 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 
     if (f.is_directory())
     {
-        for (DirIterator d(f), d_end ; d != d_end ; ++d)
-            _load_lined_file(*d, i);
+        std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(std::tr1::mem_fn(
+                        &PortageEnvironment::_load_lined_file<I_>), this, _1, i));
     }
     else
     {
@@ -554,7 +558,7 @@ PortageEnvironment::perform_hook(const Hook & hook) const
         _imp->need_hook_dirs();
         _imp->hooker.reset(new Hooker(this));
         std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
-                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1));
+                std::tr1::bind(std::tr1::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1, false));
     }
 
     return _imp->hooker->perform_hook(hook);
