@@ -82,13 +82,11 @@ namespace paludis
 
             virtual void set_paludis_command(const std::string &);
 
-#if 0
             virtual MirrorIterator begin_mirrors(const std::string & mirror) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual MirrorIterator end_mirrors(const std::string & mirror) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-#endif
 
             virtual FSEntry root() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -33,6 +33,7 @@
 #include <tr1/functional>
 #include <functional>
 #include <set>
+#include <map>
 #include <vector>
 
 using namespace paludis;
@@ -60,6 +61,7 @@ namespace paludis
         std::set<std::string> use_with_expands;
         std::set<std::string> use_expand;
         std::set<std::string> accept_keywords;
+        std::multimap<std::string, std::string> mirrors;
 
         PackageUse package_use;
         PackageKeywords package_keywords;
@@ -207,6 +209,31 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     _load_lined_file(_imp->conf_dir / "portage" / "package.mask", std::back_inserter(_imp->package_mask));
     _load_lined_file(_imp->conf_dir / "portage" / "package.unmask", std::back_inserter(_imp->package_unmask));
+
+    /* mirrors */
+    std::list<std::string> gentoo_mirrors;
+    WhitespaceTokeniser::get_instance()->tokenise(_imp->vars->get("GENTOO_MIRRORS"),
+            std::back_inserter(gentoo_mirrors));
+    for (std::list<std::string>::const_iterator m(gentoo_mirrors.begin()), m_end(gentoo_mirrors.end()) ;
+            m != m_end ; ++m)
+        _imp->mirrors.insert(std::make_pair("*", *m));
+
+    if ((_imp->conf_dir / "portage" / "mirrors").exists())
+    {
+        LineConfigFile mirrors(_imp->conf_dir / "portage" / "mirrors");
+        for (LineConfigFile::Iterator line(mirrors.begin()), line_end(mirrors.end()) ;
+                line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+
+            for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+                _imp->mirrors.insert(std::make_pair(tokens.at(0), *t));
+        }
+    }
 }
 
 template<typename I_>
@@ -582,5 +609,17 @@ PortageEnvironment::bashrc_files() const
     return stringify(_imp->conf_dir / "make.globals") + " " +
         stringify(_imp->conf_dir / "make.conf") + " " +
         stringify(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
+}
+
+PortageEnvironment::MirrorIterator
+PortageEnvironment::begin_mirrors(const std::string & m) const
+{
+    return MirrorIterator(_imp->mirrors.lower_bound(m));
+}
+
+PortageEnvironment::MirrorIterator
+PortageEnvironment::end_mirrors(const std::string & m) const
+{
+    return MirrorIterator(_imp->mirrors.upper_bound(m));
 }
 
