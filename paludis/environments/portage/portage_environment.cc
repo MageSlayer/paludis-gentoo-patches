@@ -317,7 +317,12 @@ void
 PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR repository:");
+    _add_ebuild_repository(portdir, "");
+}
 
+void
+PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master)
+{
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
     keys->insert("root", stringify(root()));
@@ -327,6 +332,10 @@ PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "ebuild");
     keys->insert("names_cache", "/var/empty");
+    keys->insert("master_repository", master);
+
+    /* TODO: DISTDIR, BUILD_PREFIX, SYNC */
+
     package_database()->add_repository(2,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
 }
@@ -335,16 +344,7 @@ void
 PortageEnvironment::_add_portdir_overlay_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR_OVERLAY repository '" + stringify(portdir) + "':");
-
-    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
-    keys->insert("root", stringify(root()));
-    keys->insert("location", stringify(portdir));
-    keys->insert("format", "ebuild");
-    keys->insert("names_cache", "/var/empty");
-    keys->insert("master_repository", "gentoo");
-    package_database()->add_repository(2,
-            RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
+    _add_ebuild_repository(portdir, "gentoo");
 }
 
 void
