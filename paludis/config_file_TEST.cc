@@ -251,6 +251,30 @@ namespace test_cases
         }
     } test_key_value_config_file_defaults;
 
+    struct KeyValueConfigFileSourceTest : TestCase
+    {
+        KeyValueConfigFileSourceTest() : TestCase("key value config file source") { }
+
+        void run()
+        {
+            std::stringstream d_s;
+            d_s << "six=\"llama\"" << std::endl;
+            d_s << "seven=\"spider\"" << std::endl;
+            d_s << "source config_file_TEST_dir/sourced_one" << std::endl;
+            d_s << "eight=\"octopus\"" << std::endl;
+            KeyValueConfigFile ff(d_s);
+
+            TEST_CHECK_EQUAL(ff.get("one"), "cat");
+            TEST_CHECK_EQUAL(ff.get("two"), "dog");
+            TEST_CHECK_EQUAL(ff.get("three"), "koala");
+            TEST_CHECK_EQUAL(ff.get("four"), "sheep");
+            TEST_CHECK_EQUAL(ff.get("five"), "rabbit");
+            TEST_CHECK_EQUAL(ff.get("six"), "llama");
+            TEST_CHECK_EQUAL(ff.get("seven"), "spider");
+            TEST_CHECK_EQUAL(ff.get("eight"), "octopus");
+        }
+    } test_key_value_config_file_source;
+
     /**
      * \test Test KeyValueConfigFile errors.
      *

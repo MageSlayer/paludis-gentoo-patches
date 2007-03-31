@@ -546,23 +546,38 @@ namespace
     }
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d,
+KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const Defaults & d,
         bool (* i) (const std::string &, const KeyValueConfigFile &)) :
-    ConfigFile(s),
+    ConfigFile(ss),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d, i))
 {
-    Context context("When parsing key/value configuration file" + (s.filename().empty() ? ":" :
-                "'" + s.filename() + "':"));
+    Context context("When parsing key/value configuration file" + (ss.filename().empty() ? ":" :
+                "'" + ss.filename() + "':"));
+
+    if (! ss.stream())
+        throw ConfigFileError(ss.filename(), "Cannot read input");
+
+    std::list<std::pair<Source, std::istreambuf_iterator<char> > > sources;
+    sources.push_back(std::make_pair(ss, std::istreambuf_iterator<char>(ss.stream())));
 
     std::copy(d.begin(), d.end(), std::inserter(_imp->keys, _imp->keys.begin()));
 
-    if (! s.stream())
-        throw ConfigFileError(s.filename(), "Cannot read input");
+    std::istreambuf_iterator<char> c_end;
 
-    std::istreambuf_iterator<char> c(s.stream()), c_end;
-
-    while (c != c_end)
+    while ((sources.back().second != c_end) || (! sources.empty()))
     {
+        if (sources.back().second == c_end)
+        {
+            sources.pop_back();
+            if (sources.empty())
+                break;
+            else
+                continue;
+        }
+
+        Source & s(sources.back().first);
+        std::istreambuf_iterator<char> & c(sources.back().second);
+
         if (*c == '#')
             next_line(c, c_end);
         else if (*c == '\t' || *c == '\n' || *c == '\r' || *c == ' ')
@@ -580,14 +595,28 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d,
             {
                 while (*c == '\t' || *c == ' ')
                     if (++c == c_end)
-                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" + key + "' at end of input");
+                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" +
+                                key + "' at end of input");
 
                 if (*c != '=')
                 {
                     if (key == "source")
-                        throw ConfigFileError(s.filename(), "'source' not yet supported");
+                    {
+                        std::string value(strip_leading(strip_trailing(
+                                        grab_value(c, c_end, *this, s.filename()), " \t"), "\t"));
+                        if (value.empty())
+                            throw ConfigFileError(s.filename(), "source expects a filename");
+                        FSEntry target(value);
+                        if (! target.exists())
+                            throw ConfigFileError(s.filename(), "source argument '" + stringify(target) +
+                                    "' does not exist");
+                        Source ts(target);
+                        sources.push_back(std::make_pair(ts, std::istreambuf_iterator<char>(ts.stream())));
+                        continue;
+                    }
                     else
-                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" + key + "', trailing text '"
+                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" +
+                                key + "', trailing text '"
                                 + std::string(c, c_end) + "'");
                 }
             }
