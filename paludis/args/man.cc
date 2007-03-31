@@ -76,19 +76,23 @@ namespace
             for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
                     a != a_end ; ++a)
             {
+                std::string default_string;
+                if (a->first == e->default_arg())
+                    default_string = " (default)";
+
                 switch (mf)
                 {
                     case mf_man:
                         s << ".RS" << endl;
                         s << ".TP" << endl;
                         s << ".B \"" << a->first << "\"" << endl;
-                        s << a->second << endl;
+                        s << a->second << default_string << endl;
                         s << ".RE" << endl;
                         break;
 
                     case mf_html:
                         s << "<dt>" << a->first << "</dt>" << endl;
-                        s << "<dd>" << a->second << "</dd>" << endl;
+                        s << "<dd>" << a->second << default_string << "</dd>" << endl;
                         break;
                 }
             }
