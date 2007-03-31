@@ -1,4 +1,7 @@
 #!/bin/bash
 
-unset USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND}
+# ebuild.bash doesn't allow USE etc to be set in user settings. But we need
+# to source make.conf to pick up things like CFLAGS. So... After sourcing
+# make.conf, unset things that ebuild.bash disallows.
+unset ${save_vars}
 
