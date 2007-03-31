@@ -152,6 +152,20 @@ namespace paludis
      * \ingroup grpsystem
      */
     void set_run_command_stderr_fds(const int, const int) PALUDIS_VISIBLE;
+
+    /**
+     * Fetch the username for a uid, or the uid as a string if not available.
+     *
+     * \ingroup grpsystem
+     */
+    std::string get_user_name(const uid_t) PALUDIS_VISIBLE;
+
+    /**
+     * Fetch the group name for a gid, or the gid as a string if not available.
+     *
+     * \ingroup grpsystem
+     */
+    std::string get_group_name(const gid_t) PALUDIS_VISIBLE;
 }
 
 #endif

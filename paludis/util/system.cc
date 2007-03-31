@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <grp.h>
+#include <pwd.h>
 #include <map>
 #include <iostream>
 #include "config.h"
@@ -409,5 +410,35 @@ std::string
 Command::stderr_prefix() const
 {
     return _imp->stderr_prefix;
+}
+
+std::string
+paludis::get_user_name(const uid_t u)
+{
+    const struct passwd * const p(getpwuid(u));
+    if (p)
+        return stringify(p->pw_name);
+    else
+    {
+        Context c("When getting user name for uid '" + stringify(u) + "':");
+        Log::get_instance()->message(ll_warning, lc_context, "getpwuid("
+                + stringify(u) + ") returned null");
+        return stringify(u);
+    }
+}
+
+std::string
+paludis::get_group_name(const gid_t u)
+{
+    const struct group * const p(getgrgid(u));
+    if (p)
+        return stringify(p->gr_name);
+    else
+    {
+        Context c("When getting group name for gid '" + stringify(u) + "':");
+        Log::get_instance()->message(ll_warning, lc_context, "getgrgid("
+                + stringify(u) + ") returned null");
+        return stringify(u);
+    }
 }
 

@@ -31,6 +31,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/system.hh>
 
 #include <fstream>
 #include <list>
@@ -477,8 +478,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
                         stringify(f) + "' owned by group '" +
-                        stringify(getgrgid(f.group())->gr_name) + "', not '" +
-                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) +
+                        stringify(get_group_name(f.group())) + "', not '" +
+                        stringify(get_group_name(_imp->environment->reduced_gid())) +
                         "', so cannot enable userpriv");
                 fetch_userpriv_ok = false;
             }
@@ -527,8 +528,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
                         stringify(f) + "' owned by group '" +
-                        stringify(getgrgid(f.group())->gr_name) + "', not '" +
-                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+                        stringify(get_group_name(f.group())) + "', not '" +
+                        stringify(get_group_name(_imp->environment->reduced_gid())) + "', cannot enable userpriv");
                 userpriv_ok = false;
             }
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
