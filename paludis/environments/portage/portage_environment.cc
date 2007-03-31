@@ -72,10 +72,13 @@ namespace paludis
         mutable std::tr1::shared_ptr<Hooker> hooker;
         mutable std::list<FSEntry> hook_dirs;
 
+        int overlay_importance;
+
         Implementation(const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
-            done_hooks(false)
+            done_hooks(false),
+            overlay_importance(10)
         {
         }
 
@@ -348,12 +351,12 @@ void
 PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR repository:");
-    _add_ebuild_repository(portdir, "", _imp->vars->get("SYNC"));
+    _add_ebuild_repository(portdir, "", _imp->vars->get("SYNC"), 1);
 }
 
 void
 PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
-        const std::string & sync)
+        const std::string & sync, int importance)
 {
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
@@ -372,7 +375,7 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
         buildroot.append("/portage");
     keys->insert("buildroot", buildroot);
 
-    package_database()->add_repository(2,
+    package_database()->add_repository(importance,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
 }
 
@@ -380,7 +383,7 @@ void
 PortageEnvironment::_add_portdir_overlay_repository(const FSEntry & portdir)
 {
     Context context("When creating PORTDIR_OVERLAY repository '" + stringify(portdir) + "':");
-    _add_ebuild_repository(portdir, "gentoo", "");
+    _add_ebuild_repository(portdir, "gentoo", "", ++_imp->overlay_importance);
 }
 
 void
