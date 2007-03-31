@@ -4,6 +4,24 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.22.2:
+    * Partial, highly experimental support for Portage format configuration
+    files (paludis -E portage).
+
+    * Better error and warning messages and increased error tolerance in
+    various places.
+
+    * User hooks are now run with prefixed output to make it clear what is
+    running.
+
+    * There is no longer any need to explicitly export variables in bashrc etc.
+
+    * Manual pages now indicate default values for options.
+
+    * Bugfix: getgrgid returning NULL no longer causes problems.
+
+    * Bugfix: cleaning up working directories is no longer done with userpriv.
+
 0.22.1:
     * Bugfix: pkg_setup will no longer be run with userpriv.
 
