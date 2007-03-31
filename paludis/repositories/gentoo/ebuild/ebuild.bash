@@ -87,14 +87,18 @@ ebuild_source_profile()
         done <${1}/parent
     fi
 
+    local old_set=$-
+    set -a
+
     if [[ -f ${1}/make.defaults ]] ; then
-        eval "$(sed -e 's/^\([a-zA-Z0-9\-_]\+=\)/export \1/' ${1}/make.defaults )" \
-            || die "Couldn't source ${1}/make.defaults"
+        source ${1}/make.defaults || die "Couldn't source ${1}/make.defaults"
     fi
 
     if [[ -f ${1}/bashrc ]] ; then
         source ${1}/bashrc || die "Couldn't source ${1}/bashrc"
     fi
+
+    [[ "${old_set}" == *a* ]] || set +a
 }
 
 export CONFIG_PROTECT="${PALUDIS_CONFIG_PROTECT}"
@@ -120,7 +124,10 @@ unset ${save_vars} ${save_base_vars}
 for f in ${PALUDIS_BASHRC_FILES} ; do
     if [[ -f ${f} ]] ; then
         ebuild_notice "debug" "Loading bashrc file ${f}"
+        old_set=$-
+        set -a
         source ${f}
+        [[ "${old_set}" == *a* ]] || set +a
     else
         ebuild_notice "debug" "Skipping bashrc file ${f}"
     fi
