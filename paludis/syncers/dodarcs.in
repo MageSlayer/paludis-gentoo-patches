@@ -2,9 +2,12 @@
 
 source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
+old_set=$-
+set -a
 for f in ${PALUDIS_BASHRC_FILES}; do
     [[ -f "${f}" ]] && source "${f}"
 done
+[[ "${old_set}" == *a* ]] || set +a
 
 LOCAL=
 REMOTE=
