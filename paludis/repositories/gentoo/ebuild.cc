@@ -313,6 +313,9 @@ EbuildInstallCommand::commands() const
 {
     switch (install_params.phase)
     {
+        case ebuild_ip_prepare:
+            return "prepare";
+
         case ebuild_ip_init:
             return "init saveenv";
 

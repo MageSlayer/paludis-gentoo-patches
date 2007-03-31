@@ -303,12 +303,13 @@ ebuild_main()
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
     elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
-        ebuild_section "Running ebuild phase $@..."
+        ebuild_section "Running ebuild phase $@ as $(id -un ):$(id -gn )..."
     fi
 
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|fetch|merge|unmerge|tidyup|strip|loadenv|saveenv|fetchbin|initbin|unpackbin)
+            metadata|variable|init|prepare|fetch|merge|unmerge|tidyup|\
+                    strip|loadenv|saveenv|fetchbin|initbin|unpackbin)
                 ebuild_load_module builtin_${action}
             ;;
 

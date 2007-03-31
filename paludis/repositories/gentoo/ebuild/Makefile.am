@@ -15,6 +15,7 @@ libexecprog_SCRIPTS = \
 	builtin_loadenv.bash \
 	builtin_merge.bash \
 	builtin_metadata.bash \
+	builtin_prepare.bash \
 	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
