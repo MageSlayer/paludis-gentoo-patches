@@ -8,7 +8,8 @@ SUBDIRS = misc tr1 test paludis cran ruby src doc hooks eselect bash-completion 
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa \
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
-	--with-repositories=default \
+	--with-repositories=default,cran \
+	--with-environments=default,portage \
 	--with-clients=default,contrarius,inquisitio
 
 automake-deps-built-hack.tmp : built-sources-subdirs
