@@ -297,7 +297,7 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
         WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
                 create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
@@ -313,7 +313,7 @@ Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
         WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE"],
                 create_inserter<UseFlagName>(std::inserter(use, use.end())));
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
@@ -325,7 +325,7 @@ Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
         WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
                 create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
@@ -336,7 +336,7 @@ Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
         WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND_HIDDEN"],
                 create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND_HIDDEN failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
@@ -352,7 +352,7 @@ Implementation<PortageRepositoryProfile>::is_incremental(const std::string & s) 
             || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK")
             || (use_expand.end() != use_expand.find(UseFlagName(s)));
     }
-    catch (const NameError &)
+    catch (const Exception &)
     {
         return (s == "USE") || (s == "USE_EXPAND") || (s == "USE_EXPAND_HIDDEN")
             || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK");
@@ -375,7 +375,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
             system_packages->add_child(spec);
         }
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading packages "
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
@@ -397,7 +397,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                                 pds_pm_eapi_0))));
         }
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
@@ -419,7 +419,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                         + stringify(*line) + "' failed because specification does not restrict to a "
                         "unique package");
         }
-        catch (const NameError & e)
+        catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
                     + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
@@ -454,7 +454,7 @@ Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & fi
                 else
                     m[UseFlagName(*t)] = true;
             }
-            catch (const NameError & e)
+            catch (const Exception & e)
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
                         + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
@@ -497,7 +497,7 @@ Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & fil
                     else
                         n->second[UseFlagName(*t)] = true;
                 }
-                catch (const NameError & e)
+                catch (const Exception & e)
                 {
                     Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
                             + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
@@ -552,7 +552,7 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
         use.insert(arch);
         stacked_values_list.back().use_force[arch] = true;
     }
-    catch (const NameError &)
+    catch (const Exception &)
     {
         throw PortageRepositoryConfigurationError("ARCH variable has invalid value '" + arch_s + "'");
     }
