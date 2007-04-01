@@ -320,185 +320,198 @@ main(int argc, char *argv[])
         std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);
 
-        if (CommandLine::get_instance()->a_resume_command_template.specified())
+        try
         {
-            // The template should contain at least XXXXXX
-            std::string resume_template = CommandLine::get_instance()->a_resume_command_template.argument();
-            if (resume_template.find("XXXXXX", 0) == std::string::npos )
-                throw args::DoHelp("resume-command-template must contain at least XXXXXX");
+            if (CommandLine::get_instance()->a_resume_command_template.specified())
+            {
+                // The template should contain at least XXXXXX
+                std::string resume_template = CommandLine::get_instance()->a_resume_command_template.argument();
+                if (resume_template.find("XXXXXX", 0) == std::string::npos )
+                    throw args::DoHelp("resume-command-template must contain at least XXXXXX");
+            }
+
+            if (CommandLine::get_instance()->a_list_sync_protocols.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("list-sync-protocols action takes no parameters");
+
+                return do_list_sync_protocols(env);
+            }
+
+            if (CommandLine::get_instance()->a_info.specified())
+            {
+                display_version();
+                cout << endl;
+                display_info(env);
+                cout << endl;
+                return EXIT_SUCCESS;
+            }
+
+            if (CommandLine::get_instance()->a_query.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("query action requires at least one parameter");
+
+                return do_query(env);
+            }
+
+            if (CommandLine::get_instance()->a_install.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("install action requires at least one parameter");
+
+                return do_install(env);
+            }
+
+            if (CommandLine::get_instance()->a_uninstall.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("uninstall action requires at least one parameter");
+
+                return do_uninstall(env);
+            }
+
+            if (CommandLine::get_instance()->a_config.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("config action requires at least one parameter");
+
+                return do_config(env);
+            }
+
+            if (CommandLine::get_instance()->a_uninstall_unused.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("uninstall-unused action takes no parameters");
+
+                return do_uninstall_unused(env);
+            }
+
+            if (CommandLine::get_instance()->a_sync.specified())
+            {
+                return do_sync(env);
+            }
+
+            if (CommandLine::get_instance()->a_report.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("report action takes no parameters");
+                return do_report(env);
+            }
+
+            if (CommandLine::get_instance()->a_list_repositories.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("list-repositories action takes no parameters");
+
+                return do_list_repositories(env);
+            }
+
+            if (CommandLine::get_instance()->a_list_categories.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("list-categories action takes no parameters");
+
+                return do_list_categories(env);
+            }
+
+            if (CommandLine::get_instance()->a_list_packages.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("list-packages action takes no parameters");
+
+                return do_list_packages(env);
+            }
+
+            if (CommandLine::get_instance()->a_list_sets.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("list-sets action takes no parameters");
+
+                return do_list_sets(env);
+            }
+
+            if (CommandLine::get_instance()->a_contents.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("contents action requires at least one parameter");
+
+                return do_contents(env);
+            }
+
+            if (CommandLine::get_instance()->a_owner.specified())
+            {
+                if (CommandLine::get_instance()->empty())
+                    throw args::DoHelp("owner action requires at least one parameter");
+
+                return do_owner(env);
+            }
+
+            if (CommandLine::get_instance()->a_has_version.specified())
+            {
+                if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters()))
+                    throw args::DoHelp("has-version action takes exactly one parameter");
+
+                return do_has_version(env);
+            }
+
+            if (CommandLine::get_instance()->a_best_version.specified())
+            {
+                if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters()))
+                    throw args::DoHelp("best-version action takes exactly one parameter");
+
+                return do_best_version(env);
+            }
+
+            if (CommandLine::get_instance()->a_environment_variable.specified())
+            {
+                if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters()))
+                    throw args::DoHelp("environment-variable action takes exactly two parameters (depspec var)");
+
+                return do_environment_variable(env);
+            }
+
+            if (CommandLine::get_instance()->a_configuration_variable.specified())
+            {
+                if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters()))
+                    throw args::DoHelp("configuration-variable action takes exactly two parameters (repository var)");
+
+                return do_configuration_variable(env);
+            }
+
+            if (CommandLine::get_instance()->a_update_news.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("update-news action takes no parameters");
+
+                return do_update_news(env);
+            }
+
+            if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||
+                    CommandLine::get_instance()->a_regenerate_installable_cache.specified())
+            {
+                if (! CommandLine::get_instance()->empty())
+                    throw args::DoHelp("regenerate cache actions takes no parameters");
+
+                return do_regenerate_cache(env, CommandLine::get_instance()->a_regenerate_installed_cache.specified());
+            }
+
+            throw InternalError(__PRETTY_FUNCTION__, "no action?");
         }
-
-        if (CommandLine::get_instance()->a_list_sync_protocols.specified())
+        catch (const NoSuchRepositoryError & e)
         {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-sync-protocols action takes no parameters");
-
-            return do_list_sync_protocols(env);
-        }
-
-        if (CommandLine::get_instance()->a_info.specified())
-        {
-            display_version();
             cout << endl;
-            display_info(env);
-            cout << endl;
-            return EXIT_SUCCESS;
+            cerr << "Unhandled exception:" << endl
+                << "  * " << e.backtrace("\n  * ")
+                << e.message() << " (" << e.what() << ")" << endl;
+            if (env->package_database()->has_repository_named(RepositoryName("x-" + stringify(e.name()))))
+                cerr << "Perhaps you meant 'x-" << e.name() << "'?" << endl;
+            return EXIT_FAILURE;
         }
-
-        if (CommandLine::get_instance()->a_query.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("query action requires at least one parameter");
-
-            return do_query(env);
-        }
-
-        if (CommandLine::get_instance()->a_install.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("install action requires at least one parameter");
-
-            return do_install(env);
-        }
-
-        if (CommandLine::get_instance()->a_uninstall.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("uninstall action requires at least one parameter");
-
-            return do_uninstall(env);
-        }
-
-        if (CommandLine::get_instance()->a_config.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("config action requires at least one parameter");
-
-            return do_config(env);
-        }
-
-        if (CommandLine::get_instance()->a_uninstall_unused.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("uninstall-unused action takes no parameters");
-
-            return do_uninstall_unused(env);
-        }
-
-        if (CommandLine::get_instance()->a_sync.specified())
-        {
-            return do_sync(env);
-        }
-
-        if (CommandLine::get_instance()->a_report.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("report action takes no parameters");
-            return do_report(env);
-        }
-
-        if (CommandLine::get_instance()->a_list_repositories.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-repositories action takes no parameters");
-
-            return do_list_repositories(env);
-        }
-
-        if (CommandLine::get_instance()->a_list_categories.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-categories action takes no parameters");
-
-            return do_list_categories(env);
-        }
-
-        if (CommandLine::get_instance()->a_list_packages.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-packages action takes no parameters");
-
-            return do_list_packages(env);
-        }
-
-        if (CommandLine::get_instance()->a_list_sets.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("list-sets action takes no parameters");
-
-            return do_list_sets(env);
-        }
-
-        if (CommandLine::get_instance()->a_contents.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("contents action requires at least one parameter");
-
-            return do_contents(env);
-        }
-
-        if (CommandLine::get_instance()->a_owner.specified())
-        {
-            if (CommandLine::get_instance()->empty())
-                throw args::DoHelp("owner action requires at least one parameter");
-
-            return do_owner(env);
-        }
-
-        if (CommandLine::get_instance()->a_has_version.specified())
-        {
-            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters()))
-                throw args::DoHelp("has-version action takes exactly one parameter");
-
-            return do_has_version(env);
-        }
-
-        if (CommandLine::get_instance()->a_best_version.specified())
-        {
-            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters()))
-                throw args::DoHelp("best-version action takes exactly one parameter");
-
-            return do_best_version(env);
-        }
-
-        if (CommandLine::get_instance()->a_environment_variable.specified())
-        {
-            if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters()))
-                throw args::DoHelp("environment-variable action takes exactly two parameters (depspec var)");
-
-            return do_environment_variable(env);
-        }
-
-        if (CommandLine::get_instance()->a_configuration_variable.specified())
-        {
-            if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters()))
-                throw args::DoHelp("configuration-variable action takes exactly two parameters (repository var)");
-
-            return do_configuration_variable(env);
-        }
-
-        if (CommandLine::get_instance()->a_update_news.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("update-news action takes no parameters");
-
-            return do_update_news(env);
-        }
-
-        if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||
-                CommandLine::get_instance()->a_regenerate_installable_cache.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw args::DoHelp("regenerate cache actions takes no parameters");
-
-            return do_regenerate_cache(env, CommandLine::get_instance()->a_regenerate_installed_cache.specified());
-        }
-
-        throw InternalError(__PRETTY_FUNCTION__, "no action?");
     }
     catch (const DoVersion &)
     {
