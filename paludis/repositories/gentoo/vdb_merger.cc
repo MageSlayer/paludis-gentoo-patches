@@ -226,7 +226,7 @@ VDBMerger::check()
 }
 
 void
-VDBMerger::on_enter_dir(bool is_check, const FSEntry dir)
+VDBMerger::on_enter_dir(bool is_check, const FSEntry)
 {
     if (! is_check)
         return;
