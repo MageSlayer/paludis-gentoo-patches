@@ -956,9 +956,6 @@ PortageRepository::info(bool verbose) const
             {
                 std::set<VersionSpec> versions;
 
-                /* don't use std::transform, it breaks g++4.1 */
-                // std::transform(q->begin(), q->end(), std::inserter(versions, versions.end()),
-                //        std::mem_fun_ref(&PackageDatabaseEntry::get<pde_version>));
                 for (PackageDatabaseEntryCollection::Iterator qq(q->begin()), qq_end(q->end()) ;
                         qq != qq_end ; ++qq)
                     versions.insert(qq->version);
