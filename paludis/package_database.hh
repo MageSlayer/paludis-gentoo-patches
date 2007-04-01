@@ -189,11 +189,25 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NoSuchRepositoryError : public PackageDatabaseLookupError
     {
+        private:
+            const RepositoryName _name;
+
         public:
             /**
              * Constructor.
+             *
+             * \deprecated Use the RepositoryName form.
              */
-            NoSuchRepositoryError(const std::string & name) throw ();
+            NoSuchRepositoryError(const std::string &) throw () PALUDIS_ATTRIBUTE((deprecated));
+
+            /**
+             * Constructor.
+             */
+            NoSuchRepositoryError(const RepositoryName &) throw ();
+
+            ~NoSuchRepositoryError() throw ();
+
+            RepositoryName name() const;
     };
 
     /**

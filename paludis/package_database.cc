@@ -66,9 +66,26 @@ NoSuchPackageError::NoSuchPackageError(const std::string & our_name) throw () :
 {
 }
 
-NoSuchRepositoryError::NoSuchRepositoryError(const std::string & name) throw () :
-    PackageDatabaseLookupError("Could not find repository '" + name + "'")
+NoSuchRepositoryError::NoSuchRepositoryError(const std::string & n) throw () :
+    PackageDatabaseLookupError("Could not find repository '" + n + "'"),
+    _name("UNKNOWN")
 {
+}
+
+NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) throw () :
+    PackageDatabaseLookupError("Could not find repository '" + stringify(n) + "'"),
+    _name(n)
+{
+}
+
+NoSuchRepositoryError::~NoSuchRepositoryError() throw ()
+{
+}
+
+RepositoryName
+NoSuchRepositoryError::name() const
+{
+    return _name;
 }
 
 /**
@@ -340,7 +357,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
         if ((*r)->name() == n)
             return *r;
 
-    throw NoSuchRepositoryError(stringify(n));
+    throw NoSuchRepositoryError(n);
 }
 
 std::tr1::shared_ptr<Repository>
@@ -351,7 +368,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n)
         if ((*r)->name() == n)
             return *r;
 
-    throw NoSuchRepositoryError(stringify(n));
+    throw NoSuchRepositoryError(n);
 }
 
 bool
