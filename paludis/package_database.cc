@@ -354,6 +354,17 @@ PackageDatabase::fetch_repository(const RepositoryName & n)
     throw NoSuchRepositoryError(stringify(n));
 }
 
+bool
+PackageDatabase::has_repository_named(const RepositoryName & n) const
+{
+    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->name() == n)
+            return true;
+
+    return false;
+}
+
 RepositoryName
 PackageDatabase::favourite_repository() const
 {

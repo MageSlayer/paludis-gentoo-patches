@@ -270,6 +270,12 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Do we have a named repository?
+             */
+            bool has_repository_named(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
              * Fetch the name of our 'favourite' repository (if a repository's
              * name matches this when doing a graphical display, the repository
              * name part may be omitted).
