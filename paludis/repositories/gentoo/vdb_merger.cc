@@ -142,7 +142,7 @@ VDBMerger::on_error(bool is_check, const std::string & s)
     make_check_fail();
 
     if (is_check)
-        std::cout << "!!! " << s << std::endl;
+        std::cout << "." << std::endl << "!!! " << s << std::endl;
     else
         throw MergerError(s);
 }
@@ -219,7 +219,18 @@ VDBMerger::merge()
 bool
 VDBMerger::check()
 {
-    std::cout << ">>> Checking whether we can merge to " << _imp->options.root << std::endl;
-    return Merger::check();
+    std::cout << ">>> Checking whether we can merge to " << _imp->options.root << " ";
+    bool result(Merger::check());
+    std::cout << std::endl;
+    return result;
+}
+
+void
+VDBMerger::on_enter_dir(bool is_check, const FSEntry dir)
+{
+    if (! is_check)
+        return;
+
+    std::cout << ".";
 }
 
