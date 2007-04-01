@@ -249,6 +249,7 @@ ebuild_load_ebuild()
 {
     export EBUILD="${1}"
     unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
+    local saved_SLOT="${SLOT}"
 
     [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
     source ${1} || die "Error sourcing ebuild '${1}'"
@@ -261,6 +262,12 @@ ebuild_load_ebuild()
     PDEPEND="${PDEPEND} ${E_PDEPEND}"
     KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
     [[ ${EAPI-unset} == "unset" ]] && EAPI="0"
+
+    if [[ -n "${saved_SLOT}" ]] && [[ "${SLOT}" != "${saved_SLOT}" ]] ; then
+        ebuild_notice "qa" \
+            "Ebuild ${1} illegally tried to change SLOT from '${saved_SLOT}' to '${SLOT}'"
+        export SLOT=${saved_SLOT}
+    fi
 }
 
 perform_hook()
