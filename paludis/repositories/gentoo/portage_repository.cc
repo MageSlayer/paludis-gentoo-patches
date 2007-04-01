@@ -675,7 +675,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
                                     + stringify(*line) + "' failed because specification does not restrict to a "
                                     "unique package");
                     }
-                    catch (const NameError & e)
+                    catch (const Exception & e)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
                                 + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
