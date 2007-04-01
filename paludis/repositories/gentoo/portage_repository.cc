@@ -617,12 +617,14 @@ PortageRepository::fetch_repo_name(const std::string & location)
     catch (...)
     {
     }
-    Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open repo_name file in '"
-            + location + "/profiles/', falling back to a generated name (ignore this message if "
-            "you have yet to sync this repository).");
 
     std::string modified_location(FSEntry(location).basename());
     std::replace(modified_location.begin(), modified_location.end(), '/', '-');
+
+    Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open repo_name file in '"
+            + location + "/profiles/', falling back to generated name 'x-" + modified_location +
+            "' (ignore this message if you have yet to sync this repository).");
+
     return RepositoryName("x-" + modified_location);
 }
 
