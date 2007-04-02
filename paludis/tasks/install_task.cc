@@ -189,7 +189,7 @@ InstallTask::execute()
 
     /* we're about to display our task list */
     if (_imp->pretend &&
-        0 != _imp->env->perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
+        0 != perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
                              _imp->raw_targets.end(), " "))))
         throw PackageInstallActionError("Pretend install aborted by hook");
 
@@ -200,7 +200,7 @@ InstallTask::execute()
             dep != dep_end ; ++dep)
     {
         if (_imp->pretend &&
-                0 != _imp->env->perform_hook(Hook("install_pretend_display_item_pre")
+                0 != perform_hook(Hook("install_pretend_display_item_pre")
                     ("TARGET", stringify(dep->package))
                     ("KIND", stringify(dep->kind))))
             throw PackageInstallActionError("Pretend install aborted by hook");
@@ -209,7 +209,7 @@ InstallTask::execute()
         on_display_merge_list_entry(*dep);
 
         if (_imp->pretend &&
-                0 != _imp->env->perform_hook(Hook("install_pretend_display_item_post")
+                0 != perform_hook(Hook("install_pretend_display_item_post")
                     ("TARGET", stringify(dep->package))
                     ("KIND", stringify(dep->kind))))
             throw PackageInstallActionError("Pretend install aborted by hook");
@@ -220,7 +220,7 @@ InstallTask::execute()
 
     if (_imp->pretend)
     {
-        if (0 != _imp->env->perform_hook(Hook("install_pretend_post")("TARGETS", join(
+        if (0 != perform_hook(Hook("install_pretend_post")("TARGETS", join(
                              _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))))
             throw PackageInstallActionError("Pretend install aborted by hook");
         return;
@@ -235,7 +235,7 @@ InstallTask::execute()
     /* we're about to fetch / install the entire list */
     if (_imp->install_options.fetch_only)
     {
-        if (0 != _imp->env->perform_hook(Hook("fetch_all_pre")("TARGETS", join(
+        if (0 != perform_hook(Hook("fetch_all_pre")("TARGETS", join(
                              _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))))
             throw PackageInstallActionError("Fetch aborted by hook");
         on_fetch_all_pre();
@@ -252,7 +252,7 @@ InstallTask::execute()
                             d->destination->destination_interface->want_pre_post_phases())
                         any_live_destination = true;
 
-        if (0 != _imp->env->perform_hook(Hook("install_all_pre")
+        if (0 != perform_hook(Hook("install_all_pre")
                      ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
                      ("PALUDIS_NO_LIVE_DESTINATION", any_live_destination ? "" : "yes")))
             throw PackageInstallActionError("Install aborted by hook");
@@ -289,7 +289,7 @@ InstallTask::execute()
         /* we're about to fetch / install one item */
         if (_imp->install_options.fetch_only)
         {
-            if (0 != _imp->env->perform_hook(Hook("fetch_pre")
+            if (0 != perform_hook(Hook("fetch_pre")
                          ("TARGET", cpvr)
                          ("X_OF_Y", stringify(x) + " of " + stringify(y))))
                 throw PackageInstallActionError("Fetch of '" + cpvr + "' aborted by hook");
@@ -297,7 +297,7 @@ InstallTask::execute()
         }
         else
         {
-            if (0 != _imp->env->perform_hook(Hook("install_pre")
+            if (0 != perform_hook(Hook("install_pre")
                          ("TARGET", cpvr)
                          ("X_OF_Y", stringify(x) + " of " + stringify(y))
                          ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")))
@@ -319,7 +319,7 @@ InstallTask::execute()
         }
         catch (const PackageInstallActionError & e)
         {
-            int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
+            int PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
             throw;
         }
 
@@ -327,7 +327,7 @@ InstallTask::execute()
         if (_imp->install_options.fetch_only)
         {
             on_fetch_post(*dep);
-            if (0 != _imp->env->perform_hook(Hook("fetch_post")
+            if (0 != perform_hook(Hook("fetch_post")
                          ("TARGET", cpvr)
                          ("X_OF_Y", stringify(x) + " of " + stringify(y))))
                 throw PackageInstallActionError("Fetch of '" + cpvr + "' aborted by hook");
@@ -335,7 +335,7 @@ InstallTask::execute()
         else
         {
             on_install_post(*dep);
-            if (0 != _imp->env->perform_hook(Hook("install_post")
+            if (0 != perform_hook(Hook("install_post")
                          ("TARGET", cpvr)
                          ("X_OF_Y", stringify(x) + " of " + stringify(y))
                          ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")))
@@ -390,7 +390,7 @@ InstallTask::execute()
             on_no_clean_needed(*dep);
         else
         {
-            if (0 != _imp->env->perform_hook(Hook("clean_all_pre")("TARGETS", join(
+            if (0 != perform_hook(Hook("clean_all_pre")("TARGETS", join(
                                  clean_list.begin(), clean_list.end(), " "))))
                 throw PackageInstallActionError("Clean aborted by hook");
             on_clean_all_pre(*dep, clean_list);
@@ -399,7 +399,7 @@ InstallTask::execute()
                     c_end(clean_list.end()) ; c != c_end ; ++c)
             {
                 /* clean one item */
-                if (0 != _imp->env->perform_hook(Hook("clean_pre")("TARGET", stringify(*c))
+                if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(*c))
                              ("X_OF_Y", stringify(x) + " of " + stringify(y))))
                     throw PackageInstallActionError("Clean of '" + cpvr + "' aborted by hook");
                 on_clean_pre(*dep, *c);
@@ -416,18 +416,18 @@ InstallTask::execute()
                 }
                 catch (const PackageUninstallActionError & e)
                 {
-                    int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("clean_fail")("TARGET", stringify(*c))("MESSAGE", e.message())));
+                    int PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")("TARGET", stringify(*c))("MESSAGE", e.message())));
                     throw;
                 }
 
                 on_clean_post(*dep, *c);
-                if (0 != _imp->env->perform_hook(Hook("clean_post")("TARGET", stringify(*c))
+                if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(*c))
                              ("X_OF_Y", stringify(x) + " of " + stringify(y))))
                     throw PackageInstallActionError("Clean of '" + cpvr + "' aborted by hook");
             }
 
             /* we're done cleaning */
-            if (0 != _imp->env->perform_hook(Hook("clean_all_post")("TARGETS", join(
+            if (0 != perform_hook(Hook("clean_all_post")("TARGETS", join(
                                  clean_list.begin(), clean_list.end(), " "))))
                 throw PackageInstallActionError("Clean aborted by hook");
             on_clean_all_post(*dep, clean_list);
@@ -484,14 +484,14 @@ InstallTask::execute()
     if (_imp->install_options.fetch_only)
     {
         on_fetch_all_post();
-        if (0 != _imp->env->perform_hook(Hook("fetch_all_post")("TARGETS", join(
+        if (0 != perform_hook(Hook("fetch_all_post")("TARGETS", join(
                              _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))))
             throw PackageInstallActionError("Fetch aborted by hook");
     }
     else
     {
         on_install_all_post();
-        if (0 != _imp->env->perform_hook(Hook("install_all_post")("TARGETS", join(
+        if (0 != perform_hook(Hook("install_all_post")("TARGETS", join(
                              _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))))
             throw PackageInstallActionError("Install aborted by hook");
     }
@@ -591,5 +591,11 @@ void
 InstallTask::set_safe_resume(const bool value)
 {
     _imp->install_options.safe_resume = value;
+}
+
+int
+InstallTask::perform_hook(const Hook & hook) const
+{
+    return _imp->env->perform_hook(hook);
 }
 
