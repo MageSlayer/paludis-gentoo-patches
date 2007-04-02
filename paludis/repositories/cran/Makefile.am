@@ -1,3 +1,4 @@
+SUBDIRS = cran .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = cran_repository-sr.hh cran_repository-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
@@ -94,7 +95,7 @@ check_PROGRAMS = $(TESTS)
 check_SCRIPTS = cran_repository_TEST_setup.sh cran_repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
-	CRAN_BASH_DIR="$(top_srcdir)/cran/" \
+	CRAN_BASH_DIR="$(top_srcdir)/paludis/repositories/cran/cran/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
@@ -113,5 +114,5 @@ cran_installed_repository-sr.cc : cran_installed_repository.sr $(top_srcdir)/mis
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_installed_repository.sr > $@
 
 built-sources : $(BUILT_SOURCES)
-	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

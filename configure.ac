@@ -885,7 +885,6 @@ AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(
 	Makefile
 	bash-completion/Makefile
-	cran/Makefile
 	doc/Makefile
 	doc/doxygen.conf
 	doc/examples/Makefile
@@ -910,6 +909,7 @@ AC_OUTPUT(
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile
+	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
 	paludis/repositories/gentoo/Makefile
