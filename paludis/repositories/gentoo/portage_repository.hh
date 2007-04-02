@@ -60,6 +60,7 @@ namespace paludis
         public RepositoryDestinationInterface,
         public RepositoryLicensesInterface,
         public RepositoryPortageInterface,
+        public RepositoryHookInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
@@ -189,6 +190,9 @@ namespace paludis
             void set_profile_by_arch(const UseFlagName &);
 
             ///\}
+
+            int perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

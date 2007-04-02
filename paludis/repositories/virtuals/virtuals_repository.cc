@@ -93,7 +93,8 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             .config_interface(0)
             .contents_interface(0)
             .licenses_interface(0)
-            .portage_interface(0),
+            .portage_interface(0)
+            .hook_interface(0),
             "virtuals"),
     PrivateImplementationPattern<VirtualsRepository>(
             new Implementation<VirtualsRepository>(env))

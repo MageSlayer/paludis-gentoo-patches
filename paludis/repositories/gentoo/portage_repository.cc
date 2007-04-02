@@ -290,7 +290,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .config_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)
-            .portage_interface(this),
+            .portage_interface(this)
+            .hook_interface(this),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
@@ -1286,5 +1287,14 @@ void
 PortageRepository::merge(const MergeOptions & o)
 {
     _imp->entries_ptr->merge(o);
+}
+
+int
+PortageRepository::perform_hook(const Hook & hook) const
+{
+    Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
+            + stringify(name()) + "':");
+
+    return 0;
 }
 

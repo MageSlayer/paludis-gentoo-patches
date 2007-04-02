@@ -33,6 +33,7 @@ namespace paludis
         public Repository,
         public RepositoryInstalledInterface,
         public RepositoryMaskInterface,
+        public RepositoryHookInterface,
         private PrivateImplementationPattern<InstalledVirtualsRepository>
     {
         private:
@@ -90,6 +91,9 @@ namespace paludis
             }
 
             virtual FSEntry root() const;
+
+            int perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

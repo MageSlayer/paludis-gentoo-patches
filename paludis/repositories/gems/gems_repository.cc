@@ -257,7 +257,8 @@ GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
             .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
-            .portage_interface(0),
+            .portage_interface(0)
+            .hook_interface(0),
             "gems"),
     PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(p))
 {

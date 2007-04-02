@@ -527,7 +527,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .config_interface(this)
             .contents_interface(this)
             .licenses_interface(0)
-            .portage_interface(0),
+            .portage_interface(0)
+            .hook_interface(this),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {
@@ -1679,5 +1680,14 @@ VDBRepository::merge(const MergeOptions & m)
             .root(root()));
 
     post_merge_command();
+}
+
+int
+VDBRepository::perform_hook(const Hook & hook) const
+{
+    Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
+            + stringify(name()) + "':");
+
+    return 0;
 }
 

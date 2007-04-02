@@ -56,6 +56,7 @@ namespace paludis
         public RepositoryDestinationInterface,
         public RepositoryContentsInterface,
         public RepositoryConfigInterface,
+        public RepositoryHookInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
@@ -175,6 +176,9 @@ namespace paludis
                     const PackageDatabaseEntry * const) const;
 
             virtual FSEntry root() const;
+
+            int perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

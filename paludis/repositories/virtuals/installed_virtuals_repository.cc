@@ -102,7 +102,8 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
-            .portage_interface(0),
+            .portage_interface(0)
+            .hook_interface(this),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r))
@@ -333,5 +334,14 @@ FSEntry
 InstalledVirtualsRepository::root() const
 {
     return _imp->root;
+}
+
+int
+InstalledVirtualsRepository::perform_hook(const Hook & hook) const
+{
+    Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
+            + stringify(name()) + "':");
+
+    return 0;
 }
 

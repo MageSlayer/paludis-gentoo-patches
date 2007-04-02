@@ -68,17 +68,27 @@ Hooker::add_dir(const FSEntry & dir, const bool v)
 int
 Hooker::perform_hook(const Hook & hook) const
 {
-    HookPresentCache::iterator cache_entry(_imp->hook_cache.end());
-
-    if (_imp->hook_cache.end() != ((cache_entry = _imp->hook_cache.find(hook.name()))))
-        if (! cache_entry->second)
-            return 0;
+    int max_exit_status(0);
 
     Context context("When triggering hook '" + hook.name() + "'");
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
 
+    /* repo hooks first */
+
+    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+        if ((*r)->hook_interface)
+            max_exit_status = std::max(max_exit_status, ((*r)->hook_interface->perform_hook(hook)));
+
+    /* file hooks, but only if necessary */
+
+    HookPresentCache::iterator cache_entry(_imp->hook_cache.end());
+
+    if (_imp->hook_cache.end() != ((cache_entry = _imp->hook_cache.find(hook.name()))))
+        if (! cache_entry->second)
+            return max_exit_status;
+
     bool had_hook(false);
-    int max_exit_status(0);
     for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->dirs.begin()), h_end(_imp->dirs.end()) ;
             h != h_end ; ++h)
     {

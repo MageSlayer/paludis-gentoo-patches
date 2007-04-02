@@ -48,6 +48,7 @@ namespace paludis
     class Environment;
     class RepositoryNameCache;
     class PortageRepositoryProfile;
+    class Hook;
 
     class Repository;
     class RepositoryInstallableInterface;
@@ -68,6 +69,7 @@ namespace paludis
     class RepositoryConfigInterface;
     class RepositoryLicensesInterface;
     class RepositoryPortageInterface;
+    class RepositoryHookInterface;
 
     /**
      * A set of destinations.
@@ -1232,6 +1234,25 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryPortageInterface();
+    };
+
+    /**
+     * Interface for handling hooks.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class RepositoryHookInterface
+    {
+        public:
+            /**
+             * Perform a hook, and return the highest exit status.
+             */
+            virtual int perform_hook(const Hook & hook) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual ~RepositoryHookInterface();
     };
 
     /**

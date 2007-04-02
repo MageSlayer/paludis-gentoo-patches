@@ -330,3 +330,7 @@ RepositoryPortageInterface::~RepositoryPortageInterface()
 {
 }
 
+RepositoryHookInterface::~RepositoryHookInterface()
+{
+}
+

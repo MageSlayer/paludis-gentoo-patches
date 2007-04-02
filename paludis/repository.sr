@@ -53,6 +53,7 @@ make_class_RepositoryCapabilities()
     key config_interface "RepositoryConfigInterface *"
     key licenses_interface "RepositoryLicensesInterface *"
     key portage_interface "RepositoryPortageInterface *"
+    key hook_interface "RepositoryHookInterface *"
 
     doxygen_comment << "END"
         /**
