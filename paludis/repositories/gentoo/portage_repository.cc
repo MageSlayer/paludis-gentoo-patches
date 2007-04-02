@@ -1206,14 +1206,9 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
 
     _imp->profile_ptr = iter->profile;
 
-    try
-    {
+    if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
         _imp->params.environment->package_database()->fetch_repository(
                 RepositoryName("virtuals"))->invalidate();
-    }
-    catch (const NoSuchRepositoryError &)
-    {
-    }
 }
 
 void
