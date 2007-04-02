@@ -61,7 +61,7 @@ env.package_database.repositories.each do | repo |
     repo.category_names.each do | cat |
         repo.package_names(cat).each do | pkg |
             repo.version_specs(pkg).each do | ver |
-                src_uri = repo.version_metadata(pkg, ver).src_uri
+                src_uri = repo.version_metadata(pkg, ver).src_uri_string
                 src_uri or next
                 src_uri.split(/\s+/).each do | part |
                     part =~ %r~/~ or next
