@@ -1,9 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-@GENERATED_FILE@
-
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -75,7 +73,7 @@
 #  define PALUDIS_ATTRIBUTE(x)
 #endif
 
-#define PALUDIS_ENABLE_VISIBILITY @PALUDIS_ENABLE_VISIBILITY@
+#define PALUDIS_ENABLE_VISIBILITY 0
 #if PALUDIS_ENABLE_VISIBILITY
 #  define PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((visibility("default")))
 #  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))

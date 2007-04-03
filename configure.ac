@@ -944,7 +944,6 @@ AC_OUTPUT(
 	paludis/syncers/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
-	paludis/util/attributes.hh
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile

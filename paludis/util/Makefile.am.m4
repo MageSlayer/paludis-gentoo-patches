@@ -34,14 +34,14 @@ include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
-	hashed_containers.hh util.hh attributes.hh
+	hashed_containers.hh util.hh
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 \
 	testscriptlist \
-	test_extras.cc attributes.hh.in
+	test_extras.cc
 SUBDIRS = .
 
 libpaludisutil_la_SOURCES = filelist
