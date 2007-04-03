@@ -683,6 +683,27 @@ fi
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}
 
+dnl {{{ vim
+AC_ARG_ENABLE([vim],
+			  AS_HELP_STRING([--enable-vim], [Enable Vim extras]),
+			  [HAVE_VIM=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [AC_MSG_RESULT([no])
+			   HAVE_VIM=no])
+VIM_INSTALL_DIR=
+if test x$HAVE_VIM = xyes ; then
+	AC_MSG_CHECKING([for Vim installation dir])
+	AC_ARG_WITH([vim-install-dir],
+		AS_HELP_STRING([--with-vim-install-dir=dir], [Specify Vim installation dir]),
+		VIM_INSTALL_DIR=`eval echo $withval`,
+		VIM_INSTALL_DIR=`eval echo $datadir/vim/vimfiles`)
+	AC_MSG_RESULT([$VIM_INSTALL_DIR])
+fi
+AC_SUBST([HAVE_VIM])
+AM_CONDITIONAL([HAVE_VIM], test "x$HAVE_VIM" = "xyes")
+AC_SUBST([VIM_INSTALL_DIR])
+dnl }}}
+
 dnl {{{ repositories
 ALL_REPOSITORIES="cran fake gentoo gems virtuals"
 DEFAULT_REPOSITORIES="fake gentoo virtuals"
@@ -937,6 +958,9 @@ AC_OUTPUT(
 	src/clients/adjutrix/Makefile
 	test/Makefile
 	tr1/Makefile
+	vim/Makefile
+	vim/ftdetect/Makefile
+	vim/syntax/Makefile
 	zsh-completion/Makefile
 	)
 dnl }}}
