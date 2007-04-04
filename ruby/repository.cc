@@ -450,7 +450,7 @@ namespace
         std::tr1::shared_ptr<Repository> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
 
-        std::tr1::shared_ptr<const RepositoryInfo> * p = new std::tr1::shared_ptr<const RepositoryInfo>((*self_ptr)->info(Qfalse == verbose));
+        std::tr1::shared_ptr<const RepositoryInfo> * p = new std::tr1::shared_ptr<const RepositoryInfo>((*self_ptr)->info(Qfalse != verbose));
         return Data_Wrap_Struct(c_repository_info, 0, &Common<std::tr1::shared_ptr<const RepositoryInfo> >::free, p);
     }
 
