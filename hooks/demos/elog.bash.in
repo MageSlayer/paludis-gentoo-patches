@@ -56,9 +56,9 @@ case "${HOOK}" in
     echo
     old_pf=""
     while read line ; do
-        line_status=$(echo ${line} | cut -d' ' -f1 )
-        line_pf=$(echo ${line} | cut -d' ' -f2 )
-        line_message=$(echo ${line} | cut -d' ' -f3- )
+        line_status=$(echo "${line}" | cut -d' ' -f1 )
+        line_pf=$(echo "${line}" | cut -d' ' -f2 )
+        line_message=$(echo "${line}" | cut -d' ' -f3- )
 
         if [[ "${old_pf}" != "${line_pf}" ]] ; then
             echo
