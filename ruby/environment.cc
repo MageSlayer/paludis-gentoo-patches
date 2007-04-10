@@ -444,7 +444,6 @@ namespace
 
     /*
      * call-seq:
-     *     make_from_spec() -> Environment
      *     make_from_spec(spec) -> Environment
      *
      * Create an environment from the given spec.
