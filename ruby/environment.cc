@@ -442,6 +442,16 @@ namespace
         return Qnil;
     }
 
+    /*
+     * call-seq:
+     *     make_from_spec() -> Environment
+     *     make_from_spec(spec) -> Environment
+     *
+     * Create an environment from the given spec.
+     * A spec consisits of <b>class:suffix</b> both of which may be omitted. <b>class</b> is the environment class,
+     * e.g. paludis or portage, <b>suffix</b> is the configuration directory suffix.
+     *
+     */
     VALUE
     environment_maker_make_from_spec(VALUE, VALUE spec)
     {
@@ -507,6 +517,13 @@ namespace
         rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
         rb_define_method(c_no_config_environment, "accept_unstable=", RUBY_FUNC_CAST(&no_config_environment_set_accept_unstable), 0);
 
+        /*
+         * Document-class: Paludis::EnvironmentMaker
+         *
+         * A class that holds methods to create environments.
+         *
+         * To access the default environment use make_from_spec()
+         */
         c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);
         rb_define_method(c_environment_maker, "make_from_spec", RUBY_FUNC_CAST(&environment_maker_make_from_spec), 1);
