@@ -48,7 +48,7 @@ AuxiliaryStage::is_rebuild() const
     for (std::list<std::string>::const_iterator p(packages.begin()), p_end(packages.end()) ;
             p != p_end ; ++p)
         if ( _env->package_database()->query(
-                    query::Matches(PackageDepSpec(*p)) &
+                    query::Matches(PackageDepSpec(*p, pds_pm_permissive)) &
                         query::InstalledAtRoot(_env->root()),
                     qo_whatever)->empty())
             return false;

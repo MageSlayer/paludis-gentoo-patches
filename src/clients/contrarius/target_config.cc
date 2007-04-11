@@ -38,7 +38,7 @@ TargetConfig::_parse_defaults()
     for (LineConfigFile::Iterator l(defaults.begin()), l_end(defaults.end()) ;
             l != l_end ; ++l)
     {
-        Context c("While parsing line '" + *l + "'");
+        Context c2("While parsing line '" + *l + "'");
         std::vector<std::string> tokens;
         WhitespaceTokeniser::get_instance()->tokenise(*l, std::back_inserter(tokens));
         SpecEntryList * list(&_binutils_list);
