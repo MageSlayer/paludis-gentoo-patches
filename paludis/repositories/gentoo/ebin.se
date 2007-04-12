@@ -5,9 +5,12 @@ make_enum_EbinInstallCommandPhase()
 {
     prefix ebin_ip
 
-    key ebin_ip_unpack        "Initialise and unpack."
-    key ebin_ip_preinstall    "Preinstall to a live system."
-    key ebin_ip_postinstall   "Postinstall to a live system."
+    key ebin_ip_prepare       "Prepare the working directory"
+    key ebin_ip_initbinenv    "Extract and load the binary environment"
+    key ebin_ip_setup         "Perform pre-unpack setup phases"
+    key ebin_ip_unpackbin     "Extract the binary"
+    key ebin_ip_preinstall    "Preinstall to a live system"
+    key ebin_ip_postinstall   "Postinstall to a live system"
     key ebin_ip_tidyup        "Tidy up work."
 
     doxygen_comment << "END"

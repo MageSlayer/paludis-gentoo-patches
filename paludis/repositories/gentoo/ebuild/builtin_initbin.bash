@@ -23,9 +23,8 @@ builtin_initbin()
     local a
     for a in P PV PR PN PVR PF CATEGORY PORTDIR \
         PKGDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
-        CHOST PALUDIS_COMMAND ROOT ; do
+        CHOST PALUDIS_COMMAND ROOT PALUDIS_LOADSAVEENV_DIR ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
-        declare -r ${a}="${!a}"
     done
 
     for a in PKGDIR ; do
@@ -41,22 +40,38 @@ builtin_initbin()
 
     export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/work"
     mkdir -p "${WORKDIR}" || die "Couldn't create \$WORKDIR (\"${WORKDIR}\")"
-    declare -r WORKDIR="${WORKDIR}"
 
     export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
-    declare -r T="${T}"
     export HOME="${T}"
 
     export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image/"
     export D="${D//+(\/)//}"
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
-    declare -r D="${D}"
 
     export IMAGE="${D}"
-    declare -r IMAGE="${IMAGE}"
 
     export S="${WORKDIR}/${P}"
+
+    [[ -n "${B}" ]] && unpack --binary --only .paludis-binpkg-environment ${B}
+
+    [[ -f "${IMAGE}/.paludis-binpkg-environment" ]] || \
+        die "No saved environment in binary tarball"
+
+    local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
+
+    echo ebuild_scrub_environment "${IMAGE}/.paludis-binpkg-environment" 1>&2
+    ebuild_scrub_environment "${IMAGE}/.paludis-binpkg-environment" \
+        || die "Can't load saved environment for cleaning"
+
+    echo source "${IMAGE}/.paludis-binpkg-environment" 1>&2
+    source "${IMAGE}/.paludis-binpkg-environment" \
+        || die "Can't load saved environment"
+
+    export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
+
+    echo rm "${IMAGE}/.paludis-binpkg-environment" 1>&2
+    rm "${IMAGE}/.paludis-binpkg-environment"
 }
 
 ebuild_f_initbin()

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -32,6 +32,17 @@ unpack_one()
     [[ -z "$1" ]] && die "Bad argument for unpack_one"
     [[ -e "$1" ]] || die "${1} doesn't exist"
 
+    if [[ -n "${UNPACKONLY}" ]] ; then
+        case "${x}" in
+            *.tar.bz2|*.tbz2)
+            ;;
+
+            *)
+            die "Can't use --only with ${x}"
+            ;;
+        esac
+    fi
+
     case "${x}" in
         *.tar)
             echo tar xf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" 1>&2
@@ -44,8 +55,8 @@ unpack_one()
             ;;
 
         *.tar.bz2|*.tbz2)
-            echo tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" 1>&2
-            tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" || die "Couldn't unpack ${1}"
+            echo tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" ${UNPACKONLY} 1>&2
+            tar jxf "${1}" --no-same-owner "${TAR_OPTIONS[@]}" ${UNPACKONLY} || die "Couldn't unpack ${1}"
             ;;
 
         *.zip|*.ZIP|*.jar)
@@ -91,6 +102,13 @@ export UNPACKTODIR="${PWD}"
 if [[ "${1}" == "--binary" ]] ; then
     export UNPACKFROMDIR="${PKGDIR}"
     export UNPACKTODIR="${IMAGE}"
+    shift
+fi
+
+unset UNPACKONLY
+if [[ "${1}" == "--only" ]] ; then
+    shift
+    export UNPACKONLY="${1}"
     shift
 fi
 

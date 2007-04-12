@@ -19,12 +19,7 @@
 builtin_unpackbin()
 {
     [[ -n "${B}" ]] && unpack --binary ${B}
-
-    [[ -f "${IMAGE}/.paludis-binpkg-environment" ]] || \
-        die "No saved environment in binary tarball"
-
-    mv "${IMAGE}"/.paludis-binpkg-environment ${T}/binpkgenv \
-        || die "Couldn't extract saved environment"
+    rm -f ${D}/.paludis-binpkg-environment
 }
 
 ebuild_f_unpackbin()

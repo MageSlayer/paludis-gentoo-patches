@@ -67,6 +67,7 @@ namespace paludis
             virtual bool failure() = 0;
             virtual bool do_run_command(const Command &);
             virtual Command extend_command(const Command &) = 0;
+            virtual Command add_portage_vars(const Command &) const;
 
         public:
             virtual ~EbinCommand();

@@ -24,6 +24,9 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/about.hh>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 using namespace paludis;
 
@@ -117,20 +120,36 @@ EbinCommand::operator() ()
             .with_setenv("PALUDIS_FETCHERS_DIRS", params.environment->fetchers_dirs())
             .with_setenv("PALUDIS_SYNCERS_DIRS", params.environment->syncers_dirs())
             .with_setenv("PALUDIS_COMMAND", params.environment->paludis_command())
+            .with_setenv("PALUDIS_REDUCED_GID", stringify(params.environment->reduced_gid()))
+            .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment->reduced_uid()))
             .with_setenv("KV", kernel_version())
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
-    if (do_run_command(cmd))
+    if (do_run_command(add_portage_vars(cmd)))
         return success();
     else
         return failure();
 }
 
-EbinFetchCommand::EbinFetchCommand(const EbinCommandParams & p, const EbinFetchCommandParams & f) :
-    EbinCommand(p),
-    fetch_params(f)
+Command
+EbinCommand::add_portage_vars(const Command & cmd) const
 {
+    return Command(cmd)
+        .with_setenv("PORTAGE_BASHRC", "/dev/null")
+        .with_setenv("PORTAGE_BUILDDIR", stringify(params.buildroot) + "/" +
+             stringify(params.db_entry->name.category) + "/" +
+             stringify(params.db_entry->name.package) + "-" +
+             stringify(params.db_entry->version))
+        .with_setenv("PORTAGE_CALLER", params.environment->paludis_command())
+        .with_setenv("PORTAGE_GID", "0")
+        .with_setenv("PORTAGE_INST_GID", "0")
+        .with_setenv("PORTAGE_INST_UID", "0")
+        .with_setenv("PORTAGE_MASTER_PID", stringify(::getpid()))
+        .with_setenv("PORTAGE_NICENCESS", stringify(::getpriority(PRIO_PROCESS, 0)))
+        .with_setenv("PORTAGE_TMPDIR", stringify(params.buildroot))
+        .with_setenv("PORTAGE_TMPFS", "/dev/shm")
+        .with_setenv("PORTAGE_WORKDIR_MODE", "0700");
 }
 
 std::string
@@ -149,11 +168,24 @@ EbinFetchCommand::failure()
 Command
 EbinFetchCommand::extend_command(const Command & cmd)
 {
-    return Command(cmd)
-        .with_setenv("B", fetch_params.b)
-        .with_setenv("FLAT_BIN_URI", fetch_params.flat_bin_uri)
-        .with_setenv("ROOT", fetch_params.root)
-        .with_setenv("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : "");
+    Command result(Command(cmd)
+            .with_setenv("B", fetch_params.b)
+            .with_setenv("FLAT_BIN_URI", fetch_params.flat_bin_uri)
+            .with_setenv("ROOT", fetch_params.root)
+            .with_setenv("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : "")
+            .with_setenv("ROOT", fetch_params.root)
+            .with_setenv("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : ""));
+
+    if (fetch_params.userpriv)
+        result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+
+    return result;
+}
+
+EbinFetchCommand::EbinFetchCommand(const EbinCommandParams & p, const EbinFetchCommandParams & f) :
+    EbinCommand(p),
+    fetch_params(f)
+{
 }
 
 std::string
@@ -161,14 +193,23 @@ EbinInstallCommand::commands() const
 {
     switch (install_params.phase)
     {
-        case ebin_ip_unpack:
-            return "initbin unpackbin";
+        case ebin_ip_prepare:
+            return "prepare";
+
+        case ebin_ip_initbinenv:
+            return "initbin saveenv";
+
+        case ebin_ip_setup:
+            return "loadenv setup saveenv";
+
+        case ebin_ip_unpackbin:
+            return "loadenv unpackbin saveenv";
 
         case ebin_ip_preinstall:
-            return "preinst saveenv";
+            return "loadenv strip preinst saveenv";
 
         case ebin_ip_postinstall:
-            return "loadenv postinst";
+            return "loadenv postinst saveenv";
 
         case ebin_ip_tidyup:
             return "tidyup";
@@ -222,24 +263,6 @@ EbinInstallCommand::extend_command(const Command & cmd)
                 install_params.disable_cfgpro ? "/" : "")
             .with_setenv("PALUDIS_DEBUG_BUILD", debug_build)
             .with_setenv("SLOT", stringify(install_params.slot)));
-
-    switch (install_params.phase)
-    {
-        case ebin_ip_preinstall:
-        case ebin_ip_postinstall:
-            result
-                .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(params.buildroot /
-                            stringify(params.db_entry->name.category) / (
-                                stringify(params.db_entry->name.package) + "-" + stringify(params.db_entry->version)) / "temp"
-                            / "binpkgenv"))
-                .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
-            break;
-
-        case ebin_ip_unpack:
-        case ebin_ip_tidyup:
-        case last_ebin_ip:
-            ;
-    };
 
     return result;
 }

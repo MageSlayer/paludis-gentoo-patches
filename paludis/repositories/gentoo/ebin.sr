@@ -28,6 +28,7 @@ make_class_EbinFetchCommandParams()
     key flat_bin_uri std::string
     key root std::string
     key safe_resume bool
+    key userpriv bool
 
     doxygen_comment << "END"
         /**

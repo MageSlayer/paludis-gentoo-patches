@@ -25,6 +25,8 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 #include <set>
 #include <fstream>
 
@@ -218,12 +220,40 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .pkgdir(_imp->params.pkgdir)
             .buildroot(_imp->params.buildroot));
 
+    bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
+    if (fetch_userpriv_ok)
+    {
+        FSEntry f(_imp->params.pkgdir);
+        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
+
+        if (f.exists())
+        {
+            if (f.group() != _imp->environment->reduced_gid())
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' owned by group '" +
+                        stringify(get_group_name(f.group())) + "', not '" +
+                        stringify(get_group_name(_imp->environment->reduced_gid())) +
+                        "', so cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
+            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' does not group write permission," +
+                        "cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
+        }
+    }
+
     EbinFetchCommand fetch_cmd(command_params,
             EbinFetchCommandParams::create()
             .b(binaries)
             .flat_bin_uri(flat_bin_uri)
             .root(stringify(get_root(o.destinations)))
-            .safe_resume(o.safe_resume));
+            .safe_resume(o.safe_resume)
+            .userpriv(false));
 
     fetch_cmd();
 
@@ -239,7 +269,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .b(binaries)
             .root(stringify(get_root(o.destinations)))
             .debug_build(o.debug_build)
-            .phase(ebin_ip_unpack)
+            .phase(ebin_ip_prepare)
             .disable_cfgpro(o.no_config_protect)
             .config_protect(_imp->portage_repository->profile_variable("CONFIG_PROTECT"))
             .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
@@ -247,9 +277,20 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     stringify(q.package) + "-" + stringify(v)) / "temp")
             .slot(SlotName(metadata->slot)));
 
-    EbinInstallCommand build_cmd(command_params, install_params);
-    build_cmd();
+    EbinInstallCommand prepare_cmd(command_params, install_params);
+    prepare_cmd();
 
+    install_params.phase = ebin_ip_initbinenv;
+    EbinInstallCommand initbinenv_cmd(command_params, install_params);
+    initbinenv_cmd();
+
+    install_params.phase = ebin_ip_setup;
+    EbinInstallCommand setup_cmd(command_params, install_params);
+    setup_cmd();
+
+    install_params.phase = ebin_ip_unpackbin;
+    EbinInstallCommand unpackbin_cmd(command_params, install_params);
+    unpackbin_cmd();
 
     for (DestinationsCollection::Iterator d(o.destinations->begin()),
             d_end(o.destinations->end()) ; d != d_end ; ++d)
@@ -324,7 +365,7 @@ EbinEntries::merge(const MergeOptions & m)
     ebin_dir /= stringify(m.package.name.package);
     ebin_dir.mkdir();
 
-    FSEntry ebin_file_name(ebin_dir / (stringify(m.package.name.package) + "-" + stringify(m.package.version) + ".ebin"));
+    FSEntry ebin_file_name(ebin_dir / (stringify(m.package.name.package) + "-" + stringify(m.package.version) + ".ebin.incomplete"));
     std::ofstream ebin_file(stringify(ebin_file_name).c_str());
     if (! ebin_file)
         throw PackageInstallActionError("Cannot write to '" + stringify(ebin_file_name) + "'");
@@ -385,5 +426,10 @@ EbinEntries::merge(const MergeOptions & m)
             .environment_file(m.environment_file));
 
     merge_cmd();
+
+    FSEntry real_ebin_file_name(ebin_dir / (stringify(m.package.name.package) + "-" + stringify(m.package.version) + ".ebin"));
+    if (real_ebin_file_name.exists())
+        real_ebin_file_name.unlink();
+    ebin_file_name.rename(real_ebin_file_name);
 }
 
