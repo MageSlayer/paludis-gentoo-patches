@@ -281,6 +281,11 @@
  * \ingroup grplibpaludisutil
  */
 
+/** \defgroup grpoptions Options Container
+ *
+ * \ingroup grplibpaludisutil
+ */
+
 /** \defgroup grppatterns Patterns
  *
  * \ingroup grplibpaludisutil
