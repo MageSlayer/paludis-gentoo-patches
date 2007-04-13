@@ -15,6 +15,7 @@ make_class_InstallOptions()
          *
          * \see Repository
          * \ingroup grprepository
+         * \nosubgrouping
          */
 END
 }
@@ -29,6 +30,7 @@ make_class_UninstallOptions()
          *
          * \see Repository
          * \ingroup grprepository
+         * \nosubgrouping
          */
 END
 }
@@ -75,9 +77,17 @@ make_class_RepositoryPortageInterfaceProfilesDescLine()
     key status std::string
     key profile "std::tr1::shared_ptr<PortageRepositoryProfile>"
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * A profiles.desc line in a Repository implementing RepositoryPortageInterface.
+         *
+         * \see Repository
+         * \see RepositoryPortageInterface
+         * \nosubgrouping
+         */
+END
 }
-
-
 
 make_class_RepositoryProvidesEntry()
 {
@@ -87,6 +97,16 @@ make_class_RepositoryProvidesEntry()
 
     allow_named_args
     comparison_operators all all
+
+    doxygen_comment << "END"
+        /**
+         * A provides entry in a Repository implementing RepositoryProvidesInterface.
+         *
+         * \see Repository
+         * \see RepositoryProvidesInterface
+         * \nosubgrouping
+         */
+END
 }
 
 make_class_RepositoryVirtualsEntry()
@@ -96,6 +116,16 @@ make_class_RepositoryVirtualsEntry()
 
     allow_named_args
     comparison_operators all virtual_name
+
+    doxygen_comment << "END"
+        /**
+         * A virtuals entry in a Repository implementing RepositoryVirtualsInterface.
+         *
+         * \see Repository
+         * \see RepositoryVirtualsInterface
+         * \nosubgrouping
+         */
+END
 }
 
 make_class_MergeOptions()

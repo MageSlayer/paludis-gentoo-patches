@@ -75,8 +75,6 @@ namespace paludis
      * A set of destinations.
      *
      * \ingroup grpdepresolver
-     * \ingroup grpenvironment
-     * \ingroup grprepository
      */
     typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
 

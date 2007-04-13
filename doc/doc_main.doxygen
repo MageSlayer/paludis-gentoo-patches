@@ -239,7 +239,7 @@
 
 /** \defgroup grpuninstalllist Uninstall (reverse dependency) resolution
  *
- * \ingroup grpuninstalllist
+ * \ingroup grpdependencies
  */
 
 /** \defgroup grpdepspecs Dependency specs

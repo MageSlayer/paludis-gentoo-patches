@@ -52,6 +52,18 @@ make_class_DepListEntryDestination()
 
     allow_named_args
     comparison_operators "all" "destination"
+
+    doxygen_comment << "END"
+        /**
+         * A destination for a DepListEntry. Only the .destination key is of use outside
+         * of DepList.
+         *
+         * \see DepList
+         * \see DepListEntry
+         * \ingroup grpdepresolver
+         * \nosubgrouping
+         */
+END
 }
 
 make_class_DepListEntry()

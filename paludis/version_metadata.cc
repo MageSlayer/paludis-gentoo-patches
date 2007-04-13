@@ -81,7 +81,7 @@ VersionMetadata::~VersionMetadata()
 {
 }
 
-VersionMetadata::VersionMetadata(const VersionMetadataBase::Params<> & base, const VersionMetadataCapabilities & caps) :
+VersionMetadata::VersionMetadata(const VersionMetadataBase::NamedArguments<> & base, const VersionMetadataCapabilities & caps) :
     VersionMetadataBase(base),
     VersionMetadataCapabilities(caps)
 {

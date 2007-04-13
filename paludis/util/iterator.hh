@@ -77,6 +77,11 @@ namespace paludis
         typedef T_ Type;
     };
 
+    /**
+     * Like std::tr1::remove_pointer, for std::tr1::shared_ptr.
+     *
+     * \ingroup grpiterators
+     */
     template <typename T_>
     struct RemoveSharedPointer<const std::tr1::shared_ptr<T_> >
     {

@@ -8,6 +8,19 @@ make_class_VersionRequirement()
 
     allow_named_args
     comparison_operators "equality" "all"
+
+    doxygen_comment << "END"
+        /**
+         * A requirement for a version, consisting of a VersionOperator and an associated
+         * VersionSpec.
+         *
+         * \ingroup grpversions
+         * \see VersionSpec
+         * \see VersionOperator
+         * \see VersionRequirements
+         * \nosubgrouping
+         */
+END
 }
 
 

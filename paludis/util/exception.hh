@@ -207,7 +207,6 @@ namespace paludis
      * A ConfigurationError is thrown when an invalid configuration occurs.
      *
      * \ingroup grpexceptions
-     * \ingroup grpconfigfile
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigurationError :

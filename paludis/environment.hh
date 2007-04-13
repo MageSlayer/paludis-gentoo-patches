@@ -48,34 +48,39 @@ namespace paludis
      * Represents the data for an Environment hook call.
      *
      * \ingroup grpenvironment
+     * \nosubgrouping
      */
     class Hook :
         private PrivateImplementationPattern<Hook>
     {
         public:
-            /// Constructor.
+            ///\name Basic operations
+            ///\{
+
             Hook(const std::string & name);
 
-            /// Copy constructor.
             Hook(const Hook &);
 
-            /// Destructor.
             ~Hook();
+
+            ///\}
 
             /// Add data to the hook.
             Hook operator() (const std::string & key, const std::string & value) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /// Iterate over extra environment data.
+            ///\name Iterate over environment data
+            ///\{
+
             typedef libwrapiter::ForwardIterator<Hook, const std::pair<const std::string, std::string> > Iterator;
 
-            /// Start of extra environment data.
             Iterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /// End of extra environment data.
             Iterator end() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
 
             /// Our name.
             std::string name() const
@@ -87,7 +92,17 @@ namespace paludis
      * database and provides various methods for querying package visibility
      * and options.
      *
+     * Contains a PackageDatabase, which in turn contains a number of Repository
+     * instances.
+     *
+     * EnvironmentMaker is often used to create the appropriate Environment
+     * subclass for an application.
+     *
      * \ingroup grpenvironment
+     * \see PackageDatabase
+     * \see Repository
+     * \see EnvironmentMaker
+     * \nosubgrouping
      */
     class Environment :
         private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>

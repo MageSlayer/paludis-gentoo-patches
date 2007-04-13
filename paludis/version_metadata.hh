@@ -89,7 +89,7 @@ namespace paludis
             PackageDepSpecParseMode eapi_as_package_dep_spec_parse_mode() const;
 
         protected:
-            VersionMetadata(const VersionMetadataBase::Params<> &, const VersionMetadataCapabilities &);
+            VersionMetadata(const VersionMetadataBase::NamedArguments<> &, const VersionMetadataCapabilities &);
 
     };
 }

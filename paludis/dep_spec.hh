@@ -348,14 +348,8 @@ namespace paludis
              */
             explicit PackageDepSpec(const std::string &) PALUDIS_ATTRIBUTE((deprecated));
 
-            /**
-             * Constructor.
-             */
             PackageDepSpec(const std::string &, const PackageDepSpecParseMode);
 
-            /**
-             * Constructor.
-             */
             explicit PackageDepSpec(
                 std::tr1::shared_ptr<QualifiedPackageName> q = std::tr1::shared_ptr<QualifiedPackageName>(),
                 std::tr1::shared_ptr<CategoryNamePart> c = std::tr1::shared_ptr<CategoryNamePart>(),
@@ -367,9 +361,6 @@ namespace paludis
                 std::tr1::shared_ptr<UseRequirements> u = std::tr1::shared_ptr<UseRequirements>(),
                 std::tr1::shared_ptr<const DepTag> t = std::tr1::shared_ptr<const DepTag>());
 
-            /**
-             * Copy constructor.
-             */
             PackageDepSpec(const PackageDepSpec &);
 
             ~PackageDepSpec();
@@ -516,9 +507,6 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            /**
-             * Constructor, with blocking spec.
-             */
             BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> spec);
 
             ///\}

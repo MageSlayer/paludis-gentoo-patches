@@ -41,22 +41,69 @@ namespace paludis
 {
     class FSEntry;
 
+    /**
+     * Raised if an error is encountered parsing a configuration file.
+     *
+     * \ingroup grpconfigfile
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class ConfigFileError :
         public ConfigurationError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
+            /**
+             * Constructor, where the filename is known.
+             *
+             * \param filename The filename in which the error occurred. May be a blank string, if
+             *   the filename is not necessarily known.
+             * \param message A description of the error.
+             */
             ConfigFileError(const std::string & filename, const std::string & message) throw ();
+
+            /**
+             * Constructor, where the filename is not known.
+             *
+             * \param message A description of the error.
+             */
             ConfigFileError(const std::string & message) throw ();
+
+            ///\}
     };
 
+    /**
+     * Base class for configuration files.
+     *
+     * Data is read in from a ConfigFile::Source instance, which can be created from
+     * an FSEntry, a std::istream or a string.
+     *
+     * \see KeyValueConfigFile
+     * \see LineConfigFile
+     *
+     * \ingroup grpconfigfile
+     * \nosubgrouping
+     */
     class ConfigFile :
         private InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
     {
         public:
+            /**
+             * A source (for example, a file or a string) usable by ConfigFile.
+             *
+             * \see ConfigFile
+             * \ingroup grpconfigfile
+             * \nosubgrouping
+             */
             class Source :
                 private PrivateImplementationPattern<Source>
             {
                 public:
+                    ///\name Basic operations
+                    ///\{
+
                     Source(const FSEntry &);
                     Source(const std::string &);
                     Source(std::istream &);
@@ -66,47 +113,115 @@ namespace paludis
 
                     ~Source();
 
+                    ///\}
+
+                    /**
+                     * Our stream, for use by ConfigFile.
+                     */
                     std::istream & stream() const;
+
+                    /**
+                     * Our filename (may be empty), for use by ConfigFile.
+                     */
                     std::string filename() const;
             };
 
+            ///\name Basic operations
+            ///\{
+
             virtual ~ConfigFile();
 
+            ///\}
+
         protected:
+
+            ///\name Basic operations
+            ///\{
+
             ConfigFile(const Source &);
+
+            ///\}
     };
 
+    /**
+     * A line-based configuration file.
+     *
+     * Line continuations, where a line ends in a backslash, are supported. Comment lines
+     * start with a hash character. Leading and trailing whitespace on a line is automatically
+     * stripped.
+     *
+     * \ingroup grplineconfigfile
+     * \nosubgrouping
+     */
     class LineConfigFile :
         public ConfigFile,
         private PrivateImplementationPattern<LineConfigFile>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             LineConfigFile(const Source &);
             ~LineConfigFile();
 
+            ///\}
+
+            ///\name Iterate over our lines
+            ///\{
+
             typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> Iterator;
 
-            Iterator begin() const;
-            Iterator end() const;
+            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
     };
 
+    /**
+     * A key=value configuration file.
+     *
+     * \ingroup grpkvconfigfile
+     * \nosubgrouping
+     */
     class KeyValueConfigFile :
         public ConfigFile,
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
         public:
+            /**
+             * A source of default values for a KeyValueConfigFile.
+             *
+             * \ingroup grpkvconfigfile
+             * \see KeyValueConfigFile
+             * \nosubgrouping
+             */
             class Defaults :
                 private PrivateImplementationPattern<Defaults>
             {
                 public:
+                    ///\name Basic operations
+                    ///\{
+
+                    /**
+                     * Avoid various C++ syntax oddities by providing a default constructor that
+                     * can't be used by anything.
+                     *
+                     * This is specialised for permissible parameters.
+                     */
                     template <typename T_>
                     Defaults(T_)
                     {
                         T_::WrongTypeForDefaults;
                     }
 
+                    /**
+                     * Defaults, from a function.
+                     */
                     Defaults(std::string (*)(const std::string &, const std::string &));
 
+                    /**
+                     * Defaults, from an empty string.
+                     */
                     Defaults();
 
                     Defaults(const Defaults &);
@@ -114,33 +229,76 @@ namespace paludis
 
                     ~Defaults();
 
+                    ///\}
+
+                    /**
+                     * Get the default value for a particular key.
+                     */
                     std::string get(const std::string &) const;
+
+                    ///\name Iterate over our default keys
+                    ///\{
 
                     typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > Iterator;
                     Iterator begin() const;
                     Iterator end() const;
+
+                    ///\}
             };
+
+            ///\name Basic operations
+            ///\{
 
             KeyValueConfigFile(const Source &, const Defaults & = Defaults(),
                     bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0);
             ~KeyValueConfigFile();
 
+            ///\}
+
+            ///\name Iterate over our keys
+            ///\{
+
             typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > Iterator;
             Iterator begin() const;
             Iterator end() const;
 
+            ///\}
+
+            /**
+             * Fetch the value for a particular key.
+             */
             std::string get(const std::string &) const;
     };
 
+    /**
+     * Use another KeyValueConfigFile for defaults.
+     *
+     * \ingroup grpkvconfigfile
+     */
     template<>
     KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile>);
 
+    /**
+     * Use a string pair collection for defaults.
+     *
+     * \ingroup grpkvconfigfile
+     */
     template<>
     KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
 
+    /**
+     * Use another KeyValueConfigFile for defaults (non-const).
+     *
+     * \ingroup grpkvconfigfile
+     */
     template<>
     KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile>);
 
+    /**
+     * Use a string pair collection for defaults (non-const).
+     *
+     * \ingroup grpkvconfigfile
+     */
     template<>
     KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >);
 }
