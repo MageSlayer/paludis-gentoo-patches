@@ -24,24 +24,76 @@
 
 namespace paludis
 {
+    /**
+     * Used by Options<> for underlying storage.
+     *
+     * Holds a collection of bits, similar to std::bitset<>, but with no fixed
+     * underlying size.
+     *
+     * \see Options<>
+     * \ingroup grpoptions
+     */
     class OptionsStore :
         private PrivateImplementationPattern<OptionsStore>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             OptionsStore();
             OptionsStore(const OptionsStore &);
             const OptionsStore & operator= (const OptionsStore &);
             ~OptionsStore();
 
+            ///\}
+
+            ///\name Modifications
+            ///\{
+
+            /**
+             * Set the specified bit.
+             */
             void add(const unsigned);
+
+            /**
+             * Unset the specified bit.
+             */
             void remove(const unsigned);
+
+            /**
+             * Set any bit that is set in the parameter.
+             */
             void combine(const OptionsStore &);
+
+            /**
+             * Unset any bit that is set in the parameter.
+             */
             void subtract(const OptionsStore &);
 
+            ///\}
+
+            ///\name Tests
+            ///\{
+
+            /**
+             * Is a particular bit set?
+             */
             bool test(const unsigned) const;
+
+            /**
+             * Is any bit set?
+             */
             bool any() const;
+
+            ///\}
     };
 
+    /**
+     * Holds a series of true/false values mapped on an enum type, like a
+     * std::bitset<> without the static size requirement.
+     *
+     * \ingroup grpoptions
+     */
     template <typename E_>
     class Options
     {
@@ -49,6 +101,9 @@ namespace paludis
             OptionsStore _store;
 
         public:
+            /**
+             * Return a copy of ourself with the specified bit enabled.
+             */
             Options operator+ (const E_ & e) const
             {
                 Options result(*this);
@@ -56,12 +111,18 @@ namespace paludis
                 return result;
             }
 
+            /**
+             * Enable the specified bit.
+             */
             Options & operator+= (const E_ & e)
             {
                 _store.add(static_cast<unsigned>(e));
                 return *this;
             }
 
+            /**
+             * Return a copy of ourself with the specified bit disabled.
+             */
             Options operator- (const E_ & e) const
             {
                 Options result(*this);
@@ -69,12 +130,18 @@ namespace paludis
                 return result;
             }
 
+            /**
+             * Disable the specified bit.
+             */
             Options & operator-= (const E_ & e)
             {
                 _store.remove(static_cast<unsigned>(e));
                 return *this;
             }
 
+            /**
+             * Return a copy of ourself, bitwise 'or'ed with another Options set.
+             */
             Options operator| (const Options<E_> & e) const
             {
                 Options result(*this);
@@ -82,28 +149,43 @@ namespace paludis
                 return result;
             }
 
+            /**
+             * Enable any bits that are enabled in the parameter.
+             */
             Options & operator|= (const Options<E_> & e)
             {
                 _store.combine(e._store);
                 return *this;
             }
 
+            /**
+             * Disable any bits that are enabled in the parameter.
+             */
             Options & subtract(const Options<E_> & e)
             {
                 _store.subtract(e._store);
                 return *this;
             }
 
+            /**
+             * Returns whether the specified bit is enabled.
+             */
             bool operator[] (const E_ & e) const
             {
                 return _store.test(static_cast<unsigned>(e));
             }
 
+            /**
+             * Returns whether any bit is enabled.
+             */
             bool any() const
             {
                 return _store.any();
             }
 
+            /**
+             * Returns whether all bits are disabled.
+             */
             bool none() const
             {
                 return ! _store.any();
