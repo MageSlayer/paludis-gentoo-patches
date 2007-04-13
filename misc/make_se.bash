@@ -73,6 +73,12 @@ while read a ; do
 
     if [[ "${what_to_make}" == "--header" ]] ; then
 
+        echo "#ifdef DOXYGEN"
+        echo "// doxygen needs this to get namespaces right"
+        echo "namespace ${want_namespace}"
+        echo "{"
+        echo "#endif"
+
         doxygen_comment()
         {
             cat
@@ -87,7 +93,7 @@ while read a ; do
             echo "    ${want_keys[${k}]},  ///< ${want_key_descriptions[${k}]}"
         done
 
-        echo "    last_${want_prefix_key}"
+        echo "    last_${want_prefix_key} ///< Number of keys in ${want_namespace}::${a}"
 
         echo "};"
 
@@ -95,6 +101,11 @@ while read a ; do
         echo "std::ostream &"
         echo "operator<< (std::ostream &, const $a &);"
         echo
+
+        echo "#ifdef DOXYGEN"
+        echo "// end namespace for doxygen"
+        echo "}"
+        echo "#endif"
 
     elif [[ "${what_to_make}" == "--source" ]] ; then
 
