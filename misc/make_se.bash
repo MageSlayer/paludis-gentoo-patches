@@ -98,6 +98,9 @@ while read a ; do
         echo "};"
 
         echo
+        echo "/**"
+        echo " * Write a ${a} to a stream."
+        echo " */"
         echo "std::ostream &"
         echo "operator<< (std::ostream &, const $a &);"
         echo
