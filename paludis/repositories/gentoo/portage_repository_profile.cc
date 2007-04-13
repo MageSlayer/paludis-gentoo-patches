@@ -222,7 +222,7 @@ Implementation<PortageRepositoryProfile>::load_profile_parent(const FSEntry & di
     if (! (dir / "parent").exists())
         return;
 
-    LineConfigFile file(dir / "parent");
+    LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
 
     LineConfigFile::Iterator i(file.begin()), i_end(file.end());
     if (i == i_end)
@@ -435,7 +435,7 @@ Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & fi
         return;
 
     Context context("When loading basic use file '" + stringify(file) + ":");
-    LineConfigFile f(file);
+    LineConfigFile f(file, LineConfigFileOptions());
     for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
@@ -470,7 +470,7 @@ Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & fil
         return;
 
     Context context("When loading specised use file '" + stringify(file) + ":");
-    LineConfigFile f(file);
+    LineConfigFile f(file, LineConfigFileOptions());
     for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {

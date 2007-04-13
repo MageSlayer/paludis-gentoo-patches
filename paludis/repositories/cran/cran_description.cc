@@ -42,7 +42,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
         return;
     }
 
-    LineConfigFile file(f);
+    LineConfigFile file(f, LineConfigFileOptions());
     LineConfigFile::Iterator l(file.begin()), l_end(file.end());
 
     // Fill in default values

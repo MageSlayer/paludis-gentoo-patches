@@ -62,7 +62,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
             try
             {
                 LineConfigFile file(FSEntry(getenv_with_default(
-                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "inherits_blacklist.txt");
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "inherits_blacklist.txt", LineConfigFileOptions());
                 std::copy(file.begin(), file.end(), std::inserter(
                                 inherits_blacklist, inherits_blacklist.end()));
             }

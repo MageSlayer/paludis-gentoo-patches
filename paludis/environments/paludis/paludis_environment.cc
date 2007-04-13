@@ -643,7 +643,7 @@ PaludisEnvironment::local_package_set(const SetName & s) const
     FSEntry ff(FSEntry(_imp->config->config_dir()) / "sets" / (stringify(s) + ".conf"));
     if (ff.exists())
     {
-        LineConfigFile f(ff);
+        LineConfigFile f(ff, LineConfigFileOptions());
         std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
 

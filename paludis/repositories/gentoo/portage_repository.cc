@@ -243,7 +243,7 @@ namespace paludis
 
             found_one = true;
 
-            LineConfigFile f(*p / "profiles.desc");
+            LineConfigFile f(*p / "profiles.desc", LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -508,7 +508,7 @@ PortageRepository::need_category_names() const
         if (! (*p / "categories").exists())
             continue;
 
-        LineConfigFile cats(*p / "categories");
+        LineConfigFile cats(*p / "categories", LineConfigFileOptions());
 
         for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
                 line != line_end ; ++line)
@@ -608,7 +608,7 @@ PortageRepository::fetch_repo_name(const std::string & location)
             if (! name_file.is_regular_file())
                 break;
 
-            LineConfigFile f(name_file);
+            LineConfigFile f(name_file, LineConfigFileOptions());
             if (f.begin() == f.end())
                 break;
             return RepositoryName(*f.begin());
@@ -664,7 +664,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
 
             if (fff.exists())
             {
-                LineConfigFile ff(fff);
+                LineConfigFile ff(fff, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
@@ -749,7 +749,7 @@ PortageRepository::do_arch_flags() const
             if (! a.exists())
                 continue;
 
-            LineConfigFile archs(a);
+            LineConfigFile archs(a, LineConfigFileOptions());
             std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -795,7 +795,7 @@ PortageRepository::need_mirrors() const
         {
             if ((*p / "thirdpartymirrors").exists())
             {
-                LineConfigFile mirrors(*p / "thirdpartymirrors");
+                LineConfigFile mirrors(*p / "thirdpartymirrors", LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> entries;
@@ -938,7 +938,7 @@ PortageRepository::info(bool verbose) const
     std::set<std::string> info_pkgs;
     if ((_imp->params.location / "profiles" / "info_pkgs").exists())
     {
-        LineConfigFile vars(_imp->params.location / "profiles" / "info_pkgs");
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_pkgs", LineConfigFileOptions());
         info_pkgs.insert(vars.begin(), vars.end());
     }
 
@@ -973,7 +973,7 @@ PortageRepository::info(bool verbose) const
     std::set<std::string> info_vars;
     if ((_imp->params.location / "profiles" / "info_vars").exists())
     {
-        LineConfigFile vars(_imp->params.location / "profiles" / "info_vars");
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_vars", LineConfigFileOptions());
         info_vars.insert(vars.begin(), vars.end());
     }
 

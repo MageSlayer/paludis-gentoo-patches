@@ -570,7 +570,7 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
 
         if (_imp->world_file.exists())
         {
-            LineConfigFile world(_imp->world_file);
+            LineConfigFile world(_imp->world_file, LineConfigFileOptions());
 
             for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                     line != line_end ; ++line)
@@ -635,7 +635,7 @@ CRANInstalledRepository::add_string_to_world(const std::string & n) const
 
     if (_imp->world_file.exists())
     {
-        LineConfigFile world(_imp->world_file);
+        LineConfigFile world(_imp->world_file, LineConfigFileOptions());
 
         for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                 line != line_end ; ++line)

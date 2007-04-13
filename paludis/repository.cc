@@ -50,7 +50,7 @@ namespace
             if (! (FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt").exists())
                 return;
 
-            LineConfigFile f(FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt");
+            LineConfigFile f(FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt", LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {

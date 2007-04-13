@@ -97,7 +97,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
             try
             {
                 LineConfigFile file(FSEntry(getenv_with_default(
-                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_depend.txt");
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_depend.txt", LineConfigFileOptions());
                 std::copy(file.begin(), file.end(), create_inserter<QualifiedPackageName>(std::inserter(
                                 suspicious_depend, suspicious_depend.end())));
             }
@@ -120,7 +120,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
             try
             {
                 LineConfigFile file(FSEntry(getenv_with_default(
-                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_rdepend.txt");
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_rdepend.txt", LineConfigFileOptions());
                 std::copy(file.begin(), file.end(), create_inserter<QualifiedPackageName>(std::inserter(
                                 suspicious_rdepend, suspicious_rdepend.end())));
             }

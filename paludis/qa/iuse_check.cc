@@ -68,7 +68,7 @@ IuseCheck::operator() (const EbuildCheckData & e) const
                 try
                 {
                     LineConfigFile iuse_blacklist_file(FSEntry(getenv_with_default(
-                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "iuse_blacklist.txt");
+                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "iuse_blacklist.txt", LineConfigFileOptions());
                     std::copy(iuse_blacklist_file.begin(), iuse_blacklist_file.end(),
                             create_inserter<UseFlagName>(std::inserter(iuse_blacklist, iuse_blacklist.end())));
                 }

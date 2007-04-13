@@ -293,7 +293,7 @@ CRANRepository::need_packages() const
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
-    LineConfigFile packages(FSEntry(_imp->location / "PACKAGES"));
+    LineConfigFile packages(FSEntry(_imp->location / "PACKAGES"), LineConfigFileOptions());
     LineConfigFile::Iterator l(packages.begin()), l_end(packages.end());
     std::string last_package_name;
     bool skip_invalid_package = false;

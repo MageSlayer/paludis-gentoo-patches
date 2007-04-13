@@ -223,7 +223,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
-        LineConfigFile mirrors(_imp->conf_dir / "portage" / "mirrors");
+        LineConfigFile mirrors(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions());
         for (LineConfigFile::Iterator line(mirrors.begin()), line_end(mirrors.end()) ;
                 line != line_end ; ++line)
         {
@@ -257,7 +257,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     }
     else
     {
-        LineConfigFile file(f);
+        LineConfigFile file(f, LineConfigFileOptions());
         for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
         {
@@ -301,7 +301,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
     }
     else
     {
-        LineConfigFile file(f);
+        LineConfigFile file(f, LineConfigFileOptions());
         for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
@@ -318,7 +318,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     {
         Context context_local("When loading parent profiles:");
 
-        LineConfigFile f(d / "parent");
+        LineConfigFile f(d / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
             _load_profile((d / *line).realpath());

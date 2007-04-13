@@ -93,7 +93,7 @@ PortageRepositorySets::package_set(const SetName & s) const
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
 
         std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
-        LineConfigFile f(ff);
+        LineConfigFile f(ff, LineConfigFileOptions());
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
         {

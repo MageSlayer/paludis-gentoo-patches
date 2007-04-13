@@ -9,7 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`about',                             `hh', `test')
-add(`config_file',                       `hh', `cc', `test', `testscript')
+add(`config_file',                       `hh', `cc', `se', `test', `testscript')
 add(`contents',                          `hh', `cc')
 add(`dep_spec',                          `hh', `cc', `se', `test')
 add(`dep_spec_flattener',                `hh', `cc')

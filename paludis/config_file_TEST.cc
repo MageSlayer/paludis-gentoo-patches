@@ -26,6 +26,7 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
+#include <iomanip>
 #include <unistd.h>
 
 using namespace test;
@@ -62,7 +63,8 @@ namespace test_cases
             s << "four  four" << std::endl;
             s << "five \\" << std::endl;
             s << "six" << std::endl;
-            LineConfigFile f(s);
+
+            LineConfigFile f(s, LineConfigFileOptions());
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 5);
             std::vector<std::string> lines;
             std::copy(f.begin(), f.end(), std::back_inserter(lines));
@@ -71,6 +73,26 @@ namespace test_cases
             TEST_CHECK_EQUAL(lines.at(2), "three");
             TEST_CHECK_EQUAL(lines.at(3), "four  four");
             TEST_CHECK_EQUAL(lines.at(4), "five six");
+
+            s.clear();
+            s.seekg(0, std::ios::beg);
+
+            LineConfigFile g(s, LineConfigFileOptions() + lcfo_disallow_comments
+                    + lcfo_preserve_whitespace + lcfo_no_skip_blank_lines);
+            TEST_CHECK_EQUAL(std::distance(g.begin(), g.end()), 11);
+            lines.clear();
+            std::copy(g.begin(), g.end(), std::back_inserter(lines));
+            TEST_CHECK_EQUAL(lines.at(0), "one");
+            TEST_CHECK_EQUAL(lines.at(1), "  two    \t  ");
+            TEST_CHECK_EQUAL(lines.at(2), "   \t  ");
+            TEST_CHECK_EQUAL(lines.at(3), "");
+            TEST_CHECK_EQUAL(lines.at(4), "three");
+            TEST_CHECK_EQUAL(lines.at(5), "# blah");
+            TEST_CHECK_EQUAL(lines.at(6), "  # blah");
+            TEST_CHECK_EQUAL(lines.at(7), "#");
+            TEST_CHECK_EQUAL(lines.at(8), "  #  \t  ");
+            TEST_CHECK_EQUAL(lines.at(9), "four  four");
+            TEST_CHECK_EQUAL(lines.at(10), "five six");
         }
     } test_config_file;
 
@@ -86,21 +108,21 @@ namespace test_cases
         {
             FSEntry ff("config_file_TEST_dir/config_file");
             TEST_CHECK(ff.is_regular_file());
-            LineConfigFile f(ff);
+            LineConfigFile f(ff, LineConfigFileOptions());
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 1);
             TEST_CHECK_EQUAL(*f.begin(), "I am a fish.");
 
             FSEntry ff2("config_file_TEST_dir/not_a_config_file");
             TEST_CHECK(! ff2.exists());
             LineConfigFile * f2(0);
-            TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2), ConfigFileError);
+            TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2, LineConfigFileOptions()), ConfigFileError);
 
             if (0 != geteuid())
             {
                 FSEntry ff3("config_file_TEST_dir/unreadable_file");
                 TEST_CHECK(ff3.is_regular_file());
                 LineConfigFile * f3(0);
-                TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3), ConfigFileError);
+                TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3, LineConfigFileOptions()), ConfigFileError);
             }
         }
     } test_config_file_open_file;
@@ -126,7 +148,7 @@ namespace test_cases
             s << "#" << std::endl;
             s << "  #  \t  " << std::endl;
             s << "four  four" << std::endl;
-            LineConfigFile ff(s);
+            LineConfigFile ff(s, LineConfigFileOptions());
             std::vector<std::string> f(ff.begin(), ff.end());
 
             TEST_CHECK_EQUAL(f.size(), 4);

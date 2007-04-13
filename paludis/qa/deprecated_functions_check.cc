@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +62,7 @@ DeprecatedFunctionsCheck::operator() (const FSEntry & f) const
                 try
                 {
                     LineConfigFile deprecated_functions_file(FSEntry(getenv_with_default(
-                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "deprecated_functions.txt");
+                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "deprecated_functions.txt", LineConfigFileOptions());
                     for (LineConfigFile::Iterator l(deprecated_functions_file.begin()),
                             l_end(deprecated_functions_file.end()) ; l != l_end ; ++l)
                         deprecated_functions.push_back(std::make_pair(*l, pcrepp::Pcre::Pcre("\\b" + *l + "\\b")));

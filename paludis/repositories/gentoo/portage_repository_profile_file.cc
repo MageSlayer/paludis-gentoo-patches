@@ -42,7 +42,7 @@ ProfileFile::add_file(const FSEntry & f)
     if (! f.exists())
         return;
 
-    LineConfigFile file(f);
+    LineConfigFile file(f, LineConfigFileOptions());
     for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
         if (0 == line->compare(0, 1, "-", 0, 1))

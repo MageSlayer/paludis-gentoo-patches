@@ -40,7 +40,7 @@ namespace paludis
         {
             if (f.is_regular_file())
             {
-                LineConfigFile ff(f);
+                LineConfigFile ff(f, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {

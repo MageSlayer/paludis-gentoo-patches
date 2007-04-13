@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_LineConfigFileOption()
+{
+    prefix lcfo
+
+    key lcfo_disallow_continuations     "Do not recognise line continuations"
+    key lcfo_disallow_comments          "Do not recognise comments"
+    key lcfo_preserve_whitespace        "Preserve exact whitespace"
+    key lcfo_no_skip_blank_lines        "Do not skip blank lines"
+
+    doxygen_comment << "END"
+        /**
+         * Options for a LineConfigFile.
+         *
+         * \see LineConfigFile
+         * \see LineConfigFileOptions
+         * \ingroup grpconfigfile
+         */
+END
+}
+

@@ -463,7 +463,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -519,7 +519,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -573,7 +573,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -613,7 +613,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -653,7 +653,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -785,7 +785,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file);
+            LineConfigFile f(*file, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {

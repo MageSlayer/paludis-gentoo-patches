@@ -103,7 +103,7 @@ void do_display_profiles_use(NoConfigEnvironment & env)
 
     std::set<UseFlagName> all_use_flags;
     {
-        LineConfigFile use_desc(env.main_repository_dir() / "profiles"/ "use.desc");
+        LineConfigFile use_desc(env.main_repository_dir() / "profiles"/ "use.desc", LineConfigFileOptions());
         for (LineConfigFile::Iterator line(use_desc.begin()), line_end(use_desc.end()) ;
                 line != line_end ; ++line)
         {
@@ -131,7 +131,7 @@ void do_display_profiles_use(NoConfigEnvironment & env)
 
             std::string prefix(strip_trailing_string(d->basename(), ".desc"));
 
-            LineConfigFile use_desc(*d);
+            LineConfigFile use_desc(*d, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(use_desc.begin()), line_end(use_desc.end()) ;
                     line != line_end ; ++line)
             {

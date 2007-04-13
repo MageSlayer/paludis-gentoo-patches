@@ -92,7 +92,7 @@ PortageRepositoryNews::update_news() const
     {
         Context local_context("When handling news skip file '" + stringify(
                 _imp->skip_file) + "':");
-        LineConfigFile s(_imp->skip_file);
+        LineConfigFile s(_imp->skip_file, LineConfigFileOptions());
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
@@ -212,13 +212,20 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 
-    LineConfigFile line_file(our_filename);
+    LineConfigFile line_file(our_filename, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_no_skip_blank_lines
+            + lcfo_disallow_comments);
     for (LineConfigFile::Iterator line(line_file.begin()), line_end(line_file.end()) ;
             line != line_end ; ++line)
     {
+        if (line->empty())
+            break;
+
         std::string::size_type p(line->find(':'));
         if (std::string::npos == p)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Bad header line '" + *line + "'");
             break;
+        }
         else
         {
             std::string k(strip_leading(strip_trailing(line->substr(0, p), " \t\n"), " \t\n"));

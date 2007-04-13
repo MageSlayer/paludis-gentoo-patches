@@ -41,6 +41,8 @@
 
 using namespace paludis;
 
+#include <paludis/config_file-se.cc>
+
 ConfigFileError::ConfigFileError(const std::string & f, const std::string & m) throw () :
     ConfigurationError("Configuration file error: " + (f.empty() ? m : f + ": " + m))
 {
@@ -154,6 +156,19 @@ LineConfigFile::LineConfigFile(const Source & s) :
     ConfigFile(s),
     PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
+    _parse(s, LineConfigFileOptions());
+}
+
+LineConfigFile::LineConfigFile(const Source & s, const LineConfigFileOptions & o) :
+    ConfigFile(s),
+    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
+{
+    _parse(s, o);
+}
+
+void
+LineConfigFile::_parse(const Source & s, const LineConfigFileOptions & opts)
+{
     Context context("When parsing line configuration file" + (s.filename().empty() ? ":" :
                 "'" + s.filename() + "':"));
 
@@ -164,9 +179,13 @@ LineConfigFile::LineConfigFile(const Source & s) :
     while (std::getline(s.stream(), line))
     {
         if (line.empty())
+        {
+            if (opts[lcfo_no_skip_blank_lines])
+                _imp->lines.push_back(line);
             continue;
+        }
 
-        while ('\\' == line.at(line.length() - 1))
+        while ((! opts[lcfo_disallow_continuations]) && '\\' == line.at(line.length() - 1))
         {
             line.erase(line.length() - 1);
             std::string next_line;
@@ -176,18 +195,23 @@ LineConfigFile::LineConfigFile(const Source & s) :
             if (next_line.empty())
                 throw ConfigFileError(s.filename(), "Line continuation followed by empty line");
 
-            if ((! next_line.empty()) && ('#' == next_line.at(0)))
-                throw ConfigFileError(s.filename(), "Line continuation followed by comment");
+            if (! opts[lcfo_disallow_comments])
+                if ((! next_line.empty()) && ('#' == next_line.at(0)))
+                    throw ConfigFileError(s.filename(), "Line continuation followed by comment");
 
             line.append(next_line);
         }
 
-        line = strip_leading(strip_trailing(line, " \t\r\n"), " \t\r\n");
-        if (line.empty())
-            continue;
+        if (! opts[lcfo_preserve_whitespace])
+            line = strip_leading(strip_trailing(line, " \t\r\n"), " \t\r\n");
 
-        if ('#' == line.at(0))
-            continue;
+        if (! opts[lcfo_no_skip_blank_lines])
+            if (line.empty())
+                continue;
+
+        if (! opts[lcfo_disallow_comments])
+            if ('#' == line.at(0))
+                continue;
 
         _imp->lines.push_back(line);
     }

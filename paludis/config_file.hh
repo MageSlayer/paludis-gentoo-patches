@@ -24,6 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/options.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -39,6 +40,8 @@
 
 namespace paludis
 {
+#include <paludis/config_file-se.hh>
+
     class FSEntry;
 
     /**
@@ -123,7 +126,7 @@ namespace paludis
                     /**
                      * Our filename (may be empty), for use by ConfigFile.
                      */
-                    std::string filename() const;
+                    std::string filename() const PALUDIS_ATTRIBUTE((warn_unused_result));
             };
 
             ///\name Basic operations
@@ -144,11 +147,23 @@ namespace paludis
     };
 
     /**
+     * Options for a LineConfigFile.
+     *
+     * \see LineConfigFileOption
+     * \see LineConfigFile
+     * \ingroup grplineconfigfile
+     */
+    typedef Options<LineConfigFileOption> LineConfigFileOptions;
+
+    /**
      * A line-based configuration file.
      *
-     * Line continuations, where a line ends in a backslash, are supported. Comment lines
-     * start with a hash character. Leading and trailing whitespace on a line is automatically
-     * stripped.
+     * Various syntax options are available, and are controlled by LineConfigFileOptions:
+     *
+     * - Unless lcfo_disallow_continuations, lines ending in a backslash are continuations
+     * - Unless lcfo_disallow_comments, lines starting with a \# are comments
+     * - Unless lcfo_preserve_whitespace, leading and trailing whitespace is stripped
+     * - Unless lcfo_no_skip_blank_lines, blank lines are skipped.
      *
      * \ingroup grplineconfigfile
      * \nosubgrouping
@@ -157,11 +172,22 @@ namespace paludis
         public ConfigFile,
         private PrivateImplementationPattern<LineConfigFile>
     {
+        private:
+            void _parse(const Source &, const LineConfigFileOptions &);
+
         public:
             ///\name Basic operations
             ///\{
 
-            LineConfigFile(const Source &);
+            /**
+             * Deprecated constructor.
+             *
+             * \deprecated Use the two argument form.
+             */
+            LineConfigFile(const Source &) PALUDIS_ATTRIBUTE((deprecated));
+
+            LineConfigFile(const Source &, const LineConfigFileOptions &);
+
             ~LineConfigFile();
 
             ///\}
@@ -240,8 +266,8 @@ namespace paludis
                     ///\{
 
                     typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > Iterator;
-                    Iterator begin() const;
-                    Iterator end() const;
+                    Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                     ///\}
             };
@@ -259,15 +285,15 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > Iterator;
-            Iterator begin() const;
-            Iterator end() const;
+            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
             /**
              * Fetch the value for a particular key.
              */
-            std::string get(const std::string &) const;
+            std::string get(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
