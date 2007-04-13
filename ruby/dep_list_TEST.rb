@@ -148,12 +148,17 @@ module Paludis
             #This will fail if the defaults change, please also update the rdoc.
             default_options.each_pair do |method, value|
                 assert_respond_to options, method
+                next if method == :override_masks
                 assert_equal value, options.send(method)
                 #check setters work
                 assert_nothing_raised do
                     options.send("#{method}=", options_hash[method])
                     assert_equal options_hash[method], options.send(method)
                 end
+            end
+            assert_kind_of DepListOverrideMasks, options.override_masks
+            assert_nothing_raised do
+                options.override_masks = DepListOverrideMasks.new
             end
         end
 
@@ -305,3 +310,4 @@ module Paludis
         end
     end
 end
+

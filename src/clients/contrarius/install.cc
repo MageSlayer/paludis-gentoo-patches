@@ -319,8 +319,8 @@ do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
 
                     bool need_comma(false);
                     MaskReasons m(env->mask_reasons(*pp));
-                    for (unsigned mm = 0 ; mm < m.size() ; ++mm)
-                        if (m[mm])
+                    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
+                        if (m[static_cast<MaskReason>(mm)])
                         {
                             if (need_comma)
                                 cerr << ", ";

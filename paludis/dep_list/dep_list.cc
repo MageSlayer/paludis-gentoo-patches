@@ -581,11 +581,11 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
         {
             while (next != last_dl_override)
             {
-                if (masks_to_override.test(next))
+                if (masks_to_override[next])
                     next = static_cast<DepListOverrideMask>(static_cast<int>(next) + 1);
-                else if (d->_imp->opts->override_masks.test(next))
+                else if (d->_imp->opts->override_masks[next])
                 {
-                    masks_to_override.set(next);
+                    masks_to_override += next;
                     break;
                 }
                 else
@@ -596,23 +596,21 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
                 break;
 
             MaskReasons mask_mask;
-            if (masks_to_override.test(dl_override_repository_masks))
-                mask_mask.set(mr_repository_mask);
-            if (masks_to_override.test(dl_override_profile_masks))
-                mask_mask.set(mr_profile_mask);
-            if (masks_to_override.test(dl_override_licenses))
-                mask_mask.set(mr_license);
-            mask_mask.set(mr_by_association);
-            mask_mask.flip();
+            if (masks_to_override[dl_override_repository_masks])
+                mask_mask += mr_repository_mask;
+            if (masks_to_override[dl_override_profile_masks])
+                mask_mask += mr_profile_mask;
+            if (masks_to_override[dl_override_licenses])
+                mask_mask += mr_license;
+            mask_mask += mr_by_association;
 
-            bool override_tilde_keywords(masks_to_override.test(dl_override_tilde_keywords));
-            bool override_unkeyworded(masks_to_override.test(dl_override_unkeyworded));
+            bool override_tilde_keywords(masks_to_override[dl_override_tilde_keywords]);
+            bool override_unkeyworded(masks_to_override[dl_override_unkeyworded]);
 
             for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
-                if (! (d->_imp->env->mask_reasons(*p, override_tilde_keywords, override_unkeyworded)
-                            & mask_mask).any())
+                if (! (d->_imp->env->mask_reasons(*p, override_tilde_keywords, override_unkeyworded).subtract(mask_mask).any()))
                 {
                     d->add_error_package(*p, dlk_masked);
                     best_visible_candidate = &*p;

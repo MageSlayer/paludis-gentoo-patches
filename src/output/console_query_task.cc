@@ -136,7 +136,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                     for (MaskReason m(MaskReason(0)) ; m < last_mr ;
                             m = MaskReason(static_cast<int>(m) + 1))
                     {
-                        if (! masks.test(m))
+                        if (! masks[m])
                             continue;
 
                         switch (m)

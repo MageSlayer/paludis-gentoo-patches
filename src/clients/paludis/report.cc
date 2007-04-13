@@ -95,8 +95,8 @@ namespace
         cout << endl << "    Masked by: ";
 
         bool comma(false);
-        for (unsigned i(0), i_end(mr.size()); i != i_end; ++i)
-            if (mr.test(i))
+        for (unsigned i(0), i_end(last_mr); i != i_end; ++i)
+            if (mr[static_cast<MaskReason>(i)])
             {
                 if (comma)
                     cout << ", ";

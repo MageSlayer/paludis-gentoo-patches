@@ -1125,7 +1125,7 @@ namespace
             int mr = NUM2INT(mask_reason);
             if (mr < 0 || mr >= last_dl_override)
                 rb_raise(rb_eArgError, "DepListOverrideMask out of range");
-            m_ptr->set(mr);
+            *m_ptr += static_cast<DepListOverrideMask>(mr);
             return Qnil;
 
         }
@@ -1142,7 +1142,7 @@ namespace
         Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
         if (argc == 0)
         {
-            m_ptr->reset();
+            *m_ptr = DepListOverrideMasks();
             return Qnil;
         }
         else if (argc == 1)
@@ -1152,7 +1152,7 @@ namespace
                 int mr = NUM2INT(argv[0]);
                 if (mr < 0 || mr >= last_dl_override)
                     rb_raise(rb_eArgError, "DepListOverrideMask out of range");
-                m_ptr->reset(mr);
+                *m_ptr -= static_cast<DepListOverrideMask>(mr);
                 return Qnil;
 
             }
@@ -1164,28 +1164,6 @@ namespace
         else
         {
             rb_raise(rb_eArgError, "clear expects one or zero arguments, but got %d",argc);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     == other_mask_reason -> True or False
-     *
-     * Are two DepListOverrideMasks equal
-     */
-    VALUE
-    dep_list_override_masks_equal(VALUE self, VALUE other)
-    {
-        DepListOverrideMasks * m_ptr;
-        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
-        try
-        {
-            DepListOverrideMasks mr = value_to_dep_list_override_masks(other);
-            return (*m_ptr) == mr ? Qtrue : Qfalse;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
         }
     }
 
@@ -1517,7 +1495,6 @@ namespace
         rb_define_method(c_dep_list_override_masks, "empty?", RUBY_FUNC_CAST(&dep_list_override_masks_empty), 0);
         rb_define_method(c_dep_list_override_masks, "set", RUBY_FUNC_CAST(&dep_list_override_masks_set), 1);
         rb_define_method(c_dep_list_override_masks, "reset", RUBY_FUNC_CAST(&dep_list_override_masks_reset), -1);
-        rb_define_method(c_dep_list_override_masks, "==", RUBY_FUNC_CAST(&dep_list_override_masks_equal), 1);
     }
 }
 

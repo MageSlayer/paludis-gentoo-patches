@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_MASK_REASONS_HH
 #define PALUDIS_GUARD_PALUDIS_MASK_REASONS_HH 1
 
-#include <bitset>
+#include <paludis/util/options.hh>
 #include <iosfwd>
 
 /** \file
@@ -39,7 +39,7 @@ namespace paludis
      *
      * \ingroup grpmaskreasons
      */
-    typedef std::bitset<last_mr> MaskReasons;
+    typedef Options<MaskReason> MaskReasons;
 }
 
 #endif

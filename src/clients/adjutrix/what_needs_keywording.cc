@@ -62,10 +62,10 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     d_options.circular = dl_circular_discard_silently;
     d_options.use = dl_use_deps_take_all;
     d_options.blocks = dl_blocks_discard_completely;
-    d_options.override_masks.set(dl_override_tilde_keywords);
-    d_options.override_masks.set(dl_override_unkeyworded);
-    d_options.override_masks.set(dl_override_repository_masks);
-    d_options.override_masks.set(dl_override_profile_masks);
+    d_options.override_masks += dl_override_tilde_keywords;
+    d_options.override_masks += dl_override_unkeyworded;
+    d_options.override_masks += dl_override_repository_masks;
+    d_options.override_masks += dl_override_profile_masks;
 
     DepList d(&env, d_options);
 
@@ -122,9 +122,9 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             std::string masks;
 
             MaskReasons r(env.mask_reasons(p->package));
-            if (r.test(mr_repository_mask))
+            if (r[mr_repository_mask])
                     masks.append("R");
-            if (r.test(mr_profile_mask))
+            if (r[mr_profile_mask])
                     masks.append("P");
 
             cout << std::setw(10) << std::left << masks;

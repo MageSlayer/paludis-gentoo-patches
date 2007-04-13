@@ -133,20 +133,20 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
                 e.repository)->version_metadata(e.name, e.version));
 
     if (! accept_eapi(metadata->eapi))
-        result.set(mr_eapi);
+        result += mr_eapi;
     else
     {
         if (breaks_portage(e, *metadata) && ! accept_breaks_portage())
-            result.set(mr_breaks_portage);
+            result += mr_breaks_portage;
 
         if (metadata->interactive && ! accept_interactive())
-            result.set(mr_interactive);
+            result += mr_interactive;
 
         if (metadata->virtual_interface)
         {
             result |= mask_reasons(metadata->virtual_interface->virtual_for);
             if (result.any())
-                result.set(mr_by_association);
+                result += mr_by_association;
         }
 
         if (metadata->ebuild_interface)
@@ -158,26 +158,26 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             if (keywords.empty())
                 keywords.insert(KeywordName("empty"));
 
-            result.set(mr_keyword);
+            result += mr_keyword;
             for (std::set<KeywordName>::const_iterator i(keywords.begin()),
                     i_end(keywords.end()) ; i != i_end ; ++i)
                 if (accept_keyword(*i, &e, override_tilde_keywords))
                 {
-                    result.reset(mr_keyword);
+                    result -= mr_keyword;
                     break;
                 }
 
-            if (override_unkeyworded && result.test(mr_keyword))
+            if (override_unkeyworded && result[mr_keyword])
             {
-                result.reset(mr_keyword);
+                result -= mr_keyword;
                 for (std::set<KeywordName>::const_iterator i(keywords.begin()),
                         i_end(keywords.end()) ; i != i_end ; ++i)
                     if ("-*" == stringify(*i))
-                        result.set(mr_keyword);
+                        result += mr_keyword;
                     else if ('-' == stringify(*i).at(0))
                         if (accept_keyword(KeywordName(stringify(*i).substr(1)), &e, override_tilde_keywords))
                         {
-                            result.set(mr_keyword);
+                            result += mr_keyword;
                             break;
                         }
             }
@@ -188,13 +188,13 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             LicenceChecker lc(this, &e);
             metadata->license_interface->license()->accept(&lc);
             if (! lc.ok)
-                result.set(mr_license);
+                result += mr_license;
         }
 
         if (! query_user_unmasks(e))
         {
             if (query_user_masks(e))
-                result.set(mr_user_mask);
+                result += mr_user_mask;
 
             const Repository * const repo(package_database()->fetch_repository(e.repository).get());
 
@@ -202,11 +202,11 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             {
                 if (repo->mask_interface->query_profile_masks(e.name,
                             e.version))
-                    result.set(mr_profile_mask);
+                    result += mr_profile_mask;
 
                 if (repo->mask_interface->query_repository_masks(e.name,
                             e.version))
-                    result.set(mr_repository_mask);
+                    result += mr_repository_mask;
             }
         }
     }

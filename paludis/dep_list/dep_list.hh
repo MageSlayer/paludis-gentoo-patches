@@ -27,10 +27,10 @@
 #include <paludis/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
 
 #include <iosfwd>
-#include <bitset>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 

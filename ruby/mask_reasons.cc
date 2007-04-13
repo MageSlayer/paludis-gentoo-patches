@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,31 +104,9 @@ namespace
             int mr = NUM2INT(mask_reason);
             if (mr < 0 || mr >= last_mr)
                 rb_raise(rb_eArgError, "MaskReason out of range");
-            m_ptr->set(mr);
+            *m_ptr += static_cast<MaskReason>(mr);
             return Qnil;
 
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     == other_mask_reason -> True or False
-     *
-     * Are two MaskReasons equal
-     */
-    VALUE
-    mask_reasons_equal(VALUE self, VALUE other)
-    {
-        MaskReasons * m_ptr;
-        Data_Get_Struct(self, MaskReasons, m_ptr);
-        try
-        {
-            MaskReasons mr = value_to_mask_reasons(other);
-            return (*m_ptr) == mr ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -152,7 +130,6 @@ namespace
         rb_include_module(c_mask_reasons, rb_mEnumerable);
         rb_define_method(c_mask_reasons, "empty?", RUBY_FUNC_CAST(&mask_reasons_empty), 0);
         rb_define_method(c_mask_reasons, "set", RUBY_FUNC_CAST(&mask_reasons_set), 1);
-        rb_define_method(c_mask_reasons, "==", RUBY_FUNC_CAST(&mask_reasons_equal), 1);
 
         /*
          * Document-module: Paludis::MaskReason

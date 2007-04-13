@@ -22,7 +22,7 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <bitset>
+#include <paludis/util/options.hh>
 
 namespace paludis
 {
@@ -35,7 +35,7 @@ namespace paludis
      * \ingroup grpdepresolver
      * \see DepListOverrideMask
      */
-    typedef std::bitset<last_dl_override> DepListOverrideMasks;
+    typedef Options<DepListOverrideMask> DepListOverrideMasks;
 }
 
 #endif

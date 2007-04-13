@@ -420,15 +420,15 @@ do_install(std::tr1::shared_ptr<Environment> env)
                 a_end(CommandLine::get_instance()->dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
             if (*a == "tilde-keyword")
-                options.override_masks.set(dl_override_tilde_keywords);
+                options.override_masks += dl_override_tilde_keywords;
             else if (*a == "unkeyworded")
-                options.override_masks.set(dl_override_unkeyworded);
+                options.override_masks += dl_override_unkeyworded;
             else if (*a == "repository")
-                options.override_masks.set(dl_override_repository_masks);
+                options.override_masks += dl_override_repository_masks;
             else if (*a == "profile")
-                options.override_masks.set(dl_override_repository_masks);
+                options.override_masks += dl_override_repository_masks;
             else if (*a == "license")
-                options.override_masks.set(dl_override_licenses);
+                options.override_masks += dl_override_licenses;
             else
                 throw args::DoHelp("bad value for --dl-override-masks");
         }
@@ -611,8 +611,8 @@ do_install(std::tr1::shared_ptr<Environment> env)
 
                     bool need_comma(false);
                     MaskReasons m(env->mask_reasons(*pp));
-                    for (unsigned mm = 0 ; mm < m.size() ; ++mm)
-                        if (m[mm])
+                    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
+                        if (m[static_cast<MaskReason>(mm)])
                         {
                             if (need_comma)
                                 cerr << ", ";

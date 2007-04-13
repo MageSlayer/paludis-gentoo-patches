@@ -1075,8 +1075,8 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
 
     output_no_endl("    Masked by: ");
 
-    for (unsigned mm = 0 ; mm < r.size() ; ++mm)
-        if (r[mm])
+    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
+        if (r[static_cast<MaskReason>(mm)])
         {
             if (need_comma)
                 output_no_endl(", ");

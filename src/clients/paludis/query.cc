@@ -171,7 +171,7 @@ int do_query(std::tr1::shared_ptr<Environment> env)
         for (MaskReason m(MaskReason(0)) ; m < last_mr ;
                 m = MaskReason(static_cast<int>(m) + 1))
         {
-            if (! mask_reasons_to_explain.test(m))
+            if (! mask_reasons_to_explain[m])
                 continue;
 
             switch (m)
