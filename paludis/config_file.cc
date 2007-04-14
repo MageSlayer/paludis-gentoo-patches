@@ -393,7 +393,7 @@ namespace
         while (c != c_end)
         {
             if (*c == '\n' || *c == '\r' || *c == ' ' || *c == '\t' || *c == '=' || *c == '$' || *c == '\\'
-                    || *c == '"' || *c == '\'')
+                    || *c == '"' || *c == '\'' || *c == '#')
                 break;
             else
                 result.append(stringify(*c++));
@@ -483,7 +483,8 @@ namespace
         throw ConfigFileError(f, "Unterminated 'quoted string");
     }
 
-    std::string grab_dquoted(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+    std::string grab_dquoted(const KeyValueConfigFileOptions & opts,
+            std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
             const KeyValueConfigFile & d, const std::string & f)
     {
         std::string result;
@@ -496,7 +497,12 @@ namespace
                     throw ConfigFileError(f, "Unterminated \"quoted string ending in a backslash");
 
                 if (*c == '\n')
-                    ++c;
+                {
+                    if (opts[kvcfo_disallow_continuations])
+                        throw ConfigFileError(f, "\"quoted string ends in a backslash and continuations are not allowed");
+                    else
+                        ++c;
+                }
                 else if (*c == 't')
                 {
                     result.append("\t");
@@ -510,7 +516,7 @@ namespace
                 else
                     result.append(stringify(*c++));
             }
-            else if (*c == '$')
+            else if (*c == '$' && ! opts[kvcfo_disallow_variables])
                 result.append(grab_dollar(++c, c_end, d, f));
             else if (*c == '"')
             {
@@ -524,18 +530,19 @@ namespace
         throw ConfigFileError(f, "Unterminated \"quoted string");
     }
 
-    std::string grab_value(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+    std::string grab_value(const KeyValueConfigFileOptions & opts,
+            std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
             const KeyValueConfigFile & d, const std::string & f)
     {
         std::string result;
 
         while (c != c_end)
         {
-            if (*c == '"')
-                result.append(grab_dquoted(++c, c_end, d, f));
-            else if (*c == '\'')
+            if (*c == '"' && ! opts[kvcfo_disallow_double_quoted_strings])
+                result.append(grab_dquoted(opts, ++c, c_end, d, f));
+            else if (*c == '\'' && ! opts[kvcfo_disallow_single_quoted_strings])
                 result.append(grab_squoted(++c, c_end, d, f));
-            else if (*c == '\\')
+            else if (*c == '\\' && ! opts[kvcfo_disallow_continuations])
             {
                 if (++c == c_end)
                     throw ConfigFileError(f, "Backslash at end of input");
@@ -550,7 +557,7 @@ namespace
                 else
                     result.append(stringify(*c++));
             }
-            else if (*c == '$')
+            else if (*c == '$' && ! opts[kvcfo_disallow_variables])
                 result.append(grab_dollar(++c, c_end, d, f));
             else if (*c == '\n')
             {
@@ -562,8 +569,20 @@ namespace
                 ++c;
                 break;
             }
-            else
+            else if (*c == ' ' || *c == '\t')
+            {
+                if (opts[kvcfo_disallow_space_inside_unquoted_values])
+                    throw ConfigFileError(f, "Extra or trailing whitespace in value");
+
                 result.append(stringify(*c++));
+            }
+            else
+            {
+                if (opts[kvcfo_disallow_unquoted_values])
+                    throw ConfigFileError(f, "Unquoted values not allowed");
+
+                result.append(stringify(*c++));
+            }
         }
 
         return result;
@@ -574,6 +593,20 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const Defaults & d,
         bool (* i) (const std::string &, const KeyValueConfigFile &)) :
     ConfigFile(ss),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d, i))
+{
+    _parse(ss, KeyValueConfigFileOptions(), d);
+}
+
+KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const KeyValueConfigFileOptions & o, const Defaults & d,
+        bool (* i) (const std::string &, const KeyValueConfigFile &)) :
+    ConfigFile(ss),
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d, i))
+{
+    _parse(ss, o, d);
+}
+
+void
+KeyValueConfigFile::_parse(const Source & ss, const KeyValueConfigFileOptions & opts, const Defaults & d)
 {
     Context context("When parsing key/value configuration file" + (ss.filename().empty() ? ":" :
                 "'" + ss.filename() + "':"));
@@ -602,7 +635,7 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const Defaults & d,
         Source & s(sources.back().first);
         std::istreambuf_iterator<char> & c(sources.back().second);
 
-        if (*c == '#')
+        if (*c == '#' && ! opts[kvcfo_disallow_comments])
             next_line(c, c_end);
         else if (*c == '\t' || *c == '\n' || *c == '\r' || *c == ' ')
             ++c;
@@ -617,17 +650,18 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const Defaults & d,
 
             if (*c != '=')
             {
-                while (*c == '\t' || *c == ' ')
-                    if (++c == c_end)
-                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" +
-                                key + "' at end of input");
+                if (! opts[kvcfo_disallow_space_around_equals])
+                    while (*c == '\t' || *c == ' ')
+                        if (++c == c_end)
+                            throw ConfigFileError(s.filename(), "Unknown command or broken variable '" +
+                                    key + "' at end of input");
 
                 if (*c != '=')
                 {
-                    if (key == "source")
+                    if (key == "source" && ! opts[kvcfo_disallow_source])
                     {
                         std::string value(strip_leading(strip_trailing(
-                                        grab_value(c, c_end, *this, s.filename()), " \t"), "\t"));
+                                        grab_value(opts, c, c_end, *this, s.filename()), " \t"), "\t"));
                         if (value.empty())
                             throw ConfigFileError(s.filename(), "source expects a filename");
                         FSEntry target(value);
@@ -647,11 +681,12 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & ss, const Defaults & d,
             if (++c == c_end)
                 throw ConfigFileError(s.filename(), "= at end of input");
 
-            while (*c == '\t' || *c == ' ')
-                if (++c == c_end)
-                    throw ConfigFileError(s.filename(), "= at end of input");
+            if (! opts[kvcfo_disallow_space_around_equals])
+                while (*c == '\t' || *c == ' ')
+                    if (++c == c_end)
+                        throw ConfigFileError(s.filename(), "= at end of input");
 
-            std::string value(grab_value(c, c_end, *this, s.filename()));
+            std::string value(grab_value(opts, c, c_end, *this, s.filename()));
 
             if (_imp->is_incremental && (*_imp->is_incremental)(key, *this))
             {

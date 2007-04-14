@@ -71,7 +71,9 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
     std::tr1::shared_ptr<EbinVersionMetadata> result(new EbinVersionMetadata(SlotName("unset")));
 
     KeyValueConfigFile f(_imp->params.location / stringify(q.category) /
-            stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebin"));
+            stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebin"),
+            KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments +
+            kvcfo_disallow_space_around_equals + kvcfo_disallow_source);
 
     result->run_depend_string = f.get("RDEPEND");
     result->post_depend_string = f.get("PDEPEND");

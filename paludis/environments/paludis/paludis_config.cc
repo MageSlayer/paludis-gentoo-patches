@@ -159,7 +159,7 @@ namespace paludis
             return;
         }
 
-        KeyValueConfigFile f(FSEntry(config_dir) / "environment.conf");
+        KeyValueConfigFile f(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions());
         if (! f.get("reduced_username").empty())
         {
             reduced_username = f.get("reduced_username");
@@ -325,7 +325,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     if ((local_config_dir / "specpath").exists())
     {
-        KeyValueConfigFile specpath(local_config_dir / "specpath");
+        KeyValueConfigFile specpath(local_config_dir / "specpath", KeyValueConfigFileOptions());
         root_prefix = specpath.get("root");
         local_config_suffix = specpath.get("config-suffix");
 
@@ -378,7 +378,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
-            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf");
+            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions());
             std::copy(defaults_file.begin(), defaults_file.end(),
                     conf_vars->inserter());
         }
@@ -403,7 +403,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            KeyValueConfigFile k(*repo_file, KeyValueConfigFile::Defaults(conf_vars));
+            KeyValueConfigFile k(*repo_file, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
 
             std::string format(k.get("format"));
             if (format.empty())

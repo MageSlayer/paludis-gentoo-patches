@@ -177,7 +177,8 @@ bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     PStream prog(cmd);
-    KeyValueConfigFile f(prog);
+    KeyValueConfigFile f(prog, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
+            + kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values + kvcfo_disallow_unquoted_values);
     _metadata.reset(new EbuildVersionMetadata);
 
     bool ok(false);

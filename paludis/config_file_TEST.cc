@@ -175,7 +175,7 @@ namespace test_cases
             s << "three=" << std::endl;
             s << "four = \"fourth\" " << std::endl;
             s << "five = ''" << std::endl;
-            KeyValueConfigFile ff(s);
+            KeyValueConfigFile ff(s, KeyValueConfigFileOptions());
 
             TEST_CHECK_EQUAL(ff.get("one"), "first");
             TEST_CHECK_EQUAL(ff.get("two"), "second");
@@ -200,7 +200,7 @@ namespace test_cases
             s << "one='first" << std::endl;
             s << " first " << std::endl;
             s << "first'" << std::endl;
-            KeyValueConfigFile ff(s);
+            KeyValueConfigFile ff(s, KeyValueConfigFileOptions());
 
             TEST_CHECK_EQUAL(ff.get("one"), "first\n first \nfirst");
         }
@@ -220,7 +220,7 @@ namespace test_cases
             s << "x=foo" << std::endl;
             s << "y = \"${x}\\\\${y}\\$${z}\"" << std::endl;
             s << "z = $x$y$z" << std::endl;
-            KeyValueConfigFile ff(s);
+            KeyValueConfigFile ff(s, KeyValueConfigFileOptions());
 
             TEST_CHECK_EQUAL(ff.get("x"), "foo");
             TEST_CHECK_EQUAL(ff.get("y"), "foo\\$");
@@ -239,7 +239,7 @@ namespace test_cases
             t << "f = " << std::endl;
             t << "g = foo \\" << std::endl;
             t << "    bar" << std::endl;
-            KeyValueConfigFile fg(t, KeyValueConfigFile::Defaults(t_defs));
+            KeyValueConfigFile fg(t, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(t_defs));
 
             TEST_CHECK_EQUAL(fg.get("a"), "foo");
             TEST_CHECK_EQUAL(fg.get("b"), "foo");
@@ -261,12 +261,12 @@ namespace test_cases
 
             std::stringstream d_s;
             d_s << "foo=oink" << std::endl;
-            std::tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, &getenv_with_default));
+            std::tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(), &getenv_with_default));
 
             std::stringstream s;
             s << "x=${foo}" << std::endl;
             s << "y=${moo}" << std::endl;
-            KeyValueConfigFile ff(s, d_ff);
+            KeyValueConfigFile ff(s, KeyValueConfigFileOptions(), d_ff);
 
             TEST_CHECK_EQUAL(ff.get("x"), "oink");
             TEST_CHECK_EQUAL(ff.get("y"), "cow");
@@ -284,7 +284,7 @@ namespace test_cases
             d_s << "seven=\"spider\"" << std::endl;
             d_s << "source config_file_TEST_dir/sourced_one" << std::endl;
             d_s << "eight=\"octopus\"" << std::endl;
-            KeyValueConfigFile ff(d_s);
+            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions());
 
             TEST_CHECK_EQUAL(ff.get("one"), "cat");
             TEST_CHECK_EQUAL(ff.get("two"), "dog");
@@ -309,39 +309,39 @@ namespace test_cases
         {
             std::stringstream s1;
             s1 << "x='" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s1), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s1, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s2;
             s2 << "x='moo\"" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s2), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s2, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s3;
             s3 << "x=${foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s3), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s3, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s4;
             s4 << "x=$~" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s4), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s4, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s5;
             s5 << "x=abc\\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s5), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s5, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s6;
             s6 << "x=$" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s6), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s6, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s7;
             s7 << "x=blah \\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s7), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s7, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s8;
             s8 << "x=blah \\" << std::endl << "# foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s8), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s8, KeyValueConfigFileOptions()), ConfigurationError);
 
             std::stringstream s9;
             s9 << "x='blah" << std::endl << "blah" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s9), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s9, KeyValueConfigFileOptions()), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }

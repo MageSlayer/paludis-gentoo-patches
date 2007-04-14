@@ -16,7 +16,32 @@ make_enum_LineConfigFileOption()
          *
          * \see LineConfigFile
          * \see LineConfigFileOptions
-         * \ingroup grpconfigfile
+         * \ingroup grplineconfigfile
+         */
+END
+}
+
+make_enum_KeyValueConfigFileOption()
+{
+    prefix kvcfo
+
+    key kvcfo_disallow_continuations                 "Do not recognise line continuations"
+    key kvcfo_disallow_comments                      "Do not recognise comments"
+    key kvcfo_disallow_space_around_equals           "Do not allow spaces around equals"
+    key kvcfo_disallow_space_inside_unquoted_values  "Do not allow spaces inside unquoted values"
+    key kvcfo_disallow_single_quoted_strings         "Do not allow single quoted strings"
+    key kvcfo_disallow_double_quoted_strings         "Do not allow double quoted strings"
+    key kvcfo_disallow_unquoted_values               "Do not allow unquoted values"
+    key kvcfo_disallow_variables                     "Do not allow variable expansions"
+    key kvcfo_disallow_source                        "Do not allow the source command"
+
+    doxygen_comment << "END"
+        /**
+         * Options for a KeyValueConfigFile.
+         *
+         * \see KeyValueConfigFile
+         * \see KeyValueConfigFileOptions
+         * \ingroup grpkeyvalueconfigfile
          */
 END
 }

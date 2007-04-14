@@ -204,7 +204,27 @@ namespace paludis
     };
 
     /**
+     * Options for a KeyValueConfigFileOptions.
+     *
+     * \see KeyValueConfigFileOption
+     * \see KeyValueConfigFile
+     */
+    typedef Options<KeyValueConfigFileOption> KeyValueConfigFileOptions;
+
+    /**
      * A key=value configuration file.
+     *
+     * Various syntax options are available, and are controlled by KeyValueConfigFileOptions:
+     *
+     * - Unless kvcfo_disallow_continuations, line continuations via backslashes are allowed.
+     * - Unless kvcfo_disallow_comments, comments start with a \#.
+     * - Unless kvcfo_disallow_space_around_equals, the equals sign can have surrounding whitespace.
+     * - Unless kvcfo_disallow_space_inside_unquoted_values, foo = bar baz is legal.
+     * - Unless kvcfo_disallow_single_quoted_strings, single quoted strings are legal.
+     * - Unless kvcfo_disallow_double_quoted_strings, double quoted strings are legal.
+     * - Unless kvcfo_disallow_unquoted_values, unquoted values are legal.
+     * - Unless kvcfo_disallow_variables, variables using $foo and ${foo} are expanded.
+     * - Unless kvcfo_disallow_source, source path is legal.
      *
      * \ingroup grpkvconfigfile
      * \nosubgrouping
@@ -260,7 +280,7 @@ namespace paludis
                     /**
                      * Get the default value for a particular key.
                      */
-                    std::string get(const std::string &) const;
+                    std::string get(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                     ///\name Iterate over our default keys
                     ///\{
@@ -272,11 +292,24 @@ namespace paludis
                     ///\}
             };
 
+        private:
+            void _parse(const Source &, const KeyValueConfigFileOptions &, const Defaults &);
+
+        public:
             ///\name Basic operations
             ///\{
 
+            /**
+             * Constructor.
+             *
+             * \deprecated Use the form taking KeyValueConfigFileOptions.
+             */
             KeyValueConfigFile(const Source &, const Defaults & = Defaults(),
+                    bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0) PALUDIS_ATTRIBUTE((deprecated));
+
+            KeyValueConfigFile(const Source &, const KeyValueConfigFileOptions &, const Defaults & = Defaults(),
                     bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0);
+
             ~KeyValueConfigFile();
 
             ///\}

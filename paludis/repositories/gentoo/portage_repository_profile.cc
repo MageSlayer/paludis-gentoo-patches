@@ -258,7 +258,8 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
     if (! (dir / "make.defaults").exists())
         return;
 
-    KeyValueConfigFile file(dir / "make.defaults");
+    KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
+            kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values);
 
     for (KeyValueConfigFile::Iterator k(file.begin()), k_end(file.end()) ;
             k != k_end ; ++k)

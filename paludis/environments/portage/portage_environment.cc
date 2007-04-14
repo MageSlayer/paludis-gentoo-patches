@@ -156,12 +156,12 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
             "guaranteed; issues should be reported via trac. You are strongly encouraged "
             "to migrate to a Paludis configuration.");
 
-    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null")));
+    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions()));
     _load_profile((_imp->conf_dir / "make.profile").realpath());
     if ((_imp->conf_dir / "make.globals").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", _imp->vars, &is_incremental));
+        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions(), _imp->vars, &is_incremental));
     if ((_imp->conf_dir / "make.conf").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", _imp->vars,
+        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions(), _imp->vars,
                     &is_incremental_excluding_use_expand));
 
     /* TODO: load USE etc from env? */
@@ -325,7 +325,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     }
 
     if ((d / "make.defaults").exists())
-        _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", _imp->vars, &is_incremental));
+        _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions(), _imp->vars, &is_incremental));
 }
 
 void
