@@ -112,7 +112,7 @@ CommandLine::CommandLine() :
     add_usage_line("--find-unused-packages [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ] ");
-    add_usage_line("--keywords-graph [ --repository-dir /path ] "
+    add_usage_line("--keyword-graph [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]");
     add_usage_line("--reverse-deps [ --repository-dir /path ] "
