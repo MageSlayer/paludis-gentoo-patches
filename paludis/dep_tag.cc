@@ -100,6 +100,36 @@ DepTagCategory::DepTagCategory(
 {
 }
 
+bool
+DepTagCategory::visible() const
+{
+    return _visible;
+}
+
+std::string
+DepTagCategory::id() const
+{
+    return _id;
+}
+
+std::string
+DepTagCategory::title() const
+{
+    return _title;
+}
+
+std::string
+DepTagCategory::pre_text() const
+{
+    return _pre_text;
+}
+
+std::string
+DepTagCategory::post_text() const
+{
+    return _post_text;
+}
+
 NoSuchDepTagCategory::NoSuchDepTagCategory(const std::string & s) throw () :
     Exception("No such dep tag category '" + s + "'")
 {

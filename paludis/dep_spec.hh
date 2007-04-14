@@ -217,18 +217,12 @@ namespace paludis
             /**
              * Fetch our use flag name.
              */
-            const UseFlagName & flag() const
-            {
-                return _flag;
-            }
+            UseFlagName flag() const;
 
             /**
              * Fetch whether we are a ! flag.
              */
-            bool inverse() const
-            {
-                return _inverse;
-            }
+            bool inverse() const;
 
             virtual const UseDepSpec * as_use_dep_spec() const;
     };
@@ -262,10 +256,7 @@ namespace paludis
             /**
              * Fetch our text.
              */
-            const std::string & text() const
-            {
-                return _str;
-            }
+            std::string text() const;
     };
 
     /**
@@ -514,10 +505,7 @@ namespace paludis
             /**
              * Fetch the spec we're blocking.
              */
-            std::tr1::shared_ptr<const PackageDepSpec> blocked_spec() const
-            {
-                return _spec;
-            }
+            std::tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
     };
 
 }

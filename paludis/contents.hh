@@ -69,10 +69,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsEntry(const std::string & our_name) :
-                _name(our_name)
-            {
-            }
+            ContentsEntry(const std::string & our_name);
 
             ///\}
 
@@ -85,10 +82,7 @@ namespace paludis
             ///\}
 
             /// Our name.
-            std::string name() const
-            {
-                return _name;
-            }
+            std::string name() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -208,10 +202,7 @@ namespace paludis
             ///\}
 
             /// Our target (as per readlink).
-            std::string target() const
-            {
-                return _target;
-            }
+            std::string target() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

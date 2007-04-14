@@ -154,6 +154,24 @@ UseDepSpec::as_use_dep_spec() const
     return this;
 }
 
+UseFlagName
+UseDepSpec::flag() const
+{
+    return _flag;
+}
+
+bool
+UseDepSpec::inverse() const
+{
+    return _inverse;
+}
+
+std::string
+StringDepSpec::text() const
+{
+    return _str;
+}
+
 const PackageDepSpec *
 PackageDepSpec::as_package_dep_spec() const
 {
@@ -733,5 +751,11 @@ PackageDepSpec::_make_unique()
         _imp->use_requirements.reset(new UseRequirements(*_imp->use_requirements));
 
     _imp->unique = true;
+}
+
+std::tr1::shared_ptr<const PackageDepSpec>
+BlockDepSpec::blocked_spec() const
+{
+    return _spec;
 }
 

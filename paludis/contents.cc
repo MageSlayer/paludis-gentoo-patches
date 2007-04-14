@@ -28,8 +28,19 @@
 
 using namespace paludis;
 
+ContentsEntry::ContentsEntry(const std::string & n) :
+    _name(n)
+{
+}
+
 ContentsEntry::~ContentsEntry()
 {
+}
+
+std::string
+ContentsEntry::name() const
+{
+    return _name;
 }
 
 ContentsFileEntry::ContentsFileEntry(const std::string & our_name) :
@@ -61,6 +72,12 @@ ContentsSymEntry::ContentsSymEntry(const std::string & our_name, const std::stri
     ContentsEntry(our_name),
     _target(our_target)
 {
+}
+
+std::string
+ContentsSymEntry::target() const
+{
+    return _target;
 }
 
 namespace paludis

@@ -77,43 +77,28 @@ namespace paludis
             /**
              * Should we be displayed in a tag category summary?
              */
-            bool visible() const
-            {
-                return _visible;
-            }
+            bool visible() const;
 
             /**
              * Fetch our short ID (for example, 'GLSA').
              */
-            std::string id() const
-            {
-                return _id;
-            }
+            std::string id() const;
 
             /**
              * Fetch our title (for example, 'Security advisories'), or an
              * empty string if we're untitled.
              */
-            std::string title() const
-            {
-                return _title;
-            }
+            std::string title() const;
 
             /**
              * Fetch our pre list text, or an empty string.
              */
-            std::string pre_text() const
-            {
-                return _pre_text;
-            }
+            std::string pre_text() const;
 
             /**
              * Fetch our post list text, or an empty string.
              */
-            std::string post_text() const
-            {
-                return _post_text;
-            }
+            std::string post_text() const;
     };
 
     /**
