@@ -76,6 +76,7 @@ namespace paludis
             void clear();
             bool had_set_targets() const;
             bool had_package_targets() const;
+            void override_target_type(const DepListTargetType);
 
             typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsIterator;
             TargetsIterator begin_targets() const;

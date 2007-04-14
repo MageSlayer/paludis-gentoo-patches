@@ -49,6 +49,7 @@ namespace paludis
 
         bool had_set_targets;
         bool had_package_targets;
+        bool override_target_type;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
                 std::tr1::shared_ptr<const DestinationsCollection> d) :
@@ -62,7 +63,8 @@ namespace paludis
             pretend(false),
             preserve_world(false),
             had_set_targets(false),
-            had_package_targets(false)
+            had_package_targets(false),
+            override_target_type(false)
         {
         }
     };
@@ -108,7 +110,8 @@ InstallTask::add_target(const std::string & target)
                 throw HadBothPackageAndSetTargets();
 
             _imp->had_set_targets = true;
-            _imp->dep_list.options()->target_type = dl_target_set;
+            if (! _imp->override_target_type)
+                _imp->dep_list.options()->target_type = dl_target_set;
             _imp->targets->add_child(s);
             done = true;
         }
@@ -123,7 +126,8 @@ InstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->dep_list.options()->target_type = dl_target_package;
+        if (! _imp->override_target_type)
+            _imp->dep_list.options()->target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
             _imp->targets->add_child(PortageDepParser::parse(target, PortageDepParser::Policy::text_is_package_dep_spec(
@@ -597,5 +601,12 @@ int
 InstallTask::perform_hook(const Hook & hook) const
 {
     return _imp->env->perform_hook(hook);
+}
+
+void
+InstallTask::override_target_type(const DepListTargetType t)
+{
+    _imp->override_target_type = true;
+    _imp->dep_list.options()->target_type = t;
 }
 

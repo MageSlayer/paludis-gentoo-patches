@@ -515,6 +515,19 @@ do_install(std::tr1::shared_ptr<Environment> env)
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
     task.set_safe_resume(CommandLine::get_instance()->a_safe_resume.specified());
 
+    if (CommandLine::get_instance()->dl_reinstall_targets.specified())
+    {
+        if (CommandLine::get_instance()->dl_reinstall_targets.argument() == "auto")
+        {
+        }
+        else if (CommandLine::get_instance()->dl_reinstall_targets.argument() == "always")
+            task.override_target_type(dl_target_package);
+        else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "never")
+            task.override_target_type(dl_target_set);
+        else
+            throw args::DoHelp("bad value for --dl-reinstall-targets");
+    }
+
     if (CommandLine::get_instance()->a_add_to_world_spec.specified())
         task.set_add_to_world_spec(CommandLine::get_instance()->a_add_to_world_spec.argument());
 

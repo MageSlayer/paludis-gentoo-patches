@@ -125,6 +125,13 @@ CommandLine::CommandLine() :
             ("daily",          "If they are over a day old")
             ("weekly",         "If they are over a week old"),
             "never"),
+    dl_reinstall_targets(&dl_args, "dl-reinstall-targets", '\0', "Whether to reinstall targets",
+            args::EnumArg::EnumArgOptions
+            ("auto",           "If the target is a set, never, otherwise always")
+            ("never",          "Never")
+            ("always",         "Always"),
+            "auto"),
+
     dl_upgrade(&dl_args, "dl-upgrade", '\0', "When to upgrade packages",
             args::EnumArg::EnumArgOptions
             ("always",        "Always")

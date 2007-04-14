@@ -244,6 +244,7 @@ class CommandLine :
 
         paludis::args::EnumArg dl_reinstall;
         paludis::args::EnumArg dl_reinstall_scm;
+        paludis::args::EnumArg dl_reinstall_targets;
         paludis::args::EnumArg dl_upgrade;
         paludis::args::EnumArg dl_new_slots;
         paludis::args::EnumArg dl_downgrade;
