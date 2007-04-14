@@ -73,6 +73,9 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
                 k != k_end ; ++k)
         {
             std::string stable_keyword(stringify(*k));
+            if (stable_keyword[0] == '-')
+                continue;
+
             if (stable_keyword[0] == '~')
                 stable_keyword.erase(0, 1);
 
