@@ -98,6 +98,16 @@ namespace test_cases
 
             g.add_edge("e", "b", 7);
             TEST_CHECK_THROWS(g.topological_sort(std::back_inserter(t)), NoGraphTopologicalOrderExistsError);
+
+            try
+            {
+                g.topological_sort(std::back_inserter(t));
+                TEST_CHECK(false);
+            }
+            catch (const NoGraphTopologicalOrderExistsError & e)
+            {
+                TEST_CHECK_EQUAL(join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), " "), "a b c d e");
+            }
         }
     } test_directed_graph;
 }

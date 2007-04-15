@@ -21,10 +21,36 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_IMPL_HH 1
 
 #include <paludis/util/graph.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <map>
+#include <list>
 
 namespace paludis
 {
+    class NoGraphTopologicalOrderExistsError::RemainingNodes
+    {
+        private:
+            std::list<std::string> _n;
+
+        public:
+            void add(const std::string & s)
+            {
+                _n.push_back(s);
+            }
+
+            typedef libwrapiter::ForwardIterator<RemainingNodes, const std::string> Iterator;
+
+            Iterator begin() const
+            {
+                return Iterator(_n.begin());
+            }
+
+            Iterator end() const
+            {
+                return Iterator(_n.end());
+            }
+    };
+
     template<>
     template <typename Node_, typename Edge_>
     struct Implementation<DirectedGraph<Node_, Edge_> >
@@ -231,7 +257,7 @@ namespace paludis
     template <typename Node_, typename Edge_>
     template <typename OutputIterator_>
     void
-    DirectedGraph<Node_, Edge_>::topological_sort(OutputIterator_ i) const
+    DirectedGraph<Node_, Edge_>::topological_sort(OutputIterator_ x) const
     {
         struct Sorter
         {
@@ -267,12 +293,19 @@ namespace paludis
                     do_one(i, *n++);
 
                 if (g.begin_nodes() != g.end_nodes())
-                    throw NoGraphTopologicalOrderExistsError();
+                {
+                    std::tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
+                            new NoGraphTopologicalOrderExistsError::RemainingNodes);
+                    for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
+                        r->add(stringify(*n));
+
+                    throw NoGraphTopologicalOrderExistsError(r);
+                }
             }
         };
 
         Sorter s(*this);
-        s.sort(i);
+        s.sort(x);
     }
 }
 

@@ -58,8 +58,17 @@ namespace paludis
     class NoGraphTopologicalOrderExistsError :
         public GraphError
     {
+        private:
+            class RemainingNodes;
+
+        private:
+            std::tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
+
         public:
-            NoGraphTopologicalOrderExistsError() throw ();
+            NoGraphTopologicalOrderExistsError(std::tr1::shared_ptr<const RemainingNodes>) throw ();
+            ~NoGraphTopologicalOrderExistsError() throw ();
+
+            std::tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
     };
 
     template <typename Node_, typename Edge_>

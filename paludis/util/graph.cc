@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "graph.hh"
+#include <paludis/util/graph.hh>
+#include <paludis/util/graph-impl.hh>
 
 using namespace paludis;
 
@@ -26,8 +27,20 @@ GraphError::GraphError(const std::string & msg) throw () :
 {
 }
 
-NoGraphTopologicalOrderExistsError::NoGraphTopologicalOrderExistsError() throw () :
-    GraphError("No topological order exists")
+NoGraphTopologicalOrderExistsError::NoGraphTopologicalOrderExistsError(
+        std::tr1::shared_ptr<const RemainingNodes> r) throw () :
+    GraphError("No topological order exists"),
+    _remaining_nodes(r)
+{
+}
+
+std::tr1::shared_ptr<const NoGraphTopologicalOrderExistsError::RemainingNodes>
+NoGraphTopologicalOrderExistsError::remaining_nodes() const
+{
+    return _remaining_nodes;
+}
+
+NoGraphTopologicalOrderExistsError::~NoGraphTopologicalOrderExistsError() throw ()
 {
 }
 
