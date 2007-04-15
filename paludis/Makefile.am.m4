@@ -78,7 +78,7 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist srlist srcleanlist selist secleanlist \
-	repository_blacklist.txt
+	repository_blacklist.txt hooker.bash
 SUBDIRS = digests fetchers syncers util selinux . dep_list merger repositories environments args qa tasks
 BUILT_SOURCES = srcleanlist secleanlist
 
@@ -100,7 +100,8 @@ endif
 TESTS = testlist
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
+	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -111,6 +112,9 @@ check_SCRIPTS = testscriptlist
 
 paludis_datadir = $(datadir)/paludis
 paludis_data_DATA = repository_blacklist.txt
+
+paludis_libexecdir = $(libexecdir)/paludis
+paludis_libexec_SCRIPTS = hooker.bash
 
 if MONOLITHIC
 
