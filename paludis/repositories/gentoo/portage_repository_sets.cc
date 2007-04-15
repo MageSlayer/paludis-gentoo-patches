@@ -26,6 +26,7 @@
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/query.hh>
+#include <paludis/set_file.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -92,58 +93,15 @@ PortageRepositorySets::package_set(const SetName & s) const
         FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
 
-        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
-        LineConfigFile f(ff, LineConfigFileOptions());
-        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
-        {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.empty())
-                continue;
+        SetFile f(SetFileParams::create()
+                .file_name(ff)
+                .environment(_imp->environment)
+                .type(sft_paludis_conf)
+                .parse_mode(pds_pm_eapi_0)
+                .tag(tag));
 
-            if (1 == tokens.size())
-            {
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), pds_pm_eapi_0));
-                spec->set_tag(tag);
-                result->add_child(spec);
-            }
-            else if ("*" == tokens.at(0))
-            {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), pds_pm_eapi_0));
-                spec->set_tag(tag);
-                result->add_child(spec);
-            }
-            else if ("?" == tokens.at(0))
-            {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1), pds_pm_eapi_0));
-                p->set_tag(tag);
-                if (p->package_ptr())
-                {
-                    if (! _imp->environment->package_database()->query(
-                                query::Package(*p->package_ptr()) & query::InstalledAtRoot(
-                                    _imp->params.environment->root()), qo_whatever)->empty())
-                        result->add_child(p);
-                }
-                else
-                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
-                            + stringify(ff) + "' uses ? operator but does not specify an unambiguous package");
-            }
-            else
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not start with '*' or '?' token, skipping");
 
-            if (tokens.size() > 2)
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' has trailing garbage");
-        }
-
-        return result;
+        return f.contents();
     }
     else
         return std::tr1::shared_ptr<DepSpec>();

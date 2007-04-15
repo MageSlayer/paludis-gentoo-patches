@@ -62,7 +62,7 @@ ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
-addthis(`$1',`$5')addthis(`$1',`$6')')dnl
+addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
 
 include(`paludis/files.m4')
 

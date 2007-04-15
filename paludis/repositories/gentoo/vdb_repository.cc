@@ -31,6 +31,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository_name_cache.hh>
+#include <paludis/set_file.hh>
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -1077,50 +1078,24 @@ VDBRepository::do_package_set(const SetName & s) const
     }
     else if ("world" == s.data())
     {
-        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
         if (_imp->world_file.exists())
         {
-            LineConfigFile world(_imp->world_file, LineConfigFileOptions());
-
-            for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
-                    line != line_end ; ++line)
-            {
-                try
-                {
-                    if (std::string::npos == line->find('/'))
-                    {
-                        std::tr1::shared_ptr<DepSpec> spec(_imp->env->package_set(SetName(*line)));
-                        if (spec)
-                            result->add_child(spec);
-                        else
-                            Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
-                                    + stringify(_imp->world_file) + "' entry '" + *line +
-                                    " is not a known package set");
-                    }
-                    else
-                    {
-                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*line))));
-                        spec->set_tag(tag);
-                        result->add_child(spec);
-                    }
-                }
-                catch (const NameError & n)
-                {
-                    Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
-                            + stringify(_imp->world_file) + "' entry '" + *line + " is broken: '"
-                            + n.message() + "' (" + n.what() + ")");
-                }
-            }
+            SetFile world(SetFileParams::create()
+                    .file_name(_imp->world_file)
+                    .type(sft_simple)
+                    .parse_mode(pds_pm_unspecific)
+                    .tag(tag)
+                    .environment(_imp->env));
+            return world.contents();
         }
         else
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "World file '" + stringify(_imp->world_file) +
                     "' doesn't exist");
 
-        return result;
+        return std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
     }
     else
         return std::tr1::shared_ptr<DepSpec>();
@@ -1146,98 +1121,46 @@ VDBRepository::invalidate()
 void
 VDBRepository::add_string_to_world(const std::string & n) const
 {
-    Context context("When adding '" + n + "' to world file '" +
-            stringify(_imp->world_file) + "':");
+    Context context("When adding '" + n + "' to world file '" + stringify(_imp->world_file) + "':");
 
-    bool found(false);
-
-    if (_imp->world_file.exists())
+    if (! _imp->world_file.exists())
     {
-        LineConfigFile world(_imp->world_file, LineConfigFileOptions());
-
-        for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
-                line != line_end ; ++line)
-            if (*line == n)
-            {
-                found = true;
-                break;
-            }
-    }
-
-    if (! found)
-    {
-        /* portage is retarded, and doesn't ensure that the last entry in world has
-         * a newline character after it. */
-        bool world_file_needs_newline(false);
+        std::ofstream f(stringify(_imp->world_file).c_str());
+        if (! f)
         {
-            std::ifstream world(stringify(_imp->world_file).c_str(), std::ios::in);
-            if (world)
-            {
-                world.seekg(0, std::ios::end);
-                if (0 != world.tellg())
-                {
-                    world.seekg(-1, std::ios::end);
-                    if ('\n' != world.get())
-                        world_file_needs_newline = true;
-                }
-            }
-        }
-
-        if (world_file_needs_newline)
-            Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
-                    + stringify(_imp->world_file) + "' lacks final newline");
-
-        std::ofstream world(stringify(_imp->world_file).c_str(), std::ios::out | std::ios::app);
-        if (! world)
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot append to world file '"
-                    + stringify(_imp->world_file) + "', skipping world update");
-        else
-        {
-            if (world_file_needs_newline)
-                world << std::endl;
-            world << n << std::endl;
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
+                    + stringify(_imp->world_file) + "'");
+            return;
         }
     }
+
+    SetFile world(SetFileParams::create()
+            .file_name(_imp->world_file)
+            .type(sft_simple)
+            .parse_mode(pds_pm_unspecific)
+            .tag(std::tr1::shared_ptr<DepTag>())
+            .environment(_imp->env));
+    world.add(n);
+    world.rewrite();
 }
 
 void
 VDBRepository::remove_string_from_world(const std::string & n) const
 {
-    std::list<std::string> world_lines;
+    Context context("When removing '" + n + "' from world file '" + stringify(_imp->world_file) + "':");
 
     if (_imp->world_file.exists())
     {
-        std::ifstream world_file(stringify(_imp->world_file).c_str());
+        SetFile world(SetFileParams::create()
+                .file_name(_imp->world_file)
+                .type(sft_simple)
+                .parse_mode(pds_pm_unspecific)
+                .tag(std::tr1::shared_ptr<DepTag>())
+                .environment(_imp->env));
 
-        if (! world_file)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot read world file '"
-                    + stringify(_imp->world_file) + "', skipping world update");
-            return;
-        }
-
-        std::string line;
-        while (std::getline(world_file, line))
-        {
-            if (strip_leading(strip_trailing(line, " \t"), "\t") != stringify(n))
-                world_lines.push_back(line);
-            else
-                Log::get_instance()->message(ll_debug, lc_no_context, "Removing line '"
-                            + line + "' from world file '" + stringify(_imp->world_file));
-        }
+        world.remove(n);
+        world.rewrite();
     }
-
-    std::ofstream world_file(stringify(_imp->world_file).c_str());
-
-    if (! world_file)
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Cannot write world file '"
-                + stringify(_imp->world_file) + "', skipping world update");
-        return;
-    }
-
-    std::copy(world_lines.begin(), world_lines.end(),
-            std::ostream_iterator<std::string>(world_file, "\n"));
 }
 
 void

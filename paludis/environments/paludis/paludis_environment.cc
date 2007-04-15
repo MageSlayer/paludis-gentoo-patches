@@ -24,6 +24,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
+#include <paludis/set_file.hh>
 #include <paludis/repository.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -640,64 +641,31 @@ PaludisEnvironment::local_package_set(const SetName & s) const
 {
     Context context("When looking for package set '" + stringify(s) + "' in paludis environment:");
 
-    FSEntry ff(FSEntry(_imp->config->config_dir()) / "sets" / (stringify(s) + ".conf"));
-    if (ff.exists())
+    FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
+    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
+
+    if ((dir / (stringify(s) + ".bash")).exists())
     {
-        LineConfigFile f(ff, LineConfigFileOptions());
-        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
-        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
-
-        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
-        {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.empty())
-                continue;
-
-            if (1 == tokens.size())
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
-                spec->set_tag(tag);
-                result->add_child(spec);
-            }
-            else if ("*" == tokens.at(0))
-            {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), pds_pm_unspecific));
-                spec->set_tag(tag);
-                result->add_child(spec);
-            }
-            else if ("?" == tokens.at(0))
-            {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1), pds_pm_unspecific));
-                p->set_tag(tag);
-
-                if (p->package_ptr())
-                {
-                    if (! package_database()->query(
-                                query::Package(*p->package_ptr()) & query::InstalledAtRoot(root()),
-                                qo_whatever)->empty())
-                        result->add_child(p);
-                }
-                else
-                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
-                            + stringify(ff) + "' uses ? operator but does not specify an unambiguous package");
-            }
-            else
-                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not start with '*' or '?' token, skipping");
-
-            if (tokens.size() > 2)
-                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' has trailing garbage");
-        }
-
-        return result;
+        SetFile f(SetFileParams::create()
+                .file_name(dir / (stringify(s) + ".bash"))
+                .type(sft_paludis_bash)
+                .parse_mode(pds_pm_unspecific)
+                .tag(tag)
+                .environment(this));
+        return f.contents();
     }
-
-    return std::tr1::shared_ptr<AllDepSpec>();
+    else if ((dir / (stringify(s) + ".conf")).exists())
+    {
+        SetFile f(SetFileParams::create()
+                .file_name(dir / (stringify(s) + ".conf"))
+                .type(sft_paludis_conf)
+                .parse_mode(pds_pm_unspecific)
+                .tag(tag)
+                .environment(this));
+        return f.contents();
+    }
+    else
+        return std::tr1::shared_ptr<AllDepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>

@@ -46,7 +46,7 @@ a collection of packages.</p>
 
 <h3>User Defined Sets</h3>
 
-<p>The <code>DefaultEnvironment</code> environment class allows user defined package sets via
+<p>The <code>PaludisEnvironment</code> environment class allows user defined package sets via
 text files. These should be named <code><em>setname</em>.conf</code> and placed in
 <code><em>confdir</em>/sets/</code>, where <code><em>confdir</em></code> is the configuration directory
 in which <code>use.conf</code> et al. reside. The format is as follows:</p>
@@ -64,6 +64,10 @@ in which <code>use.conf</code> et al. reside. The format is as follows:</p>
 </ul>
 
 <p>Most users will only have use for <code>*</code> lines.</p>
+
+<p>In addition, dynamic sets are possible. These should use a <code>.bash</code> extension instead
+of <code>.conf</code>, and when executed should output what would be valid content for a
+<code>.conf</code> set.</p>
 
 <h3>Portage Repositories Defined Sets</h3>
 

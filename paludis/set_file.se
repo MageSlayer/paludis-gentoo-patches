@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_SetFileType()
+{
+    prefix sft
+
+    key sft_paludis_conf        "A Paludis style .conf file"
+    key sft_paludis_bash        "A Paludis style .bash file"
+    key sft_simple              "A simple line-based file"
+
+    doxygen_comment << "END"
+        /**
+         * The type of a SetFile.
+         *
+         * \see SetFile
+         * \ingroup grpsetfile
+         */
+END
+}
+
+
+
