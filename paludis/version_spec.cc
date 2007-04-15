@@ -153,36 +153,59 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (text.at(p) >= 'a' && text.at(p) <= 'z')
                 _imp->parts.push_back(Part(letter, text.at(p++)));
 
-        /* suffix */
-        if (p < text.length())
-            do
-            {
-                PartKind k(empty);
-                if (0 == text.compare(p, 6, "_alpha"))
-                {
-                    k = alpha;
-                    p += 6;
-                }
-                else if (0 == text.compare(p, 5, "_beta"))
-                {
-                    k = beta;
-                    p += 5;
-                }
-                else if (0 == text.compare(p, 4, "_pre"))
-                {
-                    k = pre;
-                    p += 4;
-                }
-                else if (0 == text.compare(p, 3, "_rc"))
-                {
-                    k = rc;
-                    p += 3;
-                }
-                else
-                    break;
+        bool suffix(true);
+        while (suffix)
+        {
+            suffix = false;
 
+            /* suffix */
+            if (p < text.length())
+                do
+                {
+                    PartKind k(empty);
+                    if (0 == text.compare(p, 6, "_alpha"))
+                    {
+                        k = alpha;
+                        p += 6;
+                    }
+                    else if (0 == text.compare(p, 5, "_beta"))
+                    {
+                        k = beta;
+                        p += 5;
+                    }
+                    else if (0 == text.compare(p, 4, "_pre"))
+                    {
+                        k = pre;
+                        p += 4;
+                    }
+                    else if (0 == text.compare(p, 3, "_rc"))
+                    {
+                        k = rc;
+                        p += 3;
+                    }
+                    else
+                        break;
+
+                    x = std::numeric_limits<unsigned long>::max();
+                    for ( ; p < text.length() ; ++p)
+                    {
+                        if (text.at(p) < '0' || text.at(p) > '9')
+                            break;
+                        if (x == std::numeric_limits<unsigned long>::max())
+                            x = 0;
+                        x *= 10;
+                        x += text.at(p) - '0';
+                    }
+
+                    _imp->parts.push_back(Part(k, x));
+                    suffix = true;
+                } while (false);
+
+            /* patch level */
+            if (p < text.length() && 0 == text.compare(p, 2, "_p") && 0 != text.compare(p, 3, "_pr"))
+            {
                 x = std::numeric_limits<unsigned long>::max();
-                for ( ; p < text.length() ; ++p)
+                for (p += 2 ; p < text.length() ; ++p)
                 {
                     if (text.at(p) < '0' || text.at(p) > '9')
                         break;
@@ -191,40 +214,26 @@ VersionSpec::VersionSpec(const std::string & text) :
                     x *= 10;
                     x += text.at(p) - '0';
                 }
-
-                _imp->parts.push_back(Part(k, x));
-            } while (false);
-
-        /* patch level */
-        if (p < text.length() && 0 == text.compare(p, 2, "_p"))
-        {
-            x = std::numeric_limits<unsigned long>::max();
-            for (p += 2 ; p < text.length() ; ++p)
-            {
-                if (text.at(p) < '0' || text.at(p) > '9')
-                    break;
-                if (x == std::numeric_limits<unsigned long>::max())
-                    x = 0;
-                x *= 10;
-                x += text.at(p) - '0';
+                _imp->parts.push_back(Part(patch, x));
+                suffix = true;
             }
-            _imp->parts.push_back(Part(patch, x));
-        }
 
-        /* try */
-        if (p < text.length() && 0 == text.compare(p, 4, "-try"))
-        {
-            x = std::numeric_limits<unsigned long>::max();
-            for (p += 4 ; p < text.length() ; ++p)
+            /* try */
+            if (p < text.length() && 0 == text.compare(p, 4, "-try"))
             {
-                if (text.at(p) < '0' || text.at(p) > '9')
-                    break;
-                if (x == std::numeric_limits<unsigned long>::max())
-                    x = 0;
-                x *= 10;
-                x += text.at(p) - '0';
+                x = std::numeric_limits<unsigned long>::max();
+                for (p += 4 ; p < text.length() ; ++p)
+                {
+                    if (text.at(p) < '0' || text.at(p) > '9')
+                        break;
+                    if (x == std::numeric_limits<unsigned long>::max())
+                        x = 0;
+                    x *= 10;
+                    x += text.at(p) - '0';
+                }
+                _imp->parts.push_back(Part(trypart, x));
+                suffix = true;
             }
-            _imp->parts.push_back(Part(trypart, x));
         }
 
         /* scm */

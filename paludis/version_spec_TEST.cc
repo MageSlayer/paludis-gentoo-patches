@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,9 +89,8 @@ namespace test_cases
             TEST_CHECK_THROWS(VersionSpec v1("1-pre"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1_blah"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2b"), BadVersionSpecError);
-            TEST_CHECK_THROWS(VersionSpec v1("1_pre_alpha"),
-                    BadVersionSpecError);
-            TEST_CHECK_THROWS(VersionSpec v1("1_p_alpha"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2-r2"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1-r2_pre"), BadVersionSpecError);
         }
     } test_version_spec_reject;
 
@@ -109,6 +108,10 @@ namespace test_cases
             TEST_CHECK(v == VersionSpec("1.2.3"));
             VersionSpec v1("1.2_pre2-r1");
             TEST_CHECK(v1 == VersionSpec("1.2_pre2-r1"));
+            VersionSpec v2("1.2_pre2_rc5_p6-r1");
+            TEST_CHECK(v2 == VersionSpec("1.2_pre2_rc5_p6-r1"));
+            VersionSpec v3("1.2_pre2_pre3_pre4");
+            TEST_CHECK(v3 == VersionSpec("1.2_pre2_pre3_pre4"));
         }
     } test_version_spec_parse;
 
@@ -290,7 +293,13 @@ namespace test_cases
             TEST_CHECK(VersionSpec("1.2.0.0_alpha7-r4") > VersionSpec("1.2_alpha7-r4"));
 
             std::vector<VersionSpec> v;
+            v.push_back(VersionSpec("1_alpha_alpha"));
             v.push_back(VersionSpec("1_alpha"));
+            v.push_back(VersionSpec("1_alpha1_alpha"));
+            v.push_back(VersionSpec("1_alpha1_beta_pre"));
+            v.push_back(VersionSpec("1_alpha1_beta"));
+            v.push_back(VersionSpec("1_alpha1"));
+            v.push_back(VersionSpec("1_alpha1-r1"));
             v.push_back(VersionSpec("1_alpha10"));
             v.push_back(VersionSpec("1_alpha10-r1"));
             v.push_back(VersionSpec("1_alpha10-r1.0"));
@@ -355,19 +364,19 @@ namespace test_cases
             std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
             for ( ; v1 != v_end ; ++v1)
             {
-                TestMessageSuffix s1("v1:" + stringify(*v1), true);
+                TestMessageSuffix s1("v1:" + stringify(*v1));
                 std::vector<VersionSpec>::iterator v2(v.begin());
                 for ( ; v2 != v_end ; ++v2)
                 {
-                    TestMessageSuffix s2("v2:" + stringify(*v2), true);
+                    TestMessageSuffix s2("v2:" + stringify(*v2));
                     if (std::distance(v.begin(), v1) < std::distance(v.begin(), v2))
                     {
                         TEST_CHECK(*v1 < *v2);
                         TEST_CHECK(*v2 > *v1);
                         TEST_CHECK(*v1 != *v2);
                         TEST_CHECK(*v2 != *v1);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
                         TEST_CHECK(v1->hash_value() != v2->hash_value());
                         TEST_CHECK(v2->hash_value() != v1->hash_value());
                     }
@@ -377,8 +386,8 @@ namespace test_cases
                         TEST_CHECK(*v1 > *v2);
                         TEST_CHECK(*v2 != *v1);
                         TEST_CHECK(*v1 != *v2);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
                         TEST_CHECK(v1->hash_value() != v2->hash_value());
                         TEST_CHECK(v2->hash_value() != v1->hash_value());
                     }
@@ -386,8 +395,8 @@ namespace test_cases
                     {
                         TEST_CHECK(*v2 == *v1);
                         TEST_CHECK(*v1 == *v2);
-                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
-                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()));
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()));
                         TEST_CHECK(v1->hash_value() == v2->hash_value());
                         TEST_CHECK(v2->hash_value() == v1->hash_value());
                     }
