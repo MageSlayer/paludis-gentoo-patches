@@ -19,6 +19,10 @@ hook_run_fancy_hook() {
 hook_depend_fancy_hook() {
     echo
 }
+
+hook_after_fancy_hook() {
+    echo
+}
 END
 chmod +x fancy_hook/one.hook
 
@@ -75,6 +79,15 @@ hook_depend_ordering() {
         ;;
         d)
         echo e f
+        ;;
+        h)
+    esac
+}
+
+hook_after_ordering() {
+    case $(basename ${HOOK_FILE} | sed -e 's,\.hook$,,' ) in
+        a)
+        echo x
         ;;
         h)
         echo i

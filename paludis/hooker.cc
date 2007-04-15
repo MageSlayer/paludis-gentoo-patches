@@ -89,6 +89,8 @@ namespace
             const bool _run_prefixed;
             const Environment * const _env;
 
+            virtual void _add_dependency_class(const Hook &, DirectedGraph<std::string, int> &, bool);
+
         public:
             FancyHookFile(const FSEntry & f, const bool r, const Environment * const e) :
                 _file_name(f),
@@ -190,11 +192,19 @@ FancyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, in
 {
     Context c("When finding dependencies of hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
+    _add_dependency_class(hook, g, false);
+    _add_dependency_class(hook, g, true);
+}
+
+void
+FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, int> & g, bool depend)
+{
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
             stringify(file_name()) + "' for dependencies of '" + hook.name() + "'");
 
     Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
-            "/hooker.bash '" + stringify(file_name()) + "' 'hook_depend_" + stringify(hook.name()) + "'");
+            "/hooker.bash '" + stringify(file_name()) + "' 'hook_" + (depend ? "depend" : "after") + "_" +
+            stringify(hook.name()) + "'");
 
     cmd
         .with_setenv("ROOT", stringify(_env->root()))
@@ -206,7 +216,7 @@ FancyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, in
         .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
 
-    cmd.with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + " (depend)> ");
+    cmd.with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 
     for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
@@ -228,8 +238,11 @@ FancyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, in
         {
             if (g.has_node(*d))
                 g.add_edge(strip_trailing_string(file_name().basename(), ".hook"), *d, 0);
-            else
+            else if (depend)
                 Log::get_instance()->message(ll_warning, lc_context, "Hook dependency '" + stringify(*d) +
+                        "' for '" + stringify(file_name()) + "' not found");
+            else
+                Log::get_instance()->message(ll_debug, lc_context, "Hook after '" + stringify(*d) +
                         "' for '" + stringify(file_name()) + "' not found");
         }
     }
