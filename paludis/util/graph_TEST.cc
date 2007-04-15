@@ -17,159 +17,88 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "graph.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+
+#include <paludis/util/graph.hh>
+#include <paludis/util/graph-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/destringify.hh>
+
+#include <list>
 
 using namespace test;
 using namespace paludis;
 
-namespace
-{
-    class StringGraph :
-        public Graph<std::string>
-    {
-        protected:
-            virtual unsigned node_to_index(const std::string & s) const
-            {
-                return destringify<unsigned>(s);
-            }
-
-        public:
-            StringGraph(unsigned size) :
-                Graph<std::string>(size)
-            {
-            }
-    };
-}
-
 namespace test_cases
 {
-    struct SimpleGraphTest : TestCase
+    struct TestDirectedGraph : TestCase
     {
-        SimpleGraphTest() : TestCase("simple graph") { }
+        TestDirectedGraph() : TestCase("directed graph") { }
 
         void run()
         {
-            SimpleGraph g(20);
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
+            DirectedGraph<std::string, int> g;
+
+            TEST_CHECK(! g.has_node("a"));
+            TEST_CHECK(! g.has_node("b"));
+            TEST_CHECK(! g.has_node("c"));
+            TEST_CHECK(! g.has_node("d"));
+            TEST_CHECK(! g.has_node("e"));
+            TEST_CHECK(! g.has_node("f"));
+            TEST_CHECK(! g.has_node("x"));
+
+            g.add_node("a");
+            g.add_node("b");
+            g.add_node("c");
+            g.add_node("d");
+            g.add_node("e");
+            g.add_node("f");
+
+            TEST_CHECK(g.has_node("a"));
+            TEST_CHECK(g.has_node("b"));
+            TEST_CHECK(g.has_node("c"));
+            TEST_CHECK(g.has_node("d"));
+            TEST_CHECK(g.has_node("e"));
+            TEST_CHECK(g.has_node("f"));
+            TEST_CHECK(! g.has_node("x"));
+
+            g.add_node("y");
+            TEST_CHECK(g.has_node("y"));
+            g.delete_node("y");
+            TEST_CHECK(! g.has_node("y"));
+
+            g.add_edge("a", "b", 1);
+            g.add_edge("b", "c", 2);
+            g.add_edge("c", "e", 3);
+            g.add_edge("b", "d", 4);
+            g.add_edge("d", "e", 5);
+            g.add_edge("d", "f", 6);
+
+            int x(0);
+            for (char mc('a') ; mc < 'g' ; ++mc)
+                for (char nc('a') ; nc < 'g' ; ++nc)
                 {
-                    TEST_CHECK(! g.is_connected(x, y));
-                    if (x > y)
+                    std::string m(stringify(mc)), n(stringify(nc));
+
+                    if (g.has_edge(m, n))
                     {
-                        g.connect(x, y);
-                        TEST_CHECK(g.is_connected(x, y));
+                        TEST_CHECK(! g.has_edge(n, m));
+                        TEST_CHECK(g.has_outgoing_edges(m));
+                        TEST_CHECK(0 != g.fetch_edge(m, n));
                     }
+                    else
+                        TEST_CHECK_THROWS(g.fetch_edge(m, n), NoSuchGraphEdgeError);
                 }
 
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
-                    TEST_CHECK_EQUAL(g.is_connected(x, y), bool(x > y));
+            std::list<std::string> t;
+            g.topological_sort(std::back_inserter(t));
 
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_outgoing(x), bool(x > 0));
+            TEST_CHECK_EQUAL(join(t.begin(), t.end(), " "), "e c f d b a");
 
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_incoming(x), bool(x < 19));
-
-            g.reverse();
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
-                    TEST_CHECK_EQUAL(g.is_connected(x, y), bool(x < y));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_incoming(x), bool(x > 0));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_outgoing(x), bool(x < 19));
+            g.add_edge("e", "b", 7);
+            TEST_CHECK_THROWS(g.topological_sort(std::back_inserter(t)), NoGraphTopologicalOrderExistsError);
         }
-    } test_simple_graph;
-
-    struct SimpleTopologicalOrderingTest : TestCase
-    {
-        SimpleTopologicalOrderingTest() : TestCase("simple topological ordering") { }
-
-        void run()
-        {
-            SimpleGraph g(8);
-            g.connect(0, 1);
-            g.connect(1, 2);
-            g.connect(2, 3);
-            g.connect(1, 4);
-            g.connect(4, 3);
-            g.connect(4, 5);
-            g.connect(7, 6);
-
-            SimpleTopologicalOrdering t(g);
-            TEST_CHECK_EQUAL(join(t.begin(), t.end(), " "), "3 2 5 4 1 0 6 7");
-        }
-    } test_topological_ordering;
-
-    struct SimpleTopologicalOrderingCycleTest : TestCase
-    {
-        SimpleTopologicalOrderingCycleTest() : TestCase("simple topological ordering cycles") { }
-
-        void run()
-        {
-            SimpleGraph g(3);
-            g.connect(0, 1);
-            g.connect(1, 2);
-            g.connect(2, 0);
-
-            TEST_CHECK_THROWS((SimpleTopologicalOrdering(g)), NoSimpleTopologicalOrderingExists);
-
-            SimpleGraph h(3);
-            h.connect(0, 1);
-            h.connect(2, 2);
-
-            TEST_CHECK_THROWS((SimpleTopologicalOrdering(h)), NoSimpleTopologicalOrderingExists);
-        }
-    } test_topological_ordering_cycles;
-
-    struct GraphTest : TestCase
-    {
-        GraphTest() : TestCase("graph") { }
-
-        void run()
-        {
-            StringGraph g(20);
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
-                {
-                    TEST_CHECK(! g.is_connected(stringify(x), stringify(y)));
-                    if (x > y)
-                    {
-                        g.connect(stringify(x), stringify(y));
-                        TEST_CHECK(g.is_connected(stringify(x), stringify(y)));
-                    }
-                }
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
-                    TEST_CHECK_EQUAL(g.is_connected(stringify(x), stringify(y)), bool(x > y));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_outgoing(stringify(x)), bool(x > 0));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_incoming(stringify(x)), bool(x < 19));
-
-            g.reverse();
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                for (unsigned y(0) ; y < 20 ; ++y)
-                    TEST_CHECK_EQUAL(g.is_connected(stringify(x), stringify(y)), bool(x < y));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_incoming(stringify(x)), bool(x > 0));
-
-            for (unsigned x(0) ; x < 20 ; ++x)
-                TEST_CHECK_EQUAL(g.has_outgoing(stringify(x)), bool(x < 19));
-        }
-    } test_graph;
+    } test_directed_graph;
 }
 

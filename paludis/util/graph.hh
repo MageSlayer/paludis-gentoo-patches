@@ -22,130 +22,143 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/exception.hh>
 
 namespace paludis
 {
-    class SimpleGraph :
-        private PrivateImplementationPattern<SimpleGraph>,
-        private InstantiationPolicy<SimpleGraph, instantiation_method::NonCopyableTag>
-    {
-        public:
-            SimpleGraph(const unsigned nodes);
-            ~SimpleGraph();
-
-            unsigned size() const;
-
-            void connect(const unsigned, const unsigned);
-            void unconnect(const unsigned, const unsigned);
-            void reverse();
-
-            bool is_connected(const unsigned, const unsigned) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            bool has_outgoing(const unsigned) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            bool has_incoming(const unsigned) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            void clear_incoming(const unsigned);
-            void clear_outgoing(const unsigned);
-    };
-
-    class NoSimpleTopologicalOrderingExists :
+    class GraphError :
         public Exception
     {
-        private:
-            const unsigned _cycle;
-
-        public:
-            NoSimpleTopologicalOrderingExists(const unsigned &) throw ();
-
-            unsigned cycle() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    class SimpleTopologicalOrdering :
-        private PrivateImplementationPattern<SimpleTopologicalOrdering>
-    {
-        private:
-            void _dfs(const SimpleGraph &, const unsigned);
-
-        public:
-            SimpleTopologicalOrdering(const SimpleGraph &);
-            ~SimpleTopologicalOrdering();
-
-            typedef libwrapiter::ForwardIterator<SimpleTopologicalOrdering, const unsigned> Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    template <typename T_>
-    class Graph :
-        protected SimpleGraph
-    {
         protected:
-            virtual unsigned node_to_index(const T_ &) const = 0;
+            GraphError(const std::string & msg) throw ();
+    };
 
-            Graph(const unsigned nodes) :
-                SimpleGraph(nodes)
-            {
-            }
-
+    class NoSuchGraphNodeError :
+        public GraphError
+    {
         public:
-            virtual ~Graph()
+            template <typename Node_>
+            NoSuchGraphNodeError(const Node_ & node) throw () :
+                GraphError("Node '" + stringify(node) + "' does not exist")
             {
-            }
-
-            using SimpleGraph::size;
-
-            void connect(const T_ & a, const T_ & b)
-            {
-                SimpleGraph::connect(node_to_index(a), node_to_index(b));
-            }
-
-            void unconnect(const T_ a, const T_ & b)
-            {
-                SimpleGraph::unconnect(node_to_index(a), node_to_index(b));
-            }
-
-            using SimpleGraph::reverse;
-
-            bool is_connected(const T_ &, const T_ &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            bool has_outgoing(const T_ &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            bool has_incoming(const T_ &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            void clear_incoming(const T_ & a)
-            {
-                SimpleGraph::clear_incoming(a);
-            }
-
-            void clear_outgoing(const T_ & a)
-            {
-                SimpleGraph::clear_outgoing(a);
             }
     };
 
-    template <typename T_>
-    bool Graph<T_>::is_connected(const T_ & a, const T_ & b) const
+    class NoSuchGraphEdgeError :
+        public GraphError
     {
-        return SimpleGraph::is_connected(node_to_index(a), node_to_index(b));
-    }
+        public:
+            template <typename Node_>
+            NoSuchGraphEdgeError(const Node_ & e1, const Node_ & e2) throw () :
+                GraphError("Edge '" + stringify(e1) + "' -> '" + stringify(e2) + "' does not exist")
+            {
+            }
+    };
 
-    template <typename T_>
-    bool Graph<T_>::has_outgoing(const T_ & a) const
+    class NoGraphTopologicalOrderExistsError :
+        public GraphError
     {
-        return SimpleGraph::has_outgoing(node_to_index(a));
-    }
+        public:
+            NoGraphTopologicalOrderExistsError() throw ();
+    };
 
-    template <typename T_>
-    bool Graph<T_>::has_incoming(const T_ & a) const
+    template <typename Node_, typename Edge_>
+    class DirectedGraph :
+        private PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >
     {
-        return SimpleGraph::has_incoming(node_to_index(a));
-    }
+        private:
+            using PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >::_imp;
+
+            void operator= (const DirectedGraph &);
+
+        public:
+            DirectedGraph();
+            DirectedGraph(const DirectedGraph &);
+            ~DirectedGraph();
+
+            ///\name Node related functions
+            ///\{
+
+            /**
+             * Add a node, if it does not already exist.
+             */
+            void add_node(const Node_ &);
+
+            /**
+             * Delete a node, if it exists.
+             */
+            void delete_node(const Node_ &);
+
+            /**
+             * Return whether a node exists.
+             */
+            bool has_node(const Node_ &) const;
+
+            class NodeIterator;
+            NodeIterator begin_nodes() const;
+            NodeIterator end_nodes() const;
+
+            ///\}
+
+            ///\name Edge related functions
+            ///\{
+
+            /**
+             * Add an edge, if it does not already exist.
+             *
+             * \throw NoSuchGraphNodeError if either node is not in the graph.
+             */
+            void add_edge(const Node_ &, const Node_ &, const Edge_ &);
+
+            /**
+             * Delete an edge, if it exists.
+             */
+            void delete_edge(const Node_ &, const Node_ &);
+
+            /**
+             * Delete all edges leaving a node.
+             */
+            void delete_outgoing_edges(const Node_ &);
+
+            /**
+             * Delete all edges entering a node.
+             */
+            void delete_incoming_edges(const Node_ &);
+
+            /**
+             * Return whether an edge exists.
+             */
+            bool has_edge(const Node_ &, const Node_ &) const;
+
+            /**
+             * Fetch an edge.
+             *
+             * \throw NoSuchGraphEdgeError if the edge does not exist.
+             */
+            const Edge_ fetch_edge(const Node_ &, const Node_ &) const;
+
+            /**
+             * Return whether a node has outgoing edges.
+             *
+             * \throw NoSuchGraphNodeError if the node does not exist.
+             */
+            bool has_outgoing_edges(const Node_ &) const;
+
+            ///\}
+
+            ///\name Ordering functions
+            ///\{
+
+            /**
+             * Place our nodes, topological sorted, into OutputIterator_.
+             *
+             * \throw NoGraphTopologicalOrderExistsError if no such order exists.
+             */
+            template <typename OutputIterator_>
+            void topological_sort(OutputIterator_ i) const;
+
+            ///\}
+    };
 }
 
 #endif
