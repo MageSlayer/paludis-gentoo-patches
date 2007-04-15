@@ -28,6 +28,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/system.hh>
@@ -152,25 +153,45 @@ namespace paludis
             return;
 
         Context context("When loading environment.conf:");
-        if (! (FSEntry(config_dir) / "environment.conf").exists())
-        {
-            Log::get_instance()->message(ll_debug, lc_context,
-                    "No environment.conf exists in '" + stringify(config_dir) + "'");
-            return;
-        }
 
-        KeyValueConfigFile f(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions());
-        if (! f.get("reduced_username").empty())
+        std::tr1::shared_ptr<KeyValueConfigFile> kv;
+
+        if ((FSEntry(config_dir) / "environment.conf").exists())
+            kv.reset(new KeyValueConfigFile(FSEntry(config_dir) / "environment.conf", KeyValueConfigFileOptions()));
+        else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
-            reduced_username = f.get("reduced_username");
-            Log::get_instance()->message(ll_debug, lc_context,
-                    "loaded key 'reduced_username' = '" + reduced_username + "'");
+            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "environment.bash") + "'")
+                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                    .with_stderr_prefix("environment.bash> "));
+            PStream s(cmd);
+            kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions()));
+
+            if (s.exit_status() != 0)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(FSEntry(config_dir) / "environment.bash")
+                        + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                kv.reset();
+            }
         }
         else
-            Log::get_instance()->message(ll_debug, lc_context,
-                    "Key 'reduced_username' is unset, using '" + reduced_username + "'");
+            Log::get_instance()->message(ll_debug, lc_context, "No environment.conf or environment.bash in '"
+                    + config_dir + "'");
 
-        accept_breaks_portage = f.get("portage_compatible").empty();
+        if (kv)
+        {
+            if (! kv->get("reduced_username").empty())
+            {
+                reduced_username = kv->get("reduced_username");
+                Log::get_instance()->message(ll_debug, lc_context,
+                        "loaded key 'reduced_username' = '" + reduced_username + "'");
+            }
+            else
+                Log::get_instance()->message(ll_debug, lc_context,
+                        "Key 'reduced_username' is unset, using '" + reduced_username + "'");
+
+            accept_breaks_portage = kv->get("portage_compatible").empty();
+        }
 
         has_environment_conf = true;
     }
@@ -379,8 +400,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
             KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions());
-            std::copy(defaults_file.begin(), defaults_file.end(),
-                    conf_vars->inserter());
+            std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
+        }
+        else if ((local_config_dir / "repository_defaults.bash").exists())
+        {
+            Command cmd(Command("bash '" + stringify(local_config_dir / "repository_defaults.bash") + "'")
+                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                    .with_stderr_prefix("repository_defaults.bash> "));
+            PStream s(cmd);
+            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions());
+            std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
         }
 
         std::list<FSEntry> dirs;
@@ -395,6 +425,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             std::copy(DirIterator(*dir), DirIterator(),
                     filter_inserter(std::back_inserter(repo_files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(*dir), DirIterator(),
+                    filter_inserter(std::back_inserter(repo_files), IsFileWithExtension(".bash")));
         }
 
         std::list<std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > > later_keys;
@@ -403,18 +435,39 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            KeyValueConfigFile k(*repo_file, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
+            std::tr1::shared_ptr<KeyValueConfigFile> kv;
+            if (IsFileWithExtension(".bash")(*repo_file))
+            {
+                Command cmd(Command("bash '" + stringify(*repo_file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(repo_file->basename() + "> "));
+                PStream s(cmd);
+                kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
 
-            std::string format(k.get("format"));
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*repo_file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    kv.reset();
+                }
+            }
+            else
+                kv.reset(new KeyValueConfigFile(*repo_file, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars)));
+
+            if (! kv)
+                continue;
+
+            std::string format(kv->get("format"));
             if (format.empty())
                 throw PaludisConfigError("Key 'format' not specified or empty");
 
-            int importance(k.get("master_repository").empty() ? 0 : 10);
-            if (! k.get("importance").empty())
-                importance = destringify<int>(k.get("importance"));
+            int importance(kv->get("master_repository").empty() ? 0 : 10);
+            if (! kv->get("importance").empty())
+                importance = destringify<int>(kv->get("importance"));
 
             std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete(k.begin(), k.end()));
+                    new AssociativeCollection<std::string, std::string>::Concrete(kv->begin(), kv->end()));
 
             keys->erase("importance");
             keys->insert("importance", stringify(importance));
@@ -425,7 +478,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             keys->erase("root");
             keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
 
-            if (! k.get("master_repository").empty())
+            if (! kv->get("master_repository").empty())
             {
                 Log::get_instance()->message(ll_debug, lc_context, "Delaying '" + stringify(*repo_file) +
                         "' because it uses master_repository");
@@ -451,9 +504,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "keywords.conf");
+        files.push_back(local_config_dir / "keywords.bash");
         if ((local_config_dir / "keywords.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -463,8 +521,30 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -507,9 +587,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "licenses.conf");
+        files.push_back(local_config_dir / "licenses.bash");
         if ((local_config_dir / "licenses.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -519,8 +604,30 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -561,9 +668,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "package_mask.conf");
+        files.push_back(local_config_dir / "package_mask.bash");
         if ((local_config_dir / "package_mask.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -573,8 +685,31 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 if (line->empty())
@@ -601,9 +736,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "package_unmask.conf");
+        files.push_back(local_config_dir / "package_unmask.bash");
         if ((local_config_dir / "package_unmask.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -613,8 +753,31 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 if (line->empty())
@@ -641,9 +804,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "use.conf");
+        files.push_back(local_config_dir / "use.bash");
         if ((local_config_dir / "use.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "use.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "use.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -653,8 +821,31 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -773,9 +964,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "mirrors.conf");
+        files.push_back(local_config_dir / "mirrors.bash");
         if ((local_config_dir / "mirrors.conf.d").exists())
+        {
             std::copy(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(),
                     filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+            std::copy(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+        }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -785,8 +981,31 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->is_regular_file())
                 continue;
 
-            LineConfigFile f(*file, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            std::tr1::shared_ptr<LineConfigFile> f;
+
+            if (IsFileWithExtension(".bash")(*file))
+            {
+                Command cmd(Command("bash '" + stringify(*file) + "'")
+                        .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                        .with_stderr_prefix(file->basename() + "> "));
+                PStream s(cmd);
+                f.reset(new LineConfigFile(s, LineConfigFileOptions()));
+
+                if (s.exit_status() != 0)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Script '" + stringify(*file)
+                            + "' returned non-zero exit status '" + stringify(s.exit_status()) + "'");
+                    f.reset();
+                }
+            }
+            else
+                f.reset(new LineConfigFile(*file, LineConfigFileOptions()));
+
+            if (! f)
+                continue;
+
+            for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> m;

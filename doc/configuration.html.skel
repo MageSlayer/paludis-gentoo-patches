@@ -81,6 +81,9 @@ general operation. Recognised keys are:</p>
     or <code>-try</code> and any <code>EAPI</code> containing the string <code>paludis</code>.</dd>
 </dl>
 
+<p>If <code>environment.conf</code> does not exist and <code>environment.bash</code>
+does, Paludis executes the latter and pretends that its stdout is the content of the former.</p>
+
 <h3>The use.conf File</h3>
 
 <p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>
@@ -114,8 +117,11 @@ x11-libs/gtk+:2 tiff
 <p>Note that if a package matches multiple lines, <em>all</em> of these lines will
 be considered, not just the best or last match.</p>
 
-<p>If a <code>use.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>use.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>use.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The keywords.conf File</h3>
 
@@ -148,8 +154,11 @@ package being masked, as the package is stabilised.</p>
 keywords from a less specific match. The <code>*</code> special keyword can be
 used to accept anything.</p>
 
-<p>If a <code>keywords.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>keywords.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>keywords.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The package_mask.conf File</h3>
 
@@ -166,8 +175,11 @@ per line. For example:</p>
 app-editors/gvim
 </pre>
 
-<p>If a <code>package_unmask.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>package_mask.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>package_mask.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The package_unmask.conf File</h3>
 
@@ -180,8 +192,11 @@ in this directory is treated as if it were appended to the main file.</p>
 =media-sound/banshee-0.11.0
 </pre>
 
-<p>If a <code>package_mask.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>package_unmask.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>package_unmask.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The licenses.conf File</h3>
 
@@ -199,8 +214,11 @@ filtering is desired, use:</p>
 app-editors/vim-core vim
 </pre>
 
-<p>If a <code>licenses.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>licenses.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>licenses.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The mirrors.conf File</h3>
 
@@ -214,8 +232,11 @@ any other location for all files. For example:</p>
 gentoo http://gentoo.blueyonder.co.uk/distfiles
 </pre>
 
-<p>If a <code>mirrors.conf.d</code> directory exists, any file named <code>*.conf</code>
-in this directory is treated as if it were appended to the main file.</p>
+<p>If <code>mirrors.bash</code> exists, it is executed and its stdout is used as if
+it were appended to the main file. If a <code>mirrors.conf.d</code> directory
+exists, any file named <code>*.conf</code> in this directory is treated as if it
+were appended to the main file, and any file named <code>*.bash</code> is
+executed and has its stdout used as if it were appended to the main file.</p>
 
 <h3>The bashrc File</h3>
 
@@ -232,6 +253,10 @@ variable <code>${ROOT}</code> is defined based upon <code>specpath</code>. All
 files must define a <code>format =</code> key; depending upon the value used, other
 optional and mandatory keys are available.</p>
 
+<p>Files named <code>*.bash</code> in the <code>repositories/</code> subdirectory
+are executed by Paludis and their stdout is used as if it were a normal repository
+<code>.conf</code> file.</p>
+
 <p>Each repository can have a key named <code>importance</code>. This is used when
 two different repositories contain an identical package atom (e.g. foo/bar-1.0).
 The repository with the higher importance will always be chosen first. If not
@@ -242,6 +267,9 @@ provided, the default is 0.</p>
 does <strong>not</strong> live in the <code>repositories/</code> subdirectory).
 Keys in this file are overridden by identically named keys in individual
 configuration files.</p>
+
+<p>If <code>repository_defaults.conf</code> does not exist and <code>repository_defaults.bash</code>
+does, Paludis executes the latter and pretends that its stdout is the content of the former.</p>
 
 <h4>ebuild Format Repositories</h4>
 
