@@ -187,7 +187,7 @@ main(int argc, char *argv[])
                             if (! stderr_prefix_shown)
                             {
                                 if (stderr_had_interesting_char)
-                                    std::cerr << stdout_prefix;
+                                    std::cerr << stderr_prefix;
                                 stderr_prefix_shown = true;
                             }
 

@@ -124,11 +124,17 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
             extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
         }
 
+        std::string c(cmd.command());
+
+        if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
+            c = LIBEXECDIR "/paludis/utils/outputwrapper --stdout-prefix '"
+                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- " + c;
+
         cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command()
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c
                 + " " + extras);
-        execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
-        throw PStreamError("execl /bin/sh -c '" + cmd.command() + "' failed:"
+        execl("/bin/sh", "sh", "-c", c.c_str(), static_cast<char *>(0));
+        throw PStreamError("execl /bin/sh -c '" + c + "' failed:"
                 + stringify(strerror(errno)));
     }
     else if (-1 == child)
