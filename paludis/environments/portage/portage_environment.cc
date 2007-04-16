@@ -267,7 +267,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
             if (tokens.empty())
                 continue;
 
-            std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+            std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(0), pds_pm_permissive));
             if (1 == tokens.size())
             {
                 if (! def_value.empty())
@@ -305,7 +305,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
         for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                        strip_trailing(strip_leading(*line, " \t"), " \t"), pds_pm_unspecific));
+                        strip_trailing(strip_leading(*line, " \t"), " \t"), pds_pm_permissive));
     }
 }
 
