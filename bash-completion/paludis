@@ -72,6 +72,7 @@ _paludis() {
 
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
+        --dl-reinstall-targets \
         --dl-upgrade \
         --dl-new-slots \
         --dl-downgrade \
@@ -226,6 +227,10 @@ _paludis() {
                     ;;
                 --dl-reinstall-scm)
                     COMPREPLY=($(compgen -W "never always daily weekly" -- "${cur}"))
+                    return 0
+                    ;;
+                --dl-reinstall-targets)
+                    COMPREPLY=($(compgen -W "auto never always" -- "${cur}"))
                     return 0
                     ;;
                 --dl-upgrade)
