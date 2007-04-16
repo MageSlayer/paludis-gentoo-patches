@@ -23,6 +23,7 @@
 #include <paludis/util/graph.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <map>
+#include <set>
 #include <list>
 
 namespace paludis
@@ -262,42 +263,50 @@ namespace paludis
         struct Sorter
         {
             DirectedGraph g;
+            std::set<Node_> done;
 
             Sorter(const DirectedGraph & gg) :
                 g(gg)
             {
             }
 
-            void do_one(OutputIterator_ i, const Node_ & n)
+            void do_one(OutputIterator_ & i, const Node_ & n)
             {
+                if (done.end() != done.find(n))
+                    return;
+
                 if (g.has_outgoing_edges(n))
                     return;
 
                 *i++ = n;
+                done.insert(n);
 
                 for (typename DirectedGraph::NodeIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
-                    if ((*m != n) && g.has_edge(*m, n))
+                    if (g.has_edge(*m, n))
                     {
                         g.delete_edge(*m, n);
                         do_one(i, *m++);
                     }
                     else
                         ++m;
-
-                g.delete_node(n);
             }
 
-            void sort(OutputIterator_ i)
+            void sort(OutputIterator_ & i)
             {
+                unsigned c(0);
                 for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
+                {
+                    ++c;
                     do_one(i, *n++);
+                }
 
-                if (g.begin_nodes() != g.end_nodes())
+                if (done.size() < c)
                 {
                     std::tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
                             new NoGraphTopologicalOrderExistsError::RemainingNodes);
                     for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
-                        r->add(stringify(*n));
+                        if (done.end() == done.find(*n))
+                            r->add(stringify(*n));
 
                     throw NoGraphTopologicalOrderExistsError(r);
                 }
