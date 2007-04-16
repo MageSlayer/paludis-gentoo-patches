@@ -35,7 +35,7 @@ if [[ $(type -t $2 2>/dev/null ) != "function" ]] ; then
     elif [[ ${2#hook_after} != ${2} ]] ; then
         exit 0
     else
-        echo "Error running undefined function '$2' from file '$1' for hook '$HOOK'" | tee outfile 1>&2
+        echo "Error running undefined function '$2' from file '$1' for hook '$HOOK'" 1>&2
         exit 124
     fi
 fi
