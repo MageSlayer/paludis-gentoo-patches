@@ -99,14 +99,6 @@ endif
 
 TESTS = testlist
 
-TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
-	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
-	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/test/run_test.sh
-
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 
@@ -146,4 +138,12 @@ changequote(`<', `>')
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+TESTS_ENVIRONMENT = env \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
+	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	bash $(top_srcdir)/test/run_test.sh
 

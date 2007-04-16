@@ -322,7 +322,7 @@ paludis::run_command(const Command & cmd)
         std::string command(cmd.command());
 
         if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
-            command = LIBEXECDIR "/paludis/utils/outputwrapper --stdout-prefix '"
+            command = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
                 + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- "
                 + command;
 

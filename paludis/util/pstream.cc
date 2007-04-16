@@ -127,7 +127,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
         std::string c(cmd.command());
 
         if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
-            c = LIBEXECDIR "/paludis/utils/outputwrapper --stdout-prefix '"
+            c = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
                 + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- " + c;
 
         cmd.echo_to_stderr();
