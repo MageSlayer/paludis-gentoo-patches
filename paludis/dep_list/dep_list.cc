@@ -657,7 +657,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
         if (already_installed->empty() || ! can_fall_back)
         {
             if (! a->use_requirements_ptr())
-                throw AllMaskedError(stringify(*a));
+                throw AllMaskedError(*a);
 
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> match_except_reqs(d->_imp->env->package_database()->query(
                         *a->without_use_requirements(), is_any, qo_whatever));
@@ -667,7 +667,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
                 if (! (d->_imp->env->mask_reasons(*i).any()))
                     throw UseRequirementsNotMetError(stringify(*a));
 
-            throw AllMaskedError(stringify(*a));
+            throw AllMaskedError(*a);
         }
         else
         {

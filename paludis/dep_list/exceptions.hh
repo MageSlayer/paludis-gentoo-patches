@@ -54,13 +54,13 @@ namespace paludis
     class AllMaskedError : public DepListError
     {
         private:
-            std::string _query;
+            const PackageDepSpec _query;
 
         public:
             ///\name Basic operations
             ///\{
 
-            AllMaskedError(const std::string & query) throw ();
+            AllMaskedError(const PackageDepSpec & query) throw ();
 
             virtual ~AllMaskedError() throw ()
             {
@@ -71,7 +71,7 @@ namespace paludis
             /**
              * Our query.
              */
-            const std::string & query() const
+            const PackageDepSpec query() const
             {
                 return _query;
             }

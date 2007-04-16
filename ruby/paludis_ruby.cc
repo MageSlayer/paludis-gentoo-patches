@@ -166,7 +166,7 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     {
         VALUE ex_args[2];
         ex_args[0] = rb_str_new2(dynamic_cast<const paludis::AllMaskedError *>(&ee)->message().c_str());
-        ex_args[1] = rb_str_new2(dynamic_cast<const paludis::AllMaskedError *>(&ee)->query().c_str());
+        ex_args[1] = rb_str_new2(stringify(dynamic_cast<const paludis::AllMaskedError *>(&ee)->query()).c_str());
         rb_exc_raise(rb_class_new_instance(2, ex_args, c_all_masked_error));
     }
     else if (0 != dynamic_cast<const paludis::BlockError *>(&ee))

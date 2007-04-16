@@ -601,9 +601,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     env->package_database()->query(
-                        query::Matches(PackageDepSpec(
-                                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(e.query()))))
-                        & query::RepositoryHasInstallableInterface(), qo_order_by_version));
+                        query::Matches(e.query()) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
             if (p->empty())
             {
                 cout << endl;
@@ -685,6 +683,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
         }
         catch (...)
         {
+            Log::get_instance()->message(ll_warning, lc_context, "Couldn't work out a friendly error message for mask reasons");
             throw e;
         }
 

@@ -26,8 +26,8 @@ DepListError::DepListError(const std::string & m) throw () :
 {
 }
 
-AllMaskedError::AllMaskedError(const std::string & q) throw () :
-    DepListError("Error searching for '" + q + "': no available versions"),
+AllMaskedError::AllMaskedError(const PackageDepSpec & q) throw () :
+    DepListError("Error searching for '" + stringify(q) + "': no available versions"),
     _query(q)
 {
 }
