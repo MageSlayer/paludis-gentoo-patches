@@ -24,7 +24,7 @@ installhookcommonprog_SCRIPTS = \
 	fix_symlinks.bash
 
 installhookinstallallpost_SCRIPTS = \
-	find_config_updates.bash
+	find_config_updates.hook
 
 installhookinstallpost_SCRIPTS = \
 	update_config_protect_list.bash
