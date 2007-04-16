@@ -62,7 +62,7 @@ BinutilsStage::build(const StageOptions &) const
     Context context("When building BinutilsStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(TargetConfig::get_instance()->binutils(),
-                pds_pm_unspecific));
+                pds_pm_permissive));
 
     _env->clear_forced_use();
 
@@ -73,7 +73,7 @@ bool
 BinutilsStage::is_rebuild() const
 {
     return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->binutils(), pds_pm_unspecific)) &
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->binutils(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever)->empty());
 }
@@ -84,7 +84,7 @@ KernelHeadersStage::build(const StageOptions &) const
     Context context("When building KernelHeadersStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(TargetConfig::get_instance()->headers(),
-                pds_pm_unspecific));
+                pds_pm_permissive));
 
     _env->clear_forced_use();
 
@@ -97,7 +97,7 @@ bool
 KernelHeadersStage::is_rebuild() const
 {
     return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->headers(), pds_pm_unspecific)) &
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->headers(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever)->empty());
 }
@@ -108,7 +108,7 @@ MinimalStage::build(const StageOptions &) const
     Context context("When executing MinimalStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
-                pds_pm_unspecific));
+                pds_pm_permissive));
 
     _env->clear_forced_use();
 
@@ -129,7 +129,7 @@ bool
 MinimalStage::is_rebuild() const
 {
    return (! _env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_unspecific)) &
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever)->empty());
 }
@@ -140,7 +140,7 @@ LibCStage::build(const StageOptions &) const
     Context context("When building LibCStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
-                pds_pm_unspecific));
+                pds_pm_permissive));
 
     _env->clear_forced_use();
 
@@ -151,7 +151,7 @@ bool
 LibCStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_unspecific)) &
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));
 
@@ -167,7 +167,7 @@ FullStage::build(const StageOptions &) const
     Context context("When building FullStage:");
 
     std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
-                pds_pm_unspecific));
+                pds_pm_permissive));
 
     _env->clear_forced_use();
 
@@ -185,7 +185,7 @@ bool
 FullStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
-                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_unspecific)) &
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));
 

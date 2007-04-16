@@ -325,7 +325,7 @@ namespace test_cases
             UninstallListTestCaseBase("with unused deps world")
         {
             installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
-                        "foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_unspecific)));
+                        "foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_permissive)));
         }
 
         void populate_targets()
@@ -361,7 +361,7 @@ namespace test_cases
             UninstallListTestCaseBase("with unused deps world target")
         {
             installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
-                        "foo/bar foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_unspecific)));
+                        "foo/bar foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_permissive)));
         }
 
         void populate_targets()

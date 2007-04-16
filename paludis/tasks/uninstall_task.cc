@@ -105,7 +105,7 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target, pds_pm_unspecific)));
+        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target, pds_pm_permissive)));
     }
     else
         try
@@ -123,7 +123,7 @@ UninstallTask::add_target(const std::string & target)
                 DepSpecFlattener f(_imp->env, 0, spec);
                 for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
                     _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    stringify((*i)->text()), pds_pm_unspecific)));
+                                    stringify((*i)->text()), pds_pm_permissive)));
             }
             else
             {

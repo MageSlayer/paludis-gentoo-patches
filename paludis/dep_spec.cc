@@ -229,7 +229,7 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
                 std::tr1::shared_ptr<UseRequirements>(),
                 std::tr1::shared_ptr<const DepTag>()))
 {
-    _do_parse(ss, pds_pm_unspecific);
+    _do_parse(ss, pds_pm_permissive);
     _imp->unique = true;
 }
 
@@ -296,33 +296,107 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                     break;
 
                 case pds_pm_eapi_0:
-                    Log::get_instance()->message(ll_warning, lc_context, "Use dependencies not safe for use with this EAPI");
+                    Log::get_instance()->message(ll_warning, lc_context, "[] dependencies not safe for use with this EAPI");
                     break;
 
                 case pds_pm_eapi_0_strict:
-                    throw PackageDepSpecError("Use dependencies not safe for use with this EAPI");
+                    throw PackageDepSpecError("[] dependencies not safe for use with this EAPI");
             }
 
             if (s.at(s.length() - 1) != ']')
                 throw PackageDepSpecError("Mismatched []");
 
             std::string flag(s.substr(use_group_p + 1));
-            UseFlagState state(use_enabled);
             if (flag.length() < 2)
                 throw PackageDepSpecError("Invalid [] contents");
+
             flag.erase(flag.length() - 1);
-            if ('-' == flag.at(0))
+
+            switch (flag.at(0))
             {
-                state = use_disabled;
-                flag.erase(0, 1);
-                if (flag.empty())
-                    throw PackageDepSpecError("Invalid [] contents");
-            }
-            UseFlagName name(flag);
-            if (! _imp->use_requirements)
-                _imp->use_requirements.reset(new UseRequirements);
-            if (! _imp->use_requirements->insert(name, state))
-                throw PackageDepSpecError("Conflicting [] contents");
+                case '<':
+                case '>':
+                case '=':
+                case '~':
+                    {
+                        _imp->version_requirements.reset(new VersionRequirements::Concrete);
+                        char needed_mode(0);
+
+                        while (! flag.empty())
+                        {
+                            Context cc("When parsing [] segment '" + flag + "':");
+
+                            std::string op;
+                            std::string::size_type opos(0);
+                            while (opos < flag.length())
+                                if (std::string::npos == std::string("><=~").find(flag.at(opos)))
+                                    break;
+                                else
+                                    ++opos;
+
+                            op = flag.substr(0, opos);
+                            flag.erase(0, opos);
+
+                            if (op.empty())
+                                throw PackageDepSpecError("Missing operator inside []");
+
+                            VersionOperator vop(op);
+
+                            std::string ver;
+                            opos = flag.find_first_of("|&");
+                            if (std::string::npos == opos)
+                            {
+                                ver = flag;
+                                flag.clear();
+                            }
+                            else
+                            {
+                                if (0 == needed_mode)
+                                    needed_mode = flag.at(opos);
+                                else if (needed_mode != flag.at(opos))
+                                    throw PackageDepSpecError("Mixed & and | inside []");
+
+                                _imp->version_requirements_mode = (flag.at(opos) == '|' ? vr_or : vr_and);
+                                ver = flag.substr(0, opos++);
+                                flag.erase(0, opos);
+                            }
+
+                            if (ver.empty())
+                                throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
+
+                            if ('*' == ver.at(ver.length() - 1))
+                            {
+                                ver.erase(ver.length() - 1);
+                                if (vop == vo_equal)
+                                    vop = vo_equal_star;
+                                else
+                                    throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
+                            }
+
+                            VersionSpec vs(ver);
+                            _imp->version_requirements->push_back(VersionRequirement(vop, vs));
+                        }
+                    }
+                    break;
+
+                default:
+                    {
+                        UseFlagState state(use_enabled);
+                        if ('-' == flag.at(0))
+                        {
+                            state = use_disabled;
+                            flag.erase(0, 1);
+                            if (flag.empty())
+                                throw PackageDepSpecError("Invalid [] contents");
+                        }
+                        UseFlagName name(flag);
+                        if (! _imp->use_requirements)
+                            _imp->use_requirements.reset(new UseRequirements);
+                        if (! _imp->use_requirements->insert(name, state))
+                            throw PackageDepSpecError("Conflicting [] contents");
+                    }
+                    break;
+            };
 
             s.erase(use_group_p);
         }
@@ -373,6 +447,9 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
 
         if (std::string::npos != std::string("<>=~").find(s.at(0)))
         {
+            if (_imp->version_requirements)
+                throw PackageDepSpecError("Cannot mix [] and traditional version specifications");
+
             std::string::size_type p(1);
             if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
                 ++p;
@@ -419,7 +496,26 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                     q = new_q;
             }
 
-            _imp->package_ptr.reset(new QualifiedPackageName(s.substr(p, q - p - 1)));
+            std::string t(s.substr(p, q - p - 1));
+            if (t.length() >= 3 && (0 == t.compare(0, 2, "*/")))
+            {
+                if (pds_pm_unspecific != mode)
+                    throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse mode '"
+                            + stringify(mode) + "'");
+
+                if (0 != t.compare(t.length() - 2, 2, "/*"))
+                    _imp->package_name_part_ptr.reset(new PackageNamePart(t.substr(2)));
+            }
+            else if (t.length() >= 3 && (0 == t.compare(t.length() - 2, 2, "/*")))
+            {
+                if (pds_pm_unspecific != mode)
+                    throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse mode '"
+                            + stringify(mode) + "'");
+
+                _imp->category_name_part_ptr.reset(new CategoryNamePart(t.substr(0, t.length() - 2)));
+            }
+            else
+                _imp->package_ptr.reset(new QualifiedPackageName(t));
 
             _imp->version_requirements.reset(new VersionRequirements::Concrete);
 
@@ -453,7 +549,27 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                 _imp->version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q))));
         }
         else
-            _imp->package_ptr.reset(new QualifiedPackageName(s));
+        {
+            if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
+            {
+                if (pds_pm_unspecific != mode)
+                    throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse mode '"
+                            + stringify(mode) + "'");
+
+                if (0 != s.compare(s.length() - 2, 2, "/*"))
+                    _imp->package_name_part_ptr.reset(new PackageNamePart(s.substr(2)));
+            }
+            else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
+            {
+                if (pds_pm_unspecific != mode)
+                    throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(ss) + "' with parse mode '"
+                            + stringify(mode) + "'");
+
+                _imp->category_name_part_ptr.reset(new CategoryNamePart(s.substr(0, s.length() - 2)));
+            }
+            else
+                _imp->package_ptr.reset(new QualifiedPackageName(s));
+        }
     }
     catch (Exception &)
     {
@@ -482,60 +598,45 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 {
     if (a.version_requirements_ptr())
     {
-        bool need_op(false);
-        for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
-                r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+        if (a.version_requirements_ptr()->begin() == a.version_requirements_ptr()->end())
         {
-            if (need_op)
-            {
-                switch (a.version_requirements_mode())
-                {
-                    case vr_and:
-                        s << "&";
-                        break;
-
-                    case vr_or:
-                        s << "|";
-                        break;
-
-                    case last_vr:
-                        ;
-                }
-            }
-
-            if (r->version_operator == vo_equal_star)
+        }
+        else if (next(a.version_requirements_ptr()->begin()) == a.version_requirements_ptr()->end())
+        {
+            if (a.version_requirements_ptr()->begin()->version_operator == vo_equal_star)
                 s << "=";
             else
-               s << r->version_operator;
-
-            need_op = true;
+               s << a.version_requirements_ptr()->begin()->version_operator;
         }
     }
 
     if (a.package_ptr())
         s << *a.package_ptr();
+    else
+    {
+        if (a.category_name_part_ptr())
+            s << *a.category_name_part_ptr();
+        else
+            s << "*";
+
+        s << "/";
+
+        if (a.package_name_part_ptr())
+            s << *a.package_name_part_ptr();
+        else
+            s << "*";
+    }
 
     if (a.version_requirements_ptr())
     {
-        bool need_comma(false), need_hyphen(true);
-        for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
-                r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+        if (a.version_requirements_ptr()->begin() == a.version_requirements_ptr()->end())
         {
-            if (need_comma)
-                s << ",";
-
-            if (need_hyphen)
-            {
-                s << "-";
-                need_hyphen = false;
-            }
-
-            s << r->version_spec;
-
-            if (r->version_operator == vo_equal_star)
+        }
+        else if (next(a.version_requirements_ptr()->begin()) == a.version_requirements_ptr()->end())
+        {
+            s << "-" << a.version_requirements_ptr()->begin()->version_spec;
+            if (a.version_requirements_ptr()->begin()->version_operator == vo_equal_star)
                 s << "*";
-
-            need_comma = true;
         }
     }
 
@@ -543,6 +644,58 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
         s << ":" << *a.slot_ptr();
     if (a.repository_ptr())
         s << "::" << *a.repository_ptr();
+
+    if (a.version_requirements_ptr())
+    {
+        if (a.version_requirements_ptr()->begin() == a.version_requirements_ptr()->end())
+        {
+        }
+        else if (next(a.version_requirements_ptr()->begin()) == a.version_requirements_ptr()->end())
+        {
+        }
+        else
+        {
+            bool need_op(false);
+            s << "[";
+            for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
+                    r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+            {
+                if (need_op)
+                {
+                    do
+                    {
+                        switch (a.version_requirements_mode())
+                        {
+                            case vr_and:
+                                s << "&";
+                                continue;
+
+                            case vr_or:
+                                s << "|";
+                                continue;
+
+                            case last_vr:
+                                ;
+                        }
+                        throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
+                    } while (false);
+                }
+
+                if (r->version_operator == vo_equal_star)
+                    s << "=";
+                else
+                    s << r->version_operator;
+
+                s << r->version_spec;
+
+                if (r->version_operator == vo_equal_star)
+                    s << "*";
+
+                need_op = true;
+            }
+            s << "]";
+        }
+    }
 
     if (a.use_requirements_ptr())
     {

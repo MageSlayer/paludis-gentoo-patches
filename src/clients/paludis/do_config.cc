@@ -77,7 +77,7 @@ namespace
                 new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                             env->package_database()->fetch_unique_qualified_package_name(
                                 PackageNamePart(target))))) :
-                new PackageDepSpec(target, pds_pm_unspecific));
+                new PackageDepSpec(target, pds_pm_permissive));
 
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));

@@ -189,7 +189,7 @@ namespace
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), pds_pm_unspecific));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
                 if (params.tag)
                     spec->set_tag(params.tag);
 

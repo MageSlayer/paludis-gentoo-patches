@@ -78,7 +78,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
                                     env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))))),
                     env.default_destinations());
         else
-            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p, pds_pm_unspecific)),
+            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p, pds_pm_permissive)),
                     env.default_destinations());
     }
 

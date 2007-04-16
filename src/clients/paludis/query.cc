@@ -110,7 +110,7 @@ void do_one_query(
                                 env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))));
     }
     else
-        spec.reset(new PackageDepSpec(q, pds_pm_unspecific));
+        spec.reset(new PackageDepSpec(q, pds_pm_permissive));
 
     if (spec)
         do_one_package_query(env, mask_reasons_to_explain, spec);

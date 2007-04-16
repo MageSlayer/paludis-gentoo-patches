@@ -119,7 +119,7 @@ namespace
             if (1 == argc)
             {
                 rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
-                p = pds_pm_unspecific;
+                p = pds_pm_permissive;
             }
             else
                 p = static_cast<PackageDepSpecParseMode>(NUM2INT(argv[1]));
@@ -412,7 +412,7 @@ paludis::ruby::value_to_package_dep_spec(VALUE v)
     if (T_STRING == TYPE(v))
     {
         rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
-        return std::tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(v), pds_pm_unspecific));
+        return std::tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(v), pds_pm_permissive));
     }
     else
     {

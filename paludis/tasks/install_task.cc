@@ -131,7 +131,7 @@ InstallTask::add_target(const std::string & target)
 
         if (std::string::npos != target.find('/'))
             _imp->targets->add_child(PortageDepParser::parse(target, PortageDepParser::Policy::text_is_package_dep_spec(
-                            true, pds_pm_unspecific)));
+                            true, pds_pm_permissive)));
         else
         {
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
@@ -466,7 +466,7 @@ InstallTask::execute()
             {
                 if (_imp->add_to_world_spec)
                     _imp->env->add_appropriate_to_world(PortageDepParser::parse_depend(
-                                *_imp->add_to_world_spec, pds_pm_unspecific), &w);
+                                *_imp->add_to_world_spec, pds_pm_permissive), &w);
                 else
                     _imp->env->add_appropriate_to_world(_imp->targets, &w);
             }

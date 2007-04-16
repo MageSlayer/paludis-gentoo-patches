@@ -230,7 +230,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                                     PackageNamePart(*CommandLine::get_instance()->begin_parameters()))))));
         }
         else
-            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters(), pds_pm_unspecific));
+            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters(), pds_pm_permissive));
     }
     catch (const AmbiguousPackageNameError & e)
     {

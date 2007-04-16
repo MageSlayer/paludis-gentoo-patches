@@ -101,7 +101,7 @@ do_one_contents(
     std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
             new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                         env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))) :
-            new PackageDepSpec(q, pds_pm_unspecific));
+            new PackageDepSpec(q, pds_pm_permissive));
 
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
