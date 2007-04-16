@@ -38,5 +38,4 @@ done < <(${PALUDIS_COMMAND} --list-repositories --repository-format ebuild | \
     sed -n -e '/^\*/s,^\*\s*,,p' )
 
 einfo_unhooked "Done cleaning write cache for ebuild format repositories"
-echo
 
