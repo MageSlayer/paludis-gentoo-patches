@@ -244,7 +244,6 @@ GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
             .contents_interface(0)
             .installable_interface(this)
             .installed_interface(0)
-            .news_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
             .uninstallable_interface(0)

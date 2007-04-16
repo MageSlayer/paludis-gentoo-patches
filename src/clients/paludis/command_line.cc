@@ -56,7 +56,6 @@ CommandLine::CommandLine() :
     a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0',
             "List available repository formats"),
     a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories"),
-    a_update_news(&action_args_internal, "update-news", '\0', "Regenerate news.unread files"),
     a_regenerate_installed_cache(&action_args_internal, "regenerate-installed-cache", '\0',
             "Regenerate (non-metadata) cache for installed repositories"),
     a_regenerate_installable_cache(&action_args_internal, "regenerate-installable-cache", '\0',
@@ -237,7 +236,9 @@ CommandLine::CommandLine() :
     a_add_to_world_atom(&deprecated_args, "add-to-world-atom", '\0',
             "Replaced by --add-to-world-spec"),
     a_config_suffix(&deprecated_args, "config-suffix", 'c',
-            "Replaced by --environment")
+            "Replaced by --environment"),
+    a_update_news(&action_args_internal, "update-news", '\0',
+            "No longer useful, does nothing")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
@@ -260,7 +261,6 @@ CommandLine::CommandLine() :
     add_usage_line("--list-sync-protocols");
     add_usage_line("--list-repository-formats");
     add_usage_line("--list-dep-tag-categories");
-    add_usage_line("--update-news");
 
     add_environment_variable("PALUDIS_HOME", "Overrides the home directory used when searching "
             "for configuration files etc.");

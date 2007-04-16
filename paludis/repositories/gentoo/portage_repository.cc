@@ -276,7 +276,6 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .mask_interface(this)
             .installable_interface(this)
             .installed_interface(0)
-            .news_interface(this)
             .sets_interface(this)
             .syncable_interface(this)
             .uninstallable_interface(0)
@@ -1289,6 +1288,9 @@ PortageRepository::perform_hook(const Hook & hook) const
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
+
+    if (hook.name() == "sync_all_post")
+        update_news();
 
     return 0;
 }

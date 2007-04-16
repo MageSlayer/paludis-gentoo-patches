@@ -270,10 +270,6 @@ RepositoryMaskInterface::~RepositoryMaskInterface()
 {
 }
 
-RepositoryNewsInterface::~RepositoryNewsInterface()
-{
-}
-
 RepositorySetsInterface::~RepositorySetsInterface()
 {
 }

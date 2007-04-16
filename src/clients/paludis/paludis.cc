@@ -24,7 +24,6 @@
 #include "do_config.hh"
 #include "install.hh"
 #include "list.hh"
-#include "news.hh"
 #include "owner.hh"
 #include "query.hh"
 #include "report.hh"
@@ -485,10 +484,9 @@ main(int argc, char *argv[])
 
             if (CommandLine::get_instance()->a_update_news.specified())
             {
-                if (! CommandLine::get_instance()->empty())
-                    throw args::DoHelp("update-news action takes no parameters");
-
-                return do_update_news(env);
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "Calling --update-news is no longer useful or necessary");
+                return EXIT_SUCCESS;
             }
 
             if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||

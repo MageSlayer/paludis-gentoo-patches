@@ -52,7 +52,6 @@ namespace paludis
         public RepositoryUseInterface,
         public RepositoryInstallableInterface,
         public RepositorySyncableInterface,
-        public RepositoryNewsInterface,
         public RepositorySetsInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
@@ -161,8 +160,6 @@ namespace paludis
             virtual void invalidate();
             virtual void regenerate_cache() const;
 
-            virtual void update_news() const;
-
             virtual std::string get_environment_variable(
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const;
@@ -193,6 +190,9 @@ namespace paludis
 
             int perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void update_news() const;
+
     };
 }
 

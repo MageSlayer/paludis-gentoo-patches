@@ -134,9 +134,6 @@ class CommandLine :
         /// --list-dep-tag-categories
         paludis::args::SwitchArg a_list_dep_tag_categories;
 
-        /// --update-news
-        paludis::args::SwitchArg a_update_news;
-
         /// --regenerate-installed-cache
         paludis::args::SwitchArg a_regenerate_installed_cache;
 
@@ -314,7 +311,7 @@ class CommandLine :
         paludis::args::StringArg a_show_install_reasons;
         paludis::args::StringArg a_add_to_world_atom;
         paludis::args::StringArg a_config_suffix;
-
+        paludis::args::SwitchArg a_update_news;
 
         ///\}
 };

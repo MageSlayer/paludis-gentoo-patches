@@ -54,7 +54,6 @@ namespace paludis
     class RepositoryInstallableInterface;
     class RepositoryInstalledInterface;
     class RepositoryMaskInterface;
-    class RepositoryNewsInterface;
     class RepositorySetsInterface;
     class RepositorySyncableInterface;
     class RepositoryUninstallableInterface;
@@ -860,29 +859,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryWorldInterface();
-    };
-
-    /**
-     * Interface for news handling for repositories.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class RepositoryNewsInterface
-    {
-        public:
-            ///\name News functionality
-            ///\{
-
-            /**
-             * Update our news.unread file.
-             */
-            virtual void update_news() const = 0;
-
-            ///\}
-
-            virtual ~RepositoryNewsInterface();
     };
 
     /**

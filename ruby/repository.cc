@@ -961,8 +961,6 @@ namespace
                         &Repository::installed_interface>::fetch)), 0);
         rb_define_method(c_repository, "mask_interface", RUBY_FUNC_CAST((&Interface<RepositoryMaskInterface,
                         &Repository::mask_interface>::fetch)), 0);
-        rb_define_method(c_repository, "news_interface", RUBY_FUNC_CAST((&Interface<RepositoryNewsInterface,
-                        &Repository::news_interface>::fetch)), 0);
         rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<RepositorySetsInterface,
                         &Repository::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,

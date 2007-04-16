@@ -199,6 +199,9 @@ FancyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, in
 void
 FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, int> & g, bool depend)
 {
+    Context context("When adding dependency class '" + stringify(depend ? "depend" : "after") + "' for hook '"
+            + stringify(hook.name()) + "' file '" + stringify(file_name()) + "':");
+
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
             stringify(file_name()) + "' for dependencies of '" + hook.name() + "'");
 
@@ -333,28 +336,32 @@ Hooker::perform_hook(const Hook & hook) const
             }
         }
 
-        Context context_local("When determining hook execution order for '" + hook.name() + "':");
-
         DirectedGraph<std::string, int> hook_deps;
-        for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
-                f != f_end ; ++f)
-            hook_deps.add_node(f->first);
+        {
+            Context context_local("When determining hook dependencies for '" + hook.name() + "':");
+            for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+                    f != f_end ; ++f)
+                hook_deps.add_node(f->first);
 
-        for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
-                f != f_end ; ++f)
-            f->second->add_dependencies(hook, hook_deps);
+            for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+                    f != f_end ; ++f)
+                f->second->add_dependencies(hook, hook_deps);
+        }
 
         std::list<std::string> ordered;
-        try
         {
-            hook_deps.topological_sort(std::back_inserter(ordered));
-        }
-        catch (const NoGraphTopologicalOrderExistsError & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Could not resolve dependency order for hook '"
-                    + hook.name() + "' due to exception '" + e.message() + "' (" + e.what() + "'), skipping hooks '" +
-                    join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") + "' and using hooks '" + join(ordered.begin(),
-                        ordered.end(), "', '") + "' in that order");;
+            Context context_local("When determining hook ordering for '" + hook.name() + "':");
+            try
+            {
+                hook_deps.topological_sort(std::back_inserter(ordered));
+            }
+            catch (const NoGraphTopologicalOrderExistsError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Could not resolve dependency order for hook '"
+                        + hook.name() + "' due to exception '" + e.message() + "' (" + e.what() + "'), skipping hooks '" +
+                        join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), "', '") + "' and using hooks '" + join(ordered.begin(),
+                            ordered.end(), "', '") + "' in that order");;
+            }
         }
 
         for (std::list<std::string>::const_iterator o(ordered.begin()), o_end(ordered.end()) ;

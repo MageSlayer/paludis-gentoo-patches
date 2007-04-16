@@ -514,7 +514,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .installable_interface(0)
             .installed_interface(this)
             .mask_interface(0)
-            .news_interface(0)
             .sets_interface(this)
             .syncable_interface(0)
             .uninstallable_interface(this)

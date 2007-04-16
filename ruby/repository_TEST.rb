@@ -188,7 +188,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.main_repository
-            [:installable_interface, :installed_interface, :mask_interface, :news_interface,
+            [:installable_interface, :installed_interface, :mask_interface,
                 :sets_interface, :syncable_interface, :uninstallable_interface, :use_interface,
                 :world_interface, :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :contents_interface, :portage_interface].each do |sym|

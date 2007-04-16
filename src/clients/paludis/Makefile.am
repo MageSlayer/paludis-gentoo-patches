@@ -42,7 +42,6 @@ paludis_SOURCES = \
 	do_contents.hh       do_contents.cc       \
 	do_config.hh         do_config.cc         \
 	owner.hh             owner.cc             \
-	news.hh              news.cc              \
 	report.hh            report.cc            \
 	paludis.cc
 

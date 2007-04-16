@@ -17,7 +17,7 @@ installhookcommonprog_SCRIPTS = \
 	gnu_info_index.bash \
 	eselect_env_update.bash \
 	log.bash \
-	news.bash \
+	news.hook \
 	installable_cache_regen.bash \
 	installed_cache_regen.bash \
 	write_cache_clean.bash \
@@ -243,9 +243,9 @@ install-data-local :
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_post/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_pre/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_post/
-	ln -sf ../common/news.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
-	ln -sf ../common/news.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_all_post/
-	ln -sf ../common/news.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_pretend_post/
+	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
+	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/install_all_post/
+	ln -sf ../common/news.hook $(DESTDIR)/$(libexecdir)/paludis/hooks/install_pretend_post/
 	ln -sf ../common/installable_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/write_cache_clean.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_post/
@@ -258,7 +258,7 @@ uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/eselect_env_update.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
-	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/news.bash
+	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/news.hook
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/write_cache_clean.bash
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/fix_symlinks.bash
 

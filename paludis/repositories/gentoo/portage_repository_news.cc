@@ -100,6 +100,13 @@ PortageRepositoryNews::update_news() const
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
+        if (0 == stringify(_imp->portage_repository->name()).compare(0, 2, "x-"))
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot enable GLEP 42 news items for repository '"
+                    + stringify(_imp->portage_repository->name()) + "' because it is using a generated repository name");
+            return;
+        }
+
         if (! d->is_directory())
             continue;
         if (! (*d / (d->basename() + ".en.txt")).is_regular_file())

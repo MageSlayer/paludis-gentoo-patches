@@ -89,7 +89,6 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .mask_interface(this)
             .installed_interface(this)
             .use_interface(0)
-            .news_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
             .uninstallable_interface(0)

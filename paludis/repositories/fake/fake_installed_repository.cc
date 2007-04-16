@@ -31,7 +31,6 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .installed_interface(this)
             .contents_interface(0)
             .mask_interface(this)
-            .news_interface(0)
             .sets_interface(this)
             .syncable_interface(0)
             .uninstallable_interface(0)

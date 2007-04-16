@@ -121,6 +121,7 @@ int do_sync(std::tr1::shared_ptr<Environment> env)
         task.add_target(*q);
 
     task.execute();
+    cout << endl;
 
     return task.return_code();
 }
