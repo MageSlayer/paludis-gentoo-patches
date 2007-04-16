@@ -104,3 +104,60 @@ for a in a b c d e f g h i j k ; do
     ln -s ../ordering.common ordering/${a}.hook
 done
 
+mkdir bad_hooks
+cat <<"END" > bad_hooks.common
+hook_run_bad_hooks() {
+    basename ${HOOK_FILE} | sed -e 's,\.hook$,,' >> hooker_TEST_dir/bad_hooks.out
+}
+END
+chmod +x bad_hooks.common
+
+for a in one three ; do
+    ln -s ../bad_hooks.common bad_hooks/${a}.hook
+done
+
+cat <<"END" > bad_hooks/two.hook
+asdf
+END
+chmod +x bad_hooks/two.hook
+
+mkdir cycles
+cat <<"END" > cycles.common
+hook_run_cycles() {
+    basename ${HOOK_FILE} | sed -e 's,\.hook$,,' >> hooker_TEST_dir/cycles.out
+}
+
+hook_depend_cycles() {
+    case $(basename ${HOOK_FILE} | sed -e 's,\.hook$,,' ) in
+        c)
+        echo d;
+        ;;
+        d)
+        echo e;
+        ;;
+        e)
+        echo c;
+        ;;
+        f)
+        echo g;
+        ;;
+        h)
+        echo h;
+        ;;
+    esac
+}
+
+hook_after_cycles() {
+    case $(basename ${HOOK_FILE} | sed -e 's,\.hook$,,' ) in
+        a)
+        echo b
+        ;;
+    esac
+}
+END
+chmod +x cycles.common
+
+for a in a b c d e f g h i ; do
+    ln -s ../cycles.common cycles/${a}.hook
+done
+

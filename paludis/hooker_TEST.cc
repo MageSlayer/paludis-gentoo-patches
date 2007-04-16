@@ -72,7 +72,18 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            Hooker hooker(&env);
 
+            FSEntry("hooker_TEST_dir/bad_hooks.out").unlink();
+
+            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("bad_hooks")), 123);
+
+            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/bad_hooks.out")).c_str());
+            std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+            TEST_CHECK_EQUAL(line, "one\nthree\n");
         }
     } test_hooker_bad_hooks;
 
@@ -82,7 +93,18 @@ namespace test_cases
 
         void run()
         {
+            TestEnvironment env;
+            Hooker hooker(&env);
 
+            FSEntry("hooker_TEST_dir/cycles.out").unlink();
+
+            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("cycles")), 0);
+
+            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/cycles.out")).c_str());
+            std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+            TEST_CHECK_EQUAL(line, "b\na\ng\nf\ni\n");
         }
     } test_hooker_cycles;
 }
