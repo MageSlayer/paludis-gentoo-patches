@@ -170,8 +170,8 @@ FancyHookFile::run(const Hook & hook) const
 
     if (_run_prefixed)
         cmd
-            .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ")
-            .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
+            .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ")
+            .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ");
 
     for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
