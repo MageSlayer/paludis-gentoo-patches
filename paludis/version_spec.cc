@@ -19,9 +19,11 @@
 
 #include <algorithm>
 #include <paludis/util/compare.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -118,40 +120,49 @@ VersionSpec::VersionSpec(const std::string & text) :
 
     if (0 == text.compare(p, 3, "scm"))
     {
-        _imp->parts.push_back(Part(scm, 0));
+        _imp->parts.push_back(Part(scm, 0, 0));
         p += 3;
     }
     else
     {
         /* numbers... */
-        unsigned long x(0);
+        bool first(true);
         while (p < text.length())
         {
-            if (text.at(p) < '0' || text.at(p) > '9')
-                throw BadVersionSpecError(text, "expected a digit but found '" + stringify(text.at(p)) + "'");
+            std::string::size_type q(text.find_first_not_of("0123456789", p));
+            std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+            p = std::string::npos == q ? text.length() : q;
 
-            x *= 10;
-            x += text.at(p) - '0';
+            if (number_part.empty())
+                throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
 
-            if (++p >= text.length())
-                break;
-
-            if ('.' == text.at(p))
+            if (first)
+                _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
+            else
             {
-                ++p;
-                _imp->parts.push_back(Part(number, x));
-                x = 0;
+                if ('0' == number_part.at(0))
+                {
+                    q = number_part.find_first_not_of("0");
+                    if (std::string::npos == q)
+                        _imp->parts.push_back(Part(number, 0, 0));
+                    else
+                        _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(strip_trailing(number_part, "0")), q));
+                }
+                else
+                    _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
             }
 
-            if (text.at(p) < '0' || text.at(p) > '9')
+            if (p < text.length() && '.' != text.at(p))
                 break;
+
+            ++p;
+            first = false;
         }
-        _imp->parts.push_back(Part(number, x));
 
         /* letter */
         if (p < text.length())
             if (text.at(p) >= 'a' && text.at(p) <= 'z')
-                _imp->parts.push_back(Part(letter, text.at(p++)));
+                _imp->parts.push_back(Part(letter, text.at(p++), 0));
 
         bool suffix(true);
         while (suffix)
@@ -186,7 +197,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     else
                         break;
 
-                    x = std::numeric_limits<unsigned long>::max();
+                    unsigned x(std::numeric_limits<unsigned long>::max());
                     for ( ; p < text.length() ; ++p)
                     {
                         if (text.at(p) < '0' || text.at(p) > '9')
@@ -197,14 +208,14 @@ VersionSpec::VersionSpec(const std::string & text) :
                         x += text.at(p) - '0';
                     }
 
-                    _imp->parts.push_back(Part(k, x));
+                    _imp->parts.push_back(Part(k, x, 0));
                     suffix = true;
                 } while (false);
 
             /* patch level */
             if (p < text.length() && 0 == text.compare(p, 2, "_p") && 0 != text.compare(p, 3, "_pr"))
             {
-                x = std::numeric_limits<unsigned long>::max();
+                unsigned x(std::numeric_limits<unsigned long>::max());
                 for (p += 2 ; p < text.length() ; ++p)
                 {
                     if (text.at(p) < '0' || text.at(p) > '9')
@@ -214,14 +225,14 @@ VersionSpec::VersionSpec(const std::string & text) :
                     x *= 10;
                     x += text.at(p) - '0';
                 }
-                _imp->parts.push_back(Part(patch, x));
+                _imp->parts.push_back(Part(patch, x, 0));
                 suffix = true;
             }
 
             /* try */
             if (p < text.length() && 0 == text.compare(p, 4, "-try"))
             {
-                x = std::numeric_limits<unsigned long>::max();
+                unsigned x(std::numeric_limits<unsigned long>::max());
                 for (p += 4 ; p < text.length() ; ++p)
                 {
                     if (text.at(p) < '0' || text.at(p) > '9')
@@ -231,7 +242,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     x *= 10;
                     x += text.at(p) - '0';
                 }
-                _imp->parts.push_back(Part(trypart, x));
+                _imp->parts.push_back(Part(trypart, x, 0));
                 suffix = true;
             }
         }
@@ -240,7 +251,7 @@ VersionSpec::VersionSpec(const std::string & text) :
         if ((p < text.length()) && (0 == text.compare(p, 4, "-scm")))
         {
             p += 4;
-            _imp->parts.push_back(Part(scm, 0));
+            _imp->parts.push_back(Part(scm, 0, 0));
         }
         else
         {
@@ -267,7 +278,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     x += text.at(p) - '0';
                     ++p;
                 }
-                _imp->parts.push_back(Part(revision, x));
+                _imp->parts.push_back(Part(revision, x, 0));
 
                 if (p >= text.length())
                     break;
@@ -318,7 +329,7 @@ VersionSpec::compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, 0);
+    Part end_part(empty, 0, 0);
     while (true)
     {
         const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
@@ -326,9 +337,26 @@ VersionSpec::compare(const VersionSpec & other) const
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if (*p1 < *p2)
+        if (p1 == &end_part && p2->kind == revision && p2->value == 0)
+            continue;
+
+        if (p2 == &end_part && p1->kind == revision && p1->value == 0)
+            continue;
+
+        unsigned long m1(1), m2(1);
+        for (unsigned long x(0) ; x < p2->multiplier ; ++x)
+            m1 *= 10;
+        for (unsigned long x(0) ; x < p1->multiplier ; ++x)
+            m2 *= 10;
+
+        if (p1->kind < p2->kind)
             return -1;
-        if (*p1 > *p2)
+        if (p1->kind > p2->kind)
+            return 1;
+
+        if (p1->value * m1 < p2->value * m2)
+            return -1;
+        if (p1->value * m1 > p2->value * m2)
             return 1;
     }
 
@@ -342,22 +370,35 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, 0);
+    Part end_part(empty, 0, 0);
     while (true)
     {
-        const Part * p1(v1 == v1_end ? &end_part : &*v1++);
-        while (p1 != &end_part && p1->kind == revision)
-            p1 = (v1 == v1_end ? &end_part : &*v1++);
-
-        const Part * p2(v2 == v2_end ? &end_part : &*v2++);
-        while (p2 != &end_part && p2->kind == revision)
-            p2 = (v2 == v2_end ? &end_part : &*v2++);
-
+        const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
+        const Part * const p2(v2 == v2_end ? &end_part : &*v2++);
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if (*p1 != *p2)
-            return false;
+        if (p1->kind != p2->kind)
+        {
+            if (p1 != &end_part || p2->kind != revision)
+                return false;
+        }
+        else
+        {
+            unsigned long m1(1), m2(1);
+            for (unsigned long x(0) ; x < p2->multiplier ; ++x)
+                m1 *= 10;
+            for (unsigned long x(0) ; x < p1->multiplier ; ++x)
+                m2 *= 10;
+
+            if (p1->kind == revision)
+            {
+                if (p1->value * m1 > p2->value * m2)
+                    return false;
+            }
+            else if (p1->value * m1 != p2->value * m2)
+                return false;
+        }
     }
 
     return true;
@@ -385,13 +426,13 @@ VersionSpec::hash_value() const
         for (std::vector<Part>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
                 r != r_end ; ++r)
         {
-            if (r->kind == empty && r->value == 0)
+            if (r->value == 0 && r->kind == revision)
                 continue;
 
             std::size_t hh(result & h_mask);
             result <<= 5;
             result ^= (hh >> h_shift);
-            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3));
+            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3) + (r->multiplier << 12));
         }
     } while (false);
 
