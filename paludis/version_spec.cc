@@ -251,6 +251,12 @@ VersionSpec::VersionSpec(const std::string & text) :
         if ((p < text.length()) && (0 == text.compare(p, 4, "-scm")))
         {
             p += 4;
+            std::vector<Part>::reverse_iterator i(_imp->parts.rbegin()), i_end(_imp->parts.rend());
+            if (i != i_end)
+                ++i;
+            for ( ; i != i_end ; ++i)
+                if (std::numeric_limits<unsigned long>::max() == i->value)
+                    i->value = 0;
             _imp->parts.push_back(Part(scm, 0, 0));
         }
         else
