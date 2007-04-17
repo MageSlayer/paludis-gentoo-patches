@@ -226,11 +226,20 @@ Implementation<PortageRepositoryProfile>::load_profile_parent(const FSEntry & di
     LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
 
     LineConfigFile::Iterator i(file.begin()), i_end(file.end());
+    bool once(false);
     if (i == i_end)
         Log::get_instance()->message(ll_warning, lc_context, "parent file is empty");
     else
         for ( ; i != i_end ; ++i)
         {
+            if ('#' == i->at(0))
+            {
+                if (! once)
+                    Log::get_instance()->message(ll_qa, lc_context, "Comments not allowed in '" + stringify(dir / "parent") + "'");
+                once = true;
+                continue;
+            }
+
             FSEntry parent_dir(dir);
             do
             {
