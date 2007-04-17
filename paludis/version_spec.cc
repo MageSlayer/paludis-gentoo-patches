@@ -197,7 +197,7 @@ VersionSpec::VersionSpec(const std::string & text) :
                     else
                         break;
 
-                    unsigned x(std::numeric_limits<unsigned long>::max());
+                    unsigned long x(std::numeric_limits<unsigned long>::max());
                     for ( ; p < text.length() ; ++p)
                     {
                         if (text.at(p) < '0' || text.at(p) > '9')
@@ -215,7 +215,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             /* patch level */
             if (p < text.length() && 0 == text.compare(p, 2, "_p") && 0 != text.compare(p, 3, "_pr"))
             {
-                unsigned x(std::numeric_limits<unsigned long>::max());
+                unsigned long x(std::numeric_limits<unsigned long>::max());
                 for (p += 2 ; p < text.length() ; ++p)
                 {
                     if (text.at(p) < '0' || text.at(p) > '9')
@@ -232,7 +232,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             /* try */
             if (p < text.length() && 0 == text.compare(p, 4, "-try"))
             {
-                unsigned x(std::numeric_limits<unsigned long>::max());
+                unsigned long x(std::numeric_limits<unsigned long>::max());
                 for (p += 4 ; p < text.length() ; ++p)
                 {
                     if (text.at(p) < '0' || text.at(p) > '9')
