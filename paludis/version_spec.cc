@@ -349,21 +349,29 @@ VersionSpec::compare(const VersionSpec & other) const
         if (p2 == &end_part && p1->kind == revision && p1->value == 0)
             continue;
 
-        unsigned long m1(1), m2(1);
-        for (unsigned long x(0) ; x < p2->multiplier ; ++x)
-            m1 *= 10;
-        for (unsigned long x(0) ; x < p1->multiplier ; ++x)
-            m2 *= 10;
-
         if (p1->kind < p2->kind)
             return -1;
         if (p1->kind > p2->kind)
             return 1;
 
-        if (p1->value * m1 < p2->value * m2)
-            return -1;
-        if (p1->value * m1 > p2->value * m2)
-            return 1;
+        if ((0 != p1->leading_zeroes) || (0 != p2->leading_zeroes))
+        {
+            std::string p1s(std::string(p1->leading_zeroes, '0') + stringify(p1->value));
+            std::string p2s(std::string(p2->leading_zeroes, '0') + stringify(p2->value));
+            int c(p1s.compare(p2s));
+
+            if (c < 0)
+                return -1;
+            if (c > 0)
+                return 1;
+        }
+        else
+        {
+            if (p1->value < p2->value)
+                return -1;
+            if (p1->value > p2->value)
+                return 1;
+        }
     }
 
     return 0;
@@ -391,19 +399,28 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         }
         else
         {
-            unsigned long m1(1), m2(1);
-            for (unsigned long x(0) ; x < p2->multiplier ; ++x)
-                m1 *= 10;
-            for (unsigned long x(0) ; x < p1->multiplier ; ++x)
-                m2 *= 10;
-
             if (p2->kind == revision)
             {
-                if (p2->value * m2 > p1->value * m1)
+                if (p2->value > p1->value)
                     return false;
             }
-            else if (p1->value * m1 != p2->value * m2)
-                return false;
+            else
+            {
+                if ((0 != p1->leading_zeroes) || (0 != p2->leading_zeroes))
+                {
+                    std::string p1s(std::string(p1->leading_zeroes, '0') + strip_trailing(stringify(p1->value), "0"));
+                    std::string p2s(std::string(p2->leading_zeroes, '0') + strip_trailing(stringify(p2->value), "0"));
+                    int c(p1s.compare(p2s));
+
+                    if (c != 0)
+                        return false;
+                }
+                else
+                {
+                    if (p1->value != p2->value)
+                        return false;
+                }
+            }
         }
     }
 
@@ -438,7 +455,7 @@ VersionSpec::hash_value() const
             std::size_t hh(result & h_mask);
             result <<= 5;
             result ^= (hh >> h_shift);
-            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3) + (r->multiplier << 12));
+            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3) + (r->leading_zeroes << 12));
         }
     } while (false);
 

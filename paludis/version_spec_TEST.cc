@@ -374,6 +374,7 @@ namespace test_cases
             v.push_back(VersionSpec("1.0.0"));
             v.push_back(VersionSpec("1.001"));
             v.push_back(VersionSpec("1.01"));
+            v.push_back(VersionSpec("1.0101"));
             v.push_back(VersionSpec("1.1_alpha3"));
             v.push_back(VersionSpec("1.1"));
             v.push_back(VersionSpec("1.1-r1"));
