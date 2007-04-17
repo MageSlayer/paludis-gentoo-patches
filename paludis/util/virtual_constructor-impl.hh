@@ -34,12 +34,6 @@
 
 namespace paludis
 {
-    /**
-     * Behaviour policy classes for what to do if an appropriate constructor
-     * cannot be found for a VirtualConstructor::find_maker call.
-     *
-     * \ingroup grpvc
-     */
     namespace virtual_constructor_not_found
     {
         template <typename ExceptionType_>
