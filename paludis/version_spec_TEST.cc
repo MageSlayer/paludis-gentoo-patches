@@ -151,22 +151,22 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(! VersionSpec("1.3-r1").tilde_compare(VersionSpec("1.4-r1")));
-            TEST_CHECK(! VersionSpec("1.3-r1").tilde_compare(VersionSpec("1.4")));
-            TEST_CHECK(! VersionSpec("1.3-r1").tilde_compare(VersionSpec("1.2")));
-            TEST_CHECK(! VersionSpec("1.3-r1").tilde_compare(VersionSpec("1.3")));
+            TEST_CHECK(! VersionSpec("1.4-r1").tilde_compare(VersionSpec("1.3-r1")));
+            TEST_CHECK(! VersionSpec("1.4").tilde_compare(VersionSpec("1.3-r1")));
+            TEST_CHECK(! VersionSpec("1.2").tilde_compare(VersionSpec("1.3-r1")));
+            TEST_CHECK(! VersionSpec("1.3").tilde_compare(VersionSpec("1.3-r1")));
 
             TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2")));
-            TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2-r1")));
-            TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2-r1.2.3")));
-            TEST_CHECK(! VersionSpec("1.2").tilde_compare(VersionSpec("1.3")));
-            TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2")));
-            TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2.3")));
+            TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2")));
+            TEST_CHECK(VersionSpec("1.2-r1.2.3").tilde_compare(VersionSpec("1.2")));
+            TEST_CHECK(! VersionSpec("1.3").tilde_compare(VersionSpec("1.2")));
+            TEST_CHECK(VersionSpec("1.2-r2").tilde_compare(VersionSpec("1.2-r1")));
+            TEST_CHECK(VersionSpec("1.2-r2.3").tilde_compare(VersionSpec("1.2-r1")));
             TEST_CHECK(VersionSpec("1.2-r2").tilde_compare(VersionSpec("1.2-r2")));
-            TEST_CHECK(! VersionSpec("1.2-r2").tilde_compare(VersionSpec("1.2-r1")));
-            TEST_CHECK(! VersionSpec("1.2-r2").tilde_compare(VersionSpec("1.2-r1.3")));
-            TEST_CHECK(! VersionSpec("1.2-r2.3").tilde_compare(VersionSpec("1.2-r2")));
-            TEST_CHECK(VersionSpec("1.2-r2.3").tilde_compare(VersionSpec("1.2-r2.4")));
+            TEST_CHECK(! VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2")));
+            TEST_CHECK(! VersionSpec("1.2-r1.3").tilde_compare(VersionSpec("1.2-r2")));
+            TEST_CHECK(! VersionSpec("1.2-r2").tilde_compare(VersionSpec("1.2-r2.3")));
+            TEST_CHECK(VersionSpec("1.2-r2.4").tilde_compare(VersionSpec("1.2-r2.3")));
         }
     } test_version_spec_tilde_compare;
 

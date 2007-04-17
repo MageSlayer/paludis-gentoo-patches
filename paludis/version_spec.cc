@@ -380,7 +380,7 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
 
         if (p1->kind != p2->kind)
         {
-            if (p1 != &end_part || p2->kind != revision)
+            if (p2 != &end_part || p1->kind != revision)
                 return false;
         }
         else
@@ -391,9 +391,9 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
             for (unsigned long x(0) ; x < p1->multiplier ; ++x)
                 m2 *= 10;
 
-            if (p1->kind == revision)
+            if (p2->kind == revision)
             {
-                if (p1->value * m1 > p2->value * m2)
+                if (p2->value * m2 > p1->value * m1)
                     return false;
             }
             else if (p1->value * m1 != p2->value * m2)
