@@ -46,7 +46,7 @@ define(`addse', `define(`selist', selist `$1.se')dnl
 define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
 define(`seheaderlist', seheaderlist `$1-se.hh')dnl
 $1-se.hh : $1.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@ ; them rm -f $`'@ ; exit 1 ; fi
+	if ! $(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
 
 $1-se.cc : $1.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $`'(srcdir)/$1.se > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
