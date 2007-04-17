@@ -55,7 +55,7 @@ DefaultsCheck::operator() (const FSEntry & f) const
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
-    else if (! IsFileWithExtension(".ebuild")(f))
+    else if (! is_file_with_extension(f, ".ebuild", IsFileWithOptions()))
         result << Message(qal_skip, "Not an ebuild file");
     else
     {

@@ -43,18 +43,15 @@ namespace test_cases
 
         void run()
         {
-            IsFileWithExtension a("foo");
-            IsFileWithExtension b("goat");
-
             FSEntry c("teh.foo");
             FSEntry d("is_file_with_extension_TEST_file.goat");
 
             TEST_CHECK(d.exists());
 
-            TEST_CHECK( !a(c) );
-            TEST_CHECK( !a(d) );
-            TEST_CHECK( !b(c) );
-            TEST_CHECK( b(d) );
+            TEST_CHECK(! is_file_with_extension(c, "foo", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_extension(d, "foo", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_extension(c, "goat", IsFileWithOptions()));
+            TEST_CHECK(is_file_with_extension(d, "goat", IsFileWithOptions()));
 
         }
     } test_is_file_with_extension;
@@ -69,20 +66,16 @@ namespace test_cases
 
         void run()
         {
-            IsFileWithExtension a("teh","foo");
-            IsFileWithExtension b("is", "goat");
-            IsFileWithExtension c("with", "goat");
-
             FSEntry d("teh.foo");
             FSEntry e("is_file_with_extension_TEST_file.goat");
 
             TEST_CHECK(e.exists());
 
-            TEST_CHECK( !a(d) );
-            TEST_CHECK( !a(e) );
-            TEST_CHECK( !b(d) );
-            TEST_CHECK( b(e) );
-            TEST_CHECK( !c(e) );
+            TEST_CHECK(! is_file_with_prefix_extension(d, "teh", "foo", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_prefix_extension(e, "teh", "foo", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_prefix_extension(d, "is", "goat", IsFileWithOptions()));
+            TEST_CHECK(is_file_with_prefix_extension(e, "is", "goat", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_prefix_extension(e, "with", "goat", IsFileWithOptions()));
         }
     } test_is_file_with_extension_prefix;
 

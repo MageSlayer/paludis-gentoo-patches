@@ -7,6 +7,12 @@ define(`filelist', `')dnl
 define(`headerlist', `')dnl
 define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
+define(`selist', `')dnl
+define(`secleanlist', `')dnl
+define(`seheaderlist', `')dnl
+define(`srlist', `')dnl
+define(`srcleanlist', `')dnl
+define(`srheaderlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
@@ -20,21 +26,45 @@ define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', header
 define(`addhhx', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
+define(`addsr', `define(`srlist', srlist `$1.sr')dnl
+define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
+define(`srheaderlist', srheaderlist `$1-sr.hh')dnl
+$1-sr.hh : $1.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
+
+$1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
+
+')dnl
+define(`addse', `define(`selist', selist `$1.se')dnl
+define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
+define(`seheaderlist', seheaderlist `$1-se.hh')dnl
+$1-se.hh : $1.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
+
+$1-se.cc : $1.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $`'(srcdir)/$1.se > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
+
+')dnl
 define(`addthis', `dnl
 ifelse(`$2', `hh', `addhh(`$1')', `')dnl
 ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
+ifelse(`$2', `sr', `addsr(`$1')', `')dnl
+ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
-addthis(`$1',`$5')addthis(`$1',`$6')')dnl
+addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
 
 include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
 	hashed_containers.hh util.hh
+DISTCLEANFILES = srcleanlist secleanlist
+BUILT_SOURCES = srcleanlist secleanlist
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -68,7 +98,7 @@ lib_LTLIBRARIES = libpaludisutil.la
 endif
 
 paludis_util_includedir = $(includedir)/paludis/util/
-paludis_util_include_HEADERS = headerlist
+paludis_util_include_HEADERS = headerlist srheaderlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

@@ -22,6 +22,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <set>
@@ -29,6 +30,10 @@
 #include <stdint.h>
 
 using namespace paludis;
+
+template class VirtualConstructor<std::string,
+         std::tr1::shared_ptr<Environment> (*) (const std::string &),
+         virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >;
 
 NoSuchEnvironmentTypeError::NoSuchEnvironmentTypeError(const std::string & format) throw ():
     ConfigurationError("No available maker for environment type '" + format + "'")
@@ -78,8 +83,8 @@ EnvironmentMaker::load_dir(const FSEntry & so_dir)
         if (d->is_directory())
             load_dir(*d);
 
-        if (! IsFileWithExtension(".so." + stringify(100 * PALUDIS_VERSION_MAJOR +
-                        PALUDIS_VERSION_MINOR))(*d))
+        if (! is_file_with_extension(*d, ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
+                    IsFileWithOptions()))
             continue;
 
         /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it

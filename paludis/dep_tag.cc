@@ -19,6 +19,7 @@
 
 #include "dep_tag.hh"
 #include <paludis/util/compare.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.
@@ -27,6 +28,9 @@
  */
 
 using namespace paludis;
+
+template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
+         virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
 
 #include <paludis/dep_tag-sr.cc>
 

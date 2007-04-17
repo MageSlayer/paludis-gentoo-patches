@@ -35,6 +35,7 @@
 #include <list>
 #include <algorithm>
 #include <set>
+#include <vector>
 
 #include <strings.h>
 #include <ctype.h>

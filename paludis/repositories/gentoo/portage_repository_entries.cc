@@ -20,8 +20,14 @@
 #include "portage_repository_entries.hh"
 #include "ebuild_entries.hh"
 #include "ebin_entries.hh"
+#include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace paludis;
+
+template class VirtualConstructor<std::string,
+         std::tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
+                 const PortageRepositoryParams &),
+         virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >;
 
 PortageRepositoryEntries::PortageRepositoryEntries(const std::string & ext) :
     _ext(ext)

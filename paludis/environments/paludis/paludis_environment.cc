@@ -677,9 +677,9 @@ PaludisEnvironment::sets_list() const
         for (DirIterator d(FSEntry(_imp->config->config_dir()) / "sets"), d_end ;
                 d != d_end ; ++d)
         {
-            if (IsFileWithExtension(".conf")(*d))
+            if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
                 result->insert(SetName(strip_trailing_string(d->basename(), ".conf")));
-            else if (IsFileWithExtension(".bash")(*d))
+            else if (is_file_with_extension(*d, ".bash", IsFileWithOptions()))
                 result->insert(SetName(strip_trailing_string(d->basename(), ".bash")));
         }
 

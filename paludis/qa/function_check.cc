@@ -38,8 +38,8 @@ FunctionCheck::operator() (const FSEntry & f) const
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file.");
-    else if (! IsFileWithExtension(".ebuild")(f) &&
-            ! IsFileWithExtension(".eclass")(f))
+    else if (! is_file_with_extension(f, ".ebuild", IsFileWithOptions()) &&
+            ! is_file_with_extension(f, ".eclass", IsFileWithOptions()))
         result << Message(qal_skip, "Not an ebuild or eclass.");
     else
     {

@@ -28,6 +28,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <string>
 #include <set>

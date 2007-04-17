@@ -36,20 +36,20 @@ define(`addsr', `define(`srlist', srlist `$1.sr')dnl
 define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
 define(`srheaderlist', srheaderlist `$1-sr.hh')dnl
 $1-sr.hh : $1.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@
+	if ! $(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
 
 $1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@
+	if ! $(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
 
 ')dnl
 define(`addse', `define(`selist', selist `$1.se')dnl
 define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
 define(`seheaderlist', seheaderlist `$1-se.hh')dnl
 $1-se.hh : $1.se $(top_srcdir)/misc/make_se.bash
-	$(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@
+	if ! $(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@ ; them rm -f $`'@ ; exit 1 ; fi
 
 $1-se.cc : $1.se $(top_srcdir)/misc/make_se.bash
-	$(top_srcdir)/misc/make_se.bash --source $`'(srcdir)/$1.se > $`'@
+	if ! $(top_srcdir)/misc/make_se.bash --source $`'(srcdir)/$1.se > $`'@ ; then rm -f $`'@ ; exit 1 ; fi
 
 ')dnl
 define(`addthis', `dnl

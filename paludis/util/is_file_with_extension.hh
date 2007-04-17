@@ -20,8 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH
 #define PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH 1
 
-#include <functional>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/options.hh>
+#include <functional>
 #include <string>
 
 /** \file
@@ -32,14 +33,51 @@
 
 namespace paludis
 {
+
+#include <paludis/util/is_file_with_extension-se.hh>
+
+    /**
+     * Options for is_file_with_prefix_extension() and is_file_with_extension().
+     *
+     * \see IsFileWithOption
+     * \see is_file_with_prefix_extension
+     * \see is_file_with_extension
+     * \ingroup grpfilesystem
+     */
+    typedef Options<IsFileWithOption> IsFileWithOptions;
+
+    /**
+     * Return whether an FSEntry is a file with a given extension.
+     *
+     * \see is_file_with_prefix_extension()
+     *
+     * \ingroup grpfilesystem
+     */
+    bool is_file_with_extension(const FSEntry &, const std::string &, const IsFileWithOptions &);
+
+    /**
+     * Return whether an FSEntry is a file with a given prefix and a given
+     * extension prefix.
+     *
+     * \see is_file_with_extension()
+     *
+     * \ingroup grpfilesystem
+     */
+    bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &);
+
     /**
      * The IsFileWithExtension class is a functor that determines whether an
      * FSEntry instance is a file with a given extension and (optionally) a
      * given filename prefix.
      *
      * \ingroup grpfilesystem
+     * \deprecated Use is_file_with_extension and std::tr1::bind.
      */
-    class PALUDIS_VISIBLE IsFileWithExtension :
+#ifdef DOXYGEN
+    class IsFileWithExtension :
+#else
+    class PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((deprecated)) IsFileWithExtension :
+#endif
         public std::unary_function<bool, FSEntry>
     {
         private:
@@ -50,12 +88,12 @@ namespace paludis
             /**
              * Constructor.
              */
-            IsFileWithExtension(const std::string & ext);
+            IsFileWithExtension(const std::string & ext) PALUDIS_ATTRIBUTE((deprecated));
 
             /**
              * Constructor.
              */
-            IsFileWithExtension(const std::string & prefix, const std::string & ext);
+            IsFileWithExtension(const std::string & prefix, const std::string & ext) PALUDIS_ATTRIBUTE((deprecated));
 
             /**
              * Operator.

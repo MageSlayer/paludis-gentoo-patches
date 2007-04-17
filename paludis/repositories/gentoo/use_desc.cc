@@ -60,7 +60,7 @@ namespace paludis
 
             if ((f / "desc").is_directory())
                 for (DirIterator d(f / "desc"), d_end ; d != d_end ; ++d)
-                    if (IsFileWithExtension(".desc")(*d))
+                    if (is_file_with_extension(*d, ".desc", IsFileWithOptions()))
                         add(*d, strip_trailing_string(d->basename(), ".desc") + "_");
         }
     };

@@ -25,11 +25,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <tr1/functional>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
@@ -302,7 +304,7 @@ namespace
             std::list<FSEntry> files((DirIterator(dir)), DirIterator());
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
-                if (! IsFileWithExtension(".ebuild")(*f))
+                if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
                     continue;
 
                 qa::EbuildCheckData d(
@@ -323,7 +325,7 @@ namespace
             std::list<FSEntry> files((DirIterator(dir)), DirIterator());
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
-                if (! IsFileWithExtension(".ebuild")(*f))
+                if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
                     continue;
 
                 for (RepositoryPortageInterface::ProfilesIterator
@@ -444,7 +446,7 @@ namespace
                 continue;
             else if ('.' == d->basename().at(0))
                 continue;
-            else if (IsFileWithExtension(".eclass")(d->basename()))
+            else if (is_file_with_extension(d->basename(), ".eclass", IsFileWithOptions()))
             {
                 bool fatal(false);
 
@@ -523,6 +525,8 @@ namespace
     bool
     do_check(const FSEntry & dir)
     {
+        using namespace std::tr1::placeholders;
+
         Context context("When checking directory '" + stringify(dir) + "':");
 
         if (dir.basename() == "eclass" && dir.is_directory())
@@ -539,8 +543,8 @@ namespace
             return do_check_profiles_dir(dir, env);
         }
 
-        if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
-                        dir.basename() + "-", ".ebuild")))
+        if (std::count_if(DirIterator(dir), DirIterator(),
+                    std::tr1::bind(&is_file_with_prefix_extension, _1, dir.basename() + "-", ".ebuild", IsFileWithOptions())))
         {
             qa::QAEnvironment env(dir.dirname().dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
                     QualudisCommandLine::get_instance()->a_master_repository_dir.argument());

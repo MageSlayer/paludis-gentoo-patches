@@ -126,7 +126,7 @@ void do_display_profiles_use(NoConfigEnvironment & env)
         for (DirIterator d(env.main_repository_dir() / "profiles" / "desc"), d_end ;
                 d != d_end ; ++d)
         {
-            if (! IsFileWithExtension(".desc")(*d))
+            if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
                 continue;
 
             std::string prefix(strip_trailing_string(d->basename(), ".desc"));

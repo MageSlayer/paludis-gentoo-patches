@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,11 +21,30 @@
 
 using namespace paludis;
 
-/** \file
- * Implementation of IsFileWithExtension.
- *
- * \ingroup grpfilesystem
- */
+#include <paludis/util/is_file_with_extension-se.cc>
+
+bool
+paludis::is_file_with_extension(const FSEntry & f, const std::string & s, const IsFileWithOptions & o)
+{
+    return is_file_with_prefix_extension(f, "", s, o);
+}
+
+bool
+paludis::is_file_with_prefix_extension(const FSEntry & f, const std::string & prefix,
+        const std::string & ext, const IsFileWithOptions & o)
+{
+    const std::string filename(f.basename());
+
+    if (filename.length() < ext.length() + prefix.length())
+        return false;
+
+    if (0 != filename.compare(filename.length() - ext.length(), ext.length(), ext))
+        return false;
+    if (0 != filename.compare(0, prefix.length(), prefix))
+        return false;
+
+    return f.is_regular_file() || ((! o[ifwo_no_follow_symlinks]) && f.exists() && f.realpath().is_regular_file());
+}
 
 IsFileWithExtension::IsFileWithExtension(const std::string & ext) :
     _prefix(""),
@@ -42,15 +61,6 @@ IsFileWithExtension::IsFileWithExtension(const std::string & prefix, const std::
 bool
 IsFileWithExtension::operator() (const FSEntry & f) const
 {
-    const std::string filename(f.basename());
-
-    if (filename.length() < _ext.length() + _prefix.length())
-        return false;
-    if (0 != filename.compare(filename.length() - _ext.length(),
-                _ext.length(), _ext))
-        return false;
-    if (0 != filename.compare(0, _prefix.length(), _prefix))
-        return false;
-    return f.is_regular_file() || (f.exists() && f.realpath().is_regular_file());
+    return is_file_with_prefix_extension(f, _prefix, _ext, IsFileWithOptions());
 }
 

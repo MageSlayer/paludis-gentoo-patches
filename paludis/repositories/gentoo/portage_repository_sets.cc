@@ -36,6 +36,7 @@
 #include <paludis/util/tokeniser.hh>
 
 #include <list>
+#include <tr1/functional>
 #include <set>
 
 #include "config.h"
@@ -119,10 +120,11 @@ PortageRepositorySets::sets_list() const
 
     try
     {
+        using namespace std::tr1::placeholders;
+
         std::list<FSEntry> repo_sets;
         std::copy(DirIterator(_imp->params.setsdir), DirIterator(),
-            filter_inserter(std::back_inserter(repo_sets),
-            IsFileWithExtension(".conf")));
+            filter_inserter(std::back_inserter(repo_sets), std::tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
 
         std::list<FSEntry>::const_iterator f(repo_sets.begin()),
             f_end(repo_sets.end());
@@ -245,7 +247,7 @@ PortageRepositorySets::security_set(bool insecurity) const
 
     for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
     {
-        if (! IsFileWithExtension("glsa-", ".xml")(*f))
+        if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", IsFileWithOptions()))
             continue;
 
         Context local_context("When parsing security advisory '" + stringify(*f) + "':");

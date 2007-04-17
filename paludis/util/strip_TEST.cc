@@ -44,13 +44,11 @@ namespace test_cases
 
         void run()
         {
-            StripLeadingString a("foo");
-
-            TEST_CHECK("bar" == a("foobar"));
-            TEST_CHECK("fishbar" == a("fishbar"));
-            TEST_CHECK("" == a("foo"));
-            TEST_CHECK("fishfoobar" == a("fishfoobar"));
-            TEST_CHECK("blahfoo" == a("blahfoo"));
+            TEST_CHECK("bar" == strip_leading_string("foobar", "foo"));
+            TEST_CHECK("fishbar" == strip_leading_string("fishbar", "foo"));
+            TEST_CHECK("" == strip_leading_string("foo", "foo"));
+            TEST_CHECK("fishfoobar" == strip_leading_string("fishfoobar", "foo"));
+            TEST_CHECK("blahfoo" == strip_leading_string("blahfoo", "foo"));
         }
     } test_strip_leading_string;
 
@@ -64,13 +62,11 @@ namespace test_cases
 
         void run()
         {
-            StripLeading a("foo");
-
-            TEST_CHECK("bar" == a("foobar"));
-            TEST_CHECK("ishbar" == a("fishbar"));
-            TEST_CHECK("" == a("foo"));
-            TEST_CHECK("ishfoobar" == a("fishfoobar"));
-            TEST_CHECK("blahfoo" == a("blahfoo"));
+            TEST_CHECK("bar" == strip_leading("foobar", "foo"));
+            TEST_CHECK("ishbar" == strip_leading("fishbar", "foo"));
+            TEST_CHECK("" == strip_leading("foo", "foo"));
+            TEST_CHECK("ishfoobar" == strip_leading("fishfoobar", "foo"));
+            TEST_CHECK("blahfoo" == strip_leading("blahfoo", "foo"));
         }
     } test_strip_leading;
 
@@ -84,13 +80,11 @@ namespace test_cases
 
         void run()
         {
-            StripTrailingString a("foo");
-
-            TEST_CHECK("foobar" == a("foobar"));
-            TEST_CHECK("fishbar" == a("fishbar"));
-            TEST_CHECK("" == a("foo"));
-            TEST_CHECK("fishfoobar" == a("fishfoobar"));
-            TEST_CHECK("blah" == a("blahfoo"));
+            TEST_CHECK("foobar" == strip_trailing_string("foobar", "foo"));
+            TEST_CHECK("fishbar" == strip_trailing_string("fishbar", "foo"));
+            TEST_CHECK("" == strip_trailing_string("foo", "foo"));
+            TEST_CHECK("fishfoobar" == strip_trailing_string("fishfoobar", "foo"));
+            TEST_CHECK("blah" == strip_trailing_string("blahfoo", "foo"));
         }
     } test_strip_trailing_string;
 
@@ -104,15 +98,12 @@ namespace test_cases
 
         void run()
         {
-            StripTrailing a("foo");
-
-            TEST_CHECK("foobar" == a("foobar"));
-            TEST_CHECK("fishbar" == a("fishbar"));
-            TEST_CHECK("" == a("foo"));
-            TEST_CHECK("fishfoobar" == a("fishfoobar"));
-            TEST_CHECK("blah" == a("blahfoo"));
+            TEST_CHECK("foobar" == strip_trailing("foobar", "foo"));
+            TEST_CHECK("fishbar" == strip_trailing("fishbar", "foo"));
+            TEST_CHECK("" == strip_trailing("foo", "foo"));
+            TEST_CHECK("fishfoobar" == strip_trailing("fishfoobar", "foo"));
+            TEST_CHECK("blah" == strip_trailing("blahfoo", "foo"));
         }
     } test_strip_trailing;
-
 }
 

@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_IsFileWithOption()
+{
+    prefix ifwo
+
+    key ifwo_no_follow_symlinks    "Do not follow symlinks"
+
+    doxygen_comment << "END"
+        /**
+         * Options for is_file_with_extension() and is_file_with_prefix_extension().
+         *
+         * \see IsFileWithOptions
+         * \see is_file_with_extension()
+         * \see is_file_with_prefix_extension()
+         * \ingroup grpfilesystem
+         */
+END
+}
+
+
+

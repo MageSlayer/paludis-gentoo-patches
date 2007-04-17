@@ -20,9 +20,14 @@
 #include "extractor.hh"
 #include "description_extractor.hh"
 #include "name_extractor.hh"
+#include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
+
+template class paludis::VirtualConstructor<std::string,
+         std::tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
+         paludis::virtual_constructor_not_found::ThrowException<NoSuchExtractorError> >;
 
 NoSuchExtractorError::NoSuchExtractorError(const std::string & m) throw () :
     Exception("No such extractor '" + m + "'")

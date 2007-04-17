@@ -20,9 +20,14 @@
 #include "matcher.hh"
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
+#include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
+
+template class paludis::VirtualConstructor<std::string,
+         std::tr1::shared_ptr<Matcher> (*) (const std::string &),
+         paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >;
 
 Matcher::Matcher()
 {

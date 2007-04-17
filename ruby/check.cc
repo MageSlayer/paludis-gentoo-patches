@@ -21,6 +21,7 @@
 #include <paludis/qa/check.hh>
 #include <paludis/qa/package_dir_check.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/qa/qa.hh>
 #include <ruby.h>
 

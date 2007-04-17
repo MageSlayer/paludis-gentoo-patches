@@ -25,6 +25,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <fstream>
 #include <iostream>
+#include <vector>
 #include <map>
 
 using namespace paludis;

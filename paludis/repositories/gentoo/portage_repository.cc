@@ -61,6 +61,7 @@
 #include <algorithm>
 #include <vector>
 #include <limits>
+#include <tr1/functional>
 
 #include <strings.h>
 #include <ctype.h>
@@ -413,6 +414,8 @@ PortageRepository::do_category_names() const
 std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 PortageRepository::do_package_names(const CategoryNamePart & c) const
 {
+    using namespace std::tr1::placeholders;
+
     /* this isn't particularly fast because it isn't called very often. avoid
      * changing the data structures used to make this faster at the expense of
      * slowing down single item queries. */
@@ -431,7 +434,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             if (! d->is_directory())
                 continue;
             if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                        IsFileWithExtension(_imp->entries_ptr->file_extension())))
+                        std::tr1::bind(&is_file_with_extension, _1, _imp->entries_ptr->file_extension(), IsFileWithOptions())))
                 continue;
 
             try
@@ -570,8 +573,8 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
     for (DirIterator e(path), e_end ; e != e_end ; ++e)
     {
-        if (! IsFileWithExtension(stringify(n.package) + "-",
-                    _imp->entries_ptr->file_extension())(*e))
+        if (! is_file_with_prefix_extension(*e, stringify(n.package) + "-", _imp->entries_ptr->file_extension(),
+                    IsFileWithOptions()))
             continue;
 
         try

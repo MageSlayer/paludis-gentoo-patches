@@ -25,6 +25,7 @@
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/log.hh>
 #include <paludis/query.hh>
+#include <vector>
 #include "vr_entry.hh"
 
 using namespace paludis;

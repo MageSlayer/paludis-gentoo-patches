@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
 
 #include <list>
 #include <map>

@@ -22,6 +22,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <dlfcn.h>
@@ -37,6 +38,11 @@
 #endif
 
 using namespace paludis;
+
+template class VirtualConstructor<std::string,
+         std::tr1::shared_ptr<Repository> (*) (Environment * const,
+                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >),
+            virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >;
 
 NoSuchRepositoryTypeError::NoSuchRepositoryTypeError(const std::string & format) throw ():
     ConfigurationError("No available maker for repository type '" + format + "'")
@@ -86,8 +92,8 @@ RepositoryMaker::load_dir(const FSEntry & so_dir)
         if (d->is_directory())
             load_dir(*d);
 
-        if (! IsFileWithExtension(".so." + stringify(100 * PALUDIS_VERSION_MAJOR +
-                        PALUDIS_VERSION_MINOR))(*d))
+        if (! is_file_with_extension(*d, ".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR),
+                    IsFileWithOptions()))
             continue;
 
         /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it

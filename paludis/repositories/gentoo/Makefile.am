@@ -122,6 +122,7 @@ libpaludisgentoorepository_la_LIBADD = \
 else
 
 libpaludisgentoorepository_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/merger/libpaludismerger.la \
 	$(top_builddir)/paludis/digests/libpaludisdigests.la \
 	$(top_builddir)/paludis/libpaludis.la \

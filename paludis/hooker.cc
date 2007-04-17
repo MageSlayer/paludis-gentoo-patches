@@ -320,14 +320,14 @@ Hooker::perform_hook(const Hook & hook) const
 
             for (DirIterator e(d->first / hook.name()), e_end ; e != e_end ; ++e)
             {
-                if (IsFileWithExtension(".bash")(*e))
+                if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
                                     std::tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name()) + "'");
 
-                if (IsFileWithExtension(".hook")(*e))
+                if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
                                     std::tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)

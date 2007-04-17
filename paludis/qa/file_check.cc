@@ -33,8 +33,13 @@
 #include <paludis/qa/variable_assigns_check.hh>
 #include <paludis/qa/whitespace_check.hh>
 
+#include <paludis/util/virtual_constructor-impl.hh>
+
 using namespace paludis;
 using namespace paludis::qa;
+
+template class VirtualConstructor<std::string, std::tr1::shared_ptr<FileCheck> (*) (),
+         virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >;
 
 FileCheck::FileCheck()
 {

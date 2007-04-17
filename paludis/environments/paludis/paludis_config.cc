@@ -34,11 +34,13 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
+#include <tr1/functional>
 #include <fstream>
 #include <algorithm>
 #include <sstream>
 #include <list>
 #include <map>
+#include <vector>
 
 #include <ctype.h>
 #include <sys/types.h>
@@ -317,6 +319,8 @@ PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string &
 PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & suffix) :
     PrivateImplementationPattern<PaludisConfig>(new Implementation<PaludisConfig>(e))
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When loading paludis configuration:");
 
     /* indirection */
@@ -424,9 +428,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 continue;
 
             std::copy(DirIterator(*dir), DirIterator(),
-                    filter_inserter(std::back_inserter(repo_files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(repo_files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(*dir), DirIterator(),
-                    filter_inserter(std::back_inserter(repo_files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(repo_files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         std::list<std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > > later_keys;
@@ -436,7 +440,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
             std::tr1::shared_ptr<KeyValueConfigFile> kv;
-            if (IsFileWithExtension(".bash")(*repo_file))
+            if (is_file_with_extension(*repo_file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*repo_file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -508,9 +512,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "keywords.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -522,7 +526,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 continue;
 
             std::tr1::shared_ptr<LineConfigFile> f;
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -591,9 +595,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "licenses.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -605,7 +609,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 continue;
 
             std::tr1::shared_ptr<LineConfigFile> f;
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -672,9 +676,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "package_mask.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -687,7 +691,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             std::tr1::shared_ptr<LineConfigFile> f;
 
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -740,9 +744,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "package_unmask.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -755,7 +759,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             std::tr1::shared_ptr<LineConfigFile> f;
 
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -808,9 +812,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "use.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "use.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "use.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -823,7 +827,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             std::tr1::shared_ptr<LineConfigFile> f;
 
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -968,9 +972,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / "mirrors.conf.d").exists())
         {
             std::copy(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::copy(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(),
-                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".bash")));
+                    filter_inserter(std::back_inserter(files), std::tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -983,7 +987,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             std::tr1::shared_ptr<LineConfigFile> f;
 
-            if (IsFileWithExtension(".bash")(*file))
+            if (is_file_with_extension(*file, ".bash", IsFileWithOptions()))
             {
                 Command cmd(Command("bash '" + stringify(*file) + "'")
                         .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))

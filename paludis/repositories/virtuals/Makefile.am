@@ -39,6 +39,7 @@ libpaludisvirtualsrepository_la_SOURCES = \
 if ! MONOLITHIC
 
 libpaludisvirtualsrepository_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
