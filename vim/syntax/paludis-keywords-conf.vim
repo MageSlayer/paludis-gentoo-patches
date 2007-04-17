@@ -19,6 +19,8 @@ syn region PaludisKeywordsConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisKeywordsConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
 	    \ nextgroup=PaludisKeywordsConfKeyword,PaludisKeywordsConfContinuation
+            \ contains=PaludisKeywordsConfWildcard
+syn match  PaludisKeywordsConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisKeywordsConfSet /^[^ \t#\/]\+\S\@!/
 	    \ nextgroup=PaludisKeywordsConfKeyword,PaludisKeywordsConfContinuation skipwhite
 syn match  PaludisKeywordsConfKeyword contained /-\?\~\?[a-zA-Z0-9\-_*]\+/
@@ -28,6 +30,7 @@ syn match  PaludisKeywordsConfContinuation contained /\\$/
 
 hi def link PaludisKeywordsConfComment          Comment
 hi def link PaludisKeywordsConfPDS              Identifier
+hi def link PaludisKeywordsConfWildcard         Special
 hi def link PaludisKeywordsConfSet              Special
 hi def link PaludisKeywordsConfKeyword          Keyword
 hi def link PaludisKeywordsConfContinuation     Preproc

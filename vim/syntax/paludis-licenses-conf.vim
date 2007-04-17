@@ -19,6 +19,8 @@ syn region PaludisLicensesConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisLicensesConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
 	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation
+            \ contains=PaludisLicensesConfWildcard
+syn match  PaludisLicensesConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisLicensesConfSet /^[^ \t#\/]\+\S\@!/
 	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfLicense contained /-\?[a-zA-Z0-9\-_*]\+/
@@ -28,6 +30,7 @@ syn match  PaludisLicensesConfContinuation contained /\\$/
 
 hi def link PaludisLicensesConfComment          Comment
 hi def link PaludisLicensesConfPDS              Identifier
+hi def link PaludisLicensesConfWildcard         Special
 hi def link PaludisLicensesConfSet              Special
 hi def link PaludisLicensesConfLicense          Keyword
 hi def link PaludisLicensesConfContinuation     Preproc

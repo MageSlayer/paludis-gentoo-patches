@@ -18,11 +18,14 @@ endif
 syn region PaludisPackageMaskConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisPackageMaskConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
+            \ contains=PaludisPackageMaskConfWildcard
+syn match  PaludisPackageMaskConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisPackageMaskConfSet /^[^ \t#\/]\+\S\@!/
 
 hi def link PaludisPackageMaskConfComment          Comment
 hi def link PaludisPackageMaskConfPDS              Identifier
 hi def link PaludisPackageMaskConfSet              Special
+hi def link PaludisPackageMaskConfWildcard         Special
 
 let b:current_syntax = "paludis-package-mask-conf"
 

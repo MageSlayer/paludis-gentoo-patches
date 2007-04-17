@@ -19,6 +19,8 @@ syn region PaludisUseConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisUseConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfContinuation
+            \ contains=PaludisUseConfWildcard
+syn match  PaludisUseConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisUseConfSet /^[^ \t#\/]\+\S\@!/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
 syn match  PaludisUseConfFlag contained /[a-zA-Z0-9\-_*]\+:\@!/
@@ -31,6 +33,7 @@ syn match  PaludisUseConfContinuation contained /\\$/
 hi def link PaludisUseConfComment          Comment
 hi def link PaludisUseConfPDS              Identifier
 hi def link PaludisUseConfSet              Special
+hi def link PaludisUseConfWildcard         Special
 hi def link PaludisUseConfPrefix           Constant
 hi def link PaludisUseConfFlag             Keyword
 hi def link PaludisUseConfContinuation     Preproc
