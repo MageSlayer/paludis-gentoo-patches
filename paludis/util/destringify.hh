@@ -74,7 +74,7 @@ namespace paludis
                 std::istringstream ss(s);
                 Type_ t;
                 ss >> t;
-                if (!ss.eof() || ss.bad())
+                if (! ss.eof() || ss.fail())
                     throw Exception_(s);
                 return t;
             }

@@ -48,6 +48,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(destringify<int>("-99"),   -99);
             TEST_CHECK_EQUAL(destringify<int>(" 12345"), 12345);
             TEST_CHECK_THROWS(destringify<int>(""), DestringifyError);
+            TEST_CHECK_THROWS(destringify<int>("x"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<int>("10000000000000000000000000000000000000000000000"), DestringifyError);
         }
     } test_case_destringify_int;
 
