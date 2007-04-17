@@ -579,11 +579,14 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
         try
         {
-            v->insert(VersionSpec(strip_leading_string(
-                            strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
-                            stringify(n.package) + "-")));
+            if (! v->insert(VersionSpec(strip_leading_string(
+                                strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
+                                stringify(n.package) + "-"))))
+                Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
+                        + "' for '" + stringify(n) + "' in repository '" + stringify(name())
+                        + "' because another equivalent version already exists");
         }
-        catch (const NameError & ee)
+        catch (const Exception & ee)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
                     + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
