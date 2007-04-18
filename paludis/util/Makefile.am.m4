@@ -69,7 +69,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
-EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 \
+EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist secleanlist \
 	testscriptlist \
 	test_extras.cc
 SUBDIRS = .
