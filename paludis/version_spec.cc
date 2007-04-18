@@ -136,24 +136,32 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (number_part.empty())
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
 
-            if (first)
-                _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
-            else
+            try
             {
-                if ('0' == number_part.at(0))
-                {
-                    q = number_part.find_first_not_of("0");
-                    if (std::string::npos == q)
-                        _imp->parts.push_back(Part(number, 0, 0));
-                    else
-                        _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(strip_trailing(number_part, "0")), q));
-                }
-                else
+                if (first)
                     _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
-            }
+                else
+                {
+                    if ('0' == number_part.at(0))
+                    {
+                        q = number_part.find_first_not_of("0");
+                        if (std::string::npos == q)
+                            _imp->parts.push_back(Part(number, 0, 0));
+                        else
+                            _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(
+                                            strip_trailing(number_part, "0")), q));
+                    }
+                    else
+                        _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
+                }
 
-            if (p < text.length() && '.' != text.at(p))
-                break;
+                if (p < text.length() && '.' != text.at(p))
+                    break;
+            }
+            catch (const BadVersionSpecError &)
+            {
+                throw BadVersionSpecError(text, "Number part '" + number_part + "' contains more than the permitted eight digits");
+            }
 
             ++p;
             first = false;
