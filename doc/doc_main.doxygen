@@ -73,7 +73,27 @@
  * \ingroup grplibpaludis
  */
 
+/** \defgroup grphooker Hooker
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grpmerger Merger
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grpunmerger Unmerger
+ *
+ * \ingroup grplibpaludis
+ */
+
 /** \defgroup grpnames Names
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grphosttuplename Host tuple names
  *
  * \ingroup grplibpaludis
  */
@@ -110,9 +130,19 @@
  * \ingroup grpconfigfile
  */
 
+/** \defgroup grpsetfile Set files
+ *
+ * \ingroup grpconfigfile
+ */
+
 // ----- grpenvironment Subgroups -----
 
-/** \defgroup grpdefaultenvironment Default environment
+/** \defgroup grppaludisenvironment Paludis environment
+ *
+ * \ingroup grpenvironment
+ */
+
+/** \defgroup grpporgateenvironment Portage environment
  *
  * \ingroup grpenvironment
  */
@@ -137,11 +167,11 @@
  * \ingroup grpenvironment
  */
 
-// ----- grpdefaultenvironment Subgroups -----
+// ----- grppaludisenvironment Subgroups -----
 
-/** \defgroup grpdefaultconfig Default configuration
+/** \defgroup grppaludisconfig Paludis environment configuration
  *
- * \ingroup grpdefaultenvironment
+ * \ingroup grppaludisenvironment
  */
 
 // --- grppackagedatabase Subgroups -----
@@ -151,9 +181,19 @@
  * \ingroup grppackagedatabase
  */
 
+/** \defgroup grpquery Queries
+ *
+ * \ingroup grppackagedatabase
+ */
+
 // --- grprepository Subgroups -----
 
 /** \defgroup grpfakerepository Fake repository
+ *
+ * \ingroup grprepository
+ */
+
+/** \defgroup grpgemsrepository Gems repository
  *
  * \ingroup grprepository
  */
@@ -276,12 +316,22 @@
  * \ingroup grplibpaludisutil
  */
 
+/** \defgroup grpgraph Graphs
+ *
+ * \ingroup grplibpaludisutil
+ */
+
 /** \defgroup grpiterators Iterators
  *
  * \ingroup grplibpaludisutil
  */
 
 /** \defgroup grpoptions Options Container
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpnamedarguments Named arguments
  *
  * \ingroup grplibpaludisutil
  */

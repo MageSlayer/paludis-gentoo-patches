@@ -81,7 +81,7 @@ namespace paludis
      * of an ArchitectureNamePart.
      *
      * \ingroup grpnames
-     * \ingroup hosttuplename
+     * \ingroup grphosttuplename
      */
     struct ArchitectureNamePartValidator :
         private InstantiationPolicy<ArchitectureNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -124,7 +124,7 @@ namespace paludis
      * of an ManufacturerNamePart.
      *
      * \ingroup grpnames
-     * \ingroup hosttuplename
+     * \ingroup grphosttuplename
      */
     struct ManufacturerNamePartValidator :
         private InstantiationPolicy<ManufacturerNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -167,7 +167,7 @@ namespace paludis
      * of an KernelNamePart.
      *
      * \ingroup grpnames
-     * \ingroup hosttuplename
+     * \ingroup grphosttuplename
      */
     struct KernelNamePartValidator :
         private InstantiationPolicy<KernelNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -210,7 +210,7 @@ namespace paludis
      * of an UserlandNamePart.
      *
      * \ingroup grpnames
-     * \ingroup hosttuplename
+     * \ingroup grphosttuplename
      */
     struct UserlandNamePartValidator :
         private InstantiationPolicy<UserlandNamePartValidator, instantiation_method::NonInstantiableTag>

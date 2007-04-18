@@ -41,7 +41,7 @@ make_enum_KeyValueConfigFileOption()
          *
          * \see KeyValueConfigFile
          * \see KeyValueConfigFileOptions
-         * \ingroup grpkeyvalueconfigfile
+         * \ingroup grpkvconfigfile
          */
 END
 }

@@ -11,8 +11,9 @@ than the full class lists.
 
 Some classes you may find useful:
 
-- paludis::Environment
+- paludis::Environment, which is usually created using paludis::EnvironmentMaker
 - paludis::PackageDatabase
 - paludis::Repository and the associated interface classes
+- paludis::VersionMetadata
 
 */
