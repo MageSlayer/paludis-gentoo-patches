@@ -39,7 +39,7 @@ and library code is in paludis/ .</p>
 </pre>
 
 <p>Compile this using <code>g++ -Wall -lpaludis
-    -lpaludisdefaultenvironment</code>. If your compiler lacks tr1 support, you
+    -lpaludisenvironments</code>. If your compiler lacks tr1 support, you
 may also need <code>-I/usr/include/paludis/compat</code>.</p>
 
 <p>The same application written in Ruby will look something like:</p>
@@ -141,30 +141,32 @@ type that can be written to a <code>std::ostream</code>.</p>
 
 <h2>The Environment</h2>
 
-<p>At the heart of the Paludis API is a <cpde>paludis::Environment</code> subclass instance. All
+<p>At the heart of the Paludis API is a <code>paludis::Environment</code> subclass instance. All
 non-trivial clients will use one of the Environment subclasses as their starting
 point for obtaining data (<code>Environment</code> itself contains abstract members and cannot
 be used directly).</p>
 
-<h3>DefaultEnvironment</h3>
+<h3>PaludisEnvironment and PortageEnvironment</h3>
 
-<p>The <code>paludis::DefaultEnvironment</code> class should be used when user configuration
-files (<code>~/.paludis</code> or <code>/etc/paludis</code>) are to be parsed. This
-is a singleton class (see <a href="doxygen/html/References.html">GoF</a> for details on
-singletons) whose instance can be obtained via the
-<code>paludis::DefaultEnvironment::get_instance</code> method.</p>
+<p>The <code>paludis::PaludisEnvironment</code> and <code>paludis::PortageEnvironment</code>
+classes should be used when user configuration is to be honoured. These classes are not usually
+created directly; instead, <code>paludis::EnvironmentMaker</code> is used to obtain an
+instance:</p>
 
-<p>The configuration suffix can be set using the
-<code>paludis::DefaultConfig::set_config_suffix</code>
-static member function. Clients should usually provide a <code>--config-suffix</code> and
-<code>-c</code> command-line option for this.</p>
+<pre>
+    std::string my_spec_string(...);
+    std::tr1::shared_ptr&lt;paludis::Environment&gt; env(
+            paludis::EnvironmentMaker::get_instance()-&lt;make_from_spec(my_spec_string));
+</pre>
 
-<p>When using <code>DefaultEnvironment</code>, linking should include
-<code>-lpaludisdefaultenvironment</code>.</p>
+<p>The specification string should usually be the command line parameter value for <code>-E</code>
+or <code>--environment</code>. An empty string will give the default <code>PaludisEnvironment</code>
+or <code>PortageEnvironment</code>.</p>
 
-<p>In Ruby, the class is <code>Paludis::DefaultEnvironment</code>, the instance is
-<code>Paludis::DefaultEnvironment::instance</code> and the configuration suffix is
-set using <code>Paludis::DefaultConfig::config_suffix=</code>.</p>
+<p>When using <code>EnvironmentMaker</code>, linking should include
+<code>-lpaludisenvironments</code>.</p>
+
+<p>In Ruby, instances must be obtained using <code>Paludis::EnvironmentMaker</code>.</p>
 
 <h3>NoConfigEnvironment</h3>
 
