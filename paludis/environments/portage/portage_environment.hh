@@ -24,13 +24,31 @@
 
 namespace paludis
 {
+    /**
+     * Thrown if a configuration error occurs in a PortageEnvironment.
+     *
+     * \ingroup grpportageenvironment
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class PortageEnvironmentConfigurationError :
         public ConfigurationError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PortageEnvironmentConfigurationError(const std::string &) throw ();
+
+            ///\}
     };
 
+    /**
+     * Environment using Portage-like configuration files.
+     *
+     * \ingroup grpportageenvironment
+     * \nosubgrouping
+     */
     class PortageEnvironment :
         public Environment,
         private PrivateImplementationPattern<PortageEnvironment>
@@ -52,8 +70,13 @@ namespace paludis
             void _load_atom_file(const FSEntry &, I_, const std::string &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             PortageEnvironment(const std::string &);
             virtual ~PortageEnvironment();
+
+            ///\}
 
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

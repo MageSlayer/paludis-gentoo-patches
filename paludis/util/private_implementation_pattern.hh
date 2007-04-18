@@ -50,6 +50,12 @@ namespace paludis
         private InstantiationPolicy<PrivateImplementationPattern<C_>, instantiation_method::NonCopyableTag>
     {
         protected:
+            /**
+             * Smart pointer to our implementation.
+             *
+             * \see PrivateImplementationPattern
+             * \ingroup grppimp
+             */
             class ImpPtr
             {
                 private:
@@ -58,6 +64,9 @@ namespace paludis
                     Implementation<C_> * _ptr;
 
                 public:
+                    ///\name Basic operations
+                    ///\{
+
                     ImpPtr(Implementation<C_> * p) :
                         _ptr(p)
                     {
@@ -67,6 +76,11 @@ namespace paludis
                     {
                         delete _ptr;
                     }
+
+                    ///\}
+
+                    ///\name Dereference operators
+                    //\{
 
                     Implementation<C_> * operator-> ()
                     {
@@ -78,6 +92,11 @@ namespace paludis
                         return _ptr;
                     }
 
+                    ///\}
+
+                    /**
+                     * Reset to a new Implementation.
+                     */
                     void reset(Implementation<C_> * p)
                     {
                         std::swap(_ptr, p);

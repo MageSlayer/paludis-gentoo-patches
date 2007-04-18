@@ -34,6 +34,12 @@ namespace paludis
 #include <paludis/repositories/gentoo/ebin-se.hh>
 #include <paludis/repositories/gentoo/ebin-sr.hh>
 
+    /**
+     * Version metadata for a .ebin file.
+     *
+     * \ingroup grpebininterface
+     * \nosubgrouping
+     */
     class EbinVersionMetadata :
         public VersionMetadata,
         public VersionMetadataEbuildInterface,
@@ -44,8 +50,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             EbinVersionMetadata(const SlotName &);
             virtual ~EbinVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {
@@ -53,32 +64,93 @@ namespace paludis
             }
     };
 
+    /**
+     * A command related to a .ebin file.
+     *
+     * \ingroup grpebininterface
+     * \nosubgrouping
+     */
     class EbinCommand :
         private InstantiationPolicy<EbinCommand, instantiation_method::NonCopyableTag>
     {
         protected:
+            /**
+             * Our parameters.
+             */
             EbinCommandParams params;
+
+            ///\name Basic operations
+            ///\{
 
             EbinCommand(const EbinCommandParams &);
 
+            ///\}
+
+            ///\name Command options
+            ///\{
+
+            /**
+             * What commands should be run?
+             */
             virtual std::string commands() const = 0;
+
+            /**
+             * Was our execution a success?
+             */
             virtual bool success();
+
+            /**
+             * Should we use sandbox?
+             */
             virtual bool use_sandbox() const;
+
+            /**
+             * Handle a failure.
+             */
             virtual bool failure() = 0;
+
+            /**
+             * Run the command specified.
+             */
             virtual bool do_run_command(const Command &);
+
+            /**
+             * Extend the basic command.
+             */
             virtual Command extend_command(const Command &) = 0;
+
+            /**
+             * Add Portage emulation variables.
+             */
             virtual Command add_portage_vars(const Command &) const;
 
+            ///\}
+
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~EbinCommand();
 
+            ///\}
+
+            /**
+             * Run the command.
+             */
             virtual bool operator() ();
     };
 
+    /**
+     * Fetch a .ebin's bin_uri contents.
+     *
+     * \ingroup grpebininterface
+     * \nosubgrouping
+     */
     class EbinFetchCommand :
         public EbinCommand
     {
         protected:
+            /// Our parameters.
             const EbinFetchCommandParams fetch_params;
 
             virtual std::string commands() const;
@@ -88,13 +160,25 @@ namespace paludis
             virtual Command extend_command(const Command &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             EbinFetchCommand(const EbinCommandParams &, const EbinFetchCommandParams &);
+
+            ///\}
     };
 
+    /**
+     * Perform a part of a .ebin install sequence.
+     *
+     * \ingroup grpebininterface
+     * \nosubgrouping
+     */
     class EbinInstallCommand :
         public EbinCommand
     {
         protected:
+            /// Our parameters.
             const EbinInstallCommandParams install_params;
 
             virtual std::string commands() const;
@@ -104,18 +188,42 @@ namespace paludis
             virtual Command extend_command(const Command &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             EbinInstallCommand(const EbinCommandParams &, const EbinInstallCommandParams &);
+
+            ///\}
     };
 
+    /**
+     * Merge to a .ebin repository.
+     *
+     * \ingroup grpebininterface
+     * \nosubgrouping
+     */
     class EbinMergeCommand
     {
         protected:
+            ///\name Parameters
+            ///\{
+
             const EbinCommandParams params;
             const EbinMergeCommandParams merge_params;
 
+            ///\}
+
         public:
+            ///\name Basic operations
+            ///\{
+
             EbinMergeCommand(const EbinCommandParams &, const EbinMergeCommandParams &);
 
+            ///\}
+
+            /**
+             * Perform the merge.
+             */
             void operator() ();
     };
 }

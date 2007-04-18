@@ -127,8 +127,6 @@ namespace paludis
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
-            virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;
@@ -164,8 +162,10 @@ namespace paludis
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const;
 
-            virtual MirrorsIterator begin_mirrors(const std::string & s) const;
-            virtual MirrorsIterator end_mirrors(const std::string & s) const;
+            virtual MirrorsIterator begin_mirrors(const std::string & s) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MirrorsIterator end_mirrors(const std::string & s) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Information about PortageRepository
             ///\{
@@ -191,6 +191,9 @@ namespace paludis
             int perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Update GLEP 42 news files.
+             */
             void update_news() const;
 
     };

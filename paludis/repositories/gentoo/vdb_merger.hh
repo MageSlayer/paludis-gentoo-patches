@@ -30,13 +30,24 @@ namespace paludis
 
 #include <paludis/repositories/gentoo/vdb_merger-sr.hh>
 
+    /**
+     * Merger for VDBRepository.
+     *
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     */
     class VDBMerger :
         public Merger,
         private PrivateImplementationPattern<VDBMerger>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             VDBMerger(const VDBMergerOptions &);
             ~VDBMerger();
+
+            ///\}
 
             virtual Hook extend_hook(const Hook &);
 

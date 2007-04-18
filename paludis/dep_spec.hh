@@ -250,6 +250,9 @@ namespace paludis
 
             ///\}
 
+            /**
+             * Change our text.
+             */
             void set_text(const std::string &);
 
         public:

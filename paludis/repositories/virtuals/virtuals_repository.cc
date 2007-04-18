@@ -370,12 +370,6 @@ VirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
     return p.first != p.second;
 }
 
-bool
-VirtualsRepository::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
 void
 VirtualsRepository::invalidate()
 {

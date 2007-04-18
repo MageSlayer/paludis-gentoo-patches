@@ -90,9 +90,15 @@ namespace paludis
                     const VersionSpec &, const std::string & var,
                     std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
+            /**
+             * Handle an install.
+             */
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
+            /**
+             * Handle a merge.
+             */
             virtual void merge(const MergeOptions &) = 0;
     };
 

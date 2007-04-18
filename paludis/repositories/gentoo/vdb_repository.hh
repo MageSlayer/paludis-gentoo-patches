@@ -108,8 +108,6 @@ namespace paludis
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
-            virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
 
             /* end of RepositoryUseInterface */
@@ -117,8 +115,14 @@ namespace paludis
             virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart &) const;
 
+            /**
+             * Add a string to world.
+             */
             virtual void add_string_to_world(const std::string &) const;
 
+            /**
+             * Remove a string from world.
+             */
             virtual void remove_string_from_world(const std::string &) const;
 
             virtual void do_config(const QualifiedPackageName &, const VersionSpec &) const;

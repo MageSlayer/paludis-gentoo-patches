@@ -223,12 +223,6 @@ FakeRepositoryBase::do_arch_flags() const
     return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-bool
-FakeRepositoryBase::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
 void
 FakeRepositoryBase::invalidate()
 {
@@ -250,18 +244,6 @@ std::tr1::shared_ptr<const UseFlagNameCollection>
 FakeRepositoryBase::do_use_expand_prefixes() const
 {
     return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
-}
-
-UseFlagName
-FakeRepositoryBase::do_use_expand_name(const UseFlagName & u) const
-{
-    return u;
-}
-
-UseFlagName
-FakeRepositoryBase::do_use_expand_value(const UseFlagName & u) const
-{
-    return u;
 }
 
 void

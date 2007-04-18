@@ -24,6 +24,14 @@
 
 namespace paludis
 {
+    /**
+     * Rewrite a DepSpec heirarchy to replace AllDepSpec and AnyDepSpec
+     * collections of PackageDepSpec with a single PackageDepSpec using ranged
+     * dependencies.
+     *
+     * \ingroup grpdepresolver
+     * \nosubgrouping
+     */
     class RangeRewriter :
         public DepSpecVisitorTypes::ConstVisitor
     {
@@ -32,9 +40,18 @@ namespace paludis
             bool _invalid;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             RangeRewriter();
             virtual ~RangeRewriter();
 
+            ///\}
+
+            /**
+             * Our rewritten spec, or a zero pointer if we couldn't do any
+             * rewriting.
+             */
             std::tr1::shared_ptr<const PackageDepSpec> spec() const
             {
                 if (_invalid)
@@ -43,12 +60,17 @@ namespace paludis
                 return _spec;
             }
 
+            ///\name Visit methods
+            ///\{
+
             void visit(const AllDepSpec *);
             void visit(const AnyDepSpec *);
             void visit(const UseDepSpec *);
             void visit(const PlainTextDepSpec *);
             void visit(const PackageDepSpec *);
             void visit(const BlockDepSpec *);
+
+            ///\}
     };
 }
 

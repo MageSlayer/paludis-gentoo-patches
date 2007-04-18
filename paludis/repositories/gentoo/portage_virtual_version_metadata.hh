@@ -24,6 +24,12 @@
 
 namespace paludis
 {
+    /**
+     * Version metadata for a PortageRepository virtual.
+     *
+     * \ingroup grpportagerepository
+     * \nosubgrouping
+     */
     class PortageVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataVirtualInterface,
@@ -31,8 +37,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PortageVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~PortageVirtualVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {

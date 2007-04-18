@@ -42,7 +42,12 @@ namespace paludis
                     const RepositoryProvidesEntry &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FakeInstalledRepository(const Environment * const, const RepositoryName &);
+
+            ///\}
 
             bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
             bool is_default_destination() const;

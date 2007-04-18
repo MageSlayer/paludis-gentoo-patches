@@ -1,8 +1,17 @@
 make_class_GLSARange()
 {
-    key op std::string;
+    key op std::string
     # not a version, may be something like 1.3*
-    key version std::string;
+    key version std::string
 
-    allow_named_args;
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * A version range in a GLSA.
+         *
+         * \see PortageRepositorySets
+         * \ingroup grpportagerepository
+         */
+END
 }

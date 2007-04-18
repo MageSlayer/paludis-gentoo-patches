@@ -78,10 +78,24 @@ namespace paludis
              */
             void set_accept_unstable(const bool value);
 
+            /**
+             * Fetch our 'main' repository.
+             */
             std::tr1::shared_ptr<Repository> main_repository();
+
+            /**
+             * Fetch our 'main' repository.
+             */
             std::tr1::shared_ptr<const Repository> main_repository() const;
 
+            /**
+             * Fetch our 'master' repository (may be zero).
+             */
             std::tr1::shared_ptr<Repository> master_repository();
+
+            /**
+             * Fetch our 'master' repository (may be zero).
+             */
             std::tr1::shared_ptr<const Repository> master_repository() const;
 
             virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,

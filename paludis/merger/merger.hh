@@ -33,13 +33,32 @@ namespace paludis
 #include <paludis/merger/merger-se.hh>
 #include <paludis/merger/merger-sr.hh>
 
+    /**
+     * Thrown if an error occurs during a Merger operation.
+     *
+     * \ingroup grpmerger
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class MergerError :
         public Exception
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             MergerError(const std::string & msg) throw ();
+
+            ///\}
     };
 
+    /**
+     * Handles merging an image to a live filesystem.
+     *
+     * \ingroup grpmerger
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class Merger
     {
         private:
@@ -47,18 +66,45 @@ namespace paludis
             bool _result;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             Merger(const MergerOptions &);
 
+            ///\}
+
+            /**
+             * When called, makes check()'s result a failure.
+             */
             void make_check_fail();
 
+            /**
+             * Allows subclasses to extend hook calls.
+             */
             virtual Hook extend_hook(const Hook &);
 
+            /**
+             * Determine the entry type of a filesystem entry.
+             */
             virtual MergerEntryType entry_type(const FSEntry &);
 
+            /**
+             * Handle a directory, recursively.
+             */
             virtual void do_dir_recursive(bool is_check, const FSEntry &, const FSEntry &);
 
+            /**
+             * Allows subclasses to perform behaviour when entering a directory.
+             */
             virtual void on_enter_dir(bool is_check, const FSEntry);
+
+            /**
+             * Allows subclasses to perform behaviour when leaving a directory.
+             */
             virtual void on_leave_dir(bool is_check, const FSEntry);
+
+            ///\name Handle filesystem entry things
+            ///\{
 
             virtual void on_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
@@ -96,16 +142,42 @@ namespace paludis
             virtual void unlink_misc(FSEntry);
             virtual void on_misc(bool is_check, const FSEntry &, const FSEntry &);
 
+            ///\}
+
+            /**
+             * What to do when an error occurs.
+             */
             virtual void on_error(bool is_check, const std::string &) = 0;
+
+            /**
+             * What to do when a warning occurs.
+             */
             virtual void on_warn(bool is_check, const std::string &) = 0;
+
+            ///\name Configuration protection
+            ///\{
 
             virtual bool config_protected(const FSEntry &, const FSEntry &) = 0;
             virtual std::string make_config_protect_name(const FSEntry &, const FSEntry &) = 0;
 
+            ///\}
+
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~Merger();
 
+            ///\}
+
+            /**
+             * Check a merge, return whether no errors were encountered.
+             */
             virtual bool check() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Perform the merge.
+             */
             virtual void merge();
     };
 

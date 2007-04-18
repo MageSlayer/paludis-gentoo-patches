@@ -105,6 +105,12 @@ namespace paludis
         private InstantiationPolicy<PortageDepParser, instantiation_method::NonInstantiableTag>
     {
         public:
+            /**
+             * Controls how a PortageDepParser treats any and text groups.
+             *
+             * \see PortageDepParser
+             * \ingroup grpdepparser
+             */
             class Policy
             {
                 private:
@@ -119,10 +125,26 @@ namespace paludis
                             std::tr1::shared_ptr<StringDepSpec> (Policy::* const) (const std::string &) const);
 
                 public:
+                    /**
+                     * Return a Policy object that makes text specs
+                     * PlainTextDepSpec instances.
+                     */
                     static Policy text_is_text_dep_spec(bool permit_any_deps);
+
+                    /**
+                     * Return a Policy object that makes text specs
+                     * PackageDepSpec instances.
+                     */
                     static Policy text_is_package_dep_spec(bool permit_any_deps, PackageDepSpecParseMode);
 
+                    /**
+                     * Create a text dep spec.
+                     */
                     std::tr1::shared_ptr<StringDepSpec> create(const std::string &) const;
+
+                    /**
+                     * Whether any deps are permitted.
+                     */
                     bool permit_any_deps() const;
             };
 

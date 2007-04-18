@@ -46,8 +46,13 @@ namespace paludis
         public NameError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             BadVersionSpecError(const std::string & name) throw ();
             BadVersionSpecError(const std::string & name, const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**

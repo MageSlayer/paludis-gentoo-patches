@@ -63,22 +63,52 @@ namespace paludis
         private PrivateImplementationPattern<GLSAPackage>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             GLSAPackage(const QualifiedPackageName & name);
             ~GLSAPackage();
+
+            ///\}
+
+            ///\name Iterate over our archs.
+            ///\{
 
             typedef libwrapiter::ForwardIterator<GLSAPackage, const UseFlagName> ArchsIterator;
             ArchsIterator begin_archs() const;
             ArchsIterator end_archs() const;
+
+            ///\}
+
+            /**
+             * Add an arch.
+             */
             void add_arch(const UseFlagName &);
+
+            ///\name Iterate over our ranges.
+            ///\{
 
             typedef libwrapiter::ForwardIterator<GLSAPackage, const GLSARange> RangesIterator;
             RangesIterator begin_unaffected() const;
             RangesIterator end_unaffected() const;
             RangesIterator begin_vulnerable() const;
             RangesIterator end_vulnerable() const;
+
+            ///\}
+
+            /**
+             * Add an unaffected package.
+             */
             void add_unaffected(const GLSARange &);
+
+            /**
+             * Add a vulnerable package.
+             */
             void add_vulnerable(const GLSARange &);
 
+            /**
+             * Our package's name.
+             */
             QualifiedPackageName name() const;
     };
 
@@ -92,20 +122,51 @@ namespace paludis
         private PrivateImplementationPattern<GLSA>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             GLSA();
             ~GLSA();
 
+            ///\}
+
+            /**
+             * Create a GLSA from an XML file.
+             */
             static std::tr1::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
+
+            ///\name Iterate over our packages.
+            ///\{
 
             typedef libwrapiter::ForwardIterator<GLSA, const GLSAPackage> PackagesIterator;
             PackagesIterator begin_packages() const;
             PackagesIterator end_packages() const;
+
+            ///\}
+
+            /**
+             * Add a package.
+             */
             void add_package(std::tr1::shared_ptr<const GLSAPackage>);
 
+            /**
+             * Set our ID.
+             */
             void set_id(const std::string &);
+
+            /**
+             * Fetch our ID.
+             */
             std::string id() const;
 
+            /**
+             * Set our title.
+             */
             void set_title(const std::string &);
+
+            /**
+             * Fetch our title.
+             */
             std::string title() const;
     };
 }

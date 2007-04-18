@@ -315,6 +315,9 @@ namespace paludis
      */
     struct RepositoryNameComparator
     {
+        /**
+         * Perform the comparison.
+         */
         bool operator() (const RepositoryName & lhs, const RepositoryName & rhs) const
         {
             return lhs.data() < rhs.data();

@@ -511,12 +511,6 @@ CRANInstalledRepositoryConfigurationError::CRANInstalledRepositoryConfigurationE
 {
 }
 
-bool
-CRANInstalledRepository::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
 void
 CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
         const UninstallOptions &) const

@@ -130,12 +130,32 @@ make_class_WriteVDBEntryParams()
     key output_directory "FSEntry"
     key environment_file "FSEntry"
 
+    doxygen_comment << "END"
+        /**
+         * Parameters for writing a VDB entry.
+         *
+         * \see WriteVDBEntryCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
+
     allow_named_args
 }
 
 make_class_VDBPostMergeCommandParams()
 {
     key root "FSEntry"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a VDBPostMergeCommand.
+         *
+         * \see VDBPostMergeCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
 
     allow_named_args
 }

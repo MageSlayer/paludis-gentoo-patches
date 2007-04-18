@@ -7,6 +7,16 @@ make_class_ProfileCheckData()
     key profiles_desc_line RepositoryPortageInterface::ProfilesDescLine
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a ProfileCheck.
+         *
+         * \see ProfileCheck
+         * \ingroup grpqa
+         * \nosubgrouping
+         */
+END
 }
 
 

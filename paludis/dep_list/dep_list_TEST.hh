@@ -38,6 +38,8 @@
 using namespace paludis;
 using namespace test;
 
+#ifndef DOXYGEN
+
 namespace paludis
 {
     class DepListEntry;
@@ -168,5 +170,7 @@ namespace test_cases
             }
     };
 }
+
+#endif
 
 #endif

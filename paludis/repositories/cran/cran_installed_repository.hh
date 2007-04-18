@@ -81,8 +81,6 @@ namespace paludis
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual bool do_is_licence(const std::string &) const;
-
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
                     const UninstallOptions &) const;
 
@@ -90,7 +88,14 @@ namespace paludis
 
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
+            /**
+             * Add a string to world.
+             */
             virtual void add_string_to_world(const std::string &) const;
+
+            /**
+             * Remove a string from world.
+             */
             virtual void remove_string_from_world(const std::string &) const;
 
         public:

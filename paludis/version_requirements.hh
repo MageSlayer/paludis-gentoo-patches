@@ -38,6 +38,12 @@ namespace paludis
      */
     typedef SequentialCollection<VersionRequirement> VersionRequirements;
 
+    /**
+     * Whether our version requirements are an 'and' or an 'or' set.
+     *
+     * \see PackageDepSpec
+     * \ingroup grpversions
+     */
     enum VersionRequirementsMode
     {
         vr_or,     ///\< Must match one

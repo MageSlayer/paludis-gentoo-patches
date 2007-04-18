@@ -61,6 +61,12 @@ namespace paludis
 #include <paludis/repositories/gentoo/ebuild-se.hh>
 #include <paludis/repositories/gentoo/ebuild-sr.hh>
 
+    /**
+     * VersionMetadata for an ebuild.
+     *
+     * \ingroup grpebuildinterface
+     * \nosubgrouping
+     */
     class EbuildVersionMetadata :
         public VersionMetadata,
         public VersionMetadataEbuildInterface,
@@ -69,8 +75,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             EbuildVersionMetadata();
             virtual ~EbuildVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {
@@ -358,6 +369,11 @@ namespace paludis
             void operator() ();
     };
 
+    /**
+     * Command to be run after a VDB merge.
+     *
+     * \ingroup grpebuildinterface
+     */
     class VDBPostMergeCommand :
         private InstantiationPolicy<VDBPostMergeCommand, instantiation_method::NonCopyableTag>
     {
@@ -365,10 +381,12 @@ namespace paludis
             const VDBPostMergeCommandParams params;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             VDBPostMergeCommand(const VDBPostMergeCommandParams &);
+
+            ///\}
 
             /**
              * Run the command.

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,14 +38,27 @@ namespace paludis
         private PrivateImplementationPattern<ProfileFile>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             ProfileFile();
             ~ProfileFile();
 
+            ///\}
+
+            /**
+             * Add a file.
+             */
             void add_file(const FSEntry &);
+
+            ///\name Iterate over our profile lines.
+            ///\{
 
             typedef libwrapiter::ForwardIterator<ProfileFile, const std::string> Iterator;
             Iterator begin() const;
             Iterator end() const;
+
+            ///\}
     };
 }
 

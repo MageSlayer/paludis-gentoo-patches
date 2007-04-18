@@ -34,6 +34,12 @@ namespace paludis
 
     class Environment;
 
+    /**
+     * Work out uninstall ordering for packages.
+     *
+     * \ingroup grpuninstalllist
+     * \nosubgrouping
+     */
     class UninstallList :
         private PrivateImplementationPattern<UninstallList>,
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
@@ -52,17 +58,37 @@ namespace paludis
             std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_world() const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             UninstallList(const Environment * const, const UninstallListOptions &);
             virtual ~UninstallList();
 
+            ///\}
+
+            /**
+             * Our options.
+             */
             UninstallListOptions & options;
 
+            /**
+             * Add a package, optionally with a reason.
+             */
             void add(const PackageDatabaseEntry &, const PackageDatabaseEntry * const = 0);
+
+            /**
+             * Add any unused packages that are dependencies of packages to uninstall.
+             */
             void add_unused();
+
+            ///\name Iterate over our items to remove
+            ///\{
 
             typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> Iterator;
             Iterator begin() const;
             Iterator end() const;
+
+            ///\}
     };
 }
 

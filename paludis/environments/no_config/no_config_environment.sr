@@ -9,5 +9,15 @@ make_class_NoConfigEnvironmentParams()
     key repository_type NoConfigEnvironmentRepositoryType
     key master_repository_dir "FSEntry"
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a NoConfigEnvironment.
+         *
+         * \see NoConfigEnvironment
+         * \ingroup grpnoconfigenvironment
+         * \nosubgrouping
+         */
+END
 }
 

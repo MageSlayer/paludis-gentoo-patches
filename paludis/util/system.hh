@@ -94,36 +94,115 @@ namespace paludis
 
     /**
      * A command to be run.
+     *
+     * \see PStream
+     * \see run_command
+     * \ingroup grpsystem
+     * \nosubgrouping
      */
     class Command :
         private PrivateImplementationPattern<Command>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             Command(const std::string &);
             Command(const char * const);
             Command(const Command &);
             const Command & operator= (const Command &);
             ~Command();
 
+            ///\}
+
+            ///\name Change command execution options
+            ///\{
+
+            /**
+             * Include a chdir before we run our command.
+             */
             Command & with_chdir(const FSEntry &);
+
+            /**
+             * Add a setenv before we run our command.
+             */
             Command & with_setenv(const std::string &, const std::string &);
+
+            /**
+             * Run our command sandboxed.
+             */
             Command & with_sandbox();
+
+            /**
+             * Echo the command to be run to stderr before running it.
+             */
             Command & with_echo_to_stderr();
+
+            /**
+             * Add a setuid and setgid before running our command.
+             */
             Command & with_uid_gid(const uid_t, const gid_t);
+
+            /**
+             * Prefix stdout output with this.
+             */
             Command & with_stdout_prefix(const std::string &);
+
+            /**
+             * Prefix stderr output with this.
+             */
             Command & with_stderr_prefix(const std::string &);
 
+            ///\}
+
+            ///\name Fetch command execution options
+            ///\{
+
+            /**
+             * Our command, as a string.
+             */
             std::string command() const;
+
+            /**
+             * Where to chdir, as a string.
+             */
             std::string chdir() const;
+
+            /**
+             * Echo ourself to stderr.
+             */
             void echo_to_stderr() const;
+
+            /**
+             * The uid for setuid.
+             */
             std::tr1::shared_ptr<const uid_t> uid() const;
+
+            /**
+             * The gid for setgid.
+             */
             std::tr1::shared_ptr<const gid_t> gid() const;
+
+            /**
+             * The stdout prefix.
+             */
             std::string stdout_prefix() const;
+
+            /**
+             * The stderr prefix.
+             */
             std::string stderr_prefix() const;
+
+            ///\}
+
+            ///\name Iterate over our setenvs.
+            ///\{
 
             typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
             Iterator begin_setenvs() const;
             Iterator end_setenvs() const;
+
+            ///\}
     };
 
 

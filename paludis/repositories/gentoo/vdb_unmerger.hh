@@ -32,13 +32,31 @@ namespace paludis
 
 #include <paludis/repositories/gentoo/vdb_unmerger-sr.hh>
 
+    /**
+     * Thrown if an unmerge from a VDBRepository using VDBUnmerger fails.
+     *
+     * \ingroup grpvdbrepository
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class VDBUnmergerError :
         public UnmergerError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             VDBUnmergerError(const std::string &) throw ();
+
+            ///\}
     };
 
+    /**
+     * Handle unmerging from a VDBRepository.
+     *
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     */
     class VDBUnmerger :
         private PrivateImplementationPattern<VDBUnmerger>,
         public Unmerger
@@ -47,18 +65,32 @@ namespace paludis
             bool config_protected(const FSEntry &);
             std::string make_tidy(const FSEntry &) const;
 
+            /**
+             * Unmerge non-directories.
+             */
             template <typename I_>
             void unmerge_non_directories(I_ begin, const I_ end);
 
+            /**
+             * Unmerge directories.
+             */
             template <typename I_>
             void unmerge_directories(I_ begin, const I_ end);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             VDBUnmerger(const VDBUnmergerOptions &);
             ~VDBUnmerger();
 
+            ///\}
+
             virtual Hook extend_hook(const Hook &);
 
+            /**
+             * Perform the unmerge.
+             */
             void unmerge();
     };
 

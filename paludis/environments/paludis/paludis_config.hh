@@ -56,6 +56,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grppaludisconfig
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PaludisConfigError : public ConfigurationError
     {
@@ -66,12 +67,24 @@ namespace paludis
             PaludisConfigError(const std::string & msg) throw ();
     };
 
+    /**
+     * Thrown if the config directory cannot be found by PaludisConfig.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppaludisconfig
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE PaludisConfigNoDirectoryError :
         public PaludisConfigError,
         public FallBackToAnotherMakerError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisConfigNoDirectoryError(const std::string & msg) throw ();
+
+            ///\}
     };
 
 #include <paludis/environments/paludis/use_config_entry-sr.hh>
@@ -88,9 +101,14 @@ namespace paludis
         private PrivateImplementationPattern<PaludisConfig>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisConfig(PaludisEnvironment * const, const std::string & suffix);
 
             ~PaludisConfig();
+
+            ///\}
 
             ///\name Iterate over our repositories
             ///\{
@@ -222,6 +240,9 @@ namespace paludis
              */
             std::string root() const;
 
+            /**
+             * Whether it's ok to unmask things that break Portage.
+             */
             bool accept_breaks_portage() const;
 
             ///\name Userpriv

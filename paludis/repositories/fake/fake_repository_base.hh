@@ -70,8 +70,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             FakeVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~FakeVirtualVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {
@@ -104,8 +109,6 @@ namespace paludis
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
-            virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
-            virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;
 
@@ -135,8 +138,6 @@ namespace paludis
 
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
-
-            virtual bool do_is_licence(const std::string &) const;
 
             virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
@@ -190,6 +191,9 @@ namespace paludis
 
             virtual void invalidate();
 
+            /**
+             * Fetch our associated environment.
+             */
             const Environment * environment() const;
     };
 }

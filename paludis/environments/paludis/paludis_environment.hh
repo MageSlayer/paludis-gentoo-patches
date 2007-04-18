@@ -48,9 +48,14 @@ namespace paludis
             std::tr1::shared_ptr<CompositeDepSpec> local_package_set(const SetName &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisEnvironment(const std::string &);
 
             ~PaludisEnvironment();
+
+            ///\}
 
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 

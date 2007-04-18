@@ -79,9 +79,17 @@ namespace paludis
         };
     }
 
+    /**
+     * Holds the entries for a VirtualConstructor.
+     *
+     * \see VirtualConstructor
+     * \ingroup grpvc
+     * \nosubgrouping
+     */
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
     struct VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::EntriesHolder
     {
+        /// The entries.
         std::vector<std::pair<KeyType_, ValueType_> > entries;
     };
 

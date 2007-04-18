@@ -39,15 +39,22 @@ namespace paludis
         private PrivateImplementationPattern<EbinEntries>
     {
         public:
-            static std::tr1::shared_ptr<PortageRepositoryEntries>
-                make_ebin_entries(const Environment * const,
-                        PortageRepository * const, const PortageRepositoryParams &);
+            /**
+             * Create an EbinEntries instance.
+             */
+            static std::tr1::shared_ptr<PortageRepositoryEntries> make_ebin_entries(const Environment * const,
+                    PortageRepository * const, const PortageRepositoryParams &);
+
+            ///\name Basic operations
+            ///\{
 
             EbinEntries(const Environment * const,
                     PortageRepository * const portage_repository,
                     const PortageRepositoryParams &);
 
             virtual ~EbinEntries();
+
+            ///\}
 
             virtual std::tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;

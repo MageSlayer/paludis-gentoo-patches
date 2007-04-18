@@ -45,7 +45,12 @@ namespace paludis
         public ConfigurationError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             SetFileError(const FSEntry &, const std::string &) throw ();
+
+            ///\}
     };
 
     /**

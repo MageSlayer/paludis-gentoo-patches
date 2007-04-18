@@ -1131,36 +1131,6 @@ PortageRepository::do_use_expand_hidden_prefixes() const
     return result;
 }
 
-UseFlagName
-PortageRepository::do_use_expand_name(const UseFlagName & u) const
-{
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-    {
-        std::string lower_i;
-        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), ::tolower);
-        if (0 == lower_i.compare(0, lower_i.length(), stringify(u), 0, lower_i.length()))
-            return *i;
-    }
-
-    throw InternalError(PALUDIS_HERE, "Not a use expand name: '" + stringify(u) + "'");
-}
-
-UseFlagName
-PortageRepository::do_use_expand_value(const UseFlagName & u) const
-{
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-    {
-        std::string lower_i;
-        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), ::tolower);
-        if (0 == lower_i.compare(0, lower_i.length(), stringify(u), 0, lower_i.length()))
-            return UseFlagName(stringify(u).substr(lower_i.length() + 1));
-    }
-
-    throw InternalError(PALUDIS_HERE, "Not a use expand name: '" + stringify(u) + "'");
-}
-
 void
 PortageRepository::regenerate_cache() const
 {

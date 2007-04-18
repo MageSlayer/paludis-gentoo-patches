@@ -49,7 +49,7 @@ namespace paludis
      * Thrown if PALUDIS_ENVIRONMENT_SO_DIR is not a directory.
      *
      * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup grpenvironment
      */
     class PALUDIS_VISIBLE PaludisEnvironmentSoDirNotADirectoryError :
         public Exception
@@ -72,24 +72,42 @@ namespace paludis
             mutable std::string _what;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisEnvironmentSoDirCannotDlopenError(const std::string & file,
                     const std::string & e) throw ();
 
             ~PaludisEnvironmentSoDirCannotDlopenError() throw ();
 
+            ///\}
+
             const char * what() const throw ();
     };
 
+    /**
+     * If an EnvironmentMaker default call fails with an exception of this type,
+     * it is ok to fall back and try another maker.
+     *
+     * \ingroup grpenvironment
+     * \nosubgrouping
+     */
     class FallBackToAnotherMakerError
     {
         protected:
+            ///\name Basic operations
+            ///\{
+
             FallBackToAnotherMakerError();
+
+            ///\}
     };
 
     /**
      * Virtual constructor for environments.
      *
-     * \ingroup grprepository
+     * \ingroup grpenvironment
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE EnvironmentMaker :
         public VirtualConstructor<std::string,
@@ -106,9 +124,33 @@ namespace paludis
             void load_dir(const FSEntry &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             ~EnvironmentMaker();
 
-            std::tr1::shared_ptr<Environment> make_from_spec(const std::string &) const;
+            ///\}
+
+            /**
+             * Create an Environment subclass from the specified spec.
+             *
+             * \param spec The environment spec, which is in the form
+             *     env:suffix, where env is the string representing an
+             *     Environment's kind (e.g. "paludis", "portage") and
+             *     suffix is the information to pass to the constructing
+             *     function (for paludis, a config suffix, and for portage,
+             *     a location). If env is not specified, it defaults to
+             *     trying paludis then portage. If suffix is not specified,
+             *     it defaults to an empty string. If no colon is present,
+             *     the supplied string is taken as env (this includes an
+             *     empty string).
+             *
+             * \throw NoSuchEnvironmentTypeError if an invalid environment type
+             *     is specified.
+             * \see Environment
+             * \ingroup grpenvironment
+             */
+            std::tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
     };
 }
 

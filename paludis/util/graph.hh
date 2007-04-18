@@ -24,53 +24,114 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/exception.hh>
 
+/** \file
+ * Declarations for DirectedGraph and related utilities.
+ *
+ * \ingroup grpgraph
+ */
+
 namespace paludis
 {
+    /**
+     * Base class for DirectedGraph errors.
+     *
+     * \ingroup grpgraph
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class GraphError :
         public Exception
     {
         protected:
+            ///\name Basic operations
+            ///\{
+
             GraphError(const std::string & msg) throw ();
+
+            ///\}
     };
 
+    /**
+     * Thrown if a DirectedGraph operation relies upon a node being present when it is not.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpgraph
+     * \nosubgrouping
+     */
     class NoSuchGraphNodeError :
         public GraphError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             template <typename Node_>
             NoSuchGraphNodeError(const Node_ & node) throw () :
                 GraphError("Node '" + stringify(node) + "' does not exist")
             {
             }
+
+            ///\}
     };
 
+    /**
+     * Thrown if a DirectedGraph operation relies upon an edge being present when it is not.
+     *
+     * \ingroup grpgraph
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class NoSuchGraphEdgeError :
         public GraphError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             template <typename Node_>
             NoSuchGraphEdgeError(const Node_ & e1, const Node_ & e2) throw () :
                 GraphError("Edge '" + stringify(e1) + "' -> '" + stringify(e2) + "' does not exist")
             {
             }
+
+            ///\}
     };
 
+    /**
+     * Thrown if no ordering is available for a DirectedGraph::topological_sort.
+     *
+     * \ingroup grpgraph
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class NoGraphTopologicalOrderExistsError :
         public GraphError
     {
         private:
             class RemainingNodes;
-
-        private:
             std::tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             NoGraphTopologicalOrderExistsError(std::tr1::shared_ptr<const RemainingNodes>) throw ();
             ~NoGraphTopologicalOrderExistsError() throw ();
 
+            ///\}
+
+            /**
+             * The nodes remaining in the graph.
+             */
             std::tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
     };
 
+    /**
+     * A simple directed graph.
+     *
+     * \ingroup grpgraph
+     * \nosubgrouping
+     */
     template <typename Node_, typename Edge_>
     class DirectedGraph :
         private PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >
@@ -81,9 +142,14 @@ namespace paludis
             void operator= (const DirectedGraph &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             DirectedGraph();
             DirectedGraph(const DirectedGraph &);
             ~DirectedGraph();
+
+            ///\}
 
             ///\name Node related functions
             ///\{
@@ -102,6 +168,11 @@ namespace paludis
              * Return whether a node exists.
              */
             bool has_node(const Node_ &) const;
+
+            ///\}
+
+            ///\name Iterate over our nodes
+            ///\{
 
             class NodeIterator;
             NodeIterator begin_nodes() const;

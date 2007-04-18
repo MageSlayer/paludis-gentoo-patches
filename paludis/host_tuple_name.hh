@@ -48,13 +48,15 @@ namespace paludis
     class HostTupleNameError : public NameError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             HostTupleNameError(const std::string & name) throw ();
 
             HostTupleNameError(const std::string & name,
                     const std::string & type) throw ();
+
+            ///\}
     };
 
     /**

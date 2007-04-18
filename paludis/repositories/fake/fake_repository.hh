@@ -47,8 +47,16 @@ namespace paludis
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FakeRepository(const Environment * const, const RepositoryName &);
 
+            ///\}
+
+            /**
+             * Add a virtual package.
+             */
             void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepSpec>);
     };
 }

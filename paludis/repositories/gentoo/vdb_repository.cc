@@ -1278,18 +1278,6 @@ VDBRepository::do_use_expand_hidden_prefixes() const
     return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-UseFlagName
-VDBRepository::do_use_expand_name(const UseFlagName & u) const
-{
-    return u;
-}
-
-UseFlagName
-VDBRepository::do_use_expand_value(const UseFlagName & u) const
-{
-    return u;
-}
-
 bool
 VDBRepository::load_provided_using_cache() const
 {

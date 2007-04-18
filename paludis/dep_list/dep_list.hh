@@ -58,27 +58,64 @@ namespace paludis
             friend class QueryVisitor;
             friend class ShowSuggestVisitor;
 
+            /**
+             * Find an appropriate destination for a package.
+             */
             std::tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
                     std::tr1::shared_ptr<const DestinationsCollection>);
 
+            /**
+             * Add a DepSpec with role context.
+             */
             void add_in_role(std::tr1::shared_ptr<const DepSpec>, const std::string & role,
                     std::tr1::shared_ptr<const DestinationsCollection>);
+
+            /**
+             * Return whether we prefer the first parameter, which is installed,
+             * over the second, which isn't.
+             */
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
 
+            /**
+             * Add a package to the list.
+             */
             void add_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
+
+            /**
+             * Add an already installed package to the list.
+             */
             void add_already_installed_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
+
+            /**
+             * Add an error package to the list.
+             */
             void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
+
+            /**
+             * Add a suggested package to the list.
+             */
             void add_suggested_package(const PackageDatabaseEntry &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
+            /**
+             * Add predependencies.
+             */
             void add_predeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
+
+            /**
+             * Add postdependencies.
+             */
             void add_postdeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
+            /**
+             * Return whether the specified PackageDatabaseEntry is matched by
+             * the top level target.
+             */
             bool is_top_level_target(const PackageDatabaseEntry &) const;
 
         public:

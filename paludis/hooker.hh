@@ -29,15 +29,33 @@ namespace paludis
     class Environment;
     class Hook;
 
+    /**
+     * Handles executing hooks for an Environment.
+     *
+     * \ingroup grphooker
+     * \nosubgrouping
+     */
     class Hooker :
         private PrivateImplementationPattern<Hooker>,
         private InstantiationPolicy<Hooker, instantiation_method::NonCopyableTag>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             Hooker(const Environment * const) PALUDIS_ATTRIBUTE((nonnull(1)));
             ~Hooker();
 
-            int perform_hook(const Hook &) const;
+            ///\}
+
+            /**
+             * Perform a hook, return the highest exit status.
+             */
+            int perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Add a new hook directory.
+             */
             void add_dir(const FSEntry &, const bool output_prefixed);
     };
 }

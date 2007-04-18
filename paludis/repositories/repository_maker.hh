@@ -72,10 +72,15 @@ namespace paludis
             mutable std::string _what;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisRepositorySoDirCannotDlopenError(const std::string & file,
                     const std::string & e) throw ();
 
             ~PaludisRepositorySoDirCannotDlopenError() throw ();
+
+            ///\}
 
             const char * what() const throw ();
     };

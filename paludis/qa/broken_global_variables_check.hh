@@ -37,10 +37,19 @@ namespace paludis
             public:
                 BrokenGlobalVariablesCheck();
 
+                /**
+                 * Perform the check.
+                 */
                 CheckResult operator() (const FSEntry &) const;
 
+                /**
+                 * Fetch the check's identifier.
+                 */
                 static const std::string & identifier();
 
+                /**
+                 * Describe the check.
+                 */
                 virtual std::string describe() const
                 {
                     return "Checks for abuse of pkg_setup variables in globals";

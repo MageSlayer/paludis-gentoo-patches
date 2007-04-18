@@ -9,6 +9,15 @@ make_class_PackageDatabasesEntry()
     key package_database "std::tr1::shared_ptr<PackageDatabase>"
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Internal use by QAEnvironment: our package databases.
+         *
+         * \nosubgrouping
+         * \ingroup grpqa
+         */
+END
 }
 
 

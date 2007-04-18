@@ -29,6 +29,7 @@ namespace paludis
      */
     struct Empty
     {
+        /// Convenience instance.
         static const Empty instance;
     };
 

@@ -28,16 +28,30 @@
 
 namespace paludis
 {
+    /**
+     * Holds the remaining nodes list for a NoGraphTopologicalOrderExistsError.
+     *
+     * \see NoGraphTopologicalOrderExistsError
+     * \ingroup grpexceptions
+     * \ingroup grpgraph
+     * \nosubgrouping
+     */
     class NoGraphTopologicalOrderExistsError::RemainingNodes
     {
         private:
             std::list<std::string> _n;
 
         public:
+            /**
+             * Add a remaining node.
+             */
             void add(const std::string & s)
             {
                 _n.push_back(s);
             }
+
+            ///\name Iterate over our nodes
+            ///\{
 
             typedef libwrapiter::ForwardIterator<RemainingNodes, const std::string> Iterator;
 
@@ -50,13 +64,26 @@ namespace paludis
             {
                 return Iterator(_n.end());
             }
+
+            ///\}
     };
 
+    /**
+     * Implementation data for a DirectedGraph.
+     *
+     * \see DirectedGraph
+     * \ingroup grpgraph
+     * \nosubgrouping
+     */
     template<>
     template <typename Node_, typename Edge_>
     struct Implementation<DirectedGraph<Node_, Edge_> >
     {
+        /// Our data.
         std::map<Node_, std::map<Node_, Edge_> > store;
+
+        ///\name Basic operations
+        ///\{
 
         Implementation()
         {
@@ -66,6 +93,8 @@ namespace paludis
             store(s)
         {
         }
+
+        ///\}
     };
 
     template <typename Node_, typename Edge_>
@@ -107,6 +136,13 @@ namespace paludis
         return _imp->store.end() != _imp->store.find(n);
     }
 
+    /**
+     * Iterate over the nodes in a DirectedGraph.
+     *
+     * \see DirectedGraph
+     * \ingroup grpgraph
+     * \nosubgrouping
+     */
     template <typename Node_, typename Edge_>
     class DirectedGraph<Node_, Edge_>::NodeIterator
     {
@@ -121,6 +157,9 @@ namespace paludis
             }
 
         public:
+            ///\name Basic operations
+            ///\{
+
             NodeIterator(const NodeIterator & other) :
                 _i(other._i)
             {
@@ -129,6 +168,11 @@ namespace paludis
             ~NodeIterator()
             {
             }
+
+            ///\}
+
+            ///\name Comparison operators
+            ///\{
 
             bool operator== (const NodeIterator & other) const
             {
@@ -139,6 +183,11 @@ namespace paludis
             {
                 return ! operator== (other);
             }
+
+            ///\}
+
+            ///\name Advance operators
+            ///\{
 
             NodeIterator & operator++ ()
             {
@@ -153,6 +202,11 @@ namespace paludis
                 return tmp;
             }
 
+            ///\}
+
+            ///\name Dereference operators
+            ///\{
+
             const Node_ & operator*() const
             {
                 return _i->first;
@@ -162,6 +216,8 @@ namespace paludis
             {
                 return &_i->first;
             }
+
+            ///\}
     };
 
     template <typename Node_, typename Edge_>

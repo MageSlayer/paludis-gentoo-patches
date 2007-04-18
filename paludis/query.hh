@@ -24,34 +24,92 @@
 #include <paludis/name.hh>
 #include <paludis/package_database_entry.hh>
 
+/** \file
+ * Query and related classes.
+ *
+ * \ingroup grpquery
+ */
+
 namespace paludis
 {
     class Environment;
     class PackageDepSpec;
     class FSEntry;
 
+    /**
+     * A QueryDelegate subclass is used by Query to provide the information
+     * needed by PackageDatabase::query.
+     *
+     * \see Query
+     * \ingroup grpquery
+     */
     class QueryDelegate
     {
         protected:
+            ///\name Basic operations
+            ///\{
+
             QueryDelegate();
 
         public:
             virtual ~QueryDelegate();
 
+            ///\}
+
+            /**
+             * Fetch the names of repositories potentially containing matches.
+             * All returned repositories must exist.
+             *
+             * Default behaviour: return all repositories.
+             */
             virtual std::tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment &) const;
 
+            /**
+             * Fetch the names of categories potentially containing matches.
+             *
+             * Default behaviour: return all categories in the provided
+             * repository collection.
+             */
             virtual std::tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment &,
                     std::tr1::shared_ptr<const RepositoryNameCollection>) const;
 
+            /**
+             * Fetch the names of packages potentially containing matches.
+             *
+             * Default behaviour: return all packages in the provided repository
+             * in the provided categories.
+             *
+             * Note that some entries in the categories collection (but not in
+             * the repositories collection) may not exist.
+             */
             virtual std::tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment &,
                     std::tr1::shared_ptr<const RepositoryNameCollection>,
                     std::tr1::shared_ptr<const CategoryNamePartCollection>) const;
 
+            /**
+             * Fetch the versions of matching packages.
+             *
+             * Default behaviour: return all versions in the provided packages.
+             *
+             * Note that some entries in the qualified package name collection
+             * (but not in the repositories collection) may not exist.
+             */
             virtual std::tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment &,
                     std::tr1::shared_ptr<const RepositoryNameCollection>,
                     std::tr1::shared_ptr<const QualifiedPackageNameCollection>) const;
     };
 
+    /**
+     * Parameter for a PackageDatabase query.
+     *
+     * Holds a QueryDelegate to perform actual operations, so that it can be
+     * copied without splicing problems.
+     *
+     * \see QueryDelegate
+     * \see PackageDatabase::query
+     * \ingroup grpquery
+     * \nosubgrouping
+     */
     class Query
     {
         friend Query operator& (const Query &, const Query &);
@@ -60,10 +118,18 @@ namespace paludis
             std::tr1::shared_ptr<const QueryDelegate> _d;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             Query(std::tr1::shared_ptr<const QueryDelegate>);
 
         public:
             ~Query();
+
+            ///\}
+
+            ///\name Delegate-implemented functions
+            ///\{
 
             std::tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment & e) const
             {
@@ -89,60 +155,170 @@ namespace paludis
             {
                 return _d->versions(e, r, q);
             }
+
+            ///\}
     };
 
+    /**
+     * Various Query classes.
+     *
+     * \see Query
+     * \ingroup grpquery
+     */
     namespace query
     {
+        /**
+         * Fetch packages matching a given PackageDepSpec.
+         *
+         * \see Query
+         * \see PackageDatabase::query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
         class Matches :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 Matches(const PackageDepSpec &);
+
+                ///\}
         };
 
+        /**
+         * Fetch packages with a given package name.
+         *
+         * \see Query
+         * \see PackageData
+         * \ingroup grpquerybase::query
+         * \nosubgrouping
+         */
         class Package :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 Package(const QualifiedPackageName &);
+
+                ///\}
         };
 
+        /**
+         * Fetch packages that are not masked.
+         *
+         * \see Query
+         * \see PackageData
+         * \ingroup grpquerybase::query
+         * \nosubgrouping
+         */
         class NotMasked :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 NotMasked();
+
+                ///\}
         };
 
+        /**
+         * Fetch packages from a repository that has
+         * RepositoryInstalledInterface.
+         *
+         * \see Query
+         * \see PackageData
+         * \ingroup grpquerybase::query
+         * \nosubgrouping
+         */
         class RepositoryHasInstalledInterface :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 RepositoryHasInstalledInterface();
+
+                ///\}
         };
 
+        /**
+         * Fetch packages from a repository that has
+         * RepositoryInstallableInterface.
+         *
+         * \see PackageDatabase::query
+         * \see Query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
         class RepositoryHasInstallableInterface :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 RepositoryHasInstallableInterface();
+
+                ///\}
         };
 
+        /**
+         * Fetch packages from a repository that has
+         * RepositoryUninstallableInterface.
+         *
+         * \see PackageDatabase::query
+         * \see Query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
         class RepositoryHasUninstallableInterface :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 RepositoryHasUninstallableInterface();
+
+                ///\}
         };
 
+        /**
+         * Fetch packages that are installed at a particular root.
+         *
+         * \see Query
+         * \see PackageDatabase::query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
         class InstalledAtRoot :
             public Query
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 InstalledAtRoot(const FSEntry &);
+
+                ///}
         };
     }
 
+    /**
+     * Create a Query that returns packages for which both Query parameters
+     * hold.
+     *
+     * \see Query
+     * \see PackageDatabase::query
+     * \ingroup grpquery
+     */
     Query operator& (const Query &, const Query &);
 }
 

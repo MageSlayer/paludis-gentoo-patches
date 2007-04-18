@@ -31,30 +31,66 @@ namespace paludis
 
 #include <paludis/merger/unmerger-sr.hh>
 
+    /**
+     * Thrown if an error occurs during an unmerge.
+     *
+     * \ingroup grpunmerger
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class UnmergerError :
         public Exception
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             UnmergerError(const std::string & msg) throw ();
+
+            ///\}
     };
 
+    /**
+     * Handles unmerging items.
+     *
+     * \ingroup grpunmerger
+     * \nosubgrouping
+     */
     class Unmerger
     {
         private:
             UnmergerOptions _options;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             Unmerger(const UnmergerOptions &);
 
+            ///\}
+
+            /**
+             * Extend a hook with extra options.
+             */
             virtual Hook extend_hook(const Hook &);
+
+            ///\name Unlink operations
+            ///\{
 
             virtual void unlink_file(FSEntry);
             virtual void unlink_dir(FSEntry);
             virtual void unlink_sym(FSEntry);
             virtual void unlink_misc(FSEntry);
 
+            ///\}
+
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~Unmerger();
+
+            ///\}
     };
 }
 

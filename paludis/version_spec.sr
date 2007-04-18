@@ -6,6 +6,15 @@ make_class_Part()
     key kind PartKind
     key value "unsigned long"
     key leading_zeroes "unsigned long"
+
+    doxygen_comment << "END"
+        /**
+         * Internal use by VersionSpec.
+         *
+         * \ingroup grpversions
+         * \nosubgrouping
+         */
+END
 }
 
 

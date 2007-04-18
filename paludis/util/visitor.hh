@@ -28,8 +28,10 @@
 
 namespace std
 {
+#ifndef DOXYGEN
     template <typename A_, typename B_>
     B_ for_each(A_, A_, B_);
+#endif
 }
 
 namespace paludis
@@ -372,6 +374,12 @@ namespace paludis
         return AcceptVisitor<VisitorPointer_>(p);
     }
 
+    /**
+     * Convenience mixin class: implement a particular visit function by
+     * visiting its begin/end range.
+     *
+     * \ingroup grpvisitor
+     */
     template <
         typename N1_,
         typename N2_,

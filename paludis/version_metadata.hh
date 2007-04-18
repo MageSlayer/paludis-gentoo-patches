@@ -45,14 +45,28 @@ namespace paludis
     class VersionMetadataLicenseInterface;
     class VersionMetadata;
 
+    /**
+     * Implemented as a virtual base by VersionMetadata descendents, to allow
+     * interfaces to access the base VersionMetadata class.
+     *
+     * \ingroup grpversions
+     */
     class VersionMetadataHasInterfaces
     {
         protected:
+            ///\name Basic operations
+            ///\{
+
             VersionMetadataHasInterfaces();
 
         public:
             virtual ~VersionMetadataHasInterfaces();
 
+            ///\}
+
+            /**
+             * Fetch our base VersionMetadata class.
+             */
             virtual const VersionMetadata * version_metadata() const = 0;
     };
 
@@ -86,11 +100,18 @@ namespace paludis
         public:
             virtual ~VersionMetadata();
 
+            /**
+             * Return the appropriate PackageDepSpecParseMode for our EAPI.
+             */
             PackageDepSpecParseMode eapi_as_package_dep_spec_parse_mode() const;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             VersionMetadata(const VersionMetadataBase::NamedArguments<> &, const VersionMetadataCapabilities &);
 
+            ///\}
     };
 }
 

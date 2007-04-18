@@ -24,6 +24,12 @@
 
 namespace paludis
 {
+    /**
+     * VersionMetadata for a CRAN package.
+     *
+     * \ingroup grpcranrepository
+     * \nosubgrouping
+     */
     class CRANVersionMetadata :
         public VersionMetadata,
         public VersionMetadataCRANInterface,
@@ -32,8 +38,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             CRANVersionMetadata(bool want_origins);
             virtual ~CRANVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {

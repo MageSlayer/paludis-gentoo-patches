@@ -193,6 +193,9 @@ namespace paludis
             const RepositoryName _name;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              *
@@ -200,13 +203,15 @@ namespace paludis
              */
             NoSuchRepositoryError(const std::string &) throw () PALUDIS_ATTRIBUTE((deprecated));
 
-            /**
-             * Constructor.
-             */
             NoSuchRepositoryError(const RepositoryName &) throw ();
 
             ~NoSuchRepositoryError() throw ();
 
+            ///\}
+
+            /**
+             * The name of our repository.
+             */
             RepositoryName name() const;
     };
 

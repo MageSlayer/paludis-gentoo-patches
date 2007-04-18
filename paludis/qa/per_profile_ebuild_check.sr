@@ -9,5 +9,15 @@ make_class_PerProfileEbuildCheckData()
     key profile FSEntry
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a PerProfileEbuildCheck.
+         *
+         * \ingroup grpqa
+         * \see PerProfileEbuildCheck
+         * \nosubgrouping
+         */
+END
 }
 

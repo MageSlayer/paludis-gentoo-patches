@@ -24,6 +24,14 @@
 
 namespace paludis
 {
+    /**
+     * Version metadata for a VDBRepository entry.
+     *
+     * \see VDBRepository
+     * \see VersionMetadata
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     */
     class VDBVersionMetadata :
         public VersionMetadata,
         public VersionMetadataDepsInterface,
@@ -33,8 +41,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             VDBVersionMetadata();
             virtual ~VDBVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {
@@ -42,6 +55,14 @@ namespace paludis
             }
     };
 
+    /**
+     * Version metadata for a VDBRepository virtual entry.
+     *
+     * \see VDBRepository
+     * \see VersionMetadata
+     * \ingroup grpvdbrepository
+     * \nosubgrouping
+     */
     class VDBVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataDepsInterface,
@@ -49,8 +70,13 @@ namespace paludis
         public virtual VersionMetadataHasInterfaces
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             VDBVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~VDBVirtualVersionMetadata();
+
+            ///\}
 
             virtual const VersionMetadata * version_metadata() const
             {

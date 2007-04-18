@@ -306,6 +306,9 @@ namespace paludis
                     _other->set_specified(value);
                 }
 
+                /**
+                 * Fetch our associated option.
+                 */
                 ArgsOption * other() const
                 {
                     return _other;

@@ -10,6 +10,15 @@ make_class_VREntry()
 
     comparison_operators all virtual_name version
 
+    doxygen_comment << "END"
+        /**
+         * Internal data structure for a virtual in a VirtualsRepository.
+         *
+         * \see VirtualsRepository
+         * \nosubgrouping
+         */
+END
+
     allow_named_args
 }
 
