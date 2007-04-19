@@ -407,7 +407,7 @@ EbinEntries::merge(const MergeOptions & m)
                 stringify(m.package.name.package) + "-" +
                 stringify(m.package.version) + ".tar.bz2"));
 
-    ebin_file << "BIN_URI=" << pkg_file_name.basename() << std::endl;
+    ebin_file << "BIN_URI=" << _imp->params.write_bin_uri_prefix << pkg_file_name.basename() << std::endl;
 
     if (pkg_file_name.exists())
         pkg_file_name.unlink();

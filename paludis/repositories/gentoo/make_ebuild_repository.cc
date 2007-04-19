@@ -183,6 +183,7 @@ paludis::make_ebuild_repository(
                 .sync_options(sync_options)
                 .master_repository(master_repository)
                 .enable_destinations(false)
+                .write_bin_uri_prefix("")
                 .buildroot(buildroot)));
 }
 

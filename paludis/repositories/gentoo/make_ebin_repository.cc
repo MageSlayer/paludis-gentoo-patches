@@ -116,6 +116,10 @@ paludis::make_ebin_repository(
     if (m->end() != m->find("sync"))
         sync = m->find("sync")->second;
 
+    std::string write_bin_uri_prefix;
+    if (m->end() != m->find("write_bin_uri_prefix"))
+        write_bin_uri_prefix = m->find("write_bin_uri_prefix")->second;
+
     std::string sync_options;
     if (m->end() != m->find("sync_options"))
         sync_options = m->find("sync_options")->second;
@@ -151,6 +155,7 @@ paludis::make_ebin_repository(
                 .sync_options(sync_options)
                 .master_repository(master_repository)
                 .enable_destinations(true)
+                .write_bin_uri_prefix(write_bin_uri_prefix)
                 .buildroot(buildroot)));
 }
 

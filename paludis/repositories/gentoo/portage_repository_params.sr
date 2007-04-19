@@ -21,6 +21,7 @@ make_class_PortageRepositoryParams()
     key buildroot FSEntry
     key master_repository "std::tr1::shared_ptr<const PortageRepository>"
     key enable_destinations bool
+    key write_bin_uri_prefix std::string
 
     doxygen_comment << "END"
         /**
