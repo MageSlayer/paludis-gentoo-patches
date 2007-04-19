@@ -72,11 +72,7 @@ bool
 EbuildCommand::operator() ()
 {
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-            "/ebuild.bash '" +
-            stringify(params.ebuild_dir) + "/" +
-            stringify(params.db_entry->name.package) + "-" +
-            stringify(params.db_entry->version) +
-            ".ebuild' " + commands());
+            "/ebuild.bash '" + ebuild_file() + "' " + commands());
 
     if (use_sandbox())
         cmd.with_sandbox();
@@ -120,6 +116,13 @@ EbuildCommand::operator() ()
         return success();
     else
         return failure();
+}
+
+std::string
+EbuildCommand::ebuild_file() const
+{
+    return stringify(params.ebuild_dir) + "/" +
+        stringify(params.db_entry->name.package) + "-" + stringify(params.db_entry->version) + ".ebuild";
 }
 
 Command
@@ -178,7 +181,8 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     PStream prog(cmd);
     KeyValueConfigFile f(prog, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
-            + kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values + kvcfo_disallow_unquoted_values);
+            + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
+            + kvcfo_disallow_variables);
     _metadata.reset(new EbuildVersionMetadata);
 
     bool ok(false);
@@ -429,6 +433,12 @@ EbuildUninstallCommand::commands() const
     }
 
     throw InternalError(PALUDIS_HERE, "Bad phase value");
+}
+
+std::string
+EbuildUninstallCommand::ebuild_file() const
+{
+    return "-";
 }
 
 bool

@@ -116,6 +116,11 @@ namespace paludis
             virtual std::string commands() const = 0;
 
             /**
+             * Return our ebuild file.
+             */
+            virtual std::string ebuild_file() const;
+
+            /**
              * Actions to be taken after a successful command.
              *
              * The return value of this function is used for the return value
@@ -310,6 +315,8 @@ namespace paludis
             virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
             virtual Command extend_command(const Command &);
+
+            virtual std::string ebuild_file() const;
 
         public:
             /**
