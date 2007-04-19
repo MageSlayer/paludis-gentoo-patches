@@ -522,7 +522,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
         }
         else if (CommandLine::get_instance()->dl_reinstall_targets.argument() == "always")
             task.override_target_type(dl_target_package);
-        else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "never")
+        else if (CommandLine::get_instance()->dl_reinstall_targets.argument() == "never")
             task.override_target_type(dl_target_set);
         else
             throw args::DoHelp("bad value for --dl-reinstall-targets");
