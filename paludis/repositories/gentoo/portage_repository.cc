@@ -1238,7 +1238,7 @@ bool
 PortageRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
 {
     std::string f(_imp->params.environment->package_database()->fetch_repository(e.repository)->format());
-    return f == "ebuild";
+    return f == "ebuild" || f == "ebin";
 }
 
 bool
