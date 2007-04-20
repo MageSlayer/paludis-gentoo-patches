@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <exception>
 #include <paludis/util/log.hh>
 
 /** \file
@@ -74,7 +75,7 @@ Log::log_level() const
 }
 
 void
-Log::message(const LogLevel l, const LogContext c, const std::string & s)
+Log::_message(const LogLevel l, const LogContext c, const std::string & s)
 {
     if (l >= _imp->log_level)
     {
@@ -121,6 +122,25 @@ Log::message(const LogLevel l, const LogContext c, const std::string & s)
     }
 }
 
+LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :
+    _message(o._message),
+    _log_level(o._log_level),
+    _log_context(o._log_context)
+{
+}
+
+void
+Log::message(const LogLevel l, const LogContext c, const std::string & s)
+{
+    _message(l, c, s);
+}
+
+LogMessageHandler
+Log::message(const LogLevel l, const LogContext c)
+{
+    return LogMessageHandler(l, c);
+}
+
 void
 Log::set_log_stream(std::ostream * const s)
 {
@@ -159,5 +179,23 @@ void
 Log::set_program_name(const std::string & s)
 {
     _imp->program_name = s;
+}
+
+LogMessageHandler::LogMessageHandler(const LogLevel l, const LogContext c) :
+    _log_level(l),
+    _log_context(c)
+{
+}
+
+void
+LogMessageHandler::_append(const std::string & s)
+{
+    _message.append(s);
+}
+
+LogMessageHandler::~LogMessageHandler()
+{
+    if (! std::uncaught_exception() && ! _message.empty())
+        Log::get_instance()->_message(_log_level, _log_context, _message);
 }
 

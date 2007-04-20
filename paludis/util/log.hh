@@ -66,6 +66,8 @@ namespace paludis
         last_lc
     };
 
+    class LogMessageHandler;
+
     /**
      * Singleton class that handles log messages.
      *
@@ -76,9 +78,12 @@ namespace paludis
         private PrivateImplementationPattern<Log>
     {
         friend class InstantiationPolicy<Log, instantiation_method::SingletonTag>;
+        friend class LogMessageHandler;
 
         private:
             Log();
+
+            void _message(const LogLevel, const LogContext, const std::string &);
 
         public:
             /**
@@ -103,6 +108,16 @@ namespace paludis
             void message(const LogLevel, const LogContext, const std::string &);
 
             /**
+             * Log a message.
+             *
+             * The return value can be appended to using
+             * LogMessageHandler::operator<<(). When the return value is
+             * destroyed (that is to say, at the end of the statement), the log
+             * message is written.
+             */
+            LogMessageHandler message(const LogLevel, const LogContext) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
              * Change the log stream.
              */
             void set_log_stream(std::ostream * const);
@@ -111,6 +126,47 @@ namespace paludis
              * Set our program name.
              */
             void set_program_name(const std::string &);
+    };
+
+    /**
+     * Used by Log::message().
+     *
+     * \see Log
+     * \ingroup grplog
+     */
+    class PALUDIS_VISIBLE LogMessageHandler
+    {
+        friend LogMessageHandler Log::message(const LogLevel, const LogContext);
+
+        private:
+            std::string _message;
+            LogLevel _log_level;
+            LogContext _log_context;
+
+            LogMessageHandler(const LogMessageHandler &);
+            LogMessageHandler(const LogLevel, const LogContext);
+            void operator= (const LogMessageHandler &);
+
+            void _append(const std::string & s);
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ~LogMessageHandler();
+
+            ///\}
+
+            /**
+             * Append some text to our message.
+             */
+            template <typename T_>
+            LogMessageHandler &
+            operator<< (const T_ & t)
+            {
+                _append(stringify(t));
+                return *this;
+            }
     };
 
     /**
