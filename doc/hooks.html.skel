@@ -21,23 +21,83 @@ that is executed when a particular well defined action occurs.</p>
 
 <ul>
     <li>General hooks. These have access to a limited environment. If
-    a hook returns a non-zero exit code, the action will be aborted.</li>
+    a hook returns a non-zero exit code, the action will be aborted.
+    See <a href="#general-hooks">General Hooks</a>.</li>
 
     <li>Ebuild phase hooks. These have <code>ebuild</code> in the hook name, and
     have full access to the ebuild environment (including the ability to call
-    <code>die</code>), but are only used for ebuild-based activities.</li>
+    <code>die</code>), but are only used for ebuild-based activities.
+    See <a href="#ebuild-hooks">Ebuild Hooks</a>.</li>
 
     <li>Ebuild message hooks. These are special hooks that are called for
-    <code>einfo</code>, <code>ewarn</code> etc.</li>
+    <code>einfo</code>, <code>ewarn</code> etc.
+    See <a href="#ebuild-message-hooks">Ebuild Message Hooks</a>.</li>
 
     <li>Merger / Unmerger hooks. These are used when installing and uninstalling
     content to the live filesystem. If a check hook returns a non-zero exit
-    code, the action will be aborted.</li>
+    code, the action will be aborted.
+    See <a href="#merger-hooks">Merger / Unmerger Hooks</a>.</li>
 </ul>
+
+<p>There are currently three categories of hook execution code:</p>
+
+<ul>
+    <li><code>.bash</code> hooks. These are simple <code>.bash</code> files that
+    are executed with a particular environment. See <a href="#bash-hooks">Bash Hooks</a>
+    for details.</li>
+
+    <li><code>.hook</code> hooks. These are also <code>bash</code> files, but rather
+    than containing the relevant code in global scope, they make use of functions
+    to perform hook actions. They also support specifying execution order dependencies
+    upon other <code>.hook</code> files. See <a href="#hook-hooks">Hook Hooks</a>
+    for details.</li>
+
+    <li>Repository hooks. These are implemented internally by <code>Repository</code>
+    classes.</li>
+</ul>
+
+<p>Not all hook execution code methods are available for all hook categories. The
+following table indicates availability:</p>
+
+<table border="1">
+    <tr>
+        <td></td>
+        <th><code>.bash</code></th>
+        <th><code>.hook</code></th>
+        <th>Repository</th>
+    </tr>
+    <tr>
+        <th>General</th>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+    </tr>
+    <tr>
+        <th>Ebuild Phase</th>
+        <td>yes</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Ebuild Message</th>
+        <td>yes</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Merger</th>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+    </tr>
+</table>
+
+<p>Where there is a choice, <code>.hook</code> hooks should be favoured over <code>.bash</code>
+hooks.</p>
 
 <h3>Available Hooks</h3>
 
-<h4>General Hooks</h4>
+<h4 id="general-hooks">General Hooks</h4>
 
 <p>The following general normal hooks are available:</p>
 
@@ -79,7 +139,7 @@ target. The <code>PALUDIS_CMDLINE</code> variables described below are also avai
 <code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
 interest.</p>
 
-<h4>Ebuild Hooks</h4>
+<h4 id="ebuild-hooks">Ebuild Hooks</h4>
 
 <p>The following ebuild hooks are available:</p>
 
@@ -138,7 +198,7 @@ interest.</p>
 variable will contain the name of the hook being called. The
 <code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
 
-<h4>Ebuild Message Hooks</h4>
+<h4 id="ebuild-message-hooks">Ebuild Message Hooks</h4>
 
 <p>The following ebuild message hooks are available:</p>
 
@@ -154,7 +214,7 @@ being called, and the <code>MESSAGE</code> environment variable will contain
 the message being passed to the function.  The <code>PALUDIS_CMDLINE</code>
 variables described below are also available.</p>
 
-<h4>Merger / Unmerger Hooks</h4>
+<h4 id="merger-hooks">Merger / Unmerger Hooks</h4>
 
 <p>The merger runs in two stages, for safety. First it checks that it can
 probably install safely, then it does the actual install. Note that calculating
@@ -231,8 +291,8 @@ to be unlinked, and <code>ROOT</code> is the filesystem root.</p>
 <h3>User Defined Hooks</h3>
 
 <p>User defined hooks should be executable (<code>chmod a+x</code>) scripts named
-<code>*.bash</code>. They can live in two locations (or be symlinked there, to
-allow a single script to be shared between hooks):</p>
+<code>*.bash</code> or <code>*.hook</code>. They can live in two locations (or
+be symlinked there, to allow a single script to be shared between hooks):</p>
 
 <ul>
     <li><code><em>confdir</em>/hooks/<em>hookname</em>/</code>, where
@@ -242,6 +302,60 @@ allow a single script to be shared between hooks):</p>
     <li><code><em>DATADIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
     systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
 </ul>
+
+<h4 id="bash-hooks">Bash Hooks</h4>
+
+<p>A <code>.bash</code> hook is merely executed when the associated action is
+triggered. There is no guarantee as to execution order.</p>
+
+<h4 id="hook-hooks">Hook Hooks</h4>
+
+<p>A <code>.hook</code> hook is more powerful. It must not run anything in
+global scope, but instead defines all its actions in functions. It must, at
+minimum, define a function called <code>hook_run_$HOOK</code> for each hook
+that it can handle. It may also define functions called <code>hook_depend_$HOOK</code>,
+which should output names of any other hooks upon which it depends, and
+<code>hook_after_$HOOK</code>, which is similar but indicates an ordering
+rather than hard dependency (the named hooks not existing is not an error).
+For example:</p>
+
+<pre>
+#!/bin/bash
+
+hook_run_install_all_post()
+{
+    # ensure that einfo etc are available
+    export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+    source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+
+    echo
+    einfo "Checking for monkeys..."
+
+    if [[ -d "${ROOT}/var/lib/monkeys" ]] ; then
+        for m in "${ROOT}"/var/lib/monkeys/* ; do
+            ewarn "Found monkey $(basename ${m} )"
+        done
+    else
+        einfo "No monkeys found"
+    fi
+}
+
+hook_depend_install_all_post()
+{
+    # we need to run after the Paludis standard eselect_env_update hook
+    echo eselect_env_update
+}
+
+hook_after_install_all_post()
+{
+    # if checking for rabbits or squirrels, do those first
+    echo check_for_rabbits check_for_squirrels
+}
+</pre>
+
+<p>Note that the <code>hook_depend_</code> and <code>hook_after_</code> functions
+are cached, and are generally only called once per session, so the output should
+not vary based upon outside parameters.</p>
 
 <h3>Package Manager Defined Hooks</h3>
 
