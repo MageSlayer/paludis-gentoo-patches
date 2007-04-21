@@ -307,6 +307,10 @@ namespace
                 if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
                     continue;
 
+                // Don't check ebuilds with the wrong name.
+                if (stringify(dir.basename()) != stringify(f->basename()).substr(0,stringify(dir.basename()).length()))
+                    continue;
+
                 qa::EbuildCheckData d(
                         QualifiedPackageName(CategoryNamePart(stringify(dir.dirname().basename())),
                                 PackageNamePart(stringify(dir.basename()))),
@@ -326,6 +330,10 @@ namespace
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
                 if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
+                    continue;
+
+                // Don't check ebuilds with the wrong name.
+                if (stringify(dir.basename()) != stringify(f->basename()).substr(0,stringify(dir.basename()).length()))
                     continue;
 
                 for (RepositoryPortageInterface::ProfilesIterator
