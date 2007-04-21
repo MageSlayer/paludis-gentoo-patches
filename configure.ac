@@ -684,6 +684,7 @@ AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}
 
 dnl {{{ vim
+AC_MSG_CHECKING([whether to install Vim scripts])
 AC_ARG_ENABLE([vim],
 			  AS_HELP_STRING([--enable-vim], [Enable Vim extras]),
 			  [HAVE_VIM=$enableval
