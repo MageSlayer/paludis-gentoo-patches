@@ -22,6 +22,7 @@
 #include <paludis/qa/changelog_check.hh>
 #include <paludis/qa/defaults_check.hh>
 #include <paludis/qa/deprecated_functions_check.hh>
+#include <paludis/qa/ebuild_name_check.hh>
 #include <paludis/qa/filename_check.hh>
 #include <paludis/qa/file_permissions_check.hh>
 #include <paludis/qa/function_check.hh>
@@ -56,6 +57,7 @@ FileCheckMaker::FileCheckMaker()
     register_maker(ChangeLogCheck::identifier(), &MakeFileCheck<ChangeLogCheck>::make_file_check);
     register_maker(DefaultsCheck::identifier(), &MakeFileCheck<DefaultsCheck>::make_file_check);
     register_maker(DeprecatedFunctionsCheck::identifier(), &MakeFileCheck<DeprecatedFunctionsCheck>::make_file_check);
+    register_maker(EbuildNameCheck::identifier(), &MakeFileCheck<EbuildNameCheck>::make_file_check);
     register_maker(FileNameCheck::identifier(), &MakeFileCheck<FileNameCheck>::make_file_check);
     register_maker(FilePermissionsCheck::identifier(), &MakeFileCheck<FilePermissionsCheck>::make_file_check);
     register_maker(FunctionCheck::identifier(), &MakeFileCheck<FunctionCheck>::make_file_check);

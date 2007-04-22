@@ -36,8 +36,6 @@ Assigned to: <nobody>
 
 Missing counterparts for
 
-  * "ebuild.namenomatch":"Ebuild files that do not have the same name as their parent directory"
-
   * "ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy."
 
   * "LIVEVCS.stable":"This ebuild is a live checkout from a VCS but has stable keywords."
