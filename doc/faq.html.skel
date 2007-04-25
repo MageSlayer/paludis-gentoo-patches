@@ -249,6 +249,13 @@ The syntax for the configuration file line is
 for syncing with the <code>gentoo</code> repository via CVS, you would use
 <code>sync = cvs+ssh://username@cvs.gentoo.org:/var/cvsroot:gentoo-x86</code>.</p>
 
+<h2 id="generaloperation">General Operation</h2>
+
+<h3 id="updatingrdepends">Paludis does not update DEPENDs by default</h3>
+
+<p>Paludis does not update already satisfied DEPENDs by default. If you need a
+different behaviour, use the <code>--dl-installed-deps-pre</code> option.</p>
+
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
 <h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
