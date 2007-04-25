@@ -251,10 +251,11 @@ for syncing with the <code>gentoo</code> repository via CVS, you would use
 
 <h2 id="generaloperation">General Operation</h2>
 
-<h3 id="updatingrdepends">Paludis does not update DEPENDs by default</h3>
+<h3 id="updatingdepends">Paludis does not update DEPENDs of already installed packages</h3>
 
-<p>Paludis does not update already satisfied DEPENDs by default. If you need a
-different behaviour, use the <code>--dl-installed-deps-pre</code> option.</p>
+<p>Paludis ignores DEPENDs of already installed packages by default. If you
+need a different behaviour, use the <code>--dl-installed-deps-pre</code>
+option.</p>
 
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
