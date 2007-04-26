@@ -154,6 +154,8 @@ ebuild_scrub_environment()
     local filters=(
         -e '/^\(EU\|PP\|U\)ID=/d'
         -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\)=/d'
+        -e '/^BASH_COMPLETION\(_DIR\)\?=/d'
+        -e '/^bash[0-9]\+[a-z]\?=/d'
         -e '/^\(FUNCNAME\|GROUPS\|SHELLOPTS\)=/d'
         -e '/^\(declare -x \|export \)\?SANDBOX_ACTIVE=/d'
     )
