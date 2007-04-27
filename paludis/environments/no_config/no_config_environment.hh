@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_NO_CONFIG_NO_CONFIG_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_NO_CONFIG_NO_CONFIG_ENVIRONMENT_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/environment_implementation.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -49,10 +49,14 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
-        public Environment,
+        public EnvironmentImplementation,
         private PrivateImplementationPattern<NoConfigEnvironment>,
         private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
     {
+        protected:
+            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             ///\name Basic operations
             ///\{
@@ -63,20 +67,23 @@ namespace paludis
 
             ///\}
 
-            virtual std::string paludis_command() const;
-            virtual void set_paludis_command(const std::string &);
+            ///\name NoConfigEnvironment-specific configuration options
+            ///\{
 
             /**
              * What is our top level directory for our main repository?
              */
             FSEntry main_repository_dir() const;
 
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const, const bool) const;
-
             /**
              * Should we accept unstable keywords?
              */
             void set_accept_unstable(const bool value);
+
+            ///\}
+
+            ///\name NoConfigEnvironment-specific repository information
+            ///\{
 
             /**
              * Fetch our 'main' repository.
@@ -98,10 +105,18 @@ namespace paludis
              */
             std::tr1::shared_ptr<const Repository> master_repository() const;
 
-            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
-                    const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));
+            ///\}
 
-            virtual void clear_forced_use();
+            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string paludis_command() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void set_paludis_command(const std::string &);
     };
 }
 

@@ -19,79 +19,69 @@
 
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <map>
+#include <paludis/package_database.hh>
 #include <string>
-
-/** \file
- * Implementation of TestEnvironment.
- *
- * \ingroup grptestenvironment
- */
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<TestEnvironment>
+    {
+        std::tr1::shared_ptr<PackageDatabase> package_database;
+        std::string paludis_command;
+
+        Implementation(Environment * const e) :
+            package_database(new PackageDatabase(e)),
+            paludis_command("")
+        {
+        }
+    };
+}
+
 TestEnvironment::TestEnvironment() :
-    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
+    PrivateImplementationPattern<TestEnvironment>(new Implementation<TestEnvironment>(this))
+{
+}
+
+TestEnvironment::~TestEnvironment()
 {
 }
 
 bool
-TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry *) const
+TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry &) const
 {
     return (std::string::npos != u.data().find("enabled"));
 }
 
 bool
-TestEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const,
-        const bool override_tilde_keywords) const
+TestEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
 {
-    return k == KeywordName("test") || (override_tilde_keywords && k == KeywordName("~test"));
+    return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
 
-bool
-TestEnvironment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
+std::tr1::shared_ptr<PackageDatabase>
+TestEnvironment::package_database()
 {
-    return true;
+    return _imp->package_database;
 }
 
-bool
-TestEnvironment::query_user_masks(const PackageDatabaseEntry &) const
+std::tr1::shared_ptr<const PackageDatabase>
+TestEnvironment::package_database() const
 {
-    return false;
+    return _imp->package_database;
 }
 
-bool
-TestEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
+std::string
+TestEnvironment::paludis_command() const
 {
-    return false;
-}
-
-namespace
-{
-    static const std::multimap<std::string, std::string> test_environment_mirrors;
-}
-
-TestEnvironment::MirrorIterator
-TestEnvironment::begin_mirrors(const std::string &) const
-{
-    return MirrorIterator(test_environment_mirrors.begin());
-}
-
-TestEnvironment::MirrorIterator
-TestEnvironment::end_mirrors(const std::string &) const
-{
-    return MirrorIterator(test_environment_mirrors.end());
+    return _imp->paludis_command;
 }
 
 void
-TestEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
-        const UseFlagState)
+TestEnvironment::set_paludis_command(const std::string & s)
 {
-    throw InternalError(PALUDIS_HERE, "force_use not currently available for TestEnvironment");
-}
-
-void
-TestEnvironment::clear_forced_use()
-{
+    _imp->paludis_command = s;
 }
 

@@ -141,20 +141,18 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
-            std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
-                    create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
+            std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
 
             for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
             {
-                if (keywords.end() != keywords.find(KeywordName(stringify(*a))))
+                if (keywords->end() != keywords->find(KeywordName(stringify(*a))))
                     cout << colour(cl_bold_green, "+ ");
-                else if (keywords.end() != keywords.find(KeywordName("~" + stringify(*a))))
+                else if (keywords->end() != keywords->find(KeywordName("~" + stringify(*a))))
                     cout << colour(cl_bold_yellow, "~ ");
-                else if (keywords.end() != keywords.find(KeywordName("-" + stringify(*a))))
+                else if (keywords->end() != keywords->find(KeywordName("-" + stringify(*a))))
                     cout << colour(cl_red, "- ");
-                else if (keywords.end() != keywords.find(KeywordName("-*")))
+                else if (keywords->end() != keywords->find(KeywordName("-*")))
                     cout << colour(cl_red, "* ");
                 else
                     cout << "  ";

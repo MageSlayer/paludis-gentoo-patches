@@ -95,6 +95,11 @@ EbinCommand::operator() ()
     if (use_sandbox())
         cmd.with_sandbox();
 
+    std::tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
+    std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
+
     cmd = extend_command(cmd
             .with_setenv("P", stringify(params.db_entry->name.package) + "-" +
                 stringify(params.db_entry->version.remove_revision()))
@@ -115,10 +120,10 @@ EbinCommand::operator() ()
                  std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
             .with_setenv("PALUDIS_TMPDIR", stringify(params.buildroot))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-            .with_setenv("PALUDIS_BASHRC_FILES", params.environment->bashrc_files())
-            .with_setenv("PALUDIS_HOOK_DIRS", params.environment->hook_dirs())
-            .with_setenv("PALUDIS_FETCHERS_DIRS", params.environment->fetchers_dirs())
-            .with_setenv("PALUDIS_SYNCERS_DIRS", params.environment->syncers_dirs())
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+            .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
+            .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
+            .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
             .with_setenv("PALUDIS_COMMAND", params.environment->paludis_command())
             .with_setenv("PALUDIS_REDUCED_GID", stringify(params.environment->reduced_gid()))
             .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment->reduced_uid()))

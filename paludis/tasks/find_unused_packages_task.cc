@@ -64,12 +64,9 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
             old_slot = metadata->slot;
         }
 
-        std::set<KeywordName> current_keywords;
-        WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
-                create_inserter<KeywordName>(std::inserter(current_keywords, current_keywords.end())));
-
+        std::tr1::shared_ptr<const KeywordNameCollection> current_keywords(metadata->ebuild_interface->keywords());
         bool used(false);
-        for (std::set<KeywordName>::const_iterator k(current_keywords.begin()), k_end(current_keywords.end()) ;
+        for (KeywordNameCollection::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)
         {
             std::string stable_keyword(stringify(*k));
@@ -89,7 +86,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
         if (! used)
             result->append(PackageDatabaseEntry(package, p->version, _repo->name()));
 
-        keywords.insert(current_keywords.begin(), current_keywords.end());
+        keywords.insert(current_keywords->begin(), current_keywords->end());
     }
 
     return result;

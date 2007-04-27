@@ -23,6 +23,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/query.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <map>

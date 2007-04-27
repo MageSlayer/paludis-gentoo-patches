@@ -23,6 +23,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/repository-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
@@ -128,6 +129,14 @@ namespace paludis
             virtual void on_preserve_world() = 0;
 
             virtual void on_installed_paludis();
+
+            ///\}
+
+            ///\name Logic
+            ///\{
+
+            virtual void world_update_set(const SetName &);
+            virtual void world_update_packages(std::tr1::shared_ptr<const DepSpec>);
 
             ///\}
 

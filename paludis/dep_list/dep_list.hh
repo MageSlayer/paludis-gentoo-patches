@@ -36,6 +36,7 @@
 
 namespace paludis
 {
+    class VersionMetadata;
 
 #include <paludis/dep_list/dep_list-sr.hh>
 

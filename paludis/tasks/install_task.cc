@@ -23,6 +23,9 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/query.hh>
+#include <paludis/hook.hh>
+#include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <list>
 
@@ -101,7 +104,7 @@ InstallTask::add_target(const std::string & target)
     bool done(false);
     try
     {
-        if ((target != "insecurity") && ((s = ((_imp->env->package_set(SetName(target)))))))
+        if ((target != "insecurity") && ((s = ((_imp->env->set(SetName(target)))))))
         {
             if (_imp->had_set_targets)
                 throw MultipleSetTargetsSpecified();
@@ -143,42 +146,6 @@ InstallTask::add_target(const std::string & target)
     }
 
     _imp->raw_targets.push_back(modified_target);
-}
-
-namespace
-{
-    struct WorldCallbacks :
-        public Environment::WorldCallbacks
-    {
-        InstallTask * const t;
-
-        WorldCallbacks(InstallTask * const tt) :
-            t(tt)
-        {
-        }
-
-        virtual void add_callback(const PackageDepSpec & a)
-        {
-            t->on_update_world(a);
-        }
-
-        virtual void add_callback(const SetName & a)
-        {
-            t->on_update_world(a);
-        }
-
-        virtual void skip_callback(const PackageDepSpec & a,
-                const std::string & s)
-        {
-            t->on_update_world_skip(a, s);
-        }
-
-        virtual void skip_callback(const SetName & a,
-                const std::string & s)
-        {
-            t->on_update_world_skip(a, s);
-        }
-    };
 }
 
 void
@@ -460,22 +427,21 @@ InstallTask::execute()
         if (! _imp->preserve_world)
         {
             on_update_world_pre();
-            WorldCallbacks w(this);
 
             if (_imp->had_package_targets)
             {
                 if (_imp->add_to_world_spec)
-                    _imp->env->add_appropriate_to_world(PortageDepParser::parse_depend(
-                                *_imp->add_to_world_spec, pds_pm_permissive), &w);
+                    world_update_packages(PortageDepParser::parse_depend(
+                                *_imp->add_to_world_spec, pds_pm_permissive));
                 else
-                    _imp->env->add_appropriate_to_world(_imp->targets, &w);
+                    world_update_packages(_imp->targets);
             }
             else if (_imp->had_set_targets)
             {
                 if (_imp->add_to_world_spec)
-                    _imp->env->add_set_to_world(SetName(*_imp->add_to_world_spec), &w);
+                    world_update_set(SetName(*_imp->add_to_world_spec));
                 else if (! _imp->raw_targets.empty())
-                    _imp->env->add_set_to_world(SetName(*_imp->raw_targets.begin()), &w);
+                    world_update_set(SetName(*_imp->raw_targets.begin()));
             }
 
             on_update_world_post();
@@ -608,5 +574,99 @@ InstallTask::override_target_type(const DepListTargetType t)
 {
     _imp->override_target_type = true;
     _imp->dep_list.options()->target_type = t;
+}
+
+void
+InstallTask::world_update_set(const SetName & s)
+{
+    if (s == SetName("world") || s == SetName("system") || s == SetName("security")
+            || s == SetName("everything") || s == SetName("insecurity"))
+    {
+        on_update_world_skip(s, "special sets cannot be added to world");
+        return;
+    }
+
+    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->world_interface)
+            (*r)->world_interface->add_to_world(s);
+
+    on_update_world(s);
+}
+
+namespace
+{
+    struct WorldTargetFinder :
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>
+    {
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>::visit;
+
+        InstallTask * const task;
+        std::list<const PackageDepSpec *> items;
+        bool inside_any;
+        bool inside_use;
+
+        WorldTargetFinder(InstallTask * const t) :
+            task(t),
+            inside_any(false),
+            inside_use(false)
+        {
+        }
+
+        void visit(const AnyDepSpec * a)
+        {
+            Save<bool> save_inside_any(&inside_any, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const UseDepSpec * a)
+        {
+            Save<bool> save_inside_use(&inside_use, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PlainTextDepSpec *)
+        {
+        }
+
+        void visit(const PackageDepSpec * a)
+        {
+            if (inside_any)
+                task->on_update_world_skip(*a, "inside || ( ) block");
+            else if (inside_use)
+                task->on_update_world_skip(*a, "inside use? ( ) block");
+            else if (a->slot_ptr())
+                task->on_update_world_skip(*a, ":slot restrictions");
+            else if (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())
+                task->on_update_world_skip(*a, "version restrictions");
+            else
+            {
+                items.push_back(a);
+                task->on_update_world(*a);
+            }
+        }
+
+        void visit(const BlockDepSpec *)
+        {
+        }
+    };
+}
+
+void
+InstallTask::world_update_packages(std::tr1::shared_ptr<const DepSpec> a)
+{
+    WorldTargetFinder w(this);
+    a->accept(&w);
+    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
+            i_end(w.items.end()) ; i != i_end ; ++i)
+    {
+        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                r_end(_imp->env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+            if ((*r)->world_interface && (*i)->package_ptr())
+                (*r)->world_interface->add_to_world(*(*i)->package_ptr());
+    }
 }
 

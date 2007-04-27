@@ -26,6 +26,8 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/log.hh>
 #include <paludis/query.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <map>

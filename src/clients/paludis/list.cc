@@ -17,16 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <src/output/colour.hh>
 #include "command_line.hh"
 #include "list.hh"
+
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/visitor.hh>
+#include <src/output/colour.hh>
+
+#include <tr1/memory>
 #include <iomanip>
 #include <iostream>
 #include <list>
 #include <map>
-#include <paludis/paludis.hh>
-#include <paludis/util/log.hh>
-#include <paludis/util/visitor.hh>
 
 using namespace paludis;
 
@@ -221,16 +225,16 @@ do_list_sets(std::tr1::shared_ptr<Environment> env)
                         r->format()))
                 continue;
 
-        std::tr1::shared_ptr<const SetsCollection> set_names(r->sets_interface->sets_list());
-        for (SetsCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        std::tr1::shared_ptr<const SetNameCollection> set_names(r->sets_interface->sets_list());
+        for (SetNameCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back(stringify(r->name()));
     }
 
     if (! CommandLine::get_instance()->a_repository.specified())
     {
-        std::tr1::shared_ptr<const SetsCollection> set_names(env->sets_list());
-        for (SetsCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        std::tr1::shared_ptr<const SetNameCollection> set_names(env->set_names());
+        for (SetNameCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back("environment");
     }

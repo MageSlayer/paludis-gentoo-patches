@@ -18,6 +18,7 @@
  */
 
 #include "description_extractor.hh"
+#include <paludis/package_database.hh>
 
 using namespace paludis;
 using namespace inquisitio;

@@ -27,8 +27,14 @@ else
 fi
 
 echo ">>> test ${testname}"
-${@}
-code=$?
+if [[ -n "${TEST_OUTPUT_WRAPPER}" ]] ; then
+    $TEST_OUTPUT_WRAPPER --stdout-prefix "${testname#./}> " --stderr-prefix "${testname#./}> " -- ${@}
+    code=$?
+else
+    ${@}
+    code=$?
+fi
+
 if [[ 0 != ${code} ]] ; then
     echo ">>> test ${testname} returned ${code}"
     if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then

@@ -72,7 +72,7 @@ namespace paludis
             /**
              * Give a list of all the sets in this repo.
              */
-            std::tr1::shared_ptr<const SetsCollection> sets_list() const;
+            std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
     };
 }
 

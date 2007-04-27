@@ -1101,7 +1101,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
                 {
                     output_no_endl(" ");
 
-                    LicenceDisplayer ld(output_stream(), environment(), &e.package);
+                    LicenceDisplayer ld(output_stream(), environment(), e.package);
                     metadata->license_interface->license()->accept(&ld);
                 }
             }
@@ -1111,11 +1111,8 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
                 if (meta->ebuild_interface)
                 {
-                    std::set<KeywordName> keywords;
-                    WhitespaceTokeniser::get_instance()->tokenise(meta->ebuild_interface->keywords,
-                            create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
-
-                    output_no_endl(" ( " + render_as_masked(join(keywords.begin(), keywords.end(), " ")) + " )");
+                    std::tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                    output_no_endl(" ( " + render_as_masked(join(keywords->begin(), keywords->end(), " ")) + " )");
                 }
             }
 

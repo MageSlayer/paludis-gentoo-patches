@@ -187,12 +187,9 @@ int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
 {
     std::map<std::string, std::string> syncers;
 
-    std::list<std::string> syncers_dirs;
-    WhitespaceTokeniser::get_instance()->tokenise(env->syncers_dirs(),
-            std::back_inserter(syncers_dirs));
-
-    for (std::list<std::string>::const_iterator d(syncers_dirs.begin()),
-            d_end(syncers_dirs.end()) ; d != d_end ; ++d)
+    std::tr1::shared_ptr<const FSEntryCollection> sd(env->syncers_dirs());
+    for (FSEntryCollection::Iterator d(sd->begin()),
+            d_end(sd->end()) ; d != d_end ; ++d)
     {
         FSEntry dir(*d);
         if (! dir.is_directory())
@@ -221,7 +218,7 @@ int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
         {
             std::cout << "* " << colour(cl_key_name, s->first) << std::endl;
             if (0 != run_command(Command(s->second + " --help")
-                        .with_setenv("PALUDIS_FETCHERS_DIRS", env->fetchers_dirs())
+                        .with_setenv("PALUDIS_FETCHERS_DIRS", join(sd->begin(), sd->end(), " "))
                         .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))))
                 Log::get_instance()->message(ll_warning, lc_context, "Syncer help command '" +
                         s->second + " --help' failed");

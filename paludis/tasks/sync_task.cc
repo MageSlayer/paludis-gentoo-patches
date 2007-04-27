@@ -20,6 +20,8 @@
 #include "sync_task.hh"
 #include <paludis/environment.hh>
 #include <paludis/syncer.hh>
+#include <paludis/package_database.hh>
+#include <paludis/hook.hh>
 #include <list>
 
 using namespace paludis;

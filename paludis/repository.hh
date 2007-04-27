@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
+#include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
@@ -45,49 +46,6 @@
 
 namespace paludis
 {
-    class Environment;
-    class RepositoryNameCache;
-    class PortageRepositoryProfile;
-    class Hook;
-
-    class Repository;
-    class RepositoryInstallableInterface;
-    class RepositoryInstalledInterface;
-    class RepositoryMaskInterface;
-    class RepositorySetsInterface;
-    class RepositorySyncableInterface;
-    class RepositoryUninstallableInterface;
-    class RepositoryUseInterface;
-    class RepositoryWorldInterface;
-    class RepositoryEnvironmentVariableInterface;
-    class RepositoryMirrorsInterface;
-    class RepositoryProvidesInterface;
-    class RepositoryVirtualsInterface;
-    class RepositoryDestinationInterface;
-    class RepositoryContentsInterface;
-    class RepositoryConfigInterface;
-    class RepositoryLicensesInterface;
-    class RepositoryPortageInterface;
-    class RepositoryHookInterface;
-
-    /**
-     * A set of destinations.
-     *
-     * \ingroup grpdepresolver
-     */
-    typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
-
-    /**
-     * What debug build option to use when installing a package.
-     *
-     * \ingroup grprepository
-     */
-    enum InstallDebugOption
-    {
-        ido_none,
-        ido_split,
-        ido_internal
-    };
 
 #include <paludis/repository-sr.hh>
 
@@ -734,13 +692,6 @@ namespace paludis
     };
 
     /**
-     * Contains the names of all the sets provided by the repository.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<SetName> SetsCollection;
-
-    /**
      * Interface for package sets for repositories.
      *
      * \see Repository
@@ -776,7 +727,7 @@ namespace paludis
             /**
              * Gives a list of the names of all the sets provided by this repo.
              */
-            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const
+            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

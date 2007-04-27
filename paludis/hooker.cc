@@ -19,7 +19,9 @@
 
 #include "hooker.hh"
 #include <paludis/environment.hh>
+#include <paludis/hook.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>

@@ -29,7 +29,7 @@
 
 namespace paludis
 {
-    class Environment;
+    class AdaptedEnvironment;
 
 #include <src/clients/contrarius/contrarius_stage_options-sr.hh>
 
@@ -37,10 +37,10 @@ namespace paludis
         public StageBase
     {
         protected:
-            std::tr1::shared_ptr<Environment> _env;
+            std::tr1::shared_ptr<AdaptedEnvironment> _env;
 
         public:
-            ContrariusStage(std::tr1::shared_ptr<Environment> e) :
+            ContrariusStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 _env(e)
             {
             }
@@ -50,7 +50,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            AuxiliaryStage(std::tr1::shared_ptr<Environment> e) :
+            AuxiliaryStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }
@@ -74,7 +74,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            BinutilsStage(std::tr1::shared_ptr<Environment> e) :
+            BinutilsStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }
@@ -98,7 +98,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            KernelHeadersStage(std::tr1::shared_ptr<Environment> e) :
+            KernelHeadersStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }
@@ -122,7 +122,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            MinimalStage(std::tr1::shared_ptr<Environment> e) :
+            MinimalStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }
@@ -146,7 +146,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            LibCStage(std::tr1::shared_ptr<Environment> e) :
+            LibCStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }
@@ -171,7 +171,7 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            FullStage(std::tr1::shared_ptr<Environment> e) :
+            FullStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
                 ContrariusStage(e)
             {
             }

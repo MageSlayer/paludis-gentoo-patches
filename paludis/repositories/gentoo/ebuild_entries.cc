@@ -302,11 +302,9 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             archives.append(" ");
 
             /* add * mirror entries */
-            for (Environment::MirrorIterator
-                    m(_imp->params.environment->begin_mirrors("*")),
-                    m_end(_imp->params.environment->end_mirrors("*")) ;
-                    m != m_end ; ++m)
-                flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
+            std::tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
+            for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
+                flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
@@ -317,18 +315,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
 
+                std::tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
-                        _imp->params.environment->begin_mirrors(mirror.substr(0, spos)) == 
-                        _imp->params.environment->end_mirrors(mirror.substr(0, spos)))
+                        mirrors->empty())
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
-                for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, spos))),
-                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, spos))) ;
-                        m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
+                for (MirrorsCollection::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+                    flat_src_uri.append(*m + "/" + mirror.substr(spos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(mirror.substr(0, spos))),
@@ -344,11 +339,10 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             std::string master_mirror(strip_trailing_string(stringify(_imp->portage_repository->name()), "x-"));
             if (! no_mirror && _imp->portage_repository->is_mirror(master_mirror))
             {
-                for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(master_mirror)),
-                        m_end(_imp->params.environment->end_mirrors(master_mirror)) ;
-                        m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
+                std::tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
+
+                for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
+                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
@@ -401,7 +395,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
         for (std::set<UseFlagName>::const_iterator iuse_it(iuse.begin()), iuse_end(iuse.end()) ;
                 iuse_it != iuse_end; ++iuse_it)
-            if (_imp->params.environment->query_use(*iuse_it, &e))
+            if (_imp->params.environment->query_use(*iuse_it, e))
                 use += (*iuse_it).data() + " ";
     }
 
@@ -426,7 +420,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
         /* possible values from environment */
         std::tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(_imp->params.environment->
-                known_use_expand_names(*x, &e));
+                known_use_expand_names(*x, e));
         for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
                 i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
             possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
@@ -434,7 +428,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
                 u != u_end ; ++u)
         {
-            if (! _imp->params.environment->query_use(UseFlagName(lower_x + "_" + stringify(*u)), &e))
+            if (! _imp->params.environment->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
                 continue;
 
             use.append(lower_x + "_" + stringify(*u) + " ");

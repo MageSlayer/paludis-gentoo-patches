@@ -21,6 +21,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
+#include <paludis/environment.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
@@ -523,13 +524,14 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
                 stringify(v) + "' because its location ('" + stringify(_imp->location) + "') is not a directory");
 
     std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, v));
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash unmerge")
             .with_setenv("PN", vm->cran_interface->package)
             .with_setenv("PV", stringify(v))
             .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
             .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files()));
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
     if (0 != run_command(cmd))
         throw PackageUninstallActionError("Couldn't unmerge '" + stringify(q) + "-" + stringify(v) + "'");
@@ -572,7 +574,7 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
                 {
                     if (std::string::npos == line->find('/'))
                     {
-                        std::tr1::shared_ptr<DepSpec> spec(_imp->env->package_set(SetName(*line)));
+                        std::tr1::shared_ptr<DepSpec> spec(_imp->env->set(SetName(*line)));
                         if (spec)
                             result->add_child(spec);
                         else
@@ -604,12 +606,12 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
         return std::tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 CRANInstalledRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("everything"));
     result->insert(SetName("world"));
     return result;
@@ -741,6 +743,8 @@ CRANInstalledRepository::want_pre_post_phases() const
 void
 CRANInstalledRepository::merge(const MergeOptions & m)
 {
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+
     Command cmd = Command(LIBEXECDIR "/paludis/cran.bash merge")
         .with_setenv("IMAGE", stringify(m.image_dir))
         .with_setenv("PN", stringify(m.package.name.package))
@@ -748,7 +752,7 @@ CRANInstalledRepository::merge(const MergeOptions & m)
         .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
         .with_setenv("ROOT", stringify(root()))
         .with_setenv("REPOSITORY", stringify(m.package.repository));
 

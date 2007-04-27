@@ -230,7 +230,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
         display_metadata_iuse("Use flags", "IUSE", metadata->ebuild_interface->iuse, e);
         if (want_raw())
         {
-            display_metadata_key("Keywords", "KEYWORDS", metadata->ebuild_interface->keywords);
+            display_metadata_key("Keywords", "KEYWORDS", metadata->ebuild_interface->keywords_string);
             display_metadata_key("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri_string);
             display_metadata_key("Restrict", "RESTRICT", metadata->ebuild_interface->restrict_string);
         }
@@ -274,7 +274,7 @@ ConsoleQueryTask::display_metadata_license(const std::string & k, const std::str
     }
     else
     {
-        LicenceDisplayer d(output_stream(), _imp->env, &display_entry);
+        LicenceDisplayer d(output_stream(), _imp->env, display_entry);
         l->accept(&d);
         output_right_column("");
     }

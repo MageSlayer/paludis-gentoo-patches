@@ -22,6 +22,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
+#include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

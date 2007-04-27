@@ -23,6 +23,7 @@
 #include <paludis/tasks/uninstall_task.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/dep_list/uninstall_list.hh>
+#include <paludis/package_database.hh>
 
 #include <iostream>
 #include <limits>

@@ -13,12 +13,15 @@
  * \ingroup grpmatchpackage
  */
 
-#include <paludis/dep_spec.hh>
-#include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
 {
+    class Environment;
+    class DepSpec;
+    class PackageDepSpec;
+    class PackageDatabaseEntry;
+
     /**
      * Return whether the specified spec matches the specified target.
      *

@@ -288,7 +288,7 @@ namespace
         {
             const UseDepSpec * const u(spec->as_use_dep_spec());
             if (0 != u)
-                return env->query_use(u->flag(), pde) ^ u->inverse();
+                return (pde ? env->query_use(u->flag(), *pde) : false) ^ u->inverse();
             else
                 return true;
         }
@@ -412,7 +412,7 @@ DepList::QueryVisitor::visit(const UseDepSpec * const a)
 {
     /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
-    if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
+    if ((d->_imp->current_pde() ? d->_imp->env->query_use(a->flag(), *d->_imp->current_pde()) : false) ^ a->inverse())
     {
         result = true;
         for (CompositeDepSpec::Iterator c(a->begin()), c_end(a->end()) ; c != c_end ; ++c)
@@ -604,13 +604,16 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
                 mask_mask += mr_license;
             mask_mask += mr_by_association;
 
-            bool override_tilde_keywords(masks_to_override[dl_override_tilde_keywords]);
-            bool override_unkeyworded(masks_to_override[dl_override_unkeyworded]);
+            MaskReasonsOptions override_options;
+            if (masks_to_override[dl_override_tilde_keywords])
+                override_options += mro_override_tilde_keywords;
+            if (masks_to_override[dl_override_unkeyworded])
+                override_options += mro_override_unkeyworded;
 
             for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
-                if (! (d->_imp->env->mask_reasons(*p, override_tilde_keywords, override_unkeyworded).subtract(mask_mask).any()))
+                if (! (d->_imp->env->mask_reasons(*p, override_options).subtract(mask_mask).any()))
                 {
                     d->add_error_package(*p, dlk_masked);
                     best_visible_candidate = &*p;
@@ -792,7 +795,7 @@ DepList::AddVisitor::visit(const UseDepSpec * const a)
 {
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
-        if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
+        if ((d->_imp->current_pde() ? d->_imp->env->query_use(a->flag(), *d->_imp->current_pde()) : false) ^ a->inverse())
             std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
     else
@@ -1085,7 +1088,7 @@ DepList::ShowSuggestVisitor::visit(const PlainTextDepSpec * const)
 void
 DepList::ShowSuggestVisitor::visit(const UseDepSpec * const a)
 {
-    if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
+    if ((d->_imp->current_pde() ? d->_imp->env->query_use(a->flag(), *d->_imp->current_pde()) : false) ^ a->inverse())
         std::for_each(a->begin(), a->end(), accept_visitor(this));
 }
 
@@ -1615,7 +1618,7 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 
         for (std::set<std::string>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
                 f != f_end ; ++f)
-            if (_imp->env->query_use(UseFlagName(*f), &installed) != _imp->env->query_use(UseFlagName(*f), &uninstalled))
+            if (_imp->env->query_use(UseFlagName(*f), installed) != _imp->env->query_use(UseFlagName(*f), uninstalled))
                 return false;
     }
 

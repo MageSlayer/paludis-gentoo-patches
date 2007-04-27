@@ -25,6 +25,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
+#include <paludis/package_database.hh>
 #include <list>
 #include <vector>
 #include <fstream>
@@ -259,7 +260,7 @@ SimpleHandler::_create_contents() const
         {
             if (_p.environment && std::string::npos == i->find('/'))
             {
-                std::tr1::shared_ptr<DepSpec> p(_p.environment->package_set(SetName(*i)));
+                std::tr1::shared_ptr<DepSpec> p(_p.environment->set(SetName(*i)));
                 if (p)
                     _contents->add_child(p);
                 else

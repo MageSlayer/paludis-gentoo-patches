@@ -20,9 +20,34 @@
 #include "portage_environment.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/util/collection_concrete.hh>
 
 using namespace paludis;
 using namespace test;
+
+namespace
+{
+    class TestPortageEnvironment :
+        public PortageEnvironment
+    {
+        public:
+            using PortageEnvironment::accept_keywords;
+
+            TestPortageEnvironment(const std::string & e) :
+                PortageEnvironment(e)
+            {
+            }
+    };
+
+    bool accept_keyword(const TestPortageEnvironment & env,
+            const KeywordName & k, const PackageDatabaseEntry & e)
+    {
+        std::tr1::shared_ptr<KeywordNameCollection> kk(new KeywordNameCollection::Concrete);
+        kk->insert(k);
+        return env.accept_keywords(kk, e);
+    }
+}
 
 namespace test_cases
 {
@@ -34,20 +59,22 @@ namespace test_cases
         {
             PortageEnvironment env("portage_environment_TEST_dir/query_use");
 
-            TEST_CHECK(env.query_use(UseFlagName("one"), 0));
-            TEST_CHECK(env.query_use(UseFlagName("two"), 0));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), 0));
-            TEST_CHECK(! env.query_use(UseFlagName("four"), 0));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), 0));
+            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("repo"));
+
+            TEST_CHECK(env.query_use(UseFlagName("one"), x));
+            TEST_CHECK(env.query_use(UseFlagName("two"), x));
+            TEST_CHECK(! env.query_use(UseFlagName("three"), x));
+            TEST_CHECK(! env.query_use(UseFlagName("four"), x));
+            TEST_CHECK(! env.query_use(UseFlagName("five"), x));
 
             PackageDatabaseEntry d(QualifiedPackageName("app/one"), VersionSpec("1"),
                     RepositoryName("repo"));
 
-            TEST_CHECK(! env.query_use(UseFlagName("one"), &d));
-            TEST_CHECK(env.query_use(UseFlagName("two"), &d));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), &d));
-            TEST_CHECK(env.query_use(UseFlagName("four"), &d));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), &d));
+            TEST_CHECK(! env.query_use(UseFlagName("one"), d));
+            TEST_CHECK(env.query_use(UseFlagName("two"), d));
+            TEST_CHECK(! env.query_use(UseFlagName("three"), d));
+            TEST_CHECK(env.query_use(UseFlagName("four"), d));
+            TEST_CHECK(! env.query_use(UseFlagName("five"), d));
         }
     } test_query_use;
 
@@ -57,33 +84,35 @@ namespace test_cases
 
         void run()
         {
-            PortageEnvironment env("portage_environment_TEST_dir/accept_keywords");
+            TestPortageEnvironment env("portage_environment_TEST_dir/accept_keywords");
 
-            TEST_CHECK(env.accept_keyword(KeywordName("arch"), 0));
-            TEST_CHECK(env.accept_keyword(KeywordName("other_arch"), 0));
-            TEST_CHECK(! env.accept_keyword(KeywordName("~arch"), 0));
+            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("repo"));
+
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), x));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), x));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), x));
 
             PackageDatabaseEntry d1(QualifiedPackageName("app/one"), VersionSpec("1"),
                     RepositoryName("repo"));
-            TEST_CHECK(env.accept_keyword(KeywordName("arch"), &d1));
-            TEST_CHECK(env.accept_keyword(KeywordName("other_arch"), &d1));
-            TEST_CHECK(env.accept_keyword(KeywordName("~arch"), &d1));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), d1));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), d1));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), d1));
 
             PackageDatabaseEntry d2(QualifiedPackageName("app/two"), VersionSpec("1"),
                     RepositoryName("repo"));
-            TEST_CHECK(env.accept_keyword(KeywordName("other_arch"), &d2));
-            TEST_CHECK(env.accept_keyword(KeywordName("arch"), &d2));
-            TEST_CHECK(env.accept_keyword(KeywordName("~arch"), &d2));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), d2));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), d2));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), d2));
 
             PackageDatabaseEntry d3(QualifiedPackageName("app/three"), VersionSpec("1"),
                     RepositoryName("repo"));
-            TEST_CHECK(! env.accept_keyword(KeywordName("other_arch"), &d3));
-            TEST_CHECK(! env.accept_keyword(KeywordName("arch"), &d3));
-            TEST_CHECK(! env.accept_keyword(KeywordName("~arch"), &d3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), d3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("arch"), d3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), d3));
 
             PackageDatabaseEntry d4(QualifiedPackageName("app/four"), VersionSpec("1"),
                     RepositoryName("repo"));
-            TEST_CHECK(env.accept_keyword(KeywordName("fred"), &d4));
+            TEST_CHECK(accept_keyword(env, KeywordName("fred"), d4));
 
         }
     } test_accept_keywords;

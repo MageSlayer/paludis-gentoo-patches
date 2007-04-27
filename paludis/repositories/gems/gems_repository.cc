@@ -186,10 +186,10 @@ GemsRepository::do_package_set(const SetName &) const
     return std::tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 GemsRepository::sets_list() const
 {
-    return std::tr1::shared_ptr<SetsCollection>(new SetsCollection::Concrete);
+    return std::tr1::shared_ptr<SetNameCollection>(new SetNameCollection::Concrete);
 }
 
 bool
@@ -206,17 +206,14 @@ GemsRepository::do_sync() const
 
     std::string protocol(_imp->params.yaml_uri.substr(0, p));
 
-    std::list<std::string> fetchers_dirs;
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->params.environment->fetchers_dirs(),
-            std::back_inserter(fetchers_dirs));
-
-    Log::get_instance()->message(ll_debug, lc_context, "looking for syncer protocol '"
-            + stringify(protocol) + "'");
+    Log::get_instance()->message(ll_debug, lc_context) << "looking for syncer protocol '"
+            + stringify(protocol) + "'";
 
     FSEntry fetcher("/var/empty");
     bool ok(false);
-    for (std::list<std::string>::const_iterator d(fetchers_dirs.begin()),
-            d_end(fetchers_dirs.end()) ; d != d_end && ! ok; ++d)
+    std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(_imp->params.environment->fetchers_dirs());
+    for (FSEntryCollection::Iterator d(fetchers_dirs->begin()),
+            d_end(fetchers_dirs->end()) ; d != d_end && ! ok; ++d)
     {
         fetcher = FSEntry(*d) / ("do" + protocol);
         if (fetcher.exists() && fetcher.has_permission(fs_ug_owner, fs_perm_execute))

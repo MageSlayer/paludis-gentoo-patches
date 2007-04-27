@@ -22,6 +22,10 @@
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <map>
@@ -120,18 +124,15 @@ namespace
             if (! metadata->ebuild_interface)
                 continue;
 
-            std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
-                    create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
-
+            std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());;
             /* ensure that there's an entry for this SLOT */
             versions_in_slots.insert(std::make_pair(metadata->slot, VersionsEntry(
                             VersionsEntry::create()
                             .best_keyworded(VersionSpec("0"))
                             .best_anywhere(VersionSpec("0")))));
 
-            if (keywords.end() != keywords.find(keyword) ||
-                    keywords.end() != keywords.find(KeywordName("~" + stringify(keyword))))
+            if (keywords->end() != keywords->find(keyword) ||
+                    keywords->end() != keywords->find(KeywordName("~" + stringify(keyword))))
             {
                 is_interesting = true;
                 versions_in_slots.find(metadata->slot)->second.best_keyworded =
@@ -139,7 +140,7 @@ namespace
                 worst_keyworded = std::min(worst_keyworded, *v);
             }
 
-            if (keywords.end() != std::find_if(keywords.begin(), keywords.end(), IsStableOrUnstableKeyword()))
+            if (keywords->end() != std::find_if(keywords->begin(), keywords->end(), IsStableOrUnstableKeyword()))
                 versions_in_slots.find(metadata->slot)->second.best_anywhere =
                     std::max(versions_in_slots.find(metadata->slot)->second.best_anywhere, *v);
         }

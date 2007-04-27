@@ -22,17 +22,17 @@ provides_cache = /var/empty
 END
 
 cat <<END > home/.paludis/keywords.conf
-* test
+*/* test
 ~foo/bar-1 ~test
 END
 
 cat <<END > home/.paludis/use.conf
-* enabled
+*/* enabled
 ~foo/bar-1 sometimes_enabled
 END
 
 cat <<END > home/.paludis/licenses.conf
-* *
+*/* *
 END
 
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1

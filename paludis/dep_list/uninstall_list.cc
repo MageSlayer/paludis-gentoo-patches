@@ -28,6 +28,8 @@ using namespace paludis;
 #include <paludis/util/log.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
+#include <paludis/version_metadata.hh>
+#include <paludis/package_database.hh>
 #include <list>
 #include <algorithm>
 
@@ -263,7 +265,7 @@ namespace
 
         void visit(const UseDepSpec * const u)
         {
-            if (env->query_use(UseFlagName(u->flag()), &pkg) ^ u->inverse())
+            if (env->query_use(UseFlagName(u->flag()), pkg) ^ u->inverse())
                 std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
@@ -361,7 +363,7 @@ UninstallList::add_unused_dependencies()
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        std::tr1::shared_ptr<DepSpec> world(_imp->env->package_set(SetName("world")));
+        std::tr1::shared_ptr<DepSpec> world(_imp->env->set(SetName("world")));
         for (PackageDatabaseEntryCollection::Iterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
@@ -428,7 +430,7 @@ UninstallList::collect_world() const
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
 
-    std::tr1::shared_ptr<DepSpec> world(_imp->env->package_set(SetName("world")));
+    std::tr1::shared_ptr<DepSpec> world(_imp->env->set(SetName("world")));
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
         if (match_package_in_heirarchy(*_imp->env, *world, *i))

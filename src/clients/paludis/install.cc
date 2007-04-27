@@ -652,7 +652,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
                                 {
                                     cerr << " ";
 
-                                    LicenceDisplayer ld(cerr, env.get(), &*pp);
+                                    LicenceDisplayer ld(cerr, env.get(), *pp);
                                     meta->license_interface->license()->accept(&ld);
                                 }
                             }
@@ -664,14 +664,9 @@ do_install(std::tr1::shared_ptr<Environment> env)
                                             pp->name, pp->version));
                                 if (meta->ebuild_interface)
                                 {
-                                    std::set<KeywordName> keywords;
-                                    WhitespaceTokeniser::get_instance()->tokenise(
-                                            meta->ebuild_interface->keywords,
-                                            create_inserter<KeywordName>(
-                                                std::inserter(keywords, keywords.end())));
-
-                                    cerr << " ( " << colour(cl_masked, join(keywords.begin(),
-                                                    keywords.end(), " ")) << " )";
+                                    std::tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                                    cerr << " ( " << colour(cl_masked, join(keywords->begin(),
+                                                    keywords->end(), " ")) << " )";
                                 }
                             }
 

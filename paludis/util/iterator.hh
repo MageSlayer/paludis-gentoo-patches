@@ -144,9 +144,9 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename Iter_, typename Value_>
-    class IndirectIterator : public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,
-                             public Comparisons<typename std::iterator_traits<Iter_>::iterator_category,
-                                        Iter_, Value_>::Type
+    class IndirectIterator :
+        public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,
+        public Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type
     {
         private:
             Iter_ _i;
@@ -226,10 +226,13 @@ namespace paludis
      *
      * \ingroup grpiterators
      */
-    template <typename Value_, typename Iter_>
-    IndirectIterator<Iter_, Value_> indirect_iterator(const Iter_ & i)
+    template <typename Iter_>
+    IndirectIterator<Iter_,
+        typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
+    indirect_iterator(const Iter_ & i)
     {
-        return IndirectIterator<Iter_, Value_>(i);
+        return IndirectIterator<Iter_,
+            typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>(i);
     }
 
     /**

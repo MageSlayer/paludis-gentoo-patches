@@ -58,9 +58,10 @@ LicenceDisplayer::visit(const paludis::PlainTextDepSpec * spec)
 LicenceDisplayer::LicenceDisplayer(
         std::ostream & s,
         const paludis::Environment * const e,
-        const paludis::PackageDatabaseEntry * const d) :
+        const paludis::PackageDatabaseEntry & d) :
     stream(s),
     env(e),
     db_entry(d)
 {
 }
+

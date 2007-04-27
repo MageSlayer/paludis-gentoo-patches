@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
+#include <paludis/hook.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

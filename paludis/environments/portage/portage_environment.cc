@@ -29,6 +29,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_database.hh>
 #include <algorithm>
 #include <tr1/functional>
 #include <functional>
@@ -74,11 +75,14 @@ namespace paludis
 
         int overlay_importance;
 
-        Implementation(const std::string & s) :
+        std::tr1::shared_ptr<PackageDatabase> package_database;
+
+        Implementation(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
             done_hooks(false),
-            overlay_importance(10)
+            overlay_importance(10),
+            package_database(new PackageDatabase(e))
         {
         }
 
@@ -143,8 +147,7 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this))),
-    PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(s))
+    PrivateImplementationPattern<PortageEnvironment>(new Implementation<PortageEnvironment>(this, s))
 {
     using namespace std::tr1::placeholders;
 
@@ -223,8 +226,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
-        LineConfigFile mirrors(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions());
-        for (LineConfigFile::Iterator line(mirrors.begin()), line_end(mirrors.end()) ;
+        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions());
+        for (LineConfigFile::Iterator line(m.begin()), line_end(m.end()) ;
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
@@ -412,16 +415,16 @@ PortageEnvironment::~PortageEnvironment()
 }
 
 bool
-PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
+PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
     /* first check package database use masks... */
-    const Repository * const repo((e ? package_database()->fetch_repository(e->repository).get() : 0));
+    std::tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
 
-    if (repo && repo->use_interface)
+    if (repo->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, e))
+        if (repo->use_interface->query_use_mask(f, &e))
             return false;
-        if (repo->use_interface->query_use_force(f, e))
+        if (repo->use_interface->query_use_force(f, &e))
             return true;
     }
 
@@ -433,19 +436,16 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         state = use_enabled;
 
     /* check use: per package config */
-    if (e)
+    for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
+            i != i_end ; ++i)
     {
-        for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
-                i != i_end ; ++i)
-        {
-            if (! match_package(*this, *i->first, *e))
-                continue;
+        if (! match_package(*this, *i->first, e))
+            continue;
 
-            if (i->second == stringify(f))
-                state = use_enabled;
-            else if (i->second == "-" + stringify(f))
-                state = use_disabled;
-        }
+        if (i->second == stringify(f))
+            state = use_enabled;
+        else if (i->second == "-" + stringify(f))
+            state = use_disabled;
     }
 
     switch (state)
@@ -473,56 +473,46 @@ PortageEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
-void
-PortageEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>,
-        const UseFlagName &, const UseFlagState)
-{
-    throw InternalError(PALUDIS_HERE, "force_use not currently available for PortageEnvironment");
-}
-
-void
-PortageEnvironment::clear_forced_use()
-{
-}
-
 bool
-PortageEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const d,
-        const bool override_tilde_keywords) const
+PortageEnvironment::accept_keywords(std::tr1::shared_ptr <const KeywordNameCollection> keywords,
+        const PackageDatabaseEntry & d) const
 {
     bool result(false);
 
-    if (stringify(k) == "*")
+    if (keywords->end() != keywords->find(KeywordName("*")))
         return true;
 
-    if (_imp->accept_keywords.end() != _imp->accept_keywords.find(stringify(k)))
-        result = true;
-
-    if (d)
+    for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+            k != k_end ; ++k)
     {
+        bool local_result(false);
+
+        if (_imp->accept_keywords.end() != _imp->accept_keywords.find(stringify(*k)))
+            local_result = true;
+
         for (PackageKeywords::const_iterator i(_imp->package_keywords.begin()), i_end(_imp->package_keywords.end()) ;
                 i != i_end ; ++i)
         {
-            if (! match_package(*this, *i->first, *d))
+            if (! match_package(*this, *i->first, d))
                 continue;
 
-            if (i->second == stringify(k))
-                result = true;
-            else if (i->second == "-" + stringify(k))
-                result = false;
+            if (i->second == stringify(*k))
+                local_result = true;
+            else if (i->second == "-" + stringify(*k))
+                local_result = false;
             else if (i->second == "-*")
-                result = false;
+                local_result = false;
             else if (i->second == "**")
-                result = true;
+                local_result = true;
         }
-    }
 
-    if ((! result) && override_tilde_keywords && ('~' == stringify(k).at(0)))
-        result = accept_keyword(KeywordName(stringify(k).substr(1)), d, false);
+        result |= local_result;
+    }
 
     return result;
 }
 
-FSEntry
+const FSEntry
 PortageEnvironment::root() const
 {
     if (_imp->vars->get("ROOT").empty())
@@ -532,7 +522,7 @@ PortageEnvironment::root() const
 }
 
 bool
-PortageEnvironment::query_user_masks(const PackageDatabaseEntry & e) const
+PortageEnvironment::masked_by_user(const PackageDatabaseEntry & e) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
@@ -543,7 +533,7 @@ PortageEnvironment::query_user_masks(const PackageDatabaseEntry & e) const
 }
 
 bool
-PortageEnvironment::query_user_unmasks(const PackageDatabaseEntry & e) const
+PortageEnvironment::unmasked_by_user(const PackageDatabaseEntry & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
@@ -555,7 +545,7 @@ PortageEnvironment::query_user_unmasks(const PackageDatabaseEntry & e) const
 
 std::tr1::shared_ptr<const UseFlagNameCollection>
 PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
-        const PackageDatabaseEntry * pde) const
+        const PackageDatabaseEntry & pde) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
@@ -568,22 +558,18 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
         if (0 == i->compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
             result->insert(UseFlagName(*i));
 
-    if (pde)
+    for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
+            i != i_end ; ++i)
     {
-        for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
-                i != i_end ; ++i)
-        {
-            if (! match_package(*this, *i->first, *pde))
-                continue;
+        if (! match_package(*this, *i->first, pde))
+            continue;
 
-            if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
-                result->insert(UseFlagName(i->second));
-        }
+        if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+            result->insert(UseFlagName(i->second));
     }
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "PortageEnvironment::known_use_expand_names("
-            + stringify(prefix) + ", " + (pde ? stringify(*pde) : stringify("0")) + ") -> ("
-            + join(result->begin(), result->end(), ", ") + ")");
+    Log::get_instance()->message(ll_debug, lc_no_context) << "PortageEnvironment::known_use_expand_names("
+            << prefix << ", " << pde << ") -> (" << join(result->begin(), result->end(), ", ") << ")";
 
     return result;
 }
@@ -604,36 +590,50 @@ PortageEnvironment::perform_hook(const Hook & hook) const
     return _imp->hooker->perform_hook(hook);
 }
 
-std::string
+std::tr1::shared_ptr<const FSEntryCollection>
 PortageEnvironment::hook_dirs() const
 {
     _imp->need_hook_dirs();
-    return join(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), " ");
+    std::tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->inserter());
+    return result;
 }
 
-std::string
+std::tr1::shared_ptr<const FSEntryCollection>
 PortageEnvironment::bashrc_files() const
 {
-    return stringify(_imp->conf_dir / "make.globals") + " " +
-        stringify(_imp->conf_dir / "make.conf") + " " +
-        stringify(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
-}
-
-PortageEnvironment::MirrorIterator
-PortageEnvironment::begin_mirrors(const std::string & m) const
-{
-    return MirrorIterator(_imp->mirrors.lower_bound(m));
-}
-
-PortageEnvironment::MirrorIterator
-PortageEnvironment::end_mirrors(const std::string & m) const
-{
-    return MirrorIterator(_imp->mirrors.upper_bound(m));
+    std::tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    result->push_back(_imp->conf_dir / "make.globals");
+    result->push_back(_imp->conf_dir / "make.conf");
+    result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
+    return result;
 }
 
 bool
-PortageEnvironment::accept_breaks_portage() const
+PortageEnvironment::accept_breaks_portage(const PackageDatabaseEntry &) const
 {
     return false;
+}
+
+std::tr1::shared_ptr<PackageDatabase>
+PortageEnvironment::package_database()
+{
+    return _imp->package_database;
+}
+
+std::tr1::shared_ptr<const PackageDatabase>
+PortageEnvironment::package_database() const
+{
+    return _imp->package_database;
+}
+
+std::tr1::shared_ptr<const MirrorsCollection>
+PortageEnvironment::mirrors(const std::string & m) const
+{
+    std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
+        p(_imp->mirrors.equal_range(m));
+    std::tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
+    std::copy(p.first, p.second, transform_inserter(result->inserter(), SelectSecond<std::string, std::string>()));
+    return result;
 }
 

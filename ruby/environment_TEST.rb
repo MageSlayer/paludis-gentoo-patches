@@ -78,9 +78,11 @@ module Paludis
         end
 
         def test_query_use
-            assert env.query_use("enabled")
-            assert ! env.query_use("not_enabled")
-            assert ! env.query_use("sometimes_enabled")
+            pde = PackageDatabaseEntry.new("x/x", VersionSpec.new("1.0"), "testrepo")
+
+            assert env.query_use("enabled", pde)
+            assert ! env.query_use("not_enabled", pde)
+            assert ! env.query_use("sometimes_enabled", pde)
 
             pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
@@ -93,7 +95,7 @@ module Paludis
             assert_raise ArgumentError do
                 env.query_use(1, 2, 3)
             end
-            assert_raise TypeError do
+            assert_raise ArgumentError do
                 env.query_use(123)
             end
         end
@@ -105,7 +107,8 @@ module Paludis
         end
 
         def test_query_use
-            assert ! env.query_use("foo")
+            pde = PackageDatabaseEntry.new("x/x", VersionSpec.new("1.0"), "testrepo")
+            assert ! env.query_use("foo", pde)
             pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
             assert ! env.query_use("foo", pde)
         end
@@ -114,106 +117,8 @@ module Paludis
             assert_raise ArgumentError do
                 env.query_use(1, 2, 3)
             end
-            assert_raise TypeError do
+            assert_raise ArgumentError do
                 env.query_use(123)
-            end
-        end
-    end
-
-    class TestCase_EnvironmentAcceptKeyword < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def test_accept_keyword
-            assert env.accept_keyword("test")
-            assert ! env.accept_keyword("bad")
-            assert ! env.accept_keyword("~test")
-
-            pde = PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
-
-            assert env.accept_keyword("test", pde)
-            assert ! env.accept_keyword("bad", pde)
-            assert env.accept_keyword("~test", pde)
-        end
-
-        def test_accept_keyword_bad
-            assert_raise ArgumentError do
-                env.accept_keyword(1, 2, 3)
-            end
-            assert_raise TypeError do
-                env.accept_keyword(123)
-            end
-        end
-    end
-
-    class TestCase_NoConfigEnvironmentAcceptKeyword < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_accept_keyword
-            assert env.accept_keyword("test")
-            assert ! env.accept_keyword("bad")
-            assert ! env.accept_keyword("~test")
-
-            pde = PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
-
-            assert env.accept_keyword("test", pde)
-            assert ! env.accept_keyword("bad", pde)
-            assert ! env.accept_keyword("~test", pde)
-        end
-
-        def test_accept_keyword_bad
-            assert_raise ArgumentError do
-                env.accept_keyword(1, 2, 3)
-            end
-            assert_raise TypeError do
-                env.accept_keyword(123)
-            end
-        end
-    end
-
-    class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def test_accept_license
-            assert env.accept_license("test")
-
-            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
-
-            assert env.accept_license("test", pde)
-        end
-
-        def test_accept_license_bad
-            assert_raise ArgumentError do
-                env.accept_license(1, 2, 3)
-            end
-            assert_raise TypeError do
-                env.accept_license(123)
-            end
-        end
-    end
-
-    class TestCase_NoConfigEnvironmentAcceptLicense < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_accept_license
-            assert env.accept_license("test")
-            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
-            assert env.accept_license("test", pde)
-        end
-
-        def test_accept_license_bad
-            assert_raise ArgumentError do
-                env.accept_license(1, 2, 3)
-            end
-            assert_raise TypeError do
-                env.accept_license(123)
             end
         end
     end
@@ -257,48 +162,6 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentQueryUserMasks < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def test_query_user_masks
-            p2 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
-            p3 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("3.0"), "testrepo")
-
-            assert ! env.query_user_masks(p2)
-            assert env.query_user_masks(p3)
-        end
-
-        def test_query_user_unmasks
-            p2 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
-            p3 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("3.0"), "testrepo")
-
-            assert env.query_user_unmasks(p2)
-            assert ! env.query_user_unmasks(p3)
-        end
-
-        def test_query_user_masks_bad
-            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
-            assert_raise ArgumentError do
-                env.query_user_masks(p, p)
-            end
-            assert_raise TypeError do
-                env.query_user_masks(123)
-            end
-        end
-
-        def test_query_user_unmasks_bad
-            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
-            assert_raise ArgumentError do
-                env.query_user_unmasks(p, p)
-            end
-            assert_raise TypeError do
-                env.query_user_unmasks(123)
-            end
-        end
-    end
-
     class TestCase_EnvironmentPackageDatabase < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentMaker.instance.make_from_spec("")
@@ -335,12 +198,12 @@ module Paludis
         end
 
         def test_package_set
-            assert_kind_of DepSpec, env.package_set('everything')
+            assert_kind_of DepSpec, env.set('everything')
         end
 
         def test_package_set_error
             assert_raise SetNameError do
-                env.package_set('broken*')
+                env.set('broken*')
             end
         end
     end
@@ -351,12 +214,12 @@ module Paludis
         end
 
         def test_package_set
-            assert_kind_of DepSpec, env.package_set('everything')
+            assert_kind_of DepSpec, env.set('everything')
         end
 
         def test_package_set_error
             assert_raise SetNameError do
-                env.package_set('broken*')
+                env.set('broken*')
             end
         end
     end
@@ -378,7 +241,7 @@ module Paludis
 
         def env_master
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo",
-                                   "/var/empty", 
+                                   "/var/empty",
                                    Dir.getwd().to_s + "/environment_TEST_dir/slaverepo")
         end
 

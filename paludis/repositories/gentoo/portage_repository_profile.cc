@@ -20,13 +20,12 @@
 #include <paludis/repositories/gentoo/portage_repository_profile.hh>
 #include <paludis/repositories/gentoo/portage_repository_profile_file.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
-
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
-
+#include <paludis/util/join.hh>
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>

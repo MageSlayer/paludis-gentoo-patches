@@ -20,6 +20,7 @@
 #include "downgrade_check.hh"
 #include "command_line.hh"
 #include <paludis/query.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/tokeniser.hh>

@@ -29,6 +29,7 @@ $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
+define(`addfwd', `define(`filelist', filelist `$1-fwd.hh')define(`headerlist', headerlist `$1-fwd.hh')')dnl
 define(`addhhx', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
@@ -54,6 +55,7 @@ $1-se.cc : $1.se $(top_srcdir)/misc/make_se.bash
 ')dnl
 define(`addthis', `dnl
 ifelse(`$2', `hh', `addhh(`$1')', `')dnl
+ifelse(`$2', `fwd', `addfwd(`$1')', `')dnl
 ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `sr', `addsr(`$1')', `')dnl

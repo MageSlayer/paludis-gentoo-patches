@@ -92,7 +92,7 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
     result->provide_string = f.get("PROVIDE");
     result->src_uri_string = f.get("SRC_URI");
     result->restrict_string = f.get("RESTRICT");
-    result->keywords = f.get("KEYWORDS");
+    result->keywords_string = f.get("KEYWORDS");
     result->iuse = f.get("IUSE");
     result->inherited = f.get("INHERITED");
 
@@ -157,11 +157,9 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             binaries.append(" ");
 
             /* add * mirror entries */
-            for (Environment::MirrorIterator
-                    m(_imp->params.environment->begin_mirrors("*")),
-                    m_end(_imp->params.environment->end_mirrors("*")) ;
-                    m != m_end ; ++m)
-                flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
+            std::tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
+            for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
+                flat_bin_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
@@ -172,18 +170,15 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since BIN_URI is broken");
 
+                std::tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
-                        _imp->params.environment->begin_mirrors(mirror.substr(0, spos)) == 
-                        _imp->params.environment->end_mirrors(mirror.substr(0, spos)))
+                        mirrors->empty())
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since BIN_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
-                for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, spos))),
-                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, spos))) ;
-                        m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
+                for (MirrorsCollection::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+                    flat_bin_uri.append(*m + "/" + mirror.substr(spos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(mirror.substr(0, spos))),
@@ -199,11 +194,9 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             std::string master_mirror(strip_trailing_string(stringify(_imp->portage_repository->name()), "x-"));
             if (_imp->portage_repository->is_mirror(master_mirror))
             {
-                for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(master_mirror)),
-                        m_end(_imp->params.environment->end_mirrors(master_mirror)) ;
-                        m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
+                std::tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
+                for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
+                    flat_bin_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
@@ -396,7 +389,7 @@ EbinEntries::merge(const MergeOptions & m)
         ebin_file << "PROVIDE=" << metadata->ebuild_interface->provide_string << std::endl;
         ebin_file << "SRC_URI=" << metadata->ebuild_interface->src_uri_string << std::endl;
         ebin_file << "RESTRICT=" << metadata->ebuild_interface->restrict_string << std::endl;
-        ebin_file << "KEYWORDS=" << metadata->ebuild_interface->keywords << std::endl;
+        ebin_file << "KEYWORDS=" << metadata->ebuild_interface->keywords_string << std::endl;
         ebin_file << "IUSE=" << metadata->ebuild_interface->iuse << std::endl;
         ebin_file << "INHERITED=" << metadata->ebuild_interface->inherited << std::endl;
     }

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/tasks/stage_builder_task.hh>
+#include <paludis/environment.hh>
 #include <src/clients/contrarius/stage.hh>
 #include <src/clients/contrarius/stage_builder.hh>
 #include <src/output/colour.hh>

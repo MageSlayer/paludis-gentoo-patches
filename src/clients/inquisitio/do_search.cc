@@ -25,6 +25,8 @@
 
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/iterator.hh>
 #include <list>
 #include <set>
 #include <iostream>

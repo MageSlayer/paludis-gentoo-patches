@@ -498,6 +498,8 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     std::string p(vm->cran_interface->package);
     std::string v(vm->cran_interface->version);
 
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
             .with_setenv("CATEGORY", "cran")
             .with_setenv("DISTDIR", stringify(_imp->distdir))
@@ -507,7 +509,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
             .with_setenv("PALUDIS_CRAN_MIRRORS", _imp->mirror)
             .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files()));
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
 
     if (0 != run_command(cmd))
@@ -532,7 +534,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
         .with_setenv("ROOT", stringify(get_root(o.destinations)))
         .with_setenv("WORKDIR", stringify(workdir));
 
@@ -566,7 +568,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
         .with_setenv("ROOT", stringify(get_root(o.destinations)))
         .with_setenv("WORKDIR", stringify(workdir))
         .with_setenv("REPOSITORY", stringify(name()));
@@ -592,12 +594,12 @@ CRANRepository::do_package_set(const SetName & s) const
         return std::tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 CRANRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("base"));
     return result;
 }

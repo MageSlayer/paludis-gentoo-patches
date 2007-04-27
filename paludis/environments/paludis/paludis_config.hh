@@ -40,6 +40,11 @@ namespace paludis
 {
     struct EnvironmentMirrorIteratorTag;
     struct PaludisEnvironment;
+    struct KeywordsConf;
+    struct UseConf;
+    struct LicensesConf;
+    struct PackageMaskConf;
+    struct MirrorsConf;
 
     /**
      * Iterate over environment mirrors.
@@ -110,6 +115,18 @@ namespace paludis
 
             ///\}
 
+            ///\name Config files
+            ///\{
+
+            std::tr1::shared_ptr<const KeywordsConf> keywords_conf() const;
+            std::tr1::shared_ptr<const UseConf> use_conf() const;
+            std::tr1::shared_ptr<const LicensesConf> licenses_conf() const;
+            std::tr1::shared_ptr<const PackageMaskConf> package_mask_conf() const;
+            std::tr1::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
+            std::tr1::shared_ptr<const MirrorsConf> mirrors_conf() const;
+
+            ///\}
+
             ///\name Iterate over our repositories
             ///\{
 
@@ -121,119 +138,10 @@ namespace paludis
 
             ///\}
 
-            ///\name Iterate over our default, set and per-package keywords
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, KeywordName> > PackageKeywordsIterator;
-
-            PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
-
-            PackageKeywordsIterator end_package_keywords(const QualifiedPackageName & d) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const KeywordName> DefaultKeywordsIterator;
-
-            DefaultKeywordsIterator begin_default_keywords() const;
-
-            DefaultKeywordsIterator end_default_keywords() const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, SetKeywordConfigEntry> SetKeywordsIterator;
-
-            SetKeywordsIterator begin_set_keywords() const;
-            SetKeywordsIterator end_set_keywords() const;
-
-            ///\}
-
-            ///\name Iterate over our default, set and per-package licenses
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageLicensesIterator;
-
-            PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
-
-            PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const std::string> DefaultLicensesIterator;
-
-            DefaultLicensesIterator begin_default_licenses() const;
-
-            DefaultLicensesIterator end_default_licenses() const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, SetLicenseConfigEntry> SetLicensesIterator;
-
-            SetLicensesIterator begin_set_licenses() const;
-            SetLicensesIterator end_set_licenses() const;
-
-            ///\}
-
-            ///\name Iterate over our masks and unmasks
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const PackageDepSpec> UserMasksIterator;
-
-            UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const;
-
-            UserMasksIterator end_user_masks(const QualifiedPackageName & d) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const PackageDepSpec> UserUnmasksIterator;
-
-            UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const;
-
-            UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, SetMaskConfigEntry> UserMasksSetsIterator;
-
-            UserMasksSetsIterator begin_user_masks_sets() const;
-            UserMasksSetsIterator end_user_masks_sets() const;
-            UserMasksSetsIterator begin_user_unmasks_sets() const;
-            UserMasksSetsIterator end_user_unmasks_sets() const;
-
-            ///\}
-
-            ///\name Iterate over our default and per-package and per-set use flags
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const UseConfigEntry> UseConfigIterator;
-
-            UseConfigIterator begin_use_config(const QualifiedPackageName & q) const;
-
-            UseConfigIterator end_use_config(const QualifiedPackageName & q) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig,
-                    const std::pair<UseFlagName, UseFlagState> > DefaultUseIterator;
-
-            DefaultUseIterator begin_default_use() const;
-
-            DefaultUseIterator end_default_use() const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const std::string> UseMinusStarIterator;
-
-            UseMinusStarIterator begin_use_prefixes_with_minus_star() const;
-            UseMinusStarIterator end_use_prefixes_with_minus_star() const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageUseMinusStarIterator;
-
-            PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
-            PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const SetUseConfigEntry> SetUseConfigIterator;
-
-            SetUseConfigIterator begin_set_use_config() const;
-            SetUseConfigIterator end_set_use_config() const;
-
-            typedef libwrapiter::ForwardIterator<PaludisConfig, const SetUseConfigMinusStarEntry> SetUseMinusStarIterator;
-
-            SetUseMinusStarIterator begin_set_use_prefixes_with_minus_star() const;
-            SetUseMinusStarIterator end_set_use_prefixes_with_minus_star() const;
-
-            ///\}
-
             /**
              * Our bashrc files.
              */
-            std::string bashrc_files() const;
+            std::tr1::shared_ptr<const FSEntryCollection> bashrc_files() const;
 
             /**
              * The ROOT.
@@ -258,17 +166,6 @@ namespace paludis
              * The config directory.
              */
             std::string config_dir() const;
-
-            ///\name Iterate over our mirrors
-            ///\{
-
-            typedef EnvironmentMirrorIterator MirrorIterator;
-
-            MirrorIterator begin_mirrors(const std::string & m) const;
-
-            MirrorIterator end_mirrors(const std::string & m) const;
-
-            ///\}
     };
 }
 

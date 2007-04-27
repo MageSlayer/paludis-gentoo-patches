@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PORTAGE_PORTAGE_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PORTAGE_PORTAGE_ENVIRONMENT_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/environment_implementation.hh>
 
 namespace paludis
 {
@@ -50,7 +50,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PortageEnvironment :
-        public Environment,
+        public EnvironmentImplementation,
         private PrivateImplementationPattern<PortageEnvironment>
     {
         private:
@@ -69,6 +69,19 @@ namespace paludis
             template<typename I_>
             void _load_atom_file(const FSEntry &, I_, const std::string &);
 
+        protected:
+            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_breaks_portage(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool masked_by_user(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool unmasked_by_user(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             ///\name Basic operations
             ///\{
@@ -78,51 +91,38 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
-                    const UseFlagState);
-
-            virtual void clear_forced_use();
-
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
-                    const bool override_tilde_keywords = false) const
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+                    const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
-                    const PackageDatabaseEntry *) const
+            virtual std::tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const
+            virtual std::tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const
+            virtual const FSEntry root() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual int perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void set_paludis_command(const std::string &);
-
-            virtual MirrorIterator begin_mirrors(const std::string & mirror) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual MirrorIterator end_mirrors(const std::string & mirror) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string hook_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string bashrc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool accept_breaks_portage() const;
     };
 }
 

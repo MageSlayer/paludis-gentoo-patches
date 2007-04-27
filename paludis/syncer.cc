@@ -25,6 +25,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
 #include <list>
 
 /** \file
@@ -63,17 +64,14 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
     if (q < p)
         _remote = _remote.substr(q < p ? q + 1 : 0);
 
-    std::list<std::string> syncers_dirs;
-    WhitespaceTokeniser::get_instance()->tokenise(_environment->syncers_dirs(),
-            std::back_inserter(syncers_dirs));
+    Log::get_instance()->message(ll_debug, lc_context) << "looking for syncer protocol '"
+        + stringify(format) << "'";
 
-    Log::get_instance()->message(ll_debug, lc_context, "looking for syncer protocol '"
-            + stringify(format) + "'");
-
+    std::tr1::shared_ptr<const FSEntryCollection> syncer_dirs(_environment->syncers_dirs());
     FSEntry syncer("/var/empty");
     bool ok(false);
-    for (std::list<std::string>::const_iterator d(syncers_dirs.begin()),
-            d_end(syncers_dirs.end()) ; d != d_end && ! ok; ++d)
+    for (FSEntryCollection::Iterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
+            d != d_end && ! ok; ++d)
     {
         syncer = FSEntry(*d) / ("do" + format);
         if (syncer.exists() && syncer.has_permission(fs_ug_owner, fs_perm_execute))
@@ -92,12 +90,15 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
 void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_environment->bashrc_files());
+    std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(_environment->fetchers_dirs());
+    std::tr1::shared_ptr<const FSEntryCollection> syncers_dirs(_environment->syncers_dirs());
 
     Command cmd(Command(stringify(_syncer) + " " + opts.options + " '" + _local + "' '" + _remote + "'")
             .with_setenv("PALUDIS_ACTION", "sync")
-            .with_setenv("PALUDIS_BASHRC_FILES", _environment->bashrc_files())
-            .with_setenv("PALUDIS_FETCHERS_DIRS", _environment->fetchers_dirs())
-            .with_setenv("PALUDIS_SYNCERS_DIRS", _environment->syncers_dirs())
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+            .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
+            .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (run_command(cmd))

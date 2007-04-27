@@ -76,7 +76,7 @@ module Paludis
             assert_equal "", vmd("1.0").provide_string
             assert_equal "http://example.com/bar-1.0.tar.bz2", vmd("1.0").src_uri_string
             assert_equal "monkey", vmd("1.0").restrict_string
-            assert_equal "test", vmd("1.0").keywords.gsub(%r/\s/, "")
+            assert_equal "test", vmd("1.0").keywords_string.gsub(%r/\s/, "")
             assert_equal "", vmd("1.0").iuse.gsub(%r/\s/, "")
         end
 

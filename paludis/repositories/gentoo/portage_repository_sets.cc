@@ -108,12 +108,12 @@ PortageRepositorySets::package_set(const SetName & s) const
         return std::tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 PortageRepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));

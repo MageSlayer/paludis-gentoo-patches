@@ -13,15 +13,15 @@ END
 
 mkdir -p root/${SYSCONFDIR}/paludis/repositories
 cat <<END > root/${SYSCONFDIR}/paludis/use.conf
-* foo
+*/* foo
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/licenses.conf
-* *
+*/* *
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
-* test
+*/* test
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/bashrc
@@ -75,6 +75,7 @@ USERLAND=test
 KERNEL=test
 TESTPROFILE_WAS_SOURCED=yes
 PROFILE_ORDERING=1
+USE_EXPAND="USERLAND KERNEL"
 END
 cat <<END > profiles/anothertestprofile/make.defaults
 ARCH=test
@@ -106,6 +107,12 @@ pkg_setup() {
     [[ -z "${TESTPROFILE_WAS_SOURCED}" ]] && die "testprofile not sourced"
     [[ -z "${ANOTHERTESTPROFILE_WAS_SOURCED}" ]] && die "anothertestprofile not sourced"
     [[ ${PROFILE_ORDERING:-0} != 2 ]] && die "bad profile source ordering"
+
+    [[ $USERLAND == test ]] || die "bad userland"
+    [[ $KERNEL == test ]] || die "bad kernel"
+    use userland_test || die "bad use for userland"
+    use kernel_test || die "bad use for kernel"
+    use test || die "bad use for arch"
 }
 
 src_unpack() {

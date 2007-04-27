@@ -203,8 +203,54 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
         {
             e.environment->set_accept_unstable(unstable);
 
-            if (e.environment->mask_reasons(ee).any())
-                result << Message(qal_skip, "Masked, so skipping checks");
+            MaskReasons m(e.environment->mask_reasons(ee));
+            if (m.any())
+            {
+                std::string reasons;
+                for (MaskReason rr(MaskReason(0)) ; rr < last_mr ;
+                        rr = MaskReason(static_cast<int>(rr) + 1))
+                {
+                    if (! m[rr])
+                        continue;
+
+                    switch (rr)
+                    {
+                        case mr_keyword:
+                            reasons.append("K");
+                            break;
+                        case mr_user_mask:
+                            reasons.append("U");
+                            break;
+                        case mr_profile_mask:
+                            reasons.append("P");
+                            break;
+                        case mr_repository_mask:
+                            reasons.append("R");
+                            break;
+                        case mr_eapi:
+                            reasons.append("E");
+                            break;
+                        case mr_license:
+                            reasons.append("L");
+                            break;
+                        case mr_by_association:
+                            reasons.append("A");
+                            break;
+                        case mr_chost:
+                            reasons.append("C");
+                            break;
+                        case mr_breaks_portage:
+                            reasons.append("B");
+                            break;
+                        case mr_interactive:
+                            reasons.append("I");
+                            break;
+                        case last_mr:
+                            break;
+                    }
+                }
+                result << Message(qal_skip, "Masked (" + reasons + "), so skipping checks");
+            }
             else
             {
                 Checker depend_checker(result, "DEPEND", e.environment, ee, unstable);

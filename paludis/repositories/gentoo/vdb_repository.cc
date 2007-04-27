@@ -32,6 +32,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/set_file.hh>
+#include <paludis/hook.hh>
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -441,7 +442,7 @@ namespace paludis
             Context local_context("When loading key 'LICENSE':");
             p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
         }
-        p->metadata->keywords = "*";
+        p->metadata->keywords_string = "*";
         {
             Context local_context("When loading key 'INHERITED':");
             p->metadata->inherited = file_contents(location, p->name, p->version, "INHERITED");
@@ -589,15 +590,9 @@ VDBRepository::do_category_names() const
 
     std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
 
-#if 0
-    for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
-            c != c_end ; ++c)
-        result->insert(c->name.category);
-#else
     fast_unique_copy(_imp->entries.begin(), _imp->entries.end(),
             transform_inserter(result->inserter(), VDBEntry::ExtractCategory()),
             VDBEntry::CompareCategory());
-#endif
 
     return result;
 }
@@ -617,10 +612,6 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), c,
                     VDBEntry::CompareCategory()));
-#if 0
-    for ( ; r.first != r.second ; ++(r.first))
-        result->insert(r.first->name);
-#endif
     fast_unique_copy(r.first, r.second,
             transform_inserter(result->inserter(), VDBEntry::ExtractPackage()),
             VDBEntry::ComparePackage());
@@ -1100,12 +1091,12 @@ VDBRepository::do_package_set(const SetName & s) const
         return std::tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 VDBRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("everything"));
     result->insert(SetName("world"));
     return result;

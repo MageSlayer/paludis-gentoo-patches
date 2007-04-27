@@ -27,6 +27,9 @@ using namespace paludis;
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/digests/md5.hh>
+#include <paludis/hook.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/join.hh>
 #include <list>
 #include <fstream>
 #include <iostream>
@@ -77,6 +80,8 @@ VDBUnmerger::extend_hook(const Hook & h)
     std::string pv(stringify(_imp->options.version.remove_revision()));
     std::string slot(stringify(_imp->options.repository->version_metadata(_imp->options.package_name, _imp->options.version)->slot));
 
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+
     return Unmerger::extend_hook(h)
         ("P", pn + "-" + pv)
         ("PN", pn)
@@ -88,7 +93,7 @@ VDBUnmerger::extend_hook(const Hook & h)
         ("SLOT", slot)
         ("CONFIG_PROTECT", _imp->options.config_protect)
         ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
-        ("PALUDIS_BASHRC_FILES", _imp->options.environment->bashrc_files());
+        ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
 void

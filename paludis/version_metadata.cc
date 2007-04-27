@@ -22,7 +22,7 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/log.hh>
-#include <vector>
+#include <paludis/util/collection_concrete.hh>
 
 /** \file
  * Implementation of VersionMetadata.
@@ -70,6 +70,28 @@ VersionMetadataEbinInterface::bin_uri() const
 {
     return PortageDepParser::parse(bin_uri_string,
             PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+std::tr1::shared_ptr<const KeywordNameCollection>
+VersionMetadataEbuildInterface::keywords() const
+{
+    Context context("When splitting up keyword string '" + keywords_string + "':");
+
+    std::tr1::shared_ptr<KeywordNameCollection> result(new KeywordNameCollection::Concrete);
+    WhitespaceTokeniser::get_instance()->tokenise(keywords_string,
+            create_inserter<KeywordName>(result->inserter()));
+    return result;
+}
+
+std::tr1::shared_ptr<const KeywordNameCollection>
+VersionMetadataCRANInterface::keywords() const
+{
+    Context context("When splitting up keyword string '" + keywords_string + "':");
+
+    std::tr1::shared_ptr<KeywordNameCollection> result(new KeywordNameCollection::Concrete);
+    WhitespaceTokeniser::get_instance()->tokenise(keywords_string,
+            create_inserter<KeywordName>(result->inserter()));
+    return result;
 }
 
 VersionMetadataDepsInterface::VersionMetadataDepsInterface(const DepParserFunction & p) :

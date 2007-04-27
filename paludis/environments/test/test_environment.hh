@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_TEST_ENVIRONMENT_HH 1
 
 #include <paludis/package_database_entry.hh>
-#include <paludis/environment.hh>
+#include <paludis/environment_implementation.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declarations for the TestEnvironment class.
@@ -38,61 +39,37 @@ namespace paludis
      *
      * \ingroup grptestenvironment
      */
-    class PALUDIS_VISIBLE TestEnvironment : public Environment
+    class PALUDIS_VISIBLE TestEnvironment :
+        private PrivateImplementationPattern<TestEnvironment>,
+        public EnvironmentImplementation
     {
-        private:
-            std::string _paludis_command;
+        protected:
+            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             TestEnvironment();
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+            ~TestEnvironment();
 
-            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
-                    const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));
+            ///\}
 
-            virtual void clear_forced_use();
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
-                    const bool) const;
+            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
-
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
-
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
-
-            virtual std::string bashrc_files() const
-            {
-                return "";
-            }
-
-            virtual std::string hook_dirs() const
-            {
-                return "";
-            }
+            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const
-            {
-                return _paludis_command;
-            }
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void set_paludis_command(const std::string & c)
-            {
-                _paludis_command = c;
-            }
-
-            virtual int perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return 0;
-            }
-
-            virtual MirrorIterator begin_mirrors(const std::string &) const;
-
-            virtual MirrorIterator end_mirrors(const std::string &) const;
+            virtual void set_paludis_command(const std::string &);
     };
 }
 

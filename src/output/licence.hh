@@ -36,13 +36,13 @@ struct LicenceDisplayer :
     const paludis::Environment * const env;
 
     /// Our db entry.
-    const paludis::PackageDatabaseEntry * const db_entry;
+    const paludis::PackageDatabaseEntry db_entry;
 
     /// Constructor.
     LicenceDisplayer(
             std::ostream & stream,
             const paludis::Environment * const e,
-            const paludis::PackageDatabaseEntry * const d);
+            const paludis::PackageDatabaseEntry & d);
 
     ///\name Visit methods
     ///{

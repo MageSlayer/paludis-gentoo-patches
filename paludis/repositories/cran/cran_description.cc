@@ -47,7 +47,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
 
     // Fill in default values
     metadata->slot = SlotName("0");
-    metadata->cran_interface->keywords = std::string("*");
+    metadata->cran_interface->keywords_string = std::string("*");
     metadata->eapi = "CRAN-1";
 
     std::string key;

@@ -25,6 +25,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/hook.hh>
 #include <vector>
 #include <algorithm>
 
@@ -261,15 +262,9 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
 
 
     std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
-#if 0
-    /// \todo: in theory, this can be a lot faster
-    for ( ; p.first != p.second ; ++p.first)
-        result->insert(p.first->virtual_name);
-#else
     fast_unique_copy(p.first, p.second,
             transform_inserter(result->inserter(), EntriesNameExtractor()),
             EntriesNameComparator());
-#endif
 
     return result;
 }
@@ -279,14 +274,6 @@ InstalledVirtualsRepository::do_category_names() const
 {
     std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("virtual"));
-
-#if 0
-    need_entries();
-
-    fast_unique_copy(_imp->entries.begin(), _imp->entries.end(),
-            transform_inserter(result->inserter(), EntriesCategoryExtractor()),
-            EntriesCategoryComparator());
-#endif
 
     return result;
 }

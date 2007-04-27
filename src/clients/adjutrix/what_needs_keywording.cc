@@ -106,14 +106,12 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
                             p->package.version));
             if (m->ebuild_interface)
             {
-                std::set<std::string> keywords;
-                WhitespaceTokeniser::get_instance()->tokenise(m->ebuild_interface->keywords,
-                        std::inserter(keywords, keywords.end()));
-                for (std::set<std::string>::const_iterator k(keywords.begin()), k_end(keywords.end()) ;
+                std::tr1::shared_ptr<const KeywordNameCollection> keywords(m->ebuild_interface->keywords());
+                for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
-                    if (*k == "-*"
-                            || *k == stringify(target_keyword)
-                            || k->substr(1) == stringify(target_arch))
+                    if (*k == KeywordName("-*")
+                            || *k == target_keyword
+                            || k->data().substr(1) == stringify(target_arch))
                         current.append(stringify(*k) + " ");
             }
 

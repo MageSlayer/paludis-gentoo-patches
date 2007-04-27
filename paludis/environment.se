@@ -1,0 +1,21 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_MaskReasonsOption()
+{
+    prefix mro
+
+    key mro_override_unkeyworded        "Ignore keyword masks for unkeyworded packages"
+    key mro_override_tilde_keywords     "Pretend packages with keyword ~foo also have keyword foo"
+
+    doxygen_comment << "END"
+        /**
+         * Options for Environment::mask_reasons().
+         *
+         * \see MaskReasonsOptions
+         * \see Environment
+         * \ingroup grpenvironment
+         */
+END
+}
+

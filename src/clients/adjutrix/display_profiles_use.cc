@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 #include <paludis/config_file.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -78,7 +79,7 @@ namespace
                 env.package_database()->favourite_repository());
         for (std::set<UseFlagName>::const_iterator u(all_use.begin()), u_end(all_use.end()) ;
                 u != u_end ; ++u)
-            if (env.query_use(*u, &e))
+            if (env.query_use(*u, e))
                 cout << *u << " ";
 
         std::string current_prefix("not on a boat");
@@ -89,7 +90,7 @@ namespace
                 cout << endl << std::setw(20) << (upperify(stringify(u->first)) + ":");
             current_prefix = u->first;
 
-            if (env.query_use(UseFlagName(current_prefix + "_" + stringify(u->second)), &e))
+            if (env.query_use(UseFlagName(current_prefix + "_" + stringify(u->second)), e))
                 cout << u->second << " ";
         }
 

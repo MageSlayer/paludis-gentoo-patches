@@ -18,12 +18,10 @@
  */
 
 #include <paludis/match_package.hh>
-
-/** \file
- * Implementation for match_package.hh.
- *
- * \ingroup grpmatchpackage
- */
+#include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/version_metadata.hh>
+#include <paludis/package_database.hh>
 
 using namespace paludis;
 
@@ -97,12 +95,12 @@ paludis::match_package(
                         continue;
 
                     case use_enabled:
-                        if (! env.query_use(u->first, &entry))
+                        if (! env.query_use(u->first, entry))
                             return false;
                         continue;
 
                     case use_disabled:
-                        if (env.query_use(u->first, &entry))
+                        if (env.query_use(u->first, entry))
                             return false;
                         continue;
                 }

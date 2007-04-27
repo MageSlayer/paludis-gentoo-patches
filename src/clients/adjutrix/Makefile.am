@@ -69,6 +69,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	SYSCONFDIR="$(sysconfdir)" \
 	ADJUTRIX_OPTIONS="" \
+	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_srcdir)/paludis/util/outputwrapper`" \
 	bash $(top_srcdir)/test/run_test.sh bash
 
 TESTS = version_TEST help_TEST find_stable_candidates_TEST args_from_environment_TEST

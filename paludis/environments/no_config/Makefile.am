@@ -41,7 +41,33 @@ paludis_environment_no_config_include_HEADERS = \
 EXTRA_DIST = \
 	no_config_environment-sr.hh \
 	no_config_environment-sr.cc \
-	no_config_environment.sr
+	no_config_environment.sr \
+	no_config_environment_TEST.cc \
+	no_config_environment_TEST_setup.sh \
+	no_config_environment_TEST_cleanup.sh
+
+TESTS = no_config_environment_TEST
+
+TESTS_ENVIRONMENT = env \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	bash $(top_srcdir)/test/run_test.sh
+
+check_PROGRAMS = $(TESTS)
+check_SCRIPTS = no_config_environment_TEST_setup.sh no_config_environment_TEST_cleanup.sh
+
+no_config_environment_TEST_SOURCES = no_config_environment_TEST.cc
+
+no_config_environment_TEST_LDADD = \
+	libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
 
 BUILT_SOURCES = \
 	no_config_environment-sr.hh \

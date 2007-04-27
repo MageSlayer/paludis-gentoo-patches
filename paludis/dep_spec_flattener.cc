@@ -105,7 +105,7 @@ void DepSpecFlattener::visit(const AnyDepSpec *)
 
 void DepSpecFlattener::visit(const UseDepSpec * u)
 {
-    if (_imp->env->query_use(u->flag(), _imp->pkg) ^ u->inverse())
+    if (_imp->env->query_use(u->flag(), *_imp->pkg) ^ u->inverse())
         std::for_each(u->begin(), u->end(), accept_visitor(
                     static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
 }

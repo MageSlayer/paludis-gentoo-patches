@@ -24,6 +24,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
+#include <paludis/package_database.hh>
 #include <set>
 
 using namespace paludis;
@@ -35,6 +36,8 @@ namespace paludis
     template<>
     struct Implementation<NoConfigEnvironment>
     {
+        const NoConfigEnvironmentParams params;
+
         const FSEntry top_level_dir;
         const FSEntry write_cache;
         bool accept_unstable;
@@ -45,7 +48,10 @@ namespace paludis
 
         std::string paludis_command;
 
-        Implementation(Environment * const env, const NoConfigEnvironmentParams & params);
+        std::tr1::shared_ptr<PackageDatabase> package_database;
+
+        Implementation(NoConfigEnvironment * const env, const NoConfigEnvironmentParams & params);
+        void initialise(NoConfigEnvironment * const env);
     };
 
     /* This goat is for Dave Wickham */
@@ -108,12 +114,19 @@ namespace
 }
 
 Implementation<NoConfigEnvironment>::Implementation(
-        Environment * const env, const NoConfigEnvironmentParams & params) :
-    top_level_dir(params.repository_dir),
-    write_cache(params.write_cache),
-    accept_unstable(params.accept_unstable),
-    is_vdb(is_vdb_repository(params.repository_dir, params.repository_type)),
-    paludis_command("false")
+        NoConfigEnvironment * const env, const NoConfigEnvironmentParams & p) :
+    params(p),
+    top_level_dir(p.repository_dir),
+    write_cache(p.write_cache),
+    accept_unstable(p.accept_unstable),
+    is_vdb(is_vdb_repository(p.repository_dir, p.repository_type)),
+    paludis_command("false"),
+    package_database(new PackageDatabase(env))
+{
+}
+
+void
+Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 {
     Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir) + "':");
 
@@ -130,7 +143,7 @@ Implementation<NoConfigEnvironment>::Implementation(
             keys->insert("write_cache", stringify(params.write_cache));
             keys->insert("names_cache", "/var/empty");
 
-            env->package_database()->add_repository(1, ((master_repo =
+            package_database->add_repository(1, ((master_repo =
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         }
 
@@ -145,9 +158,9 @@ Implementation<NoConfigEnvironment>::Implementation(
         if (FSEntry("/var/empty") != params.master_repository_dir)
             keys->insert("master_repository", stringify(master_repo->name()));
 
-        env->package_database()->add_repository(2, ((main_repo =
+        package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
-        env->package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
+        package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
     else
@@ -162,21 +175,22 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        env->package_database()->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
+        package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
 
         std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
         iv_keys->insert("root", "/");
-        env->package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
+        package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                     iv_keys));
     }
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :
-    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this))),
     PrivateImplementationPattern<NoConfigEnvironment>(
             new Implementation<NoConfigEnvironment>(this, params))
 {
+    _imp->initialise(this);
+
     if (_imp->main_repo)
         if (_imp->main_repo->portage_interface->end_profiles() != _imp->main_repo->portage_interface->begin_profiles())
             _imp->main_repo->portage_interface->set_profile(_imp->main_repo->portage_interface->begin_profiles());
@@ -192,59 +206,10 @@ NoConfigEnvironment::~NoConfigEnvironment()
 {
 }
 
-std::string
-NoConfigEnvironment::paludis_command() const
-{
-    return _imp->paludis_command;
-}
-
-void
-NoConfigEnvironment::set_paludis_command(const std::string & s)
-{
-    _imp->paludis_command = s;
-}
-
 FSEntry
 NoConfigEnvironment::main_repository_dir() const
 {
     return _imp->top_level_dir;
-}
-
-bool
-NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const,
-        const bool override_tilde_keywords) const
-{
-    if (_imp->is_vdb)
-        return true;
-
-    std::string accept_keywords(_imp->main_repo->portage_interface->profile_variable("ACCEPT_KEYWORDS"));
-    if (accept_keywords.empty())
-    {
-        std::string arch(_imp->main_repo->portage_interface->profile_variable("ARCH"));
-        if (stringify(k) == arch)
-            return true;
-
-        if ((_imp->accept_unstable || override_tilde_keywords) && ("~" + stringify(k) == arch))
-            return true;
-    }
-    else
-    {
-        std::list<KeywordName> accepted;
-        WhitespaceTokeniser::get_instance()->tokenise(accept_keywords,
-                create_inserter<KeywordName>(std::back_inserter(accepted)));
-
-        if (accepted.end() != std::find(accepted.begin(), accepted.end(), k))
-            return true;
-
-        if ((_imp->accept_unstable || override_tilde_keywords) && '~' == stringify(k).at(0))
-        {
-            if (accepted.end() != std::find(accepted.begin(), accepted.end(),
-                        KeywordName(stringify(k).substr(1))))
-                return true;
-        }
-    }
-
-    return false;
 }
 
 void
@@ -277,15 +242,57 @@ NoConfigEnvironment::master_repository() const
     return _imp->master_repo;
 }
 
-void
-NoConfigEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>,
-        const UseFlagName &, const UseFlagState)
+std::tr1::shared_ptr<PackageDatabase>
+NoConfigEnvironment::package_database()
 {
-    throw InternalError(PALUDIS_HERE, "force_use not currently available for NoConfigEnvironment");
+    return _imp->package_database;
+}
+
+std::tr1::shared_ptr<const PackageDatabase>
+NoConfigEnvironment::package_database() const
+{
+    return _imp->package_database;
+}
+
+std::string
+NoConfigEnvironment::paludis_command() const
+{
+    return _imp->paludis_command;
 }
 
 void
-NoConfigEnvironment::clear_forced_use()
+NoConfigEnvironment::set_paludis_command(const std::string & s)
 {
+    _imp->paludis_command = s;
+}
+
+bool
+NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> keywords,
+        const PackageDatabaseEntry &) const
+{
+    if (_imp->is_vdb)
+        return true;
+
+    std::string ak(_imp->main_repo->portage_interface->profile_variable("ACCEPT_KEYWORDS"));
+
+    if (ak.empty())
+    {
+        std::string arch(_imp->main_repo->portage_interface->profile_variable("ARCH"));
+        if (keywords->end() != keywords->find(KeywordName(arch)))
+            return true;
+    }
+    else
+    {
+        std::list<KeywordName> accepted;
+        WhitespaceTokeniser::get_instance()->tokenise(ak,
+                create_inserter<KeywordName>(std::back_inserter(accepted)));
+
+        for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                k != k_end ; ++k)
+            if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
+                return true;
+    }
+
+    return false;
 }
 

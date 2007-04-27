@@ -24,6 +24,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/query.hh>
+#include <paludis/hook.hh>
 #include <list>
 
 using namespace paludis;
@@ -110,7 +111,7 @@ UninstallTask::add_target(const std::string & target)
     else
         try
         {
-            std::tr1::shared_ptr<DepSpec> spec(_imp->env->package_set(SetName(target)));
+            std::tr1::shared_ptr<DepSpec> spec(_imp->env->set(SetName(target)));
             if (spec)
             {
                 if (_imp->had_package_targets)
@@ -163,30 +164,6 @@ UninstallTask::add_unused()
 
     if (! _imp->raw_targets.empty())
         throw InternalError(PALUDIS_HERE, "Trying to mix unused and normal targets?");
-}
-
-namespace
-{
-    struct WorldCallbacks :
-        public Environment::WorldCallbacks
-    {
-        UninstallTask * const t;
-
-        WorldCallbacks(UninstallTask * const tt) :
-            t(tt)
-        {
-        }
-
-        virtual void remove_callback(const PackageDepSpec & a)
-        {
-            t->on_update_world(a);
-        }
-
-        virtual void remove_callback(const SetName & a)
-        {
-            t->on_update_world(a);
-        }
-    };
 }
 
 void
@@ -254,6 +231,8 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
+#if 0
+
         std::tr1::shared_ptr<AllDepSpec> all(new AllDepSpec);
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
@@ -286,6 +265,7 @@ UninstallTask::execute()
             for (std::list<std::string>::const_iterator t(_imp->raw_targets.begin()),
                     t_end(_imp->raw_targets.end()) ; t != t_end ; ++t)
                 _imp->env->remove_set_from_world(SetName(*t), &w);
+#endif
 
         on_update_world_post();
     }

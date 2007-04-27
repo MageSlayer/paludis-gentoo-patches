@@ -364,6 +364,13 @@ namespace paludis
     typedef Validated<std::string, KeywordNameValidator> KeywordName;
 
     /**
+     * Holds a collection of KeywordName instances.
+     *
+     * \ingroup grpnames
+     */
+    typedef SortedCollection<KeywordName> KeywordNameCollection;
+
+    /**
      * A USE flag can be on, off or unspecified.
      *
      * \ingroup grpnames
@@ -413,6 +420,13 @@ namespace paludis
      * \ingroup grpnames
      */
     typedef Validated<std::string, SetNameValidator> SetName;
+
+    /**
+     * A collection of set names.
+     *
+     * \ingroup grpnames
+     */
+    typedef SortedCollection<SetName> SetNameCollection;
 }
 
 #endif

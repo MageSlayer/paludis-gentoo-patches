@@ -26,6 +26,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/mem_fn.hpp>
+#include <boost/ref.hpp>
 
 namespace std
 {
@@ -33,6 +34,8 @@ namespace std
     {
         using boost::bind;
         using boost::mem_fn;
+        using boost::ref;
+        using boost::cref;
 
         namespace placeholders
         {

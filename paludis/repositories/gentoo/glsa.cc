@@ -141,13 +141,13 @@ GLSA::~GLSA()
 GLSA::PackagesIterator
 GLSA::begin_packages() const
 {
-    return PackagesIterator(indirect_iterator<const GLSAPackage>(_imp->packages.begin()));
+    return PackagesIterator(indirect_iterator(_imp->packages.begin()));
 }
 
 GLSA::PackagesIterator
 GLSA::end_packages() const
 {
-    return PackagesIterator(indirect_iterator<const GLSAPackage>(_imp->packages.end()));
+    return PackagesIterator(indirect_iterator(_imp->packages.end()));
 }
 
 void

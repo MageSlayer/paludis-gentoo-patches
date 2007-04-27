@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH 1
 
 #include <paludis/package_database.hh>
-#include <paludis/environment.hh>
+#include <paludis/environment_implementation.hh>
 
 /** \file
  * Declarations for the PaludisEnvironment class.
@@ -40,12 +40,28 @@ namespace paludis
      * \ingroup grppaludisenvironment
      */
     class PALUDIS_VISIBLE PaludisEnvironment :
-        public Environment,
+        public EnvironmentImplementation,
         public InstantiationPolicy<PaludisEnvironment, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<PaludisEnvironment>
-    {
+   {
         protected:
-            std::tr1::shared_ptr<CompositeDepSpec> local_package_set(const SetName &) const;
+            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_breaks_portage(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool masked_by_user(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool unmasked_by_user(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<CompositeDepSpec> local_set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations
@@ -57,56 +73,63 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
-
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
-                    const bool) const;
-
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
-
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
-
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
-
-            virtual std::string bashrc_files() const;
-
-            virtual std::string hook_dirs() const;
-
-            virtual std::string fetchers_dirs() const;
-
-            virtual std::string syncers_dirs() const;
-
-            virtual std::string paludis_command() const;
-
-            virtual void set_paludis_command(const std::string &);
-
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
-                    const PackageDatabaseEntry *) const;
-
-            virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
-
-            virtual MirrorIterator end_mirrors(const std::string & mirror) const;
-
-            virtual FSEntry root() const;
-
-            virtual uid_t reduced_uid() const;
-            virtual gid_t reduced_gid() const;
-
-            void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
-                    const UseFlagState);
-
-            virtual void clear_forced_use();
-
-            virtual bool accept_breaks_portage() const;
+            ///\name PaludisEnvironment-specific information
+            ///\{
 
             /**
              * The config directory.
              */
             std::string config_dir() const;
+
+            ///\}
+
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+                    const UseFlagName &, const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const FSEntryCollection> syncers_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const FSEntry root() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual uid_t reduced_uid() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual gid_t reduced_gid() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const SetNameCollection> set_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual int perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string paludis_command() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void set_paludis_command(const std::string &);
+
+            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 #endif

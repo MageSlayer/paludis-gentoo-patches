@@ -150,7 +150,7 @@ make_class_VersionMetadataEbuildInterface()
     key provide_string std::string
     key src_uri_string std::string
     key restrict_string std::string
-    key keywords std::string
+    key keywords_string std::string
     key eclass_keywords std::string
     key iuse std::string
     key inherited std::string
@@ -166,9 +166,14 @@ END
             std::tr1::shared_ptr<const DepSpec> provide() const;
 
             /**
-             * SRCU_URI, as a dep atom.
+             * SRC_URI, as a dep atom.
              */
             std::tr1::shared_ptr<const DepSpec> src_uri() const;
+
+            /**
+             * Our keywords.
+             */
+            std::tr1::shared_ptr<const KeywordNameCollection> keywords() const;
 END
 
     allow_named_args
@@ -213,7 +218,7 @@ make_class_VersionMetadataCRANInterface()
 {
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key keywords std::string
+    key keywords_string std::string
     key package std::string
     key version std::string
     key is_bundle bool
@@ -228,6 +233,13 @@ make_class_VersionMetadataCRANInterface()
          * \see VersionMetadata
          * \ingroup grpversions
          */
+END
+
+    extra_methods <<END
+            /**
+             * Our keywords.
+             */
+            std::tr1::shared_ptr<const KeywordNameCollection> keywords() const;
 END
 }
 

@@ -49,7 +49,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
             //std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
             std::set<KeywordName> keywords;
             WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
-                keywords, create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
+                keywords_string, create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
 
             if (keywords.end() != keywords.find(KeywordName("-*")) &&
                     keywords.size() == 1)

@@ -24,6 +24,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>

@@ -262,10 +262,10 @@ FakeRepositoryBase::do_package_set(const SetName & id) const
         return i->second;
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 FakeRepositoryBase::sets_list() const
 {
-    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     std::copy(_imp->sets.begin(), _imp->sets.end(),
             transform_inserter(result->inserter(), SelectFirst<SetName, std::tr1::shared_ptr<DepSpec> >()));
     return result;
@@ -305,7 +305,7 @@ FakeVersionMetadata::FakeVersionMetadata() :
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
 {
-    keywords = "test";
+    keywords_string = "test";
 }
 
 FakeVersionMetadata::~FakeVersionMetadata()

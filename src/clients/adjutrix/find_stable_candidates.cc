@@ -22,6 +22,10 @@
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <map>
@@ -119,11 +123,9 @@ namespace
             if (! metadata->ebuild_interface)
                 continue;
 
-            std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
-                    create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
+            std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
 
-            if (keywords.end() != keywords.find(keyword))
+            if (keywords->end() != keywords->find(keyword))
             {
                 is_interesting = true;
 
@@ -135,7 +137,7 @@ namespace
                                 .best_version(VersionSpec("0")))));
             }
 
-            if (keywords.end() != std::find_if(keywords.begin(), keywords.end(), IsStableKeyword()))
+            if (keywords->end() != std::find_if(keywords->begin(), keywords->end(), IsStableKeyword()))
             {
                 /* ensure that an entry exists */
                 slots_to_versions.insert(std::make_pair(metadata->slot,

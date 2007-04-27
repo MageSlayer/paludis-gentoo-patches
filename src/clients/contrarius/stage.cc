@@ -21,6 +21,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/package_database.hh>
+#include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/query.hh>
 #include <string>
 #include <tr1/memory>
@@ -64,7 +66,7 @@ BinutilsStage::build(const StageOptions &) const
     std::tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(TargetConfig::get_instance()->binutils(),
                 pds_pm_permissive));
 
-    _env->clear_forced_use();
+    _env->clear_adaptions();
 
     return 0 == do_install(_env, stringify(*binutils));
 }
@@ -86,9 +88,9 @@ KernelHeadersStage::build(const StageOptions &) const
     std::tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(TargetConfig::get_instance()->headers(),
                 pds_pm_permissive));
 
-    _env->clear_forced_use();
+    _env->clear_adaptions();
 
-    _env->force_use(headers, UseFlagName("crosscompile_opts_headers-only"), use_enabled);
+    _env->adapt_use(headers, UseFlagName("crosscompile_opts_headers-only"), use_enabled);
 
     return 0 == do_install(_env, stringify(*headers));
 }
@@ -110,17 +112,17 @@ MinimalStage::build(const StageOptions &) const
     std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
                 pds_pm_permissive));
 
-    _env->clear_forced_use();
+    _env->clear_adaptions();
 
-    _env->force_use(gcc, UseFlagName("boundschecking"), use_disabled);
-    _env->force_use(gcc, UseFlagName("fortran"), use_disabled);
-    _env->force_use(gcc, UseFlagName("gtk"), use_disabled);
-    _env->force_use(gcc, UseFlagName("gcj"), use_disabled);
-    _env->force_use(gcc, UseFlagName("mudflap"), use_disabled);
-    _env->force_use(gcc, UseFlagName("objc"), use_disabled);
-    _env->force_use(gcc, UseFlagName("objc-gc"), use_disabled);
-    _env->force_use(gcc, UseFlagName("nocxx"), use_enabled);
-    _env->force_use(gcc, UseFlagName("crosscompile_opts_bootstrap"), use_enabled);
+    _env->adapt_use(gcc, UseFlagName("boundschecking"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("fortran"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("gtk"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("gcj"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("mudflap"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("objc"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("objc-gc"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("nocxx"), use_enabled);
+    _env->adapt_use(gcc, UseFlagName("crosscompile_opts_bootstrap"), use_enabled);
 
     return 0 == do_install(_env, stringify(*gcc));
 }
@@ -142,7 +144,7 @@ LibCStage::build(const StageOptions &) const
     std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
                 pds_pm_permissive));
 
-    _env->clear_forced_use();
+    _env->clear_adaptions();
 
     return 0 == do_install(_env, stringify(*libc));
 }
@@ -158,7 +160,7 @@ LibCStage::is_rebuild() const
     if (c->empty())
         return false;
 
-    return (! _env->query_use(UseFlagName("crosscompile_opts_headers-only"), &(*c->last())));
+    return (! _env->query_use(UseFlagName("crosscompile_opts_headers-only"), *c->last()));
 }
 
 int
@@ -169,14 +171,14 @@ FullStage::build(const StageOptions &) const
     std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
                 pds_pm_permissive));
 
-    _env->clear_forced_use();
+    _env->clear_adaptions();
 
-    _env->force_use(gcc, UseFlagName("boundschecking"), use_disabled);
-    _env->force_use(gcc, UseFlagName("gtk"), use_disabled);
-    _env->force_use(gcc, UseFlagName("gcj"), use_disabled);
-    _env->force_use(gcc, UseFlagName("mudflap"), use_disabled);
-    _env->force_use(gcc, UseFlagName("objc"), use_disabled);
-    _env->force_use(gcc, UseFlagName("objc-gc"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("boundschecking"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("gtk"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("gcj"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("mudflap"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("objc"), use_disabled);
+    _env->adapt_use(gcc, UseFlagName("objc-gc"), use_disabled);
 
     return 0 == do_install(_env, stringify(*gcc));
 }
@@ -192,6 +194,6 @@ FullStage::is_rebuild() const
     if (c->empty())
         return false;
 
-    return (! _env->query_use(UseFlagName("nocxx"), &(*c->last())));
+    return (! _env->query_use(UseFlagName("nocxx"), *c->last()));
 }
 

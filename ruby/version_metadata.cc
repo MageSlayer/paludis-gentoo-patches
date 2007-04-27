@@ -455,18 +455,18 @@ namespace
 
     /*
      * call-seq:
-     *     keywords -> String
+     *     keywords_string -> String
      *
      * Fetches the package keywords, if ebuild_interface or cran_interface is not Nil.
      */
-    VALUE version_metadata_keywords(VALUE self)
+    VALUE version_metadata_keywords_string(VALUE self)
     {
         std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->ebuild_interface)
-            return rb_str_new2(((*self_ptr)->ebuild_interface->keywords).c_str());
+            return rb_str_new2(((*self_ptr)->ebuild_interface->keywords_string).c_str());
         if ((*self_ptr)->cran_interface)
-            return rb_str_new2(((*self_ptr)->cran_interface->keywords).c_str());
+            return rb_str_new2(((*self_ptr)->cran_interface->keywords_string).c_str());
         else
             return Qnil;
     }
@@ -541,7 +541,7 @@ namespace
                         &VersionMetadataCRANInterface::version>::fetch)), 0);
         rb_define_method(c_version_metadata, "is_bundle?", RUBY_FUNC_CAST(&version_metadata_is_bundle), 0);
 
-        rb_define_method(c_version_metadata, "keywords", RUBY_FUNC_CAST(&version_metadata_keywords), 0);
+        rb_define_method(c_version_metadata, "keywords_string", RUBY_FUNC_CAST(&version_metadata_keywords_string), 0);
 
     }
 }

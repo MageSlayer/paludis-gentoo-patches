@@ -325,14 +325,6 @@ VirtualsRepository::do_category_names() const
 {
     std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("virtual"));
-#if 0
-    need_entries();
-
-    fast_unique_copy(_imp->entries.begin(), _imp->entries.end(),
-            transform_inserter(result->inserter(), EntriesCategoryExtractor()),
-            EntriesCategoryComparator());
-#endif
-
     return result;
 }
 

@@ -12,6 +12,12 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 libpaludispaludisenvironment_la_SOURCES = \
+	bashable_conf.cc       bashable_conf.hh \
+	keywords_conf.cc       keywords_conf.hh \
+	licenses_conf.cc       licenses_conf.hh \
+	package_mask_conf.cc   package_mask_conf.hh \
+	use_conf.cc            use_conf.hh \
+	mirrors_conf.cc        mirrors_conf.hh \
 	paludis_config.cc      paludis_config.hh \
 	paludis_environment.cc paludis_environment.hh \
 	registration.cc
@@ -45,7 +51,13 @@ paludis_environment_paludis_include_HEADERS = \
 	paludis_config.hh \
 	paludis_environment.hh \
 	use_config_entry-sr.hh \
-	repository_config_entry-sr.hh
+	repository_config_entry-sr.hh \
+	use_conf.hh \
+	keywords_conf.hh \
+	licenses_conf.hh \
+	bashable_conf.hh \
+	package_mask_conf.hh \
+	mirrors_conf.hh
 
 EXTRA_DIST = \
 	paludis_environment_TEST_setup.sh \

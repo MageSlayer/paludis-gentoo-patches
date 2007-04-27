@@ -750,17 +750,18 @@ fi
 dnl }}}
 
 dnl {{{ environments
-ALL_ENVIRONMENTS="no_config paludis portage test"
-DEFAULT_ENVIRONMENTS="no_config paludis test"
+ALL_ENVIRONMENTS="adapted no_config paludis portage test"
+DEFAULT_ENVIRONMENTS="adapted no_config paludis test"
 AC_MSG_CHECKING([which environments to build...])
 AC_ARG_WITH([environments],
 			[  --with-environments=foo,bar,...
 			  Build the specified environments:
-			  default         Equivalent to no_config,paludis.test
+			  default         Equivalent to adapted,no_config,paludis.test
 
+			  adapted         An environment adapter, for contrarius etc
 			  no_config       Configurationless environment, for adjutrix etc
 			  paludis         Standard Paludis environments
-			  portage         Portage configuration (UNUSABLE)
+			  portage         Portage configuration (experimental)
 			  test            For test cases],
 			[environments="`echo $with_environments | tr ',' ' '`"],
 			[environments="$DEFAULT_ENVIRONMENTS"])
@@ -921,6 +922,7 @@ AC_OUTPUT(
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
 	paludis/environments/Makefile
+	paludis/environments/adapted/Makefile
 	paludis/environments/paludis/Makefile
 	paludis/environments/portage/Makefile
 	paludis/environments/no_config/Makefile

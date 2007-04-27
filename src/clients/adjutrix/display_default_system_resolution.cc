@@ -75,7 +75,7 @@ namespace
 
         try
         {
-            d.add(env.package_set(SetName("system")), env.default_destinations());
+            d.add(env.set(SetName("system")), env.default_destinations());
 
             for (DepList::Iterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
                 cout << "    " << e->package << ":" << e->metadata->slot << endl;

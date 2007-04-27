@@ -37,90 +37,20 @@ namespace
 
     /*
      * call-seq:
-     *     query_use(use_flag)
      *     query_use(use_flag, package_database_entry)
      *
-     * Does the user want the specified USE flag set, either globally or for a PackageDatabaseEntry.
+     * Does the user want the specified USE flag set for a PackageDatabaseEntry.
      */
     VALUE
-    environment_query_use(int argc, VALUE * argv, VALUE self)
+    environment_query_use(VALUE self, VALUE flag, VALUE pdev)
     {
         EnvironmentData * env_data;
         Data_Get_Struct(self, EnvironmentData, env_data);
 
         try
         {
-            if (1 == argc)
-                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
-            else if (2 == argc)
-            {
-                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
-                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
-            }
-            else
-                rb_raise(rb_eArgError, "Environment.query_use expects one or two arguments, but got %d", argc);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     accept_keyword(keyword)
-     *     accept_keyword(keyword, package_database_entry)
-     *
-     * Is the specified KEYWORD set, either globally or for a PackageDatabaseEntry.
-     */
-    VALUE
-    environment_accept_keyword(int argc, VALUE * argv, VALUE self)
-    {
-        EnvironmentData * env_data;
-        Data_Get_Struct(self, EnvironmentData, env_data);
-
-        try
-        {
-            if (1 == argc)
-                return env_data->env_ptr->accept_keyword(KeywordName(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
-            else if (2 == argc)
-            {
-                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
-                return env_data->env_ptr->accept_keyword(KeywordName(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
-            }
-            else
-                rb_raise(rb_eArgError, "Environment.accept_keyword expects one or two arguments, but got %d", argc);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     accept_license(license)
-     *     accept_license(license, package_database_entry)
-     *
-     * Is the specified LICENSE set, either globally or for a PackageDatabaseEntry.
-     */
-    VALUE
-    environment_accept_license(int argc, VALUE * argv, VALUE self)
-    {
-        EnvironmentData * env_data;
-        Data_Get_Struct(self, EnvironmentData, env_data);
-
-        try
-        {
-            if (1 == argc)
-                return env_data->env_ptr->accept_license(std::string(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
-            else if (2 == argc)
-            {
-                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
-                return env_data->env_ptr->accept_license(std::string(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
-            }
-            else
-                rb_raise(rb_eArgError, "Environment.accept_license expects one or two arguments, but got %d", argc);
+            PackageDatabaseEntry pde(value_to_package_database_entry(pdev));
+            return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(flag)), pde) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -153,43 +83,6 @@ namespace
     }
 
     /*
-     * Document-method: query_user_masks
-     *
-     * call-seq:
-     *     query_user_masks(package_database_entry) -> true or false
-     *
-     * Are there any user masks on a PackageDatabaseEntry?
-     */
-    /*
-     * Document-method: query_user_unmasks
-     *
-     * call-seq:
-     *     query_user_unmasks(package_database_entry) -> true or false
-     *
-     * Are there any user unmasks on a PackageDatabaseEntry?
-     */
-    template <bool (Environment::* m_) (const PackageDatabaseEntry &) const>
-    struct EnvBoolStruct
-    {
-        static VALUE
-        fetch(VALUE self, VALUE pde_value)
-        {
-            EnvironmentData * env_data;
-            Data_Get_Struct(self, EnvironmentData, env_data);
-            PackageDatabaseEntry pde = value_to_package_database_entry(pde_value);
-            try
-            {
-                 return ((env_data->env_ptr)->*m_)(pde) ? Qtrue : Qfalse;
-            }
-            catch (const std::exception & e)
-            {
-                exception_to_ruby_exception(e);
-            }
-
-        }
-    };
-
-    /*
      * Fetch our PackageDatabase.
      */
     VALUE
@@ -210,19 +103,19 @@ namespace
 
     /*
      * call-seq:
-     *     package_set(set_name)
+     *     set(set_name)
      *
      * Fetch a named package set as a DepSpec.
      */
     VALUE
-    environment_package_set(VALUE self, VALUE set_name)
+    environment_set(VALUE self, VALUE set_name)
     {
         EnvironmentData * env_data;
         Data_Get_Struct(self, EnvironmentData, env_data);
 
         try
         {
-            return dep_spec_to_value(env_data->env_ptr->package_set(SetName(StringValuePtr(set_name))));
+            return dep_spec_to_value(env_data->env_ptr->set(SetName(StringValuePtr(set_name))));
         }
         catch (const std::exception & e)
         {
@@ -481,16 +374,10 @@ namespace
          */
         c_environment = environment_class();
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), -1);
-        rb_define_method(c_environment, "accept_keyword", RUBY_FUNC_CAST(&environment_accept_keyword), -1);
-        rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), -1);
+        rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
         rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
-        rb_define_method(c_environment, "query_user_masks",
-                RUBY_FUNC_CAST((&EnvBoolStruct<&Environment::query_user_masks>::fetch)), 1);
-        rb_define_method(c_environment, "query_user_unmasks",
-                RUBY_FUNC_CAST((&EnvBoolStruct<&Environment::query_user_unmasks>::fetch)), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
-        rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
+        rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
 

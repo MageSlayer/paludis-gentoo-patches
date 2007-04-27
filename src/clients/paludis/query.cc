@@ -100,7 +100,7 @@ void do_one_query(
     {
         try
         {
-            set = env->package_set(SetName(q));
+            set = env->set(SetName(q));
         }
         catch (const SetNameError &)
         {

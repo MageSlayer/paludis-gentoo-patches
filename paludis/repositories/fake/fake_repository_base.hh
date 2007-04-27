@@ -140,7 +140,7 @@ namespace paludis
                     const VersionSpec &) const;
 
             virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
-            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
+            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
         protected:
             /**

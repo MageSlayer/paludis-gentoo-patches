@@ -20,6 +20,7 @@
 #include "use_flag_pretty_printer.hh"
 #include <paludis/version_metadata.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include "colour.hh"
@@ -87,7 +88,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
             if (std::string::npos != use_expand_delim_pos(*flag, use_interface->use_expand_prefixes()))
                 continue;
 
-        if (environment()->query_use(*flag, &pkg))
+        if (environment()->query_use(*flag, pkg))
         {
             if (use_interface && use_interface->query_use_force(*flag, &pkg))
                 output_flag(render_as_forced_flag(stringify(*flag)));
@@ -106,7 +107,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
         {
             if (old_iuse.end() != old_iuse.find(*flag))
             {
-                if (environment()->query_use(*flag, &pkg) != environment()->query_use(*flag, old_pkg))
+                if (environment()->query_use(*flag, pkg) != environment()->query_use(*flag, *old_pkg))
                 {
                     _changed_flags->insert(*flag);
                     output_flag_changed_mark();
@@ -150,7 +151,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
             old_expand_name = expand_name;
         }
 
-        if (environment()->query_use(*flag, &pkg))
+        if (environment()->query_use(*flag, pkg))
         {
             if (use_interface && use_interface->query_use_force(*flag, &pkg))
                 output_flag(render_as_forced_flag(stringify(expand_value)));
@@ -169,7 +170,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
         {
             if (old_iuse.end() != old_iuse.find(*flag))
             {
-                if (environment()->query_use(*flag, &pkg) != environment()->query_use(*flag, old_pkg))
+                if (environment()->query_use(*flag, pkg) != environment()->query_use(*flag, *old_pkg))
                 {
                     _changed_flags->insert(*flag);
                     output_flag_changed_mark();

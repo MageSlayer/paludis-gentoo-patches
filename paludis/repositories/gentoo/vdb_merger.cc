@@ -21,8 +21,12 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/join.hh>
+#include <paludis/hook.hh>
 #include <paludis/digests/md5.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/package_database.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -80,6 +84,8 @@ VDBMerger::extend_hook(const Hook & h)
                 _imp->options.environment->package_database()->fetch_repository(
                     pde->repository)->version_metadata(pde->name, pde->version)->slot));
 
+    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+
     return Merger::extend_hook(h)
         ("P", pn + "-" + pv)
         ("PN", pn)
@@ -91,7 +97,7 @@ VDBMerger::extend_hook(const Hook & h)
         ("SLOT", slot)
         ("CONFIG_PROTECT", _imp->options.config_protect)
         ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
-        ("PALUDIS_BASHRC_FILES", _imp->options.environment->bashrc_files());
+        ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
 void

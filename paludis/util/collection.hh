@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH
 #define PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH 1
 
+#include <paludis/util/collection-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <libwrapiter/libwrapiter.hh>
 #include <iterator>
@@ -154,7 +155,7 @@ namespace paludis
      * \ingroup grpcollections
      * \nosubgrouping
      */
-    template <typename T_, typename C_ = std::less<T_> >
+    template <typename T_, typename C_>
     class PALUDIS_VISIBLE SortedCollection :
         private InstantiationPolicy<SortedCollection<T_, C_>, instantiation_method::NonCopyableTag>,
         public std::iterator<typename std::iterator_traits<

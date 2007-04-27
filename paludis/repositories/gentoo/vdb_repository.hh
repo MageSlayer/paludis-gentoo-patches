@@ -166,7 +166,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const;
 
-            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
+            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 

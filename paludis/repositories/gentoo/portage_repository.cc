@@ -34,6 +34,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/hook.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_database_entry.hh>
@@ -852,7 +853,7 @@ PortageRepository::do_package_set(const SetName & s) const
     return _imp->sets_ptr->package_set(s);
 }
 
-std::tr1::shared_ptr<const SetsCollection>
+std::tr1::shared_ptr<const SetNameCollection>
 PortageRepository::sets_list() const
 {
     return _imp->sets_ptr->sets_list();

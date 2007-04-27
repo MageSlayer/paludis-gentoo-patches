@@ -55,7 +55,7 @@ EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result
         std::getline(cache, line); result->homepage = line;
         std::getline(cache, line); result->license_string = line;
         std::getline(cache, line); result->description = line;
-        std::getline(cache, line); result->keywords = line;
+        std::getline(cache, line); result->keywords_string = line;
         std::getline(cache, line); result->inherited = line;
         std::getline(cache, line); result->iuse = line;
         std::getline(cache, line);
@@ -136,7 +136,7 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
         cache << normalise(v->homepage) << std::endl;
         cache << normalise(v->license_string) << std::endl;
         cache << normalise(v->description) << std::endl;
-        cache << normalise(v->keywords) << std::endl;
+        cache << normalise(v->keywords_string) << std::endl;
         cache << normalise(v->inherited) << std::endl;
         cache << normalise(v->iuse) << std::endl;
         cache << std::endl;

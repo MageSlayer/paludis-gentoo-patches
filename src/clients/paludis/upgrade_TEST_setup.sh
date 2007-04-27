@@ -13,15 +13,15 @@ END
 
 mkdir -p root/${SYSCONFDIR}/paludis/repositories
 cat <<END > root/${SYSCONFDIR}/paludis/use.conf
-* foo
+*/* foo
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/licenses.conf
-* *
+*/* *
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/keywords.conf
-* test
+*/* test
 END
 
 cat <<END > root/${SYSCONFDIR}/paludis/bashrc
