@@ -137,6 +137,30 @@ MinimalStage::is_rebuild() const
 }
 
 int
+LibCHeadersStage::build(const StageOptions &) const
+{
+    Context context("When building LIbCHeaderStage:");
+
+    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
+                pds_pm_unspecific));
+
+    _env->clear_adaptions();
+
+    _env->adapt_use(libc, UseFlagName("crosscompile_opts_headers-only"), use_enabled);
+
+    return 0 == do_install(_env, stringify(*libc));
+}
+
+bool
+LibCHeadersStage::is_rebuild() const
+{
+    return (! std::tr1::shared_ptr<const PackageDatabaseEntryCollection>(_env->package_database()->query(
+                query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_unspecific)) &
+                    query::InstalledAtRoot(_env->root()),
+                qo_whatever))->empty());
+}
+
+int
 LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");

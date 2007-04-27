@@ -142,6 +142,30 @@ namespace paludis
             }
     };
 
+    class LibCHeadersStage :
+        public ContrariusStage
+    {
+        public:
+            LibCHeadersStage(std::tr1::shared_ptr<AdaptedEnvironment> e) :
+                ContrariusStage(e)
+            {
+            }
+
+            virtual int build(const StageOptions &) const;
+
+            virtual std::string description() const
+            {
+                return "Building the C standard library headers as part of the cross toolchain";
+            };
+
+            virtual bool is_rebuild() const;
+
+            virtual std::string short_name() const
+            {
+                return "cross-libc-headers stage";
+            }
+    };
+
     class LibCStage :
         public ContrariusStage
     {
