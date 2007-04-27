@@ -280,6 +280,9 @@ NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameColle
         std::string arch(_imp->main_repo->portage_interface->profile_variable("ARCH"));
         if (keywords->end() != keywords->find(KeywordName(arch)))
             return true;
+
+        if (_imp->accept_unstable && keywords->end() != keywords->find(KeywordName("~" + arch)))
+            return true;
     }
     else
     {
@@ -289,8 +292,14 @@ NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameColle
 
         for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                 k != k_end ; ++k)
+        {
             if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))
                 return true;
+
+            if (_imp->accept_unstable && stringify(*k).at(0) == '~')
+                if (accepted.end() != std::find(accepted.begin(), accepted.end(), KeywordName(stringify(*k).substr(1))))
+                    return true;
+        }
     }
 
     return false;
