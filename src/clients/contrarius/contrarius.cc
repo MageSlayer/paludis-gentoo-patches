@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
             stage = "cxx";
 
         std::tr1::shared_ptr<AdaptedEnvironment> env(
-                new AdaptedEnvironment(EnvironmentMaker::get_instance()->make_from_spec("")));
+                new AdaptedEnvironment(EnvironmentMaker::get_instance()->make_from_spec(
+                        CommandLine::get_instance()->a_environment.argument())));
 
         StageOptions stage_opts(CommandLine::get_instance()->a_pretend.specified(),
             CommandLine::get_instance()->a_fetch.specified(),
@@ -97,6 +98,7 @@ int main(int argc, char *argv[])
                 if (TargetConfig::get_instance()->headers().empty())
                     throw DoHelp("--headers specified though CTARGET does not need any headers");
                 builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCHeadersStage(env)));
             }
 
             builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(env)));

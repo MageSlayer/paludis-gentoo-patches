@@ -33,6 +33,7 @@ CommandLine::CommandLine() :
             "Tweak toolchain creation."),
     a_fetch(&build_args,     "fetch",        'f', "Only fetch sources; don't install anything"),
     a_pretend(&build_args,   "pretend",      'p', "Pretend only"),
+    a_environment(&build_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_show_reasons(&build_args, "show-reasons", '\0', "Show why packages are being installed",
             paludis::args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")
@@ -57,16 +58,6 @@ CommandLine::CommandLine() :
             ("split",    "Split debug information")
             ("internal", "Keep debug information with binaries"),
             "none"),
-
-    package_options(this, "Options to adjust package names and versions", ""),
-    a_binutils_name(&package_options,       "binutils-name",    '\0', "Package name for the binutils stage."),
-    a_binutils_version(&package_options,    "binutils-version", '\0', "Package version for the binutils stage."),
-    a_gcc_name(&package_options,            "gcc-name",         '\0', "Package name for the minima/full stage."),
-    a_gcc_version(&package_options,         "gcc-version",      '\0', "Package version for the system headers stage."),
-    a_headers_name(&package_options,        "headers-name",         '\0', "Package name for the system headers stage."),
-    a_headers_version(&package_options,     "headers-version",      '\0', "Package version for the minima/full stage."),
-    a_libc_name(&package_options,           "libc-name",        '\0', "Package name for the libc stage."),
-    a_libc_version(&package_options,        "libc-version",     '\0', "Package version for the libc stage."),
 
     output_options(this, "Options for output verbosity",
             ""),

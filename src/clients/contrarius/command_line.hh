@@ -57,6 +57,9 @@ class CommandLine :
         /// --pretend
         paludis::args::SwitchArg a_pretend;
 
+        /// --environment
+        paludis::args::StringArg a_environment;
+
         /// --show-reasons
         paludis::args::EnumArg a_show_reasons;
 
@@ -74,38 +77,6 @@ class CommandLine :
 
         /// --debug-build
         paludis::args::EnumArg a_debug_build;
-
-        ///\}
-
-        ///\name Package options
-        ///\{
-
-        /// Package options.
-        paludis::args::ArgsGroup package_options;
-
-        /// Bintuils name
-        paludis::args::StringArg a_binutils_name;
-
-        /// Binutils version
-        paludis::args::StringArg a_binutils_version;
-
-        /// Gcc  name
-        paludis::args::StringArg a_gcc_name;
-
-        /// Gcc version
-        paludis::args::StringArg a_gcc_version;
-
-        /// Headers  name
-        paludis::args::StringArg a_headers_name;
-
-        /// Headers version
-        paludis::args::StringArg a_headers_version;
-
-        /// Libc name
-        paludis::args::StringArg a_libc_name;
-
-        /// Libc version
-        paludis::args::StringArg a_libc_version;
 
         ///\}
 
