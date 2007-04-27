@@ -18,12 +18,12 @@ endif
 syn region PaludisUseConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisUseConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
-	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfContinuation
+	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation
             \ contains=PaludisUseConfWildcard
 syn match  PaludisUseConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisUseConfSet /^[^ \t#\/]\+\S\@!/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
-syn match  PaludisUseConfFlag contained /[a-zA-Z0-9\-_*]\+:\@!/
+syn match  PaludisUseConfFlag contained /\S\@<![a-zA-Z0-9\-_*]\+\S\@!/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
 syn match  PaludisUseConfPrefix contained /[a-zA-Z0-9_*][a-zA-Z0-9\-_*]*:/
 	    \ nextgroup=PaludisUseConfFlag,PaludisUseConfPrefix,PaludisUseConfContinuation skipwhite
