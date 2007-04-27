@@ -28,7 +28,8 @@ fi
 
 echo ">>> test ${testname}"
 if [[ -n "${TEST_OUTPUT_WRAPPER}" ]] ; then
-    $TEST_OUTPUT_WRAPPER --stdout-prefix "${testname#./}> " --stderr-prefix "${testname#./}> " -- ${@}
+    $TEST_OUTPUT_WRAPPER --stdout-prefix "${testname#./}> " --stderr-prefix \
+        "${testname#./}> " --wrap-blanks -- ${@}
     code=$?
 else
     ${@}

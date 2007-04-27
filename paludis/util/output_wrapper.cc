@@ -31,6 +31,7 @@ main(int argc, char *argv[])
 {
     int argi(1);
     std::string stdout_prefix, stderr_prefix;
+    bool wrap_blanks(false);
 
     for ( ; argi < argc ; ++argi)
     {
@@ -40,6 +41,8 @@ main(int argc, char *argv[])
             ++argi;
             break;
         }
+        else if (s == "--wrap-blanks")
+            wrap_blanks = true;
         else if (s == "--stdout-prefix")
         {
             if (++argi >= argc)
@@ -152,7 +155,7 @@ main(int argc, char *argv[])
 
                             if (! stdout_prefix_shown)
                             {
-                                if (stdout_had_interesting_char)
+                                if (stdout_had_interesting_char || wrap_blanks)
                                     std::cout << stdout_prefix;
                                 stdout_prefix_shown = true;
                             }
@@ -186,7 +189,7 @@ main(int argc, char *argv[])
 
                             if (! stderr_prefix_shown)
                             {
-                                if (stderr_had_interesting_char)
+                                if (stderr_had_interesting_char || wrap_blanks)
                                     std::cerr << stderr_prefix;
                                 stderr_prefix_shown = true;
                             }
