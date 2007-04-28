@@ -21,6 +21,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/environment_maker.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -37,7 +38,7 @@ namespace
 
     /*
      * call-seq:
-     *     query_use(use_flag, package_database_entry)
+     *     query_use(use_flag, package_database_entry) -> true or false
      *
      * Does the user want the specified USE flag set for a PackageDatabaseEntry.
      */
@@ -60,7 +61,7 @@ namespace
 
     /*
      * call-seq:
-     *     mask_reasons(package_database_entry)
+     *     mask_reasons(package_database_entry) -> MaskReasons
      *
      * Fetch the MaskReasons for a PackageDatabaseEntry.
      */
@@ -83,6 +84,9 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     package_database -> PackageDatabase
+     *
      * Fetch our PackageDatabase.
      */
     VALUE
@@ -103,7 +107,7 @@ namespace
 
     /*
      * call-seq:
-     *     set(set_name)
+     *     set(set_name) -> DepSpec
      *
      * Fetch a named package set as a DepSpec.
      */
@@ -116,6 +120,58 @@ namespace
         try
         {
             return dep_spec_to_value(env_data->env_ptr->set(SetName(StringValuePtr(set_name))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     accept_license(license, pde) -> true of false
+     *
+     * Do we accept a particular license for a particular package?
+     */
+    VALUE
+    environment_accept_license(VALUE self, VALUE license, VALUE p)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+        try
+        {
+            PackageDatabaseEntry pde = value_to_package_database_entry(p);
+            return env_data->env_ptr->accept_license(std::string(StringValuePtr(license)), pde) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     accept_keywords(keywords, pde) -> true or false
+     *
+     * Do we accept any of the specified keywords for a particular package
+     */
+    VALUE
+    environment_accept_keywords(VALUE self, VALUE keywords, VALUE p)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+        try
+        {
+            PackageDatabaseEntry pde = value_to_package_database_entry(p);
+            std::tr1::shared_ptr<KeywordNameCollection> knc (new KeywordNameCollection::Concrete);
+            long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
+            for (long i = 0; i < len; i++)
+            {
+                // Stupid macros won't let me do it on one line.
+                VALUE kw = rb_ary_entry(keywords, i);
+                knc->insert(KeywordName(StringValuePtr(kw)));
+            }
+            return env_data->env_ptr->accept_keywords(knc, pde) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -380,6 +436,8 @@ namespace
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
+        rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
+        rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

@@ -101,6 +101,55 @@ module Paludis
         end
     end
 
+    class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def pde
+            PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
+        end
+
+        def test_accept_license
+            assert env.accept_license('GPL-2', pde)
+            assert !env.accept_license('Failure', pde)
+        end
+
+        def test_accept_license
+            assert_raise TypeError do
+                env.accept_keywords('license','a string')
+            end
+        end
+    end
+
+    class TestCase_EnvironmentAcceptKeywords < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def pde
+            PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
+        end
+
+        def test_accept_keywords
+            assert env.accept_keywords(['test'], pde)
+            assert !env.accept_keywords(['test2'], pde)
+            assert env.accept_keywords(['test','testtest'], pde)
+            assert env.accept_keywords(['test2','testtest'], pde)
+            assert !env.accept_keywords(['test2','test3'], pde)
+        end
+
+        def test_accept_keywords_bad
+            assert_raise TypeError do
+                env.accept_keywords('test',pde)
+            end
+
+            assert_raise TypeError do
+                env.accept_keywords([],'a string')
+            end
+        end
+    end
+
     class TestCase_NoConfigEnvironmentUse < Test::Unit::TestCase
         def env
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")

@@ -15,7 +15,7 @@ profiles = \${location}/profiles/testprofile
 END
 
 cat <<END > home/.paludis/keywords.conf
-*/* test
+*/* test testtest testtesttest
 ~foo/bar-1.0 ~test
 END
 
@@ -58,7 +58,7 @@ SRC_URI=""
 SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
-KEYWORDS="test"
+KEYWORDS="test testtest testtesttest"
 END
 
 cat <<"END" > foo/bar/bar-2.0.ebuild || exit 1
