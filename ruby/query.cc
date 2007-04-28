@@ -186,7 +186,7 @@ namespace
         /*
          * Document-class: Paludis::Query::Matches
          *
-         * Query for packages that match a PackageDepSpec
+         * Fetch packages matching a given PackageDepSpec.
          */
         c_matches = rb_define_class_under(c_query_module, "Matches", c_query);
         rb_define_singleton_method(c_matches, "new", RUBY_FUNC_CAST(&matches_new), 1);
@@ -194,30 +194,55 @@ namespace
         /*
          * Document-class: Paludis::Query::Package
          *
-         * Query for packages that match a QualifiedPackageName
+         * Fetch packages with a given package name.
          */
         c_package = rb_define_class_under(c_query_module, "Package", c_query);
         rb_define_singleton_method(c_package, "new", RUBY_FUNC_CAST(&package_new), 1);
 
+        /*
+         * Document-class: Paludis::Query::NotMasked
+         *
+         * Fetch packages that are not masked.
+         */
         c_not_masked = rb_define_class_under(c_query_module, "NotMasked", c_query);
         rb_define_singleton_method(c_not_masked, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::NotMasked>::query_new), 0);
 
+        /*
+         * Document-class: Paludis::Query::RepositoryHasInstalledInterface
+         *
+         * Fetch packages from a repository that has RepositoryHasInstalledInterface.
+         */
         c_repository_has_installed_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasInstalledInterface", c_query);
         rb_define_singleton_method(c_repository_has_installed_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasInstalledInterface>::query_new), 0);
 
+        /*
+         * Document-class: Paludis::Query::RepositoryHasInstallableInterface
+         *
+         * Fetch packages from a repository that has RepositoryHasInstallableInterface.
+         */
         c_repository_has_installable_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasInstallableInterface", c_query);
         rb_define_singleton_method(c_repository_has_installable_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasInstallableInterface>::query_new), 0);
 
+        /*
+         * Document-class: Paludis::Query::RepositoryHasUninstallableInterface
+         *
+         * Fetch packages from a repository that has RepositoryHasUninstallableInterface.
+         */
         c_repository_has_uninstallable_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasUninstallableInterface", c_query);
         rb_define_singleton_method(c_repository_has_uninstallable_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasUninstallableInterface>::query_new), 0);
 
+        /*
+         * Document-class: Paludis::Query::InstalledAtRoot
+         *
+         * Fetch packages that are installed at a particular root.
+         */
         c_installed_at_root = rb_define_class_under(c_query_module,
                 "InstalledAtRoot", c_query);
         rb_define_singleton_method(c_installed_at_root, "new", RUBY_FUNC_CAST(&installed_at_root_new), 1);
