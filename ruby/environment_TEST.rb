@@ -113,9 +113,13 @@ module Paludis
         def test_accept_license
             assert env.accept_license('GPL-2', pde)
             assert !env.accept_license('Failure', pde)
+
+            pde2 = PackageDatabaseEntry.new("foo/baz", "1.0", "testrepo")
+            assert env.accept_license('GPL-2', pde2)
+            assert env.accept_license('Failure', pde2)
         end
 
-        def test_accept_license
+        def test_accept_license_bad
             assert_raise TypeError do
                 env.accept_keywords('license','a string')
             end
