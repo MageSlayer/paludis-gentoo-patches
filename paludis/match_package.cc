@@ -103,6 +103,9 @@ paludis::match_package(
                         if (env.query_use(u->first, entry))
                             return false;
                         continue;
+
+                    case last_use:
+                        ;
                 }
                 throw InternalError(PALUDIS_HERE, "bad UseFlagState");
             }

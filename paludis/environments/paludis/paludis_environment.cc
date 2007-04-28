@@ -169,6 +169,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
             case use_unspecified:
                 continue;
+
+            case last_use:
+                ;
         }
         throw InternalError(PALUDIS_HERE, "bad state");
     } while (false);
@@ -184,6 +187,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
             case use_enabled:
                 return true;
+
+            case last_use:
+                ;
         }
 
         throw InternalError(PALUDIS_HERE, "bad state");

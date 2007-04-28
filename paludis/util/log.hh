@@ -54,17 +54,7 @@ namespace paludis
         initial_ll = ll_debug ///< Initial value
     };
 
-    /**
-     * Specifies whether a log message has context.
-     *
-     * \ingroup grplog
-     */
-    enum LogContext
-    {
-        lc_no_context,
-        lc_context,
-        last_lc
-    };
+#include <paludis/util/log-se.hh>
 
     class LogMessageHandler;
 

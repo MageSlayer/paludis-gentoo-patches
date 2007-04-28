@@ -36,23 +36,7 @@ namespace paludis
 {
     class VersionSpec;
 
-    /**
-     * Represents an operator attached to a VersionSpec.
-     *
-     * \ingroup grpversions
-     */
-    enum VersionOperatorValue
-    {
-        vo_less_equal,       ///< <= dependency
-        vo_less,             ///< < dependency
-        vo_equal,            ///< = dependency
-        vo_tilde,            ///< ~ dependency
-        vo_greater,          ///< > dependency
-        vo_greater_equal,    ///< >= dependency
-        vo_equal_star,       ///< =* dependency
-        vo_tilde_greater,    ///< ~> dependency (gems)
-        last_vo              ///< number of items
-    };
+#include <paludis/version_operator-se.hh>
 
     /**
      * An operator attached to a VersionSpec, validated.

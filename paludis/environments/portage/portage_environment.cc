@@ -456,6 +456,9 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
         case use_enabled:
             return true;
+
+        case last_use:
+            ;
     }
 
     throw InternalError(PALUDIS_HERE, "bad state");

@@ -1,0 +1,19 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_UseFlagState()
+{
+    prefix use
+
+    key use_unspecified     "unspecified"
+    key use_disabled        "disabled"
+    key use_enabled         "enabled"
+
+    doxygen_comment << "END"
+        /**
+         * A USE flag can be on, off or unspecified.
+         *
+         * \ingroup grpnames
+         */
+END
+}

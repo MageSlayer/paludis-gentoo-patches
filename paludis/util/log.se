@@ -1,0 +1,18 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_LogContext()
+{
+    prefix lc
+
+    key lc_no_context        "No context"
+    key lc_context           "Context"
+
+    doxygen_comment << "END"
+        /**
+         * Specifies whether a log message has context.
+         *
+         * \ingroup grplog
+         */
+END
+}

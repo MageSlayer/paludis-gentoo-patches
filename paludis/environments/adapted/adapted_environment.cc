@@ -94,6 +94,9 @@ AdaptedEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry 
 
         case use_unspecified:
             return _imp->env->query_use(u, e);
+
+        case last_use:
+            ;
     }
 
     throw InternalError(PALUDIS_HERE, "Bad state");

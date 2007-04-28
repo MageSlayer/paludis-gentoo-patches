@@ -29,6 +29,8 @@
 
 using namespace paludis;
 
+#include <paludis/util/log-se.cc>
+
 namespace paludis
 {
     /**

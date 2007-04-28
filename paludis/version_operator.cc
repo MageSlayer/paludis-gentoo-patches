@@ -29,6 +29,8 @@
 
 using namespace paludis;
 
+#include <paludis/version_operator-se.cc>
+
 VersionOperatorValue
 VersionOperator::_decode(const std::string & v)
 {

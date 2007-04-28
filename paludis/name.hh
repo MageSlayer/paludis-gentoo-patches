@@ -370,17 +370,7 @@ namespace paludis
      */
     typedef SortedCollection<KeywordName> KeywordNameCollection;
 
-    /**
-     * A USE flag can be on, off or unspecified.
-     *
-     * \ingroup grpnames
-     */
-    enum UseFlagState
-    {
-        use_unspecified,     /// unspecified
-        use_disabled,        /// disabled
-        use_enabled          /// enabled
-    };
+#include <paludis/name-se.hh>
 
     /**
      * A SetNameValidator handles validation rules for the value of a

@@ -1,0 +1,24 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_VersionOperatorValue()
+{
+    prefix vo
+
+    key vo_less_equal       "<= dependency"
+    key vo_less             "< dependency"
+    key vo_equal            "= dependency"
+    key vo_tilde            "~ dependency"
+    key vo_greater          "> dependency"
+    key vo_greater_equal    ">= dependency"
+    key vo_equal_star       "=* dependency"
+    key vo_tilde_greater    "~> dependency (gems)"
+
+    doxygen_comment << "END"
+        /**
+         * Represents an operator attached to a VersionSpec.
+         *
+         * \ingroup grpversions
+         */
+END
+}
