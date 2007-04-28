@@ -552,6 +552,7 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
     std::tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
+    prefix_lower.append("_");
 
     for (std::set<std::string>::const_iterator i(_imp->use_with_expands.begin()),
             i_end(_imp->use_with_expands.end()) ; i != i_end ; ++i)

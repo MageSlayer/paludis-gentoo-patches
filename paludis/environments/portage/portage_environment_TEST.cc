@@ -22,6 +22,7 @@
 #include <test/test_framework.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/join.hh>
 
 using namespace paludis;
 using namespace test;
@@ -77,6 +78,20 @@ namespace test_cases
             TEST_CHECK(! env.query_use(UseFlagName("five"), d));
         }
     } test_query_use;
+
+    struct KnownUseNamesTest : TestCase
+    {
+        KnownUseNamesTest() : TestCase("known_use_expand_names") { }
+
+        void run()
+        {
+            PortageEnvironment env("portage_environment_TEST_dir/known_use_expand_names");
+
+            PackageDatabaseEntry pde1(QualifiedPackageName("app/one"), VersionSpec("1"), RepositoryName("foo"));
+            std::tr1::shared_ptr<const UseFlagNameCollection> k1(env.known_use_expand_names(UseFlagName("foo_cards"), pde1));
+            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three");
+        }
+    } test_known_use_expand;
 
     struct AcceptKeywordsTest : TestCase
     {

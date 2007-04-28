@@ -41,6 +41,20 @@ cat <<END > fifthrepo/profiles/repo_name
 fifth
 END
 
+mkdir -p sixthrepo/{profile,profiles,cat-one/pkg-one}
+cat <<END > sixthrepo/profiles/repo_name
+foo
+END
+cat <<END > sixthrepo/profiles/categories
+cat-one
+END
+cat <<END > sixthrepo/profile/make.defaults
+ARCH="keyword"
+USE="foo_c"
+USE_EXPAND="FOO_CARDS"
+FOO_CARDS="four"
+END
+
 mkdir -p home1/.paludis/repositories
 cat <<END > home1/.paludis/use.conf
 */* foo bar baz -fnord
@@ -155,4 +169,22 @@ master_repository = second
 importance = 5
 END
 
+mkdir -p home5/.paludis/repositories
+cat <<END > home5/.paludis/use.conf
+*/* foo FOO_CARDS: one
+cat/one FOO_CARDS: -two three
+END
+cat <<END > home5/.paludis/keywords.conf
+*/* keyword
+END
+cat <<END > home5/.paludis/licenses.conf
+*/* *
+END
+cat <<END > home5/.paludis/repositories/foo.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/sixthrepo
+profiles = `pwd`/sixthrepo/profile
+cache = /var/empty
+END
 

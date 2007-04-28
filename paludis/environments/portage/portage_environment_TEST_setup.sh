@@ -8,6 +8,9 @@ mkdir -p profile
 cat <<"END" > profile/make.defaults
 ARCH="arch"
 ACCEPT_KEYWORDS="arch"
+USE_EXPAND="FOO_CARDS"
+FOO_CARDS="four"
+USE="foo_c"
 END
 
 mkdir -p repo/profiles
@@ -39,4 +42,15 @@ app/three -*
 app/four **
 END
 
+mkdir -p known_use_expand_names/${SYSCONFDIR}/portage
+ln -s $(pwd )/profile known_use_expand_names/${SYSCONFDIR}/make.profile
+cat <<END > known_use_expand_names/${SYSCONFDIR}/make.conf
+USE="one two -three foo"
+PORTDIR="`pwd`/repo"
+ACCEPT_KEYWORDS="other_arch"
+FOO_CARDS="one"
+END
+cat <<"END" > known_use_expand_names/${SYSCONFDIR}/portage/package.use
+app/one -foo_cards_two foo_cards_three
+END
 
