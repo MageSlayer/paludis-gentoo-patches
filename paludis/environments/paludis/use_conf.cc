@@ -305,6 +305,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
     std::tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
+    prefix_lower.append("_");
 
     Qualified::const_iterator q(_imp->qualified.find(e.name));
     if (_imp->qualified.end() != q)
@@ -315,7 +316,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
 
             for (UseFlagWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
                     i != i_end ; ++i)
-                if (0 == i->first.data().compare(0, i->first.data().length(), stringify(prefix_lower), 0, i->first.data().length()))
+                if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
                     result->insert(i->first);
         }
 
@@ -337,7 +338,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
 
         for (UseFlagWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
                 i != i_end ; ++i)
-            if (0 == i->first.data().compare(0, i->first.data().length(), stringify(prefix_lower), 0, i->first.data().length()))
+            if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
                 result->insert(i->first);
     }
 
@@ -348,7 +349,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
 
         for (UseFlagWithStateMap::const_iterator i(p->second.first.begin()), i_end(p->second.first.end()) ;
                 i != i_end ; ++i)
-            if (0 == i->first.data().compare(0, i->first.data().length(), stringify(prefix_lower), 0, i->first.data().length()))
+            if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
                 result->insert(i->first);
     }
 
