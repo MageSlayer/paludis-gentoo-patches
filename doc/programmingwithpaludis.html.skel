@@ -197,14 +197,14 @@ via the <code>paludis::Environment::package_database()</code> method.</p>
 <p>The <code>PackageDatabase</code> contains a number of
 <code>paludis::Repository</code> subclass instances. These
 can be obtained using the
-paludis<cpde>::PackageDatabase::begin_repositories()</code> and
+paludis<code>::PackageDatabase::begin_repositories()</code> and
 <code>paludis::PackageDatabase::end_repositories()</code> pair or the
 <code>paludis::PackageDatabase::fetch_repository()</code> method.</p>
 
 <p>The <code>PackageDatabase</code> also provides a number of utility functions.
 <code>paludis::PackageDatabase::query()</code>
 can be used to fetch a <code>paludis::PackageDatabaseEntryCollection</code> containing packages
-matching a particular <cpde>paludis::PackageDepAtom</code>.
+matching a particular <code>paludis::PackageDepSpec</code>.
 <code>paludis::PackageDatabase::fetch_unique_qualified_package_name()</code>
 can be used to convert a <code>paludis::PackageNamePart</code> with no
 associated <code>paludis::CategoryNamePart</code> into

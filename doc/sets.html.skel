@@ -54,11 +54,11 @@ in which <code>use.conf</code> et al. reside. The format is as follows:</p>
 <ul>
     <li>Comments lines start with a <code>#</code>. These, and blank lines, are ignored.</li>
     <li>Lines consist of a symbol, followed by whitespace, followed by a package dependency
-    atom.</li>
-    <li>The symbol <code>*</code> should be used to mean "include this package dependency atom in
+    specification.</li>
+    <li>The symbol <code>*</code> should be used to mean "include this package dependency specification in
     the set".</li>
-    <li>The symbol <code>?</code> should be used to mean "include this package dependency atom in
-    the set if and only if the package part of the atom is matched by an installed package". For
+    <li>The symbol <code>?</code> should be used to mean "include this package dependency specification in
+    the set if and only if the package part of the specification is matched by an installed package". For
     example, the line <code>? &gt;=app-editors/vim-7</code> means requires <code>vim-7</code> if
     and only if <code>app-editors/vim</code> (any version) is already installed.</li>
 </ul>
@@ -69,7 +69,7 @@ in which <code>use.conf</code> et al. reside. The format is as follows:</p>
 of <code>.conf</code>, and when executed should output what would be valid content for a
 <code>.conf</code> set.</p>
 
-<h3>Portage Repositories Defined Sets</h3>
+<h3>Ebuild Repositories Defined Sets</h3>
 
 <p>Ebuild format repositories can supply their own sets. The <code>system</code> and
 <code>security</code> sets are defined programmatically; other sets are defined by a file
@@ -80,7 +80,7 @@ user defined sets above.</p>
 
 <p>Sets can currently be used as targets for <code>paludis --query</code>,
 <code>paludis --install</code> and <code>paludis --uninstall</code>.
-They can also be used as the atom column in the
+They can also be used as the specification column in the
 <code>use.conf</code>, <code>keywords.conf</code>, <code>licenses.conf</code>,
 <code>package_mask.conf</code> and <code>package_unmask.conf</code>.</p>
 

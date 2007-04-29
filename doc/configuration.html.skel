@@ -87,14 +87,14 @@ does, Paludis executes the latter and pretends that its stdout is the content of
 <h3>The use.conf File</h3>
 
 <p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>
-file. The basic format of a line is <code>atom use use use ...</code>, where
-<code>atom</code> is a package depend atom, <a href="sets.html">package set</a>
+file. The basic format of a line is <code>spec use use use ...</code>, where
+<code>spec</code> is a package dependency specification, <a href="sets.html">package set</a>
 or <code>*</code> for "all packages",
 and <code>use use use ...</code> is one or more USE flag names, prefixed by
 a minus if they are to be disabled.</p>
 
 <p>For <code>USE_EXPAND</code> variables such as <code>LINGUAS</code> and
-<code>VIDEO_CARDS</code>, <code>atom VARIABLE: value value ...</code> should be
+<code>VIDEO_CARDS</code>, <code>spec VARIABLE: value value ...</code> should be
 used. To avoid inheriting values from your profile, include <code>-*</code>.</p>
 
 <pre>
@@ -127,8 +127,8 @@ executed and has its stdout used as if it were appended to the main file.</p>
 
 <p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the
 <code>keywords.conf</code> file. The format of a line is
-<code>atom keyword1 keywords2 ...</code>, where <code>atom</code> is a package
-depend atom, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and
+<code>spec keyword1 keywords2 ...</code>, where <code>spec</code> is a package
+dependency specification, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and
 <code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
 accepting <code>~arch</code> does <em>not</em> 
 implicitly accept <code>arch</code>, however, if a package matches multiple lines,
@@ -163,7 +163,7 @@ executed and has its stdout used as if it were appended to the main file.</p>
 <h3>The package_mask.conf File</h3>
 
 <p>Packages can be masked through the use of the <code>package_mask.conf</code>
-file. The format of the file is one <code>atom</code> or <a href="sets.html">set name</a>
+file. The format of the file is one <code>spec</code> or <a href="sets.html">set name</a>
 per line. For example:</p>
 
 <pre>
@@ -185,7 +185,7 @@ executed and has its stdout used as if it were appended to the main file.</p>
 
 <p>Packages can be unmasked through the use of the
 <code>package_unmask.conf</code> file. The format of the file is one
-<code>atom</code> or <a href="sets.html">set name</a> per line. For example:</p>
+<code>spec</code> or <a href="sets.html">set name</a> per line. For example:</p>
 
 <pre>
 # I need banshee 0.11.0
@@ -258,7 +258,7 @@ are executed by Paludis and their stdout is used as if it were a normal reposito
 <code>.conf</code> file.</p>
 
 <p>Each repository can have a key named <code>importance</code>. This is used when
-two different repositories contain an identical package atom (e.g. foo/bar-1.0).
+two different repositories contain an identically named and versioned package (e.g. foo/bar-1.0).
 The repository with the higher importance will always be chosen first. If not
 provided, the default is 0.</p>
 

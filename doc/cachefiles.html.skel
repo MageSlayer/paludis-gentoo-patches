@@ -64,7 +64,7 @@ user explicitly enable or disable it.</p>
 <p><strong>Warning:</strong> If you enable the names cache, and then go on to sync or otherwise
   modify the repository in question manually or with another package manager,
   you <b>must</b> run <code>paludis --regenerate-installable-cache</code>
-  (for Portage repositories) or <code>paludis
+  (for ebuild repositories) or <code>paludis
   --regenerate-installed-cache</code> (for VDB repositories). You should
   also run this command after turning on the cache for the first time,
   and if Paludis is interrupted during an install, uninstall or sync if

@@ -139,7 +139,7 @@ use <code>--pretend</code> and check the output before proceeding:</p>
     is <em>used</em> if any of these conditions are true:</p>
 
     <ul>
-        <li>It is matched by any atom in any repository's <code>system</code> or
+        <li>It is matched by any dependency specification in any repository's <code>system</code> or
         <code>world</code> set.</li>
         <li>It is depended upon by another used package.</li>
     </ul>
