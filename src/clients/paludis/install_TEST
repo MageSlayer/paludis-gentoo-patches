@@ -1,11 +1,18 @@
 #!/bin/bash
 
-PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --config-suffix install-test \
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target && exit 1
-PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --config-suffix install-test \
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --install target || exit 2
 ./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null || exit 3
 grep target install_TEST_dir/root/var/db/pkg/world >/dev/null || exit 4
-PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --config-suffix install-test \
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target || exit 5
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --uninstall target || exit 6
+[[ -f ./install_TEST_dir/root/usr/bin/testbin ]] && exit 7
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --has-version test-category/target && exit 8
+grep target install_TEST_dir/root/var/db/pkg/world >/dev/null && exit 9
+true
 

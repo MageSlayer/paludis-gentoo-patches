@@ -153,6 +153,14 @@ namespace paludis
 
             ///\}
 
+            ///\name Logic
+            ///\{
+
+            virtual void world_remove_set(const SetName &);
+            virtual void world_remove_packages(std::tr1::shared_ptr<const DepSpec>);
+
+            ///\}
+
             /**
              * Run the task.
              */

@@ -231,8 +231,6 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-#if 0
-
         std::tr1::shared_ptr<AllDepSpec> all(new AllDepSpec);
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
@@ -258,14 +256,12 @@ UninstallTask::execute()
                             std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))));
         }
 
-        WorldCallbacks w(this);
-        _imp->env->remove_appropriate_from_world(all, &w);
+        world_remove_packages(all);
 
         if (_imp->had_set_targets)
             for (std::list<std::string>::const_iterator t(_imp->raw_targets.begin()),
                     t_end(_imp->raw_targets.end()) ; t != t_end ; ++t)
-                _imp->env->remove_set_from_world(SetName(*t), &w);
-#endif
+                world_remove_set(SetName(*t));
 
         on_update_world_post();
     }
@@ -345,5 +341,84 @@ void
 UninstallTask::set_all_versions(const bool value)
 {
     _imp->all_versions = value;
+}
+
+void
+UninstallTask::world_remove_set(const SetName & s)
+{
+    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->world_interface)
+            (*r)->world_interface->remove_from_world(s);
+
+    on_update_world(s);
+}
+
+namespace
+{
+    struct WorldTargetFinder :
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>
+    {
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>::visit;
+
+        UninstallTask * const task;
+        std::list<const PackageDepSpec *> items;
+        bool inside_any;
+        bool inside_use;
+
+        WorldTargetFinder(UninstallTask * const t) :
+            task(t),
+            inside_any(false),
+            inside_use(false)
+        {
+        }
+
+        void visit(const AnyDepSpec * a)
+        {
+            Save<bool> save_inside_any(&inside_any, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const UseDepSpec * a)
+        {
+            Save<bool> save_inside_use(&inside_use, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PlainTextDepSpec *)
+        {
+        }
+
+        void visit(const PackageDepSpec * a)
+        {
+            if (! (inside_any || inside_use || a->slot_ptr() || (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())))
+            {
+                items.push_back(a);
+                task->on_update_world(*a);
+            }
+        }
+
+        void visit(const BlockDepSpec *)
+        {
+        }
+    };
+}
+
+void
+UninstallTask::world_remove_packages(std::tr1::shared_ptr<const DepSpec> a)
+{
+    WorldTargetFinder w(this);
+    a->accept(&w);
+    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
+            i_end(w.items.end()) ; i != i_end ; ++i)
+    {
+        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                r_end(_imp->env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+            if ((*r)->world_interface && (*i)->package_ptr())
+                (*r)->world_interface->remove_from_world(*(*i)->package_ptr());
+    }
 }
 
