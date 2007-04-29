@@ -41,12 +41,19 @@ namespace test_cases
             TEST_CHECK(f1.exists());
             TEST_CHECK(f1.is_directory());
 
-            FSEntry f2(e / "valid-cat" / "valid-pkg" / "valid-pkg-0.ebuild");
-            TEST_CHECK(f2.exists());
+            FSEntry f3(e / "valid-cat" / "valid-pkg" / "valid-pkg-0.ebuild");
+            TEST_CHECK(f3.exists());
 
             CheckResult r1((*(*FileCheckMaker::get_instance()->find_maker(
-                            EbuildNameCheck::identifier()))())(f2));
+                            EbuildNameCheck::identifier()))())(f3));
             TEST_CHECK(r1.empty());
+
+            FSEntry f4(e / "valid-cat" / "valid-pkg" / "ChangeLog");
+            TEST_CHECK(f4.exists());
+
+            CheckResult r2((*(*FileCheckMaker::get_instance()->find_maker(
+                            EbuildNameCheck::identifier()))())(f4));
+            TEST_CHECK(r2.empty());
         }
     } test_ebuild_name_check_valid;
 

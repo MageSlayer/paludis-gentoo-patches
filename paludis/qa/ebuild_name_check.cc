@@ -18,6 +18,7 @@
  */
 
 #include <paludis/name.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/qa/ebuild_name_check.hh>
 
 using namespace paludis;
@@ -32,8 +33,12 @@ EbuildNameCheck::operator() (const FSEntry & f) const
 {
     CheckResult result(f, identifier());
 
-    if (stringify(f.dirname().basename()) != stringify(f.basename()).substr(0,stringify(f.dirname().basename()).length()))
-        result << Message(qal_fatal, "Ebuild name does not match directory name");
+    if (is_file_with_extension(f, ".ebuild", IsFileWithOptions()))
+    {
+        if (stringify(f.dirname().basename()) != stringify(f.basename()).substr(
+                    0, stringify(f.dirname().basename()).length()))
+            result << Message(qal_fatal, "Ebuild name does not match directory name");
+    }
 
     return result;
 }
