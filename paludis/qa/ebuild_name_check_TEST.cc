@@ -74,9 +74,23 @@ namespace test_cases
             FSEntry f2(e / "valid-cat" / "valid-pkg" / "invalid-pkg-0.ebuild");
             TEST_CHECK(f2.exists());
 
+            FSEntry f3(e / "valid-cat" / "valid-pkg" / "valid-pkg-not-0.ebuild");
+            TEST_CHECK(f3.exists());
+
+            FSEntry f4(e / "valid-cat" / "valid-pkg" / "valid-pkg.ebuild");
+            TEST_CHECK(f4.exists());
+
             CheckResult r1((*(*FileCheckMaker::get_instance()->find_maker(
                             EbuildNameCheck::identifier()))())(f2));
             TEST_CHECK(! r1.empty());
+
+            CheckResult r2((*(*FileCheckMaker::get_instance()->find_maker(
+                            EbuildNameCheck::identifier()))())(f3));
+            TEST_CHECK(! r2.empty());
+
+            CheckResult r3((*(*FileCheckMaker::get_instance()->find_maker(
+                            EbuildNameCheck::identifier()))())(f4));
+            TEST_CHECK(! r3.empty());
         }
     } test_ebuild_name_check_invalid;
 

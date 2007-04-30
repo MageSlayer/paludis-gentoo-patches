@@ -17,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/name.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/qa/ebuild_name_check.hh>
 
 using namespace paludis;
@@ -35,9 +36,17 @@ EbuildNameCheck::operator() (const FSEntry & f) const
 
     if (is_file_with_extension(f, ".ebuild", IsFileWithOptions()))
     {
-        if (stringify(f.dirname().basename()) != stringify(f.basename()).substr(
-                    0, stringify(f.dirname().basename()).length()))
-            result << Message(qal_fatal, "Ebuild name does not match directory name");
+        try
+        {
+            if (stringify(f.dirname().basename()) != stringify(
+                        PackageDepSpec("=cat/" + strip_trailing_string(stringify(f.basename()), ".ebuild"),
+                            pds_pm_permissive).package_ptr()->package))
+                result << Message(qal_fatal, "Ebuild name does not match directory name");
+        }
+        catch (const PackageDepSpecError)
+        {
+            result << Message(qal_fatal, "Ebuild version is invalid");
+        }
     }
 
     return result;
