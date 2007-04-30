@@ -41,9 +41,13 @@ EbuildNameCheck::operator() (const FSEntry & f) const
             if (stringify(f.dirname().basename()) != stringify(
                         PackageDepSpec("=cat/" + strip_trailing_string(stringify(f.basename()), ".ebuild"),
                             pds_pm_permissive).package_ptr()->package))
-                result << Message(qal_fatal, "Ebuild name does not match directory name");
+                result << Message(qal_fatal, "Ebuild package name does not match directory name");
         }
-        catch (const PackageDepSpecError)
+        catch (const PackageNamePartError &)
+        {
+            result << Message(qal_fatal, "Ebuild package name is invalid");
+        }
+        catch (const Exception &)
         {
             result << Message(qal_fatal, "Ebuild version is invalid");
         }
