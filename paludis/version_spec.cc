@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/log.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -120,13 +121,12 @@ VersionSpec::VersionSpec(const std::string & text) :
 
     if (0 == text.compare(p, 3, "scm"))
     {
-        _imp->parts.push_back(Part(scm, 0, 0));
+        _imp->parts.push_back(Part(scm, ""));
         p += 3;
     }
     else
     {
         /* numbers... */
-        bool first(true);
         while (p < text.length())
         {
             std::string::size_type q(text.find_first_not_of("0123456789", p));
@@ -136,41 +136,22 @@ VersionSpec::VersionSpec(const std::string & text) :
             if (number_part.empty())
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(p));
 
-            try
-            {
-                if (first)
-                    _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
-                else
-                {
-                    if ('0' == number_part.at(0))
-                    {
-                        q = number_part.find_first_not_of("0");
-                        if (std::string::npos == q)
-                            _imp->parts.push_back(Part(number, 0, 0));
-                        else
-                            _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(
-                                            strip_trailing(number_part, "0")), q));
-                    }
-                    else
-                        _imp->parts.push_back(Part(number, destringify<unsigned long, BadVersionSpecError>(number_part), 0));
-                }
+            if (number_part.size() > 8)
+                Log::get_instance()->message(ll_qa, lc_context) <<
+                    "Number part '" << number_part << "' exceeds 8 digit limit";
 
-                if (p < text.length() && '.' != text.at(p))
-                    break;
-            }
-            catch (const BadVersionSpecError &)
-            {
-                throw BadVersionSpecError(text, "Number part '" + number_part + "' contains more than the permitted eight digits");
-            }
+            _imp->parts.push_back(Part(number, number_part));
+
+            if (p < text.length() && '.' != text.at(p))
+                break;
 
             ++p;
-            first = false;
         }
 
         /* letter */
         if (p < text.length())
             if (text.at(p) >= 'a' && text.at(p) <= 'z')
-                _imp->parts.push_back(Part(letter, text.at(p++), 0));
+                _imp->parts.push_back(Part(letter, text.substr(p++, 1)));
 
         bool suffix(true);
         while (suffix)
@@ -205,52 +186,67 @@ VersionSpec::VersionSpec(const std::string & text) :
                     else
                         break;
 
-                    unsigned long x(std::numeric_limits<unsigned long>::max());
-                    for ( ; p < text.length() ; ++p)
-                    {
-                        if (text.at(p) < '0' || text.at(p) > '9')
-                            break;
-                        if (x == std::numeric_limits<unsigned long>::max())
-                            x = 0;
-                        x *= 10;
-                        x += text.at(p) - '0';
-                    }
+                    std::string::size_type q(text.find_first_not_of("0123456789", p));
+                    std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+                    p = std::string::npos == q ? text.length() : q;
 
-                    _imp->parts.push_back(Part(k, x, 0));
+                    if (number_part.size() > 8)
+                        Log::get_instance()->message(ll_qa, lc_context) <<
+                            "Number part '" << number_part << "' exceeds 8 digit limit";
+
+                    if (number_part.size() > 0)
+                    {
+                        number_part = strip_leading(number_part, "0");
+                        if (number_part.empty())
+                            number_part = "0";
+                    }
+                    _imp->parts.push_back(Part(k, number_part));
                     suffix = true;
                 } while (false);
 
             /* patch level */
             if (p < text.length() && 0 == text.compare(p, 2, "_p") && 0 != text.compare(p, 3, "_pr"))
             {
-                unsigned long x(std::numeric_limits<unsigned long>::max());
-                for (p += 2 ; p < text.length() ; ++p)
+                p += 2;
+
+                std::string::size_type q(text.find_first_not_of("0123456789", p));
+                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+                p = std::string::npos == q ? text.length() : q;
+
+                if (number_part.size() > 8)
+                    Log::get_instance()->message(ll_qa, lc_context) <<
+                        "Number part '" << number_part << "' exceeds 8 digit limit";
+
+                if (number_part.size() > 0)
                 {
-                    if (text.at(p) < '0' || text.at(p) > '9')
-                        break;
-                    if (x == std::numeric_limits<unsigned long>::max())
-                        x = 0;
-                    x *= 10;
-                    x += text.at(p) - '0';
+                    number_part = strip_leading(number_part, "0");
+                    if (number_part.empty())
+                        number_part = "0";
                 }
-                _imp->parts.push_back(Part(patch, x, 0));
+                _imp->parts.push_back(Part(patch, number_part));
                 suffix = true;
             }
 
             /* try */
             if (p < text.length() && 0 == text.compare(p, 4, "-try"))
             {
-                unsigned long x(std::numeric_limits<unsigned long>::max());
-                for (p += 4 ; p < text.length() ; ++p)
+                p += 4;
+
+                std::string::size_type q(text.find_first_not_of("0123456789", p));
+                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+                p = std::string::npos == q ? text.length() : q;
+
+                if (number_part.size() > 8)
+                    Log::get_instance()->message(ll_qa, lc_context) <<
+                        "Number part '" << number_part << "' exceeds 8 digit limit";
+
+                if (number_part.size() > 0)
                 {
-                    if (text.at(p) < '0' || text.at(p) > '9')
-                        break;
-                    if (x == std::numeric_limits<unsigned long>::max())
-                        x = 0;
-                    x *= 10;
-                    x += text.at(p) - '0';
+                    number_part = strip_leading(number_part, "0");
+                    if (number_part.empty())
+                        number_part = "0";
                 }
-                _imp->parts.push_back(Part(trypart, x, 0));
+                _imp->parts.push_back(Part(trypart, number_part));
                 suffix = true;
             }
         }
@@ -259,21 +255,17 @@ VersionSpec::VersionSpec(const std::string & text) :
         if ((p < text.length()) && (0 == text.compare(p, 4, "-scm")))
         {
             p += 4;
-            std::vector<Part>::reverse_iterator i(_imp->parts.rbegin()), i_end(_imp->parts.rend());
-            if (i != i_end)
-                ++i;
-            for ( ; i != i_end ; ++i)
-                if (std::numeric_limits<unsigned long>::max() == i->value)
-                    i->value = 0;
-            _imp->parts.push_back(Part(scm, 0, 0));
+            /* _suffix-scm? */
+            if (_imp->parts.back().value.empty())
+                    _imp->parts.back().value = "MAX";
+
+            _imp->parts.push_back(Part(scm, ""));
         }
-        else
-        {
-            for (std::vector<Part>::iterator i(_imp->parts.begin()),
-                    i_end(_imp->parts.end()) ; i != i_end ; ++i)
-                if (std::numeric_limits<unsigned long>::max() == i->value)
-                    i->value = 0;
-        }
+        /* Now we can change empty values to "0" */
+        for (std::vector<Part>::iterator i(_imp->parts.begin()),
+                i_end(_imp->parts.end()) ; i != i_end ; ++i)
+            if (i->value.empty())
+                i->value = "0";
     }
 
     /* revision */
@@ -283,16 +275,18 @@ VersionSpec::VersionSpec(const std::string & text) :
             p += 2;
             do
             {
-                unsigned long x = 0;
-                while (p < text.length())
-                {
-                    if (text.at(p) < '0' || text.at(p) > '9')
-                        break;
-                    x *= 10;
-                    x += text.at(p) - '0';
-                    ++p;
-                }
-                _imp->parts.push_back(Part(revision, x, 0));
+                std::string::size_type q(text.find_first_not_of("0123456789", p));
+                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+                p = std::string::npos == q ? text.length() : q;
+
+                if (number_part.size() > 8)
+                    Log::get_instance()->message(ll_qa, lc_context) <<
+                        "Number part '" << number_part << "' exceeds 8 digit limit";
+
+                number_part = strip_leading(number_part, "0");
+                if (number_part.empty())
+                    number_part = "0";
+                _imp->parts.push_back(Part(revision, number_part));
 
                 if (p >= text.length())
                     break;
@@ -343,18 +337,20 @@ VersionSpec::compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, 0, 0);
+    Part end_part(empty, "");
+    bool first(true);
     while (true)
     {
         const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
         const Part * const p2(v2 == v2_end ? &end_part : &*v2++);
+
         if (&end_part == p1 && &end_part == p2)
             break;
 
-        if (p1 == &end_part && p2->kind == revision && p2->value == 0)
+        if (p1 == &end_part && p2->kind == revision && p2->value == "0")
             continue;
 
-        if (p2 == &end_part && p1->kind == revision && p1->value == 0)
+        if (p2 == &end_part && p1->kind == revision && p1->value == "0")
             continue;
 
         if (p1->kind < p2->kind)
@@ -362,24 +358,61 @@ VersionSpec::compare(const VersionSpec & other) const
         if (p1->kind > p2->kind)
             return 1;
 
-        if ((0 != p1->leading_zeroes) || (0 != p2->leading_zeroes))
-        {
-            std::string p1s(std::string(p1->leading_zeroes, '0') + stringify(p1->value));
-            std::string p2s(std::string(p2->leading_zeroes, '0') + stringify(p2->value));
-            int c(p1s.compare(p2s));
+        std::string p1s, p2s;
+        bool length_cmp(true);
 
-            if (c < 0)
-                return -1;
-            if (c > 0)
-                return 1;
+        /* number parts */
+        if (p1->kind == number)
+        {
+            if (first)
+            {
+                /* first component - always as integer (leading zeroes removed) */
+                first = false;
+                p1s = strip_leading(p1->value, "0");
+                p2s = strip_leading(p2->value, "0");
+            }
+            else if ((! p1->value.empty() && p1->value.at(0) == '0') ||
+                    (! p2->value.empty() && p2->value.at(0) == '0'))
+            {
+                /* leading zeroes - stringwise compare with trailing zeroes removed */
+                length_cmp = false;
+                p1s = strip_trailing(p1->value, "0");
+                p2s = strip_trailing(p2->value, "0");
+            }
+            else
+            {
+                p1s = p1->value;
+                p2s = p2->value;
+            }
         }
+        /* anything else than number parts */
         else
         {
-            if (p1->value < p2->value)
+            p1s = p1->value;
+            p2s = p2->value;
+
+            /* _suffix-scm? */
+            if (p1s == "MAX" && p2s == "MAX")
+                continue;
+            else if (p1s == "MAX")
+                return 1;
+            else if (p2s == "MAX")
                 return -1;
-            if (p1->value > p2->value)
+        }
+        /* common part */
+        if (length_cmp)
+        {
+            /* length compare (integers) */
+            int c = p1s.size() - p2s.size();
+            if (c < 0)
+                return -1;
+            else if (c > 0)
                 return 1;
         }
+        /* stringwise compare (also for integers with the same size) */
+        int c(p1s.compare(p2s));
+        if (c != 0)
+            return c;
     }
 
     return 0;
@@ -392,7 +425,8 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
         v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
 
-    Part end_part(empty, 0, 0);
+    Part end_part(empty, "");
+    bool first(true);
     while (true)
     {
         const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
@@ -407,28 +441,43 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
         }
         else
         {
-            if (p2->kind == revision)
+            std::string p1s, p2s;
+            /* number part */
+            if (p1->kind == number)
             {
-                if (p2->value > p1->value)
-                    return false;
-            }
-            else
-            {
-                if ((0 != p1->leading_zeroes) || (0 != p2->leading_zeroes))
+                if (first)
                 {
-                    std::string p1s(std::string(p1->leading_zeroes, '0') + strip_trailing(stringify(p1->value), "0"));
-                    std::string p2s(std::string(p2->leading_zeroes, '0') + strip_trailing(stringify(p2->value), "0"));
-                    int c(p1s.compare(p2s));
-
-                    if (c != 0)
+                    /* first component - remove leading zeroes and check whether equal */
+                    first = false;
+                    if (strip_leading(p1->value, "0") != strip_leading(p2->value, "0"))
+                        return false;
+                }
+                else if ((! p1->value.empty() && p1->value.at(0) == '0') ||
+                        (! p2->value.empty() && p2->value.at(0) == '0'))
+                {
+                    /* leading zeroes - remove trailing zeroes and check whether equal */
+                    if (strip_trailing(p1->value, "0") != strip_trailing(p2->value, "0"))
                         return false;
                 }
                 else
                 {
+                    /* normal(!) case */
                     if (p1->value != p2->value)
                         return false;
                 }
             }
+            /* revision - compare as integers */
+            else if (p1->kind == revision)
+            {
+                int c = p1->value.size() - p2->value.size();
+                if (c < 0)
+                    return false;
+                else if (c == 0 && p1->value.compare(p2->value) == -1)
+                    return false;
+            }
+            /* not a number part nor revision - must be just equal */
+            else if (p1->value != p2->value)
+                return false;
         }
     }
 
@@ -454,16 +503,37 @@ VersionSpec::hash_value() const
 
     do
     {
+        bool first(true);
         for (std::vector<Part>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
                 r != r_end ; ++r)
         {
-            if (r->value == 0 && r->kind == revision)
+            if (r->value == "0" && r->kind == revision)
                 continue;
 
             std::size_t hh(result & h_mask);
             result <<= 5;
             result ^= (hh >> h_shift);
-            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3) + (r->leading_zeroes << 12));
+
+            std::string r_v;
+            if (! r->value.empty() && r->value.at(0) == '0')
+                r_v = strip_trailing(r->value, "0");
+            else
+                r_v = r->value;
+
+            size_t x(0);
+            int zeroes(0);
+            for (std::string::const_iterator i(r_v.begin()), i_end(r_v.end()) ;
+                    i != i_end ; ++i)
+            {
+                /* count leading zeroes if we are not the first component */
+                if (x == 0 && ! first)
+                    ++zeroes;
+                x *= 10;
+                x += *i - '0';
+            }
+            first = false;
+
+            result ^= (static_cast<std::size_t>(r->kind) + (x << 3) + (zeroes << 12));
         }
     } while (false);
 
@@ -523,7 +593,7 @@ VersionSpec::revision_only() const
             else
                 result = "r";
 
-            result.append(stringify(r->value));
+            result.append(r->value);
             r = std::find_if(next(r), _imp->parts.end(), IsPart<revision>());
         } while (r != _imp->parts.end());
 
@@ -565,7 +635,7 @@ VersionSpec::is_scm() const
         /* are we a -r9999? */
         r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
         if (r != _imp->parts.end())
-            if (r->value == 9999)
+            if (r->value == "9999")
             {
                 result = true;
                 break;
@@ -609,8 +679,24 @@ VersionSpec::bump() const
         return *this;
     if (number_parts.size() > 1)
         number_parts.pop_back();
-    if (! number_parts.empty())
-        ++number_parts.back().value;
+
+    /* ++string */
+    std::string::reverse_iterator i(number_parts.back().value.rbegin()),
+        i_end(number_parts.back().value.rend());
+    bool add1(true);
+    while (i != i_end && add1)
+    {
+        if (*i != '9')
+        {
+            ++(*i);
+            add1 = false;
+        }
+        else
+            *i = '0';
+        ++i;
+    }
+    if (add1)
+        number_parts.back().value.insert(0, "1");
 
     bool need_dot(false);
     std::string str;
@@ -619,7 +705,7 @@ VersionSpec::bump() const
     {
         if (need_dot)
             str.append(".");
-        str.append(stringify(r->value));
+        str.append(r->value);
         need_dot = true;
     }
     return VersionSpec(str);

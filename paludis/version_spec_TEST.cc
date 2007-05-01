@@ -91,7 +91,6 @@ namespace test_cases
             TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2b"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2-r2"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1-r2_pre"), BadVersionSpecError);
-            TEST_CHECK_THROWS(VersionSpec v1("10000000000000000000000000000000000000000000000000000"), BadVersionSpecError);
         }
     } test_version_spec_reject;
 
@@ -223,6 +222,9 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").bump(), "2");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2.3").bump(), "1.3");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1").bump(), "2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.99.0").bump(), "1.100");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.099.0").bump(), "1.100");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.0099.0").bump(), "1.0100");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("scm").bump(), "scm");
         }
     } test_version_bump;
@@ -311,12 +313,13 @@ namespace test_cases
             TEST_CHECK(VersionSpec("1.00") == VersionSpec("1.0"));
             TEST_CHECK(VersionSpec("1.0100") == VersionSpec("1.010"));
             TEST_CHECK(VersionSpec("1") == VersionSpec("1-r0"));
+            TEST_CHECK(VersionSpec("1-r00") == VersionSpec("1-r0"));
             TEST_CHECK(VersionSpec("1.2") == VersionSpec("1.2-r"));
             TEST_CHECK(VersionSpec("1.2-r3") == VersionSpec("1.2-r3.0"));
             TEST_CHECK(VersionSpec("1.2") == VersionSpec("1.2-r0.0"));
 
             TEST_CHECK(VersionSpec("1_alpha_beta-scm") == VersionSpec("1_alpha0_beta-scm"));
-            TEST_CHECK(VersionSpec("1_alpha_beta0_rc3-scm") == VersionSpec("1_alpha0_beta_rc3-scm"));
+            TEST_CHECK(VersionSpec("1_alpha_beta000_rc3-scm") == VersionSpec("1_alpha00_beta_rc3-scm"));
 
             TEST_CHECK(VersionSpec("0001").hash_value() == VersionSpec("1").hash_value());
             TEST_CHECK(VersionSpec("01").hash_value() == VersionSpec("001").hash_value());
@@ -386,6 +389,7 @@ namespace test_cases
             v.push_back(VersionSpec("1.2_alpha"));
             v.push_back(VersionSpec("1.2_alpha-scm"));
             v.push_back(VersionSpec("1.2_beta"));
+            v.push_back(VersionSpec("1.2_beta_p0-scm"));
             v.push_back(VersionSpec("1.2_beta_p1-scm"));
             v.push_back(VersionSpec("1.2_beta_p-scm"));
             v.push_back(VersionSpec("1.2_beta1_p-scm"));

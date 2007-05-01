@@ -4,8 +4,7 @@
 make_class_Part()
 {
     key kind PartKind
-    key value "unsigned long"
-    key leading_zeroes "unsigned long"
+    key value std::string
 
     doxygen_comment << "END"
         /**
@@ -16,5 +15,3 @@ make_class_Part()
          */
 END
 }
-
-
