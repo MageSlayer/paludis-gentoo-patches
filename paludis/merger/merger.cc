@@ -396,7 +396,7 @@ Merger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & ds
 void
 Merger::on_file_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
-    on_error(is_check, "Cannot overwrite directory '" + stringify(dst) + "' with file '"
+    on_error(is_check, "Cannot overwrite directory '" + stringify(dst / src.basename()) + "' with file '"
             + stringify(src) + "'");
 }
 
@@ -435,7 +435,7 @@ Merger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry & 
 void
 Merger::on_dir_over_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
-    on_error(is_check, "Cannot overwrite file '" + stringify(dst) + "' with directory '"
+    on_error(is_check, "Cannot overwrite file '" + stringify(dst / src.basename()) + "' with directory '"
             + stringify(src) + "'");
 }
 
@@ -508,7 +508,7 @@ Merger::on_sym_over_file(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::on_sym_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
-    on_error(is_check, "Cannot overwrite directory '" + stringify(dst) + "' with symlink '"
+    on_error(is_check, "Cannot overwrite directory '" + stringify(dst / src.basename()) + "' with symlink '"
             + stringify(src) + "'");
 }
 
