@@ -130,6 +130,18 @@ FSEntry::is_directory() const
 }
 
 bool
+FSEntry::is_directory_or_symlink_to_directory() const
+{
+    _stat();
+
+    if (_exists)
+        return S_ISDIR((*_stat_info).st_mode) ||
+            (is_symbolic_link() && realpath_if_exists().is_directory());
+
+    return false;
+}
+
+bool
 FSEntry::is_fifo() const
 {
     _stat();
@@ -158,6 +170,18 @@ FSEntry::is_regular_file() const
 
     if (_exists)
         return S_ISREG((*_stat_info).st_mode);
+
+    return false;
+}
+
+bool
+FSEntry::is_regular_file_or_symlink_to_regular_file() const
+{
+    _stat();
+
+    if (_exists)
+        return S_ISREG((*_stat_info).st_mode) ||
+            (is_symbolic_link() && realpath_if_exists().is_regular_file());
 
     return false;
 }
@@ -344,6 +368,18 @@ FSEntry::realpath() const
     std::memset(r, 0, PATH_MAX + 1);
     if (! ::realpath(_path.c_str(), r))
         throw FSError("Could not resolve path '" + _path + "'");
+    return FSEntry(r);
+}
+
+FSEntry
+FSEntry::realpath_if_exists() const
+{
+    Context context("When fetching realpath of '" + stringify(_path) + "', if it exists:");
+
+    char r[PATH_MAX + 1];
+    std::memset(r, 0, PATH_MAX + 1);
+    if (! ::realpath(_path.c_str(), r))
+        return *this;
     return FSEntry(r);
 }
 

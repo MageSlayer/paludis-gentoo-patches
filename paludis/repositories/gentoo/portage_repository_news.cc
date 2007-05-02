@@ -83,12 +83,12 @@ PortageRepositoryNews::update_news() const
             stringify(_imp->params.newsdir) + "' for repository '" +
             stringify(_imp->portage_repository->name()) + "':");
 
-    if (! _imp->params.newsdir.is_directory())
+    if (! _imp->params.newsdir.is_directory_or_symlink_to_directory())
         return;
 
     std::set<std::string> skip;
 
-    if (_imp->skip_file.is_regular_file())
+    if (_imp->skip_file.is_regular_file_or_symlink_to_regular_file())
     {
         Context local_context("When handling news skip file '" + stringify(
                 _imp->skip_file) + "':");
@@ -107,9 +107,9 @@ PortageRepositoryNews::update_news() const
             return;
         }
 
-        if (! d->is_directory())
+        if (! d->is_directory_or_symlink_to_directory())
             continue;
-        if (! (*d / (d->basename() + ".en.txt")).is_regular_file())
+        if (! (*d / (d->basename() + ".en.txt")).is_regular_file_or_symlink_to_regular_file())
             continue;
 
         if (skip.end() != skip.find(d->basename()))

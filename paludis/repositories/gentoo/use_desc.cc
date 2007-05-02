@@ -38,7 +38,7 @@ namespace paludis
 
         void add(const FSEntry & f, const std::string & prefix)
         {
-            if (f.is_regular_file())
+            if (f.is_regular_file_or_symlink_to_regular_file())
             {
                 LineConfigFile ff(f, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
@@ -58,7 +58,7 @@ namespace paludis
             add(f / "use.desc", "");
             add(f / "use.local.desc", "");
 
-            if ((f / "desc").is_directory())
+            if ((f / "desc").is_directory_or_symlink_to_directory())
                 for (DirIterator d(f / "desc"), d_end ; d != d_end ; ++d)
                     if (is_file_with_extension(*d, ".desc", IsFileWithOptions()))
                         add(*d, strip_trailing_string(d->basename(), ".desc") + "_");

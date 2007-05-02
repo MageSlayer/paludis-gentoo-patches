@@ -195,7 +195,7 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
         if (! (_imp->options.root / dst / result_name).exists())
             break;
 
-        if ((_imp->options.root / dst / result_name).is_regular_file())
+        if ((_imp->options.root / dst / result_name).is_regular_file_or_symlink_to_regular_file())
         {
             std::ifstream other_md5_file(stringify(_imp->options.root / dst / result_name).c_str());
             if (other_md5_file)

@@ -142,13 +142,17 @@ namespace test_cases
             d = FSEntry("fs_entry_TEST_dir/symlink_to_dir_a");
             TEST_CHECK(d.is_symbolic_link());
             TEST_CHECK(! d.is_directory());
+            TEST_CHECK(d.is_directory_or_symlink_to_directory());
             TEST_CHECK(! d.is_regular_file());
+            TEST_CHECK(! d.is_regular_file_or_symlink_to_regular_file());
 
             e = FSEntry("fs_entry_TEST_dir/doesnotexist_symlink");
-            TEST_CHECK(d.is_symbolic_link());
-            TEST_CHECK(d.exists());
-            TEST_CHECK(! d.is_directory());
-            TEST_CHECK(! d.is_regular_file());
+            TEST_CHECK(e.is_symbolic_link());
+            TEST_CHECK(e.exists());
+            TEST_CHECK(! e.is_directory());
+            TEST_CHECK(! e.is_directory_or_symlink_to_directory());
+            TEST_CHECK(! e.is_regular_file());
+            TEST_CHECK(! e.is_regular_file_or_symlink_to_regular_file());
 
             FSEntry f("fs_entry_TEST_dir/symlink_to_dir_a/file_in_a");
             TEST_CHECK(f.is_regular_file());
@@ -161,6 +165,7 @@ namespace test_cases
             FSEntry h("fs_entry_TEST_dir/symlink_to_file_in_a");
             TEST_CHECK(h.is_symbolic_link());
             TEST_CHECK(! h.is_regular_file());
+            TEST_CHECK(h.is_regular_file_or_symlink_to_regular_file());
             TEST_CHECK_EQUAL(h.readlink(), "dir_a/file_in_a");
 
             FSEntry i("fs_entry_TEST_dir/dir_to_make");

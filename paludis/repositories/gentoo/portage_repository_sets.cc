@@ -240,7 +240,7 @@ PortageRepositorySets::security_set(bool insecurity) const
     Context context("When building security or insecurity package set:");
     std::tr1::shared_ptr<AllDepSpec> security_packages(new AllDepSpec);
 
-    if (!_imp->params.securitydir.is_directory())
+    if (!_imp->params.securitydir.is_directory_or_symlink_to_directory())
         return security_packages;
 
     std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;

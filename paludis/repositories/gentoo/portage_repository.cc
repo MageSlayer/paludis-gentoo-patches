@@ -363,7 +363,7 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
         FSEntry fs(_imp->params.location);
         fs /= stringify(q.category);
         fs /= stringify(q.package);
-        if (! fs.is_directory())
+        if (! fs.is_directory_or_symlink_to_directory())
             return false;
         _imp->package_names.insert(std::make_pair(q, false));
         return true;
@@ -429,10 +429,10 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return std::tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
-    if ((_imp->params.location / stringify(c)).is_directory())
+    if ((_imp->params.location / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->params.location / stringify(c)), d_end ; d != d_end ; ++d)
         {
-            if (! d->is_directory())
+            if (! d->is_directory_or_symlink_to_directory())
                 continue;
             if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
                         std::tr1::bind(&is_file_with_extension, _1, _imp->entries_ptr->file_extension(), IsFileWithOptions())))
@@ -537,7 +537,7 @@ PortageRepository::need_category_names() const
                 + stringify(_imp->params.location) + "', faking it");
         for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
         {
-            if (! d->is_directory())
+            if (! d->is_directory_or_symlink_to_directory())
                 continue;
 
             std::string n(d->basename());
@@ -779,12 +779,12 @@ PortageRepository::do_license_exists(const std::string & license) const
     {
         FSEntry l(_imp->params.master_repository->params().location /
                 "licenses" / license);
-        if (l.exists() && l.is_regular_file())
+        if (l.exists() && l.is_regular_file_or_symlink_to_regular_file())
             p.reset(new FSEntry(l));
     }
 
     FSEntry l(_imp->params.location / "licenses" / license);
-    if (l.exists() && l.is_regular_file())
+    if (l.exists() && l.is_regular_file_or_symlink_to_regular_file())
         p.reset(new FSEntry(l));
 
     return p;

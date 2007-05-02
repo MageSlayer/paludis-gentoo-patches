@@ -191,7 +191,7 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
     Context context("When adding profile directory '" + stringify(dir) + ":");
     Log::get_instance()->message(ll_debug, lc_context, "Loading profile directory '" + stringify(dir) + "'");
 
-    if (! dir.is_directory())
+    if (! dir.is_directory_or_symlink_to_directory())
     {
         Log::get_instance()->message(ll_warning, lc_context,
                 "Profile component '" + stringify(dir) + "' is not a directory");

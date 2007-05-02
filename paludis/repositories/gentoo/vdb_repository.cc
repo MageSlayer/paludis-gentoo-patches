@@ -226,7 +226,7 @@ namespace
 
         FSEntry f(location / stringify(name.category) /
                 (stringify(name.package) + "-" + stringify(v)));
-        if (! (f / key).is_regular_file())
+        if (! (f / key).is_regular_file_or_symlink_to_regular_file())
             return "";
 
         std::ifstream ff(stringify(f / key).c_str());
@@ -347,7 +347,7 @@ namespace paludis
         try
         {
             for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
-                if (cat_i->is_directory())
+                if (cat_i->is_directory_or_symlink_to_directory())
                     load_entries_for(CategoryNamePart(cat_i->basename()));
 
             std::sort(entries.begin(), entries.end());
@@ -379,12 +379,12 @@ namespace paludis
             category_entries_valid.insert(cat);
 
             FSEntry dir(location / stringify(cat));
-            if (! dir.is_directory())
+            if (! dir.is_directory_or_symlink_to_directory())
                 return;
 
             for (DirIterator pkg_i(dir), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
             {
-                if (! pkg_i->is_directory())
+                if (! pkg_i->is_directory_or_symlink_to_directory())
                     continue;
 
                 if ('-' == pkg_i->basename().at(0))
@@ -702,7 +702,7 @@ VDBRepository::do_contents(
 
     FSEntry f(_imp->location / stringify(q.category) /
             (stringify(q.package) + "-" + stringify(v)));
-    if (! (f / "CONTENTS").is_regular_file())
+    if (! (f / "CONTENTS").is_regular_file_or_symlink_to_regular_file())
     {
         Log::get_instance()->message(ll_warning, lc_context,
                 "CONTENTS lookup failed for request for '" +
@@ -1189,11 +1189,11 @@ VDBRepository::get_environment_variable(
             / (stringify(for_package.name.package) + "-" +
                 stringify(for_package.version)));
 
-    if (! vdb_dir.is_directory())
+    if (! vdb_dir.is_directory_or_symlink_to_directory())
         throw EnvironmentVariableActionError("Could not find VDB entry for '"
                 + stringify(for_package) + "'");
 
-    if ((vdb_dir / var).is_regular_file())
+    if ((vdb_dir / var).is_regular_file_or_symlink_to_regular_file())
     {
         std::ifstream f(stringify(vdb_dir / var).c_str());
         if (! f)
@@ -1203,7 +1203,7 @@ VDBRepository::get_environment_variable(
                 std::string((std::istreambuf_iterator<char>(f)),
                     std::istreambuf_iterator<char>()), "\n");
     }
-    else if ((vdb_dir / "environment.bz2").is_regular_file())
+    else if ((vdb_dir / "environment.bz2").is_regular_file_or_symlink_to_regular_file())
     {
         PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
                 " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");

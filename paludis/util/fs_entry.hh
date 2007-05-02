@@ -194,9 +194,23 @@ namespace paludis
 
             /**
              * Does a filesystem entry exist at our location, and if it does,
+             * is it a directory?
+             */
+            bool is_directory_or_symlink_to_directory() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Does a filesystem entry exist at our location, and if it does,
              * is it a regular file?
              */
             bool is_regular_file() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Does a filesystem entry exist at our location, and if it does,
+             * is it a regular file?
+             */
+            bool is_regular_file_or_symlink_to_regular_file() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -238,6 +252,13 @@ namespace paludis
              * Return the canonicalised version of our path.
              */
             FSEntry realpath() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Return the canonicalised version of our path, if it exists, or
+             * ourself if it doesn't.
+             */
+            FSEntry realpath_if_exists() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
