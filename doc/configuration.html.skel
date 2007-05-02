@@ -88,8 +88,7 @@ does, Paludis executes the latter and pretends that its stdout is the content of
 
 <p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>
 file. The basic format of a line is <code>spec use use use ...</code>, where
-<code>spec</code> is a package dependency specification, <a href="sets.html">package set</a>
-or <code>*</code> for "all packages",
+<code>spec</code> is a package dependency specification or <a href="sets.html">package set</a>
 and <code>use use use ...</code> is one or more USE flag names, prefixed by
 a minus if they are to be disabled.</p>
 
@@ -99,7 +98,7 @@ used. To avoid inheriting values from your profile, include <code>-*</code>.</p>
 
 <pre>
 # By default, apply these to all packages
-* -doc nls -apache2
+*/* -doc nls -apache2
 
 # Turn off nls for vim
 app-editors/vim -nls
@@ -111,7 +110,7 @@ app-editors/vim -nls
 x11-libs/gtk+:2 tiff
 
 # We like English
-* LINGUAS: -* en_GB en
+*/* LINGUAS: -* en_GB en
 </pre>
 
 <p>Note that if a package matches multiple lines, <em>all</em> of these lines will
@@ -128,7 +127,7 @@ executed and has its stdout used as if it were appended to the main file.</p>
 <p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the
 <code>keywords.conf</code> file. The format of a line is
 <code>spec keyword1 keywords2 ...</code>, where <code>spec</code> is a package
-dependency specification, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and
+dependency specification or <a href="sets.html">set name</a> and
 <code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
 accepting <code>~arch</code> does <em>not</em> 
 implicitly accept <code>arch</code>, however, if a package matches multiple lines,
@@ -137,14 +136,14 @@ For example:</p>
 
 <pre>
 # We want a mostly stable system:
-* x86
+*/* x86
 
 # But some ~arch packages:
 app-editors/vim ~x86
 app-editors/vim-core ~x86
 </pre>
 
-<p>If <code>*</code> is not used, then every package that is to be installed will require
+<p>If <code>*/*</code> is not used, then every package that is to be installed will require
 an entry in <code>keywords.conf</code>. It is also generally assumed within the gentoo
 tree that if <code>~ARCH</code> is accepted for a package, then so is
 <code>ARCH</code>; not doing so may result in all versions or the latest version of a
@@ -204,13 +203,13 @@ executed and has its stdout used as if it were appended to the main file.</p>
 filtering is desired, use:</p>
 
 <pre>
-* *
+*/* *
 </pre>
 
 <p>For filtering, the format is similar to the keywords and use files:</p>
 
 <pre>
-* GPL-2 BSD
+*/* GPL-2 BSD
 app-editors/vim-core vim
 </pre>
 

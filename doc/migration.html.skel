@@ -83,7 +83,7 @@ For a quick template:</p>
 mkdir -p /etc/paludis/repositories
 
 cat &lt;&lt;"END" &gt; /etc/paludis/keywords.conf
-*                   x86
+*/*                 x86
 dev-cpp/libebt      x86 ~x86
 sys-apps/paludis    x86 ~x86
 dev-util/subversion x86 ~x86
@@ -92,15 +92,15 @@ sys-fs/udev         x86 ~x86
 END
 
 cat &lt;&lt;"END" &gt; /etc/paludis/use.conf
-* -doc nls -apache2
-* LINGUAS: en
-* INPUT_DEVICES: keyboard mouse
-* VIDEO_CARDS: -* ati
+*/* -doc nls -apache2
+*/* LINGUAS: en
+*/* INPUT_DEVICES: keyboard mouse
+*/* VIDEO_CARDS: -* ati
 app-editors/vim -nls
 END
 
 cat &lt;&lt;"END" &gt; /etc/paludis/licenses.conf
-* *
+*/* *
 END
 
 cat &lt;&lt;"END" &gt; /etc/paludis/mirrors.conf
