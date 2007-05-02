@@ -26,6 +26,14 @@ namespace paludis
 {
     class PackageDepSpec;
 
+    /**
+     * An Environment that allows you to change aspects of an
+     * existing Environment, e.g.\ the state of a USE flag for a
+     * package.
+     *
+     * \ingroup grpadaptedenvironment
+     * \nosubgrouping
+     */
     class AdaptedEnvironment :
         public Environment,
         private PrivateImplementationPattern<AdaptedEnvironment>
@@ -37,7 +45,14 @@ namespace paludis
             ///\name Adapting methods
             ///\{
 
+            /**
+             * Set the state of a USE flag for the given PackageDepSpec
+             */
             void adapt_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &, const UseFlagState);
+
+            /**
+             * Clear all adaptions from this Environemnt.
+             */
             void clear_adaptions();
 
             ///\}
