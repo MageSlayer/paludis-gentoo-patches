@@ -203,52 +203,50 @@ VersionSpec::VersionSpec(const std::string & text) :
                     _imp->parts.push_back(Part(k, number_part));
                     suffix = true;
                 } while (false);
+        }
 
-            /* patch level */
-            if (p < text.length() && 0 == text.compare(p, 2, "_p") && 0 != text.compare(p, 3, "_pr"))
+        /* patch level */
+        if (p < text.length() && 0 == text.compare(p, 2, "_p"))
+        {
+            p += 2;
+
+            std::string::size_type q(text.find_first_not_of("0123456789", p));
+            std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+            p = std::string::npos == q ? text.length() : q;
+
+            if (number_part.size() > 8)
+                Log::get_instance()->message(ll_qa, lc_context) <<
+                    "Number part '" << number_part << "' exceeds 8 digit limit";
+
+            if (number_part.size() > 0)
             {
-                p += 2;
-
-                std::string::size_type q(text.find_first_not_of("0123456789", p));
-                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-                p = std::string::npos == q ? text.length() : q;
-
-                if (number_part.size() > 8)
-                    Log::get_instance()->message(ll_qa, lc_context) <<
-                        "Number part '" << number_part << "' exceeds 8 digit limit";
-
-                if (number_part.size() > 0)
-                {
-                    number_part = strip_leading(number_part, "0");
-                    if (number_part.empty())
-                        number_part = "0";
-                }
-                _imp->parts.push_back(Part(patch, number_part));
-                suffix = true;
+                number_part = strip_leading(number_part, "0");
+                if (number_part.empty())
+                    number_part = "0";
             }
+            _imp->parts.push_back(Part(patch, number_part));
+        }
 
-            /* try */
-            if (p < text.length() && 0 == text.compare(p, 4, "-try"))
+        /* try */
+        if (p < text.length() && 0 == text.compare(p, 4, "-try"))
+        {
+            p += 4;
+
+            std::string::size_type q(text.find_first_not_of("0123456789", p));
+            std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
+            p = std::string::npos == q ? text.length() : q;
+
+            if (number_part.size() > 8)
+                Log::get_instance()->message(ll_qa, lc_context) <<
+                    "Number part '" << number_part << "' exceeds 8 digit limit";
+
+            if (number_part.size() > 0)
             {
-                p += 4;
-
-                std::string::size_type q(text.find_first_not_of("0123456789", p));
-                std::string number_part(std::string::npos == q ? text.substr(p) : text.substr(p, q - p));
-                p = std::string::npos == q ? text.length() : q;
-
-                if (number_part.size() > 8)
-                    Log::get_instance()->message(ll_qa, lc_context) <<
-                        "Number part '" << number_part << "' exceeds 8 digit limit";
-
-                if (number_part.size() > 0)
-                {
-                    number_part = strip_leading(number_part, "0");
-                    if (number_part.empty())
-                        number_part = "0";
-                }
-                _imp->parts.push_back(Part(trypart, number_part));
-                suffix = true;
+                number_part = strip_leading(number_part, "0");
+                if (number_part.empty())
+                    number_part = "0";
             }
+            _imp->parts.push_back(Part(trypart, number_part));
         }
 
         /* scm */
@@ -257,7 +255,7 @@ VersionSpec::VersionSpec(const std::string & text) :
             p += 4;
             /* _suffix-scm? */
             if (_imp->parts.back().value.empty())
-                    _imp->parts.back().value = "MAX";
+                _imp->parts.back().value = "MAX";
 
             _imp->parts.push_back(Part(scm, ""));
         }
