@@ -1247,6 +1247,24 @@ namespace test_cases
         }
     } test_dep_list_60;
 
+    struct DepListTestCase61 : DepListTestCase<61>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->ebuild_interface->provide_string = "virtual/foo";
+            repo->add_version("cat", "two", "2")->ebuild_interface->provide_string = "virtual/foo";
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one cat/two";
+            expected.push_back("cat/one-1:0::repo");
+            expected.push_back("virtual/foo-1:0::virtuals");
+            expected.push_back("cat/two-2:0::repo");
+            expected.push_back("virtual/foo-2:0::virtuals");
+        }
+    } test_dep_list_61;
+
     /**
      * \test Test DepList transactional add behaviour.
      *

@@ -1239,7 +1239,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
                 MatchDepListEntryAgainstPackageDepSpec(_imp->env, pp.get())));
 
-            if (z.first != z.second)
+            if (zz != z.second)
                 continue;
 
             std::tr1::shared_ptr<const VersionMetadata> m;
