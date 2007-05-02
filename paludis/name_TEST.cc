@@ -196,5 +196,150 @@ namespace test_cases
         }
     } test_package_name_part_comparison;
 
+    /**
+     * \test Test RepositoryName creation.
+     *
+     */
+    struct RepositoryNameCreationTest : public TestCase
+    {
+        RepositoryNameCreationTest() : TestCase("creation") { }
+
+        void run()
+        {
+            RepositoryName r("foo");
+            TEST_CHECK(true);
+        }
+    } test_repository_name_creation;
+
+    /**
+     * \test Test RepositoryName validation.
+     *
+     */
+    struct RepositoryNameValidationTest : public TestCase
+    {
+        RepositoryNameValidationTest() : TestCase("validation") { }
+
+        void run()
+        {
+            RepositoryName r("repo0_-");
+            TEST_CHECK_THROWS(r = RepositoryName(""), NameError);
+            TEST_CHECK_THROWS(r = RepositoryName("!!!"), NameError);
+            TEST_CHECK_THROWS(r = RepositoryName("-foo"), NameError);
+            TEST_CHECK_THROWS(r = RepositoryName("fo$o"), NameError);
+        }
+    } test_repository_name_validation;
+
+    /**
+     * \test Test SlotName creation.
+     *
+     */
+    struct SlotNameCreationTest : public TestCase
+    {
+        SlotNameCreationTest() : TestCase("creation") { }
+
+        void run()
+        {
+            SlotName s("foo");
+            TEST_CHECK(true);
+        }
+    } test_slot_name_creation;
+
+    /**
+     * \test Test SlotName validation.
+     *
+     */
+    struct SlotNameValidationTest : public TestCase
+    {
+        SlotNameValidationTest() : TestCase("validation") { }
+
+        void run()
+        {
+            SlotName s("slot0+_.-");
+            TEST_CHECK_THROWS(s = SlotName(""), NameError);
+            TEST_CHECK_THROWS(s = SlotName("!!!"), NameError);
+            TEST_CHECK_THROWS(s = SlotName("-foo"), NameError);
+            TEST_CHECK_THROWS(s = SlotName(".foo"), NameError);
+            TEST_CHECK_THROWS(s = SlotName("fo$o"), NameError);
+        }
+    } test_slot_name_validation;
+
+    /**
+     * \test Test UseFlagName creation.
+     *
+     */
+    struct UseFlagNameCreationTest : public TestCase
+    {
+        UseFlagNameCreationTest() : TestCase("creation") { }
+
+        void run()
+        {
+            UseFlagName u("foo");
+            TEST_CHECK(true);
+        }
+    } test_use_flag_name_creation;
+
+    /**
+     * \test Test UseFlagName validation.
+     *
+     */
+    struct UseFlagNameValidationTest : public TestCase
+    {
+        UseFlagNameValidationTest() : TestCase("validation") { }
+
+        void run()
+        {
+            UseFlagName u("use0+_@-");
+            TEST_CHECK_THROWS(u = UseFlagName(""), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("!!!"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("-foo"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("_foo"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("@foo"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("+foo"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("fo$o"), NameError);
+        }
+    } test_use_flag_name_validation;
+
+    /**
+     * \test Test KeywordName creation.
+     *
+     */
+    struct KeywordNameCreationTest : public TestCase
+    {
+        KeywordNameCreationTest() : TestCase("creation") { }
+
+        void run()
+        {
+            KeywordName k("foo");
+            TEST_CHECK(true);
+        }
+    } test_keyword_name_creation;
+
+    /**
+     * \test Test KeywordName validation.
+     *
+     */
+    struct KeywordNameValidationTest : public TestCase
+    {
+        KeywordNameValidationTest() : TestCase("validation") { }
+
+        void run()
+        {
+            KeywordName k("keyword0_-");
+            KeywordName k1("~keyword0_-");
+            KeywordName k2("-keyword0_-");
+            KeywordName k3("*");
+            KeywordName k4("-*");
+            TEST_CHECK_THROWS(k = KeywordName(""), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("!!!"), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("~"), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("-"), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("@foo"), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("fo$o"), NameError);
+            TEST_CHECK_THROWS(k = KeywordName("foo+"), NameError);
+        }
+    } test_keyword_name_validation;
+
+
+
 }
 

@@ -51,14 +51,19 @@ UseFlagNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_:@");
+            "0123456789-+_@");
+
+    static const std::string alphanum_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789");
 
     do
     {
         if (s.empty())
             break;
 
-        if ('-' == s.at(0) || '.' == s[0])
+        if (std::string::npos == alphanum_chars.find(s[0]))
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -96,7 +101,7 @@ SlotNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0) || '.' == s[0])
+        if ('-' == s[0] || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -129,7 +134,7 @@ PackageNamePartValidator::validate(const std::string & s)
     static const std::string number_chars(
             "0123456789");
 
-    if (s.empty() || '-' == s.at(0) || '.' == s[0])
+    if (s.empty() || '-' == s[0])
     {
         Context c("When validating package name part '" + s + "':");
         throw PackageNamePartError(s);
@@ -167,7 +172,7 @@ CategoryNamePartValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0) || '.' == s[0])
+        if ('-' == s[0] || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -192,14 +197,14 @@ RepositoryNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_");
+            "0123456789-_");
 
     do
     {
         if (s.empty())
             break;
 
-        if ('-' == s.at(0) || '.' == s[0])
+        if ('-' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -229,7 +234,7 @@ KeywordNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_");
+            "0123456789-_");
 
     do
     {
@@ -247,10 +252,10 @@ KeywordNameValidator::validate(const std::string & s)
                 if ("-*" == s)
                     return;
 
-                /* fall throuth */
+                /* fall through */
             default:
                 if (std::string::npos != s.find_first_not_of(allowed_chars,
-                            ('~' == s.at(0) ? 1 : 0)))
+                            ('~' == s[0] ? 1 : 0)))
                     continue;
         }
 
@@ -310,7 +315,7 @@ SetNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0) || '.' == s[0])
+        if ('-' == s[0] || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
