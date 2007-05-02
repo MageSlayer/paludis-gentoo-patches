@@ -46,7 +46,7 @@ namespace paludis
             ///\{
 
             /**
-             * Set the state of a USE flag for the given PackageDepSpec
+             * Set the state of a USE flag for the given PackageDepSpec.
              */
             void adapt_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &, const UseFlagState);
 
