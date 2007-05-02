@@ -176,6 +176,76 @@ module Paludis
         end
     end
 
+    class TestCase_AdaptedEnvironment < Test::Unit::TestCase
+        def env
+            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+        end
+
+        def test_create
+            assert_nothing_raised do
+                env
+            end
+        end
+
+        def test_create_bad
+            assert_raise ArgumentError do
+                AdaptedEnvironment.new
+            end
+        end
+    end
+
+    class TestCase_AdaptedEnvironmentAdaptUse < Test::Unit::TestCase
+        def env
+            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+        end
+
+        def test_adapt_use
+            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
+
+            assert env.query_use("enabled", pde)
+            assert ! env.query_use("not_enabled", pde)
+            assert env.query_use("sometimes_enabled", pde)
+
+            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'enabled', false);
+            assert ! env.query_use('enabled', pde);
+            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'not_enabled', true);
+            assert env.query_use("not_enabled", pde)
+            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'sometimes_enabled', false);
+            assert ! env.query_use("sometimes_enabled", pde)
+        end
+
+        def test_adapt_use_bad
+            assert_raise TypeError do
+                env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'not_enabled', 'lemon');
+            end
+            assert_raise TypeError do
+                env.adapt_use(PackageDepSpec.new(123, PackageDepSpecParseMode::Permissive), 'not_enabled', false);
+            end
+            assert_raise TypeError do
+                env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 7, false);
+            end
+        end
+    end
+
+    class TestCase_AdaptedEnvironmentClearAdaptions < Test::Unit::TestCase
+        def env
+            @env or @env = AdaptedEnvironment.new(EnvironmentMaker.instance.make_from_spec(""))
+        end
+
+        def test_clear_adaptions
+            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
+
+            assert env.query_use("enabled", pde)
+
+            env.adapt_use(PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive), 'enabled', false);
+            assert ! env.query_use('enabled', pde);
+
+            env.clear_adaptions;
+            assert env.query_use("enabled", pde)
+
+        end
+    end
+
     class TestCase_NoConfigEnvironmentMaskReasons < Test::Unit::TestCase
         def env
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")

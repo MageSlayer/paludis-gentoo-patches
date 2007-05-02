@@ -93,6 +93,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/no_config/.libs\`: \
+			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/adapted/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs\`: \
@@ -123,6 +124,7 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/paludis/qa/libpaludisqa.la
 
@@ -139,6 +141,7 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
 TESTS = $(IF_RUBY_TESTS)
