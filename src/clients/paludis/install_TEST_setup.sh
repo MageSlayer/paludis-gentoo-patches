@@ -113,6 +113,8 @@ pkg_setup() {
     use userland_test || die "bad use for userland"
     use kernel_test || die "bad use for kernel"
     use test || die "bad use for arch"
+
+    [[ -n "${PALUDIS_INSTALL_TEST_DIE_PLEASE}" ]] && die "told to die"
 }
 
 src_unpack() {

@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -78,12 +79,15 @@ namespace
         if (CommandLine::get_instance()->a_add_to_world_spec.specified())
             resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
                 + " '" + CommandLine::get_instance()->a_add_to_world_spec.argument() + "'";
-        else if (task.had_set_targets())
-            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
-                + " '( )'";
-        else
-            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
-                + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
+        else if (! CommandLine::get_instance()->a_preserve_world.specified())
+        {
+            if (task.had_set_targets())
+                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
+                    + " '( )'";
+            else
+                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
+                    + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
+        }
 
         if (CommandLine::get_instance()->a_destinations.specified())
             for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
@@ -108,8 +112,17 @@ namespace
             if (CommandLine::get_instance()->a_resume_command_template.specified())
             {
                 std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
-                char* resume_template = strdup(file_name.c_str());
-                int fd(mkstemp(resume_template));
+                int fd;
+                if (std::string::npos == file_name.find("XXXXXX"))
+                    fd = open(file_name.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+                else
+                {
+                    char * resume_template = strdup(file_name.c_str());
+                    fd = mkstemp(resume_template);
+                    file_name = resume_template;
+                    std::free(resume_template);
+                }
+
                 if (-1 != fd)
                 {
                     ::fchmod(fd, 0644);
@@ -119,23 +132,22 @@ namespace
                     if (resume_command_file)
                     {
                         cerr << endl;
-                        cerr << "Resume command saved to file: " << resume_template;
+                        cerr << "Resume command saved to file: " << file_name;
                         cerr << endl;
                     }
                     else
                     {
-                        cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                        cerr << "Resume command NOT saved to file: " << file_name << " due to error "
                             << strerror(errno) << endl;
-                        cerr << "Resume command: " << resume_command << endl;
+                        cerr << "Resume command: " << file_name << endl;
                     }
                 }
                 else
                 {
-                    cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                    cerr << "Resume command NOT saved to file: " << file_name << " due to error "
                         << strerror(errno) << endl;
-                    cerr << "Resume command: " << resume_command << endl;
+                    cerr << "Resume command: " << file_name << endl;
                 }
-                std::free(resume_template);
             }
             else
             {

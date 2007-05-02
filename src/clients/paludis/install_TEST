@@ -2,17 +2,20 @@
 
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target && exit 1
+PALUDIS_INSTALL_TEST_DIE_PLEASE=yes \
+    PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --install target --resume-command-template `pwd`/install_TEST_dir/resume && exit 2
+( echo -n './paludis ' ; cut -d ' ' -f2- < install_TEST_dir/resume ) > install_TEST_dir/fixedresume
+PALUDIS_HOME=./install_TEST_dir/config/ bash `pwd`/install_TEST_dir/fixedresume || exit 3
+./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null || exit 4
+grep target install_TEST_dir/root/var/db/pkg/world >/dev/null || exit 5
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --install target || exit 2
-./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null || exit 3
-grep target install_TEST_dir/root/var/db/pkg/world >/dev/null || exit 4
+    --has-version test-category/target || exit 6
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --has-version test-category/target || exit 5
+    --uninstall target || exit 7
+[[ -f ./install_TEST_dir/root/usr/bin/testbin ]] && exit 8
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --uninstall target || exit 6
-[[ -f ./install_TEST_dir/root/usr/bin/testbin ]] && exit 7
-PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --has-version test-category/target && exit 8
-grep target install_TEST_dir/root/var/db/pkg/world >/dev/null && exit 9
+    --has-version test-category/target && exit 9
+grep target install_TEST_dir/root/var/db/pkg/world >/dev/null && exit 10
 true
 
