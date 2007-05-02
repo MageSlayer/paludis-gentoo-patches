@@ -91,6 +91,13 @@ namespace test_cases
             TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2b"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1_pre-r2-r2"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1-r2_pre"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1."), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1.1."), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1.-r"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1.-r1"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1-r.0"), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1-r1."), BadVersionSpecError);
+            TEST_CHECK_THROWS(VersionSpec v1("1_p1."), BadVersionSpecError);
         }
     } test_version_spec_reject;
 

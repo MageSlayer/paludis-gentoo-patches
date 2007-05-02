@@ -142,7 +142,7 @@ VersionSpec::VersionSpec(const std::string & text) :
 
             _imp->parts.push_back(Part(number, number_part));
 
-            if (p < text.length() && '.' != text.at(p))
+            if (p < text.length() && ('.' != text.at(p) || p + 1 == text.length()))
                 break;
 
             ++p;
@@ -283,6 +283,9 @@ VersionSpec::VersionSpec(const std::string & text) :
                     Log::get_instance()->message(ll_qa, lc_context) <<
                         "Number part '" << number_part << "' exceeds 8 digit limit";
 
+                /* Are we -r */
+                bool empty(number_part.empty());
+
                 number_part = strip_leading(number_part, "0");
                 if (number_part.empty())
                     number_part = "0";
@@ -292,6 +295,16 @@ VersionSpec::VersionSpec(const std::string & text) :
                     break;
                 if (text.at(p) != '.')
                     break;
+                else if (empty)
+                {
+                    /* we don't like -r. */
+                    break;
+                }
+                else if (! (p + 1 < text.length() && text.at(p + 1) >= '0' && text.at(p + 1) <= '9'))
+                {
+                    /* we don't like -rN.x where x is not a digit */
+                    break;
+                }
                 else
                     ++p;
             }
