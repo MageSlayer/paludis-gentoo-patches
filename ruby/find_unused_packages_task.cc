@@ -44,7 +44,7 @@ namespace
         {
             if (2 == argc)
             {
-                ptr = new FindUnusedPackagesTask(value_to_environment_data(argv[0])->env_ptr,
+                ptr = new FindUnusedPackagesTask(value_to_environment(argv[0]).get(),
                     value_to_repository(argv[1]).get());
             }
             else

@@ -804,7 +804,7 @@ namespace
         {
             if (2 == argc)
             {
-                ptr = new DepList(value_to_environment_data(argv[0])->env_ptr,
+                ptr = new DepList(value_to_environment(argv[0]).get(),
                         *value_to_dep_list_options(argv[1]));
             }
             else

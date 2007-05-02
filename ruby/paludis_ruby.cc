@@ -94,7 +94,7 @@ namespace
     {
         try
         {
-            Environment * env = value_to_environment_data(en)->env_ptr;
+            std::tr1::shared_ptr<Environment> env = value_to_environment(en);
             std::tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
             PackageDatabaseEntry target = value_to_package_database_entry(t);
             return match_package(*env, *spec, target) ? Qtrue : Qfalse;

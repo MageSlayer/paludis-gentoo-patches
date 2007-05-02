@@ -47,28 +47,6 @@ namespace paludis
     namespace ruby
     {
 
-        class EnvironmentData
-        {
-            private:
-                Environment * _e;
-                const std::tr1::shared_ptr<Environment> _ee;
-
-            public:
-                Environment * const env_ptr;
-
-                EnvironmentData(Environment * const ee, Environment * const free_e = 0,
-                        const std::tr1::shared_ptr<Environment> & free_sp_e = std::tr1::shared_ptr<Environment>()) :
-                    _e(free_e),
-                    _ee(free_sp_e),
-                    env_ptr(ee)
-                {
-                }
-
-                ~EnvironmentData()
-                {
-                    delete _e;
-                }
-        };
         /* general utilities */
 
         void exception_to_ruby_exception(const std::exception &) PALUDIS_ATTRIBUTE((noreturn));
@@ -101,8 +79,8 @@ namespace paludis
         std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
-        EnvironmentData* value_to_environment_data(VALUE v);
-        NoConfigEnvironment* value_to_no_config_environment(VALUE v);
+        std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
+        std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryPortageInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
@@ -114,7 +92,7 @@ namespace paludis
         qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
         qa::PerProfileEbuildCheckData value_to_per_profile_ebuild_check_data(VALUE v);
         qa::ProfileCheckData value_to_profile_check_data(VALUE v);
-        qa::QAEnvironment* value_to_qa_environment(VALUE v);
+        std::tr1::shared_ptr<qa::QAEnvironment> value_to_qa_environment(VALUE v);
         VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
         VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
         VALUE profile_check_data_to_value(const qa::ProfileCheckData &);

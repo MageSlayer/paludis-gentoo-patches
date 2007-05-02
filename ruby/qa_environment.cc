@@ -72,10 +72,9 @@ namespace
             {
                 rb_raise(rb_eArgError, "QAEnvironment expects one to three arguments, but got %d",argc);
             }
-            QAEnvironment * e = new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(write_cache),
-                    FSEntry(master_repository_dir));
-            EnvironmentData * ptr(new EnvironmentData(e,e));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
+            std::tr1::shared_ptr<QAEnvironment> * e = new std::tr1::shared_ptr<QAEnvironment>(new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(write_cache),
+                    FSEntry(master_repository_dir)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common< std::tr1::shared_ptr<QAEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -99,12 +98,14 @@ namespace
     }
 }
 
-QAEnvironment*
+std::tr1::shared_ptr<QAEnvironment>
 paludis::ruby::value_to_qa_environment(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_qa_environment))
     {
-        return static_cast<QAEnvironment *>(value_to_environment_data(v)->env_ptr);
+        std::tr1::shared_ptr<QAEnvironment> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<QAEnvironment>, v_ptr);
+        return *v_ptr;
     }
     else
     {
