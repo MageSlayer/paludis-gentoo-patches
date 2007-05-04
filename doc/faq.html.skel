@@ -243,11 +243,24 @@ reasons:</p>
 
 <h3 id="syncfromcvs">Sync from CVS</h3>
 
-<p>Syncing from CVS requires use of either the cvs+pserver or the cvs+ssh protocol.
+<p>Syncing from CVS requires use of either the <code>cvs+pserver</code> or the <code>cvs+ssh</code> protocol.
 The syntax for the configuration file line is
 <code>sync = cvs+ssh://username@host:/path/to/cvsroot:modulename</code>. As an example,
 for syncing with the <code>gentoo</code> repository via CVS, you would use
 <code>sync = cvs+ssh://username@cvs.gentoo.org:/var/cvsroot:gentoo-x86</code>.</p>
+
+<h3 id="syncfromsnapshot">Sync from a Gentoo tree snapshot</h3>
+
+<p>Syncing from a tarball requires the <code>tar+http</code>
+or <code>tar+ftp</code> protocol.  You must also
+specify <code>sync_options = --strip-components=1</code>, as the
+Gentoo snapshots place everything under a subdirectory
+named <code>portage</code>.  For example:</p>
+<pre>
+# Replace this with your favourite Gentoo mirror
+sync = tar+ftp://my.favourite.mirror/gentoo/snapshots/portage-latest.tar.bz2
+sync_options = --strip-components=1
+</pre>
 
 <h2 id="generaloperation">General Operation</h2>
 
