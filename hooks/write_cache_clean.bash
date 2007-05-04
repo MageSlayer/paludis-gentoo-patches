@@ -27,7 +27,7 @@ einfo_unhooked "Cleaning write cache for ebuild format repositories..."
 while read repo ; do
     wcloc=$(${PALUDIS_COMMAND} --configuration-variable ${repo} write_cache )
 
-    [[ $(readlink -f ${wcloc} ) == "/var/empty" ]] && continue
+    [[ $(canonicalise ${wcloc} ) == "/var/empty" ]] && continue
     wcloc="${wcloc}/${repo}"
 
     [[ $(echo "${wcloc}"/* ) != "${wcloc}/*" ]] || continue
