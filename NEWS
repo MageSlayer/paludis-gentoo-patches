@@ -4,6 +4,37 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.24.0:
+    * Ranged dependencies using foo/bar[>=1&<2] or foo/bar[=1|=2] are now
+    allowed. An asterisk can now be used for the category and / or package part
+    of a dependency specification in places where it makes sense. Use of '*' in
+    keywords.conf, use.conf, licenses.conf is deprecated in favour of '*/*'.
+
+    * PMS r163 compliant version specifications.
+
+    * Stricter in various places: ebuilds that attempt to use non-invariant
+    SLOTs will now be caught, version spec compliance is enforced, more profile
+    sanity checks.
+
+    * New Vim syntax highlighting scripts.
+
+    * New --dl-reinstall-targets option for paludis.
+
+    * Configuration and set files can now be dynamically generated using bash
+    scripts.
+
+    * New .hook format for hooks, allowing control over execution order.
+
+    * Better handling of dependency resolution when a virtual is provided by
+    multiple packages.
+
+    * --add-to-world-spec no longer requires 'XXXXXX'. If not present, mkstemp
+    will not be used to generate the filename.
+
+    * Symlinks are now permitted in Ebuild repositories as per PMS.
+
+    * Various Environment-related internals changes giving cleaner code.
+
 0.22.2:
     * Partial, highly experimental support for Portage format configuration
     files (paludis -E portage).
