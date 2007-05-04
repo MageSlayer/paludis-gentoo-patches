@@ -416,6 +416,8 @@ PALUDIS_CXXFLAGS=
 PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
 PALUDIS_CXXFLAGS_NO_WSHADOW=
+PALUDIS_CXXFLAGS_NO_WUNUSED=
+PALUDIS_CXXFLAGS_NO_WEXTRA=
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
 PALUDIS_CXXFLAGS_VISIBILITY=
 AC_MSG_CHECKING([whether our compiler is iccy])
@@ -464,6 +466,8 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wextra])
 	if ! test "x$cxxflag_success" = "xyes" ; then
 		CHECK_CXXFLAG([-W])
+	else
+		PALUDIS_CXXFLAGS_NO_WEXTRA=-Wno-extra
 	fi
 	CHECK_CXXFLAG([-Wold-style-cast])
 	if test "x$cxxflag_success" = "xyes" ; then
@@ -478,6 +482,10 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Woverloaded-virtual])
 	CHECK_CXXFLAG([-Winit-self])
 	CHECK_CXXFLAG([-Wunreachable-code])
+	CHECK_CXXFLAG([-Wunused])
+	if test "x$cxxflag_success" = "xyes" ; then
+		PALUDIS_CXXFLAGS_NO_WUNUSED=-Wno-unused
+	fi
 	CHECK_CXXFLAG([-Wunused-function])
 	CHECK_CXXFLAG([-Wshadow])
 	if test "x$cxxflag_success" = "xyes" ; then
@@ -494,6 +502,8 @@ AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
 
 dnl AC_MSG_CHECKING([whether to enable visibility])
 dnl AC_ARG_ENABLE([visibility],
@@ -681,6 +691,80 @@ if test "x$enable_ruby" = "xyes" ; then
 fi
 
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
+dnl }}}
+
+dnl {{{ python interface
+AC_ARG_VAR(PYTHON, path to python interpreter)
+AC_MSG_CHECKING([whether to build the python interface])
+AC_ARG_ENABLE([python],
+   AS_HELP_STRING([--enable-python], [Enable python interface (default: disable)]),
+   enable_python=$enableval,
+   enable_python=no)
+AC_MSG_RESULT($enable_python)
+
+if test "x$enable_python" = "xyes" ; then
+
+	AM_PATH_PYTHON([2.3])
+	if test "x$PYTHON" = "x" ; then
+		AC_MSG_ERROR([Python is required for --enable-python])
+	fi
+	AC_SUBST([PYTHON_INSTALL_DIR])
+
+	AC_MSG_CHECKING(for headers required to compile python extensions)
+	py_prefix=`$PYTHON -c "import sys; print sys.prefix"`
+	py_exec_prefix=`$PYTHON -c "import sys; print sys.exec_prefix"`
+	PYTHON_INCLUDE_DIR="${py_prefix}/include/python${PYTHON_VERSION}"
+	if test "$py_prefix" != "$py_exec_prefix"; then
+		PYTHON_INCLUDE_DIR="$PYTHON_INCLUDE_DIR -I${py_exec_prefix}/include/python${PYTHON_VERSION}"
+	fi
+	AC_MSG_RESULT([$PYTHON_INCLUDE_DIR])
+	AC_SUBST(PYTHON_INCLUDE_DIR)
+
+	dnl {{{ check for Python.h
+	AC_MSG_CHECKING([for Python.h])
+	save_CXXFLAGS="$CXXFLAGS"
+	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
+	AC_COMPILE_IFELSE([
+	#include <Python.h>
+	],
+		[AC_MSG_RESULT([yes])],
+		[AC_MSG_RESULT([no])
+		AC_MSG_ERROR([Python.h not found in $PYTHON_INCLUDE_DIR])])
+	dnl Restore the C++ flags
+	CXXFLAGS="$save_CXXFLAGS"
+	dnl }}}
+
+	AC_ARG_WITH([python-install-dir],
+		AS_HELP_STRING([--with-python-install-dir=dir], [Specify Python installation dir]),
+		PYTHON_INSTALL_DIR=`eval echo $withval`,
+		PYTHON_INSTALL_DIR=)
+	AC_MSG_CHECKING([for Python installation dir])
+	if test "x$PYTHON_INSTALL_DIR" = "x" ; then
+		PYTHON_INSTALL_DIR=$pyexecdir
+	fi
+	AC_MSG_RESULT([$PYTHON_INSTALL_DIR])
+
+	dnl {{{ we need boost.Python
+	AC_MSG_CHECKING([for boost.python])
+	save_CXXFLAGS="$CXXFLAGS"
+	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
+	AC_COMPILE_IFELSE([
+	#include <boost/python.hpp>
+	struct Foo {};
+	BOOST_PYTHON_MODULE(foo)
+	{
+		boost::python::class_<Foo> ("Foo");
+	}
+	],
+		[AC_MSG_RESULT([yes])],
+		[AC_MSG_RESULT([no])
+		AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required])])
+	dnl Restore the C++ flags
+	CXXFLAGS="$save_CXXFLAGS"
+	dnl }}}
+
+fi
+AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")
 dnl }}}
 
 dnl {{{ vim
@@ -947,6 +1031,7 @@ AC_OUTPUT(
 	paludis/syncers/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
+	python/Makefile
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile

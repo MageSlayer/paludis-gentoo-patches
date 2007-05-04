@@ -1,0 +1,195 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis_python.hh>
+
+#include <paludis/version_metadata.hh>
+
+using namespace paludis;
+using namespace paludis::python;
+namespace bp = boost::python;
+
+VersionMetadataEbuildInterface *
+get_ei(const VersionMetadata & self)
+{
+    return self.ebuild_interface;
+}
+
+void expose_version_metadata()
+{
+    bp::register_ptr_to_python<std::tr1::shared_ptr<const VersionMetadata> >();
+    bp::class_<VersionMetadata, boost::noncopyable>
+        vm("VersionMetadata",
+                "Version metadata.",
+                bp::no_init
+          );
+    vm.def_readonly("slot", &VersionMetadata::slot,
+            "[ro] SlotName"
+            );
+    vm.def_readonly("homepage", &VersionMetadata::homepage,
+            "[ro] string"
+            );
+    vm.def_readonly("description", &VersionMetadata::description,
+            "[ro] string"
+            );
+    vm.def_readonly("eapi", &VersionMetadata::eapi,
+            "[ro] string"
+            );
+    vm.def_readonly("ebuild_interface", &VersionMetadata::ebuild_interface,
+            "[ro] EbuildInterface"
+            );
+    vm.def_readonly("ebin_interface", &VersionMetadata::ebin_interface,
+            "[ro] EbinInterface"
+            );
+    vm.def_readonly("cran_interface", &VersionMetadata::cran_interface,
+            "[ro] CRANInterface"
+            );
+    vm.def_readonly("deps_interface", &VersionMetadata::deps_interface,
+            "[ro] DepsInterface"
+            );
+    vm.def_readonly("origins_interface", &VersionMetadata::origins_interface,
+            "[ro] OriginsInterface"
+            );
+    vm.def_readonly("virtual_interface", &VersionMetadata::virtual_interface,
+            "[ro] VirtualInterface"
+            );
+    vm.def_readonly("license_interface", &VersionMetadata::license_interface,
+            "[ro] LicenseInterface"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataEbuildInterface *>();
+    bp::class_<VersionMetadataEbuildInterface, boost::noncopyable>
+        ebuild_i("VersionMetadataEbuildInterface",
+                "Version metadata for ebuilds.",
+                bp::no_init
+                );
+    ebuild_i.def_readonly("provide_string", &VersionMetadataEbuildInterface::provide_string,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("src_uri_string", &VersionMetadataEbuildInterface::src_uri_string,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("restrict_string", &VersionMetadataEbuildInterface::restrict_string,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("keywords_string", &VersionMetadataEbuildInterface::keywords_string,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("eclass_keywords", &VersionMetadataEbuildInterface::eclass_keywords,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("iuse", &VersionMetadataEbuildInterface::iuse,
+            "[ro] string"
+            );
+    ebuild_i.def_readonly("inherited", &VersionMetadataEbuildInterface::inherited,
+            "[ro] string"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataEbinInterface *>();
+    bp::class_<VersionMetadataEbinInterface, boost::noncopyable>
+        ebin_i("VersionMetadataEbinInterface",
+                "Version metadata for Ebins.",
+                bp::no_init
+              );
+    ebin_i.def_readonly("bin_uri_string", &VersionMetadataEbinInterface::bin_uri_string,
+            "[ro] string"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataCRANInterface *>();
+    bp::class_<VersionMetadataCRANInterface, boost::noncopyable>
+        cran_i("VersionMetadataCRANInterface",
+                "Version metadata for CRAN packages.",
+                bp::no_init
+                );
+    cran_i.def_readonly("keywords", &VersionMetadataCRANInterface::keywords,
+            "[ro] string"
+            );
+    cran_i.def_readonly("package", &VersionMetadataCRANInterface::package,
+            "[ro] string"
+            );
+    cran_i.def_readonly("version", &VersionMetadataCRANInterface::version,
+            "[ro] string"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataDepsInterface *>();
+    bp::class_<VersionMetadataDepsInterface, boost::noncopyable>
+        deps_i("VersionMetadataDepsInterface",
+                "Dependency data for VersionMetadata.",
+                bp::no_init
+                );
+    deps_i.def_readonly("build_depend_string", &VersionMetadataDepsInterface::build_depend_string,
+            "[ro] string"
+            );
+    deps_i.def_readonly("run_depend_string", &VersionMetadataDepsInterface::run_depend_string,
+            "[ro] string"
+            );
+    deps_i.def_readonly("post_depend_string", &VersionMetadataDepsInterface::post_depend_string,
+            "[ro] string"
+            );
+    deps_i.def_readonly("suggested_depend_string", &VersionMetadataDepsInterface::suggested_depend_string,
+            "[ro] string"
+            );
+    deps_i.add_property("build_depend", &VersionMetadataDepsInterface::build_depend,
+            "[ro] DepSpec"
+            );
+    deps_i.add_property("run_depend", &VersionMetadataDepsInterface::run_depend,
+            "[ro] DepSpec"
+            );
+    deps_i.add_property("post_depend", &VersionMetadataDepsInterface::post_depend,
+            "[ro] DepSpec"
+            );
+    deps_i.add_property("suggested_depend", &VersionMetadataDepsInterface::suggested_depend,
+            "[ro] DepSpec"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataOriginsInterface *>();
+    bp::class_<VersionMetadataOriginsInterface, boost::noncopyable>
+        origins_i("VersionMetadataOriginsInterface",
+                "Origins data for VersionMetadata.",
+                bp::no_init
+                );
+    origins_i.add_property("source", bp::make_getter(&VersionMetadataOriginsInterface::source,
+                bp::return_value_policy<bp::return_by_value>()),
+            "[ro] PackageDatabaseEntry"
+            );
+    origins_i.add_property("binary", bp::make_getter(&VersionMetadataOriginsInterface::binary,
+                bp::return_value_policy<bp::return_by_value>()),
+            "[ro] PackageDatabaseEntry"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataVirtualInterface *>();
+    bp::class_<VersionMetadataVirtualInterface, boost::noncopyable>
+        virtual_i("VersionMetadataVirtualInterface",
+                "Version metadata for virtual packages.",
+                bp::no_init
+                );
+    virtual_i.def_readonly("virtual_for", &VersionMetadataVirtualInterface::virtual_for,
+            "[ro] PackageDatabaseEntry"
+            );
+
+    bp::register_ptr_to_python<VersionMetadataLicenseInterface *>();
+    bp::class_<VersionMetadataLicenseInterface, boost::noncopyable>
+        license_i("VersionMetadataLicenseInterface",
+                "License data for VersionMetadata.",
+                bp::no_init
+                );
+    license_i.def_readonly("license_string", &VersionMetadataLicenseInterface::license_string,
+            "[ro] string"
+            );
+}
