@@ -30,11 +30,10 @@ namespace
     struct ExtraText :
         ArgsVisitorTypes::ConstVisitor
     {
-        std::stringstream s;
-        ManFormat mf;
+        DocWriter & _dw;
 
-        ExtraText(ManFormat m) :
-            mf(m)
+        ExtraText(DocWriter & dw) :
+            _dw(dw)
         {
         }
 
@@ -63,49 +62,15 @@ namespace
             if (e->begin_allowed_args() == e->end_allowed_args())
                 return;
 
-            switch (mf)
-            {
-                case mf_man:
-                    break;
-
-                case mf_html:
-                    s << "<dl>" << endl;
-                    break;
-            }
+            _dw.start_extra_arg();
 
             for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
                     a != a_end ; ++a)
             {
-                std::string default_string;
-                if (a->first == e->default_arg())
-                    default_string = " (default)";
-
-                switch (mf)
-                {
-                    case mf_man:
-                        s << ".RS" << endl;
-                        s << ".TP" << endl;
-                        s << ".B \"" << a->first << "\"" << endl;
-                        s << a->second << default_string << endl;
-                        s << ".RE" << endl;
-                        break;
-
-                    case mf_html:
-                        s << "<dt>" << a->first << "</dt>" << endl;
-                        s << "<dd>" << a->second << default_string << "</dd>" << endl;
-                        break;
-                }
+                _dw.extra_arg_enum(a->first, a->second, e->default_arg());
             }
 
-            switch (mf)
-            {
-                case mf_man:
-                    break;
-
-                case mf_html:
-                    s << "</dl>" << endl;
-                    break;
-            }
+            _dw.end_extra_arg();
         }
 
         void visit(const StringSetArg * const e)
@@ -113,221 +78,331 @@ namespace
             if (e->begin_allowed_args() == e->end_allowed_args())
                 return;
 
-            switch (mf)
-            {
-                case mf_man:
-                    break;
-
-                case mf_html:
-                    s << "<dl>" << endl;
-                    break;
-            }
+            _dw.start_extra_arg();
 
             for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
                     a != a_end ; ++a)
             {
-                switch (mf)
-                {
-                    case mf_man:
-                        s << ".RS" << endl;
-                        s << ".TP" << endl;
-                        s << ".B \"" << a->first << "\"" << endl;
-                        s << a->second << endl;
-                        s << ".RE" << endl;
-                        break;
-
-                    case mf_html:
-                        s << "<dt>" << a->first << "</dt>" << endl;
-                        s << "<dd>" << a->second << "</dd>" << endl;
-                        break;
-                }
+                _dw.extra_arg_string_set(a->first, a->second);
             }
 
-            switch (mf)
-            {
-                case mf_man:
-                    break;
-
-                case mf_html:
-                    s << "</dl>" << endl;
-                    break;
-            }
+            _dw.end_extra_arg();
         }
     };
-
-    std::ostream &
-    operator<< (std::ostream & s, const ExtraText & t)
-    {
-        s << t.s.str();
-        return s;
-    }
 }
 
-void
-paludis::args::generate_man(std::ostream & f, const ArgsHandler * const h)
-{
-    generate_man(f, h, mf_man);
-}
 
 void
-paludis::args::generate_man(std::ostream & f, const ArgsHandler * const h,
-        const ManFormat mf)
+paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 {
-    switch (mf)
-    {
-        case mf_man:
-            f << ".TH \"" << h->app_name() << "\" " << h->man_section() << endl;
-            f << ".SH NAME" << endl;
-            f << h->app_name() << " \\- " << h->app_synopsis() << endl;
-            f << ".SH SYNOPSIS" << endl;
-            break;
-
-        case mf_html:
-            f << "<h1>" << h->app_name() << "(" << h->man_section() << ")" << "</h1>" << endl;
-            f << "<h2>Name</h2>" << endl;
-            f << "<p>" << h->app_name() << " - " << h->app_synopsis() << "</p>" << endl;
-            f << "<h2>Synopsis</h2>" << endl;
-            break;
-    }
+    dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
     for (ArgsHandler::UsageLineIterator u(h->begin_usage_lines()),
             u_end(h->end_usage_lines()) ; u != u_end ; ++u)
     {
-        switch (mf)
-        {
-            case mf_man:
-                f << ".B " << h->app_name() << " " << *u << endl << endl;
-                break;
-
-            case mf_html:
-                f << "<p>" << h->app_name() << " " << *u << "</p>" << endl;
-                break;
-        }
+        dw.usage_line(h->app_name(), *u);
     }
 
-    switch (mf)
-    {
-        case mf_man:
-            f << ".SH DESCRIPTION" << endl;
-            f << h->app_description() << endl;
-            f << ".SH OPTIONS" << endl;
-            break;
-
-        case mf_html:
-            f << "<h2>Description</h2>" << endl;
-            f << "<p>" << h->app_description() << "</p>" << endl;
-            f << "<h2>Options</h2>" << endl;
-            break;
-    }
+    dw.start_description(h->app_description());
 
     for (ArgsHandler::ArgsGroupsIterator a(h->begin_args_groups()),
             a_end(h->end_args_groups()) ; a != a_end ; ++a)
     {
-        switch (mf)
-        {
-            case mf_man:
-                f << ".SS \"" << (*a)->name() << "\"" << endl;
-                f << (*a)->description() << endl;
-                break;
-
-            case mf_html:
-                f << "<h3>" << (*a)->name() << "</h3>" << endl;
-                f << "<p>" << (*a)->description() << "</p>" << endl;
-                f << "<dl>";
-                break;
-        }
+        dw.start_arg_group((*a)->name(), (*a)->description());
 
         for (paludis::args::ArgsGroup::Iterator b((*a)->begin()), b_end((*a)->end()) ;
                 b != b_end ; ++b)
         {
-            switch (mf)
-            {
-                case mf_man:
-                    f << ".TP" << endl;
-                    f << ".B \"";
-                    if ((*b)->short_name())
-                        f << "\\-" << (*b)->short_name() << " , ";
-                    f << "\\-\\-" << (*b)->long_name() << "\"" << endl;
-                    f << (*b)->description() << endl;
-                    break;
+            dw.arg_group_item((*b)->short_name(), (*b)->long_name(), (*b)->description());
 
-                case mf_html:
-                    f << "<dt>";
-                    if ((*b)->short_name())
-                        f << "-" << (*b)->short_name() << ", ";
-                    f << "--" << (*b)->long_name() << "</dt>" << endl;
-                    f << "<dd>" << (*b)->description() << endl;
-
-                    break;
-            }
-
-            ExtraText t(mf);
+            ExtraText t(dw);
             (*b)->accept(&t);
-            f << t;
 
-            switch (mf)
-            {
-                case mf_man:
-                    break;
-
-                case mf_html:
-                    f << "</dd>" << endl;
-                    break;
-            }
+            dw.end_arg_group();
         }
 
-        switch (mf)
-        {
-            case mf_man:
-                break;
-
-            case mf_html:
-                f << "</dl>";
-                break;
-        }
+        dw.end_description();
     }
 
     if (h->begin_environment_lines() != h->end_environment_lines())
     {
-        switch (mf)
-        {
-            case mf_man:
-                f << ".SH ENVIRONMENT" << endl;
-                break;
-
-            case mf_html:
-                f << "<h2>Environment</h2>" << endl;
-                f << "<dl>" << endl;
-                break;
-        }
+        dw.start_environment();
 
         for (ArgsHandler::EnvironmentLineIterator a(h->begin_environment_lines()),
                 a_end(h->end_environment_lines()) ; a != a_end ; ++a)
         {
-            switch (mf)
-            {
-                case mf_man:
-                    f << ".TP" << endl;
-                    f << ".B \"" << a->first << "\"" << endl;
-                    f << a->second << endl;
-                    break;
-
-                case mf_html:
-                    f << "<dt>" << a->first << "</dt>" << endl;
-                    f << "<dd>" << a->second << "</dd>" << endl;
-                    break;
-            }
+            dw.environment_line(a->first, a->second);
         }
 
-        switch (mf)
-        {
-            case mf_man:
-                break;
-
-            case mf_html:
-                f << "</dl>" << endl;
-                break;
-        }
+        dw.end_environment();
     }
+}
+
+DocWriter::~DocWriter()
+{
+}
+
+HtmlWriter::HtmlWriter(std::ostream & os) :
+    _os(os)
+{
+}
+
+HtmlWriter::~HtmlWriter()
+{
+}
+
+void
+HtmlWriter::heading(const std::string & name, const std::string & section_, const std::string & synopsis)
+{
+    _os << "<h1>" << name << "(" << section_ << ")" << "</h1>" << endl;
+    _os << "<h2>Name</h2>" << endl;
+    _os << "<p>" << name << " - " << synopsis << "</p>" << endl;
+    _os << "<h2>Synopsis</h2>" << endl;
+}
+
+void
+HtmlWriter::usage_line(const std::string & name, const std::string & line)
+{
+    _os << "<p>" << name << " " << line << "</p>" << endl;
+}
+
+void
+HtmlWriter::start_description(const std::string & description)
+{
+    _os << "<h2>Description</h2>" << endl;
+    _os << "<p>" << description << "</p>" << endl;
+    _os << "<h2>Options</h2>" << endl;
+}
+
+void
+HtmlWriter::start_arg_group(const std::string & name, const std::string & description)
+{
+    _os << "<h3>" << name << "</h3>" << endl;
+    _os << "<p>" << description << "</p>" << endl;
+    _os << "<dl>";
+}
+
+void
+HtmlWriter::arg_group_item(const char & short_name, const std::string & long_name,
+        const std::string & description)
+{
+    _os << "<dt>";
+    if (short_name)
+        _os << "-" << short_name << ", ";
+    _os << "--" << long_name << "</dt>" << endl;
+    _os << "<dd>" << description << endl;
+}
+
+void
+HtmlWriter::start_extra_arg()
+{
+    _os << "<dl>" << endl;
+}
+
+void
+HtmlWriter::extra_arg_enum(const std::string & first, const std::string & second, const std::string & default_arg)
+{
+    std::string default_string;
+    if (first == default_arg)
+        default_string = " (default)";
+
+    _os << "<dt>" << first << "</dt>" << endl;
+    _os << "<dd>" << second << default_string << "</dd>" << endl;
+}
+
+void
+HtmlWriter::extra_arg_string_set(const std::string & first, const std::string & second)
+{
+    _os << "<dt>" << first << "</dt>" << endl;
+    _os << "<dd>" << second << "</dd>" << endl;
+}
+
+void
+HtmlWriter::end_extra_arg()
+{
+    _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::end_arg_group()
+{
+    _os << "</dd>" << endl;
+}
+
+void
+HtmlWriter::end_description()
+{
+    _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::start_environment()
+{
+    _os << "<h2>Environment</h2>" << endl;
+    _os << "<dl>" << endl;
+}
+
+void
+HtmlWriter::environment_line(const std::string & first, const std::string & second)
+{
+    _os << "<dt>" << first << "</dt>" << endl;
+    _os << "<dd>" << second << "</dd>" << endl;
+}
+
+void
+HtmlWriter::end_environment()
+{
+    _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::section(const std::string & title)
+{
+    _os << "<h2>" << title << "</h2>" << endl;
+}
+
+void
+HtmlWriter::subsection(const std::string & title)
+{
+    _os << "<h3>" << title << "</h3>" << endl;
+}
+
+void
+HtmlWriter::paragraph(const std::string & text)
+{
+    _os << "<p>" << text << "</p>" << endl;
+}
+
+
+ManWriter::ManWriter(std::ostream & os) :
+    _os(os)
+{
+}
+
+ManWriter::~ManWriter()
+{
+}
+
+void
+ManWriter::heading(const std::string & name, const std::string & section_, const std::string & synopsis)
+{
+    _os << ".TH \"" << name << "\" " << section_ << endl;
+    _os << ".SH NAME" << endl;
+    _os << name << " \\- " << synopsis << endl;
+    _os << ".SH SYNOPSIS" << endl;
+}
+
+void
+ManWriter::usage_line(const std::string & name, const std::string & line)
+{
+    _os << ".B " << name << " " << line << endl << endl;
+}
+
+void
+ManWriter::start_description(const std::string & description)
+{
+    _os << ".SH DESCRIPTION" << endl;
+    _os << description << endl;
+    _os << ".SH OPTIONS" << endl;
+}
+
+void
+ManWriter::start_arg_group(const std::string & name, const std::string & description)
+{
+    _os << ".SS \"" << name << "\"" << endl;
+    _os << description << endl;
+}
+
+void
+ManWriter::arg_group_item(const char & short_name, const std::string & long_name,
+        const std::string & description)
+{
+    _os << ".TP" << endl;
+    _os << ".B \"";
+    if (short_name)
+        _os << "\\-" << short_name << " , ";
+    _os << "\\-\\-" << long_name << "\"" << endl;
+    _os << description << endl;
+}
+
+void
+ManWriter::start_extra_arg()
+{
+}
+
+void
+ManWriter::extra_arg_enum(const std::string & first, const std::string & second, const std::string & default_arg)
+{
+    std::string default_string;
+    if (first == default_arg)
+        default_string = " (default)";
+
+    _os << ".RS" << endl;
+    _os << ".TP" << endl;
+    _os << ".B \"" << first << "\"" << endl;
+    _os << second << default_string << endl;
+    _os << ".RE" << endl;
+}
+
+void
+ManWriter::extra_arg_string_set(const std::string & first, const std::string & second)
+{
+    _os << ".RS" << endl;
+    _os << ".TP" << endl;
+    _os << ".B \"" << first << "\"" << endl;
+    _os << second << endl;
+    _os << ".RE" << endl;
+}
+
+void
+ManWriter::end_extra_arg()
+{
+}
+
+void
+ManWriter::end_arg_group()
+{
+}
+
+void
+ManWriter::end_description()
+{
+}
+
+void
+ManWriter::start_environment()
+{
+    _os << ".SH ENVIRONMENT" << endl;
+}
+
+void
+ManWriter::environment_line(const std::string & first, const std::string & second)
+{
+    _os << ".TP" << endl;
+    _os << ".B \"" << first << "\"" << endl;
+    _os << second << endl;
+}
+
+void
+ManWriter::end_environment()
+{
+}
+
+void
+ManWriter::section(const std::string & title)
+{
+    _os << ".SH " << title << endl;
+}
+
+void
+ManWriter::subsection(const std::string & title)
+{
+    _os << ".SS \"" << title << "\"" << endl;
+}
+
+void
+ManWriter::paragraph(const std::string & text)
+{
+    _os <<  text << endl;
 }
 

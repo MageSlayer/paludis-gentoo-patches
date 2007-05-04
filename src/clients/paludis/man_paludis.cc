@@ -63,10 +63,16 @@ main(int argc, char * argv[])
     ManCommandLine cmdline;
     cmdline.run(argc, argv, "", "", "");
 
-    paludis::args::generate_man(cout, CommandLine::get_instance(),
-            cmdline.a_html.specified() ? paludis::args::mf_html : paludis::args::mf_man);
+    if (cmdline.a_html.specified())
+    {
+        paludis::args::HtmlWriter hw(cout);
+        paludis::args::generate_doc(hw, CommandLine::get_instance());
+    }
+    else
+    {
+        paludis::args::ManWriter mw(cout);
+        paludis::args::generate_doc(mw, CommandLine::get_instance());
+    }
+
     return EXIT_SUCCESS;
 }
-
-
-
