@@ -45,6 +45,108 @@ struct RepositoryWrapper :
     {
         return Repository::info(verbose);
     }
+
+    static RepositoryInstallableInterface *
+    get_installable_interface(const Repository & self)
+    {
+        return self.installable_interface;
+    }
+
+    static RepositoryInstalledInterface *
+    get_installed_interface(const Repository & self)
+    {
+        return self.installed_interface;
+    }
+
+    static RepositoryMaskInterface *
+    get_mask_interface(const Repository & self)
+    {
+        return self.mask_interface;
+    }
+
+    static RepositorySetsInterface *
+    get_sets_interface(const Repository & self)
+    {
+        return self.sets_interface;
+    }
+
+    static RepositorySyncableInterface *
+    get_syncable_interface(const Repository & self)
+    {
+        return self.syncable_interface;
+    }
+
+    static RepositoryUninstallableInterface *
+    get_uninstallable_interface(const Repository & self)
+    {
+        return self.uninstallable_interface;
+    }
+
+    static RepositoryUseInterface *
+    get_use_interface(const Repository & self)
+    {
+        return self.use_interface;
+    }
+
+    static RepositoryWorldInterface *
+    get_world_interface(const Repository & self)
+    {
+        return self.world_interface;
+    }
+
+    static RepositoryMirrorsInterface *
+    get_mirrors_interface(const Repository & self)
+    {
+        return self.mirrors_interface;
+    }
+
+    static RepositoryEnvironmentVariableInterface *
+    get_environment_variable_interface(const Repository & self)
+    {
+        return self.environment_variable_interface;
+    }
+
+    static RepositoryProvidesInterface *
+    get_provides_interface(const Repository & self)
+    {
+        return self.provides_interface;
+    }
+
+    static RepositoryVirtualsInterface *
+    get_virtuals_interface(const Repository & self)
+    {
+        return self.virtuals_interface;
+    }
+
+    static RepositoryDestinationInterface *
+    get_destination_interface(const Repository & self)
+    {
+        return self.destination_interface;
+    }
+
+    static RepositoryContentsInterface *
+    get_contents_interface(const Repository & self)
+    {
+        return self.contents_interface;
+    }
+
+    static RepositoryConfigInterface *
+    get_config_interface(const Repository & self)
+    {
+        return self.config_interface;
+    }
+
+    static RepositoryLicensesInterface *
+    get_licenses_interface(const Repository & self)
+    {
+        return self.licenses_interface;
+    }
+
+    static RepositoryPortageInterface *
+    get_portage_interface(const Repository & self)
+    {
+        return self.portage_interface;
+    }
 };
 
 struct RepositoryInstalledInterfaceWrapper :
@@ -194,55 +296,72 @@ void expose_repository()
             "version_metadata(QualifiedPackageName, VersionSpec) -> VersionMetadata\n"
             "Fetch metadata."
          );
-    r.def_readonly("mask_interface", &Repository::mask_interface,
+    r.add_property("mask_interface", bp::make_function(&RepositoryWrapper::get_mask_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryMaskInterface"
             );
-    r.def_readonly("use_interface", &Repository::use_interface,
+    r.add_property("use_interface", bp::make_function(&RepositoryWrapper::get_use_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryUseInterface"
             );
-    r.def_readonly("installed_interface", &Repository::installed_interface,
+    r.add_property("installed_interface", bp::make_function(&RepositoryWrapper::get_installed_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryInstalledInterface"
             );
-    r.def_readonly("installable_interface", &Repository::installable_interface,
+    r.add_property("installable_interface", bp::make_function(&RepositoryWrapper::get_installable_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryInstallableInterface"
             );
-    r.def_readonly("uninstallable_interface", &Repository::uninstallable_interface,
+    r.add_property("uninstallable_interface", bp::make_function(&RepositoryWrapper::get_uninstallable_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryUninstallableInterface"
             );
-    r.def_readonly("sets_interface", &Repository::sets_interface,
+    r.add_property("sets_interface", bp::make_function(&RepositoryWrapper::get_sets_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositorySetsInterface"
             );
-    r.def_readonly("syncable_interface", &Repository::syncable_interface,
+    r.add_property("syncable_interface", bp::make_function(&RepositoryWrapper::get_syncable_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositorySyncableInterface"
             );
-    r.def_readonly("world_interface", &Repository::world_interface,
+    r.add_property("world_interface", bp::make_function(&RepositoryWrapper::get_world_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryWorldInterface"
             );
-    r.def_readonly("environment_variable_interface", &Repository::environment_variable_interface,
+    r.add_property("environment_variable_interface", bp::make_function(&RepositoryWrapper::get_environment_variable_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryEnvironmentInterface"
             );
-    r.def_readonly("mirrors_interface", &Repository::mirrors_interface,
+    r.add_property("mirrors_interface", bp::make_function(&RepositoryWrapper::get_mirrors_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryMirrorsInterface"
             );
-    r.def_readonly("virtuals_interface", &Repository::virtuals_interface,
+    r.add_property("virtuals_interface", bp::make_function(&RepositoryWrapper::get_virtuals_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryVirtualsInterface"
             );
-    r.def_readonly("provides_interface", &Repository::provides_interface,
+    r.add_property("provides_interface", bp::make_function(&RepositoryWrapper::get_provides_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryProvidesInterface"
             );
-    r.def_readonly("destination_interface", &Repository::destination_interface,
+    r.add_property("destination_interface", bp::make_function(&RepositoryWrapper::get_destination_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryDestinationInterface"
             );
-    r.def_readonly("contents_interface", &Repository::contents_interface,
+    r.add_property("contents_interface", bp::make_function(&RepositoryWrapper::get_contents_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryContentsInterface"
             );
-    r.def_readonly("config_interface", &Repository::config_interface,
+    r.add_property("config_interface", bp::make_function(&RepositoryWrapper::get_config_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryConfigInterface"
             );
-    r.def_readonly("licenses_interface", &Repository::licenses_interface,
+    r.add_property("licenses_interface", bp::make_function(&RepositoryWrapper::get_licenses_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryLicensesInterface"
             );
-    r.def_readonly("portage_interface", &Repository::portage_interface,
+    r.add_property("portage_interface", bp::make_function(&RepositoryWrapper::get_portage_interface,
+            bp::return_internal_reference<>()),
             "[ro] RepositoryPortageInterface"
             );
 

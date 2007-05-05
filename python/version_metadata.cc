@@ -25,11 +25,50 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-VersionMetadataEbuildInterface *
-get_ei(const VersionMetadata & self)
+struct VersionMetadataWrapper
 {
-    return self.ebuild_interface;
-}
+    static VersionMetadataEbuildInterface *
+    get_ebuild_interface(const VersionMetadata & self)
+    {
+        return self.ebuild_interface;
+    }
+
+    static VersionMetadataEbinInterface *
+    get_ebin_interface(const VersionMetadata & self)
+    {
+        return self.ebin_interface;
+    }
+
+    static VersionMetadataCRANInterface *
+    get_cran_interface(const VersionMetadata & self)
+    {
+        return self.cran_interface;
+    }
+
+    static VersionMetadataDepsInterface *
+    get_deps_interface(const VersionMetadata & self)
+    {
+        return self.deps_interface;
+    }
+
+    static VersionMetadataOriginsInterface *
+    get_origins_interface(const VersionMetadata & self)
+    {
+        return self.origins_interface;
+    }
+
+    static VersionMetadataVirtualInterface *
+    get_virtual_interface(const VersionMetadata & self)
+    {
+        return self.virtual_interface;
+    }
+
+    static VersionMetadataLicenseInterface *
+    get_license_interface(const VersionMetadata & self)
+    {
+        return self.license_interface;
+    }
+};
 
 void expose_version_metadata()
 {
@@ -51,25 +90,32 @@ void expose_version_metadata()
     vm.def_readonly("eapi", &VersionMetadata::eapi,
             "[ro] string"
             );
-    vm.def_readonly("ebuild_interface", &VersionMetadata::ebuild_interface,
+    vm.add_property("ebuild_interface", bp::make_function(&VersionMetadataWrapper::get_ebuild_interface,
+            bp::return_internal_reference<>()),
             "[ro] EbuildInterface"
             );
-    vm.def_readonly("ebin_interface", &VersionMetadata::ebin_interface,
+    vm.add_property("ebin_interface", bp::make_function(&VersionMetadataWrapper::get_ebin_interface,
+            bp::return_internal_reference<>()),
             "[ro] EbinInterface"
             );
-    vm.def_readonly("cran_interface", &VersionMetadata::cran_interface,
+    vm.add_property("cran_interface", bp::make_function(&VersionMetadataWrapper::get_cran_interface,
+            bp::return_internal_reference<>()),
             "[ro] CRANInterface"
             );
-    vm.def_readonly("deps_interface", &VersionMetadata::deps_interface,
+    vm.add_property("deps_interface", bp::make_function(&VersionMetadataWrapper::get_deps_interface,
+            bp::return_internal_reference<>()),
             "[ro] DepsInterface"
             );
-    vm.def_readonly("origins_interface", &VersionMetadata::origins_interface,
+    vm.add_property("origins_interface", bp::make_function(&VersionMetadataWrapper::get_origins_interface,
+            bp::return_internal_reference<>()),
             "[ro] OriginsInterface"
             );
-    vm.def_readonly("virtual_interface", &VersionMetadata::virtual_interface,
+    vm.add_property("virtual_interface", bp::make_function(&VersionMetadataWrapper::get_virtual_interface,
+            bp::return_internal_reference<>()),
             "[ro] VirtualInterface"
             );
-    vm.def_readonly("license_interface", &VersionMetadata::license_interface,
+    vm.add_property("license_interface", bp::make_function(&VersionMetadataWrapper::get_license_interface,
+            bp::return_internal_reference<>()),
             "[ro] LicenseInterface"
             );
 
