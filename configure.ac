@@ -763,6 +763,33 @@ if test "x$enable_python" = "xyes" ; then
 	CXXFLAGS="$save_CXXFLAGS"
 	dnl }}}
 
+	dnl {{{ check whether we need -lboost_python or -lboost_python-mt
+	AC_MSG_CHECKING([for boost.python library name])
+	save_CXXFLAGS="$CXXFLAGS"
+	save_LIBS="$LIBS"
+	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
+	LIBS="$LIBS -lboost_python -lpython$PYTHON_VERSION"
+	AC_LINK_IFELSE([
+#include <boost/python.hpp>
+int main() { boost::python::throw_error_already_set(); return 0; }
+],
+		[BOOST_PYTHON_LIB="-lboost_python"
+		AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
+		[LIBS="$save_LIBS -lboost_python-mt -lpython$PYTHON_VERSION"
+		AC_LINK_IFELSE([
+#include <boost/python.hpp>
+int main() { boost::python::throw_error_already_set(); return 0; }
+],
+			[BOOST_PYTHON_LIB="-lboost_python-mt"
+			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
+			[AC_MSG_RESULT([not found])
+			AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required])])])
+	AC_SUBST(BOOST_PYTHON_LIB)
+	dnl Restore the C++ flags
+	LIBS="$save_LIBS"
+	CXXFLAGS="$save_CXXFLAGS"
+	dnl }}}
+
 fi
 AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")
 dnl }}}

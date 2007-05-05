@@ -85,6 +85,7 @@ if ENABLE_PYTHON
 lib_LTLIBRARIES = libpaludispython.la
 
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
+libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
 
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -135,7 +136,7 @@ pythonlib_DATA = paludis.so
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
-	    -I@PYTHON_INCLUDE_DIR@ -lboost_python \
+	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@ \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
@@ -144,7 +145,7 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
-	    -I@PYTHON_INCLUDE_DIR@ -lboost_python \
+	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@ \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
