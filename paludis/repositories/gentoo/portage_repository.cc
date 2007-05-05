@@ -1266,7 +1266,9 @@ PortageRepository::perform_hook(const Hook & hook) const
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
 
-    if (hook.name() == "sync_all_post")
+    if (hook.name() == "sync_all_post"
+            || hook.name() == "install_all_post"
+            || hook.name() == "uninstall_all_post")
         update_news();
 
     return 0;
