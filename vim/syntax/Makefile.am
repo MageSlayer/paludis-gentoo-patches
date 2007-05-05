@@ -2,11 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
 SUBDIRS =
 
-if HAVE_VIM
-
-vimsyntaxdir = $(VIM_INSTALL_DIR)/syntax/
-
-vimsyntax_DATA = \
+vimscripts = \
 	paludis-environment-conf.vim \
 	paludis-keywords-conf.vim \
 	paludis-licenses-conf.vim \
@@ -15,9 +11,16 @@ vimsyntax_DATA = \
 	paludis-repositories-conf.vim \
 	paludis-use-conf.vim
 
+if HAVE_VIM
+
+vimsyntaxdir = $(VIM_INSTALL_DIR)/syntax/
+
+vimsyntax_DATA = $(vimscripts)
+
 endif
 
-EXTRA_DIST = $(vimsyntax_DATA)
+EXTRA_DIST = $(vimscripts)
+
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
