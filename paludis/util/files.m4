@@ -10,7 +10,7 @@ dnl on this file at present...
 
 add(`attributes',                        `hh')
 add(`collection',                        `hh', `fwd')
-add(`collection_concrete',               `hhx')
+add(`collection_concrete',               `hh')
 add(`compare',                           `hh')
 add(`comparison_policy',                 `hh')
 add(`destringify',                       `hh', `cc', `test')
