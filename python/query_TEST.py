@@ -31,6 +31,9 @@ class TestCase_Queries(unittest.TestCase):
         self.queries.append(Query.NotMasked())
         self.queries.append(Query.Package("foo/bar"))
         self.queries.append(Query.Matches(PackageDepSpec(">=foo/bar-1", PackageDepSpecParseMode.PERMISSIVE)))
+        self.queries.append(Query.All())
+        self.queries.append(Query.Category("cat-foo"))
+        self.queries.append(Query.Repository("foo_repo"))
 
     def test_2_create_error(self):
         self.assertRaises(Exception, Query)
