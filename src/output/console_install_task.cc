@@ -137,6 +137,14 @@ ConsoleInstallTask::on_clean_post(const DepListEntry &,
 }
 
 void
+ConsoleInstallTask::on_clean_fail(const DepListEntry &,
+        const PackageDatabaseEntry & c)
+{
+    output_xterm_title("(" + stringify(count<current_count>()) + " of "
+            + stringify(count<max_count>()) + ") Failed cleaning " + stringify(c));
+}
+
+void
 ConsoleInstallTask::on_clean_all_post(const DepListEntry &,
         const PackageDatabaseEntryCollection &)
 {
@@ -301,8 +309,16 @@ ConsoleInstallTask::on_install_post(const DepListEntry &)
 }
 
 void
+ConsoleInstallTask::on_install_fail(const DepListEntry & d)
+{
+    output_xterm_title("(" + stringify(count<current_count>()) + "of "
+            + stringify(count<max_count>()) + ") Failed install of " + stringify(d.package));
+}
+
+void
 ConsoleInstallTask::on_install_all_post()
 {
+    output_xterm_title("Completed install");
 }
 
 void

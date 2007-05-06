@@ -290,6 +290,7 @@ InstallTask::execute()
         }
         catch (const PackageInstallActionError & e)
         {
+            on_install_fail(*dep);
             int PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
             throw;
         }
@@ -387,6 +388,7 @@ InstallTask::execute()
                 }
                 catch (const PackageUninstallActionError & e)
                 {
+                    on_clean_fail(*dep, *c);
                     int PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")("TARGET", stringify(*c))("MESSAGE", e.message())));
                     throw;
                 }

@@ -108,6 +108,7 @@ namespace paludis
             virtual void on_install_all_pre() = 0;
             virtual void on_install_pre(const DepListEntry &) = 0;
             virtual void on_install_post(const DepListEntry &) = 0;
+            virtual void on_install_fail(const DepListEntry &) = 0;
             virtual void on_install_all_post() = 0;
 
             virtual void on_no_clean_needed(const DepListEntry &) = 0;
@@ -116,6 +117,8 @@ namespace paludis
             virtual void on_clean_pre(const DepListEntry &,
                     const PackageDatabaseEntry &) = 0;
             virtual void on_clean_post(const DepListEntry &,
+                    const PackageDatabaseEntry &) = 0;
+            virtual void on_clean_fail(const DepListEntry &,
                     const PackageDatabaseEntry &) = 0;
             virtual void on_clean_all_post(const DepListEntry &,
                     const PackageDatabaseEntryCollection &) = 0;
