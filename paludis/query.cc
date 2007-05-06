@@ -194,6 +194,18 @@ query::Package::Package(const QualifiedPackageName & a) :
 {
 }
 
+query::Repository::Repository(const RepositoryName & a) :
+    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        std::tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        std::tr1::shared_ptr<SlotName>(),
+                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(a))))))
+{
+}
+
 namespace
 {
     struct NotMaskedDelegate :
@@ -410,5 +422,22 @@ Query
 paludis::operator& (const Query & q1, const Query & q2)
 {
     return Query(std::tr1::shared_ptr<QueryDelegate>(new AndQueryDelegate(q1._d, q2._d)));
+}
+
+namespace
+{
+    struct AllDelegate :
+        QueryDelegate
+    {
+        AllDelegate()
+        {
+        }
+    };
+}
+
+query::All::All() :
+    Query(std::tr1::shared_ptr<QueryDelegate>(
+                new AllDelegate))
+{
 }
 

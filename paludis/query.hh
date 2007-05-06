@@ -208,6 +208,26 @@ namespace paludis
         };
 
         /**
+         * Fetch packages in a given repository.
+         *
+         * \see Query
+         * \see PackageData
+         * \ingroup grpquerybase::query
+         * \nosubgrouping
+         */
+        class Repository :
+            public Query
+        {
+            public:
+                ///\name Basic operations
+                ///\{
+
+                Repository(const RepositoryName &);
+
+                ///\}
+        };
+
+        /**
          * Fetch packages that are not masked.
          *
          * \see Query
@@ -306,6 +326,26 @@ namespace paludis
                 ///\{
 
                 InstalledAtRoot(const FSEntry &);
+
+                ///}
+        };
+
+        /**
+         * Fetch all packages.
+         *
+         * \see Query
+         * \see PackageDatabase::query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
+        class All :
+            public Query
+        {
+            public:
+                ///\name Basic operations
+                ///\{
+
+                All();
 
                 ///}
         };
