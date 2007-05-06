@@ -206,6 +206,13 @@ query::Repository::Repository(const RepositoryName & a) :
 {
 }
 
+query::Category::Category(const CategoryNamePart & a) :
+    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(),
+                        std::tr1::shared_ptr<CategoryNamePart>(new CategoryNamePart(a))))))
+{
+}
+
 namespace
 {
     struct NotMaskedDelegate :

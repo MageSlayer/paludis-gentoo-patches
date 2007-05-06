@@ -228,6 +228,26 @@ namespace paludis
         };
 
         /**
+         * Fetch packages in a given category.
+         *
+         * \see Query
+         * \see PackageData
+         * \ingroup grpquerybase::query
+         * \nosubgrouping
+         */
+        class Category :
+            public Query
+        {
+            public:
+                ///\name Basic operations
+                ///\{
+
+                Category(const CategoryNamePart &);
+
+                ///\}
+        };
+
+        /**
          * Fetch packages that are not masked.
          *
          * \see Query
