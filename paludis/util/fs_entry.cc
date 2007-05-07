@@ -378,7 +378,10 @@ FSEntry::realpath() const
         throw FSError("Could not resolve path '" + _path + "'");
     if (! ::realpath(_path.c_str(), r))
         throw FSError("Could not resolve path '" + _path + "'");
-    return FSEntry(r);
+    FSEntry result(r);
+    if (! result.exists())
+        throw FSError("Could not resolve path '" + _path + "'");
+    return result;
 #endif
 }
 
@@ -401,7 +404,10 @@ FSEntry::realpath_if_exists() const
         return *this;
     if (! ::realpath(_path.c_str(), r))
         return *this;
-    return FSEntry(r);
+    FSEntry result(r);
+    if (! result.exists())
+        return *this;
+    return result;
 #endif
 }
 
