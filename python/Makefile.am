@@ -57,6 +57,7 @@ IF_PYTHON_QA_SOURCES =
 
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
+	paludis_python.hh \
 	paludis_python_so.cc
 
 TESTS_ENVIRONMENT = env \
