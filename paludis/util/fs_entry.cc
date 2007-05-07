@@ -484,12 +484,12 @@ FSEntry::mkdir(mode_t mode)
 bool
 FSEntry::unlink()
 {
-#ifdef HAVE_CHFLAGS
-    if (0 != ::chflags(_path.c_str(), 0))
+#ifdef HAVE_LCHFLAGS
+    if (0 != ::lchflags(_path.c_str(), 0))
     {
         int e(errno);
         if (e != ENOENT)
-            throw FSError("chflags for unlink '" + _path + "' failed: " + ::strerror(e));
+            throw FSError("lchflags for unlink '" + _path + "' failed: " + ::strerror(e));
     }
 #endif
 

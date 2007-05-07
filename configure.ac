@@ -393,9 +393,9 @@ AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
 dnl }}}
 
-dnl {{{ check for chflags function
-AC_CHECK_FUNCS([chflags])
-AM_CONDITIONAL(HAVE_CHFLAGS, test x$ac_cv_func_chflags = xyes)
+dnl {{{ check for lchflags function
+AC_CHECK_FUNCS([lchflags])
+AM_CONDITIONAL(HAVE_LCHFLAGS, test x$ac_cv_func_lchflags = xyes)
 dnl }}}
 
 dnl {{{ check for canonicalize_file_name function
