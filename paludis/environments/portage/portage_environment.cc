@@ -417,6 +417,18 @@ PortageEnvironment::~PortageEnvironment()
 bool
 PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
+    Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
+            "' in Portage environment:");
+
+    static bool recursive(false);
+    if (recursive)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "use flag state is defined recursively, forcing it to disabled instead";
+        return false;
+    }
+    Save<bool> save_recursive(&recursive, true);
+
     /* first check package database use masks... */
     std::tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
 

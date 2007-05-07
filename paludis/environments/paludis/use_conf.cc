@@ -123,6 +123,14 @@ UseConf::add(const FSEntry & filename)
         else
         {
             std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+
+            if (d->use_requirements_ptr())
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Dependency specification '" << stringify(*d)
+                    << "' includes use requirements, which cannot be used in use.conf";
+                continue;
+            }
+
             if (d->package_ptr())
             {
                 Qualified::iterator ii(_imp->qualified.insert(std::make_pair(*d->package_ptr(), PDSWithUseInfoList())).first);
