@@ -31,7 +31,7 @@ while read repo ; do
     wcloc="${wcloc}/${repo}"
 
     [[ $(echo "${wcloc}"/* ) != "${wcloc}/*" ]] || continue
-    echo rm -fr "${wcloc}/*" 1>&2
+    echo rm -fr "${wcloc}/*"
     rm -fr "${wcloc}"/* || eerror "Couldn't clear cache for ${repo} at ${wcloc}"
 
 done < <(${PALUDIS_COMMAND} --list-repositories --repository-format ebuild | \
