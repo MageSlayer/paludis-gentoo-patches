@@ -3,6 +3,7 @@
 
 #
 # Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
+# Copyright (c) 2007 Alexander Færøy <eroyf@gentoo.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -158,6 +159,60 @@ module Paludis
         end
 
         def test_kind_of
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_Repository < Test::Unit::TestCase
+        def get_query
+            Query::Repository.new("gentoo")
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_All < Test::Unit::TestCase
+        def get_query
+            Query::All.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_Category < Test::Unit::TestCase
+        def get_query
+            Query::Category.new("foo-bar")
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
             assert_kind_of Query::Query, get_query
         end
     end

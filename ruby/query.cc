@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
+ * Copyright (c) 2007 Alexander Færøy <eroyf@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +39,9 @@ namespace
     static VALUE c_repository_has_installable_interface;
     static VALUE c_repository_has_uninstallable_interface;
     static VALUE c_installed_at_root;
+    static VALUE c_repository;
+    static VALUE c_all;
+    static VALUE c_category;
 
     VALUE
     query_to_value(const Query & v)
@@ -163,6 +167,77 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     Repository.new(repository_name)
+     *
+     *
+     */
+    VALUE
+    repository_new(VALUE self, VALUE repository_name)
+    {
+        query::Repository * ptr;
+        try
+        {
+            ptr = new query::Repository(RepositoryName(StringValuePtr(repository_name)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Repository>::free, ptr));
+            rb_obj_call_init(tdata, 1, &repository_name);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     All.new()
+     *
+     *
+     */
+    VALUE
+    all_new(VALUE self)
+    {
+        query::All * ptr(0);
+        try
+        {
+            ptr = new query::All();
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::All>::free, ptr));
+            rb_obj_call_init(tdata, 0, 0);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq
+     *     Category.new(category_name)
+     *
+     *
+     */
+    VALUE
+    category_new(VALUE self, VALUE category_name)
+    {
+        query::Category * ptr(0);
+        try
+        {
+            ptr = new query::Category(CategoryNamePart(StringValuePtr(category_name)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Category>::free, ptr));
+            rb_obj_call_init(tdata, 1, &category_name);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
 
     void do_register_query()
     {
@@ -246,6 +321,30 @@ namespace
         c_installed_at_root = rb_define_class_under(c_query_module,
                 "InstalledAtRoot", c_query);
         rb_define_singleton_method(c_installed_at_root, "new", RUBY_FUNC_CAST(&installed_at_root_new), 1);
+
+        /*
+         * Document-class: Paludis::Query::Repository
+         *
+         * Fetch packages that are installed at a particular repository.
+         */
+        c_repository = rb_define_class_under(c_query_module, "Repository", c_query);
+        rb_define_singleton_method(c_repository, "new", RUBY_FUNC_CAST(&repository_new), 1);
+
+        /*
+         * Document-class: Paludis::Query::All
+         *
+         * Fetch all packages.
+         */
+        c_all = rb_define_class_under(c_query_module, "All", c_query);
+        rb_define_singleton_method(c_all, "new", RUBY_FUNC_CAST(&all_new), 0);
+
+        /*
+         * Document-class: Paludis::Query::Category
+         *
+         * Fetch all packages from a particular category.
+         */
+        c_category = rb_define_class_under(c_query_module, "Category", c_query);
+        rb_define_singleton_method(c_category, "new", RUBY_FUNC_CAST(&category_new), 1);
     }
 }
 
