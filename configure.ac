@@ -398,6 +398,14 @@ AC_CHECK_FUNCS([chflags])
 AM_CONDITIONAL(HAVE_CHFLAGS, test x$ac_cv_func_chflags = xyes)
 dnl }}}
 
+dnl {{{ check for canonicalize_file_name function
+AC_CHECK_FUNCS([canonicalize_file_name])
+AM_CONDITIONAL(HAVE_CANONICALIZE_FILE_NAME, test x$ac_cv_func_canonicalize_file_name = xyes)
+if test "x$ac_cv_func_canonicalize_file_name" = "xyes"; then
+   AC_DEFINE([HAVE_CANONICALIZE_FILE_NAME], [1], [Use canonicalize_file_name])
+fi
+dnl }}}
+
 dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then

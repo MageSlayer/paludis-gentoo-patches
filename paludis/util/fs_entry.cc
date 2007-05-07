@@ -364,11 +364,22 @@ FSEntry::realpath() const
 {
     Context context("When fetching realpath of '" + stringify(_path) + "':");
 
+#ifdef HAVE_CANONICALIZE_FILE_NAME
+    char * r(canonicalize_file_name(_path.c_str()));
+    if (! r)
+        throw FSError("Could not resolve path '" + _path + "'");
+    FSEntry result(r);
+    std::free(r);
+    return result;
+#else
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
+    if (! exists())
+        throw FSError("Could not resolve path '" + _path + "'");
     if (! ::realpath(_path.c_str(), r))
         throw FSError("Could not resolve path '" + _path + "'");
     return FSEntry(r);
+#endif
 }
 
 FSEntry
@@ -376,11 +387,22 @@ FSEntry::realpath_if_exists() const
 {
     Context context("When fetching realpath of '" + stringify(_path) + "', if it exists:");
 
+#ifdef HAVE_CANONICALIZE_FILE_NAME
+    char * r(canonicalize_file_name(_path.c_str()));
+    if (! r)
+        return *this;
+    FSEntry result(r);
+    std::free(r);
+    return result;
+#else
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
+    if (! exists())
+        return *this;
     if (! ::realpath(_path.c_str(), r))
         return *this;
     return FSEntry(r);
+#endif
 }
 
 FSEntry
