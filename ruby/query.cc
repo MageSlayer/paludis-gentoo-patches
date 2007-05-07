@@ -176,7 +176,7 @@ namespace
     VALUE
     repository_new(VALUE self, VALUE repository_name)
     {
-        query::Repository * ptr;
+        query::Repository * ptr(0);
         try
         {
             ptr = new query::Repository(RepositoryName(StringValuePtr(repository_name)));
