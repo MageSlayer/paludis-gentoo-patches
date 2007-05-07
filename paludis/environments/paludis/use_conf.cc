@@ -247,7 +247,7 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
             continue;
 
         UseFlagWithStateMap::const_iterator i(r->second.second.first.find(f));
-        if (r->second.second.first.end() != i)
+        if (i != r->second.second.first.end())
             result = i->second;
 
         if (use_unspecified == result)
