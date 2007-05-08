@@ -200,6 +200,12 @@ main(int argc, char *argv[])
             CommandLine::get_instance()->a_add_to_world_spec.set_specified(true);
         }
 
+        if (CommandLine::get_instance()->a_safe_resume.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context) <<
+                    "Safe resume support is now enabled by default; there is no need to pass --safe-resume";
+        }
+
         /* need an action */
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
@@ -315,6 +321,9 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_debug_build.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_debug_build.long_name() + " "
                     + CommandLine::get_instance()->a_debug_build.argument());
+
+        if (CommandLine::get_instance()->a_no_safe_resume.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_no_safe_resume.long_name());
 
         std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);

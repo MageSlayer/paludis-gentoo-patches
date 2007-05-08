@@ -206,8 +206,8 @@ class CommandLine :
         /// --fetch
         paludis::args::SwitchArg a_fetch;
 
-        /// --safe-resume
-        paludis::args::SwitchArg a_safe_resume;
+        /// --no-safe-resume
+        paludis::args::SwitchArg a_no_safe_resume;
 
         /// --show-reasons
         paludis::args::EnumArg a_show_reasons;
@@ -312,6 +312,7 @@ class CommandLine :
         paludis::args::StringArg a_add_to_world_atom;
         paludis::args::StringArg a_config_suffix;
         paludis::args::SwitchArg a_update_news;
+        paludis::args::SwitchArg a_safe_resume;
 
         ///\}
 };

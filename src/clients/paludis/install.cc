@@ -525,7 +525,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
-    task.set_safe_resume(CommandLine::get_instance()->a_safe_resume.specified());
+    task.set_safe_resume(! CommandLine::get_instance()->a_no_safe_resume.specified());
 
     if (CommandLine::get_instance()->dl_reinstall_targets.specified())
     {

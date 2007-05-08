@@ -84,7 +84,7 @@ CommandLine::CommandLine() :
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
     a_debug_build(&install_args, "debug-build", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
-    a_safe_resume(&install_args, "safe-resume", '\0', "Allow interrupted downloads to be resumed safely"),
+    a_no_safe_resume(&install_args, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed"),
     a_show_reasons(&install_args, "show-reasons", '\0', "Show why packages are being (un)installed",
             args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")
@@ -237,8 +237,10 @@ CommandLine::CommandLine() :
             "Replaced by --add-to-world-spec"),
     a_config_suffix(&deprecated_args, "config-suffix", 'c',
             "Replaced by --environment"),
-    a_update_news(&action_args_internal, "update-news", '\0',
-            "No longer useful, does nothing")
+    a_update_news(&deprecated_args, "update-news", '\0',
+            "No longer useful, does nothing"),
+    a_safe_resume(&deprecated_args, "safe-resume", '\0',
+            "Now default behaviour, use --no-safe-resume to disable")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
