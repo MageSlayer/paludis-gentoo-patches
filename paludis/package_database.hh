@@ -226,20 +226,9 @@ namespace paludis
         is_installable_only,  ///< Installable only
         is_any,               ///< Either
         last_is
-    };
+    } PALUDIS_ATTRIBUTE((deprecated));
 
-    /**
-     * How to order query results.
-     *
-     * \ingroup grppackagedatabase
-     */
-    enum QueryOrder
-    {
-        qo_order_by_version, ///< By version
-        qo_group_by_slot,    ///< By version, with like slots adjacent
-        qo_whatever,         ///< No particular order
-        last_qo
-    };
+#include <paludis/package_database-se.hh>
 
     /**
      * A PackageDatabase can be queried for Package instances.
@@ -357,14 +346,6 @@ namespace paludis
      */
     std::ostream &
     operator<< (std::ostream &, const InstallState &) PALUDIS_VISIBLE;
-
-    /**
-     * Write a QueryOrder to a stream.
-     *
-     * \ingroup grppackagedatabase
-     */
-    std::ostream &
-    operator<< (std::ostream &, const QueryOrder &) PALUDIS_VISIBLE;
 }
 
 #endif

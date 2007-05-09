@@ -175,18 +175,49 @@ namespace test_cases
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r2->add_version("cat", "pkg", "3")->slot = SlotName("b");
-            p.add_repository(10, r2);
+            p.add_repository(5, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d("cat/pkg", pds_pm_permissive);
 
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q1(p.query(d, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(join(q1->begin(), q1->end(), " "),
-                    "cat/pkg-1::repo1 cat/pkg-1::repo2 cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-3::repo2 cat/pkg-4::repo1");
+                    "cat/pkg-1::repo2 cat/pkg-1::repo1 cat/pkg-2::repo1 cat/pkg-3::repo2 cat/pkg-3::repo1 cat/pkg-4::repo1");
 
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q2(p.query(d, is_any, qo_group_by_slot));
             TEST_CHECK_EQUAL(join(q2->begin(), q2->end(), " "),
-                    "cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-3::repo2 cat/pkg-1::repo1 cat/pkg-1::repo2 cat/pkg-4::repo1");
+                    "cat/pkg-3::repo2 cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-1::repo2 cat/pkg-1::repo1 cat/pkg-4::repo1");
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q3(p.query(d, is_any, qo_best_version_only));
+            TEST_CHECK_EQUAL(join(q3->begin(), q3->end(), " "),
+                    "cat/pkg-4::repo1");
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q4(p.query(d, is_any, qo_best_version_in_slot_only));
+            TEST_CHECK_EQUAL(join(q4->begin(), q4->end(), " "),
+                    "cat/pkg-3::repo2 cat/pkg-3::repo1 cat/pkg-4::repo1");
+
+            std::tr1::shared_ptr<FakeRepository> r3(new FakeRepository(&e, RepositoryName("repo3")));
+            r3->add_version("cat", "other", "1")->slot = SlotName("a");
+            p.add_repository(5, r3);
+            TEST_CHECK(true);
+
+            PackageDepSpec c("cat/*", pds_pm_unspecific);
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q5(p.query(c, is_any, qo_order_by_version));
+            TEST_CHECK_EQUAL(join(q5->begin(), q5->end(), " "),
+                    "cat/other-1::repo3 cat/pkg-1::repo2 cat/pkg-1::repo1 cat/pkg-2::repo1 cat/pkg-3::repo2 cat/pkg-3::repo1 cat/pkg-4::repo1");
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q6(p.query(c, is_any, qo_group_by_slot));
+            TEST_CHECK_EQUAL(join(q6->begin(), q6->end(), " "),
+                    "cat/other-1::repo3 cat/pkg-3::repo2 cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-1::repo2 cat/pkg-1::repo1 cat/pkg-4::repo1");
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q7(p.query(c, is_any, qo_best_version_only));
+            TEST_CHECK_EQUAL(join(q7->begin(), q7->end(), " "),
+                    "cat/other-1::repo3 cat/pkg-4::repo1");
+
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q8(p.query(c, is_any, qo_best_version_in_slot_only));
+            TEST_CHECK_EQUAL(join(q8->begin(), q8->end(), " "),
+                    "cat/other-1::repo3 cat/pkg-3::repo2 cat/pkg-3::repo1 cat/pkg-4::repo1");
         }
     } package_database_query_order_test;
 

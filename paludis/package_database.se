@@ -1,0 +1,24 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_QueryOrder()
+{
+    prefix qo
+
+    key qo_order_by_version           "Order by version"
+    key qo_group_by_slot              "Order by version, with like slots grouped"
+    key qo_best_version_only          "Only the best version"
+    key qo_best_version_in_slot_only  "Only the best version in each slot"
+    key qo_whatever                   "Arbitrary ordering"
+
+    doxygen_comment << "END"
+        /**
+         * How to order paludis::PackageDatabase::query() results.
+         *
+         * \see PackageDatabase
+         * \ingroup grppackagedatabase
+         */
+END
+}
+
+

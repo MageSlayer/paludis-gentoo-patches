@@ -36,7 +36,7 @@
 
 using namespace paludis;
 
-#include "package_database_entry-sr.cc"
+#include "package_database-se.cc"
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
@@ -252,6 +252,36 @@ PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_st
     throw InternalError(PALUDIS_HERE, "Bad InstallState");
 }
 
+namespace
+{
+    bool compare_name(const PackageDatabaseEntry & a, const PackageDatabaseEntry & b)
+    {
+        return a.name == b.name;
+    }
+
+    struct CompareNameSlot
+    {
+        const PackageDatabase * const db;
+
+        CompareNameSlot(const PackageDatabase * const d) :
+            db(d)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & a, const PackageDatabaseEntry & b) const
+        {
+            if (a.name != b.name)
+                return false;
+
+            std::tr1::shared_ptr<const VersionMetadata>
+                ma(db->fetch_repository(a.repository)->version_metadata(a.name, a.version)),
+                mb(db->fetch_repository(b.repository)->version_metadata(b.name, b.version));
+
+            return ma->slot == mb->slot;
+        }
+    };
+}
+
 std::tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 {
@@ -331,6 +361,27 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             case qo_group_by_slot:
                 _sort_package_database_entry_collection(*result);
                 _group_package_database_entry_collection(*result);
+                continue;
+
+            case qo_best_version_only:
+                {
+                    _sort_package_database_entry_collection(*result);
+                    std::list<PackageDatabaseEntry> l;
+                    std::unique_copy(result->list.rbegin(), result->list.rend(),
+                            std::front_inserter(l), &compare_name);
+                    result->list.swap(l);
+                }
+                continue;
+
+            case qo_best_version_in_slot_only:
+                {
+                    _sort_package_database_entry_collection(*result);
+                    _group_package_database_entry_collection(*result);
+                    std::list<PackageDatabaseEntry> l;
+                    std::unique_copy(result->list.rbegin(), result->list.rend(),
+                            std::front_inserter(l), CompareNameSlot(this));
+                    result->list.swap(l);
+                }
                 continue;
 
             case qo_whatever:
@@ -543,35 +594,6 @@ paludis::operator<< (std::ostream & o, const InstallState & s)
         }
 
         throw InternalError(PALUDIS_HERE, "Bad InstallState");
-    } while (false);
-
-    return o;
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & o, const QueryOrder & s)
-{
-    do
-    {
-        switch (s)
-        {
-            case qo_order_by_version:
-                o << "order_by_version";
-                continue;
-
-            case qo_group_by_slot:
-                o << "group_by_slot";
-                continue;
-
-            case qo_whatever:
-                o << "whatever";
-                continue;
-
-            case last_qo:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Bad QueryOrder");
     } while (false);
 
     return o;
