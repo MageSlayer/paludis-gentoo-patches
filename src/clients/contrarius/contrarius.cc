@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
     {
         if (h.message.empty())
         {
-            cout << "Usage: " << argv[0] << "--target CTARGET [options]" << endl;
+            cout << "Usage: " << argv[0] << " --target CTARGET [options]" << endl;
             cout << endl;
             cout << *CommandLine::get_instance();
             return EXIT_SUCCESS;
