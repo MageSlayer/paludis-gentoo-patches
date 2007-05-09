@@ -43,36 +43,39 @@ DigestCollisionsCheck::operator() (const FSEntry & d) const
 {
     CheckResult result(d, identifier());
 
-    for (DirIterator i(d / "files") ; i != DirIterator() ; ++i)
+    if ((d / "files").is_directory())
     {
-        if (! is_file_with_prefix_extension(*i, "digest-", "", IsFileWithOptions()))
-            continue;
-
-        std::fstream f(stringify(*i).c_str());
-        std::string line;
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        while (std::getline(f, line))
+        for (DirIterator i(d / "files") ; i != DirIterator() ; ++i)
         {
-            std::vector<std::string> entries;
-            tokeniser.tokenise(line, std::back_inserter(entries));
-
-            if (entries.size() != 4)
+            if (! is_file_with_prefix_extension(*i, "digest-", "", IsFileWithOptions()))
                 continue;
 
-            if ("MD5" != entries.at(0))
-                continue;
-
-            MakeHashedMap<std::string, std::pair<std::string, FSEntry> >::Type::iterator existing(
-                    digests.find(entries.at(2)));
-            if (digests.end() != existing)
+            std::fstream f(stringify(*i).c_str());
+            std::string line;
+            Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+            while (std::getline(f, line))
             {
-                if (entries.at(1) != existing->second.first)
-                    result << Message(qal_major, "Digest conflict on '" + entries.at(2) +
-                            "' in '" + stringify(*i) +
-                            "' (original was '" + stringify(existing->second.second) + "')");
+                std::vector<std::string> entries;
+                tokeniser.tokenise(line, std::back_inserter(entries));
+
+                if (entries.size() != 4)
+                    continue;
+
+                if ("MD5" != entries.at(0))
+                    continue;
+
+                MakeHashedMap<std::string, std::pair<std::string, FSEntry> >::Type::iterator existing(
+                        digests.find(entries.at(2)));
+                if (digests.end() != existing)
+                {
+                    if (entries.at(1) != existing->second.first)
+                        result << Message(qal_major, "Digest conflict on '" + entries.at(2) +
+                                "' in '" + stringify(*i) +
+                                "' (original was '" + stringify(existing->second.second) + "')");
+                }
+                else
+                    digests.insert(std::make_pair(entries.at(2), std::make_pair(entries.at(1), *i)));
             }
-            else
-                digests.insert(std::make_pair(entries.at(2), std::make_pair(entries.at(1), *i)));
         }
     }
 
@@ -85,5 +88,3 @@ DigestCollisionsCheck::identifier()
     static const std::string id("digest_collisions");
     return id;
 }
-
-
