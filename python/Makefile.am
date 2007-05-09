@@ -58,7 +58,11 @@ IF_PYTHON_QA_SOURCES =
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
 	paludis_python.hh \
-	paludis_python_so.cc
+	paludis_python_so.cc \
+	environment_TEST_setup.sh environment_TEST_cleanup.sh \
+	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
+	repository_TEST_setup.sh repository_TEST_cleanup.sh \
+	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -79,6 +83,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/python/.libs\`" \
 			| tr -d ' '` \
+	PYTHONPATH="./.libs" \
 	bash $(top_srcdir)/test/run_test.sh "$(PYTHON)"
 
 if ENABLE_PYTHON
