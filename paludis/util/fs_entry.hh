@@ -271,7 +271,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Return the time the filesystem entry was created
+             * Return the time the inode for the filesystem entry was last modified
              * \exception FSError if there was a problem accessing the filesystem entry
              */
             time_t ctime() const
