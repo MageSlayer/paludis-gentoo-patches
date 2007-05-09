@@ -29,6 +29,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include "config.h"
 
 /** \file
  * Implementation for ebuild.hh things.
