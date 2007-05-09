@@ -85,7 +85,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class ProfileCheckMaker :
+        class PALUDIS_VISIBLE ProfileCheckMaker :
             public VirtualConstructor<std::string, std::tr1::shared_ptr<ProfileCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchProfileCheckTypeError> >,
             public InstantiationPolicy<ProfileCheckMaker, instantiation_method::SingletonTag>

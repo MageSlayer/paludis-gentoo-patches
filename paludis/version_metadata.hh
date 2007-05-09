@@ -51,7 +51,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    class VersionMetadataHasInterfaces
+    class PALUDIS_VISIBLE VersionMetadataHasInterfaces
     {
         protected:
             ///\name Basic operations
@@ -92,7 +92,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    class VersionMetadata :
+    class PALUDIS_VISIBLE VersionMetadata :
         private InstantiationPolicy<VersionMetadata, instantiation_method::NonCopyableTag>,
         public VersionMetadataBase,
         public VersionMetadataCapabilities

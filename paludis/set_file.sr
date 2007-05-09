@@ -1,5 +1,7 @@
 make_class_SetFileParams()
 {
+    visible
+
     key file_name FSEntry
     key type SetFileType
     key parse_mode PackageDepSpecParseMode

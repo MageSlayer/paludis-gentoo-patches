@@ -3,6 +3,8 @@
 
 make_class_VersionMetadataCapabilities()
 {
+    visible
+
     key ebuild_interface "VersionMetadataEbuildInterface *"
     key ebin_interface "VersionMetadataEbinInterface *"
     key cran_interface "VersionMetadataCRANInterface *"
@@ -26,6 +28,8 @@ END
 
 make_class_VersionMetadataDepsInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key parser DepParserFunction
@@ -73,6 +77,8 @@ END
 
 make_class_VersionMetadataLicenseInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key parser TextParserFunction
@@ -102,6 +108,8 @@ END
 
 make_class_VersionMetadataOriginsInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key "source" "std::tr1::shared_ptr<PackageDatabaseEntry>"
@@ -123,6 +131,8 @@ END
 
 make_class_VersionMetadataBase()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key slot SlotName
@@ -145,6 +155,8 @@ END
 
 make_class_VersionMetadataEbuildInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key provide_string std::string
@@ -190,6 +202,8 @@ END
 
 make_class_VersionMetadataEbinInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key bin_uri_string std::string
@@ -216,6 +230,8 @@ END
 
 make_class_VersionMetadataCRANInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key keywords_string std::string
@@ -245,6 +261,8 @@ END
 
 make_class_VersionMetadataVirtualInterface()
 {
+    visible
+
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key virtual_for PackageDatabaseEntry

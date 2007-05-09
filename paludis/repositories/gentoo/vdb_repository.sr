@@ -3,6 +3,8 @@
 
 make_class_VDBRepositoryParams()
 {
+    visible
+
     key environment "Environment *"
     key location FSEntry
     key root FSEntry

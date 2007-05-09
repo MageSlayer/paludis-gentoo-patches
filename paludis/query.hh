@@ -43,7 +43,7 @@ namespace paludis
      * \see Query
      * \ingroup grpquery
      */
-    class QueryDelegate
+    class PALUDIS_VISIBLE QueryDelegate
     {
         protected:
             ///\name Basic operations
@@ -110,7 +110,7 @@ namespace paludis
      * \ingroup grpquery
      * \nosubgrouping
      */
-    class Query
+    class PALUDIS_VISIBLE Query
     {
         friend Query operator& (const Query &, const Query &);
 
@@ -175,7 +175,7 @@ namespace paludis
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class Matches :
+        class PALUDIS_VISIBLE Matches :
             public Query
         {
             public:
@@ -195,7 +195,7 @@ namespace paludis
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
-        class Package :
+        class PALUDIS_VISIBLE Package :
             public Query
         {
             public:
@@ -215,7 +215,7 @@ namespace paludis
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
-        class Repository :
+        class PALUDIS_VISIBLE Repository :
             public Query
         {
             public:
@@ -235,7 +235,7 @@ namespace paludis
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
-        class Category :
+        class PALUDIS_VISIBLE Category :
             public Query
         {
             public:
@@ -255,7 +255,7 @@ namespace paludis
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
-        class NotMasked :
+        class PALUDIS_VISIBLE NotMasked :
             public Query
         {
             public:
@@ -276,7 +276,7 @@ namespace paludis
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
-        class RepositoryHasInstalledInterface :
+        class PALUDIS_VISIBLE RepositoryHasInstalledInterface :
             public Query
         {
             public:
@@ -297,7 +297,7 @@ namespace paludis
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class RepositoryHasInstallableInterface :
+        class PALUDIS_VISIBLE RepositoryHasInstallableInterface :
             public Query
         {
             public:
@@ -318,7 +318,7 @@ namespace paludis
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class RepositoryHasUninstallableInterface :
+        class PALUDIS_VISIBLE RepositoryHasUninstallableInterface :
             public Query
         {
             public:
@@ -338,7 +338,7 @@ namespace paludis
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class InstalledAtRoot :
+        class PALUDIS_VISIBLE InstalledAtRoot :
             public Query
         {
             public:
@@ -358,7 +358,7 @@ namespace paludis
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class All :
+        class PALUDIS_VISIBLE All :
             public Query
         {
             public:
@@ -379,7 +379,7 @@ namespace paludis
      * \see PackageDatabase::query
      * \ingroup grpquery
      */
-    Query operator& (const Query &, const Query &);
+    Query operator& (const Query &, const Query &) PALUDIS_VISIBLE;
 }
 
 #endif

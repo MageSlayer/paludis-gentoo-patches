@@ -3,6 +3,8 @@
 
 make_class_StageOptions()
 {
+    visible
+
     key pretend bool
     key fetch_only bool
     key always_rebuild bool

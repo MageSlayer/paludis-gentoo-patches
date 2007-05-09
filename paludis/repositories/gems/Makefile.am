@@ -69,7 +69,7 @@ gems_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
-gems_repository_TEST_CXXFLAGS = -I$(top_srcdir)
+gems_repository_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 
 yaml_TEST_SOURCES = yaml_TEST.cc
 
@@ -81,7 +81,7 @@ yaml_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
-yaml_TEST_CXXFLAGS = -I$(top_srcdir)
+yaml_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 
 cache_TEST_SOURCES = cache_TEST.cc
 
@@ -93,7 +93,7 @@ cache_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
-cache_TEST_CXXFLAGS = -I$(top_srcdir)
+cache_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 
 EXTRA_DIST = \
 	gems_repository_TEST.cc \

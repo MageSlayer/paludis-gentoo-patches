@@ -85,7 +85,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class PerProfileEbuildCheckMaker :
+        class PALUDIS_VISIBLE PerProfileEbuildCheckMaker :
             public VirtualConstructor<std::string, std::tr1::shared_ptr<PerProfileEbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> >,
             public InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonTag>

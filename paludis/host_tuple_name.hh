@@ -45,7 +45,7 @@ namespace paludis
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
-    class HostTupleNameError : public NameError
+    class PALUDIS_VISIBLE HostTupleNameError : public NameError
     {
         public:
             ///\name Basic operations
@@ -67,7 +67,7 @@ namespace paludis
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
-    class ArchitectureNamePartError : public HostTupleNameError
+    class PALUDIS_VISIBLE ArchitectureNamePartError : public HostTupleNameError
     {
         public:
             /**
@@ -83,7 +83,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grphosttuplename
      */
-    struct ArchitectureNamePartValidator :
+    struct PALUDIS_VISIBLE ArchitectureNamePartValidator :
         private InstantiationPolicy<ArchitectureNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -110,7 +110,7 @@ namespace paludis
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
-    class ManufacturerNamePartError : public HostTupleNameError
+    class PALUDIS_VISIBLE ManufacturerNamePartError : public HostTupleNameError
     {
         public:
             /**
@@ -126,7 +126,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grphosttuplename
      */
-    struct ManufacturerNamePartValidator :
+    struct PALUDIS_VISIBLE ManufacturerNamePartValidator :
         private InstantiationPolicy<ManufacturerNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -153,7 +153,7 @@ namespace paludis
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
-    class KernelNamePartError : public HostTupleNameError
+    class PALUDIS_VISIBLE KernelNamePartError : public HostTupleNameError
     {
         public:
             /**
@@ -169,7 +169,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grphosttuplename
      */
-    struct KernelNamePartValidator :
+    struct PALUDIS_VISIBLE KernelNamePartValidator :
         private InstantiationPolicy<KernelNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -196,7 +196,7 @@ namespace paludis
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
-    class UserlandNamePartError : public HostTupleNameError
+    class PALUDIS_VISIBLE UserlandNamePartError : public HostTupleNameError
     {
         public:
             /**
@@ -212,7 +212,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grphosttuplename
      */
-    struct UserlandNamePartValidator :
+    struct PALUDIS_VISIBLE UserlandNamePartValidator :
         private InstantiationPolicy<UserlandNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -240,7 +240,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grphosttuplename
      */
-    std::ostream & operator<< (std::ostream &, const HostTupleName &);
+    std::ostream & operator<< (std::ostream &, const HostTupleName &) PALUDIS_VISIBLE;
 }
 
 #endif

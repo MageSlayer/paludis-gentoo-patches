@@ -40,7 +40,7 @@ namespace paludis
          * The QAEnvironment is an Environment that corresponds to the environment
          * used by Qualudis for QA checks.
          */
-        class QAEnvironment :
+        class PALUDIS_VISIBLE QAEnvironment :
             public NoConfigEnvironment
         {
             private:

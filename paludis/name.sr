@@ -3,6 +3,8 @@
 
 make_class_QualifiedPackageName()
 {
+    visible
+
     key category CategoryNamePart
     key package PackageNamePart
 

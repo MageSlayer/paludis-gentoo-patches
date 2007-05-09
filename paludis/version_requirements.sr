@@ -3,6 +3,8 @@
 
 make_class_VersionRequirement()
 {
+    visible
+
     key version_operator VersionOperator
     key version_spec VersionSpec
 

@@ -38,7 +38,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class UnmergerError :
+    class PALUDIS_VISIBLE UnmergerError :
         public Exception
     {
         public:
@@ -56,7 +56,7 @@ namespace paludis
      * \ingroup grpunmerger
      * \nosubgrouping
      */
-    class Unmerger
+    class PALUDIS_VISIBLE Unmerger
     {
         private:
             UnmergerOptions _options;

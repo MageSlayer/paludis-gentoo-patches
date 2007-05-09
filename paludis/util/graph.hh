@@ -39,7 +39,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class GraphError :
+    class PALUDIS_VISIBLE GraphError :
         public Exception
     {
         protected:
@@ -58,7 +58,7 @@ namespace paludis
      * \ingroup grpgraph
      * \nosubgrouping
      */
-    class NoSuchGraphNodeError :
+    class PALUDIS_VISIBLE NoSuchGraphNodeError :
         public GraphError
     {
         public:
@@ -81,7 +81,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class NoSuchGraphEdgeError :
+    class PALUDIS_VISIBLE NoSuchGraphEdgeError :
         public GraphError
     {
         public:
@@ -104,7 +104,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class NoGraphTopologicalOrderExistsError :
+    class PALUDIS_VISIBLE NoGraphTopologicalOrderExistsError :
         public GraphError
     {
         private:
@@ -133,7 +133,7 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename Node_, typename Edge_>
-    class DirectedGraph :
+    class PALUDIS_VISIBLE DirectedGraph :
         private PrivateImplementationPattern<DirectedGraph<Node_, Edge_> >
     {
         private:

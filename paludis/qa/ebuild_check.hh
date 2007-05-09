@@ -85,7 +85,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class EbuildCheckMaker :
+        class PALUDIS_VISIBLE EbuildCheckMaker :
             public VirtualConstructor<std::string, std::tr1::shared_ptr<EbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >,
             public InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonTag>

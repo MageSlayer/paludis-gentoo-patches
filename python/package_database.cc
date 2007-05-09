@@ -30,7 +30,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_package_database()
+void PALUDIS_VISIBLE expose_package_database()
 {
     static register_exception<PackageDatabaseError>
         PackageDatabaseError("PackageDatabaseError");

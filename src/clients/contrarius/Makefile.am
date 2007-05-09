@@ -74,6 +74,7 @@ man_contrarius_SOURCES = \
 
 man_contrarius_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/src/common_args/libcommonargs.a \

@@ -18,7 +18,7 @@ paludis_args_include_HEADERS = \
 	args_dumper.hh    \
 	man.hh
 
-libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
+libpaludisargs_la_SOURCES = \
 	args.cc \
 	args_error.cc \
 	args_group.cc \
@@ -26,32 +26,23 @@ libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	args_option.cc \
 	bad_argument.cc \
 	args_visitor.cc \
-	args_dumper.cc \
+	args_dumper.cc
+
+libpaludisman_a_SOURCES = \
 	man.cc
 
 libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-if ! MONOLITHIC
-
 libpaludisargs_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
-
-endif
 
 TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
 
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludisargs.la
-
-else
-
 lib_LTLIBRARIES = libpaludisargs.la
-
-endif
+noinst_LIBRARIES = libpaludisman.a
 
 check_PROGRAMS = $(TESTS)
 

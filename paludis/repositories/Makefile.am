@@ -48,7 +48,7 @@ libpaludisrepositories_la_LIBADD = \
 
 endif
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \

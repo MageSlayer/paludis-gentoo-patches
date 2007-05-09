@@ -151,7 +151,7 @@ namespace test_cases
             LineConfigFile ff(s, LineConfigFileOptions());
             std::vector<std::string> f(ff.begin(), ff.end());
 
-            TEST_CHECK_EQUAL(f.size(), 4);
+            TEST_CHECK_EQUAL(f.size(), std::size_t(4));
             TEST_CHECK_EQUAL(f.at(0), "one");
             TEST_CHECK_EQUAL(f.at(1), "two");
             TEST_CHECK_EQUAL(f.at(2), "three");

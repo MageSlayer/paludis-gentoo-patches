@@ -26,7 +26,7 @@
 /**
  * Display licences.
  */
-struct LicenceDisplayer :
+struct PALUDIS_VISIBLE LicenceDisplayer :
     paludis::DepSpecVisitorTypes::ConstVisitor
 {
     /// Our stream.

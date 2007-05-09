@@ -3,6 +3,8 @@
 
 make_class_PackageDatabaseEntry()
 {
+    visible
+
     key name QualifiedPackageName
     key version VersionSpec
     key repository RepositoryName

@@ -41,7 +41,7 @@ namespace paludis
      * \ingroup grpsetfile
      * \nosubgrouping
      */
-    class SetFileError :
+    class PALUDIS_VISIBLE SetFileError :
         public ConfigurationError
     {
         public:
@@ -67,7 +67,7 @@ namespace paludis
      * \ingroup grpsetfile
      * \nosubgrouping
      */
-    class SetFile :
+    class PALUDIS_VISIBLE SetFile :
         private InstantiationPolicy<SetFile, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<SetFile>
     {

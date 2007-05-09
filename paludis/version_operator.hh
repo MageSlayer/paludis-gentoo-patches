@@ -43,9 +43,10 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    class VersionOperator : public ComparisonPolicy<VersionOperator,
-                                comparison_mode::EqualityComparisonTag,
-                                comparison_method::CompareByMemberTag<VersionOperatorValue> >
+    class PALUDIS_VISIBLE VersionOperator :
+        public ComparisonPolicy<VersionOperator,
+            comparison_mode::EqualityComparisonTag,
+            comparison_method::CompareByMemberTag<VersionOperatorValue> >
     {
         friend std::ostream & operator<< (std::ostream &, const VersionOperator &);
 
@@ -112,7 +113,7 @@ namespace paludis
      * \ingroup grpversions
      * \ingroup grpexceptions
      */
-    class BadVersionOperatorError :
+    class PALUDIS_VISIBLE BadVersionOperatorError :
         public Exception
     {
         public:
@@ -127,7 +128,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    std::ostream & operator<< (std::ostream & s, const VersionOperator &);
+    std::ostream & operator<< (std::ostream & s, const VersionOperator &) PALUDIS_VISIBLE;
 }
 
 #endif

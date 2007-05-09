@@ -22,7 +22,6 @@
 #include <paludis/repositories/gentoo/portage_repository_sets.hh>
 #include <paludis/repositories/gentoo/glsa.hh>
 
-#include <paludis/dep_list/dep_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/query.hh>

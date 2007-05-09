@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_version_requirements()
+void PALUDIS_VISIBLE expose_version_requirements()
 {
     bp::class_<VersionRequirement>
         vr("VersionRequirement",

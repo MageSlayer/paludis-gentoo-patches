@@ -51,7 +51,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class DepTagCategory :
+    class PALUDIS_VISIBLE DepTagCategory :
         private InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>
     {
         private:
@@ -108,7 +108,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class NoSuchDepTagCategory :
+    class PALUDIS_VISIBLE NoSuchDepTagCategory :
         public Exception
     {
         public:
@@ -125,7 +125,7 @@ namespace paludis
      *
      * \ingroup grpdeptag
      */
-    class DepTagCategoryMaker :
+    class PALUDIS_VISIBLE DepTagCategoryMaker :
         public VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
         public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>
@@ -159,7 +159,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class DepTag :
+    class PALUDIS_VISIBLE DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public virtual VisitableInterface<DepTagVisitorTypes>,
         public ComparisonPolicy<DepTag,
@@ -195,7 +195,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class GLSADepTag :
+    class PALUDIS_VISIBLE GLSADepTag :
         public DepTag,
         public Visitable<GLSADepTag, DepTagVisitorTypes>
     {
@@ -228,7 +228,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class GeneralSetDepTag :
+    class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
         public Visitable<GeneralSetDepTag, DepTagVisitorTypes>
     {
@@ -260,7 +260,7 @@ namespace paludis
      * \ingroup grpdeptag
      * \nosubgrouping
      */
-    class DependencyDepTag :
+    class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
         public Visitable<DependencyDepTag, DepTagVisitorTypes>
     {

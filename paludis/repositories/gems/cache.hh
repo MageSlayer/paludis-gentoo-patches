@@ -35,7 +35,7 @@ namespace paludis
 
 #include <paludis/repositories/gems/cache-sr.hh>
 
-    class GemsCache :
+    class PALUDIS_VISIBLE GemsCache :
         private InstantiationPolicy<GemsCache, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<GemsCache>
     {

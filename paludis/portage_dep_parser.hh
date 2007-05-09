@@ -41,7 +41,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpdepparser
      */
-    class DepStringParseError : public DepStringError
+    class PALUDIS_VISIBLE DepStringParseError : public DepStringError
     {
         public:
             /**
@@ -58,7 +58,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpdepparser
      */
-    class DepStringNestingError : public DepStringParseError
+    class PALUDIS_VISIBLE DepStringNestingError : public DepStringParseError
     {
         public:
             /**
@@ -74,7 +74,7 @@ namespace paludis
      *
      * \ingroup grpdepparser
      */
-    struct PortageDepParserPolicyInterface
+    struct PALUDIS_VISIBLE PortageDepParserPolicyInterface
     {
         /**
          * Create a new text spec from the provided string.
@@ -101,7 +101,7 @@ namespace paludis
      *
      * \ingroup grpdepparser
      */
-    class PortageDepParser :
+    class PALUDIS_VISIBLE PortageDepParser :
         private InstantiationPolicy<PortageDepParser, instantiation_method::NonInstantiableTag>
     {
         public:
@@ -111,7 +111,7 @@ namespace paludis
              * \see PortageDepParser
              * \ingroup grpdepparser
              */
-            class Policy
+            class PALUDIS_VISIBLE Policy
             {
                 private:
                     const bool _permit_any_deps;

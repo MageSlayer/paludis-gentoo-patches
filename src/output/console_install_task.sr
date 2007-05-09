@@ -3,6 +3,8 @@
 
 make_class_UseDescription()
 {
+    visible
+
     key flag UseFlagName
     key package PackageDatabaseEntry
     key state UseDescriptionState

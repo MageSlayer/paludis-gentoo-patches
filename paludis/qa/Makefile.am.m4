@@ -24,7 +24,7 @@ $1_TEST_LDADD = \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS)
-$1_TEST_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
@@ -51,6 +51,8 @@ ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')')dnl
+
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
 include(`paludis/qa/files.m4')
 
@@ -111,7 +113,6 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
 DISTCLEANFILES = srcleanlist
 BUILT_SOURCES = srcleanlist qa.hh
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \

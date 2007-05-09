@@ -3,6 +3,8 @@
 
 make_class_UnmergerOptions()
 {
+    visible
+
     key environment "Environment *"
     key root "FSEntry"
 

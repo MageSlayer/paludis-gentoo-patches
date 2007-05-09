@@ -46,7 +46,7 @@ namespace paludis
      * \ingroup grpdepspecflattener
      * \nosubgrouping
      */
-    class DepSpecFlattener :
+    class PALUDIS_VISIBLE DepSpecFlattener :
         private InstantiationPolicy<DepSpecFlattener, instantiation_method::NonCopyableTag>,
         protected DepSpecVisitorTypes::ConstVisitor,
         private PrivateImplementationPattern<DepSpecFlattener>

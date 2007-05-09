@@ -102,7 +102,7 @@ while read a ; do
         echo " * Write a ${a} to a stream."
         echo " */"
         echo "std::ostream &"
-        echo "operator<< (std::ostream &, const $a &);"
+        echo "operator<< (std::ostream &, const $a &) PALUDIS_VISIBLE;"
         echo
 
         echo "#ifdef DOXYGEN"

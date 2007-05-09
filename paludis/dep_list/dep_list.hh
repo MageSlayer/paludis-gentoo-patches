@@ -46,7 +46,7 @@ namespace paludis
      * \ingroup grpdepresolver
      * \nosubgrouping
      */
-    class DepList :
+    class PALUDIS_VISIBLE DepList :
         private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<DepList>
     {
@@ -175,7 +175,7 @@ namespace paludis
      * \ingroup grpdepresolver
      */
     std::tr1::shared_ptr<DestinationsCollection> extract_dep_list_entry_destinations(
-            std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >);
+            std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >) PALUDIS_VISIBLE;
 }
 
 #endif

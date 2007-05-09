@@ -53,7 +53,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    bool is_file_with_extension(const FSEntry &, const std::string &, const IsFileWithOptions &);
+    bool is_file_with_extension(const FSEntry &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 
     /**
      * Return whether an FSEntry is a file with a given prefix and a given
@@ -63,7 +63,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &);
+    bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 
     /**
      * The IsFileWithExtension class is a functor that determines whether an

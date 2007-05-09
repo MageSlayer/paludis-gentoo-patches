@@ -83,9 +83,9 @@ enum Colour
     cl_stage_long_name  = cl_yellow
 };
 
-bool use_colour();
-void set_use_colour(const bool value);
-bool use_xterm_titles() PALUDIS_ATTRIBUTE((pure));
+bool PALUDIS_VISIBLE use_colour();
+void PALUDIS_VISIBLE set_use_colour(const bool value);
+bool PALUDIS_VISIBLE use_xterm_titles() PALUDIS_ATTRIBUTE((pure));
 
 template <typename T_>
 std::string colour(Colour colour, const T_ & s)

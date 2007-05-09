@@ -513,13 +513,12 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
 
-dnl AC_MSG_CHECKING([whether to enable visibility])
-dnl AC_ARG_ENABLE([visibility],
-dnl 			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
-dnl 			  [ENABLE_VISIBILITY=$enableval],
-dnl 			  [ENABLE_VISIBILITY=no])
-dnl AC_MSG_RESULT([$ENABLE_VISIBILITY])
-ENABLE_VISIBILITY=no
+AC_MSG_CHECKING([whether to enable visibility])
+AC_ARG_ENABLE([visibility],
+			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
+			  [ENABLE_VISIBILITY=$enableval],
+			  [ENABLE_VISIBILITY=no])
+AC_MSG_RESULT([$ENABLE_VISIBILITY])
 AC_SUBST([ENABLE_VISIBILITY])
 if test "x$ENABLE_VISIBILITY" = "xyes" ; then
 	AC_MSG_CHECKING([for appropriate compiler visibility flags])
@@ -528,7 +527,7 @@ if test "x$ENABLE_VISIBILITY" = "xyes" ; then
 	CHECK_CXXFLAG([-fvisibility-inlines-hidden])
 	CHECK_CXXFLAG([-fvisibility=hidden])
 	AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
-	PALUDIS_CXXFLAGS_VISIBILITY=$PALUDIS_CXXFLAGS
+	PALUDIS_CXXFLAGS_VISIBILITY="$PALUDIS_CXXFLAGS -DPALUDIS_ENABLE_VISIBILITY=1"
 	PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
 	PALUDIS_ENABLE_VISIBILITY=1
 else

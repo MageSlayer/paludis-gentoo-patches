@@ -3,6 +3,8 @@
 
 make_class_HostTupleName()
 {
+    visible
+
     key architecture ArchitectureNamePart
     key manufacturer ManufacturerNamePart
     key kernel KernelNamePart

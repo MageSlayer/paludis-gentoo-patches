@@ -41,7 +41,7 @@ struct NoConfigEnvironmentWrapper :
     }
 };
 
-void expose_environment()
+void PALUDIS_VISIBLE expose_environment()
 {
     static register_exception<NoSuchEnvironmentTypeError>
         NoSuchEnvironmentTypeError("NoSuchEnvironmentTypeError");

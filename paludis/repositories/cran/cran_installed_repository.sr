@@ -3,6 +3,8 @@
 
 make_class_CRANInstalledRepositoryParams()
 {
+    visible
+
     key environment "const Environment *"
     key location FSEntry
     key root FSEntry

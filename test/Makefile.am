@@ -1,6 +1,6 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = run_test.sh
 
 libtest_a_SOURCES = \

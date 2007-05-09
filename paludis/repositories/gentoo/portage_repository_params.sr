@@ -3,6 +3,8 @@
 
 make_class_PortageRepositoryParams()
 {
+    visible
+
     key entry_format std::string
     key environment "Environment *"
     key location FSEntry

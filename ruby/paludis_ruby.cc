@@ -274,7 +274,7 @@ has_query_property_error_query(VALUE self)
     return rb_attr_get(self, rb_intern("query"));
 }
 
-void paludis::ruby::init()
+void PALUDIS_VISIBLE paludis::ruby::init()
 {
     /*
      * Document-module: Paludis

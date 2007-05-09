@@ -32,7 +32,7 @@ namespace paludis
      * \ingroup grpdepresolver
      * \nosubgrouping
      */
-    class RangeRewriter :
+    class PALUDIS_VISIBLE RangeRewriter :
         public DepSpecVisitorTypes::ConstVisitor
     {
         private:

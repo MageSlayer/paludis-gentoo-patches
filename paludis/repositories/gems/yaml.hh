@@ -36,14 +36,14 @@ namespace paludis
 
     typedef VisitorTypes<YamlScalarNode *, YamlSequenceNode *, YamlMappingNode *> YamlNodeVisitorTypes;
 
-    class YamlError :
+    class PALUDIS_VISIBLE YamlError :
         public ConfigurationError
     {
         public:
             YamlError(const std::string & msg) throw ();
     };
 
-    class YamlNode :
+    class PALUDIS_VISIBLE YamlNode :
         public virtual VisitableInterface<YamlNodeVisitorTypes>,
         private InstantiationPolicy<YamlNode, instantiation_method::NonCopyableTag>
     {
@@ -54,7 +54,7 @@ namespace paludis
             virtual ~YamlNode();
     };
 
-    class YamlScalarNode :
+    class PALUDIS_VISIBLE YamlScalarNode :
         public YamlNode,
         public Visitable<YamlScalarNode, YamlNodeVisitorTypes>
     {
@@ -76,7 +76,7 @@ namespace paludis
             }
     };
 
-    class YamlMappingNode :
+    class PALUDIS_VISIBLE YamlMappingNode :
         public YamlNode,
         public Visitable<YamlMappingNode, YamlNodeVisitorTypes>,
         private PrivateImplementationPattern<YamlMappingNode>
@@ -99,7 +99,7 @@ namespace paludis
             }
     };
 
-    class YamlSequenceNode :
+    class PALUDIS_VISIBLE YamlSequenceNode :
         public YamlNode,
         public Visitable<YamlSequenceNode, YamlNodeVisitorTypes>,
         private PrivateImplementationPattern<YamlSequenceNode>
@@ -114,7 +114,7 @@ namespace paludis
             void add(std::tr1::shared_ptr<YamlNode>);
     };
 
-    class YamlDocument :
+    class PALUDIS_VISIBLE YamlDocument :
         private PrivateImplementationPattern<YamlDocument>,
         private InstantiationPolicy<YamlDocument, instantiation_method::NonCopyableTag>
     {

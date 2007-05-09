@@ -3,6 +3,8 @@
 
 make_class_UninstallListOptions()
 {
+    visible
+
     key with_unused_dependencies bool
     key with_dependencies bool
 
@@ -25,6 +27,8 @@ END
 
 make_class_UninstallListEntry()
 {
+    visible
+
     key package PackageDatabaseEntry
     key skip_uninstall bool
     key tags "std::tr1::shared_ptr<SortedCollection<std::tr1::shared_ptr<DepTag> > >"

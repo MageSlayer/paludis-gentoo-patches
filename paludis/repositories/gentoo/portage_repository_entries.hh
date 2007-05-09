@@ -123,7 +123,7 @@ namespace paludis
      *
      * \ingroup grprepository
      */
-    class PortageRepositoryEntriesMaker :
+    class PALUDIS_VISIBLE PortageRepositoryEntriesMaker :
         public VirtualConstructor<std::string,
             std::tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
                     const PortageRepositoryParams &),

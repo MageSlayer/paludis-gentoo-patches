@@ -67,7 +67,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class DepSpec :
+    class PALUDIS_VISIBLE DepSpec :
         public virtual VisitableInterface<DepSpecVisitorTypes>,
         private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>
     {
@@ -109,7 +109,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class CompositeDepSpec :
+    class PALUDIS_VISIBLE CompositeDepSpec :
         public DepSpec,
         private PrivateImplementationPattern<CompositeDepSpec>
     {
@@ -159,7 +159,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class AnyDepSpec :
+    class PALUDIS_VISIBLE AnyDepSpec :
         public CompositeDepSpec,
         public Visitable<AnyDepSpec, DepSpecVisitorTypes>
     {
@@ -179,7 +179,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class AllDepSpec :
+    class PALUDIS_VISIBLE AllDepSpec :
         public CompositeDepSpec,
         public Visitable<AllDepSpec, DepSpecVisitorTypes>
     {
@@ -198,7 +198,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class UseDepSpec :
+    class PALUDIS_VISIBLE UseDepSpec :
         public CompositeDepSpec,
         public Visitable<UseDepSpec, DepSpecVisitorTypes>
     {
@@ -234,7 +234,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class StringDepSpec :
+    class PALUDIS_VISIBLE StringDepSpec :
         public DepSpec
     {
         private:
@@ -268,7 +268,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class UseRequirements :
+    class PALUDIS_VISIBLE UseRequirements :
         private PrivateImplementationPattern<UseRequirements>
     {
         public:
@@ -313,7 +313,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PackageDepSpec :
+    class PALUDIS_VISIBLE PackageDepSpec :
         public StringDepSpec,
         public Visitable<PackageDepSpec, DepSpecVisitorTypes>,
         private PrivateImplementationPattern<PackageDepSpec>
@@ -436,7 +436,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PlainTextDepSpec :
+    class PALUDIS_VISIBLE PlainTextDepSpec :
         public StringDepSpec,
         public Visitable<PlainTextDepSpec, DepSpecVisitorTypes>
     {
@@ -454,7 +454,7 @@ namespace paludis
      *
      * \ingroup grpdepspecs
      */
-    std::ostream & operator<< (std::ostream &, const PlainTextDepSpec &);
+    std::ostream & operator<< (std::ostream &, const PlainTextDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * Thrown if an invalid package dep spec specification is encountered.
@@ -463,7 +463,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PackageDepSpecError :
+    class PALUDIS_VISIBLE PackageDepSpecError :
         public Exception
     {
         public:
@@ -480,7 +480,7 @@ namespace paludis
      *
      * \ingroup grpdepspecs
      */
-    std::ostream & operator<< (std::ostream &, const PackageDepSpec &);
+    std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A BlockDepSpec represents a block on a package name (for example,
@@ -490,7 +490,7 @@ namespace paludis
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class BlockDepSpec :
+    class PALUDIS_VISIBLE BlockDepSpec :
         public StringDepSpec,
         public Visitable<BlockDepSpec, DepSpecVisitorTypes>
     {

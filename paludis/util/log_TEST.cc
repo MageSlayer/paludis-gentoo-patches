@@ -38,12 +38,12 @@ namespace
     };
 
     std::ostream &
-    operator<< (std::ostream &, const Monkey &) PALUDIS_ATTRIBUTE((noreturn));
-
-    std::ostream &
-    operator<< (std::ostream &, const Monkey & m)
+    operator<< (std::ostream & s, const Monkey & m)
     {
-        throw m;
+        if (s)
+            throw m;
+
+        return s;
     }
 
     int throws_a_monkey() PALUDIS_ATTRIBUTE((noreturn));

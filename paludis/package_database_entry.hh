@@ -40,7 +40,7 @@ namespace paludis
     /**
      * Comparator for ArbitrarilyOrderedPackageDatabaseEntryCollection.
      */
-    struct ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator
+    struct PALUDIS_VISIBLE ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator
     {
         /**
          * Perform the comparison.
@@ -58,7 +58,7 @@ namespace paludis
     /**
      * A PackageDatabaseEntry can be written to a stream.
      */
-    std::ostream & operator<< (std::ostream &, const PackageDatabaseEntry &);
+    std::ostream & operator<< (std::ostream &, const PackageDatabaseEntry &) PALUDIS_VISIBLE;
 }
 
 #endif

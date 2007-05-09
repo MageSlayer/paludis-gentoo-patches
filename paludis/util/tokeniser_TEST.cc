@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("one,two...+...three...", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 3);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), "two");
             TEST_CHECK_EQUAL(tokens.at(2), "three");
@@ -56,7 +56,7 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("...one,two...+...three", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 3);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), "two");
             TEST_CHECK_EQUAL(tokens.at(2), "three");
@@ -64,18 +64,18 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("one", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 1);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
             t.tokenise(".+.,.", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 0);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
             t.tokenise("", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 0);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
         }
     } test_tokeniser_ad;
@@ -95,7 +95,7 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("one,two...+...three...", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 6);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), ",");
             TEST_CHECK_EQUAL(tokens.at(2), "two");
@@ -106,7 +106,7 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("...one,two...+...three", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 6);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
             TEST_CHECK_EQUAL(tokens.at(0), "...");
             TEST_CHECK_EQUAL(tokens.at(1), "one");
             TEST_CHECK_EQUAL(tokens.at(2), ",");
@@ -117,19 +117,19 @@ namespace test_cases
 
             TEST_CHECK(tokens.empty());
             t.tokenise("one", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 1);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
             t.tokenise(".+.,.", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 1);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), ".+.,.");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
             t.tokenise("", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), 0);
+            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
         }
     } test_tokeniser_ab;

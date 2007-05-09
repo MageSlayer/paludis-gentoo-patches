@@ -40,7 +40,7 @@ namespace paludis
      *
      * \ingroup grpsyncer
      */
-    class Syncer :
+    class PALUDIS_VISIBLE Syncer :
         private InstantiationPolicy<Syncer, instantiation_method::NonCopyableTag>
     {
         protected:
@@ -70,7 +70,7 @@ namespace paludis
      *
      * \ingroup grpsyncer
      */
-    class DefaultSyncer :
+    class PALUDIS_VISIBLE DefaultSyncer :
         public Syncer
     {
         private:
@@ -104,7 +104,7 @@ namespace paludis
      * \ingroup grpsyncer
      * \ingroup grpexceptions
      */
-    class SyncFailedError :
+    class PALUDIS_VISIBLE SyncFailedError :
         public PackageActionError
     {
         public:
@@ -125,7 +125,7 @@ namespace paludis
      * \ingroup grpsyncer
      * \ingroup grpexceptions
      */
-    class NoSuchSyncerError : public SyncFailedError
+    class PALUDIS_VISIBLE NoSuchSyncerError : public SyncFailedError
     {
         public:
             /**

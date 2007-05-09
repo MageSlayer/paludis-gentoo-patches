@@ -41,7 +41,7 @@ class class_contents:
         }
 };
 
-void expose_contents()
+void PALUDIS_VISIBLE expose_contents()
 {
     bp::register_ptr_to_python<std::tr1::shared_ptr<const ContentsEntry> >();
     bp::implicitly_convertible<std::tr1::shared_ptr<ContentsEntry>,
@@ -111,3 +111,4 @@ void expose_contents()
          );
     c.def("__iter__", bp::range(&Contents::begin, &Contents::end));
 }
+

@@ -27,7 +27,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_query()
+void PALUDIS_VISIBLE expose_query()
 {
     bp::class_<Query>
         q("Query",

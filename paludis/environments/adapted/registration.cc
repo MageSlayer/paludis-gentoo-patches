@@ -23,7 +23,7 @@ using namespace paludis;
 
 extern "C"
 {
-    void register_environments(EnvironmentMaker * maker);
+    void PALUDIS_VISIBLE register_environments(EnvironmentMaker * maker);
 }
 
 void register_environments(EnvironmentMaker *)

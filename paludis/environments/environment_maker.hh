@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup grpenvironment
      * \nosubgrouping
      */
-    class NoSuchEnvironmentTypeError : public ConfigurationError
+    class PALUDIS_VISIBLE NoSuchEnvironmentTypeError : public ConfigurationError
     {
         public:
             /**
@@ -64,7 +64,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grprepository
      */
-    class PaludisEnvironmentSoDirCannotDlopenError :
+    class PALUDIS_VISIBLE PaludisEnvironmentSoDirCannotDlopenError :
         public Exception
     {
         private:
@@ -92,7 +92,7 @@ namespace paludis
      * \ingroup grpenvironment
      * \nosubgrouping
      */
-    class FallBackToAnotherMakerError
+    class PALUDIS_VISIBLE FallBackToAnotherMakerError
     {
         protected:
             ///\name Basic operations

@@ -26,7 +26,7 @@
 
 namespace paludis
 {
-    class ConsoleQueryTask :
+    class PALUDIS_VISIBLE ConsoleQueryTask :
         private PrivateImplementationPattern<ConsoleQueryTask>,
         public ConsoleTask
     {

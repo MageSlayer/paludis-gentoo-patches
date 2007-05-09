@@ -70,7 +70,7 @@ struct VersionMetadataWrapper
     }
 };
 
-void expose_version_metadata()
+void PALUDIS_VISIBLE expose_version_metadata()
 {
     bp::register_ptr_to_python<std::tr1::shared_ptr<const VersionMetadata> >();
     bp::class_<VersionMetadata, boost::noncopyable>

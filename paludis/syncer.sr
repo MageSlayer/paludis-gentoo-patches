@@ -3,6 +3,8 @@
 
 make_class_SyncOptions()
 {
+    visible
+
     key options std::string
 
     doxygen_comment << "END"
@@ -18,6 +20,8 @@ END
 
 make_class_SyncerParams()
 {
+    visible
+
     key local std::string
     key remote std::string
 

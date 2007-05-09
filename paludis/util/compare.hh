@@ -73,7 +73,7 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    inline int long compare(unsigned long t1, unsigned long t2)
+    inline int compare(unsigned long t1, unsigned long t2)
     {
         if (t1 < t2)
             return -1;

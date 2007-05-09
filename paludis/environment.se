@@ -3,6 +3,8 @@
 
 make_enum_MaskReasonsOption()
 {
+    visible
+
     prefix mro
 
     key mro_override_unkeyworded        "Ignore keyword masks for unkeyworded packages"

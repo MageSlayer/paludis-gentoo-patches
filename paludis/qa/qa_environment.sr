@@ -3,6 +3,8 @@
 
 make_class_PackageDatabasesEntry()
 {
+    visible
+
     key arch UseFlagName
     key location FSEntry
     key status std::string

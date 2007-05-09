@@ -40,7 +40,7 @@ namespace paludis
      * \ingroup grpuninstalllist
      * \nosubgrouping
      */
-    class UninstallList :
+    class PALUDIS_VISIBLE UninstallList :
         private PrivateImplementationPattern<UninstallList>,
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {

@@ -3,6 +3,8 @@
 
 make_class_GemsRepositoryParams()
 {
+    visible
+
     key environment "const Environment *"
     key location FSEntry
     key distdir FSEntry
@@ -14,6 +16,8 @@ make_class_GemsRepositoryParams()
 
 make_class_GemsRepositoryEntry()
 {
+    visible
+
     key metadata "std::tr1::shared_ptr<VersionMetadata>"
 }
 

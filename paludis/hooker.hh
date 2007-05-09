@@ -35,7 +35,7 @@ namespace paludis
      * \ingroup grphooker
      * \nosubgrouping
      */
-    class Hooker :
+    class PALUDIS_VISIBLE Hooker :
         private PrivateImplementationPattern<Hooker>,
         private InstantiationPolicy<Hooker, instantiation_method::NonCopyableTag>
     {

@@ -3,6 +3,8 @@
 
 make_class_ProfileCheckData()
 {
+    visible
+
     key profiles_dir FSEntry
     key profiles_desc_line RepositoryPortageInterface::ProfilesDescLine
 

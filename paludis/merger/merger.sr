@@ -3,6 +3,8 @@
 
 make_class_MergerOptions()
 {
+    visible
+
     key environment "Environment *"
     key image "FSEntry"
     key root "FSEntry"

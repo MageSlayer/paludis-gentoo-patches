@@ -33,7 +33,7 @@ namespace paludis
      * \see Options<>
      * \ingroup grpoptions
      */
-    class OptionsStore :
+    class PALUDIS_VISIBLE OptionsStore :
         private PrivateImplementationPattern<OptionsStore>
     {
         public:

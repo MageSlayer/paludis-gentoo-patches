@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup grpgraph
      * \nosubgrouping
      */
-    class NoGraphTopologicalOrderExistsError::RemainingNodes
+    class PALUDIS_VISIBLE NoGraphTopologicalOrderExistsError::RemainingNodes
     {
         private:
             std::list<std::string> _n;

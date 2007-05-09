@@ -73,8 +73,7 @@
 #  define PALUDIS_ATTRIBUTE(x)
 #endif
 
-#define PALUDIS_ENABLE_VISIBILITY 0
-#if PALUDIS_ENABLE_VISIBILITY
+#ifdef PALUDIS_ENABLE_VISIBILITY
 #  define PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((visibility("default")))
 #  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))
 #else

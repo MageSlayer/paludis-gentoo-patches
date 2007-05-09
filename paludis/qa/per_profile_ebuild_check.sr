@@ -3,6 +3,8 @@
 
 make_class_PerProfileEbuildCheckData()
 {
+    visible
+
     key name QualifiedPackageName
     key version VersionSpec
     key environment "QAEnvironment *"

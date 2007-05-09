@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_name()
+void PALUDIS_VISIBLE expose_name()
 {
     static register_exception<PackageNamePartError>
         PackageNamePartError("PackageNamePartError");

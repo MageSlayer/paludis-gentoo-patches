@@ -33,7 +33,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class DepListError : public Exception
+    class PALUDIS_VISIBLE DepListError : public Exception
     {
         protected:
             ///\name Basic operations
@@ -51,7 +51,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class AllMaskedError : public DepListError
+    class PALUDIS_VISIBLE AllMaskedError : public DepListError
     {
         private:
             const PackageDepSpec _query;
@@ -85,7 +85,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class UseRequirementsNotMetError : public DepListError
+    class PALUDIS_VISIBLE UseRequirementsNotMetError : public DepListError
     {
         private:
             std::string _query;
@@ -118,7 +118,7 @@ namespace paludis
      * \ingroup grpdepresolver
      * \nosubgrouping
      */
-    class DowngradeNotAllowedError : public DepListError
+    class PALUDIS_VISIBLE DowngradeNotAllowedError : public DepListError
     {
         public:
             ///\name Basic operations
@@ -138,7 +138,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class BlockError : public DepListError
+    class PALUDIS_VISIBLE BlockError : public DepListError
     {
         public:
             ///\name Basic operations
@@ -156,7 +156,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class CircularDependencyError : public DepListError
+    class PALUDIS_VISIBLE CircularDependencyError : public DepListError
     {
         public:
             ///\name Basic operations
@@ -174,7 +174,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class NoDestinationError : public DepListError
+    class PALUDIS_VISIBLE NoDestinationError : public DepListError
     {
         public:
             ///\name Basic operations

@@ -32,7 +32,7 @@ compare(const VersionOperator & self, const VersionSpec & v1, const VersionSpec 
     return (v1.*(self.as_version_spec_operator()))(v2);
 }
 
-void expose_version_operator()
+void PALUDIS_VISIBLE expose_version_operator()
 {
     static register_exception<BadVersionOperatorError>
         BadVersionOperatorError("BadVersionOperatorError");

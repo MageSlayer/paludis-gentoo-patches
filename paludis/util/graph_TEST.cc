@@ -75,7 +75,6 @@ namespace test_cases
             g.add_edge("d", "e", 5);
             g.add_edge("d", "f", 6);
 
-            int x(0);
             for (char mc('a') ; mc < 'g' ; ++mc)
                 for (char nc('a') ; nc < 'g' ; ++nc)
                 {

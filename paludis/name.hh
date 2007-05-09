@@ -44,7 +44,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class PackageNamePartError : public NameError
+    class PALUDIS_VISIBLE PackageNamePartError : public NameError
     {
         public:
             /**
@@ -59,7 +59,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct PackageNamePartValidator :
+    struct PALUDIS_VISIBLE PackageNamePartValidator :
         private InstantiationPolicy<PackageNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -91,7 +91,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpnames
      */
-    class CategoryNamePartError : public NameError
+    class PALUDIS_VISIBLE CategoryNamePartError : public NameError
     {
         public:
             /**
@@ -106,7 +106,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct CategoryNamePartValidator :
+    struct PALUDIS_VISIBLE CategoryNamePartValidator :
         private InstantiationPolicy<CategoryNamePartValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -138,7 +138,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    std::ostream & operator<< (std::ostream &, const QualifiedPackageName &);
+    std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
 
     /**
      * Holds a collection of QualifiedPackageName instances.
@@ -155,7 +155,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class QualifiedPackageNameError : public NameError
+    class PALUDIS_VISIBLE QualifiedPackageNameError : public NameError
     {
         public:
             /**
@@ -183,7 +183,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class UseFlagNameError : public NameError
+    class PALUDIS_VISIBLE UseFlagNameError : public NameError
     {
         public:
             /**
@@ -198,7 +198,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct UseFlagNameValidator :
+    struct PALUDIS_VISIBLE UseFlagNameValidator :
         private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -229,7 +229,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class SlotNameError : public NameError
+    class PALUDIS_VISIBLE SlotNameError : public NameError
     {
         public:
             /**
@@ -244,7 +244,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct SlotNameValidator :
+    struct PALUDIS_VISIBLE SlotNameValidator :
         private InstantiationPolicy<SlotNameValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -268,7 +268,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpnames
      */
-    class RepositoryNameError : public NameError
+    class PALUDIS_VISIBLE RepositoryNameError : public NameError
     {
         public:
             /**
@@ -283,7 +283,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct RepositoryNameValidator :
+    struct PALUDIS_VISIBLE RepositoryNameValidator :
         private InstantiationPolicy<RepositoryNameValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -313,7 +313,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct RepositoryNameComparator
+    struct PALUDIS_VISIBLE RepositoryNameComparator
     {
         /**
          * Perform the comparison.
@@ -330,7 +330,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct KeywordNameValidator :
+    struct PALUDIS_VISIBLE KeywordNameValidator :
         private InstantiationPolicy<KeywordNameValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -347,7 +347,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class KeywordNameError : public NameError
+    class PALUDIS_VISIBLE KeywordNameError : public NameError
     {
         public:
             /**
@@ -378,7 +378,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    struct SetNameValidator :
+    struct PALUDIS_VISIBLE SetNameValidator :
         private InstantiationPolicy<SetNameValidator, instantiation_method::NonInstantiableTag>
     {
         /**
@@ -395,7 +395,7 @@ namespace paludis
      * \ingroup grpnames
      * \ingroup grpexceptions
      */
-    class SetNameError : public NameError
+    class PALUDIS_VISIBLE SetNameError : public NameError
     {
         public:
             /**

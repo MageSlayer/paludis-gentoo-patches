@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_mask_reasons()
+void PALUDIS_VISIBLE expose_mask_reasons()
 {
     enum_auto("MaskReason", last_mr);
 

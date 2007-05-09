@@ -151,7 +151,7 @@ RepositoryMaker::~RepositoryMaker()
 
 extern "C"
 {
-    void register_repositories(RepositoryMaker * maker);
+    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
 }
 
 void register_repositories(RepositoryMaker *)

@@ -51,7 +51,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class ConfigFileError :
+    class PALUDIS_VISIBLE ConfigFileError :
         public ConfigurationError
     {
         public:
@@ -89,7 +89,7 @@ namespace paludis
      * \ingroup grpconfigfile
      * \nosubgrouping
      */
-    class ConfigFile :
+    class PALUDIS_VISIBLE ConfigFile :
         private InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
     {
         public:
@@ -100,7 +100,7 @@ namespace paludis
              * \ingroup grpconfigfile
              * \nosubgrouping
              */
-            class Source :
+            class PALUDIS_VISIBLE Source :
                 private PrivateImplementationPattern<Source>
             {
                 public:
@@ -168,7 +168,7 @@ namespace paludis
      * \ingroup grplineconfigfile
      * \nosubgrouping
      */
-    class LineConfigFile :
+    class PALUDIS_VISIBLE LineConfigFile :
         public ConfigFile,
         private PrivateImplementationPattern<LineConfigFile>
     {
@@ -229,7 +229,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      * \nosubgrouping
      */
-    class KeyValueConfigFile :
+    class PALUDIS_VISIBLE KeyValueConfigFile :
         public ConfigFile,
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
@@ -241,7 +241,7 @@ namespace paludis
              * \see KeyValueConfigFile
              * \nosubgrouping
              */
-            class Defaults :
+            class PALUDIS_VISIBLE Defaults :
                 private PrivateImplementationPattern<Defaults>
             {
                 public:

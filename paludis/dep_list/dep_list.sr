@@ -3,6 +3,8 @@
 
 make_class_DepListOptions()
 {
+    visible
+
     key reinstall DepListReinstallOption
     key reinstall_scm DepListReinstallScmOption
     key target_type DepListTargetType
@@ -47,6 +49,8 @@ END
 
 make_class_DepListEntryDestination()
 {
+    visible
+
     key destination "std::tr1::shared_ptr<Repository>"
     key generation long
 
@@ -68,6 +72,8 @@ END
 
 make_class_DepListEntry()
 {
+    visible
+
     key kind DepListEntryKind
 
     key package PackageDatabaseEntry

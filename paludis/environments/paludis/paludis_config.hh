@@ -102,7 +102,7 @@ namespace paludis
      * \ingroup grppaludisconfig
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PaludisConfig :
+    class PaludisConfig :
         private PrivateImplementationPattern<PaludisConfig>
     {
         public:

@@ -35,7 +35,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryNameCache :
+    class PALUDIS_VISIBLE RepositoryNameCache :
         private PrivateImplementationPattern<RepositoryNameCache>
     {
         private:

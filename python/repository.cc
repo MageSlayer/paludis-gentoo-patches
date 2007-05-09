@@ -197,7 +197,7 @@ struct RepositoryPortageInterfaceWrapper :
 };
 
 
-void expose_repository()
+void PALUDIS_VISIBLE expose_repository()
 {
     static register_exception<PackageActionError>
         PackageActionError("PackageActionError");

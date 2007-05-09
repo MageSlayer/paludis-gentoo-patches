@@ -108,7 +108,7 @@ namespace paludis
             void _normalise();
 
             /**
-             * Runs lstat() on the current path if we have not done so already
+             * Runs lstat() on the current path if we have not done so already.
              * Note: lstat() will give information on the symlink itself, and not what
              * the link points to, which is how stat() works.
              */

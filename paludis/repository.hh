@@ -56,7 +56,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryInfoSection :
+    class PALUDIS_VISIBLE RepositoryInfoSection :
         private PrivateImplementationPattern<RepositoryInfoSection>
     {
         public:
@@ -100,7 +100,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryInfo :
+    class PALUDIS_VISIBLE RepositoryInfo :
         private PrivateImplementationPattern<RepositoryInfo>
     {
         public:
@@ -145,7 +145,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class Repository :
+    class PALUDIS_VISIBLE Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
         public RepositoryCapabilities
     {
@@ -373,7 +373,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryMaskInterface
+    class PALUDIS_VISIBLE RepositoryMaskInterface
     {
         protected:
             ///\name Implementation details
@@ -427,7 +427,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryUseInterface
+    class PALUDIS_VISIBLE RepositoryUseInterface
     {
         protected:
             ///\name Implementation details
@@ -570,7 +570,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryInstalledInterface
+    class PALUDIS_VISIBLE RepositoryInstalledInterface
     {
         protected:
             ///\name Implementation details
@@ -622,7 +622,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryInstallableInterface
+    class PALUDIS_VISIBLE RepositoryInstallableInterface
     {
         protected:
             ///\name Implementation details
@@ -660,7 +660,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryUninstallableInterface
+    class PALUDIS_VISIBLE RepositoryUninstallableInterface
     {
         protected:
             ///\name Implementation details
@@ -698,7 +698,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositorySetsInterface
+    class PALUDIS_VISIBLE RepositorySetsInterface
     {
         protected:
             ///\name Implementation details
@@ -742,7 +742,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositorySyncableInterface
+    class PALUDIS_VISIBLE RepositorySyncableInterface
     {
         protected:
             ///\name Implementation details
@@ -781,7 +781,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryWorldInterface
+    class PALUDIS_VISIBLE RepositoryWorldInterface
     {
         public:
             ///\name World functionality
@@ -819,7 +819,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryEnvironmentVariableInterface
+    class PALUDIS_VISIBLE RepositoryEnvironmentVariableInterface
     {
         public:
             ///\name Environment query functionality
@@ -845,7 +845,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryMirrorsInterface
+    class PALUDIS_VISIBLE RepositoryMirrorsInterface
     {
         public:
             ///\name Iterate over our mirrors
@@ -879,7 +879,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryVirtualsInterface
+    class PALUDIS_VISIBLE RepositoryVirtualsInterface
     {
         public:
             ///\name Virtuals functionality
@@ -917,7 +917,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryProvidesInterface
+    class PALUDIS_VISIBLE RepositoryProvidesInterface
     {
         public:
             ///\name Provides functionality
@@ -955,7 +955,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryDestinationInterface
+    class PALUDIS_VISIBLE RepositoryDestinationInterface
     {
         public:
             ///\name Destination functions
@@ -1001,7 +1001,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryContentsInterface
+    class PALUDIS_VISIBLE RepositoryContentsInterface
     {
         protected:
             ///\name Implementation details
@@ -1043,7 +1043,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryConfigInterface
+    class PALUDIS_VISIBLE RepositoryConfigInterface
     {
         protected:
             ///\name Implementation details
@@ -1084,7 +1084,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryLicensesInterface
+    class PALUDIS_VISIBLE RepositoryLicensesInterface
     {
         protected:
             ///\name Implementation details
@@ -1127,7 +1127,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryPortageInterface
+    class PALUDIS_VISIBLE RepositoryPortageInterface
     {
         public:
             ///\name Information about a PortageRepository
@@ -1168,7 +1168,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class RepositoryHookInterface
+    class PALUDIS_VISIBLE RepositoryHookInterface
     {
         public:
             /**
@@ -1187,7 +1187,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class PackageActionError : public Exception
+    class PALUDIS_VISIBLE PackageActionError : public Exception
     {
         protected:
             /**
@@ -1203,7 +1203,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class PackageInstallActionError : public PackageActionError
+    class PALUDIS_VISIBLE PackageInstallActionError : public PackageActionError
     {
         public:
             /**
@@ -1219,7 +1219,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class PackageFetchActionError : public PackageActionError
+    class PALUDIS_VISIBLE PackageFetchActionError : public PackageActionError
     {
         public:
             /**
@@ -1235,7 +1235,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class PackageUninstallActionError : public PackageActionError
+    class PALUDIS_VISIBLE PackageUninstallActionError : public PackageActionError
     {
         public:
             /**
@@ -1251,7 +1251,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class PackageConfigActionError : public PackageActionError
+    class PALUDIS_VISIBLE PackageConfigActionError : public PackageActionError
     {
         public:
             /**
@@ -1267,7 +1267,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class EnvironmentVariableActionError :
+    class PALUDIS_VISIBLE EnvironmentVariableActionError :
         public PackageActionError
     {
         public:
@@ -1276,7 +1276,6 @@ namespace paludis
              */
             EnvironmentVariableActionError(const std::string & msg) throw ();
     };
-
 
     class PackageDatabase;
 }

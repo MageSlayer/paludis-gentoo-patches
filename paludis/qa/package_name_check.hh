@@ -40,7 +40,7 @@ namespace paludis
 
                 CheckResult operator() (const FSEntry &) const;
 
-                static const std::string & identifier();
+                static const PALUDIS_VISIBLE std::string & identifier();
 
                 virtual std::string describe() const
                 {

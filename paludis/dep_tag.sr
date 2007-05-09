@@ -1,5 +1,7 @@
 make_class_DepTagEntry()
 {
+    visible
+
     key tag "std::tr1::shared_ptr<const DepTag>"
     key generation long
 

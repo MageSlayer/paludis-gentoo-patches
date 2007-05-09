@@ -22,10 +22,11 @@
 
 #include <iosfwd>
 #include <string>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
-    class ConsoleTask
+    class PALUDIS_VISIBLE ConsoleTask
     {
         protected:
             ConsoleTask();

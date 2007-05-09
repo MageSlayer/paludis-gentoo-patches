@@ -41,7 +41,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class PackageDirCheck :
+        class PALUDIS_VISIBLE PackageDirCheck :
             public Check
         {
             protected:
@@ -56,7 +56,7 @@ namespace paludis
          *
          * \ingroup grpexceptions
          */
-        class NoSuchPackageDirCheckTypeError :
+        class PALUDIS_VISIBLE NoSuchPackageDirCheckTypeError :
             public Exception
         {
             public:
@@ -85,7 +85,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class PackageDirCheckMaker :
+        class PALUDIS_VISIBLE PackageDirCheckMaker :
             public VirtualConstructor<std::string, std::tr1::shared_ptr<PackageDirCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> >,
             public InstantiationPolicy<PackageDirCheckMaker, instantiation_method::SingletonTag>

@@ -81,7 +81,7 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        class FileCheckMaker :
+        class PALUDIS_VISIBLE FileCheckMaker :
             public VirtualConstructor<std::string, std::tr1::shared_ptr<FileCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >,
             public InstantiationPolicy<FileCheckMaker, instantiation_method::SingletonTag>

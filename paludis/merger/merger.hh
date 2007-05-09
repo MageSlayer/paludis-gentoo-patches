@@ -40,7 +40,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class MergerError :
+    class PALUDIS_VISIBLE MergerError :
         public Exception
     {
         public:
@@ -59,7 +59,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class Merger
+    class PALUDIS_VISIBLE Merger
     {
         private:
             MergerOptions _options;

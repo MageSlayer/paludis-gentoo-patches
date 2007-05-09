@@ -3,6 +3,8 @@
 
 make_class_Message()
 {
+    visible
+
     key level QALevel
     key msg std::string
 

@@ -33,7 +33,7 @@ namespace paludis
      * \ingroup grpenvironment
      * \see Environment
      */
-    class EnvironmentImplementation :
+    class PALUDIS_VISIBLE EnvironmentImplementation :
         public Environment
     {
         protected:

@@ -42,7 +42,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpversions
      */
-    class BadVersionSpecError :
+    class PALUDIS_VISIBLE BadVersionSpecError :
         public NameError
     {
         public:
@@ -60,7 +60,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    class VersionSpec :
+    class PALUDIS_VISIBLE VersionSpec :
         private PrivateImplementationPattern<VersionSpec>,
         public ComparisonPolicy<VersionSpec, comparison_mode::FullComparisonTag,
             comparison_method::CompareByMemberComparisonFunctionTag>
@@ -157,7 +157,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    std::ostream & operator<< (std::ostream &, const VersionSpec &);
+    std::ostream & operator<< (std::ostream &, const VersionSpec &) PALUDIS_VISIBLE;
 
     /**
      * Holds a collection of VersionSpec instances.

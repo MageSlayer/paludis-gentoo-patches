@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -102,21 +102,8 @@ namespace paludis
         };
     }
 
-#ifdef DOXYGEN
-    /**
-     * ComparisonPolicy specifies the availabillity of comparison methods and
-     * the strategy used to do comparisons.
-     *
-     * \ingroup grpcompare
-     */
-    template <typename OurType_, typename ComparisonModeTag_, typename ComparisonMethodTag_>
-    struct ComparisonPolicy
-    {
-    };
-#else
     template <typename OurType_, typename ComparisonModeTag_, typename ComparisonMethodTag_>
     struct ComparisonPolicy;
-#endif
 
     /**
      * ComparisonPolicy: specialisation for NoComparisonTag.

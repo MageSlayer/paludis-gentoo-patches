@@ -39,7 +39,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class VDBUnmergerError :
+    class PALUDIS_VISIBLE VDBUnmergerError :
         public UnmergerError
     {
         public:

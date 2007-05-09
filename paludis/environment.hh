@@ -79,7 +79,7 @@ namespace paludis
      * \see EnvironmentImplementation
      * \nosubgrouping
      */
-    class Environment :
+    class PALUDIS_VISIBLE Environment :
         private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>
     {
         public:

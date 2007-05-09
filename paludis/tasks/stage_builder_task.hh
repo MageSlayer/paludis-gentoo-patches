@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup grpstagebuildertask
      * \nosubgrouping
      */
-    class StageBuildError :
+    class PALUDIS_VISIBLE StageBuildError :
         public Exception
     {
         public:
@@ -58,7 +58,7 @@ namespace paludis
      * \ingroup grpstagebuildertask
      * \nosubgrouping
      */
-    class StageBase
+    class PALUDIS_VISIBLE StageBase
     {
         public:
             virtual ~StageBase();

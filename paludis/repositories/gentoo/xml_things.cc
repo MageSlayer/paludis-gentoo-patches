@@ -30,7 +30,7 @@ using namespace paludis;
 
 extern "C"
 {
-    std::tr1::shared_ptr<GLSA> create_glsa_from_xml_file(const std::string &);
+    std::tr1::shared_ptr<GLSA> PALUDIS_VISIBLE create_glsa_from_xml_file(const std::string &);
 }
 
 namespace
@@ -208,7 +208,7 @@ namespace paludis
 
 extern "C"
 {
-    void register_repositories(RepositoryMaker * maker);
+    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
 }
 
 void register_repositories(RepositoryMaker *)

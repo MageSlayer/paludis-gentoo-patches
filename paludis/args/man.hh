@@ -35,7 +35,7 @@ namespace paludis
          */
         void generate_doc(DocWriter & dw, const ArgsHandler * const h) PALUDIS_VISIBLE;
 
-        class DocWriter
+        class PALUDIS_VISIBLE DocWriter
         {
             public:
                 virtual ~DocWriter() = 0;
@@ -64,7 +64,7 @@ namespace paludis
                 virtual void paragraph(const std::string & text) = 0;
         };
 
-        class HtmlWriter :
+        class PALUDIS_VISIBLE HtmlWriter :
             public DocWriter
         {
             private:
@@ -98,7 +98,7 @@ namespace paludis
                 void paragraph(const std::string & text);
         };
 
-        class ManWriter :
+        class PALUDIS_VISIBLE ManWriter :
             public DocWriter
         {
             private:

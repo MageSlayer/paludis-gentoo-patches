@@ -36,7 +36,7 @@ namespace paludis
      *
      * \ingroup grpdepspecprettyprinter
      */
-    class DepSpecPrettyPrinter :
+    class PALUDIS_VISIBLE DepSpecPrettyPrinter :
         public DepSpecVisitorTypes::ConstVisitor
     {
         friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
@@ -81,7 +81,7 @@ namespace paludis
      *
      * \ingroup grpdepspecprettyprinter
      */
-    std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p);
+    std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p) PALUDIS_VISIBLE;
 }
 
 #endif

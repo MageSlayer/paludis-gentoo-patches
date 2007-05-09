@@ -34,7 +34,7 @@ namespace paludis
      * \ingroup grpadaptedenvironment
      * \nosubgrouping
      */
-    class AdaptedEnvironment :
+    class PALUDIS_VISIBLE AdaptedEnvironment :
         public Environment,
         private PrivateImplementationPattern<AdaptedEnvironment>
     {

@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_portage_dep_parser()
+void PALUDIS_VISIBLE expose_portage_dep_parser()
 {
     static register_exception<DepStringParseError>
         DepStringParseError("DepStringParseError");

@@ -31,7 +31,7 @@ namespace paludis
             const Environment & env,
             const PackageDepSpec & spec,
             const PackageDatabaseEntry & target)
-        PALUDIS_ATTRIBUTE((warn_unused_result));
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**
      * Return whether the specified spec matches the specified target, for heirarchies.
@@ -42,7 +42,7 @@ namespace paludis
             const Environment & env,
             const DepSpec & spec,
             const PackageDatabaseEntry & target)
-        PALUDIS_ATTRIBUTE((warn_unused_result));
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 
 #endif

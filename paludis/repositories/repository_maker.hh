@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class NoSuchRepositoryTypeError : public ConfigurationError
+    class PALUDIS_VISIBLE NoSuchRepositoryTypeError : public ConfigurationError
     {
         public:
             /**
@@ -64,7 +64,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grprepository
      */
-    class PaludisRepositorySoDirCannotDlopenError :
+    class PALUDIS_VISIBLE PaludisRepositorySoDirCannotDlopenError :
         public Exception
     {
         private:

@@ -58,7 +58,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsEntry :
+    class PALUDIS_VISIBLE ContentsEntry :
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
         public virtual VisitableInterface<ContentsVisitorTypes>
     {
@@ -91,7 +91,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsFileEntry :
+    class PALUDIS_VISIBLE ContentsFileEntry :
         public ContentsEntry,
         public Visitable<ContentsFileEntry, ContentsVisitorTypes>
     {
@@ -110,7 +110,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsDirEntry :
+    class PALUDIS_VISIBLE ContentsDirEntry :
         public ContentsEntry,
         public Visitable<ContentsDirEntry, ContentsVisitorTypes>
     {
@@ -129,7 +129,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsMiscEntry :
+    class PALUDIS_VISIBLE ContentsMiscEntry :
         public ContentsEntry,
         public Visitable<ContentsMiscEntry, ContentsVisitorTypes>
     {
@@ -148,7 +148,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsFifoEntry :
+    class PALUDIS_VISIBLE ContentsFifoEntry :
         public ContentsEntry,
         public Visitable<ContentsFifoEntry, ContentsVisitorTypes>
     {
@@ -167,7 +167,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsDevEntry :
+    class PALUDIS_VISIBLE ContentsDevEntry :
         public ContentsEntry,
         public Visitable<ContentsDevEntry, ContentsVisitorTypes>
     {
@@ -186,7 +186,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class ContentsSymEntry :
+    class PALUDIS_VISIBLE ContentsSymEntry :
         public ContentsEntry,
         public Visitable<ContentsSymEntry, ContentsVisitorTypes>
     {
@@ -211,7 +211,7 @@ namespace paludis
      * \ingroup grpcontents
      * \nosubgrouping
      */
-    class Contents :
+    class PALUDIS_VISIBLE Contents :
         private InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<Contents>
     {
@@ -246,14 +246,14 @@ namespace paludis
      *
      * \ingroup grpcontents
      */
-    std::ostream & operator<< (std::ostream &, const ContentsSymEntry &);
+    std::ostream & operator<< (std::ostream &, const ContentsSymEntry &) PALUDIS_VISIBLE;
 
     /**
      * Write a ContentsEntry to a stream
      *
      * \ingroup grpcontents
      */
-    std::ostream & operator<< (std::ostream &, const ContentsEntry &);
+    std::ostream & operator<< (std::ostream &, const ContentsEntry &) PALUDIS_VISIBLE;
 
 }
 

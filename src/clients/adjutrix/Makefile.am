@@ -26,6 +26,7 @@ man_adjutrix_SOURCES = \
 
 man_adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludismanpagethings.la \
 	$(top_builddir)/src/output/liboutput.a \

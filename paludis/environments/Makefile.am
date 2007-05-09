@@ -26,7 +26,7 @@ libpaludisenvironments_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	@DYNAMIC_LD_LIBS@
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_EQUAL(47503, (CRCHash<std::string>()("moo") & 0xffff));
+            TEST_CHECK_EQUAL(std::size_t(47503), (CRCHash<std::string>()("moo") & 0xffff));
         }
     } test_crc_hash;
 

@@ -20,6 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_SR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_SR_HH 1
 
+#include <paludis/util/attributes.hh>
+
 namespace paludis
 {
     /**
@@ -30,7 +32,7 @@ namespace paludis
     struct Empty
     {
         /// Convenience instance.
-        static const Empty instance;
+        static const PALUDIS_VISIBLE Empty instance;
     };
 
     template <bool value_, typename IfTrue_, typename IfFalse_>

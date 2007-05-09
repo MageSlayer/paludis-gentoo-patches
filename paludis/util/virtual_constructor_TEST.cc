@@ -46,8 +46,8 @@ namespace
             CookieSize _size;
 
         protected:
-            Cookie(CookieSize size) :
-                _size(size)
+            Cookie(CookieSize sz) :
+                _size(sz)
             {
             };
 
@@ -74,8 +74,8 @@ namespace
     class ChocolateChipCookie : public Cookie
     {
         public:
-            ChocolateChipCookie(CookieSize size) :
-                Cookie(size)
+            ChocolateChipCookie(CookieSize sz) :
+                Cookie(sz)
             {
             }
 
@@ -96,8 +96,8 @@ namespace
             bool _with_crunchy_bits;
 
         public:
-            GingerCookie(CookieSize size, bool with_crunchy_bits) :
-                Cookie(size),
+            GingerCookie(CookieSize sz, bool with_crunchy_bits) :
+                Cookie(sz),
                 _with_crunchy_bits(with_crunchy_bits)
             {
             }

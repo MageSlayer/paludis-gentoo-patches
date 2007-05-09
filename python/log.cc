@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_log()
+void PALUDIS_VISIBLE expose_log()
 {
     enum_auto("LogLevel", last_ll);
     enum_auto("LogContext", last_lc);

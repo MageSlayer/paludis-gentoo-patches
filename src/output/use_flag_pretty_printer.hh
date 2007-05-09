@@ -28,7 +28,7 @@ namespace paludis
     class Environment;
     class PackageDatabaseEntry;
 
-    class UseFlagPrettyPrinter
+    class PALUDIS_VISIBLE UseFlagPrettyPrinter
     {
         private:
             const Environment * const _env;

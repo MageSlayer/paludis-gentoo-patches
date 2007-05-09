@@ -199,7 +199,7 @@ namespace test_cases
             std::set<int> v;
             std::generate_n(filter_inserter(std::inserter(v, v.begin()), std::ptr_fun(&is_even)),
                     5, Counter());
-            TEST_CHECK_EQUAL(v.size(), 3);
+            TEST_CHECK_EQUAL(v.size(), std::size_t(3));
             for (int n = 0 ; n < 5 ; ++n)
             {
                 TestMessageSuffix s("n=" + stringify(n));
@@ -282,7 +282,7 @@ namespace test_cases
             std::vector<int> v;
             std::generate_n(transform_inserter(std::back_inserter(v), std::ptr_fun(&f)),
                     5, Counter());
-            TEST_CHECK_EQUAL(v.size(), 5);
+            TEST_CHECK_EQUAL(v.size(), std::size_t(5));
             for (int n = 0 ; n < 5 ; ++n)
             {
                 TestMessageSuffix s("n=" + stringify(n));
@@ -342,7 +342,7 @@ namespace test_cases
             std::vector<C> vv;
             std::copy(v.begin(), v.end(), create_inserter<C>(std::back_inserter(vv)));
 
-            TEST_CHECK_EQUAL(vv.size(), 2);
+            TEST_CHECK_EQUAL(vv.size(), std::size_t(2));
             TEST_CHECK_EQUAL(vv.at(0).s, "one");
             TEST_CHECK_EQUAL(vv.at(1).s, "two");
         }

@@ -19,7 +19,7 @@ $1_TEST_LDADD = \
 	test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludisutil.la
-$1_TEST_CXXFLAGS = -I$(top_srcdir)
+$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
@@ -60,6 +60,8 @@ ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
 
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_VISIBILITY@
+
 include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
@@ -67,7 +69,6 @@ MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
 	hashed_containers.hh util.hh
 DISTCLEANFILES = srcleanlist secleanlist
 BUILT_SOURCES = srcleanlist secleanlist
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"

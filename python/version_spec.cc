@@ -26,7 +26,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_version_spec()
+void PALUDIS_VISIBLE expose_version_spec()
 {
     static register_exception<BadVersionSpecError>
         BadVersionSpecError("BadVersionSpecError");

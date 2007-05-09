@@ -34,7 +34,7 @@ namespace paludis
      * \ingroup grpenvironment
      * \nosubgrouping
      */
-    class Hook :
+    class PALUDIS_VISIBLE Hook :
         private PrivateImplementationPattern<Hook>
     {
         public:

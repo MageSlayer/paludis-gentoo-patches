@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,17 +35,17 @@ namespace paludis
     class PALUDIS_VISIBLE RMD160
     {
         private:
-            static const uint8_t _r[80], _rp[80];
-            static const uint8_t _s[80], _sp[80];
-            static const uint32_t _k[5], _kp[5];
+            static const PALUDIS_HIDDEN uint8_t _r[80], _rp[80];
+            static const PALUDIS_HIDDEN uint8_t _s[80], _sp[80];
+            static const PALUDIS_HIDDEN uint32_t _k[5], _kp[5];
 
             uint32_t _h[5];
             uint64_t _size;
             bool _done_one_pad;
 
-            void _update(const uint8_t * const block);
+            void PALUDIS_HIDDEN _update(const uint8_t * const block);
 
-            inline int _get(std::istream & stream);
+            inline int PALUDIS_HIDDEN _get(std::istream & stream);
 
         public:
             /**

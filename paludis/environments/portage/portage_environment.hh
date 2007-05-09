@@ -31,7 +31,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \nosubgrouping
      */
-    class PortageEnvironmentConfigurationError :
+    class PALUDIS_VISIBLE PortageEnvironmentConfigurationError :
         public ConfigurationError
     {
         public:
@@ -49,7 +49,7 @@ namespace paludis
      * \ingroup grpportageenvironment
      * \nosubgrouping
      */
-    class PortageEnvironment :
+    class PALUDIS_VISIBLE PortageEnvironment :
         public EnvironmentImplementation,
         private PrivateImplementationPattern<PortageEnvironment>
     {

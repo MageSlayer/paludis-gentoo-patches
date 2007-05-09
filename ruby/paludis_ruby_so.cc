@@ -18,10 +18,11 @@
  */
 
 #include "paludis_ruby.hh"
+#include <paludis/util/attributes.hh>
 
 extern "C"
 {
-    void Init_Paludis()
+    void PALUDIS_VISIBLE Init_Paludis()
     {
         paludis::ruby::init();
     }

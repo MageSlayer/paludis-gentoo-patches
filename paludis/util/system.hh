@@ -100,7 +100,7 @@ namespace paludis
      * \ingroup grpsystem
      * \nosubgrouping
      */
-    class Command :
+    class PALUDIS_VISIBLE Command :
         private PrivateImplementationPattern<Command>
     {
         public:
