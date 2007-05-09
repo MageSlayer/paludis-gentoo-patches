@@ -1003,6 +1003,19 @@ else
 fi
 dnl }}}
 
+dnl {{{ is ldconfig gnu ldconfig
+AC_MSG_CHECKING([if we have GNU ldconfig])
+ldconfig --version &>/dev/null && paludis_is_gnu_ldconfig=yes
+if test x$paludis_is_gnu_ldconfig = "xyes"; then
+	AC_DEFINE([HAVE_GNU_LDCONFIG], 1, [Define to 1 if you have GNU 'ldconfig'.])
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi
+AC_SUBST([HAVE_GNU_LDCONFIG])
+AM_CONDITIONAL([HAVE_GNU_LDCONFIG], test x$paludis_is_gnu_ldconfig = "xyes")
+dnl }}}
+
 dnl {{{ built sources
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)
