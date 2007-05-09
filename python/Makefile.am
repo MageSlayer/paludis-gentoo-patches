@@ -97,7 +97,7 @@ libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(PYTHON_INCLUDE_DIR) -c \
-	    -o $@ $(srcdir)/paludis_python_so.cc ; then ln -s .libs/paludis_python_so.o $@ ; else rm -f $@ ; exit 1 ; fi
+	    -o $@ $(srcdir)/paludis_python_so.cc ; then ln -fs .libs/paludis_python_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
 if ENABLE_QA
 
