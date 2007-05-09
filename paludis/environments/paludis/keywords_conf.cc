@@ -127,7 +127,7 @@ bool
 KeywordsConf::query(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
 {
     static const KeywordName star_keyword("*");
-    static const KeywordName minus_star_keyword("*");
+    static const KeywordName minus_star_keyword("-*");
 
     if (k->end() != k->find(star_keyword))
         return true;
