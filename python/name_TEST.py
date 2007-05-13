@@ -33,6 +33,8 @@ class TestCase_Names(unittest.TestCase):
         self.names["repo"] = RepositoryName("repo")
         self.names["keyword"] = KeywordName("keyword")
         self.names["set"] = SetName("set")
+        IUseFlag("foo", IUseFlagParseMode.PERMISSIVE)
+        IUseFlag("foo", UseFlagState.ENABLED)
 
     def test_2_create_error(self):
         self.assertRaises(PackageNamePartError, PackageNamePart, ":bad")
@@ -54,8 +56,12 @@ class TestCase_Names(unittest.TestCase):
         for (k, v) in self.names.items():
             self.assertEqual(str(v), k)
 
+        self.assertEqual(str(IUseFlag("foo", UseFlagState.ENABLED)), "+foo")
+
     def test_4_operators(self):
         self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
+        self.assert_(IUseFlag("foo", UseFlagState.ENABLED) == IUseFlag("+foo", IUseFlagParseMode.PERMISSIVE))
+
 
     def test_5_data_members(self):
         qpn = QualifiedPackageName("cat/foo")
@@ -65,6 +71,11 @@ class TestCase_Names(unittest.TestCase):
         qpn.package = "bar"
         self.assertEqual(str(qpn.category), "blah")
         self.assertEqual(str(qpn.package), "bar")
+
+        iuf = IUseFlag("foo", UseFlagState.ENABLED)
+        iuf.flag = "blah"
+        iuf.state = UseFlagState.DISABLED
+        self.assertEqual(str(iuf), "-blah")
 
 if __name__ == "__main__":
     unittest.main()

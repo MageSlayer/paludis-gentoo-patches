@@ -35,6 +35,8 @@ void PALUDIS_VISIBLE expose_name()
         QualifiedPackageNameError("QualifiedPackageNameError");
     static register_exception<UseFlagNameError>
         UseFlagNameError("UseFlagNameError");
+    static register_exception<IUseFlagNameError>
+        IUseFlagNameError("IUseFlagNameError");
     static register_exception<SlotNameError>
         SlotNameError("SlotNameError");
     static register_exception<RepositoryNameError>
@@ -52,7 +54,8 @@ void PALUDIS_VISIBLE expose_name()
 
     class_collection<PackageNamePartCollection>
         pnpc("PackageNamePartCollection",
-                "Iterable collection of PackageNamePart instances."
+                "Iterable of PackageNamePart.\n"
+                "A collection of PackageNamePart instances."
             );
 
     class_validated<CategoryNamePart>
@@ -65,7 +68,8 @@ void PALUDIS_VISIBLE expose_name()
 
     class_collection<CategoryNamePartCollection>
         cnpc("CategoryNamePartCollection",
-                "Iterable collection of CategoryNamePart instances."
+                "Iterable of CategoryNamePart.\n"
+                "A collection of CategoryNamePart instances."
             );
 
     class_validated<UseFlagName>
@@ -75,7 +79,8 @@ void PALUDIS_VISIBLE expose_name()
 
     class_collection<UseFlagNameCollection>
         ufnc("UseFlagNameCollection",
-                "Iterable collection of UseFlagName instances."
+                "Iterable of UseFlagName.\n"
+                "A collection of UseFlagName instances."
             );
 
     class_validated<SlotName>
@@ -92,13 +97,20 @@ void PALUDIS_VISIBLE expose_name()
 
     class_collection<RepositoryNameCollection>
         rnc("RepositoryNameCollection",
-                "Iterable collection of RepositoryName instances."
+                "Iterable of RepositoryName\n"
+                "A collection of RepositoryName instances."
             );
 
     class_validated<KeywordName>
         kn("KeywordName",
                 "Holds a string that is a valid name for a KEYWORD."
           );
+
+    class_collection<KeywordNameCollection>
+        knc("KeywordNameCollection",
+                "Iterable of KeywordName\n"
+                "A collection of KeywordName instances."
+            );
 
     class_validated<SetName>
         stn("SetName",
@@ -109,6 +121,12 @@ void PALUDIS_VISIBLE expose_name()
         sc("SetNameCollection",
                 "Iterable of SetName\n"
                 "A collection of set names."
+          );
+
+    class_collection<InheritedCollection>
+        ic("InheritedCollection",
+                "Iterable of string\n"
+                "A collection of inherited packages."
           );
 
     register_shared_ptrs_to_python<QualifiedPackageName>();
@@ -126,12 +144,31 @@ void PALUDIS_VISIBLE expose_name()
 
     class_collection<QualifiedPackageNameCollection>
         qpnc("QualifiedPackageNameCollection",
-                "Iterable collection of QualifiedPackageName instances."
+                "Iterable of QualifiedPackageName\n"
+                "A collection of QualifiedPackageName instances."
             );
 
-    bp::enum_<UseFlagState>
-        ufs("UseFlagState");
-    ufs.value("UNSPECIFIED", use_unspecified);
-    ufs.value("DISABLED", use_disabled);
-    ufs.value("ENABLED", use_enabled);
+    bp::class_<IUseFlag>
+        iuf("IUseFlag",
+                "Represents an IUse flag.",
+                bp::init<const std::string &, IUseFlagParseMode>("__init__(string, IUseFlagParseMode")
+           );
+    iuf.def(bp::init<const UseFlagName &, const UseFlagState &>("__init__(UseFlagName, UseFlagState)"));
+    iuf.def("__cmp__", &IUseFlag::compare);
+    iuf.def(bp::self_ns::str(bp::self));
+    iuf.def_readwrite("flag", &IUseFlag::flag,
+            "[rw] UseFlagName"
+            );
+    iuf.def_readwrite("state", &IUseFlag::state,
+            "[rw] UseFlagState"
+            );
+
+    class_collection<IUseFlagCollection>
+        iufc("IUseFlagCollection",
+                "Iterable of IUseFlag\n"
+                "A collection of use flags."
+            );
+
+    enum_auto("UseFlagState", last_use);
+    enum_auto("IUseFlagParseMode", last_iuse_pm);
 }

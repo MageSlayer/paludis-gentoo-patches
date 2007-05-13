@@ -48,7 +48,7 @@ class TestCase_VersionMetadata(unittest.TestCase):
         vmd = self.vmd("1.0")
 
         self.assertEquals(str(vmd.slot), "0")
-#        self.assertEquals(vmd.homepage, "http://paludis.pioto.org/")
+        self.assertEquals(str(iter(vmd.homepage).next()), "http://paludis.pioto.org/")
         self.assertEquals(vmd.description, "Test package")
         self.assertEquals(vmd.eapi, "0")
 
@@ -59,13 +59,13 @@ class TestCase_VersionMetadata(unittest.TestCase):
         self.assert_(isinstance(ei, VersionMetadataEbuildInterface))
         self.assert_(isinstance(ei2, VersionMetadataEbuildInterface))
 
-#        self.assertEquals(ei.provide_string, "")
-#        self.assertEquals(ei.src_uri_string, "http://example.com/bar-1.0.tar.bz2")
-#        self.assertEquals(ei.restrict_string, "monkey")
-#        self.assertEquals(ei.keywords_string, "test ")
-#        self.assertEquals(ei.eclass_keywords, "")
-#        self.assertEquals(ei.iuse, " ")
-#        self.assertEquals(ei.inherited, "")
+        self.assertEquals(len(list(ei.provide)), 0)
+        self.assertEquals(str(iter(ei.src_uri).next()), "http://example.com/bar-1.0.tar.bz2")
+        self.assertEquals(str(iter(ei.restrictions).next()), "monkey")
+        self.assertEquals(str(iter(ei.keywords).next()), "test")
+        self.assertEquals(len(list(ei.eclass_keywords)), 0)
+        self.assertEquals(len(list(ei.iuse)), 0)
+        self.assertEquals(len(list(ei.inherited)), 0)
 
     def test_05_ebin_interface_TODO(self):
         pass
@@ -80,15 +80,16 @@ class TestCase_VersionMetadata(unittest.TestCase):
         self.assert_(isinstance(di, VersionMetadataDepsInterface))
         self.assert_(isinstance(di2, VersionMetadataDepsInterface))
 
-#        self.assertEquals(di.build_depend_string.strip(), "foo/bar")
-#        self.assertEquals(di.run_depend_string.strip(), "")
-#        self.assertEquals(di.post_depend_string.strip(), "")
-#        self.assertEquals(di.suggested_depend_string, "")
-
         self.assert_(isinstance(di.build_depend, AllDepSpec))
         self.assert_(isinstance(di.run_depend, AllDepSpec))
         self.assert_(isinstance(di.suggested_depend, AllDepSpec))
         self.assert_(isinstance(di.post_depend, AllDepSpec))
+
+        self.assertEquals(str(iter(di.build_depend).next()), "foo/bar")
+        self.assertEquals(len(list(di.run_depend)), 0)
+        self.assertEquals(len(list(di.post_depend)), 0)
+        self.assertEquals(len(list(di.suggested_depend)), 0)
+
 
     def test_08_origins_interface(self):
         oi = self.vmd_vdb("cat-one/pkg-one", "1").origins_interface
@@ -108,8 +109,8 @@ class TestCase_VersionMetadata(unittest.TestCase):
         self.assert_(isinstance(li, VersionMetadataLicenseInterface))
         self.assert_(isinstance(li2, VersionMetadataLicenseInterface))
 
-#        self.assertEquals(li.license_string, "GPL-2")
-#        self.assertEquals(li2.license_string, "")
+        self.assertEquals(str(iter(li.license).next()), "GPL-2")
+        self.assertEquals(len(list(li2.license)), 0)
 
 if __name__ == "__main__":
     unittest.main()

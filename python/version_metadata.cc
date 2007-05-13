@@ -81,11 +81,9 @@ void PALUDIS_VISIBLE expose_version_metadata()
     vm.def_readonly("slot", &VersionMetadata::slot,
             "[ro] SlotName"
             );
-#ifdef CIARANM_REMOVED_THIS
     vm.def_readonly("homepage", &VersionMetadata::homepage,
-            "[ro] string"
+            "[ro] DepSpec"
             );
-#endif
     vm.def_readonly("description", &VersionMetadata::description,
             "[ro] string"
             );
@@ -128,29 +126,27 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 bp::no_init
                 );
 
-#ifdef CIARANM_REMOVED_THIS
-    ebuild_i.def_readonly("provide_string", &VersionMetadataEbuildInterface::provide_string,
-            "[ro] string"
+    ebuild_i.def_readonly("provide", &VersionMetadataEbuildInterface::provide,
+            "[ro] DepSpec"
             );
-    ebuild_i.def_readonly("src_uri_string", &VersionMetadataEbuildInterface::src_uri_string,
-            "[ro] string"
+    ebuild_i.def_readonly("src_uri", &VersionMetadataEbuildInterface::src_uri,
+            "[ro] DepSpec"
             );
-    ebuild_i.def_readonly("restrict_string", &VersionMetadataEbuildInterface::restrict_string,
-            "[ro] string"
+    ebuild_i.def_readonly("restrictions", &VersionMetadataEbuildInterface::restrictions,
+            "[ro] DepSpec"
             );
-    ebuild_i.def_readonly("keywords_string", &VersionMetadataEbuildInterface::keywords_string,
-            "[ro] string"
+    ebuild_i.def_readonly("keywords", &VersionMetadataEbuildInterface::keywords,
+            "[ro] KeywordNameCollection"
             );
     ebuild_i.def_readonly("eclass_keywords", &VersionMetadataEbuildInterface::eclass_keywords,
             "[ro] string"
             );
     ebuild_i.def_readonly("iuse", &VersionMetadataEbuildInterface::iuse,
-            "[ro] string"
+            "[ro] IUseFlagCollection"
             );
     ebuild_i.def_readonly("inherited", &VersionMetadataEbuildInterface::inherited,
-            "[ro] string"
+            "[ro] InheritedCollection"
             );
-#endif
 
     bp::register_ptr_to_python<VersionMetadataEbinInterface *>();
     bp::class_<VersionMetadataEbinInterface, boost::noncopyable>
@@ -158,11 +154,9 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "Version metadata for Ebins.",
                 bp::no_init
               );
-#ifdef CIARANM_REMOVED_THIS
-    ebin_i.def_readonly("bin_uri_string", &VersionMetadataEbinInterface::bin_uri_string,
-            "[ro] string"
+    ebin_i.def_readonly("bin_uri", &VersionMetadataEbinInterface::bin_uri,
+            "[ro] DepSpec"
             );
-#endif
 
     bp::register_ptr_to_python<VersionMetadataCRANInterface *>();
     bp::class_<VersionMetadataCRANInterface, boost::noncopyable>
@@ -186,20 +180,6 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "Dependency data for VersionMetadata.",
                 bp::no_init
                 );
-#ifdef CIARANM_REMOVED_THIS
-    deps_i.def_readonly("build_depend_string", &VersionMetadataDepsInterface::build_depend_string,
-            "[ro] string"
-            );
-    deps_i.def_readonly("run_depend_string", &VersionMetadataDepsInterface::run_depend_string,
-            "[ro] string"
-            );
-    deps_i.def_readonly("post_depend_string", &VersionMetadataDepsInterface::post_depend_string,
-            "[ro] string"
-            );
-    deps_i.def_readonly("suggested_depend_string", &VersionMetadataDepsInterface::suggested_depend_string,
-            "[ro] string"
-            );
-#endif
     deps_i.add_property("build_depend", &VersionMetadataDepsInterface::build_depend,
             "[ro] DepSpec"
             );
@@ -244,10 +224,8 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "License data for VersionMetadata.",
                 bp::no_init
                 );
-#ifdef CIARANM_REMOVED_THIS
-    license_i.def_readonly("license_string", &VersionMetadataLicenseInterface::license_string,
-            "[ro] string"
+    license_i.def_readonly("license", &VersionMetadataLicenseInterface::license,
+            "[ro] DepSpec"
             );
-#endif
 }
 
