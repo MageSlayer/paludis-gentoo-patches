@@ -664,7 +664,7 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
             }
     }
 
-    if (use_unspecified == result && e)
+    if (use_unspecified == result && e && _imp->repository->has_version(e->name, e->version))
     {
         std::tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e->name, e->version));
         if (m->ebuild_interface)
