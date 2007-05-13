@@ -129,7 +129,7 @@ namespace
                 else
                 {
                     qo = static_cast<QueryOrder>(NUM2INT(argv[2]));
-                    rb_warn("Calling query with (PackageDepSpec, InstallState, QUeryOrder) has been deprecated");
+                    rb_warn("Calling query with (PackageDepSpec, InstallState, QueryOrder) has been deprecated");
                 }
 
                 std::tr1::shared_ptr<PackageDatabase> * self_ptr;
