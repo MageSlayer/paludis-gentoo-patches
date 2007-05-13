@@ -20,6 +20,7 @@
 #include <paludis/repositories/gentoo/portage_repository_profile.hh>
 #include <paludis/repositories/gentoo/portage_repository_profile_file.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
@@ -30,6 +31,7 @@
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/version_metadata.hh>
 
 #include <list>
 #include <algorithm>
@@ -107,6 +109,7 @@ namespace paludis
             ///\{
 
             const Environment * const env;
+            const PortageRepository * const repository;
 
             ///\}
 
@@ -152,9 +155,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Implementation(const Environment * const e, const RepositoryName & name,
-                    const FSEntryCollection & dirs) :
+            Implementation(const Environment * const e, const PortageRepository * const p,
+                    const RepositoryName & name, const FSEntryCollection & dirs) :
                 env(e),
+                repository(p),
                 system_packages(new AllDepSpec),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
@@ -569,9 +573,10 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
 }
 
 PortageRepositoryProfile::PortageRepositoryProfile(
-        const Environment * const env, const RepositoryName & name, const FSEntryCollection & location) :
+        const Environment * const env, const PortageRepository * const p, const RepositoryName & name,
+        const FSEntryCollection & location) :
     PrivateImplementationPattern<PortageRepositoryProfile>(
-            new Implementation<PortageRepositoryProfile>(env, name, location))
+            new Implementation<PortageRepositoryProfile>(env, p, name, location))
 {
 }
 
@@ -657,6 +662,17 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
                 if (g->second.end() != h)
                     result = h->second ? use_enabled : use_disabled;
             }
+    }
+
+    if (use_unspecified == result && e)
+    {
+        std::tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e->name, e->version));
+        if (m->ebuild_interface)
+        {
+            IUseFlagCollection::Iterator i(m->ebuild_interface->iuse()->find(IUseFlag(u, use_unspecified)));
+            if (i != m->ebuild_interface->iuse()->end())
+                result = i->state;
+        }
     }
 
     return result;

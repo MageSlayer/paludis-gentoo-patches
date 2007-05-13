@@ -38,6 +38,7 @@
 namespace paludis
 {
     class Environment;
+    class PortageRepository;
 
     /**
      * Holds the profile data (but <em>not</em> the profiles/ top level data) for
@@ -55,6 +56,7 @@ namespace paludis
             ///\{
 
             PortageRepositoryProfile(const Environment * const env,
+                    const PortageRepository * const,
                     const RepositoryName & name,
                     const FSEntryCollection & location);
             ~PortageRepositoryProfile();

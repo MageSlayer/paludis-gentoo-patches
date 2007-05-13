@@ -225,7 +225,7 @@ namespace paludis
             return;
 
         profile_ptr.reset(new PortageRepositoryProfile(
-                    params.environment, repo->name(), *params.profiles));
+                    params.environment, repo, repo->name(), *params.profiles));
     }
 
     void
@@ -261,7 +261,7 @@ namespace paludis
                         .path(*profiles.begin())
                         .status(tokens.at(2))
                         .profile(std::tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
-                                    params.environment, repo->name(), profiles))));
+                                    params.environment, repo, repo->name(), profiles))));
             }
         }
 
