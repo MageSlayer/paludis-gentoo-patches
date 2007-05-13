@@ -27,6 +27,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/join.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <set>
 #include <fstream>
 
@@ -75,28 +77,28 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
             KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments +
             kvcfo_disallow_space_around_equals + kvcfo_disallow_source);
 
-    result->run_depend_string = f.get("RDEPEND");
-    result->post_depend_string = f.get("PDEPEND");
-    result->suggested_depend_string = f.get("SDEPEND");
+    result->set_run_depend(f.get("RDEPEND"));
+    result->set_post_depend(f.get("PDEPEND"));
+    result->set_suggested_depend(f.get("SDEPEND"));
 
-    result->license_string = f.get("LICENSE");
+    result->set_license(f.get("LICENSE"));
 
     result->source.reset();
     result->binary.reset();
 
     result->slot = SlotName(f.get("SLOT"));
-    result->homepage = f.get("HOMEPAGE");
+    result->set_homepage(f.get("HOMEPAGE"));
     result->description = f.get("DESCRIPTION");
     result->eapi = f.get("EAPI");
 
-    result->provide_string = f.get("PROVIDE");
-    result->src_uri_string = f.get("SRC_URI");
-    result->restrict_string = f.get("RESTRICT");
-    result->keywords_string = f.get("KEYWORDS");
-    result->iuse = f.get("IUSE");
-    result->inherited = f.get("INHERITED");
+    result->set_provide(f.get("PROVIDE"));
+    result->set_src_uri(f.get("SRC_URI"));
+    result->set_restrictions(f.get("RESTRICT"));
+    result->set_keywords(f.get("KEYWORDS"));
+    result->set_iuse(f.get("IUSE"));
+    result->set_inherited(f.get("INHERITED"));
 
-    result->bin_uri_string = f.get("BIN_URI");
+    result->set_bin_uri(f.get("BIN_URI"));
 
     return result;
 }
@@ -371,27 +373,44 @@ EbinEntries::merge(const MergeOptions & m)
 
     if (metadata->deps_interface)
     {
-        ebin_file << "RDEPEND=" << metadata->deps_interface->run_depend_string << std::endl;
-        ebin_file << "PDEPEND=" << metadata->deps_interface->post_depend_string << std::endl;
-        ebin_file << "SDEPEND=" << metadata->deps_interface->suggested_depend_string << std::endl;
+        DepSpecPrettyPrinter r(0, false), p(0, false), s(0, false);
+        metadata->deps_interface->run_depend()->accept(&r);
+        metadata->deps_interface->post_depend()->accept(&p);
+        metadata->deps_interface->suggested_depend()->accept(&s);
+        ebin_file << "RDEPEND=" << r << std::endl;
+        ebin_file << "PDEPEND=" << p << std::endl;
+        ebin_file << "SDEPEND=" << s << std::endl;
     }
 
     if (metadata->license_interface)
-        ebin_file << "LICENSE=" << metadata->license_interface->license_string << std::endl;
+    {
+        DepSpecPrettyPrinter l(0, false);
+        metadata->license_interface->license()->accept(&l);
+        ebin_file << "LICENSE=" << l << std::endl;
+    }
 
     ebin_file << "SLOT=" << metadata->slot << std::endl;
-    ebin_file << "HOMEPAGE=" << metadata->homepage << std::endl;
+    DepSpecPrettyPrinter h(0, false);
+    metadata->homepage()->accept(&h);
+    ebin_file << "HOMEPAGE=" << h << std::endl;
     ebin_file << "DESCRIPTION=" << metadata->description << std::endl;
     ebin_file << "EAPI=" << metadata->eapi << std::endl;
 
     if (metadata->ebuild_interface)
     {
-        ebin_file << "PROVIDE=" << metadata->ebuild_interface->provide_string << std::endl;
-        ebin_file << "SRC_URI=" << metadata->ebuild_interface->src_uri_string << std::endl;
-        ebin_file << "RESTRICT=" << metadata->ebuild_interface->restrict_string << std::endl;
-        ebin_file << "KEYWORDS=" << metadata->ebuild_interface->keywords_string << std::endl;
-        ebin_file << "IUSE=" << metadata->ebuild_interface->iuse << std::endl;
-        ebin_file << "INHERITED=" << metadata->ebuild_interface->inherited << std::endl;
+        DepSpecPrettyPrinter p(0, false), s(0, false), r(0, false);
+        metadata->ebuild_interface->provide()->accept(&p);
+        metadata->ebuild_interface->src_uri()->accept(&s);
+        metadata->ebuild_interface->restrictions()->accept(&r);
+        ebin_file << "PROVIDE=" << p << std::endl;
+        ebin_file << "SRC_URI=" << s << std::endl;
+        ebin_file << "RESTRICT=" << r << std::endl;
+        ebin_file << "KEYWORDS=" << join(metadata->ebuild_interface->keywords()->begin(),
+                metadata->ebuild_interface->keywords()->end(), " ") << std::endl;
+        ebin_file << "IUSE=" << join(metadata->ebuild_interface->iuse()->begin(),
+                metadata->ebuild_interface->iuse()->end(), " ") << std::endl;
+        ebin_file << "INHERITED=" << join(metadata->ebuild_interface->inherited()->begin(),
+                metadata->ebuild_interface->inherited()->end(), " ") << std::endl;
     }
 
     FSEntry pkg_file_name(_imp->params.pkgdir / (

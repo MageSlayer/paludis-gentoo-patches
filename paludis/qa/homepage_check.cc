@@ -25,6 +25,55 @@
 using namespace paludis;
 using namespace paludis::qa;
 
+namespace
+{
+    struct Checker :
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+    {
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+
+        CheckResult & result;
+        bool found_one;
+
+        Checker(CheckResult & rr) :
+            result(rr),
+            found_one(false)
+        {
+        }
+
+        void visit(const PackageDepSpec * const)
+        {
+            result << Message(qal_major, "Got a PackageDepSpec in HOMEPAGE");
+        }
+
+        void visit(const PlainTextDepSpec * const t)
+        {
+            std::string text(t->text());
+
+            if (std::string::npos == text.find("http://") &&
+                    std::string::npos == text.find("https://") &&
+                    std::string::npos == text.find("ftp://"))
+                result << Message(qal_major, "HOMEPAGE part '" + text + "' doesn't look like a URL");
+
+            found_one = true;
+        }
+
+        void visit(const BlockDepSpec * const)
+        {
+            result << Message(qal_major, "Got a PackageDepSpec in HOMEPAGE");
+        }
+
+        void visit(const AnyDepSpec * const a)
+        {
+            result << Message(qal_major, "Got a || ( ) block in HOMEPAGE");
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+    };
+}
+
 HomepageCheck::HomepageCheck()
 {
 }
@@ -42,15 +91,11 @@ HomepageCheck::operator() (const EbuildCheckData & e) const
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        std::string homepage(metadata->homepage);
+        Checker c(result);
+        metadata->homepage()->accept(&c);
 
-        if (homepage.empty())
+        if (! c.found_one)
             result << Message(qal_major, "HOMEPAGE empty or unset");
-
-        else if (std::string::npos == homepage.find("http://") &&
-                std::string::npos == homepage.find("https://") &&
-                std::string::npos == homepage.find("ftp://"))
-            result << Message(qal_major, "HOMEPAGE doesn't look like a URL");
     }
     catch (const InternalError &)
     {

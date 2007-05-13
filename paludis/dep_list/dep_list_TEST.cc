@@ -66,7 +66,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             repo->add_version("cat", "two", "1");
         }
 
@@ -86,8 +86,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/three");
             repo->add_version("cat", "three", "1");
         }
 
@@ -108,7 +108,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -130,8 +130,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/three");
             repo->add_version("cat", "three", "1");
         }
 
@@ -152,9 +152,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
             repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/two");
         }
 
         void populate_expected()
@@ -174,9 +174,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/four";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/four");
             repo->add_version("cat", "four", "1");
         }
 
@@ -198,9 +198,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four cat/three";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/four";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four cat/three");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/four");
             repo->add_version("cat", "four", "1");
         }
 
@@ -222,9 +222,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/four cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/four cat/two");
             repo->add_version("cat", "four", "1");
         }
 
@@ -246,7 +246,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -267,9 +267,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
             repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/four )";
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("|| ( cat/two cat/four )");
             repo->add_version("cat", "four", "1");
         }
 
@@ -290,7 +290,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( ( cat/two cat/three ) cat/four )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( ( cat/two cat/three ) cat/four )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
             repo->add_version("cat", "four", "1");
@@ -313,10 +313,10 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three cat/four";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three cat/four");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
-            repo->add_version("cat", "four", "1")->deps_interface->build_depend_string = "|| ( ( cat/two cat/three ) cat/five )";
+            repo->add_version("cat", "four", "1")->deps_interface->set_build_depend("|| ( ( cat/two cat/three ) cat/five )");
         }
 
         void populate_expected()
@@ -337,7 +337,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
             repo->add_version("cat", "three", "1");
         }
 
@@ -357,8 +357,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/three )";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four");
             repo->add_version("cat", "three", "1");
         }
 
@@ -378,7 +378,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two:slot2";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two:slot2");
             repo->add_version("cat", "two", "1.1")->slot = SlotName("slot1");
             repo->add_version("cat", "two", "1.2")->slot = SlotName("slot2");
             repo->add_version("cat", "two", "1.3")->slot = SlotName("slot3");
@@ -400,7 +400,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "<cat/two-1.2-r2:slot2";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("<cat/two-1.2-r2:slot2");
             repo->add_version("cat", "two", "1.1")->slot = SlotName("slot1");
             repo->add_version("cat", "two", "1.2")->slot = SlotName("slot2");
             repo->add_version("cat", "two", "1.2-r1")->slot = SlotName("slot2");
@@ -424,7 +424,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( )");
         }
 
         void populate_expected()
@@ -442,7 +442,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "enabled? ( cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("enabled? ( cat/two )");
             repo->add_version("cat", "two", "1");
         }
 
@@ -462,7 +462,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "!enabled? ( cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("!enabled? ( cat/two )");
             repo->add_version("cat", "two", "1");
         }
 
@@ -481,7 +481,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "disabled? ( cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("disabled? ( cat/two )");
             repo->add_version("cat", "two", "1");
         }
 
@@ -500,7 +500,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "!disabled? ( cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("!disabled? ( cat/two )");
             repo->add_version("cat", "two", "1");
         }
 
@@ -520,7 +520,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( enabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( enabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -541,7 +541,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( !enabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( !enabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -562,7 +562,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( disabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( disabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -583,7 +583,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( !disabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( !disabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -604,7 +604,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( enabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( enabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -625,7 +625,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( !enabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( !enabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -646,7 +646,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( disabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( disabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -667,7 +667,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( !disabled? ( cat/two ) cat/three )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( !disabled? ( cat/two ) cat/three )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -688,7 +688,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( enabled? ( cat/three ) cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( enabled? ( cat/three ) cat/two )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -709,7 +709,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( !enabled? ( cat/three ) cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( !enabled? ( cat/three ) cat/two )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -731,7 +731,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( disabled? ( cat/three ) cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( disabled? ( cat/three ) cat/two )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -753,7 +753,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/three || ( !disabled? ( cat/three ) cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three || ( !disabled? ( cat/three ) cat/two )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -774,7 +774,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -795,7 +795,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -816,7 +816,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "1");
         }
@@ -836,8 +836,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/three )";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/one";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/one");
             repo->add_version("cat", "three", "1");
         }
 
@@ -857,8 +857,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two cat/three )";
-            repo->add_version("cat", "two", "1")->deps_interface->post_depend_string = "cat/one";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->deps_interface->set_post_depend("cat/one");
             repo->add_version("cat", "three", "1");
         }
 
@@ -878,7 +878,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two cat/two )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two cat/two )");
             repo->add_version("cat", "two", "1");
         }
 
@@ -898,8 +898,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two[enabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "enabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two[enabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("enabled");
         }
 
         void populate_expected()
@@ -918,8 +918,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two[-disabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "disabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two[-disabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("disabled");
         }
 
         void populate_expected()
@@ -938,8 +938,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two[disabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "disabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two[disabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("disabled");
         }
 
         void populate_expected()
@@ -965,8 +965,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two[-enabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "enabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two[-enabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("enabled");
         }
 
         void populate_expected()
@@ -992,8 +992,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two cat/two[enabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "enabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two cat/two[enabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("enabled");
         }
 
         void populate_expected()
@@ -1012,8 +1012,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two cat/two[-disabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "disabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two cat/two[-disabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("disabled");
         }
 
         void populate_expected()
@@ -1032,8 +1032,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two cat/two[disabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "disabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two cat/two[disabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("disabled");
         }
 
         void populate_expected()
@@ -1059,8 +1059,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "( cat/two cat/two[-enabled] )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->iuse = "enabled";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("( cat/two cat/two[-enabled] )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_iuse("enabled");
         }
 
         void populate_expected()
@@ -1086,7 +1086,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->post_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_post_depend("cat/two");
             repo->add_version("cat", "two", "1");
         }
 
@@ -1106,8 +1106,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->post_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_post_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/three");
             repo->add_version("cat", "three", "1");
         }
 
@@ -1128,8 +1128,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->post_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/one";
+            repo->add_version("cat", "one", "1")->deps_interface->set_post_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/one");
         }
 
         void populate_expected()
@@ -1148,8 +1148,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two || ( cat/three cat/four )";
-            repo->add_version("cat", "two", "1")->ebuild_interface->provide_string = "cat/four";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two || ( cat/three cat/four )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_provide("cat/four");
             repo->add_version("cat", "three", "1");
         }
 
@@ -1170,9 +1170,9 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->post_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/three";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/one";
+            repo->add_version("cat", "one", "1")->deps_interface->set_post_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/three");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/one");
         }
 
         void populate_expected()
@@ -1192,7 +1192,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->ebuild_interface->provide_string = "cat/two";
+            repo->add_version("cat", "one", "1")->ebuild_interface->set_provide("cat/two");
         }
 
         void populate_expected()
@@ -1211,7 +1211,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two >=cat/three-2 )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two >=cat/three-2 )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "2");
             installed_repo->add_version("cat", "three", "1");
@@ -1233,7 +1233,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "|| ( cat/two >=cat/three-3 )";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two >=cat/three-3 )");
             repo->add_version("cat", "two", "1");
             repo->add_version("cat", "three", "2");
             installed_repo->add_version("cat", "three", "1");
@@ -1251,8 +1251,8 @@ namespace test_cases
     {
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->ebuild_interface->provide_string = "virtual/foo";
-            repo->add_version("cat", "two", "2")->ebuild_interface->provide_string = "virtual/foo";
+            repo->add_version("cat", "one", "1")->ebuild_interface->set_provide("virtual/foo");
+            repo->add_version("cat", "two", "2")->ebuild_interface->set_provide("virtual/foo");
         }
 
         void populate_expected()
@@ -1282,13 +1282,13 @@ namespace test_cases
                         RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, destination_repo);
 
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/four cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/four cat/two");
             repo->add_version("cat", "four", "1");
-            repo->add_version("cat", "five", "1")->deps_interface->build_depend_string = "cat/six cat/seven";
+            repo->add_version("cat", "five", "1")->deps_interface->set_build_depend("cat/six cat/seven");
             repo->add_version("cat", "six", "1");
-            repo->add_version("cat", "seven", "1")->deps_interface->build_depend_string = "cat/doesnotexist";
+            repo->add_version("cat", "seven", "1")->deps_interface->set_build_depend("cat/doesnotexist");
 
             DepList d(&env, DepListOptions());
             d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
@@ -1320,13 +1320,13 @@ namespace test_cases
                         RepositoryName("installed_repo")));
             env.package_database()->add_repository(2, destination_repo);
 
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "cat/four cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("cat/four");
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("cat/four cat/two");
             repo->add_version("cat", "four", "1");
-            repo->add_version("cat", "five", "1")->deps_interface->build_depend_string = "cat/six cat/seven";
+            repo->add_version("cat", "five", "1")->deps_interface->set_build_depend("cat/six cat/seven");
             repo->add_version("cat", "six", "1");
-            repo->add_version("cat", "seven", "1")->deps_interface->post_depend_string = "cat/doesnotexist";
+            repo->add_version("cat", "seven", "1")->deps_interface->set_post_depend("cat/doesnotexist");
 
             DepList d(&env, DepListOptions());
             d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
@@ -1381,7 +1381,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
@@ -1408,7 +1408,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
@@ -1436,7 +1436,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
@@ -1481,7 +1481,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             repo->add_version("cat", "two", "2");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
@@ -1514,8 +1514,8 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
-            repo->add_version("cat", "zero", "1")->deps_interface->build_depend_string =
-                "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )";
+            repo->add_version("cat", "zero", "1")->deps_interface->set_build_depend(
+                "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )");
             repo->add_version("cat", "one", "scm");
             repo->add_version("cat", "two", "2");
             repo->add_version("cat", "three-live", "0");

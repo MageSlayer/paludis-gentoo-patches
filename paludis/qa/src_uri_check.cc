@@ -40,12 +40,10 @@ namespace
         using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
 
         CheckResult & result;
-        bool fetch_restrict;
         const QAEnvironment * const env;
 
-        Checker(CheckResult & rr, bool f, const QAEnvironment * const e) :
+        Checker(CheckResult & rr, const QAEnvironment * const e) :
             result(rr),
-            fetch_restrict(f),
             env(e)
         {
         }
@@ -56,11 +54,7 @@ namespace
                 return;
 
             std::string::size_type p(std::string::npos);
-            if (std::string::npos == ((p = a->text().find("://"))) && ! fetch_restrict)
-                result << Message(qal_major, "No protocol found for '" + a->text() +
-                            "' and not fetch restricted");
-
-            else if ((std::string::npos != p) &&
+            if ((std::string::npos != p) &&
                     (("http" != a->text().substr(0, p)) &&
                      ("https" != a->text().substr(0, p)) &&
                      ("mirror" != a->text().substr(0, p)) &&
@@ -142,22 +136,10 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
             std::tr1::shared_ptr<const VersionMetadata> metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-            std::string src_uri(metadata->ebuild_interface->src_uri_string);
-
-            std::tr1::shared_ptr<const DepSpec> src_uri_parts;
             try
             {
-                src_uri_parts = PortageDepParser::parse(src_uri,
-                        PortageDepParser::Policy::text_is_text_dep_spec(false));
-
-                std::set<std::string> restricts;
-                Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-                tokeniser.tokenise(metadata->ebuild_interface->restrict_string,
-                        std::inserter(restricts, restricts.begin()));
-
-                bool fetch_restrict(restricts.end() != restricts.find("fetch"));
-                Checker checker(result, fetch_restrict, e.environment);
-                src_uri_parts->accept(&checker);
+                Checker checker(result, e.environment);
+                metadata->ebuild_interface->src_uri()->accept(&checker);
             }
             catch (const DepStringError & err)
             {

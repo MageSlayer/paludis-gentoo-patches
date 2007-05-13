@@ -38,6 +38,8 @@
 #include <set>
 #include <sys/types.h>
 #include <grp.h>
+#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 
@@ -247,6 +249,8 @@ void
 EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When installing '" + stringify(q) + "-" + stringify(v) + "':");
 
     if (! _imp->portage_repository->has_version(q, v))
@@ -261,15 +265,24 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     bool fetch_restrict(false), no_mirror(false), userpriv_restrict;
     {
-        std::list<std::string> restricts;
-        WhitespaceTokeniser::get_instance()->tokenise(
-                metadata->ebuild_interface->restrict_string, std::back_inserter(restricts));
-        fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch")) ||
-            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nofetch"));
-        userpriv_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "userpriv")) ||
-            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nouserpriv"));
-        no_mirror = (restricts.end() != std::find(restricts.begin(), restricts.end(), "mirror")) ||
-            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nomirror"));
+        DepSpecFlattener restricts(_imp->params.environment, &e, metadata->ebuild_interface->restrictions());
+        fetch_restrict =
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nofetch"));
+
+        userpriv_restrict =
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+
+        no_mirror =
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "mirror")) ||
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nomirror"));
     }
 
     std::string archives, all_archives, flat_src_uri;
@@ -389,15 +402,10 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     /* make use */
     std::string use;
-    {
-        std::set<UseFlagName> iuse;
-        WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
-                iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
-        for (std::set<UseFlagName>::const_iterator iuse_it(iuse.begin()), iuse_end(iuse.end()) ;
-                iuse_it != iuse_end; ++iuse_it)
-            if (_imp->params.environment->query_use(*iuse_it, e))
-                use += (*iuse_it).data() + " ";
-    }
+    for (IUseFlagCollection::Iterator i(metadata->ebuild_interface->iuse()->begin()),
+            i_end(metadata->ebuild_interface->iuse()->end()) ; i != i_end ; ++i)
+        if (_imp->params.environment->query_use(i->flag, e))
+            use += stringify(i->flag) + " ";
 
     use += p->environment_variable("ARCH") + " ";
 

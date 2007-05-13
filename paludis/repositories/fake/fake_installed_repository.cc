@@ -100,8 +100,8 @@ FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvi
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
     result->eapi = m->eapi;
-    result->deps_interface->build_depend_string = stringify(p.provided_by_name);
-    result->deps_interface->run_depend_string = stringify(p.provided_by_name);
+    result->deps_interface->set_build_depend(stringify(p.provided_by_name));
+    result->deps_interface->set_run_depend(stringify(p.provided_by_name));
 
     return result;
 }

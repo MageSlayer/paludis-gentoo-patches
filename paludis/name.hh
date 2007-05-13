@@ -131,6 +131,74 @@ namespace paludis
      */
     typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 
+    /**
+     * A UseFlagNameError is thrown if an invalid value is assigned to
+     * a UseFlagName.
+     *
+     * \ingroup grpnames
+     * \ingroup grpexceptions
+     */
+    class PALUDIS_VISIBLE UseFlagNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            UseFlagNameError(const std::string & name) throw ();
+    };
+
+    /**
+     * An IUseFlagNameError is thrown if an invalid value is assigned to
+     * an IUseFlagName.
+     *
+     * \ingroup grpnames
+     * \ingroup grpexceptions
+     */
+    class PALUDIS_VISIBLE IUseFlagNameError : public NameError
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            IUseFlagNameError(const std::string & name, const std::string & msg) throw ();
+
+            IUseFlagNameError(const std::string & name) throw ();
+
+            ///\}
+    };
+
+    /**
+     * A UseFlagNameValidator handles validation rules for the value of a
+     * UseFlagName.
+     *
+     * \ingroup grpnames
+     */
+    struct PALUDIS_VISIBLE UseFlagNameValidator :
+        private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a UseFlagName,
+         * throw a UseFlagNameError.
+         */
+        static void validate(const std::string &);
+    };
+
+    /**
+     * A UseFlagName holds a std::string that is a valid name for a USE flag.
+     *
+     * \ingroup grpnames
+     */
+    typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
+
+    /**
+     * A collection of UseFlagName instances.
+     *
+     * \ingroup grpnames
+     */
+    typedef SortedCollection<UseFlagName> UseFlagNameCollection;
+
+
+#include <paludis/name-se.hh>
 #include <paludis/name-sr.hh>
 
     /**
@@ -139,6 +207,13 @@ namespace paludis
      * \ingroup grpnames
      */
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
+
+    /**
+     * Output an IUseFlag to a stream.
+     *
+     * \ingroup grpnames
+     */
+    std::ostream & operator<< (std::ostream &, const IUseFlag &) PALUDIS_VISIBLE;
 
     /**
      * Holds a collection of QualifiedPackageName instances.
@@ -175,52 +250,6 @@ namespace paludis
     {
         return QualifiedPackageName(c, p);
     }
-
-    /**
-     * A UseFlagNameError is thrown if an invalid value is assigned to
-     * a UseFlagName.
-     *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
-     */
-    class PALUDIS_VISIBLE UseFlagNameError : public NameError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            UseFlagNameError(const std::string & name) throw ();
-    };
-
-    /**
-     * A UseFlagNameValidator handles validation rules for the value of a
-     * UseFlagName.
-     *
-     * \ingroup grpnames
-     */
-    struct PALUDIS_VISIBLE UseFlagNameValidator :
-        private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
-    {
-        /**
-         * If the parameter is not a valid value for a UseFlagName,
-         * throw a UseFlagNameError.
-         */
-        static void validate(const std::string &);
-    };
-
-    /**
-     * A UseFlagName holds a std::string that is a valid name for a USE flag.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
-
-    /**
-     * A collection of UseFlagName instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<UseFlagName> UseFlagNameCollection;
 
     /**
      * A SlotNameError is thrown if an invalid value is assigned to
@@ -370,8 +399,6 @@ namespace paludis
      */
     typedef SortedCollection<KeywordName> KeywordNameCollection;
 
-#include <paludis/name-se.hh>
-
     /**
      * A SetNameValidator handles validation rules for the value of a
      * SetName.
@@ -417,6 +444,20 @@ namespace paludis
      * \ingroup grpnames
      */
     typedef SortedCollection<SetName> SetNameCollection;
+
+    /**
+     * A collection of use flags.
+     *
+     * \ingroup grpnames
+     */
+    typedef SortedCollection<IUseFlag> IUseFlagCollection;
+
+    /**
+     * A collection of inherited packages.
+     *
+     * \ingroup grpnames
+     */
+    typedef SortedCollection<std::string> InheritedCollection;
 }
 
 #endif

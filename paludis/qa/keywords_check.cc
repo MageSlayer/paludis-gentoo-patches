@@ -46,16 +46,11 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            //std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
-            std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
-                keywords_string, create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
-
-            if (keywords.end() != keywords.find(KeywordName("-*")) &&
-                    keywords.size() == 1)
+            if (metadata->ebuild_interface->keywords()->end() != metadata->ebuild_interface->keywords()->find(KeywordName("-*")) &&
+                    metadata->ebuild_interface->keywords()->size() == 1)
                 result << Message(qal_major, "-* abuse (use package.mask and keyword properly)");
 
-            else if (keywords.empty())
+            else if (metadata->ebuild_interface->keywords()->empty())
                 result << Message(qal_major, "KEYWORDS empty");
 
         }
@@ -64,7 +59,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }
 
-        if (! metadata->ebuild_interface->eclass_keywords.empty())
+        if (! metadata->ebuild_interface->eclass_keywords()->empty())
             result << Message(qal_major, "KEYWORDS was altered by an eclass");
     }
     catch (const InternalError &)

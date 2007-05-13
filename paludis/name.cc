@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/util/log.hh>
 #include <ostream>
 
 /** \file
@@ -332,5 +333,89 @@ SetNameValidator::validate(const std::string & s)
 SetNameError::SetNameError(const std::string & name) throw () :
     NameError(name, "set")
 {
+}
+
+namespace
+{
+    UseFlagName get_flag(const std::string & s)
+    {
+        Context c("When extracting USE flag name from IUSE flag '" + s + "':");
+        if (s.empty() || ('-' != s[0] && '+' != s[0]))
+            return UseFlagName(s);
+        else
+            return UseFlagName(s.substr(1));
+    }
+
+    UseFlagState get_state(const std::string & s, IUseFlagParseMode m)
+    {
+        Context c("When extracting USE flag state from IUSE flag '" + s + "':");
+
+        if (s.empty())
+            return use_unspecified;
+        if ('-' == s[0] || '+' == s[0])
+        {
+            switch (m)
+            {
+                case iuse_pm_eapi_0:
+                    Log::get_instance()->message(ll_warning, lc_context,
+                            "+/- prefixed IUSE flag names not allowed in this EAPI");
+
+                    /* fall through */
+
+                case iuse_pm_permissive:
+                    return '-' == s[0] ? use_disabled : use_enabled;
+
+                case iuse_pm_eapi_0_strict:
+                    throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
+
+                case last_iuse_pm:
+                    ;
+            }
+        }
+        return use_unspecified;
+    }
+}
+
+IUseFlag::IUseFlag(const std::string & s, IUseFlagParseMode m) try:
+    flag(get_flag(s)),
+    state(get_state(s, m))
+{
+}
+catch (const UseFlagNameError &)
+{
+    throw IUseFlagNameError(s);
+}
+
+IUseFlagNameError::IUseFlagNameError(const std::string & s) throw () :
+    NameError(s, "IUse flag")
+{
+}
+
+IUseFlagNameError::IUseFlagNameError(const std::string & s, const std::string & m) throw () :
+    NameError(s, "IUse flag", m)
+{
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const IUseFlag & i)
+{
+    switch (i.state)
+    {
+        case use_enabled:
+            s << "+";
+            break;
+
+        case use_disabled:
+            s << "-";
+            break;
+
+        case use_unspecified:
+        case last_use:
+            break;
+    }
+
+    s << i.flag;
+
+    return s;
 }
 

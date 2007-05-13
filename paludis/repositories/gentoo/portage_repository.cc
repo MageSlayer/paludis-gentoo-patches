@@ -1067,8 +1067,8 @@ PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntr
                 m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
 
     result->eapi = m->eapi;
-    result->build_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v);
-    result->run_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v);
+    result->set_build_depend("=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v));
+    result->set_run_depend("=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v));
 
     return result;
 

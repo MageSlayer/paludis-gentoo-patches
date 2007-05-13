@@ -50,10 +50,6 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        std::set<std::string> inherits;
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(metadata->ebuild_interface->inherited, std::inserter(inherits, inherits.begin()));
-
         static std::set<std::string> inherits_blacklist;
         if (inherits_blacklist.empty())
         {
@@ -75,7 +71,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
         }
 
         std::set<std::string> bad_inherits;
-        std::set_intersection(inherits.begin(), inherits.end(),
+        std::set_intersection(metadata->ebuild_interface->inherited()->begin(), metadata->ebuild_interface->inherited()->end(),
                 inherits_blacklist.begin(), inherits_blacklist.end(),
                 std::inserter(bad_inherits, bad_inherits.begin()));
 

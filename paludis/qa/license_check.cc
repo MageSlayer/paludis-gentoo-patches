@@ -95,15 +95,10 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
 
-            std::string license(metadata->license_interface->license_string);
-
-            std::tr1::shared_ptr<const DepSpec> license_parts;
             try
             {
-                license_parts = metadata->license_interface->license();
-
                 Checker checker(result, e.environment);
-                license_parts->accept(&checker);
+                metadata->license_interface->license()->accept(&checker);
             }
             catch (const DepStringError & err)
             {

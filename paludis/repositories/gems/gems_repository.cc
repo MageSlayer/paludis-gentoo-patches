@@ -70,7 +70,7 @@ namespace paludis
                 g != g_end ; ++g)
         {
             std::tr1::shared_ptr<VersionMetadata> m(new GemsVersionMetadata(g->version));
-            m->homepage = g->homepage;
+            m->set_homepage(g->homepage);
             if (g->description.empty())
                 m->description = g->summary;
             else

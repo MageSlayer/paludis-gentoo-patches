@@ -41,10 +41,10 @@ namespace
                 std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(this, RepositoryName("repo")));
                 _package_database->add_repository(1, std::tr1::shared_ptr<Repository>(repo));
 
-                repo->add_version("foo", "one", "0")->ebuild_interface->keywords_string = "test foo";
-                repo->add_version("foo", "two", "0")->ebuild_interface->keywords_string = "~test foo";
-                repo->add_version("foo", "three", "0")->ebuild_interface->keywords_string = "-test foo";
-                repo->add_version("foo", "four", "0")->ebuild_interface->keywords_string = "-* foo";
+                repo->add_version("foo", "one", "0")->ebuild_interface->set_keywords("test foo");
+                repo->add_version("foo", "two", "0")->ebuild_interface->set_keywords("~test foo");
+                repo->add_version("foo", "three", "0")->ebuild_interface->set_keywords("-test foo");
+                repo->add_version("foo", "four", "0")->ebuild_interface->set_keywords("-* foo");
             }
 
             ~EITestEnvironment()

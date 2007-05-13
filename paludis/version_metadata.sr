@@ -34,35 +34,18 @@ make_class_VersionMetadataDepsInterface()
 
     key parser DepParserFunction
 
-    key build_depend_string std::string
-    key run_depend_string std::string
-    key post_depend_string std::string
-    key suggested_depend_string std::string
+    cache_key build_depend std::string DepSpec _make_depend
+    cache_key run_depend std::string DepSpec _make_depend
+    cache_key post_depend std::string DepSpec _make_depend
+    cache_key suggested_depend std::string DepSpec _make_depend
 
     extra_constructors <<END
             VersionMetadataDepsInterface(const DepParserFunction &);
 END
 
     extra_methods <<END
-            /**
-             * Our build depends.
-             */
-            std::tr1::shared_ptr<const DepSpec> build_depend() const;
-
-            /**
-             * Our runtime depends.
-             */
-            std::tr1::shared_ptr<const DepSpec> run_depend() const;
-
-            /**
-             * Our post depends.
-             */
-            std::tr1::shared_ptr<const DepSpec> post_depend() const;
-
-            /**
-             * Our suggested depends.
-             */
-            std::tr1::shared_ptr<const DepSpec> suggested_depend() const;
+        private:
+            std::tr1::shared_ptr<const DepSpec> _make_depend(const std::string &) const;
 END
 
     doxygen_comment << "END"
@@ -82,18 +65,10 @@ make_class_VersionMetadataLicenseInterface()
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key parser TextParserFunction
-
-    key license_string std::string
+    cache_key license std::string DepSpec _make_license
 
     extra_constructors <<END
             VersionMetadataLicenseInterface(const TextParserFunction &);
-END
-
-    extra_methods <<END
-            /**
-             * Our licences.
-             */
-            std::tr1::shared_ptr<const DepSpec> license() const;
 END
 
     doxygen_comment << "END"
@@ -103,6 +78,11 @@ END
          * \see VersionMetadata
          * \ingroup grpversions
          */
+END
+
+    extra_methods <<END
+        private:
+            std::tr1::shared_ptr<const DepSpec> _make_license(const std::string &) const;
 END
 }
 
@@ -136,7 +116,7 @@ make_class_VersionMetadataBase()
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key slot SlotName
-    key homepage std::string
+    cache_key homepage std::string DepSpec _make_text
     key description std::string
     key eapi std::string
     key interactive bool
@@ -151,6 +131,11 @@ make_class_VersionMetadataBase()
          * \ingroup grpversions
          */
 END
+
+    extra_methods <<END
+        private:
+            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+END
 }
 
 make_class_VersionMetadataEbuildInterface()
@@ -159,33 +144,16 @@ make_class_VersionMetadataEbuildInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key provide_string std::string
-    key src_uri_string std::string
-    key restrict_string std::string
-    key keywords_string std::string
-    key eclass_keywords std::string
-    key iuse std::string
-    key inherited std::string
+    cache_key provide std::string DepSpec _make_text
+    cache_key src_uri std::string DepSpec _make_text
+    cache_key restrictions std::string DepSpec _make_text
+    cache_key keywords std::string KeywordNameCollection "_make_collection<KeywordName, KeywordNameCollection>"
+    cache_key eclass_keywords std::string KeywordNameCollection "_make_collection<KeywordName, KeywordNameCollection>"
+    cache_key iuse std::string IUseFlagCollection "_make_iuse_collection"
+    cache_key inherited std::string InheritedCollection "_make_collection<std::string, InheritedCollection>"
 
     extra_constructors <<END
             VersionMetadataEbuildInterface();
-END
-
-    extra_methods <<END
-            /**
-             * PROVIDE, as a dep atom.
-             */
-            std::tr1::shared_ptr<const DepSpec> provide() const;
-
-            /**
-             * SRC_URI, as a dep atom.
-             */
-            std::tr1::shared_ptr<const DepSpec> src_uri() const;
-
-            /**
-             * Our keywords.
-             */
-            std::tr1::shared_ptr<const KeywordNameCollection> keywords() const;
 END
 
     allow_named_args
@@ -198,6 +166,16 @@ END
          * \ingroup grpversions
          */
 END
+
+    extra_methods <<END
+        private:
+            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+
+            template <typename Item_, typename Container_>
+            std::tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
+
+            std::tr1::shared_ptr<const IUseFlagCollection> _make_iuse_collection(const std::string &) const;
+END
 }
 
 make_class_VersionMetadataEbinInterface()
@@ -206,14 +184,10 @@ make_class_VersionMetadataEbinInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key bin_uri_string std::string
+    cache_key bin_uri std::string DepSpec _make_text
 
     extra_constructors <<END
             VersionMetadataEbinInterface();
-END
-
-    extra_methods <<END
-        std::tr1::shared_ptr<const DepSpec> bin_uri() const;
 END
 
     allow_named_args
@@ -226,6 +200,11 @@ END
          * \ingroup grpversions
          */
 END
+
+    extra_methods <<END
+        private:
+            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+END
 }
 
 make_class_VersionMetadataCRANInterface()
@@ -234,7 +213,7 @@ make_class_VersionMetadataCRANInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key keywords_string std::string
+    cache_key keywords std::string KeywordNameCollection "_make_collection<KeywordName, KeywordNameCollection>"
     key package std::string
     key version std::string
     key is_bundle bool
@@ -252,10 +231,9 @@ make_class_VersionMetadataCRANInterface()
 END
 
     extra_methods <<END
-            /**
-             * Our keywords.
-             */
-            std::tr1::shared_ptr<const KeywordNameCollection> keywords() const;
+        private:
+            template <typename Item_, typename Container_>
+            std::tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
 END
 }
 

@@ -105,6 +105,11 @@ namespace paludis
              */
             PackageDepSpecParseMode eapi_as_package_dep_spec_parse_mode() const;
 
+            /**
+             * Return the appropriate IUseFlagParseMode for our EAPI.
+             */
+            IUseFlagParseMode eapi_as_iuse_flag_parse_mode() const;
+
         protected:
             ///\name Basic operations
             ///\{

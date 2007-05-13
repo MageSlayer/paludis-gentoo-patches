@@ -34,66 +34,6 @@ using namespace paludis;
 
 #include <paludis/version_metadata-sr.cc>
 
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataDepsInterface::build_depend() const
-{
-    return parser(build_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataDepsInterface::run_depend() const
-{
-    return parser(run_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataDepsInterface::post_depend() const
-{
-    return parser(post_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataDepsInterface::suggested_depend() const
-{
-    return parser(suggested_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataEbuildInterface::src_uri() const
-{
-    return PortageDepParser::parse(src_uri_string,
-            PortageDepParser::Policy::text_is_text_dep_spec(false));
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataEbinInterface::bin_uri() const
-{
-    return PortageDepParser::parse(bin_uri_string,
-            PortageDepParser::Policy::text_is_text_dep_spec(false));
-}
-
-std::tr1::shared_ptr<const KeywordNameCollection>
-VersionMetadataEbuildInterface::keywords() const
-{
-    Context context("When splitting up keyword string '" + keywords_string + "':");
-
-    std::tr1::shared_ptr<KeywordNameCollection> result(new KeywordNameCollection::Concrete);
-    WhitespaceTokeniser::get_instance()->tokenise(keywords_string,
-            create_inserter<KeywordName>(result->inserter()));
-    return result;
-}
-
-std::tr1::shared_ptr<const KeywordNameCollection>
-VersionMetadataCRANInterface::keywords() const
-{
-    Context context("When splitting up keyword string '" + keywords_string + "':");
-
-    std::tr1::shared_ptr<KeywordNameCollection> result(new KeywordNameCollection::Concrete);
-    WhitespaceTokeniser::get_instance()->tokenise(keywords_string,
-            create_inserter<KeywordName>(result->inserter()));
-    return result;
-}
-
 VersionMetadataDepsInterface::VersionMetadataDepsInterface(const DepParserFunction & p) :
     parser(p)
 {
@@ -109,12 +49,6 @@ VersionMetadata::VersionMetadata(const VersionMetadataBase::NamedArguments<> & b
 {
 }
 
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataEbuildInterface::provide() const
-{
-    return PortageDepParser::parse(provide_string, PortageDepParser::Policy::text_is_package_dep_spec(
-                false, version_metadata()->eapi_as_package_dep_spec_parse_mode()));}
-
 VersionMetadataOriginsInterface::VersionMetadataOriginsInterface()
 {
 }
@@ -122,12 +56,6 @@ VersionMetadataOriginsInterface::VersionMetadataOriginsInterface()
 VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const TextParserFunction & f) :
     parser(f)
 {
-}
-
-std::tr1::shared_ptr<const DepSpec>
-VersionMetadataLicenseInterface::license() const
-{
-    return parser(license_string);
 }
 
 VersionMetadataEbuildInterface::VersionMetadataEbuildInterface()
@@ -160,4 +88,80 @@ VersionMetadata::eapi_as_package_dep_spec_parse_mode() const
         return pds_pm_permissive;
     }
 }
+
+IUseFlagParseMode
+VersionMetadata::eapi_as_iuse_flag_parse_mode() const
+{
+    if (eapi == "0" || eapi == "")
+        return iuse_pm_eapi_0;
+    else if (eapi == "CRAN-1" || eapi == "paludis-1")
+        return iuse_pm_permissive;
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context,
+                "BUG! Don't know what parse mode to use for EAPI '" + stringify(eapi) + "'");
+        return iuse_pm_permissive;
+    }
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataDepsInterface::_make_depend(const std::string & s) const
+{
+    return parser(s, version_metadata()->eapi_as_package_dep_spec_parse_mode());
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataLicenseInterface::_make_license(const std::string & s) const
+{
+    return parser(s);
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataBase::_make_text(const std::string & s) const
+{
+    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataEbuildInterface::_make_text(const std::string & s) const
+{
+    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+template <typename Item_, typename Container_>
+std::tr1::shared_ptr<const Container_>
+VersionMetadataEbuildInterface::_make_collection(const std::string & s) const
+{
+    std::tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
+    WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<Item_>(result->inserter()));
+    return result;
+}
+
+std::tr1::shared_ptr<const IUseFlagCollection>
+VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) const
+{
+    std::tr1::shared_ptr<IUseFlagCollection> result(new IUseFlagCollection::Concrete);
+    std::list<std::string> t;
+    WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(t));
+    for (std::list<std::string>::const_iterator u(t.begin()), u_end(t.end()) ;
+            u != u_end ; ++u)
+        result->insert(IUseFlag(*u, version_metadata()->eapi_as_iuse_flag_parse_mode()));
+    return result;
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataEbinInterface::_make_text(const std::string & s) const
+{
+    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+template <typename Item_, typename Container_>
+std::tr1::shared_ptr<const Container_>
+VersionMetadataCRANInterface::_make_collection(const std::string & s) const
+{
+    std::tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
+    WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<Item_>(result->inserter()));
+    return result;
+}
+
 

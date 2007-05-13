@@ -305,7 +305,7 @@ FakeVersionMetadata::FakeVersionMetadata() :
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
 {
-    keywords_string = "test";
+    set_keywords("test");
 }
 
 FakeVersionMetadata::~FakeVersionMetadata()

@@ -81,9 +81,11 @@ void PALUDIS_VISIBLE expose_version_metadata()
     vm.def_readonly("slot", &VersionMetadata::slot,
             "[ro] SlotName"
             );
+#ifdef CIARANM_REMOVED_THIS
     vm.def_readonly("homepage", &VersionMetadata::homepage,
             "[ro] string"
             );
+#endif
     vm.def_readonly("description", &VersionMetadata::description,
             "[ro] string"
             );
@@ -125,6 +127,8 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "Version metadata for ebuilds.",
                 bp::no_init
                 );
+
+#ifdef CIARANM_REMOVED_THIS
     ebuild_i.def_readonly("provide_string", &VersionMetadataEbuildInterface::provide_string,
             "[ro] string"
             );
@@ -146,6 +150,7 @@ void PALUDIS_VISIBLE expose_version_metadata()
     ebuild_i.def_readonly("inherited", &VersionMetadataEbuildInterface::inherited,
             "[ro] string"
             );
+#endif
 
     bp::register_ptr_to_python<VersionMetadataEbinInterface *>();
     bp::class_<VersionMetadataEbinInterface, boost::noncopyable>
@@ -153,9 +158,11 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "Version metadata for Ebins.",
                 bp::no_init
               );
+#ifdef CIARANM_REMOVED_THIS
     ebin_i.def_readonly("bin_uri_string", &VersionMetadataEbinInterface::bin_uri_string,
             "[ro] string"
             );
+#endif
 
     bp::register_ptr_to_python<VersionMetadataCRANInterface *>();
     bp::class_<VersionMetadataCRANInterface, boost::noncopyable>
@@ -179,6 +186,7 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "Dependency data for VersionMetadata.",
                 bp::no_init
                 );
+#ifdef CIARANM_REMOVED_THIS
     deps_i.def_readonly("build_depend_string", &VersionMetadataDepsInterface::build_depend_string,
             "[ro] string"
             );
@@ -191,6 +199,7 @@ void PALUDIS_VISIBLE expose_version_metadata()
     deps_i.def_readonly("suggested_depend_string", &VersionMetadataDepsInterface::suggested_depend_string,
             "[ro] string"
             );
+#endif
     deps_i.add_property("build_depend", &VersionMetadataDepsInterface::build_depend,
             "[ro] DepSpec"
             );
@@ -235,7 +244,10 @@ void PALUDIS_VISIBLE expose_version_metadata()
                 "License data for VersionMetadata.",
                 bp::no_init
                 );
+#ifdef CIARANM_REMOVED_THIS
     license_i.def_readonly("license_string", &VersionMetadataLicenseInterface::license_string,
             "[ro] string"
             );
+#endif
 }
+

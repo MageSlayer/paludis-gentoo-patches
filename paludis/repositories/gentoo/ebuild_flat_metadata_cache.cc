@@ -21,9 +21,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <fstream>
 #include <set>
 #include <list>
+#include <tr1/functional>
+#include <functional>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -40,6 +44,8 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
 bool
 EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result)
 {
+    using namespace std::tr1::placeholders;
+
     Context context("When loading version metadata to '" + stringify(_filename) + "':");
 
     std::ifstream cache(stringify(_filename).c_str());
@@ -47,43 +53,28 @@ EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result
 
     if (cache)
     {
-        std::getline(cache, line); result->build_depend_string = line;
-        std::getline(cache, line); result->run_depend_string = line;
+        std::getline(cache, line); result->set_build_depend(line);
+        std::getline(cache, line); result->set_run_depend(line);
         std::getline(cache, line); result->slot = SlotName(line);
-        std::getline(cache, line); result->src_uri_string = line;
-        std::getline(cache, line); result->restrict_string = line;
-        std::getline(cache, line); result->homepage = line;
-        std::getline(cache, line); result->license_string = line;
+        std::getline(cache, line); result->set_src_uri(line);
+        std::getline(cache, line); result->set_restrictions(line);
+        std::getline(cache, line); result->set_homepage(line);
+        std::getline(cache, line); result->set_license(line);
         std::getline(cache, line); result->description = line;
-        std::getline(cache, line); result->keywords_string = line;
-        std::getline(cache, line); result->inherited = line;
-        std::getline(cache, line); result->iuse = line;
+        std::getline(cache, line); result->set_keywords(line);
+        std::getline(cache, line); result->set_inherited(line);
+        std::getline(cache, line); result->set_iuse(line);
         std::getline(cache, line);
-        std::getline(cache, line); result->post_depend_string = line;
-        std::getline(cache, line); result->provide_string = line;
+        std::getline(cache, line); result->set_post_depend(line);
+        std::getline(cache, line); result->set_provide(line);
         std::getline(cache, line); result->eapi = line;
 
         // check mtimes
         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
-        bool ok = true;
-
-        if (_ebuild.mtime() > cache_time)
-            ok = false;
-        else
-        {
-            std::set<std::string> inherits;
-            WhitespaceTokeniser::get_instance()->tokenise(
-                    stringify(result->inherited),
-                    std::inserter(inherits, inherits.end()));
-
-            for (std::set<std::string>::const_iterator i(inherits.begin()),
-                    i_end(inherits.end()) ; i != i_end ; ++i)
-                if (_eclass_mtimes->mtime(*i) > cache_time)
-                {
-                    ok = false;
-                    break;
-                }
-        }
+        bool ok = _ebuild.mtime() <= cache_time &&
+            result->inherited()->end() == std::find_if(result->inherited()->begin(), result->inherited()->end(),
+                    std::tr1::bind(std::greater<time_t>(), std::tr1::bind(
+                            std::tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
 
         if (! ok)
             Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
@@ -108,6 +99,13 @@ namespace
         WhitespaceTokeniser::get_instance()->tokenise(stringify(s), std::back_inserter(tokens));
         return join(tokens.begin(), tokens.end(), " ");
     }
+
+    std::string normalise(std::tr1::shared_ptr<const DepSpec> d)
+    {
+        DepSpecPrettyPrinter p(0, false);
+        d->accept(&p);
+        return stringify(p);
+    }
 }
 
 void
@@ -128,20 +126,20 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
 
     if (cache)
     {
-        cache << normalise(v->build_depend_string) << std::endl;
-        cache << normalise(v->run_depend_string) << std::endl;
+        cache << normalise(v->build_depend()) << std::endl;
+        cache << normalise(v->run_depend()) << std::endl;
         cache << normalise(v->slot) << std::endl;
-        cache << normalise(v->src_uri_string) << std::endl;
-        cache << normalise(v->restrict_string) << std::endl;
-        cache << normalise(v->homepage) << std::endl;
-        cache << normalise(v->license_string) << std::endl;
+        cache << normalise(v->src_uri()) << std::endl;
+        cache << normalise(v->restrictions()) << std::endl;
+        cache << normalise(v->homepage()) << std::endl;
+        cache << normalise(v->license()) << std::endl;
         cache << normalise(v->description) << std::endl;
-        cache << normalise(v->keywords_string) << std::endl;
-        cache << normalise(v->inherited) << std::endl;
-        cache << normalise(v->iuse) << std::endl;
+        cache << join(v->keywords()->begin(), v->keywords()->end(), " ") << std::endl;
+        cache << join(v->inherited()->begin(), v->inherited()->end(), " ") << std::endl;
+        cache << join(v->iuse()->begin(), v->iuse()->end(), " ") << std::endl;
         cache << std::endl;
-        cache << normalise(v->post_depend_string) << std::endl;
-        cache << normalise(v->provide_string) << std::endl;
+        cache << normalise(v->post_depend()) << std::endl;
+        cache << normalise(v->provide()) << std::endl;
         cache << normalise(v->eapi) << std::endl;
     }
     else

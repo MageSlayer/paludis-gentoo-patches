@@ -47,7 +47,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
 
     // Fill in default values
     metadata->slot = SlotName("0");
-    metadata->cran_interface->keywords_string = std::string("*");
+    metadata->cran_interface->set_keywords("*");
     metadata->eapi = "CRAN-1";
 
     std::string key;
@@ -70,7 +70,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
         if (("Package" == key) || ("Bundle" == key))
         {
             metadata->cran_interface->package = value;
-            metadata->homepage = "http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html";
+            metadata->set_homepage("http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html");
             if ("Package" == key)
             {
                 CRANDescription::normalise_name(value);
@@ -99,11 +99,11 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
                 value = "R";
             else
                 value.append(", R");
-            metadata->deps_interface->build_depend_string = value;
-            metadata->deps_interface->run_depend_string = value;
+            metadata->deps_interface->set_build_depend(value);
+            metadata->deps_interface->set_run_depend(value);
         }
         else if ("Suggests" == key)
-            metadata->deps_interface->suggested_depend_string = value;
+            metadata->deps_interface->set_suggested_depend(value);
     }
 }
 

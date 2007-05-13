@@ -22,9 +22,10 @@
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
-#include <paludis/util/tokeniser.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <set>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -139,8 +140,9 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         else
         {
             std::set<UseFlagName> iuse;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
-                    iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+            std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
+                    transform_inserter(std::inserter(iuse, iuse.begin()),
+                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
             iuse.insert(UseFlagName("bootstrap"));
             iuse.insert(UseFlagName("build"));
 

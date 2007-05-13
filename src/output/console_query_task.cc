@@ -198,7 +198,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
     std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
             version_metadata(e.name, e.version));
 
-    display_metadata_key("Homepage", "HOMEPAGE", metadata->homepage);
+    display_metadata_dep("Homepage", "HOMEPAGE", metadata->homepage(), true);
     display_metadata_key("Description", "DESCRIPTION", metadata->description);
 
     if (metadata->license_interface)
@@ -227,12 +227,14 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
     if (metadata->ebuild_interface)
     {
         display_metadata_dep("Provides", "PROVIDE", metadata->ebuild_interface->provide(), true);
-        display_metadata_iuse("Use flags", "IUSE", metadata->ebuild_interface->iuse, e);
+        display_metadata_iuse("Use flags", "IUSE", join(metadata->ebuild_interface->iuse()->begin(),
+                    metadata->ebuild_interface->iuse()->end(), " "), e);
         if (want_raw())
         {
-            display_metadata_key("Keywords", "KEYWORDS", metadata->ebuild_interface->keywords_string);
-            display_metadata_key("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri_string);
-            display_metadata_key("Restrict", "RESTRICT", metadata->ebuild_interface->restrict_string);
+            display_metadata_key("Keywords", "KEYWORDS", join(metadata->ebuild_interface->keywords()->begin(),
+                        metadata->ebuild_interface->keywords()->end(), " "));
+            display_metadata_dep("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri(), true);
+            display_metadata_dep("Restrict", "RESTRICT", metadata->ebuild_interface->restrictions(), true);
         }
     }
 

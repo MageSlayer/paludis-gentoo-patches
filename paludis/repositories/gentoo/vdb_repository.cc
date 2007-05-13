@@ -24,6 +24,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
@@ -432,36 +433,36 @@ namespace paludis
 
         {
             Context local_context("When loading key 'DEPEND':");
-            p->metadata->build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
+            p->metadata->set_build_depend(file_contents(location, p->name, p->version, "DEPEND"));
         }
         {
             Context local_context("When loading key 'RDEPEND':");
-            p->metadata->run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
+            p->metadata->set_run_depend(file_contents(location, p->name, p->version, "RDEPEND"));
         }
         {
             Context local_context("When loading key 'LICENSE':");
-            p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
+            p->metadata->set_license(file_contents(location, p->name, p->version, "LICENSE"));
         }
-        p->metadata->keywords_string = "*";
+        p->metadata->set_keywords("*");
         {
             Context local_context("When loading key 'INHERITED':");
-            p->metadata->inherited = file_contents(location, p->name, p->version, "INHERITED");
+            p->metadata->set_inherited(file_contents(location, p->name, p->version, "INHERITED"));
         }
         {
             Context local_context("When loading key 'IUSE':");
-            p->metadata->iuse = file_contents(location, p->name, p->version, "IUSE");
+            p->metadata->set_iuse(file_contents(location, p->name, p->version, "IUSE"));
         }
         {
             Context local_context("When loading key 'PDEPEND':");
-            p->metadata->post_depend_string = file_contents(location, p->name, p->version, "PDEPEND");
+            p->metadata->set_post_depend(file_contents(location, p->name, p->version, "PDEPEND"));
         }
         {
             Context local_context("When loading key 'PROVIDE':");
-            p->metadata->provide_string = file_contents(location, p->name, p->version, "PROVIDE");
+            p->metadata->set_provide(file_contents(location, p->name, p->version, "PROVIDE"));
         }
         {
             Context local_context("When loading key 'SRC_URI':");
-            p->metadata->src_uri_string = file_contents(location, p->name, p->version, "SRC_URI");
+            p->metadata->set_src_uri(file_contents(location, p->name, p->version, "SRC_URI"));
         }
         {
             Context local_context("When loading key 'EAPI':");
@@ -469,7 +470,7 @@ namespace paludis
         }
         {
             Context local_context("When loading key 'HOMEPAGE':");
-            p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
+            p->metadata->set_homepage(file_contents(location, p->name, p->version, "HOMEPAGE"));
         }
         {
             Context local_context("When loading key 'DESCRIPTION':");
@@ -1239,8 +1240,8 @@ VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry &
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
     result->eapi = m->eapi;
-    result->build_depend_string = stringify(p.provided_by_name);
-    result->run_depend_string = stringify(p.provided_by_name);
+    result->set_build_depend(stringify(p.provided_by_name));
+    result->set_run_depend(stringify(p.provided_by_name));
 
     return result;
 }
@@ -1352,19 +1353,13 @@ VDBRepository::load_provided_the_slow_way() const
 
         try
         {
-            std::string provide_str;
+            std::tr1::shared_ptr<const DepSpec> provide;
             if (e->metadata)
-                provide_str = e->metadata->ebuild_interface->provide_string;
+                provide = e->metadata->ebuild_interface->provide();
             else
-            {
-                // _imp->load_entry(e); slow
-                provide_str = file_contents(_imp->location, e->name, e->version, "PROVIDE");
-            }
-            if (provide_str.empty())
-                continue;
+                provide = PortageDepParser::parse(file_contents(_imp->location, e->name, e->version, "PROVIDE"),
+                        PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive));
 
-            std::tr1::shared_ptr<const DepSpec> provide(PortageDepParser::parse(provide_str,
-                        PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive)));
             PackageDatabaseEntry dbe(e->name, e->version, name());
             DepSpecFlattener f(_imp->env, &dbe, provide);
 
@@ -1437,13 +1432,16 @@ VDBRepository::regenerate_provides_cache() const
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
             c != c_end ; ++c)
     {
-        std::string provide_str;
+        std::tr1::shared_ptr<const DepSpec> provide;
         if (c->metadata)
-            provide_str = c->metadata->ebuild_interface->provide_string;
+            provide = c->metadata->ebuild_interface->provide();
         else
-            provide_str = file_contents(_imp->location, c->name, c->version, "PROVIDE");
+            provide = PortageDepParser::parse(file_contents(_imp->location, c->name, c->version, "PROVIDE"),
+                    PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive));
 
-        provide_str = strip_leading(strip_trailing(provide_str, " \t\r\n"), " \t\r\n");
+        DepSpecPrettyPrinter p(0, false);
+        provide->accept(&p);
+        std::string provide_str(strip_leading(strip_trailing(stringify(p), " \t\r\n"), " \t\r\n"));
         if (provide_str.empty())
             continue;
 

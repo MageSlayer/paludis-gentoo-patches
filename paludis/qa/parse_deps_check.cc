@@ -45,7 +45,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::string depend(metadata->deps_interface->build_depend_string);
+            std::string depend(metadata->deps_interface->get_raw_build_depend());
             PortageDepParser::parse(depend, PortageDepParser::Policy::text_is_package_dep_spec(true,
                         metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
                         pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));
@@ -58,7 +58,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::string rdepend(metadata->deps_interface->run_depend_string);
+            std::string rdepend(metadata->deps_interface->get_raw_run_depend());
             PortageDepParser::parse(rdepend, PortageDepParser::Policy::text_is_package_dep_spec(true,
                         metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
                         pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));
@@ -71,7 +71,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::string pdepend(metadata->deps_interface->post_depend_string);
+            std::string pdepend(metadata->deps_interface->get_raw_post_depend());
             PortageDepParser::parse(pdepend, PortageDepParser::Policy::text_is_package_dep_spec(true,
                         metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
                         pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));

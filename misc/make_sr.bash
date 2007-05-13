@@ -48,6 +48,7 @@ while read a ; do
     want_visible=
     want_keys=( )
     want_key_types=( )
+    want_cache_func=( )
     want_inherit=( )
     want_comparison_operators=
     want_comparison_fields=( )
@@ -86,6 +87,14 @@ while read a ; do
     {
         want_keys=( "${want_keys[@]}" "$1" )
         want_key_types=( "${want_key_types[@]}" "$2" )
+        want_cache_func=( "${want_cache_func[@]}" "__unset_function__" )
+    }
+
+    cache_key()
+    {
+        want_keys=( "${want_keys[@]}" "$1" )
+        want_key_types=( "${want_key_types[@]}" "$2 -> $3" )
+        want_cache_func=( "${want_cache_func[@]}" "$4" )
     }
 
     comparison_operators()
@@ -112,6 +121,11 @@ while read a ; do
     }
 
     key()
+    {
+        :
+    }
+
+    cache_key()
     {
         :
     }
@@ -171,19 +185,46 @@ while read a ; do
         fi
 
         echo "{"
-        echo "    public:"
-        echo
         echo "        ///\\name Data members"
         echo "        ///\\{"
         echo
 
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo "        ${want_key_types[${k}]} ${want_keys[${k}]};"
+            if [[ ${want_key_types[${k}]/->} == ${want_key_types[${k}]} ]] ; then
+                echo "    public:"
+                echo "        ${want_key_types[${k}]} ${want_keys[${k}]};"
+                echo
+            else
+                echo "    protected:"
+                echo "        ${want_key_types[${k}]% ->*} raw_${want_keys[${k}]};"
+                echo "        mutable std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> cached_${want_keys[${k}]};"
+                echo
+            fi
         done
 
         echo
         echo "        ///\\}"
         echo
+
+        echo "    public:"
+        echo
+
+        echo "        ///\\name Cache key methods"
+        echo "        ///\\{"
+        echo
+        for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+            if [[ ${want_key_types[${k}]/->} != ${want_key_types[${k}]} ]] ; then
+                echo "        ${current_class} & set_${want_keys[${k}]}($(make_const_ref ${want_key_types[${k}]% ->*}));"
+                echo
+                echo "        const ${want_key_types[${k}]%-> *} get_raw_${want_keys[${k}]}() const;"
+                echo
+                echo "        std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> ${want_keys[${k}]}() const;"
+                echo
+            fi
+        done
+        echo
+        echo "        ///\\}"
+
 
         if [[ -n "${want_comparison_operators}" ]] ; then
 
@@ -216,7 +257,7 @@ while read a ; do
 
         echo "        explicit ${a}("
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo -n "                $(make_const_ref "${want_key_types[${k}]}") value_for_${want_keys[${k}]}"
+            echo -n "                $(make_const_ref "${want_key_types[${k}]% ->*}") value_for_${want_keys[${k}]}"
             if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                 echo ","
             else
@@ -234,6 +275,7 @@ while read a ; do
 
         if [[ -n "${want_named_args}" ]] ; then
 
+            echo "    public:"
             echo "        ///\\name Named argument constructor"
             echo "        ///\\{"
             echo
@@ -272,12 +314,12 @@ while read a ; do
             echo "    private:"
 
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo "        const typename paludis::Select<has_${k}_, ${want_key_types[${k}]}, paludis::Empty>::Type _v${k};"
+                echo "        const typename paludis::Select<has_${k}_, ${want_key_types[${k}]% ->*}, paludis::Empty>::Type _v${k};"
             done
 
             echo "        NamedArguments("
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            const typename paludis::Select<has_${k}_, ${want_key_types[${k}]}, paludis::Empty>::Type & v${k}"
+                echo -n "            const typename paludis::Select<has_${k}_, ${want_key_types[${k}]% ->*}, paludis::Empty>::Type & v${k}"
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
@@ -319,7 +361,7 @@ while read a ; do
                         echo ">"
                     fi
                 done
-                echo "        ${want_keys[${k}]}($(make_const_ref "${want_key_types[${k}]}" ) v)"
+                echo "        ${want_keys[${k}]}($(make_const_ref "${want_key_types[${k}]% ->*}" ) v)"
                 echo "        {"
                 echo "            const typename paludis::Select<has_${k}_, void, paludis::Empty>::Type"
                 echo "                check_not_already_specified = paludis::Empty::instance;"
@@ -367,19 +409,9 @@ while read a ; do
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
-                    echo "> & va) :"
+                    echo "> & va);"
                 fi
             done
-            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            ${want_keys[${k}]}(va._v${k})"
-                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
-                    echo ","
-                else
-                    echo
-                fi
-            done
-            echo "        {"
-            echo "        }"
 
             echo
             echo "        /**"
@@ -406,7 +438,7 @@ while read a ; do
 
         echo "${a}::${a}("
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo -n "        $(make_const_ref "${want_key_types[${k}]}") value_for_${want_keys[${k}]}"
+            echo -n "        $(make_const_ref "${want_key_types[${k}]% ->*}") value_for_${want_keys[${k}]}"
             if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                 echo ","
             else
@@ -414,7 +446,12 @@ while read a ; do
             fi
         done
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo -n "    ${want_keys[${k}]}(value_for_${want_keys[${k}]})"
+            if [[ ${want_key_types[${k}]/->} == ${want_key_types[${k}]} ]] ; then
+                echo -n "    ${want_keys[${k}]}(value_for_${want_keys[${k}]})"
+            else
+                echo "    raw_${want_keys[${k}]}(value_for_${want_keys[${k}]}),"
+                echo -n "    cached_${want_keys[${k}]}()"
+            fi
             if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                 echo ","
             else
@@ -424,6 +461,60 @@ while read a ; do
         echo "{"
         echo "}"
         echo
+
+        for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+            if [[ ${want_key_types[${k}]/->} != ${want_key_types[${k}]} ]] ; then
+                echo "${a} &"
+                echo "${a}::set_${want_keys[${k}]}($(make_const_ref ${want_key_types[${k}]% ->*}) va)"
+                echo "{"
+                echo "    raw_${want_keys[${k}]} = va;"
+                echo "    cached_${want_keys[${k}]}.reset();"
+                echo "    return *this;"
+                echo "}"
+                echo
+                echo "const ${want_key_types[${k}]%-> *}"
+                echo "${a}::get_raw_${want_keys[${k}]}() const"
+                echo "{"
+                echo "    return raw_${want_keys[${k}]};"
+                echo "}"
+                echo
+                echo "std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }>"
+                echo "${a}::${want_keys[${k}]}() const"
+                echo "{"
+                echo "    if (! cached_${want_keys[${k}]})"
+                echo "        cached_${want_keys[${k}]} = ${want_cache_func[${k}]}(raw_${want_keys[${k}]});"
+                echo "    return cached_${want_keys[${k}]};"
+                echo "}"
+                echo
+            fi
+        done
+
+        if [[ -n "${want_named_args}" ]] ; then
+            echo "${a}::${a}(const NamedArguments<"
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo -n "            true"
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo "> & va) :"
+                fi
+            done
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                if [[ ${want_key_types[${k}]/->} == ${want_key_types[${k}]} ]] ; then
+                    echo -n "            ${want_keys[${k}]}(va._v${k})"
+                else
+                    echo "            raw_${want_keys[${k}]}(va._v${k}),"
+                    echo -n "            cached_${want_keys[${k}]}()"
+                fi
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo
+                fi
+            done
+            echo "        {"
+            echo "        }"
+        fi
 
         if [[ -n "${want_comparison_operators}" ]] ; then
 

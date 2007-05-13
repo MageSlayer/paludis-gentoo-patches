@@ -354,13 +354,13 @@ CRANRepository::need_packages() const
 
                 CRANDescription d(*i, FSEntry(_imp->location / std::string(last_package_name + ".DESCRIPTION")), false);
 
-                std::string dep(d.metadata->deps_interface->build_depend_string);
+                std::string dep(d.metadata->deps_interface->get_raw_build_depend());
                 std::string pkg(d.metadata->cran_interface->package);
                 if ("" == dep)
                     dep = pkg;
                 else
                     dep += "," + pkg;
-                d.metadata->deps_interface->build_depend_string = dep;
+                d.metadata->deps_interface->set_build_depend(dep);
                 d.metadata->cran_interface->is_bundle_member = true;
 
                 _imp->package_names[d.name] = true;

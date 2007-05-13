@@ -194,20 +194,20 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     bool ok(false);
     try
     {
-        _metadata->build_depend_string = f.get("DEPEND");
-        _metadata->run_depend_string = f.get("RDEPEND");
+        _metadata->set_build_depend(f.get("DEPEND"));
+        _metadata->set_run_depend(f.get("RDEPEND"));
         _metadata->slot = SlotName(f.get("SLOT"));
-        _metadata->src_uri_string = f.get("SRC_URI");
-        _metadata->restrict_string = f.get("RESTRICT");
-        _metadata->homepage = f.get("HOMEPAGE");
-        _metadata->license_interface->license_string = f.get("LICENSE");
+        _metadata->set_src_uri(f.get("SRC_URI"));
+        _metadata->set_restrictions(f.get("RESTRICT"));
+        _metadata->set_homepage(f.get("HOMEPAGE"));
+        _metadata->license_interface->set_license(f.get("LICENSE"));
         _metadata->description = f.get("DESCRIPTION");
-        _metadata->keywords_string = f.get("KEYWORDS");
-        _metadata->eclass_keywords = f.get("E_KEYWORDS");
-        _metadata->inherited = f.get("INHERITED");
-        _metadata->iuse = f.get("IUSE");
-        _metadata->post_depend_string = f.get("PDEPEND");
-        _metadata->provide_string = f.get("PROVIDE");
+        _metadata->set_keywords(f.get("KEYWORDS"));
+        _metadata->set_eclass_keywords(f.get("E_KEYWORDS"));
+        _metadata->set_inherited(f.get("INHERITED"));
+        _metadata->set_iuse(f.get("IUSE"));
+        _metadata->set_post_depend(f.get("PDEPEND"));
+        _metadata->set_provide(f.get("PROVIDE"));
         _metadata->eapi = f.get("EAPI");
 
         if (0 == prog.exit_status())

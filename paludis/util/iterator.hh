@@ -426,19 +426,30 @@ namespace paludis
     }
 
     /**
+     * Convenience class: select a member of a class.
+     *
+     * \ingroup grpiterators
+     */
+    template <typename T_, typename M_, M_ T_::* m_>
+    struct SelectMember :
+        std::unary_function<T_, M_>
+    {
+        /// Carry out the selection.
+        M_ operator() (const T_ & p) const
+        {
+            return p.*m_;
+        }
+    };
+
+    /**
      * Convenience class: select the first item of a pair.
      *
      * \ingroup grpiterators
      */
     template <typename A_, typename B_>
     struct SelectFirst :
-        std::unary_function<std::pair<A_, B_>, A_ >
+        SelectMember<std::pair<A_, B_>, A_, &std::pair<A_, B_>::first>
     {
-        /// Carry out the selection.
-        A_ operator() (const std::pair<A_, B_> & p) const
-        {
-            return p.first;
-        }
     };
 
     /**
@@ -448,13 +459,8 @@ namespace paludis
      */
     template <typename A_, typename B_>
     struct SelectSecond :
-        std::unary_function<std::pair<A_, B_>, B_ >
+        SelectMember<std::pair<A_, B_>, B_, &std::pair<A_, B_>::second>
     {
-        /// Carry out the selection.
-        B_ operator() (const std::pair<A_, B_> & p) const
-        {
-            return p.second;
-        }
     };
 
     /**

@@ -201,7 +201,7 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz");
             installed_repo->add_version("foo", "baz", "2");
         }
 
@@ -231,8 +231,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz";
-            installed_repo->add_version("foo", "baz", "2")->deps_interface->build_depend_string = "foo/moo";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz");
+            installed_repo->add_version("foo", "baz", "2")->deps_interface->set_build_depend("foo/moo");
             installed_repo->add_version("foo", "moo", "3");
         }
 
@@ -263,9 +263,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz foo/oink";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/oink");
             installed_repo->add_version("foo", "baz", "2");
-            installed_repo->add_version("foo", "moo", "3")->deps_interface->build_depend_string = "foo/oink";
+            installed_repo->add_version("foo", "moo", "3")->deps_interface->set_build_depend("foo/oink");
             installed_repo->add_version("foo", "oink", "1");
         }
 
@@ -297,9 +297,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz foo/oink";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/oink");
             installed_repo->add_version("foo", "baz", "2");
-            installed_repo->add_version("foo", "moo", "3")->deps_interface->build_depend_string = "foo/oink";
+            installed_repo->add_version("foo", "moo", "3")->deps_interface->set_build_depend("foo/oink");
             installed_repo->add_version("foo", "oink", "1");
         }
 
@@ -336,7 +336,7 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz foo/moo";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/moo");
             installed_repo->add_version("foo", "baz", "2");
             installed_repo->add_version("foo", "moo", "2");
         }
@@ -372,7 +372,7 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->build_depend_string = "foo/baz foo/moo";
+            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/moo");
             installed_repo->add_version("foo", "baz", "2");
             installed_repo->add_version("foo", "moo", "2");
         }

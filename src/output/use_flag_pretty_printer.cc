@@ -21,8 +21,8 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
 #include "colour.hh"
 #include <iostream>
 #include <set>
@@ -65,16 +65,18 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
     if (! metadata->ebuild_interface)
         return;
 
-    WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->iuse,
-            create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+    std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
+            transform_inserter(std::inserter(iuse, iuse.begin()),
+                SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
 
     if (old_pkg)
     {
         std::tr1::shared_ptr<const VersionMetadata> old_metadata(environment()->package_database()->
                 fetch_repository(old_pkg->repository)->version_metadata(old_pkg->name, old_pkg->version));
         if (old_metadata->ebuild_interface)
-            WhitespaceTokeniser::get_instance()->tokenise(old_metadata->ebuild_interface->iuse,
-                    create_inserter<UseFlagName>(std::inserter(old_iuse, old_iuse.begin())));
+            std::copy(old_metadata->ebuild_interface->iuse()->begin(), old_metadata->ebuild_interface->iuse()->end(),
+                    transform_inserter(std::inserter(old_iuse, old_iuse.begin()),
+                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
     }
 
     const RepositoryUseInterface * const use_interface(environment()->package_database()->

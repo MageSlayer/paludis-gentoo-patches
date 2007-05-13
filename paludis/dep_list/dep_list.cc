@@ -1607,18 +1607,17 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
         const VersionMetadataEbuildInterface * const evm_u(_imp->env->package_database()->fetch_repository(
                     uninstalled.repository)->version_metadata(uninstalled.name, uninstalled.version)->ebuild_interface);
 
-        std::set<std::string> use_i, use_u, use_common;
-        if (evm_i)
-            WhitespaceTokeniser::get_instance()->tokenise(evm_i->iuse, std::inserter(use_i, use_i.end()));
-        if (evm_u)
-            WhitespaceTokeniser::get_instance()->tokenise(evm_u->iuse, std::inserter(use_u, use_u.end()));
+        std::set<UseFlagName> use_common;
+        if (evm_i && evm_u)
+            std::set_intersection(
+                    evm_i->iuse()->begin(), evm_i->iuse()->end(),
+                    evm_u->iuse()->begin(), evm_u->iuse()->end(),
+                    transform_inserter(std::inserter(use_common, use_common.end()),
+                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
 
-        std::set_intersection(use_i.begin(), use_i.end(), use_u.begin(), use_u.end(),
-                std::inserter(use_common, use_common.end()));
-
-        for (std::set<std::string>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
+        for (std::set<UseFlagName>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
                 f != f_end ; ++f)
-            if (_imp->env->query_use(UseFlagName(*f), installed) != _imp->env->query_use(UseFlagName(*f), uninstalled))
+            if (_imp->env->query_use(*f, installed) != _imp->env->query_use(*f, uninstalled))
                 return false;
     }
 

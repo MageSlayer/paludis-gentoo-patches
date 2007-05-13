@@ -24,3 +24,26 @@ END
 END
 }
 
+make_class_IUseFlag()
+{
+    visible
+
+    key flag UseFlagName
+    key state UseFlagState
+
+    comparison_operators all flag
+
+    extra_constructors <<END
+        IUseFlag(const std::string &, const IUseFlagParseMode);
+END
+
+    doxygen_comment << "END"
+        /**
+         * Represents an IUse flag.
+         *
+         * \ingroup grpnames
+         * \nosubgrouping
+         */
+END
+}
+

@@ -125,6 +125,7 @@ namespace
             return Qnil;
     }
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     license_string
@@ -141,6 +142,7 @@ namespace
         else
             return Qnil;
     }
+#endif
 
     /*
      * Document-method: slot
@@ -158,6 +160,7 @@ namespace
      *
      * Our eapi
      */
+#ifdef CIARANM_REMOVED_THIS
     /*
      * Document-method: homepage
      *
@@ -166,6 +169,7 @@ namespace
      *
      * Our homepage
      */
+#endif
     /*
      * Document-method: description
      *
@@ -200,6 +204,7 @@ namespace
         return (*self_ptr)-> interactive ? Qtrue : Qfalse;
     }
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * Document-method: provide_string
      *
@@ -262,6 +267,7 @@ namespace
                 return Qnil;
         }
     };
+#endif
 
     /*
      * Document-method: package
@@ -345,6 +351,7 @@ namespace
         }
     };
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * Document-method: build_depend_string
      *
@@ -395,6 +402,7 @@ namespace
                 return Qnil;
         }
     };
+#endif
 
     /*
      * Document-method: origin_source
@@ -453,6 +461,7 @@ namespace
 
     }
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     keywords_string -> String
@@ -470,6 +479,7 @@ namespace
         else
             return Qnil;
     }
+#endif
 
     void do_register_version_metadata()
     {
@@ -488,15 +498,20 @@ namespace
         rb_define_method(c_version_metadata, "origins_interface", RUBY_FUNC_CAST(&version_metadata_origins_interface), 0);
 
         rb_define_method(c_version_metadata, "license", RUBY_FUNC_CAST(&version_metadata_license), 0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "license_string", RUBY_FUNC_CAST(&version_metadata_license_string), 0);
+#endif
 
         rb_define_method(c_version_metadata, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName, &VersionMetadataBase::slot>::fetch)), 0);
         rb_define_method(c_version_metadata, "eapi", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::eapi>::fetch)), 0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "homepage", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::homepage>::fetch)), 0);
+#endif
         rb_define_method(c_version_metadata, "description", RUBY_FUNC_CAST((&BaseValue<std::string,
                         &VersionMetadataBase::description>::fetch)), 0);
         rb_define_method(c_version_metadata, "interactive?", RUBY_FUNC_CAST(&version_metadata_interactive), 0);
 
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "provide_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &VersionMetadataEbuildInterface::provide_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "src_uri_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
@@ -509,6 +524,7 @@ namespace
                         &VersionMetadataEbuildInterface::iuse>::fetch)), 0);
         rb_define_method(c_version_metadata, "inherited", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &VersionMetadataEbuildInterface::inherited>::fetch)), 0);
+#endif
 
         rb_define_method(c_version_metadata, "build_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDepsInterface::build_depend>::fetch)), 0);
@@ -519,6 +535,7 @@ namespace
         rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDepsInterface::post_depend>::fetch)), 0);
 
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "build_depend_string", RUBY_FUNC_CAST((&DependValueString<
                         &VersionMetadataDepsInterface::build_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "run_depend_string", RUBY_FUNC_CAST((&DependValueString<
@@ -527,6 +544,7 @@ namespace
                         &VersionMetadataDepsInterface::suggested_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend_string", RUBY_FUNC_CAST((&DependValueString<
                         &VersionMetadataDepsInterface::post_depend_string>::fetch)), 0);
+#endif
 
         rb_define_method(c_version_metadata, "origin_source", RUBY_FUNC_CAST((&VMOrigins<
                         &VersionMetadataOriginsInterface::source>::fetch)), 0);
@@ -541,7 +559,9 @@ namespace
                         &VersionMetadataCRANInterface::version>::fetch)), 0);
         rb_define_method(c_version_metadata, "is_bundle?", RUBY_FUNC_CAST(&version_metadata_is_bundle), 0);
 
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "keywords_string", RUBY_FUNC_CAST(&version_metadata_keywords_string), 0);
+#endif
 
     }
 }

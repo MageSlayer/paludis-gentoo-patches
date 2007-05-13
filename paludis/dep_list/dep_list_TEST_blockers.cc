@@ -30,7 +30,7 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "!cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("!cat/two");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -64,8 +64,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "!cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("!cat/two");
         }
 
         void populate_expected()
@@ -82,10 +82,10 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
-            two_m->deps_interface->build_depend_string = "!virtual/two";
-            two_m->ebuild_interface->provide_string = "virtual/two";
+            two_m->deps_interface->set_build_depend("!virtual/two");
+            two_m->ebuild_interface->set_provide("virtual/two");
         }
 
         void populate_expected()
@@ -103,11 +103,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
-            two_m->deps_interface->build_depend_string = "!virtual/two";
-            two_m->ebuild_interface->provide_string = "virtual/two";
-            installed_repo->add_version("other", "two", "1")->ebuild_interface->provide_string = "virtual/two";
+            two_m->deps_interface->set_build_depend("!virtual/two");
+            two_m->ebuild_interface->set_provide("virtual/two");
+            installed_repo->add_version("other", "two", "1")->ebuild_interface->set_provide("virtual/two");
         }
 
         void populate_expected()
@@ -144,9 +144,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
             repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "!cat/two";
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("!cat/two");
         }
 
         void populate_expected()
@@ -171,9 +171,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = ">=cat/two-2 cat/three";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend(">=cat/two-2 cat/three");
             repo->add_version("cat", "two", "2");
-            repo->add_version("cat", "three", "1")->deps_interface->build_depend_string = "!<cat/two-2";
+            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("!<cat/two-2");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -192,8 +192,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "!cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("!cat/two");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -212,12 +212,12 @@ namespace test_cases
         void populate_repo()
         {
             std::tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
-            one_m->ebuild_interface->provide_string = "virtual/one";
-            one_m->deps_interface->build_depend_string = "!virtual/one";
-            one_m->deps_interface->run_depend_string = "!virtual/one";
+            one_m->ebuild_interface->set_provide("virtual/one");
+            one_m->deps_interface->set_build_depend("!virtual/one");
+            one_m->deps_interface->set_run_depend("!virtual/one");
             std::tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
-            i_one_m->ebuild_interface->provide_string = "virtual/one";
-            i_one_m->deps_interface->run_depend_string = "!virtual/one";
+            i_one_m->ebuild_interface->set_provide("virtual/one");
+            i_one_m->deps_interface->set_run_depend("!virtual/one");
         }
 
         void populate_expected()
@@ -235,12 +235,12 @@ namespace test_cases
         void populate_repo()
         {
             std::tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
-            one_m->ebuild_interface->provide_string = "virtual/one";
-            one_m->deps_interface->build_depend_string = "!virtual/one";
-            one_m->deps_interface->run_depend_string = "!virtual/one";
+            one_m->ebuild_interface->set_provide("virtual/one");
+            one_m->deps_interface->set_build_depend("!virtual/one");
+            one_m->deps_interface->set_run_depend("!virtual/one");
             std::tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
-            i_one_m->ebuild_interface->provide_string = "virtual/one";
-            i_one_m->deps_interface->run_depend_string = "!virtual/one";
+            i_one_m->ebuild_interface->set_provide("virtual/one");
+            i_one_m->deps_interface->set_run_depend("!virtual/one");
         }
 
         void populate_expected()
@@ -262,11 +262,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->ebuild_interface->provide_string = "virtual/two";
-            two_m->deps_interface->build_depend_string = "!virtual/two";
-            installed_repo->add_version("cat", "two", "1")->ebuild_interface->provide_string = "virtual/two";
+            two_m->ebuild_interface->set_provide("virtual/two");
+            two_m->deps_interface->set_build_depend("!virtual/two");
+            installed_repo->add_version("cat", "two", "1")->ebuild_interface->set_provide("virtual/two");
         }
 
         void populate_expected()
@@ -284,8 +284,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            repo->add_version("cat", "two", "2")->deps_interface->build_depend_string = "!<cat/two-2";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
+            repo->add_version("cat", "two", "2")->deps_interface->set_build_depend("!<cat/two-2");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -311,11 +311,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->deps_interface->build_depend_string = "!<virtual/two-2";
-            two_m->ebuild_interface->provide_string = "virtual/two";
-            installed_repo->add_version("cat", "two", "1")->ebuild_interface->provide_string = "virtual/two";
+            two_m->deps_interface->set_build_depend("!<virtual/two-2");
+            two_m->ebuild_interface->set_provide("virtual/two");
+            installed_repo->add_version("cat", "two", "1")->ebuild_interface->set_provide("virtual/two");
         }
 
         void populate_expected()
@@ -340,11 +340,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
             std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->deps_interface->build_depend_string = "!<virtual/two-2";
-            two_m->ebuild_interface->provide_string = "virtual/two";
-            installed_repo->add_version("other", "two", "1")->ebuild_interface->provide_string = "virtual/two";
+            two_m->deps_interface->set_build_depend("!<virtual/two-2");
+            two_m->ebuild_interface->set_provide("virtual/two");
+            installed_repo->add_version("other", "two", "1")->ebuild_interface->set_provide("virtual/two");
         }
 
         void populate_expected()

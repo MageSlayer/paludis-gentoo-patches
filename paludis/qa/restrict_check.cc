@@ -29,6 +29,49 @@
 using namespace paludis;
 using namespace paludis::qa;
 
+namespace
+{
+    struct Checker :
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+    {
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+
+        CheckResult & result;
+        const std::set<std::string> & allowed;
+
+        Checker(CheckResult & rr, const std::set<std::string> & a) :
+            result(rr),
+            allowed(a)
+        {
+        }
+
+        void visit(const PackageDepSpec * const)
+        {
+            result << Message(qal_major, "Got a PackageDepSpec in RESTRICT");
+        }
+
+        void visit(const PlainTextDepSpec * const t)
+        {
+            if (allowed.end() == allowed.find(t->text()))
+                result << Message(qal_major, "Unrecognised RESTRICT value '" + t->text() + "'");
+        }
+
+        void visit(const BlockDepSpec * const)
+        {
+            result << Message(qal_major, "Got a PackageDepSpec in RESTRICT");
+        }
+
+        void visit(const AnyDepSpec * const a)
+        {
+            result << Message(qal_major, "Got a || ( ) block in RESTRICT");
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+    };
+}
+
 RestrictCheck::RestrictCheck()
 {
 }
@@ -46,11 +89,6 @@ RestrictCheck::operator() (const EbuildCheckData & e) const
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        std::set<std::string> restricts;
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(metadata->ebuild_interface->restrict_string,
-                std::inserter(restricts, restricts.begin()));
-
         static std::set<std::string> allowed_restricts;
         if (allowed_restricts.empty())
         {
@@ -65,15 +103,8 @@ RestrictCheck::operator() (const EbuildCheckData & e) const
             allowed_restricts.insert("test");
         }
 
-        std::set<std::string> unknown;
-        std::set_difference(restricts.begin(), restricts.end(),
-                allowed_restricts.begin(), allowed_restricts.end(),
-                std::inserter(unknown, unknown.begin()));
-
-        if (! unknown.empty())
-            result << Message(qal_major, "Unrecognised RESTRICT values '"
-                    + join(unknown.begin(), unknown.end(), "', '") + "'");
-
+        Checker c(result, allowed_restricts);
+        metadata->ebuild_interface->restrictions()->accept(&c);
     }
     catch (const InternalError &)
     {
