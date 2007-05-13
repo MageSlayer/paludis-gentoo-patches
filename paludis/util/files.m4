@@ -40,5 +40,5 @@ add(`tokeniser',                         `hh', `cc', `test')
 add(`util',                              `hh')
 add(`validated',                         `hh', `test')
 add(`virtual_constructor',               `hh', `impl', `test')
-add(`visitor',                           `hh', `test')
+add(`visitor',                           `hh', `fwd', `test')
 

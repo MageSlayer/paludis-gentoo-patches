@@ -26,6 +26,8 @@
  * \ingroup grpvisitor
  */
 
+#include <paludis/util/visitor-fwd.hh>
+
 namespace std
 {
 #ifndef DOXYGEN
@@ -236,14 +238,14 @@ namespace paludis
      */
     template <
         typename N1_,
-        typename N2_ = visitor_internals::NoType<2> *,
-        typename N3_ = visitor_internals::NoType<3> *,
-        typename N4_ = visitor_internals::NoType<4> *,
-        typename N5_ = visitor_internals::NoType<5> *,
-        typename N6_ = visitor_internals::NoType<6> *,
-        typename N7_ = visitor_internals::NoType<7> *,
-        typename N8_ = visitor_internals::NoType<8> *,
-        typename N9_ = visitor_internals::NoType<9> *>
+        typename N2_,
+        typename N3_,
+        typename N4_,
+        typename N5_,
+        typename N6_,
+        typename N7_,
+        typename N8_,
+        typename N9_>
     class VisitorTypes
     {
         private:
