@@ -442,6 +442,10 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
     UseFlagState state(use_unspecified);
 
+    /* check use: repo */
+    if (repo->use_interface)
+        state = repo->use_interface->query_use(f, &e);
+
     /* check use: general user config */
     std::set<std::string>::const_iterator u(_imp->use_with_expands.find(stringify(f)));
     if (u != _imp->use_with_expands.end())
