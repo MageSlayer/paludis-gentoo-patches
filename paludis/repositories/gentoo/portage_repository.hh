@@ -121,15 +121,14 @@ namespace paludis
 
             /* RepositoryUseInterface */
 
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
-            virtual std::string do_describe_use_flag(const UseFlagName &,
-                    const PackageDatabaseEntry * const) const;
+            virtual std::string do_describe_use_flag(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             /* end of RepositoryUseInterface */
 

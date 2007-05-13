@@ -330,3 +330,56 @@ RepositoryHookInterface::~RepositoryHookInterface()
 {
 }
 
+UseFlagState
+RepositoryUseInterface::query_use(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+{
+    if (do_query_use_mask(u, pde))
+        return use_disabled;
+    else if (do_query_use_force(u, pde))
+        return use_enabled;
+    else
+        return do_query_use(u, pde);
+}
+
+bool
+RepositoryUseInterface::query_use_mask(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+{
+    return do_query_use_mask(u, pde);
+}
+
+bool
+RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+{
+    return do_query_use_force(u, pde);
+}
+
+std::tr1::shared_ptr<const UseFlagNameCollection>
+RepositoryUseInterface::arch_flags() const
+{
+    return do_arch_flags();
+}
+
+std::tr1::shared_ptr<const UseFlagNameCollection>
+RepositoryUseInterface::use_expand_flags() const
+{
+    return do_use_expand_flags();
+}
+
+std::tr1::shared_ptr<const UseFlagNameCollection>
+RepositoryUseInterface::use_expand_hidden_prefixes() const
+{
+    return do_use_expand_hidden_prefixes();
+}
+
+std::tr1::shared_ptr<const UseFlagNameCollection>
+RepositoryUseInterface::use_expand_prefixes() const
+{
+    return do_use_expand_prefixes();
+}
+
+std::string
+RepositoryUseInterface::describe_use_flag(const UseFlagName & n, const PackageDatabaseEntry & pkg) const
+{
+    return do_describe_use_flag(n, pkg);
+}
+

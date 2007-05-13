@@ -200,19 +200,19 @@ FakeRepositoryBase::do_query_profile_masks(const QualifiedPackageName &, const V
 }
 
 UseFlagState
-FakeRepositoryBase::do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+FakeRepositoryBase::do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const
 {
     return use_unspecified;
 }
 
 bool
-FakeRepositoryBase::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const
+FakeRepositoryBase::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const
 {
     return false;
 }
 
 bool
-FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const
+FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const
 {
     return false;
 }
@@ -273,7 +273,7 @@ FakeRepositoryBase::sets_list() const
 
 std::string
 FakeRepositoryBase::do_describe_use_flag(const UseFlagName &,
-        const PackageDatabaseEntry * const) const
+        const PackageDatabaseEntry &) const
 {
     return "";
 }

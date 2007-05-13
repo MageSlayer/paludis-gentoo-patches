@@ -195,14 +195,6 @@ class TestCase_Repository(unittest.TestCase):
         self.assertEquals(ui.query_use("test6",p), UseFlagState.ENABLED)
         self.assertEquals(ui.query_use("test7",p), UseFlagState.ENABLED)
 
-        self.assert_(not ui.query_use_mask("test1"))
-        self.assert_(not ui.query_use_mask("test2"))
-        self.assert_(not ui.query_use_mask("test3"))
-        self.assert_(ui.query_use_mask("test4"))
-        self.assert_(not ui.query_use_mask("test5"))
-        self.assert_(not ui.query_use_mask("test6"))
-        self.assert_(not ui.query_use_mask("test7"))
-
         self.assert_(not ui.query_use_mask("test1", p))
         self.assert_(not ui.query_use_mask("test2", p))
         self.assert_(not ui.query_use_mask("test3", p))
@@ -210,14 +202,6 @@ class TestCase_Repository(unittest.TestCase):
         self.assert_(ui.query_use_mask("test5", p))
         self.assert_(not ui.query_use_mask("test6", p))
         self.assert_(not ui.query_use_mask("test7", p))
-
-        self.assert_(not ui.query_use_force("test1"))
-        self.assert_(not ui.query_use_force("test2"))
-        self.assert_(not ui.query_use_force("test3"))
-        self.assert_(not ui.query_use_force("test4"))
-        self.assert_(not ui.query_use_force("test5"))
-        self.assert_(ui.query_use_force("test6"))
-        self.assert_(not ui.query_use_force("test7"))
 
         self.assert_(not ui.query_use_force("test1", p))
         self.assert_(not ui.query_use_force("test2", p))
@@ -227,7 +211,6 @@ class TestCase_Repository(unittest.TestCase):
         self.assert_(ui.query_use_force("test6", p))
         self.assert_(ui.query_use_force("test7", p))
 
-        self.assert_(ui.describe_use_flag("test1"), "A test use flag")
         self.assert_(ui.describe_use_flag("test1", p), "A test use flag")
 
     def test_21_world_interface(self):

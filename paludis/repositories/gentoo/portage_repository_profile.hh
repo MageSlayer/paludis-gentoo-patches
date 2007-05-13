@@ -67,13 +67,13 @@ namespace paludis
             ///\{
 
             /// Is a use flag masked?
-            bool use_masked(const UseFlagName &, const PackageDatabaseEntry * const) const;
+            bool use_masked(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             /// Is a use flag forced?
-            bool use_forced(const UseFlagName &, const PackageDatabaseEntry * const) const;
+            bool use_forced(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             /// Use flag state, ignoring mask and force?
-            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageDatabaseEntry * const) const;
+            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             ///\}
 

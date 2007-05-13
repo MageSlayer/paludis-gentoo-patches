@@ -806,12 +806,12 @@ DepList::AddVisitor::visit(const UseDepSpec * const a)
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         else if (a->inverse())
         {
-            if (! u->query_use_force(a->flag(), d->_imp->current_pde()))
+            if ((! d->_imp->current_pde()) || (! u->query_use_force(a->flag(), *d->_imp->current_pde())))
                 std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
         else
         {
-            if (! u->query_use_mask(a->flag(), d->_imp->current_pde()))
+            if ((! d->_imp->current_pde()) || (! u->query_use_mask(a->flag(), *d->_imp->current_pde())))
                 std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
     }

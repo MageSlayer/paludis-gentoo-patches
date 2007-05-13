@@ -76,19 +76,16 @@ UseDesc::~UseDesc()
 }
 
 std::string
-UseDesc::describe(const UseFlagName & f, const PackageDatabaseEntry * const e) const
+UseDesc::describe(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
-    if (e)
-    {
-        MakeHashedMap<std::string, std::string>::Type::const_iterator i(
-                _imp->desc.find(stringify(e->name) + ":" + stringify(f)));
-        if (_imp->desc.end() != i)
-            return i->second;
-    }
-
-    MakeHashedMap<std::string, std::string>::Type::const_iterator i(_imp->desc.find(stringify(f)));
+    MakeHashedMap<std::string, std::string>::Type::const_iterator i(
+            _imp->desc.find(stringify(e.name) + ":" + stringify(f)));
     if (_imp->desc.end() != i)
         return i->second;
+
+    MakeHashedMap<std::string, std::string>::Type::const_iterator j(_imp->desc.find(stringify(f)));
+    if (_imp->desc.end() != j)
+        return j->second;
 
     return "";
 }

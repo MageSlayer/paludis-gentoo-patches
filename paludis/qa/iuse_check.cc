@@ -93,7 +93,7 @@ IuseCheck::operator() (const EbuildCheckData & e) const
 
             for (std::set<UseFlagName>::iterator i(iuse.begin()), i_end(iuse.end()) ; i != i_end ; ++i)
                 if ("" == e.environment->package_database()->fetch_repository(ee.repository)->use_interface->
-                        describe_use_flag(*i, &ee))
+                        describe_use_flag(*i, ee))
                     result << Message(qal_minor, "Use flag '" + stringify(*i) + "' has no description");
         }
         catch (const NameError & err)

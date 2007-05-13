@@ -586,7 +586,7 @@ PortageRepositoryProfile::~PortageRepositoryProfile()
 
 bool
 PortageRepositoryProfile::use_masked(const UseFlagName & u,
-        const PackageDatabaseEntry * const e) const
+        const PackageDatabaseEntry & e) const
 {
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
@@ -596,25 +596,23 @@ PortageRepositoryProfile::use_masked(const UseFlagName & u,
         if (i->use_mask.end() != f)
             result = f->second;
 
-        if (e)
-            for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
-                    g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
-            {
-                if (! match_package(*_imp->env, *g->first, *e))
-                    continue;
+        for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
+                g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
+        {
+            if (! match_package(*_imp->env, *g->first, e))
+                continue;
 
-                FlagStatusMap::const_iterator h(g->second.find(u));
-                if (g->second.end() != h)
-                    result = h->second;
-            }
+            FlagStatusMap::const_iterator h(g->second.find(u));
+            if (g->second.end() != h)
+                result = h->second;
+        }
     }
 
     return result;
 }
 
 bool
-PortageRepositoryProfile::use_forced(const UseFlagName & u,
-        const PackageDatabaseEntry * const e) const
+PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageDatabaseEntry & e) const
 {
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
@@ -624,17 +622,16 @@ PortageRepositoryProfile::use_forced(const UseFlagName & u,
         if (i->use_force.end() != f)
             result = f->second;
 
-        if (e)
-            for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
-                    g_end(i->package_use_force.end()) ; g != g_end ; ++g)
-            {
-                if (! match_package(*_imp->env, *g->first, *e))
-                    continue;
+        for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
+                g_end(i->package_use_force.end()) ; g != g_end ; ++g)
+        {
+            if (! match_package(*_imp->env, *g->first, e))
+                continue;
 
-                FlagStatusMap::const_iterator h(g->second.find(u));
-                if (g->second.end() != h)
-                    result = h->second;
-            }
+            FlagStatusMap::const_iterator h(g->second.find(u));
+            if (g->second.end() != h)
+                result = h->second;
+        }
     }
 
     return result;
@@ -642,7 +639,7 @@ PortageRepositoryProfile::use_forced(const UseFlagName & u,
 
 UseFlagState
 PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
-        const PackageDatabaseEntry * const e) const
+        const PackageDatabaseEntry & e) const
 {
     UseFlagState result(use_unspecified);
 
@@ -651,22 +648,21 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
     {
-        if (e)
-            for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
-                    g_end(i->package_use.end()) ; g != g_end ; ++g)
-            {
-                if (! match_package(*_imp->env, *g->first, *e))
-                    continue;
+        for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
+                g_end(i->package_use.end()) ; g != g_end ; ++g)
+        {
+            if (! match_package(*_imp->env, *g->first, e))
+                continue;
 
-                FlagStatusMap::const_iterator h(g->second.find(u));
-                if (g->second.end() != h)
-                    result = h->second ? use_enabled : use_disabled;
-            }
+            FlagStatusMap::const_iterator h(g->second.find(u));
+            if (g->second.end() != h)
+                result = h->second ? use_enabled : use_disabled;
+        }
     }
 
-    if (use_unspecified == result && e && _imp->repository->has_version(e->name, e->version))
+    if (use_unspecified == result && _imp->repository->has_version(e.name, e.version))
     {
-        std::tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e->name, e->version));
+        std::tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e.name, e.version));
         if (m->ebuild_interface)
         {
             IUseFlagCollection::Iterator i(m->ebuild_interface->iuse()->find(IUseFlag(u, use_unspecified)));

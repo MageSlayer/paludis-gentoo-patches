@@ -258,16 +258,6 @@ module Paludis
     class TestCase_RepositoryQueryUse < Test::Unit::TestCase
         include RepositoryTestCase
 
-        def test_query_use_global
-            assert repo.query_use('test1') == true
-            assert repo.query_use('test2') == true
-            assert repo.query_use('test3') == nil
-            assert repo.query_use('test4') == false
-            assert repo.query_use('test5') == nil
-            assert repo.query_use('test6') == true
-            assert repo.query_use('test7') == nil
-        end
-
         def test_query_use_local
             p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
 
@@ -282,9 +272,6 @@ module Paludis
 
         def test_query_use_bad
             assert_raise TypeError do
-                repo.query_use(42)
-            end
-            assert_raise TypeError do
                 repo.query_use('test1',{})
             end
 
@@ -297,16 +284,6 @@ module Paludis
 
     class TestCase_RepositoryQueryUseMask < Test::Unit::TestCase
         include RepositoryTestCase
-
-        def test_query_use_mask_global
-            assert ! repo.query_use_mask('test1')
-            assert ! repo.query_use_mask('test2')
-            assert ! repo.query_use_mask('test3')
-            assert repo.query_use_mask('test4')
-            assert ! repo.query_use_mask('test5')
-            assert ! repo.query_use_mask('test6')
-            assert ! repo.query_use_mask('test7')
-        end
 
         def test_query_use_mask_local
             p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
@@ -322,9 +299,6 @@ module Paludis
 
         def test_query_use_mask_bad
             assert_raise TypeError do
-                repo.query_use_mask(42)
-            end
-            assert_raise TypeError do
                 repo.query_use_mask('test1',{})
             end
 
@@ -337,16 +311,6 @@ module Paludis
 
     class TestCase_RepositoryQueryUseForce < Test::Unit::TestCase
         include RepositoryTestCase
-
-        def test_query_use_force_global
-            assert ! repo.query_use_force('test1')
-            assert ! repo.query_use_force('test2')
-            assert ! repo.query_use_force('test3')
-            assert ! repo.query_use_force('test4')
-            assert ! repo.query_use_force('test5')
-            assert repo.query_use_force('test6')
-            assert ! repo.query_use_force('test7')
-        end
 
         def test_query_use_force_local
             p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
@@ -361,9 +325,6 @@ module Paludis
         end
 
         def test_query_use_force_bad
-            assert_raise TypeError do
-                repo.query_use_force(42)
-            end
             assert_raise TypeError do
                 repo.query_use_force('test1',{})
             end
@@ -542,11 +503,6 @@ module Paludis
 
         def test_responds
             assert_respond_to repo, :describe_use_flag
-        end
-
-        def test_one_arg
-            assert_kind_of String, repo.describe_use_flag('test1')
-            assert_equal 'A test use flag', repo.describe_use_flag('test1')
         end
 
         def test_two_args

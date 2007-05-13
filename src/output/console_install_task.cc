@@ -915,7 +915,7 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameColl
                 fetch_repository(p.repository)->use_interface);
 
         if (i)
-            d = i->describe_use_flag(*f, &p);
+            d = i->describe_use_flag(*f, p);
 
         _all_use_descriptions->insert(UseDescription::create()
                 .flag(*f)

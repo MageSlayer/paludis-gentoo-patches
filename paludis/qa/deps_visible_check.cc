@@ -56,10 +56,10 @@ namespace
                 if (! i)
                     return true;
 
-                if (i->query_use_mask(u->flag(), &pde) && ! u->inverse())
+                if (i->query_use_mask(u->flag(), pde) && ! u->inverse())
                     return false;
 
-                if (i->query_use_force(u->flag(), &pde) && u->inverse())
+                if (i->query_use_force(u->flag(), pde) && u->inverse())
                     return false;
 
                 /* arch flags aren't necessarily use masked. stupid! */

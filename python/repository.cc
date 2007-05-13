@@ -400,23 +400,23 @@ void PALUDIS_VISIBLE expose_repository()
                 bp::no_init
            );
     rusei.def("query_use", &RepositoryUseInterface::query_use,
-            ("ufn", bp::arg("pde")=bp::object()),
-            "query_use(UseFlagName, PackageDatabaseEntry=None) -> UseFlagState\n"
+            ("ufn", bp::arg("pde")),
+            "query_use(UseFlagName, PackageDatabaseEntry) -> UseFlagState\n"
             "Query the state of the specified use flag."
            );
     rusei.def("query_use_mask", &RepositoryUseInterface::query_use_mask,
-            ("ufn", bp::arg("pde")=bp::object()),
-            "query_use_mask(UseFlagName, PackageDatabaseEntry=None) -> bool\n"
+            ("ufn", bp::arg("pde")),
+            "query_use_mask(UseFlagName, PackageDatabaseEntry) -> bool\n"
             "Query whether the specified use flag is masked."
            );
     rusei.def("query_use_force", &RepositoryUseInterface::query_use_force,
-            ("ufn", bp::arg("pde")=bp::object()),
-            "query_use_force(UseFlagName, PackageDatabaseEntry=None) -> bool\n"
+            ("ufn", bp::arg("pde")),
+            "query_use_force(UseFlagName, PackageDatabaseEntry) -> bool\n"
             "Query whether the specified use flag is forceed."
            );
     rusei.def("describe_use_flag", &RepositoryUseInterface::describe_use_flag,
-            ("ufn", bp::arg("pde")=bp::object()),
-            "describe_use_flag(UseFlagName, PackageDatabaseEntry=None) -> string\n"
+            ("ufn", bp::arg("pde")),
+            "describe_use_flag(UseFlagName, PackageDatabaseEntry) -> string\n"
             "Describe a use flag."
            );
 

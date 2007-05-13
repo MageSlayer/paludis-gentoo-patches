@@ -52,7 +52,7 @@ namespace paludis
              *
              * May return an empty string.
              */
-            std::string describe(const UseFlagName &, const PackageDatabaseEntry * const) const;
+            std::string describe(const UseFlagName &, const PackageDatabaseEntry &) const;
     };
 }
 

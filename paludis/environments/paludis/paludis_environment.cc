@@ -162,9 +162,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
     if (repo->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, &e))
+        if (repo->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, &e))
+        if (repo->use_interface->query_use_force(f, e))
             return true;
     }
 
@@ -191,7 +191,7 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     /* check use: package database config */
     if (repo->use_interface)
     {
-        switch (repo->use_interface->query_use(f, &e))
+        switch (repo->use_interface->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

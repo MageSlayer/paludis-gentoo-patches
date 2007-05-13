@@ -434,9 +434,9 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
     if (repo->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, &e))
+        if (repo->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, &e))
+        if (repo->use_interface->query_use_force(f, e))
             return true;
     }
 
@@ -444,7 +444,7 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
     /* check use: repo */
     if (repo->use_interface)
-        state = repo->use_interface->query_use(f, &e);
+        state = repo->use_interface->query_use(f, e);
 
     /* check use: general user config */
     std::set<std::string>::const_iterator u(_imp->use_with_expands.find(stringify(f)));

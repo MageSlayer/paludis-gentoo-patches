@@ -621,9 +621,9 @@ namespace
      * repository doesn't implement use_interface.
      */
 
-    template <typename T_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry *) const> struct QueryUseMessage;
+    template <typename T_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry &) const> struct QueryUseMessage;
 
-    template <typename T_, T_ trueval_, T_ falseval_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry *) const>
+    template <typename T_, T_ trueval_, T_ falseval_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry &) const>
     struct QueryUse
     {
         static VALUE
@@ -637,19 +637,13 @@ namespace
 
                 if (use_interface)
                 {
-                    if (1 != argc && 2 != argc) {
+                    if (2 != argc)
+                    {
                         rb_raise(rb_eArgError, QueryUseMessage<T_, m_>::message, argc);
                     }
 
-                    T_ status;
-
-                    if (1 == argc)
-                        status = ((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), 0);
-                    else
-                    {
-                        PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
-                        status = ((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), &pde);
-                    }
+                    PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
+                    T_ status(((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), pde));
 
                     return status == trueval_ ? Qtrue : status == falseval_ ? Qfalse : Qnil;
                 }
@@ -670,21 +664,24 @@ namespace
     {
         static const char * message;
     };
-    const char * QueryUseMessage<UseFlagState, &RepositoryUseInterface::query_use>::message = "Repository.query_use expects one or two arguments, but got %d";
+    const char * QueryUseMessage<UseFlagState, &RepositoryUseInterface::query_use>::message =
+        "Repository.query_use expects two arguments, but got %d";
 
     template<>
     struct QueryUseMessage<bool, &RepositoryUseInterface::query_use_mask>
     {
         static const char * message;
     };
-    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_mask>::message = "Repository.query_use_mask expects one or two arguments, but got %d";
+    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_mask>::message =
+        "Repository.query_use_mask expects two arguments, but got %d";
 
     template<>
     struct QueryUseMessage<bool, &RepositoryUseInterface::query_use_force>
     {
         static const char * message;
     };
-    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_force>::message = "Repository.query_use_force expects one or two arguments, but got %d";
+    const char * QueryUseMessage<bool, &RepositoryUseInterface::query_use_force>::message =
+        "Repository.query_use_force expects two arguments, but got %d";
 
     /*
      * Document-method: query_repository_masks
@@ -753,13 +750,7 @@ namespace
                 if (1 == argc || 2 ==argc)
                 {
                     UseFlagName ufn = UseFlagName(StringValuePtr(argv[0]));
-                    PackageDatabaseEntry * pde(0);
-                    if (2 == argc)
-                    {
-                        PackageDatabaseEntry pde2 = value_to_package_database_entry(argv[1]);
-                        pde = &pde2;
-                    }
-
+                    PackageDatabaseEntry pde(value_to_package_database_entry(argv[1]));
                     return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, pde).c_str()));
 
                 }

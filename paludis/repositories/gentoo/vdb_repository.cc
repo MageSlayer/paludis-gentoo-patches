@@ -804,17 +804,16 @@ VDBRepository::do_installed_time(const QualifiedPackageName & q,
 }
 
 UseFlagState
-VDBRepository::do_query_use(const UseFlagName & f,
-        const PackageDatabaseEntry * const e) const
+VDBRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
-    if (e && e->repository == name())
+    if (e.repository == name())
     {
         if (! _imp->entries_valid)
-            _imp->load_entries_for(e->name.category);
+            _imp->load_entries_for(e.name.category);
 
         std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
             r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                            e->name, e->version), VDBEntry::CompareVersion()));
+                            e.name, e.version), VDBEntry::CompareVersion()));
 
         if (r.first == r.second)
             return use_unspecified;
@@ -832,13 +831,13 @@ VDBRepository::do_query_use(const UseFlagName & f,
 }
 
 bool
-VDBRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry * e) const
+VDBRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry & e) const
 {
     return use_disabled == do_query_use(u, e);
 }
 
 bool
-VDBRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry * e) const
+VDBRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry & e) const
 {
     return use_enabled == do_query_use(u, e);
 }
@@ -1476,7 +1475,7 @@ VDBRepository::is_default_destination() const
 
 std::string
 VDBRepository::do_describe_use_flag(const UseFlagName &,
-        const PackageDatabaseEntry * const) const
+        const PackageDatabaseEntry &) const
 {
     return "";
 }

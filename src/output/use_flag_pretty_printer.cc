@@ -92,14 +92,14 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
 
         if (environment()->query_use(*flag, pkg))
         {
-            if (use_interface && use_interface->query_use_force(*flag, &pkg))
+            if (use_interface && use_interface->query_use_force(*flag, pkg))
                 output_flag(render_as_forced_flag(stringify(*flag)));
             else
                 output_flag(render_as_enabled_flag(stringify(*flag)));
         }
         else
         {
-            if (use_interface && use_interface->query_use_mask(*flag, &pkg))
+            if (use_interface && use_interface->query_use_mask(*flag, pkg))
                 output_flag(render_as_masked_flag(stringify(*flag)));
             else
                 output_flag(render_as_disabled_flag(stringify(*flag)));
@@ -155,14 +155,14 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
 
         if (environment()->query_use(*flag, pkg))
         {
-            if (use_interface && use_interface->query_use_force(*flag, &pkg))
+            if (use_interface && use_interface->query_use_force(*flag, pkg))
                 output_flag(render_as_forced_flag(stringify(expand_value)));
             else
                 output_flag(render_as_enabled_flag(stringify(expand_value)));
         }
         else
         {
-            if (use_interface && use_interface->query_use_mask(*flag, &pkg))
+            if (use_interface && use_interface->query_use_mask(*flag, pkg))
                 output_flag(render_as_masked_flag(stringify(expand_value)));
             else
                 output_flag(render_as_disabled_flag(stringify(expand_value)));

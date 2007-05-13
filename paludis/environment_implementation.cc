@@ -376,15 +376,15 @@ EnvironmentImplementation::query_use(const UseFlagName & f, const PackageDatabas
 
     if (repo && repo->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, &e))
+        if (repo->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, &e))
+        if (repo->use_interface->query_use_force(f, e))
             return true;
     }
 
     if (repo && repo->use_interface)
     {
-        switch (repo->use_interface->query_use(f, &e))
+        switch (repo->use_interface->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

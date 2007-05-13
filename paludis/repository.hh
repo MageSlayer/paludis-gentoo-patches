@@ -436,19 +436,19 @@ namespace paludis
             /**
              * Override in descendents: get use.
              */
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: get use mask.
              */
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: get use force.
              */
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -479,7 +479,7 @@ namespace paludis
              * Override in descendents: describe a use flag.
              */
             virtual std::string do_describe_use_flag(const UseFlagName &,
-                    const PackageDatabaseEntry * const) const
+                    const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -491,72 +491,43 @@ namespace paludis
             /**
              * Query the state of the specified use flag.
              */
-            UseFlagState query_use(const UseFlagName & u, const PackageDatabaseEntry *pde) const
-            {
-                if (do_query_use_mask(u, pde))
-                    return use_disabled;
-                else if (do_query_use_force(u, pde))
-                    return use_enabled;
-                else
-                    return do_query_use(u, pde);
-            }
+            UseFlagState query_use(const UseFlagName & u, const PackageDatabaseEntry &) const;
 
             /**
              * Query whether the specified use flag is masked.
              */
-            bool query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *pde) const
-            {
-                return do_query_use_mask(u, pde);
-            }
+            bool query_use_mask(const UseFlagName & u, const PackageDatabaseEntry & pde) const;
 
             /**
              * Query whether the specified use flag is forced.
              */
-            bool query_use_force(const UseFlagName & u, const PackageDatabaseEntry *pde) const
-            {
-                return do_query_use_force(u, pde);
-            }
+            bool query_use_force(const UseFlagName & u, const PackageDatabaseEntry & pde) const;
 
             /**
              * Fetch all arch flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const
-            {
-                return do_arch_flags();
-            }
+            std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const;
 
             /**
              * Fetch all expand flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const
-            {
-                return do_use_expand_flags();
-            }
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const;
 
             /**
              * Fetch all expand hidden flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const
-            {
-                return do_use_expand_hidden_prefixes();
-            }
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const;
 
             /**
              * Fetch all use expand prefixes.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const
-            {
-                return do_use_expand_prefixes();
-            }
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const;
 
             /**
              * Describe a use flag.
              */
             std::string describe_use_flag(const UseFlagName & n,
-                    const PackageDatabaseEntry * const pkg) const
-            {
-                return do_describe_use_flag(n, pkg);
-            }
+                    const PackageDatabaseEntry & pkg) const;
 
             ///\}
 

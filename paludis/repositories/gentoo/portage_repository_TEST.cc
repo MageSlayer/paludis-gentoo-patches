@@ -623,17 +623,17 @@ namespace test_cases
                 PackageDatabaseEntry p4(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"),
                         RepositoryName("test-repo-9"));
 
-                TEST_CHECK(repo->query_use(UseFlagName("flag1"), &p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag2"), &p1) == use_disabled);
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), &p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), &p3));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), &p2));
-                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), &p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), &p4));
-                TEST_CHECK(repo->query_use(UseFlagName("flag3"), &p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag4"), &p3) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), &p2) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), &p1) == use_unspecified);
+                TEST_CHECK(repo->query_use(UseFlagName("flag1"), p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag2"), p1) == use_disabled);
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), p3));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), p2));
+                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), p4));
+                TEST_CHECK(repo->query_use(UseFlagName("flag3"), p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag4"), p3) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), p2) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), p1) == use_unspecified);
             }
         }
     } test_portage_repository_query_use;
