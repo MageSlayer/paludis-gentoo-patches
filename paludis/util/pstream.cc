@@ -170,7 +170,7 @@ PStreamInBuf::exit_status()
         Log::get_instance()->message(ll_debug, lc_no_context,
                 "manual pclose " + stringify(fdn) + " -> " + stringify(_exit_status));
     }
-    return _exit_status;
+    return WEXITSTATUS(_exit_status);
 }
 
 void
