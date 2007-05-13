@@ -30,74 +30,138 @@
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<DepSpecPrettyPrinter>
+    {
+        std::stringstream s;
+        unsigned indent;
+        bool use_newlines;
+        bool outer_block;
+        mutable bool need_space;
+
+        Implementation(unsigned i, bool b) :
+            indent(i),
+            use_newlines(b),
+            outer_block(true),
+            need_space(false)
+        {
+        }
+    };
+}
+
+DepSpecPrettyPrinter::DepSpecPrettyPrinter(unsigned i, bool b) :
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(i, b))
+{
+}
+
+DepSpecPrettyPrinter::~DepSpecPrettyPrinter()
+{
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 {
-    s << p._s.str();
+    s << p._imp->s.str();
     return s;
 }
 
 void
 DepSpecPrettyPrinter::visit(const AllDepSpec * const a)
 {
-    _s << indent() << "(" << newline();
+    if (! _imp->outer_block)
     {
-        Save<unsigned> old_indent(&_indent, _indent + 4);
+        _imp->s << indent() << "(";
+        _imp->s << newline();
+    }
+
+    {
+        Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << indent() << ")" << newline();
+
+    if (! _imp->outer_block)
+    {
+        _imp->s << indent() << ")";
+        _imp->s << newline();
+    }
 }
 
 void
 DepSpecPrettyPrinter::visit(const AnyDepSpec * const a)
 {
-    _s << indent() << "|| (" << newline();
+    Save<bool> old_outer(&_imp->outer_block, false);
+
+    _imp->s << indent() << "|| (";
+    _imp->s << newline();
     {
-        Save<unsigned> old_indent(&_indent, _indent + 4);
+        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << indent() << ")" << newline();
+    _imp->s << indent() << ")";
+    _imp->s << newline();
 }
 
 void
 DepSpecPrettyPrinter::visit(const UseDepSpec * const a)
 {
-    _s << indent() << (a->inverse() ? "!" : "") <<
-        a->flag() << "? (" << newline();
+    Save<bool> old_outer(&_imp->outer_block, false);
+
+    _imp->s << indent() << (a->inverse() ? "!" : "") << a->flag() << "? (";
+    _imp->s << newline();
     {
-        Save<unsigned> old_indent(&_indent, _indent + 4);
+        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << indent() << ")" << newline();
+    _imp->s << indent() << ")";
+    _imp->s << newline();
 }
 
 void
 DepSpecPrettyPrinter::visit(const PackageDepSpec * const p)
 {
-    _s << indent() << *p << newline();
+    _imp->s << indent() << *p;
+    _imp->s << newline();
 }
 
 void
 DepSpecPrettyPrinter::visit(const PlainTextDepSpec * const p)
 {
-    _s << indent() << p->text() << newline();
+    _imp->s << indent() << p->text();
+    _imp->s << newline();
 }
 
 void
 DepSpecPrettyPrinter::visit(const BlockDepSpec * const b)
 {
-    _s << indent() << "!" << *b->blocked_spec() << newline();
+    _imp->s << indent() << "!" << *b->blocked_spec();
+    _imp->s << newline();
 }
 
 std::string
 DepSpecPrettyPrinter::newline() const
 {
-    return _use_newlines ? "\n" : " ";
+    if (_imp->use_newlines)
+        return "\n";
+    else
+    {
+        _imp->need_space = true;
+        return "";
+    }
 }
 
 std::string
 DepSpecPrettyPrinter::indent() const
 {
-    return _use_newlines ? std::string(_indent, ' ') : "";
+    if (_imp->use_newlines)
+        return std::string(_imp->indent, ' ');
+    else if (_imp->need_space)
+    {
+        _imp->need_space = false;
+        return " ";
+    }
+    else
+        return "";
 }
 

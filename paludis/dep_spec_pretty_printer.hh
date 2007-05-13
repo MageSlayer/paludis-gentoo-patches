@@ -37,28 +37,24 @@ namespace paludis
      * \ingroup grpdepspecprettyprinter
      */
     class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-        public DepSpecVisitorTypes::ConstVisitor
+        public DepSpecVisitorTypes::ConstVisitor,
+        private PrivateImplementationPattern<DepSpecPrettyPrinter>
     {
         friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
         private:
-            std::stringstream _s;
-            unsigned _indent;
-            bool _use_newlines;
-
             std::string newline() const;
             std::string indent() const;
 
         public:
-            /**
-             * Constructor.
-             */
-            DepSpecPrettyPrinter(unsigned initial_indent,
-                    bool use_newlines = true) :
-                _indent(initial_indent),
-                _use_newlines(use_newlines)
-            {
-            }
+            ///\name Basic operations
+            ///\{
+
+            DepSpecPrettyPrinter(unsigned initial_indent, bool use_newlines = true);
+
+            ~DepSpecPrettyPrinter();
+
+            ///\}
 
             /// \name Visit functions
             ///{

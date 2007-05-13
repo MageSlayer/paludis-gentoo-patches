@@ -46,7 +46,7 @@ namespace test_cases
 
             DepSpecPrettyPrinter w(0, false);
             r.spec()->accept(&w);
-            TEST_CHECK_STRINGIFY_EQUAL(w, "a/b[=1|=2] ");
+            TEST_CHECK_STRINGIFY_EQUAL(w, "a/b[=1|=2]");
         }
     } test_range_rewriter;
 }

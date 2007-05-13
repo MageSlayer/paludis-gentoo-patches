@@ -45,7 +45,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( foo/bar >=bar/baz-1.23 ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23");
             }
 
             f.add("foo/bar");
@@ -53,7 +53,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( foo/bar >=bar/baz-1.23 moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23 moo/oink");
             }
 
             f.rewrite();
@@ -71,7 +71,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( foo/bar moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar moo/oink");
             }
 
             f.rewrite();
@@ -106,7 +106,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( >=bar/baz-1.23 ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23");
             }
 
             f.add("foo/bar");
@@ -114,7 +114,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( >=bar/baz-1.23 moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23 moo/oink");
             }
 
             f.rewrite();
@@ -132,7 +132,7 @@ namespace test_cases
             {
                 DepSpecPrettyPrinter p(0, false);
                 f.contents()->accept(&p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "( moo/oink ) ");
+                TEST_CHECK_STRINGIFY_EQUAL(p, "moo/oink");
             }
 
             f.rewrite();
