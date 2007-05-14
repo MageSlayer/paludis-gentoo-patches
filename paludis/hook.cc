@@ -83,7 +83,7 @@ Hook::grab_output(const AllowedOutputValues & av)
 bool
 Hook::validate_value(const std::string & v) const
 {
-    if (_imp->allowed_values.empty())
+    if (_imp->allowed_values.empty() || v.empty())
         return true;
     else
         return (_imp->allowed_values.find(v) != _imp->allowed_values.end());
