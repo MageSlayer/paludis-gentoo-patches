@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +51,7 @@ namespace
             {
             }
 
-            virtual int run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual const FSEntry file_name() const = 0;
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
     };
@@ -71,7 +72,7 @@ namespace
             {
             }
 
-            virtual int run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -101,7 +102,7 @@ namespace
             {
             }
 
-            virtual int run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -112,7 +113,7 @@ namespace
     };
 }
 
-int
+HookResult
 BashHookFile::run(const Hook & hook) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
@@ -130,7 +131,7 @@ BashHookFile::run(const Hook & hook) const
             .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
             .with_setenv("PALUDIS_COMMAND", _env->paludis_command()));
 
-    if (_run_prefixed)
+    if (hook.output_dest == hod_stdout && _run_prefixed)
         cmd
             .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ")
             .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
@@ -138,7 +139,18 @@ BashHookFile::run(const Hook & hook) const
     for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
-    int exit_status(run_command(cmd));
+    int exit_status(0);
+    std::string output("");
+    if (hook.output_dest == hod_grab)
+    {
+        PStream s(cmd);
+        output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
+                " \t\n");
+        exit_status = s.exit_status();
+    }
+    else
+        exit_status = run_command(cmd);
+
     if (0 == exit_status)
         Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(file_name())
                 + "' returned success '" + stringify(exit_status) + "'");
@@ -146,10 +158,10 @@ BashHookFile::run(const Hook & hook) const
         Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
                 + "' returned failure '" + stringify(exit_status) + "'");
 
-    return exit_status;
+    return HookResult(exit_status, output);
 }
 
-int
+HookResult
 FancyHookFile::run(const Hook & hook) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
@@ -170,7 +182,7 @@ FancyHookFile::run(const Hook & hook) const
         .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
 
-    if (_run_prefixed)
+    if (hook.output_dest == hod_stdout && _run_prefixed)
         cmd
             .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ")
             .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ");
@@ -178,7 +190,18 @@ FancyHookFile::run(const Hook & hook) const
     for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
-    int exit_status(run_command(cmd));
+    int exit_status(0);
+    std::string output("");
+    if (hook.output_dest == hod_grab)
+    {
+        PStream s(cmd);
+        output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
+                " \t\n");
+        exit_status = s.exit_status();
+    }
+    else
+        exit_status = run_command(cmd);
+
     if (0 == exit_status)
         Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(file_name())
                 + "' returned success '" + stringify(exit_status) + "'");
@@ -186,7 +209,7 @@ FancyHookFile::run(const Hook & hook) const
         Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(file_name())
                 + "' returned failure '" + stringify(exit_status) + "'");
 
-    return exit_status;
+    return HookResult(exit_status, output);
 }
 
 void
@@ -289,20 +312,56 @@ Hooker::add_dir(const FSEntry & dir, const bool v)
     _imp->dirs.push_back(std::make_pair(dir, v));
 }
 
-int
+HookResult
 Hooker::perform_hook(const Hook & hook) const
 {
-    int max_exit_status(0);
+    HookResult result(0, "");
 
     Context context("When triggering hook '" + hook.name() + "':");
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
 
     /* repo hooks first */
 
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        if ((*r)->hook_interface)
-            max_exit_status = std::max(max_exit_status, ((*r)->hook_interface->perform_hook(hook)));
+    do
+    {
+        switch (hook.output_dest)
+        {
+            case hod_stdout:
+                for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                        r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                    if ((*r)->hook_interface)
+                        result.max_exit_status = std::max(result.max_exit_status,
+                                ((*r)->hook_interface->perform_hook(hook)).max_exit_status);
+                continue;
+
+            case hod_grab:
+                for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                        r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                    if ((*r)->hook_interface)
+                    {
+                        HookResult tmp((*r)->hook_interface->perform_hook(hook));
+                        if (tmp > result)
+                            result = tmp;
+                        else if (! tmp.output.empty())
+                        {
+                            if (hook.validate_value(tmp.output))
+                            {
+                                if (result.max_exit_status == 0)
+                                    return tmp;
+                            }
+                            else
+                                Log::get_instance()->message(ll_warning, lc_context)
+                                    << "Hook returned invalid output: '" << tmp.output << "'";
+                        }
+                    }
+                continue;
+
+            case last_hod:
+                ;
+        }
+        throw InternalError(PALUDIS_HERE, "Bad HookOutputDestination value '" + paludis::stringify(
+                    static_cast<int>(hook.output_dest)));
+    } while(false);
 
     /* file hooks, but only if necessary */
 
@@ -373,11 +432,46 @@ Hooker::perform_hook(const Hook & hook) const
 
     if (! h->second.empty())
     {
-        for (std::list<std::tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()), f_end(h->second.end()) ;
-                f != f_end ; ++f)
-            max_exit_status = std::max(max_exit_status, (*f)->run(hook));
+        do
+        {
+            switch (hook.output_dest)
+            {
+                case hod_stdout:
+                    for (std::list<std::tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
+                            f_end(h->second.end()) ; f != f_end ; ++f)
+                        result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
+                    continue;
+
+                case hod_grab:
+                    for (std::list<std::tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
+                            f_end(h->second.end()) ; f != f_end ; ++f)
+                    {
+                        HookResult tmp((*f)->run(hook));
+                        if (tmp > result)
+                            result = tmp;
+                        else if (! tmp.output.empty())
+                        {
+                            if (hook.validate_value(tmp.output))
+                            {
+                                if (result.max_exit_status == 0)
+                                    return tmp;
+                            }
+                            else
+                                Log::get_instance()->message(ll_warning, lc_context)
+                                    << "Hook returned invalid output: '" << tmp.output << "'";
+                        }
+                    }
+                    continue;
+
+                case last_hod:
+                    ;
+            }
+            throw InternalError(PALUDIS_HERE, "Bad HookOutputDestination value '" + paludis::stringify(
+                        static_cast<int>(hook.output_dest)));
+        } while(false);
+
     }
 
-    return max_exit_status;
+    return result;
 }
 

@@ -1,0 +1,18 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_HookOutputDestination()
+{
+    prefix hod
+
+    key hod_grab          "grab"
+    key hod_stdout        "stdout"
+
+    doxygen_comment << "END"
+        /**
+         * Determines what to do with hook's output.
+         *
+         * \ingroup grpenvironment
+         */
+END
+}

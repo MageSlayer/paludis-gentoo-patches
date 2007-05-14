@@ -110,7 +110,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual int perform_hook(const Hook &) const
+            virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::tr1::shared_ptr<PackageDatabase> package_database()

@@ -217,10 +217,10 @@ EnvironmentImplementation::set_names() const
     return result;
 }
 
-int
+HookResult
 EnvironmentImplementation::perform_hook(const Hook &) const
 {
-    return 0;
+    return HookResult(0, "");
 }
 
 std::tr1::shared_ptr<const DestinationsCollection>

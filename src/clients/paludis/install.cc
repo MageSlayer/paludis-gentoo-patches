@@ -235,7 +235,7 @@ namespace
                 execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
             }
 
-            virtual int perform_hook(const Hook & hook) const
+            virtual HookResult perform_hook(const Hook & hook) const
             {
                 return ConsoleInstallTask::perform_hook(hook("RESUME_COMMAND", make_resume_command(
                                 _env, *this, false)));

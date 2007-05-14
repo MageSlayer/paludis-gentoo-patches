@@ -117,7 +117,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const SetNameCollection> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual int perform_hook(const Hook &) const
+            virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const

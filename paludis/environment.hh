@@ -26,6 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/mask_reasons.hh>
 #include <paludis/name.hh>
+#include <paludis/hook.hh>
 #include <paludis/repository-fwd.hh>
 
 /** \file
@@ -36,7 +37,6 @@
 
 namespace paludis
 {
-    class Hook;
     class PackageDatabase;
     class PackageDatabaseEntry;
     class DepSpec;
@@ -257,9 +257,9 @@ namespace paludis
             ///\{
 
             /**
-             * Perform a hook, return the highest exit status.
+             * Perform a hook.
              */
-            virtual int perform_hook(const Hook &) const
+            virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

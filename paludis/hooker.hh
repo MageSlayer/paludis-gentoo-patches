@@ -28,6 +28,7 @@ namespace paludis
     class FSEntry;
     class Environment;
     class Hook;
+    class HookResult;
 
     /**
      * Handles executing hooks for an Environment.
@@ -49,9 +50,9 @@ namespace paludis
             ///\}
 
             /**
-             * Perform a hook, return the highest exit status.
+             * Perform a hook, return HookResult.
              */
-            int perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Add a new hook directory.

@@ -268,7 +268,7 @@ UninstallTask::execute()
 
     if (0 !=
         _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(_imp->raw_targets.begin(),
-                         _imp->raw_targets.end(), " "))))
+                         _imp->raw_targets.end(), " "))).max_exit_status)
         throw PackageUninstallActionError("Uninstall aborted by hook");
     on_uninstall_all_pre();
 
@@ -287,7 +287,7 @@ UninstallTask::execute()
 
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
             throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
         on_uninstall_pre(*i);
 
@@ -303,21 +303,21 @@ UninstallTask::execute()
         }
         catch (const PackageUninstallActionError & e)
         {
-            int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message())));
+            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message())));
             throw;
         }
 
         on_uninstall_post(*i);
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
             throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
     }
 
     on_uninstall_all_post();
     if (0 !=
         _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
-                         _imp->raw_targets.end(), " "))))
+                         _imp->raw_targets.end(), " "))).max_exit_status)
         throw PackageUninstallActionError("Uninstall aborted by hook");
 }
 

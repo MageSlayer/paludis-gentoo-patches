@@ -594,7 +594,7 @@ PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
     return result;
 }
 
-int
+HookResult
 PortageEnvironment::perform_hook(const Hook & hook) const
 {
     using namespace std::tr1::placeholders;

@@ -69,7 +69,7 @@ SyncTask::execute()
 
     if (0 !=
         _imp->env->perform_hook(Hook("sync_all_pre")("TARGETS", join(_imp->targets.begin(),
-                         _imp->targets.end(), " "))))
+                         _imp->targets.end(), " "))).max_exit_status)
         throw SyncFailedError("Sync aborted by hook");
     on_sync_all_pre();
 
@@ -84,7 +84,7 @@ SyncTask::execute()
         {
             if (0 !=
                 _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r))
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
                 throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
             on_sync_pre(*r);
 
@@ -98,12 +98,12 @@ SyncTask::execute()
             on_sync_post(*r);
             if (0 !=
                 _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r))
-                             ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                             ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
                 throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
         }
         catch (const SyncFailedError & e)
         {
-            int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
+            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
                     ("X_OF_Y", stringify(x) + " of " + stringify(y))));
             on_sync_fail(*r, e);
         }
@@ -112,7 +112,7 @@ SyncTask::execute()
     on_sync_all_post();
     if (0 !=
         _imp->env->perform_hook(Hook("sync_all_post")("TARGETS", join(_imp->targets.begin(),
-                         _imp->targets.end(), " "))))
+                         _imp->targets.end(), " "))).max_exit_status)
         throw SyncFailedError("Sync aborted by hook");
 }
 

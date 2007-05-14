@@ -204,7 +204,7 @@ AdaptedEnvironment::default_destinations() const
     return _imp->env->default_destinations();
 }
 
-int
+HookResult
 AdaptedEnvironment::perform_hook(const Hook & h) const
 {
     return _imp->env->perform_hook(h);

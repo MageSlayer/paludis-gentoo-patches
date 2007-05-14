@@ -92,7 +92,7 @@ namespace paludis
 
             virtual FSEntry root() const;
 
-            int perform_hook(const Hook &) const
+            HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

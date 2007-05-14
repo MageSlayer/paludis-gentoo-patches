@@ -322,12 +322,12 @@ InstalledVirtualsRepository::root() const
     return _imp->root;
 }
 
-int
+HookResult
 InstalledVirtualsRepository::perform_hook(const Hook & hook) const
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");
 
-    return 0;
+    return HookResult(0, "");
 }
 

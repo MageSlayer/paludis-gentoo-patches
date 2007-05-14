@@ -110,7 +110,7 @@ VDBUnmerger::unmerge()
 
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                               Hook("unmerger_unlink_pre")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))))
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
 
     unmerge_non_directories(lines.begin(), lines.end());
@@ -118,7 +118,7 @@ VDBUnmerger::unmerge()
 
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                               Hook("unmerger_unlink_post")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))))
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
 }
 

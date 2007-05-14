@@ -10,6 +10,13 @@ exit 3
 END
 chmod +x simple_hook/one.bash
 
+mkdir simple_hook_output
+cat <<"END" > simple_hook_output/one.bash
+echo "foo"
+END
+chmod +x simple_hook_output/one.bash
+
+
 mkdir fancy_hook
 cat <<"END" > fancy_hook/one.hook
 hook_run_fancy_hook() {
@@ -25,6 +32,23 @@ hook_after_fancy_hook() {
 }
 END
 chmod +x fancy_hook/one.hook
+
+mkdir fancy_hook_output
+cat <<"END" > fancy_hook_output/one.hook
+hook_run_fancy_hook_output() {
+    echo foo
+}
+
+hook_depend_fancy_hook_output() {
+    echo
+}
+
+hook_after_fancy_hook_output() {
+    echo
+}
+END
+chmod +x fancy_hook_output/one.hook
+
 
 mkdir several_hooks
 cat <<"END" > several_hooks/one.hook
@@ -59,6 +83,83 @@ hook_depend_several_hooks() {
 }
 END
 chmod +x several_hooks/three.hook
+
+mkdir several_hooks_output
+cat <<"END" > several_hooks_output/one.hook
+hook_run_several_hooks_output() {
+    echo one
+    echo one >> hooker_TEST_dir/several_output.out
+}
+
+hook_depend_several_hooks_output() {
+    echo
+}
+END
+chmod +x several_hooks_output/one.hook
+
+cat <<"END" > several_hooks_output/two.hook
+hook_run_several_hooks_output() {
+    echo two
+    echo two >> hooker_TEST_dir/several_output.out
+}
+
+hook_depend_several_hooks_output() {
+    echo one
+}
+END
+chmod +x several_hooks_output/two.hook
+
+cat <<"END" > several_hooks_output/three.hook
+hook_run_several_hooks_output() {
+    echo three
+    echo three >> hooker_TEST_dir/several_output.out
+}
+
+hook_depend_several_hooks_output() {
+    echo two
+}
+END
+chmod +x several_hooks_output/three.hook
+
+mkdir several_hooks_output_bad
+cat <<"END" > several_hooks_output_bad/one.hook
+hook_run_several_hooks_output_bad() {
+    echo one
+    echo one >> hooker_TEST_dir/several_output_bad.out
+    return 1
+}
+
+hook_depend_several_hooks_output_bad() {
+    echo
+}
+END
+chmod +x several_hooks_output_bad/one.hook
+
+cat <<"END" > several_hooks_output_bad/two.hook
+hook_run_several_hooks_output_bad() {
+    echo two
+    echo two >> hooker_TEST_dir/several_output_bad.out
+    return 99
+}
+
+hook_depend_several_hooks_output_bad() {
+    echo one
+}
+END
+chmod +x several_hooks_output_bad/two.hook
+
+cat <<"END" > several_hooks_output_bad/three.hook
+hook_run_several_hooks_output_bad() {
+    echo three
+    echo three >> hooker_TEST_dir/several_output_bad.out
+    return 2
+}
+
+hook_depend_several_hooks_output_bad() {
+    echo two
+}
+END
+chmod +x several_hooks_output_bad/three.hook
 
 mkdir ordering
 cat <<"END" > ordering.common

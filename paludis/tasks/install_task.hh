@@ -171,7 +171,7 @@ namespace paludis
             /**
              * Perform a hook. By default, delegates to environment.
              */
-            virtual int perform_hook(const Hook &) const
+            virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

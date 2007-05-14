@@ -38,11 +38,19 @@ namespace test_cases
         {
             TestEnvironment env;
             Hooker hooker(&env);
+            HookResult result(0, "");
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("simple_hook")), 3);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("fancy_hook")), 5);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("several_hooks")), 7);
+            result = hooker.perform_hook(Hook("simple_hook"));
+            TEST_CHECK_EQUAL(result.max_exit_status, 3);
+            TEST_CHECK_EQUAL(result.output, "");
+            result = hooker.perform_hook(Hook("fancy_hook"));
+            TEST_CHECK_EQUAL(result.max_exit_status, 5);
+            TEST_CHECK_EQUAL(result.output, "");
+            result = hooker.perform_hook(Hook("several_hooks"));
+            TEST_CHECK_EQUAL(result.max_exit_status, 7);
+            TEST_CHECK_EQUAL(result.output, "");
+
         }
     } test_hooker;
 
@@ -58,7 +66,9 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/ordering.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("ordering")), 0);
+            HookResult result(hooker.perform_hook(Hook("ordering")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "");
 
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/ordering.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -79,13 +89,15 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/bad_hooks.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("bad_hooks")), 123);
+            HookResult result(hooker.perform_hook(Hook("bad_hooks")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 123);
+            TEST_CHECK_EQUAL(result.output, "");
 
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/bad_hooks.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\nthree\n");
-        }
+       }
     } test_hooker_bad_hooks;
 
     struct HookerCyclesTest : TestCase
@@ -100,7 +112,9 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/cycles.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            TEST_CHECK_EQUAL(hooker.perform_hook(Hook("cycles")), 0);
+            HookResult result(hooker.perform_hook(Hook("cycles")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "");
 
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/cycles.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -108,5 +122,83 @@ namespace test_cases
             TEST_CHECK_EQUAL(line, "b\na\ng\nf\ni\n");
         }
     } test_hooker_cycles;
+
+    struct HookerOutputTest : TestCase
+    {
+        HookerOutputTest() : TestCase("hooker output") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            Hooker hooker(&env);
+            HookResult result(0, "");
+
+            FSEntry("hooker_TEST_dir/several_output.out").unlink();
+
+            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+
+            result = hooker.perform_hook(Hook("simple_hook_output")
+                    .grab_output(Hook::AllowedOutputValues()("foo")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "foo");
+
+            result = hooker.perform_hook(Hook("fancy_hook_output")
+                    .grab_output(Hook::AllowedOutputValues()("foo")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "foo");
+
+            result = hooker.perform_hook(Hook("several_hooks_output")
+                    .grab_output(Hook::AllowedOutputValues()));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "one");
+
+            result = hooker.perform_hook(Hook("several_hooks_output")
+                    .grab_output(Hook::AllowedOutputValues()("one")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "one");
+
+            result = hooker.perform_hook(Hook("several_hooks_output")
+                    .grab_output(Hook::AllowedOutputValues()("two")("three")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "two");
+
+            result = hooker.perform_hook(Hook("several_hooks_output")
+                    .grab_output(Hook::AllowedOutputValues()("blah")));
+            TEST_CHECK_EQUAL(result.output, "");
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+
+            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/several_output.out")).c_str());
+            std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+            TEST_CHECK_EQUAL(line, "one\none\none\ntwo\none\ntwo\nthree\n");
+
+        }
+    } test_hooker_output;
+
+    struct HookerBadOutputHooksTest : TestCase
+    {
+        HookerBadOutputHooksTest() : TestCase("hooker bad ouput hooks") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            Hooker hooker(&env);
+
+            FSEntry("hooker_TEST_dir/several_output_bad.out").unlink();
+
+            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+
+            HookResult result(hooker.perform_hook(Hook("several_hooks_output_bad")
+                        .grab_output(Hook::AllowedOutputValues())));
+            TEST_CHECK_EQUAL(result.output, "two");
+            TEST_CHECK_EQUAL(result.max_exit_status, 99);
+
+            std::ifstream f(stringify(FSEntry("hooker_TEST_dir/several_output_bad.out")).c_str());
+            std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+            TEST_CHECK_EQUAL(line, "one\ntwo\nthree\n");
+        }
+    } test_hooker_bad_output_hooks;
+
 }
 

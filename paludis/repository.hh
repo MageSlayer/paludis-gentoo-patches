@@ -1143,9 +1143,9 @@ namespace paludis
     {
         public:
             /**
-             * Perform a hook, and return the highest exit status.
+             * Perform a hook.
              */
-            virtual int perform_hook(const Hook & hook) const
+            virtual HookResult perform_hook(const Hook & hook) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual ~RepositoryHookInterface();

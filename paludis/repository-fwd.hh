@@ -29,6 +29,7 @@ namespace paludis
     class RepositoryNameCache;
     class PortageRepositoryProfile;
     class Hook;
+    class HookResult;
 
     class Repository;
     class RepositoryInstallableInterface;

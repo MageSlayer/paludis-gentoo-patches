@@ -266,7 +266,7 @@ PaludisEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
-int
+HookResult
 PaludisEnvironment::perform_hook(const Hook & hook) const
 {
     if (! _imp->hooker)

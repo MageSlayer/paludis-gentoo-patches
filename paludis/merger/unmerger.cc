@@ -48,7 +48,7 @@ Unmerger::unlink_file(FSEntry d)
 {
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 
     if (d.is_regular_file())
@@ -65,7 +65,7 @@ Unmerger::unlink_file(FSEntry d)
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_post")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 }
 
@@ -74,14 +74,14 @@ Unmerger::unlink_sym(FSEntry d)
 {
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 
     d.unlink();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_post")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 }
 
@@ -90,14 +90,14 @@ Unmerger::unlink_dir(FSEntry d)
 {
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 
     d.rmdir();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_post")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 }
 
@@ -106,14 +106,14 @@ Unmerger::unlink_misc(FSEntry d)
 {
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 
     d.unlink();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_post")
-                         ("UNLINK_TARGET", stringify(d)))))
+                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
         throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
 }
 

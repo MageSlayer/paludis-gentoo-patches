@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,12 +23,16 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/compare.hh>
 #include <utility>
 #include <string>
+#include <set>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
 {
+#include <paludis/hook-se.hh>
+#include <paludis/hook-sr.hh>
     /**
      * Represents the data for an Environment hook call.
      *
@@ -41,6 +46,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
+            class AllowedOutputValues;
+
+            HookOutputDestination output_dest;
+
             Hook(const std::string & name);
 
             Hook(const Hook &);
@@ -52,6 +61,10 @@ namespace paludis
             /// Add data to the hook.
             Hook operator() (const std::string & key, const std::string & value) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            Hook grab_output(const AllowedOutputValues & av);
+
+            bool validate_value(const std::string & value) const;
 
             ///\name Iterate over environment data
             ///\{
@@ -68,6 +81,24 @@ namespace paludis
 
             /// Our name.
             std::string name() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE Hook::AllowedOutputValues
+    {
+        private:
+            friend class Hook;
+
+            std::set<std::string> allowed_values;
+
+        public:
+            AllowedOutputValues();
+
+            AllowedOutputValues(const AllowedOutputValues & other);
+
+            ~AllowedOutputValues();
+
+            AllowedOutputValues operator() (const std::string & v) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

@@ -1260,7 +1260,7 @@ PortageRepository::merge(const MergeOptions & o)
     _imp->entries_ptr->merge(o);
 }
 
-int
+HookResult
 PortageRepository::perform_hook(const Hook & hook) const
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
@@ -1271,6 +1271,6 @@ PortageRepository::perform_hook(const Hook & hook) const
             || hook.name() == "uninstall_all_post")
         update_news();
 
-    return 0;
+    return HookResult(0, "");
 }
 
