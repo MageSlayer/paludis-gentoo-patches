@@ -42,7 +42,7 @@ CreateMetadataCheck::operator() (const EbuildCheckData & e) const
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        if ("UNKNOWN" == metadata->eapi)
+        if (! metadata->eapi.supported)
             result << Message(qal_fatal, "Couldn't generate metadata");
     }
     catch (const InternalError &)

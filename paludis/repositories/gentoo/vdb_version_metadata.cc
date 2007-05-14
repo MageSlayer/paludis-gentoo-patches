@@ -28,7 +28,7 @@ VDBVersionMetadata::VDBVersionMetadata() :
             .slot(SlotName("UNSET"))
             .homepage("")
             .description("")
-            .eapi("UNKNOWN")
+            .eapi(EAPIData::get_instance()->unknown_eapi())
             .interactive(false),
             VersionMetadataCapabilities::create()
             .deps_interface(this)
@@ -55,7 +55,7 @@ VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
             .slot(s)
             .homepage("")
             .description("")
-            .eapi("UNKNOWN")
+            .eapi(EAPIData::get_instance()->unknown_eapi())
             .interactive(false),
             VersionMetadataCapabilities::create()
             .deps_interface(this)

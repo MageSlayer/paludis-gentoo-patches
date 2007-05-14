@@ -118,7 +118,7 @@ make_class_VersionMetadataBase()
     key slot SlotName
     cache_key homepage std::string DepSpec _make_text
     key description std::string
-    key eapi std::string
+    key eapi EAPI
     key interactive bool
 
     allow_named_args

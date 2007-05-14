@@ -26,6 +26,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/eapi.hh>
 #include <string>
 
 /** \file
@@ -99,16 +100,6 @@ namespace paludis
     {
         public:
             virtual ~VersionMetadata();
-
-            /**
-             * Return the appropriate PackageDepSpecParseMode for our EAPI.
-             */
-            PackageDepSpecParseMode eapi_as_package_dep_spec_parse_mode() const;
-
-            /**
-             * Return the appropriate IUseFlagParseMode for our EAPI.
-             */
-            IUseFlagParseMode eapi_as_iuse_flag_parse_mode() const;
 
         protected:
             ///\name Basic operations

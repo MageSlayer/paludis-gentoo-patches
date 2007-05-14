@@ -74,40 +74,17 @@ VersionMetadataHasInterfaces::~VersionMetadataHasInterfaces()
 {
 }
 
-PackageDepSpecParseMode
-VersionMetadata::eapi_as_package_dep_spec_parse_mode() const
-{
-    if (eapi == "0" || eapi == "")
-        return pds_pm_eapi_0;
-    else if (eapi == "CRAN-1" || eapi == "paludis-1")
-        return pds_pm_permissive;
-    else
-    {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "BUG! Don't know what parse mode to use for EAPI '" + stringify(eapi) + "'");
-        return pds_pm_permissive;
-    }
-}
-
-IUseFlagParseMode
-VersionMetadata::eapi_as_iuse_flag_parse_mode() const
-{
-    if (eapi == "0" || eapi == "")
-        return iuse_pm_eapi_0;
-    else if (eapi == "CRAN-1" || eapi == "paludis-1")
-        return iuse_pm_permissive;
-    else
-    {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "BUG! Don't know what parse mode to use for EAPI '" + stringify(eapi) + "'");
-        return iuse_pm_permissive;
-    }
-}
-
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::_make_depend(const std::string & s) const
 {
-    return parser(s, version_metadata()->eapi_as_package_dep_spec_parse_mode());
+    if (version_metadata()->eapi.supported)
+        return parser(s, version_metadata()->eapi.supported->package_dep_spec_parse_mode);
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "Don't know how to parse dependency strings for EAPI '" + version_metadata()->eapi.name + "'";
+        return std::tr1::shared_ptr<DepSpec>(new AllDepSpec);
+    }
 }
 
 std::tr1::shared_ptr<const DepSpec>
@@ -143,9 +120,18 @@ VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) con
     std::tr1::shared_ptr<IUseFlagCollection> result(new IUseFlagCollection::Concrete);
     std::list<std::string> t;
     WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(t));
-    for (std::list<std::string>::const_iterator u(t.begin()), u_end(t.end()) ;
-            u != u_end ; ++u)
-        result->insert(IUseFlag(*u, version_metadata()->eapi_as_iuse_flag_parse_mode()));
+
+    if (version_metadata()->eapi.supported)
+    {
+        IUseFlagParseMode m(version_metadata()->eapi.supported->iuse_flag_parse_mode);
+        for (std::list<std::string>::const_iterator u(t.begin()), u_end(t.end()) ;
+                u != u_end ; ++u)
+            result->insert(IUseFlag(*u, m));
+    }
+    else
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "Don't know how to parse IUSE strings for EAPI '" + version_metadata()->eapi.name + "'";
+
     return result;
 }
 

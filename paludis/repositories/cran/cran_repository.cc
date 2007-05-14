@@ -414,7 +414,7 @@ CRANRepository::do_version_metadata(
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
         result.reset(new CRANVersionMetadata(false));
-        result->eapi = "UNKNOWN";
+        result->eapi = EAPIData::get_instance()->unknown_eapi();
     }
 
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));

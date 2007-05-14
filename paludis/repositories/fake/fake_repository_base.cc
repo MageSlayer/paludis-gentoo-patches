@@ -173,7 +173,7 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
                 std::tr1::shared_ptr<VersionMetadata>(new FakeVersionMetadata)));
     std::tr1::shared_ptr<VersionMetadata> r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
     r->slot = SlotName("0");
-    r->eapi = "0";
+    r->eapi = EAPIData::get_instance()->eapi_from_string("0");
     return r;
 }
 
@@ -290,7 +290,7 @@ FakeVersionMetadata::FakeVersionMetadata() :
             .slot(SlotName("0"))
             .homepage("")
             .description("")
-            .eapi("paludis-1")
+            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
             .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(this)
@@ -318,7 +318,7 @@ FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const
             .slot(s)
             .homepage("")
             .description("")
-            .eapi("paludis-1")
+            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
             .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(0)

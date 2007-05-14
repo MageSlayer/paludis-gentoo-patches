@@ -28,7 +28,7 @@ CRANVersionMetadata::CRANVersionMetadata(bool want_origins) :
             .slot(SlotName("unset"))
             .homepage("")
             .description("")
-            .eapi("UNKNOWN")
+            .eapi(EAPIData::get_instance()->unknown_eapi())
             .interactive(false),
             VersionMetadataCapabilities::create()
             .cran_interface(this)

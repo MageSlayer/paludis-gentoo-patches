@@ -47,8 +47,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         {
             std::string depend(metadata->deps_interface->get_raw_build_depend());
             PortageDepParser::parse(depend, PortageDepParser::Policy::text_is_package_dep_spec(true,
-                        metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
-                        pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));
+                        metadata->eapi.supported->strict_package_dep_spec_parse_mode));
         }
         catch (const Exception & err)
         {
@@ -60,9 +59,8 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         {
             std::string rdepend(metadata->deps_interface->get_raw_run_depend());
             PortageDepParser::parse(rdepend, PortageDepParser::Policy::text_is_package_dep_spec(true,
-                        metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
-                        pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));
-}
+                        metadata->eapi.supported->strict_package_dep_spec_parse_mode));
+        }
         catch (const Exception & err)
         {
             result << Message(qal_fatal, "Unparsable RDEPEND: '" +
@@ -73,9 +71,8 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         {
             std::string pdepend(metadata->deps_interface->get_raw_post_depend());
             PortageDepParser::parse(pdepend, PortageDepParser::Policy::text_is_package_dep_spec(true,
-                        metadata->eapi_as_package_dep_spec_parse_mode() == pds_pm_eapi_0 ?
-                        pds_pm_eapi_0_strict : metadata->eapi_as_package_dep_spec_parse_mode()));
-}
+                        metadata->eapi.supported->strict_package_dep_spec_parse_mode));
+        }
         catch (const Exception & err)
         {
             result << Message(qal_fatal, "Unparsable PDEPEND: '" +

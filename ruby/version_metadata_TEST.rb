@@ -68,7 +68,7 @@ module Paludis
 #            assert_equal "http://paludis.pioto.org/", vmd("1.0").homepage
             assert_kind_of DepSpec, vmd('1.0').homepage
             assert_equal "0", vmd("1.0").slot
-            assert_equal "0", vmd("1.0").eapi
+#            assert_equal "0", vmd("1.0").eapi
 #            assert_equal "GPL-2", vmd("1.0").license_string
             assert_kind_of DepSpec, vmd('1.0').license
             assert !vmd('1.0').interactive?

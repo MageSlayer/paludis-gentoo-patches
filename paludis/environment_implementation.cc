@@ -22,6 +22,7 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/eapi.hh>
 
 using namespace paludis;
 
@@ -91,10 +92,11 @@ namespace
         }
     };
 }
+
 bool
-EnvironmentImplementation::accept_eapi(const std::string & e, const PackageDatabaseEntry &) const
+EnvironmentImplementation::accept_eapi(const EAPI & e, const PackageDatabaseEntry &) const
 {
-    return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-1";
+    return e.supported;
 }
 
 bool
@@ -138,7 +140,7 @@ bool
 EnvironmentImplementation::breaks_portage(const PackageDatabaseEntry & e, const VersionMetadata & m) const
 {
     return (e.version.has_try_part() || e.version.has_scm_part()
-            || std::string::npos != m.eapi.find("paludis"));
+            || (! m.eapi.supported) || (m.eapi.supported->breaks_portage));
 }
 
 EnvironmentImplementation::~EnvironmentImplementation()

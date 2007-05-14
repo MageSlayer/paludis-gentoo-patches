@@ -544,11 +544,13 @@ namespace test_cases
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                     TEST_CHECK_EQUAL(m->description, "The Description");
-                    TEST_CHECK_EQUAL(m->eapi, "0");
+                    TEST_CHECK_EQUAL(m->eapi.name, "0");
+                    TEST_CHECK(m->eapi.supported);
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
                     TEST_CHECK_EQUAL(m->description, "dquote \" squote ' backslash \\ dollar $");
-                    TEST_CHECK_EQUAL(m->eapi, "0");
+                    TEST_CHECK_EQUAL(m->eapi.name, "0");
+                    TEST_CHECK(m->eapi.supported);
                 }
             }
         }
@@ -585,7 +587,8 @@ namespace test_cases
                 std::tr1::shared_ptr<const VersionMetadata> m;
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->eapi, "UNKNOWN");
+                TEST_CHECK_EQUAL(m->eapi.name, "UNKNOWN");
+                TEST_CHECK(! m->eapi.supported);
             }
         }
     } test_portage_repository_metadata_unparsable;

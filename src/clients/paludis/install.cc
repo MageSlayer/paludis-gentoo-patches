@@ -645,7 +645,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
                             {
                                 std::string eapi_str(env->package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
-                                            pp->name, pp->version)->eapi);
+                                            pp->name, pp->version)->eapi.name);
 
                                 if (eapi_str == "UNKNOWN")
                                     cerr << " ( " << colour(cl_masked, eapi_str) <<

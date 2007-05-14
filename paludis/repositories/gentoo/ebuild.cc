@@ -208,7 +208,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         _metadata->set_iuse(f.get("IUSE"));
         _metadata->set_post_depend(f.get("PDEPEND"));
         _metadata->set_provide(f.get("PROVIDE"));
-        _metadata->eapi = f.get("EAPI");
+        _metadata->eapi = EAPIData::get_instance()->eapi_from_string(f.get("EAPI"));
 
         if (0 == prog.exit_status())
             ok = true;
@@ -226,7 +226,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Could not generate cache for '"
                 + stringify(*params.db_entry) + "'");
-        _metadata->eapi = "UNKNOWN";
+        _metadata->eapi = EAPIData::get_instance()->unknown_eapi();
 
         return false;
     }
@@ -484,7 +484,7 @@ EbuildVersionMetadata::EbuildVersionMetadata() :
             .slot(SlotName("UNSET"))
             .homepage("")
             .description("")
-            .eapi("UNKNOWN")
+            .eapi(EAPIData::get_instance()->unknown_eapi())
             .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(this)

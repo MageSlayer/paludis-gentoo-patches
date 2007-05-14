@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_IMPLEMENTATION_HH 1
 
 #include <paludis/environment.hh>
+#include <paludis/eapi-fwd.hh>
 
 namespace paludis
 {
@@ -44,7 +45,7 @@ namespace paludis
              *
              * Default behaviour: recognised EAPIs accepted.
              */
-            virtual bool accept_eapi(const std::string &, const PackageDatabaseEntry &) const
+            virtual bool accept_eapi(const EAPI &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

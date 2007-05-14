@@ -89,7 +89,7 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
     result->slot = SlotName(f.get("SLOT"));
     result->set_homepage(f.get("HOMEPAGE"));
     result->description = f.get("DESCRIPTION");
-    result->eapi = f.get("EAPI");
+    result->eapi = EAPIData::get_instance()->eapi_from_string(f.get("EAPI"));
 
     result->set_provide(f.get("PROVIDE"));
     result->set_src_uri(f.get("SRC_URI"));
@@ -394,7 +394,7 @@ EbinEntries::merge(const MergeOptions & m)
     metadata->homepage()->accept(&h);
     ebin_file << "HOMEPAGE=" << h << std::endl;
     ebin_file << "DESCRIPTION=" << metadata->description << std::endl;
-    ebin_file << "EAPI=" << metadata->eapi << std::endl;
+    ebin_file << "EAPI=" << metadata->eapi.name << std::endl;
 
     if (metadata->ebuild_interface)
     {

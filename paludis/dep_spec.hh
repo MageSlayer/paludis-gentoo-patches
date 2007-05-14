@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
@@ -41,26 +42,6 @@
 
 namespace paludis
 {
-    class DepSpec;
-    class CompositeDepSpec;
-    class PackageDepSpec;
-    class PlainTextDepSpec;
-    class AllDepSpec;
-    class AnyDepSpec;
-    class UseDepSpec;
-    class SetDepSpec;
-    class BlockDepSpec;
-
-#include <paludis/dep_spec-se.hh>
-
-    /**
-     * Visitor types for a visitor that can visit a DepSpec heirarchy.
-     *
-     * \ingroup grpdepspecs
-     */
-    typedef VisitorTypes<PackageDepSpec *, PlainTextDepSpec *, AllDepSpec *, AnyDepSpec *,
-            UseDepSpec *, BlockDepSpec *> DepSpecVisitorTypes;
-
     /**
      * Base class for a dependency spec.
      *
@@ -450,13 +431,6 @@ namespace paludis
     };
 
     /**
-     * A PlainTextDepSpec can be written to an ostream.
-     *
-     * \ingroup grpdepspecs
-     */
-    std::ostream & operator<< (std::ostream &, const PlainTextDepSpec &) PALUDIS_VISIBLE;
-
-    /**
      * Thrown if an invalid package dep spec specification is encountered.
      *
      * \ingroup grpexceptions
@@ -474,13 +448,6 @@ namespace paludis
 
             ///\}
     };
-
-    /**
-     * A PackageDepSpec can be written to an ostream.
-     *
-     * \ingroup grpdepspecs
-     */
-    std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A BlockDepSpec represents a block on a package name (for example,

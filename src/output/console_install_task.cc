@@ -1101,7 +1101,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             if (mr_eapi == mm)
             {
                 std::string eapi_str(environment()->package_database()->fetch_repository(
-                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi);
+                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi.name);
 
                 if (eapi_str == "UNKNOWN")
                     output_no_endl(" ( " + render_as_masked(eapi_str) + " ) (probably a broken ebuild)");

@@ -353,7 +353,7 @@ CRANInstalledRepository::do_version_metadata(
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': No DESCRIPTION file present.");
         result.reset(new CRANVersionMetadata(true));
-        result->eapi = "UNKNOWN";
+        result->eapi = EAPIData::get_instance()->unknown_eapi();
         return result;
     }
 

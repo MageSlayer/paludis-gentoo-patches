@@ -67,7 +67,7 @@ EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result
         std::getline(cache, line);
         std::getline(cache, line); result->set_post_depend(line);
         std::getline(cache, line); result->set_provide(line);
-        std::getline(cache, line); result->eapi = line;
+        std::getline(cache, line); result->eapi = EAPIData::get_instance()->eapi_from_string(line);
 
         // check mtimes
         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
@@ -140,7 +140,7 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
         cache << std::endl;
         cache << normalise(v->post_depend()) << std::endl;
         cache << normalise(v->provide()) << std::endl;
-        cache << normalise(v->eapi) << std::endl;
+        cache << normalise(v->eapi.name) << std::endl;
     }
     else
     {

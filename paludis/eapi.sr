@@ -1,0 +1,46 @@
+make_class_SupportedEAPI()
+{
+    visible
+
+    key package_dep_spec_parse_mode PackageDepSpecParseMode
+    key strict_package_dep_spec_parse_mode PackageDepSpecParseMode
+
+    key iuse_flag_parse_mode IUseFlagParseMode
+    key strict_iuse_flag_parse_mode IUseFlagParseMode
+
+    key breaks_portage bool
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Information about a supported EAPI.
+         *
+         * \see EAPIData
+         * \see EAPI
+         * \ingroup grpnames
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_EAPI()
+{
+    visible
+
+    key name std::string
+    key supported "std::tr1::shared_ptr<const SupportedEAPI>"
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Information about an EAPI.
+         *
+         * \see EAPIData
+         * \ingroup grpnames
+         * \nosubgrouping
+         */
+END
+}
+

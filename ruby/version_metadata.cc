@@ -133,6 +133,7 @@ namespace
      *
      * Our slot
      */
+#ifdef CIARANM_REMOVED_THIS
     /*
      * Document-method: eapi
      *
@@ -141,6 +142,7 @@ namespace
      *
      * Our eapi
      */
+#endif
     /*
      * Document-method: description
      *
@@ -457,7 +459,9 @@ namespace
         rb_define_method(c_version_metadata, "license", RUBY_FUNC_CAST(&version_metadata_license), 0);
 
         rb_define_method(c_version_metadata, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName, &VersionMetadataBase::slot>::fetch)), 0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "eapi", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::eapi>::fetch)), 0);
+#endif
         rb_define_method(c_version_metadata, "homepage", RUBY_FUNC_CAST(&version_metadata_homepage), 0);
         rb_define_method(c_version_metadata, "description", RUBY_FUNC_CAST((&BaseValue<std::string,
                         &VersionMetadataBase::description>::fetch)), 0);

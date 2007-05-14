@@ -466,7 +466,7 @@ namespace paludis
         }
         {
             Context local_context("When loading key 'EAPI':");
-            p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
+            p->metadata->eapi = EAPIData::get_instance()->eapi_from_string(file_contents(location, p->name, p->version, "EAPI"));
         }
         {
             Context local_context("When loading key 'HOMEPAGE':");

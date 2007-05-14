@@ -28,7 +28,7 @@ GemsVersionMetadata::GemsVersionMetadata(const VersionSpec & v) :
             .slot(SlotName(stringify(v)))
             .homepage("")
             .description("")
-            .eapi("paludis-1")
+            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
             .interactive(false),
             VersionMetadataCapabilities::create()
             .deps_interface(this)

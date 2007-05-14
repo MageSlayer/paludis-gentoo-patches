@@ -37,7 +37,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
 
     if (! f.is_regular_file())
     {
-        metadata->eapi = "UNKNOWN";
+        metadata->eapi = EAPIData::get_instance()->unknown_eapi();
         Log::get_instance()->message(ll_warning, lc_context, "Unexpected irregular file: '" + stringify(f) + "'.");
         return;
     }
@@ -48,7 +48,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
     // Fill in default values
     metadata->slot = SlotName("0");
     metadata->cran_interface->set_keywords("*");
-    metadata->eapi = "CRAN-1";
+    metadata->eapi = EAPIData::get_instance()->eapi_from_string("CRAN-1");
 
     std::string key;
     for ( ; l != l_end ; ++l)

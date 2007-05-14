@@ -39,7 +39,7 @@ EbinVersionMetadata::EbinVersionMetadata(const SlotName & s) :
             .slot(s)
             .homepage("")
             .description("")
-            .eapi("paludis-1")
+            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
             .interactive(false),
             VersionMetadataCapabilities::create()
             .ebin_interface(this)
