@@ -1004,13 +1004,30 @@ fi
 dnl }}}
 
 dnl {{{ is ldconfig gnu ldconfig
-AC_MSG_CHECKING([if we have GNU ldconfig])
-ldconfig --version &>/dev/null && paludis_is_gnu_ldconfig=yes
+AC_MSG_CHECKING([if ldconfig is GNU])
+paludis_is_gnu_ldconfig=
+AC_ARG_ENABLE([gnu-ldconfig],
+	AS_HELP_STRING([--enable-gnu-ldconfig], [Use GNU ldconfig syntax (default: autodetect)]),
+	[
+		AC_MSG_RESULT([$enable_val])
+		paludis_is_gnu_ldconfig=$enable_val
+	],
+	[
+		AC_MSG_RESULT([auto-detect])
+		AC_MSG_CHECKING([whether ldconfig is GNU])
+		if ! type ldconfig &>/dev/null ; then
+			AC_MSG_RESULT([don't know])
+			AC_MSG_ERROR([ldconfig not found. Use --enable-gnu-ldconfig or --disable-gnu-ldconfig])
+		fi
+		if ldconfig --version &>/dev/null ; then
+			paludis_is_gnu_ldconfig=yes
+			AC_MSG_RESULT([yes])
+		else
+			AC_MSG_RESULT([no])
+		fi
+	])
 if test x$paludis_is_gnu_ldconfig = "xyes"; then
 	AC_DEFINE([HAVE_GNU_LDCONFIG], 1, [Define to 1 if you have GNU 'ldconfig'.])
-	AC_MSG_RESULT([yes])
-else
-	AC_MSG_RESULT([no])
 fi
 AC_SUBST([HAVE_GNU_LDCONFIG])
 AM_CONDITIONAL([HAVE_GNU_LDCONFIG], test x$paludis_is_gnu_ldconfig = "xyes")
