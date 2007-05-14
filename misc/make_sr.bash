@@ -216,9 +216,11 @@ while read a ; do
             if [[ ${want_key_types[${k}]/->} != ${want_key_types[${k}]} ]] ; then
                 echo "        ${current_class} & set_${want_keys[${k}]}($(make_const_ref ${want_key_types[${k}]% ->*}));"
                 echo
-                echo "        const ${want_key_types[${k}]%-> *} get_raw_${want_keys[${k}]}() const;"
+                echo "        const ${want_key_types[${k}]%-> *} get_raw_${want_keys[${k}]}() const"
+                echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
                 echo
-                echo "        std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> ${want_keys[${k}]}() const;"
+                echo "        std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> ${want_keys[${k}]}() const"
+                echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
                 echo
             fi
         done
@@ -243,7 +245,8 @@ while read a ; do
             fi
 
             for (( k = 0 ; k < ${#want_comparison_operators[@]} ; k++ )) ; do
-                echo "        bool operator${want_comparison_operators[${k}]} (const ${a} & other) const;"
+                echo "        bool operator${want_comparison_operators[${k}]} (const ${a} & other) const"
+                echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
             done
 
             echo
@@ -426,7 +429,7 @@ while read a ; do
                     echo ">"
                 fi
             done
-            echo "        create();"
+            echo "        create() PALUDIS_ATTRIBUTE((warn_unused_result));"
 
             echo
             echo "        ///\\}"
