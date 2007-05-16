@@ -63,18 +63,11 @@ namespace paludis
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
-            void need_category_names() const;
-            void need_version_names(const QualifiedPackageName &) const;
             void need_mirrors() const;
             PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
                     const PackageDatabaseEntry & e) const;
 
         protected:
-            /**
-             * Try to get the repository name for a particular repository.
-             */
-            static RepositoryName fetch_repo_name(const std::string & location);
-
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;

@@ -28,6 +28,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <set>
 #include <fstream>
@@ -55,7 +56,6 @@ namespace paludis
 
 EbinEntries::EbinEntries(
         const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
-    PortageRepositoryEntries(".ebin"),
     PrivateImplementationPattern<EbinEntries>(new Implementation<EbinEntries>(e, p, k))
 {
 }
@@ -445,5 +445,18 @@ EbinEntries::merge(const MergeOptions & m)
     if (real_ebin_file_name.exists())
         real_ebin_file_name.unlink();
     ebin_file_name.rename(real_ebin_file_name);
+}
+
+bool
+EbinEntries::is_package_file(const QualifiedPackageName & n, const FSEntry & e) const
+{
+    return is_file_with_prefix_extension(e, stringify(n.package) + "-", ".ebin", IsFileWithOptions());
+}
+
+VersionSpec
+EbinEntries::extract_package_file_version(const QualifiedPackageName & n, const FSEntry & e) const
+{
+    Context context("When extracting version from '" + stringify(e) + "':");
+    return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebin"), stringify(n.package) + "-"));
 }
 

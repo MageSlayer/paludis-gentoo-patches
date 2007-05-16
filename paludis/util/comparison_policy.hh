@@ -1,3 +1,5 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
 /*
  * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
@@ -24,6 +26,8 @@
  * \ingroup grpcompare
  */
 
+#include <paludis/util/comparison_policy-fwd.hh>
+
 namespace paludis
 {
     /**
@@ -38,27 +42,21 @@ namespace paludis
          *
          * \ingroup grpcompare
          */
-        struct NoComparisonTag
-        {
-        };
+        struct NoComparisonTag;
 
         /**
          * Comparisons can be made via operator== and operator!=.
          *
          * \ingroup grpcompare
          */
-        struct EqualityComparisonTag
-        {
-        };
+        struct EqualityComparisonTag;
 
         /**
          * The full range of comparison operators is available.
          *
          * \ingroup grpcompare
          */
-        struct FullComparisonTag
-        {
-        };
+        struct FullComparisonTag;
     }
 
     /**
@@ -74,9 +72,7 @@ namespace paludis
          * \ingroup grpcompare
          */
         template <typename MemberType_>
-        struct CompareByMemberTag
-        {
-        };
+        struct CompareByMemberTag;
 
         /**
          * Comparisons are done by a member function that returns an integer
@@ -85,10 +81,7 @@ namespace paludis
          *
          * \ingroup grpcompare
          */
-        struct CompareByMemberComparisonFunctionTag
-        {
-        };
-
+        struct CompareByMemberComparisonFunctionTag;
 
         /**
          * Comparisons are done via a member function that returns an item of
@@ -97,9 +90,7 @@ namespace paludis
          * \ingroup grpcompare
          */
         template <typename MemberType_>
-        struct CompareByMemberFetchFunctionTag
-        {
-        };
+        struct CompareByMemberFetchFunctionTag;
     }
 
     template <typename OurType_, typename ComparisonModeTag_, typename ComparisonMethodTag_>

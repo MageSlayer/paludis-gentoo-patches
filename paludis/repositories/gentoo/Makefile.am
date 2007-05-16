@@ -20,30 +20,11 @@ DEFS= \
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
 
-if MONOLITHIC
-
-if ENABLE_GLSA
-
-noinst_LTLIBRARIES = \
-	libpaludisgentoorepository.la \
-	libpaludisgentoorepositoryxmlthings.la
-
-else
-
-noinst_LTLIBRARIES = \
-	libpaludisgentoorepository.la
-
-endif
-
-else
-
 paludis_repositories_lib_LTLIBRARIES = libpaludisgentoorepository.la
 
 if ENABLE_GLSA
 
 lib_LTLIBRARIES = libpaludisgentoorepositoryxmlthings.la
-
-endif
 
 endif
 
@@ -82,7 +63,9 @@ paludis_repositories_gentoo_include_HEADERS = \
 	vdb_merger-sr.hh \
 	vdb_merger.hh \
 	vdb_unmerger-sr.hh \
-	vdb_unmerger.hh
+	vdb_unmerger.hh \
+	layout.hh \
+	traditional_layout.hh
 
 libpaludisgentoorepository_la_SOURCES = \
 	ebuild.cc \
@@ -109,17 +92,9 @@ libpaludisgentoorepository_la_SOURCES = \
 	vdb_version_metadata.cc \
 	vdb_merger.cc \
 	vdb_unmerger.cc \
+	layout.cc \
+	traditional_layout.cc \
 	$(paludis_repositories_gentoo_include_HEADERS)
-
-if MONOLITHIC
-
-libpaludisgentoorepository_la_LIBADD = \
-	$(top_builddir)/paludis/merger/libpaludismerger.la \
-	$(top_builddir)/paludis/digests/libpaludisdigests.la \
-	libpaludisgentoorepositoryxmlthings.la \
-	$(DYNAMIC_LD_LIBS)
-
-else
 
 libpaludisgentoorepository_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
@@ -129,12 +104,8 @@ libpaludisgentoorepository_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
-endif
-
 portage_repository_TEST_SOURCES = portage_repository_TEST.cc
 
-if MONOLITHIC
-
 portage_repository_TEST_LDADD = \
 	libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -143,19 +114,6 @@ portage_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
-
-else
-
-portage_repository_TEST_LDADD = \
-	libpaludisgentoorepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/test/libtest.a \
-	$(DYNAMIC_LD_LIBS)
-
-endif
 
 portage_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
@@ -289,18 +247,9 @@ ebin-se.cc : ebin.se $(top_srcdir)/misc/make_se.bash
 libpaludisgentoorepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh
 libpaludisgentoorepositoryxmlthings_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@
 
-if MONOLITHIC
-
-libpaludisgentoorepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
-	$(DYNAMIC_LD_LIBS)
-
-else
-
 libpaludisgentoorepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
-
-endif
 
 libpaludisgentoorepositoryxmlthings_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
@@ -309,21 +258,6 @@ if ENABLE_GLSA
 GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc
 
-if MONOLITHIC
-
-xml_things_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	libpaludisgentoorepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/test/libtest.a \
-	libpaludisgentoorepositoryxmlthings.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
-
-else
-
 xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
@@ -333,8 +267,6 @@ xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
-
-endif
 
 endif
 

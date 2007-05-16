@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_NAME_HH 1
 
+#include <paludis/name-fwd.hh>
 #include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -70,21 +71,6 @@ namespace paludis
     };
 
     /**
-     * A PackageNamePart holds a std::string that is a valid name for the
-     * package part of a QualifiedPackageName.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, PackageNamePartValidator> PackageNamePart;
-
-    /**
-     * Holds a set of PackageNamePart instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<PackageNamePart> PackageNamePartCollection;
-
-    /**
      * A CategoryNamePartError is thrown if an invalid value is assigned to
      * a CategoryNamePart.
      *
@@ -115,21 +101,6 @@ namespace paludis
          */
         static void validate(const std::string &);
     };
-
-    /**
-     * A CategoryNamePart holds a std::string that is a valid name for the
-     * category part of a QualifiedPackageName.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, CategoryNamePartValidator> CategoryNamePart;
-
-    /**
-     * Holds a set of CategoryNamePart instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 
     /**
      * A UseFlagNameError is thrown if an invalid value is assigned to
@@ -183,44 +154,7 @@ namespace paludis
         static void validate(const std::string &);
     };
 
-    /**
-     * A UseFlagName holds a std::string that is a valid name for a USE flag.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
-
-    /**
-     * A collection of UseFlagName instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<UseFlagName> UseFlagNameCollection;
-
-
-#include <paludis/name-se.hh>
 #include <paludis/name-sr.hh>
-
-    /**
-     * Output a QualifiedPackageName to a stream.
-     *
-     * \ingroup grpnames
-     */
-    std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
-
-    /**
-     * Output an IUseFlag to a stream.
-     *
-     * \ingroup grpnames
-     */
-    std::ostream & operator<< (std::ostream &, const IUseFlag &) PALUDIS_VISIBLE;
-
-    /**
-     * Holds a collection of QualifiedPackageName instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<QualifiedPackageName> QualifiedPackageNameCollection;
 
     /**
      * A QualifiedPackageNameError may be thrown if an invalid name is
@@ -284,13 +218,6 @@ namespace paludis
     };
 
     /**
-     * A SlotName holds a std::string that is a valid name for a SLOT.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, SlotNameValidator> SlotName;
-
-    /**
      * A RepositoryNameError is thrown if an invalid value is assigned to
      * a RepositoryName.
      *
@@ -321,21 +248,6 @@ namespace paludis
          */
         static void validate(const std::string &);
     };
-
-    /**
-     * A RepositoryName holds a std::string that is a valid name for a
-     * Repository.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, RepositoryNameValidator, comparison_mode::EqualityComparisonTag> RepositoryName;
-
-    /**
-     * Holds a collection of RepositoryName instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SequentialCollection<RepositoryName> RepositoryNameCollection;
 
     /**
      * Arbitrary useless comparator for RepositoryName.
@@ -386,20 +298,6 @@ namespace paludis
     };
 
     /**
-     * A KeywordName holds a std::string that is a valid name for a KEYWORD.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, KeywordNameValidator> KeywordName;
-
-    /**
-     * Holds a collection of KeywordName instances.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<KeywordName> KeywordNameCollection;
-
-    /**
      * A SetNameValidator handles validation rules for the value of a
      * SetName.
      *
@@ -430,34 +328,6 @@ namespace paludis
              */
             SetNameError(const std::string & name) throw ();
     };
-
-    /**
-     * A SetName holds a std::string that is a valid name for a set.
-     *
-     * \ingroup grpnames
-     */
-    typedef Validated<std::string, SetNameValidator> SetName;
-
-    /**
-     * A collection of set names.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<SetName> SetNameCollection;
-
-    /**
-     * A collection of use flags.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<IUseFlag> IUseFlagCollection;
-
-    /**
-     * A collection of inherited packages.
-     *
-     * \ingroup grpnames
-     */
-    typedef SortedCollection<std::string> InheritedCollection;
 }
 
 #endif

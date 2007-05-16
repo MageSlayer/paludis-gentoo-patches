@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH 1
 
+#include <paludis/version_spec-fwd.hh>
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -151,20 +152,6 @@ namespace paludis
              */
             bool has_scm_part() const;
     };
-
-    /**
-     * Output a VersionSpec to a stream.
-     *
-     * \ingroup grpversions
-     */
-    std::ostream & operator<< (std::ostream &, const VersionSpec &) PALUDIS_VISIBLE;
-
-    /**
-     * Holds a collection of VersionSpec instances.
-     *
-     * \ingroup grpversions
-     */
-    typedef SortedCollection<VersionSpec> VersionSpecCollection;
 }
 
 #endif

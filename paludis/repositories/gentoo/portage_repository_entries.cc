@@ -29,11 +29,6 @@ template class VirtualConstructor<std::string,
                  const PortageRepositoryParams &),
          virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >;
 
-PortageRepositoryEntries::PortageRepositoryEntries(const std::string & ext) :
-    _ext(ext)
-{
-}
-
 PortageRepositoryEntries::~PortageRepositoryEntries()
 {
 }

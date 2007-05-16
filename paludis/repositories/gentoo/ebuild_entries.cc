@@ -32,6 +32,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/is_file_with_extension.hh>
 
 #include <fstream>
 #include <list>
@@ -77,9 +78,7 @@ namespace paludis
 
 EbuildEntries::EbuildEntries(
         const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
-    PortageRepositoryEntries(".ebuild"),
-    PrivateImplementationPattern<EbuildEntries>(new
-            Implementation<EbuildEntries>(e, p, k))
+    PrivateImplementationPattern<EbuildEntries>(new Implementation<EbuildEntries>(e, p, k))
 {
 }
 
@@ -663,5 +662,18 @@ void
 EbuildEntries::merge(const MergeOptions &)
 {
     throw InternalError(PALUDIS_HERE, "Cannot merge to PortageRepository with ebuild entries");
+}
+
+bool
+EbuildEntries::is_package_file(const QualifiedPackageName & n, const FSEntry & e) const
+{
+    return is_file_with_prefix_extension(e, stringify(n.package) + "-", ".ebuild", IsFileWithOptions());
+}
+
+VersionSpec
+EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, const FSEntry & e) const
+{
+    Context context("When extracting version from '" + stringify(e) + "':");
+    return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebuild"), stringify(n.package) + "-"));
 }
 

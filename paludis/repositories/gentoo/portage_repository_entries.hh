@@ -49,33 +49,19 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PortageRepositoryEntries
     {
-        private:
-            const std::string _ext;
-
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            /// Constructor, with our file extension
-            PortageRepositoryEntries(const std::string & ext);
-
-            ///\}
-
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~PortageRepositoryEntries();
+            virtual ~PortageRepositoryEntries() = 0;
 
             ///\}
 
-            /**
-             * Return our file extension, including the dot.
-             */
-            std::string file_extension() const
-            {
-                return _ext;
-            }
+            virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Generate version metadata.

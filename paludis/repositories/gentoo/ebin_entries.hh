@@ -67,6 +67,12 @@ namespace paludis
                     const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void merge(const MergeOptions &);
+
+            virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

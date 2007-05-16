@@ -21,6 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH
 #define PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH 1
 
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
 #include <string>
@@ -54,30 +55,6 @@ namespace paludis
             FSError(const std::string & message) throw ();
 
             ///\}
-    };
-
-    /**
-     * File permissions used by FSEntry.
-     *
-     * \ingroup grpfilesystem
-     */
-    enum FSPermission
-    {
-        fs_perm_read,       ///< read permission on file
-        fs_perm_write,      ///< write permission on file
-        fs_perm_execute     ///< execute permission on file
-    };
-
-    /**
-     * User classes used by FSEntry.
-     *
-     * \ingroup grpfilesystem
-     */
-    enum FSUserGroup
-    {
-        fs_ug_owner,         ///< owner permission
-        fs_ug_group,        ///< group permission
-        fs_ug_others        ///< others permission
     };
 
     /**
