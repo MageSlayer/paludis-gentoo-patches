@@ -47,6 +47,7 @@ namespace paludis
     class RepositoryDestinationInterface;
     class RepositoryContentsInterface;
     class RepositoryConfigInterface;
+    class RepositoryPretendInterface;
     class RepositoryLicensesInterface;
     class RepositoryPortageInterface;
     class RepositoryHookInterface;

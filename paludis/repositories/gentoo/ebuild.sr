@@ -83,6 +83,27 @@ END
     allow_named_args
 }
 
+make_class_EbuildPretendCommandParams()
+{
+    key use std::string
+    key use_expand std::string
+    key root std::string
+    key profiles "std::tr1::shared_ptr<const FSEntryCollection>"
+    key expand_vars "std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildPretendCommand.
+         *
+         * \see EbuildPretendCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}
+
 make_class_EbuildUninstallCommandParams()
 {
     key root std::string

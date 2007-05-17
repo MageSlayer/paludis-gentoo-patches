@@ -311,7 +311,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && [[ ${1} != pretend ]] ; then
         ebuild_section "Running ebuild phase $@ as $(id -un ):$(id -gn )..."
     fi
 
@@ -326,7 +326,7 @@ ebuild_main()
                 ebuild_load_module src_${action}
             ;;
 
-            setup|config|nofetch|preinst|postinst|prerm|postrm)
+            setup|config|nofetch|preinst|postinst|prerm|postrm|pretend)
                 ebuild_load_module pkg_${action}
             ;;
 
@@ -373,7 +373,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Completed ebuild phases $@"
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && [[ ${1} != pretend ]] ; then
         ebuild_section "Completed ebuild phase $@"
     fi
 }

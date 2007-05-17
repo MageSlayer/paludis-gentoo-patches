@@ -61,12 +61,16 @@ namespace paludis
 
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+                PALUDIS_ATTRIBUTE((noreturn));
 
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void merge(const MergeOptions &);
+
+            virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
+                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

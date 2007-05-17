@@ -83,6 +83,12 @@ namespace paludis
                     const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
+             * Handle a pretend.
+             */
+            virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
+                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+
+            /**
              * Handle a merge.
              */
             virtual void merge(const MergeOptions &) = 0;

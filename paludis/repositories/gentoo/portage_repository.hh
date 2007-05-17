@@ -60,6 +60,7 @@ namespace paludis
         public RepositoryLicensesInterface,
         public RepositoryPortageInterface,
         public RepositoryHookInterface,
+        public RepositoryPretendInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
@@ -106,6 +107,8 @@ namespace paludis
             virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
             virtual bool do_sync() const;
+
+            virtual bool do_pretend(const QualifiedPackageName &, const VersionSpec &) const;
 
             virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
 

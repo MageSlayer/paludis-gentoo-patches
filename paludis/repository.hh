@@ -1030,7 +1030,7 @@ namespace paludis
             ///\}
 
         public:
-            ///\name Installed content queries
+            ///\name Configuration actions
             ///\{
 
             /**
@@ -1046,6 +1046,47 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryConfigInterface();
+    };
+
+    /**
+     * Interface for handling actions for repositories supporting
+     * pretend-phase functions.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE RepositoryPretendInterface
+    {
+        protected:
+            ///\name Implementation details
+            ///\{
+
+            /**
+             * Override in descendents: do the pretend.
+             */
+            virtual bool do_pretend(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
+        public:
+            ///\name Pretend phase actions
+            ///\{
+
+            /**
+             * Do the pretend.
+             */
+            bool pretend(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+            virtual ~RepositoryPretendInterface();
     };
 
     /**

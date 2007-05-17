@@ -9,6 +9,7 @@ make_class_SupportedEAPI()
     key strict_iuse_flag_parse_mode IUseFlagParseMode
 
     key breaks_portage bool
+    key has_pretend_phase bool
 
     allow_named_args
 

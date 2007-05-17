@@ -460,3 +460,10 @@ EbinEntries::extract_package_file_version(const QualifiedPackageName & n, const 
     return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebin"), stringify(n.package) + "-"));
 }
 
+bool
+EbinEntries::pretend(const QualifiedPackageName &, const VersionSpec &,
+        std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+{
+    return true;
+}
+

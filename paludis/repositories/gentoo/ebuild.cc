@@ -597,3 +597,43 @@ VDBPostMergeCommand::operator() ()
         throw PackageInstallActionError("VDB Entry post merge commands failed");
 }
 
+std::string
+EbuildPretendCommand::commands() const
+{
+    return "pretend";
+}
+
+bool
+EbuildPretendCommand::failure()
+{
+    return false;
+}
+
+Command
+EbuildPretendCommand::extend_command(const Command & cmd)
+{
+    Command result(Command(cmd)
+            .with_setenv("USE", pretend_params.use)
+            .with_setenv("USE_EXPAND", pretend_params.use_expand)
+            .with_setenv("ROOT", pretend_params.root)
+            .with_setenv("PALUDIS_PROFILE_DIR", stringify(*pretend_params.profiles->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(pretend_params.profiles->begin(),
+                    pretend_params.profiles->end(), " ")));
+
+    for (AssociativeCollection<std::string, std::string>::Iterator
+            i(pretend_params.expand_vars->begin()),
+            j(pretend_params.expand_vars->end()) ; i != j ; ++i)
+        result.with_setenv(i->first, i->second);
+
+    result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+
+    return result;
+}
+
+EbuildPretendCommand::EbuildPretendCommand(const EbuildCommandParams & p,
+        const EbuildPretendCommandParams & f) :
+    EbuildCommand(p),
+    pretend_params(f)
+{
+}
+

@@ -265,6 +265,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)
             .portage_interface(this)
+            .pretend_interface(this)
             .hook_interface(this),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
@@ -566,6 +567,13 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 {
     _imp->need_profiles();
     _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
+}
+
+bool
+PortageRepository::do_pretend(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    _imp->need_profiles();
+    return _imp->entries_ptr->pretend(q, v, _imp->profile_ptr);
 }
 
 std::tr1::shared_ptr<DepSpec>

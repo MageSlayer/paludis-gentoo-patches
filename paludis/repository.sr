@@ -58,6 +58,7 @@ make_class_RepositoryCapabilities()
     key destination_interface "RepositoryDestinationInterface *"
     key contents_interface "RepositoryContentsInterface *"
     key config_interface "RepositoryConfigInterface *"
+    key pretend_interface "RepositoryPretendInterface *"
     key licenses_interface "RepositoryLicensesInterface *"
     key portage_interface "RepositoryPortageInterface *"
     key hook_interface "RepositoryHookInterface *"

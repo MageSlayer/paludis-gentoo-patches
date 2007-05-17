@@ -242,6 +242,77 @@ namespace
 
         return FSEntry("/");
     }
+
+    std::string make_use(const Environment * const env,
+            const PackageDatabaseEntry & pde,
+            std::tr1::shared_ptr<const VersionMetadata> metadata,
+            std::tr1::shared_ptr<const PortageRepositoryProfile> profile)
+    {
+        std::string use;
+
+        for (IUseFlagCollection::Iterator i(metadata->ebuild_interface->iuse()->begin()),
+                i_end(metadata->ebuild_interface->iuse()->end()) ; i != i_end ; ++i)
+            if (env->query_use(i->flag, pde))
+                use += stringify(i->flag) + " ";
+
+        use += profile->environment_variable("ARCH") + " ";
+
+        return use;
+    }
+
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
+    make_expand(const Environment * const env,
+            const PackageDatabaseEntry & e,
+            std::tr1::shared_ptr<const PortageRepositoryProfile> profile,
+            std::string & use)
+    {
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
+            new AssociativeCollection<std::string, std::string>::Concrete);
+
+        for (PortageRepositoryProfile::UseExpandIterator x(profile->begin_use_expand()),
+                x_end(profile->end_use_expand()) ; x != x_end ; ++x)
+        {
+            std::string lower_x;
+            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x), &::tolower);
+
+            expand_vars->insert(stringify(*x), "");
+
+            /* possible values from profile */
+            std::set<UseFlagName> possible_values;
+            WhitespaceTokeniser::get_instance()->tokenise(profile->environment_variable(stringify(*x)),
+                    create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
+
+            /* possible values from environment */
+            std::tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(
+                    env->known_use_expand_names(*x, e));
+            for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
+                    i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
+                possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
+
+            for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
+                    u != u_end ; ++u)
+            {
+                if (! env->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
+                    continue;
+
+                use.append(lower_x + "_" + stringify(*u) + " ");
+
+                std::string value;
+                AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
+                if (expand_vars->end() != i)
+                {
+                    value = i->second;
+                    if (! value.empty())
+                        value.append(" ");
+                    expand_vars->erase(i);
+                }
+                value.append(stringify(*u));
+                expand_vars->insert(stringify(*x), value);
+            }
+        }
+
+        return expand_vars;
+    }
 }
 
 void
@@ -400,59 +471,12 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     all_archives = strip_trailing(all_archives, " ");
 
     /* make use */
-    std::string use;
-    for (IUseFlagCollection::Iterator i(metadata->ebuild_interface->iuse()->begin()),
-            i_end(metadata->ebuild_interface->iuse()->end()) ; i != i_end ; ++i)
-        if (_imp->params.environment->query_use(i->flag, e))
-            use += stringify(i->flag) + " ";
-
-    use += p->environment_variable("ARCH") + " ";
+    std::string use(make_use(_imp->params.environment, e, metadata, p));
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
-            new AssociativeCollection<std::string, std::string>::Concrete);
-    for (PortageRepositoryProfile::UseExpandIterator x(p->begin_use_expand()),
-            x_end(p->end_use_expand()) ; x != x_end ; ++x)
-    {
-        std::string lower_x;
-        std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x), &::tolower);
-
-        expand_vars->insert(stringify(*x), "");
-
-        /* possible values from profile */
-        std::set<UseFlagName> possible_values;
-        WhitespaceTokeniser::get_instance()->tokenise(p->environment_variable(stringify(*x)),
-                create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
-
-        /* possible values from environment */
-        std::tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(_imp->params.environment->
-                known_use_expand_names(*x, e));
-        for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
-                i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
-            possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
-
-        for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
-                u != u_end ; ++u)
-        {
-            if (! _imp->params.environment->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
-                continue;
-
-            use.append(lower_x + "_" + stringify(*u) + " ");
-
-            std::string value;
-            AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
-            if (expand_vars->end() != i)
-            {
-                value = i->second;
-                if (! value.empty())
-                    value.append(" ");
-                expand_vars->erase(i);
-            }
-            value.append(stringify(*u));
-            expand_vars->insert(stringify(*x), value);
-        }
-    }
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+                _imp->params.environment, e, p, use));
 
     EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
@@ -675,5 +699,56 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 {
     Context context("When extracting version from '" + stringify(e) + "':");
     return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebuild"), stringify(n.package) + "-"));
+}
+
+bool
+EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
+        std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
+{
+    using namespace std::tr1::placeholders;
+
+    Context context("When running pretend for '" + stringify(q) + "-" + stringify(v) + "':");
+
+    if (! _imp->portage_repository->has_version(q, v))
+    {
+        throw PackageInstallActionError("Can't run pretend for '" + stringify(q) + "-"
+                + stringify(v) + "' since has_version failed");
+    }
+
+    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
+
+    if (! metadata->eapi.supported)
+        return true;
+    if (! metadata->eapi.supported->has_pretend_phase)
+        return true;
+
+    PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
+
+    std::string use(make_use(_imp->params.environment, e, metadata, p));
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+                _imp->params.environment, e, p, use));
+
+    EbuildCommandParams command_params(EbuildCommandParams::create()
+            .environment(_imp->params.environment)
+            .db_entry(&e)
+            .ebuild_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .files_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package) / "files")
+            .eclassdirs(_imp->params.eclassdirs)
+            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                _imp->params.location)
+            .distdir(_imp->params.distdir)
+            .buildroot(_imp->params.buildroot));
+
+    EbuildPretendCommand pretend_cmd(command_params,
+            EbuildPretendCommandParams::create()
+            .use(use)
+            .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
+            .expand_vars(expand_vars)
+            .root(stringify(_imp->params.environment->root()))
+            .profiles(_imp->params.profiles));
+
+    return pretend_cmd();
 }
 

@@ -189,6 +189,18 @@ InstallTask::execute()
     /* we're done displaying our task list */
     on_display_merge_list_post();
 
+    /* do pretend phase things */
+    bool pretend_failed(false);
+
+    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+    {
+        const RepositoryPretendInterface * const pretend_interface(
+                _imp->env->package_database()->fetch_repository(dep->package.repository)->pretend_interface);
+        if (pretend_interface)
+            pretend_failed |= ! pretend_interface->pretend(dep->package.name, dep->package.version);
+    }
+
     if (_imp->pretend)
     {
         if (0 != perform_hook(Hook("install_pretend_post")("TARGETS", join(
@@ -197,7 +209,7 @@ InstallTask::execute()
         return;
     }
 
-    if (_imp->dep_list.has_errors())
+    if (_imp->dep_list.has_errors() || pretend_failed)
     {
         on_not_continuing_due_to_errors();
         return;

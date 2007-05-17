@@ -351,6 +351,31 @@ namespace paludis
     };
 
     /**
+     * An EbuildPretendCommand is used to configure a package in a VDBRepository.
+     *
+     * \ingroup grpebuildinterface
+     */
+    class EbuildPretendCommand :
+        public EbuildCommand
+    {
+        protected:
+            /// Parameters for config.
+            const EbuildPretendCommandParams pretend_params;
+
+            virtual std::string commands() const;
+
+            virtual bool failure();
+
+            virtual Command extend_command(const Command &);
+
+        public:
+            /**
+             * Constructor.
+             */
+            EbuildPretendCommand(const EbuildCommandParams &, const EbuildPretendCommandParams &);
+    };
+
+    /**
      * Command for generating VDB entries (not a regular EbuildCommand).
      *
      * \ingroup grpebuildinterface

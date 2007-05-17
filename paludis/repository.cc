@@ -330,6 +330,16 @@ RepositoryHookInterface::~RepositoryHookInterface()
 {
 }
 
+RepositoryPretendInterface::~RepositoryPretendInterface()
+{
+}
+
+bool
+RepositoryPretendInterface::pretend(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    return do_pretend(q, v);
+}
+
 UseFlagState
 RepositoryUseInterface::query_use(const UseFlagName & u, const PackageDatabaseEntry & pde) const
 {

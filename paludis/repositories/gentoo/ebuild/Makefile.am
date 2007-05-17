@@ -36,6 +36,7 @@ libexecprog_SCRIPTS = \
 	pkg_postrm.bash \
 	pkg_preinst.bash \
 	pkg_prerm.bash \
+	pkg_pretend.bash \
 	pkg_setup.bash \
 	portage_stubs.bash \
 	sandbox.bash \
