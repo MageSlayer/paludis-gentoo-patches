@@ -6,6 +6,7 @@ make_class_PortageRepositoryParams()
     visible
 
     key entry_format std::string
+    key layout std::string
     key environment "Environment *"
     key location FSEntry
     key profiles "std::tr1::shared_ptr<const FSEntryCollection>"

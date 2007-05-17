@@ -124,6 +124,10 @@ paludis::make_ebin_repository(
     if (m->end() != m->find("sync_options"))
         sync_options = m->find("sync_options")->second;
 
+    std::string layout;
+    if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
+        layout = "traditional";
+
     if (m->end() != m->find("sync_exclude"))
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "The sync_exclude key in '"
@@ -139,6 +143,7 @@ paludis::make_ebin_repository(
 
     return std::tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebin")
+                .layout(layout)
                 .environment(env)
                 .location(location)
                 .profiles(profiles)

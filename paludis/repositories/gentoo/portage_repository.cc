@@ -29,7 +29,6 @@
 #include <paludis/repositories/gentoo/portage_virtual_version_metadata.hh>
 #include <paludis/repositories/gentoo/use_desc.hh>
 #include <paludis/repositories/gentoo/layout.hh>
-#include <paludis/repositories/gentoo/traditional_layout.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_spec.hh>
@@ -140,7 +139,8 @@ namespace paludis
         sets_ptr(new PortageRepositorySets(params.environment, r, p)),
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
-        layout(new TraditionalLayout(repo->name(), params.location, entries_ptr))
+        layout(LayoutMaker::get_instance()->find_maker(
+                    params.layout)(r->name(), params.location, entries_ptr))
     {
         if (params.master_repository)
             layout->add_profiles_dir(params.master_repository->params().location / "profiles");
@@ -287,6 +287,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
     config_info->add_kv("format", _imp->params.entry_format);
+    config_info->add_kv("layout", _imp->params.layout);
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);

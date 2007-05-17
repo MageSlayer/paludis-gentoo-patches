@@ -25,11 +25,15 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/virtual_constructor.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
+    class PortageRepositoryEntries;
+
     class PALUDIS_VISIBLE Layout
     {
         private:
@@ -96,6 +100,41 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
+    };
+
+    /**
+     * Thrown if a layout of the specified type does not exist.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE NoSuchLayoutType :
+        public ConfigurationError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchLayoutType(const std::string & format) throw ();
+    };
+
+    /**
+     * Virtual constructor for Layout.
+     *
+     * \ingroup grprepository
+     */
+    class PALUDIS_VISIBLE LayoutMaker :
+        public VirtualConstructor<std::string,
+            std::tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+                    std::tr1::shared_ptr<const PortageRepositoryEntries>),
+            virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
+        public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
+    {
+        friend class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+
+        private:
+            LayoutMaker();
     };
 }
 

@@ -165,8 +165,13 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
+    std::string layout;
+    if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
+        layout = "traditional";
+
     return std::tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")
+                .layout(layout)
                 .environment(env)
                 .location(location)
                 .profiles(profiles)

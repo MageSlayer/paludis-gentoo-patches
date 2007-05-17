@@ -18,11 +18,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "layout.hh"
+#include <paludis/repositories/gentoo/layout.hh>
+#include <paludis/repositories/gentoo/traditional_layout.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace paludis;
+
+template class VirtualConstructor<std::string,
+         std::tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+                 std::tr1::shared_ptr<const PortageRepositoryEntries>),
+         virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
 
 Layout::Layout() :
     _profiles_dirs(new FSEntryCollection::Concrete)
@@ -49,5 +56,26 @@ void
 Layout::add_profiles_dir(const FSEntry & f)
 {
     _profiles_dirs->push_back(f);
+}
+
+namespace
+{
+    template <typename T_>
+    std::tr1::shared_ptr<Layout>
+    make_layout(const RepositoryName & n, const FSEntry & b,
+            std::tr1::shared_ptr<const PortageRepositoryEntries> e)
+    {
+        return std::tr1::shared_ptr<Layout>(new T_(n, b, e));
+    }
+}
+
+LayoutMaker::LayoutMaker()
+{
+    register_maker("traditional", &make_layout<TraditionalLayout>);
+}
+
+NoSuchLayoutType::NoSuchLayoutType(const std::string & format) throw () :
+    ConfigurationError("No available maker for Portage repository layout type '" + format + "'")
+{
 }
 
