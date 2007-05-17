@@ -62,6 +62,10 @@ namespace paludis
             Hook operator() (const std::string & key, const std::string & value) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /// Get data from the hook.
+            std::string get(const std::string & key) const
+                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
             Hook grab_output(const AllowedOutputValues & av);
 
             bool validate_value(const std::string & value) const;

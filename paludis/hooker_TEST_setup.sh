@@ -50,6 +50,13 @@ END
 chmod +x fancy_hook_output/one.hook
 
 
+mkdir so_hook
+ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} so_hook
+
+mkdir so_hook_output
+ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} so_hook_output
+
+
 mkdir several_hooks
 cat <<"END" > several_hooks/one.hook
 hook_run_several_hooks() {
@@ -194,7 +201,7 @@ hook_after_ordering() {
         echo i
         ;;
         j)
-        echo k
+        echo k libpaludissohooks_TEST
         ;;
     esac
 }
@@ -204,6 +211,7 @@ chmod +x ordering.common
 for a in a b c d e f g h i j k ; do
     ln -s ../ordering.common ordering/${a}.hook
 done
+ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} ordering
 
 mkdir bad_hooks
 cat <<"END" > bad_hooks.common

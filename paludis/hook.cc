@@ -71,6 +71,15 @@ Hook::operator() (const std::string & k, const std::string & v) const
     return result;
 }
 
+std::string
+Hook::get(const std::string & k) const
+{
+     if (_imp->extra_env.end() != _imp->extra_env.find(k))
+         return _imp->extra_env.at(k);
+     else
+         return std::string("");
+}
+
 Hook
 Hook::grab_output(const AllowedOutputValues & av)
 {

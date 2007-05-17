@@ -47,6 +47,9 @@ namespace test_cases
             result = hooker.perform_hook(Hook("fancy_hook"));
             TEST_CHECK_EQUAL(result.max_exit_status, 5);
             TEST_CHECK_EQUAL(result.output, "");
+            result = hooker.perform_hook(Hook("so_hook"));
+            TEST_CHECK_EQUAL(result.max_exit_status, 6);
+            TEST_CHECK_EQUAL(result.output, "");
             result = hooker.perform_hook(Hook("several_hooks"));
             TEST_CHECK_EQUAL(result.max_exit_status, 7);
             TEST_CHECK_EQUAL(result.output, "");
@@ -73,7 +76,7 @@ namespace test_cases
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/ordering.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
-            TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\ng\ni\nh\nk\nj\n");
+            TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\ng\ni\nh\nsohook\nk\nj\n");
         }
     } test_hooker_ordering;
 
@@ -144,6 +147,11 @@ namespace test_cases
 
             result = hooker.perform_hook(Hook("fancy_hook_output")
                     .grab_output(Hook::AllowedOutputValues()("foo")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "foo");
+
+            result = hooker.perform_hook(Hook("so_hook_output")
+                     .grab_output(Hook::AllowedOutputValues()("foo")));
             TEST_CHECK_EQUAL(result.max_exit_status, 0);
             TEST_CHECK_EQUAL(result.output, "foo");
 

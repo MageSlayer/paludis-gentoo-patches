@@ -90,13 +90,25 @@ libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISIO
 
 libpaludismanpagethings_la_SOURCES = name.cc
 
+libpaludissohooks_TEST_la_SOURCES = sohooks_TEST.cc
+
+# -rpath to force shared library
+libpaludissohooks_TEST_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+libpaludissohooks_TEST_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
+
 if ! MONOLITHIC
 
 libpaludis_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	@DYNAMIC_LD_LIBS@
 
 libpaludismanpagethings_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
+
+else
+
+libpaludis_la_LIBADD = @DYNAMIC_LD_LIBS@
 
 endif
 
@@ -104,6 +116,7 @@ TESTS = testlist
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
+check_LTLIBRARIES = libpaludissohooks_TEST.la
 
 paludis_datadir = $(datadir)/paludis
 paludis_data_DATA = repository_blacklist.txt
@@ -148,5 +161,6 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	SO_SUFFIX=@VERSION_LIB_CURRENT@ \
 	bash $(top_srcdir)/test/run_test.sh
 

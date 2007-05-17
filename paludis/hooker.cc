@@ -34,8 +34,10 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/about.hh>
 #include <list>
 #include <iterator>
+#include <dlfcn.h>
 
 using namespace paludis;
 
@@ -101,6 +103,30 @@ namespace
                 _env(e)
             {
             }
+
+            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const FSEntry file_name() const
+            {
+                return _file_name;
+            }
+
+            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+    };
+
+    class SoHookFile :
+        public HookFile
+    {
+        private:
+            const FSEntry _file_name;
+            const Environment * const _env;
+
+            void * _dl;
+            HookResult (*_run)(Environment const *, const Hook &);
+            void (*_add_dependencies)(Environment const *, const Hook &, DirectedGraph<std::string, int> &);
+
+        public:
+            SoHookFile(const FSEntry &, const bool, const Environment * const);
 
             virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -279,6 +305,55 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
                 + "' returned failure '" + stringify(exit_status) + "'");
 }
 
+SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const e) :
+    _file_name(f),
+    _env(e),
+    _dl(0),
+    _run(0),
+    _add_dependencies(0)
+{
+    /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it
+     * can lead to multiple singleton instances. */
+    _dl = dlopen(stringify(f).c_str(), RTLD_GLOBAL | RTLD_NOW);
+
+    if (_dl)
+    {
+        _run = reinterpret_cast<HookResult (*)(
+            Environment const *, const Hook &)>(
+                reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_run")));
+
+        if (! _run)
+            Log::get_instance()->message(ll_warning, lc_no_context, ".so hook '" + stringify(f) + "' does not define the paludis_hook_run function");
+
+        _add_dependencies = reinterpret_cast<void (*)(
+            Environment const *, const Hook &, DirectedGraph<std::string, int> &)>(
+                reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_add_dependencies")));
+    }
+    else
+        Log::get_instance()->message(ll_warning, lc_no_context, "Opening .so hook '" + stringify(f) + "' failed: " + dlerror());
+}
+
+HookResult
+SoHookFile::run(const Hook & hook) const
+{
+    Context c("When running .so hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
+
+    if (! _run)
+        return HookResult(0, "");
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "Starting .so hook '" +
+            stringify(file_name()) + "' for '" + hook.name() + "'");
+
+    return _run(_env, hook);
+}
+
+void
+SoHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, int> & g)
+{
+    if (_add_dependencies)
+        _add_dependencies(_env, hook, g);
+}
+
 namespace paludis
 {
     template<>
@@ -394,6 +469,15 @@ Hooker::perform_hook(const Hook & hook) const
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name()) + "'");
+
+                std::string so_suffix(".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
+                if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
+                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
+                                     std::tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
+                        Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
+                                + "' because of naming conflict with '" + stringify(
+                                    hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
+
             }
         }
 
