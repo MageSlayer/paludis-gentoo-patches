@@ -146,13 +146,16 @@ namespace paludis
         std::tr1::shared_ptr<gid_t> gid;
         std::string stdout_prefix;
         std::string stderr_prefix;
+        bool prefix_discard_blank_output;
+        bool prefix_blank_lines;
 
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
                 const std::string & d = "", bool e = false,
                 std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
                 std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
-                const std::string & p = "", const std::string & q = "") :
+                const std::string & p = "", const std::string & q = "",
+                const bool b = false, const bool bb = false) :
             command(c),
             setenv_values(s),
             chdir(d),
@@ -160,7 +163,9 @@ namespace paludis
             uid(u),
             gid(g),
             stdout_prefix(p),
-            stderr_prefix(q)
+            stderr_prefix(q),
+            prefix_discard_blank_output(b),
+            prefix_blank_lines(bb)
         {
         }
     };
@@ -179,7 +184,9 @@ Command::Command(const char * const s) :
 Command::Command(const Command & other) :
     PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
                 other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
-                other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix))
+                other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
+                other._imp->prefix_discard_blank_output,
+                other._imp->prefix_blank_lines))
 {
 }
 
@@ -193,7 +200,9 @@ Command::operator= (const Command & other)
                     std::tr1::shared_ptr<uid_t>(),
                     std::tr1::shared_ptr<gid_t>(),
                     other._imp->stdout_prefix,
-                    other._imp->stderr_prefix));
+                    other._imp->stderr_prefix,
+                    other._imp->prefix_discard_blank_output,
+                    other._imp->prefix_blank_lines));
         if (other.uid() && other.gid())
             with_uid_gid(*other.uid(), *other.gid());
     }
@@ -323,8 +332,10 @@ paludis::run_command(const Command & cmd)
 
         if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
             command = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
-                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- "
-                + command;
+                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
+                + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
+                + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
+                + " -- " + command;
 
         cmd.echo_to_stderr();
         Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + command
@@ -387,6 +398,20 @@ Command::with_echo_to_stderr()
 }
 
 Command &
+Command::with_prefix_discard_blank_output()
+{
+    _imp->prefix_discard_blank_output = true;
+    return *this;
+}
+
+Command &
+Command::with_prefix_blank_lines()
+{
+    _imp->prefix_blank_lines = true;
+    return *this;
+}
+
+Command &
 Command::with_stdout_prefix(const std::string & s)
 {
     _imp->stdout_prefix = s;
@@ -410,6 +435,18 @@ std::string
 Command::stderr_prefix() const
 {
     return _imp->stderr_prefix;
+}
+
+bool
+Command::prefix_discard_blank_output() const
+{
+    return _imp->prefix_discard_blank_output;
+}
+
+bool
+Command::prefix_blank_lines() const
+{
+    return _imp->prefix_blank_lines;
 }
 
 std::string

@@ -32,6 +32,7 @@ main(int argc, char *argv[])
     int argi(1);
     std::string stdout_prefix, stderr_prefix;
     bool wrap_blanks(false);
+    bool discard_blank_output(false);
 
     for ( ; argi < argc ; ++argi)
     {
@@ -43,6 +44,8 @@ main(int argc, char *argv[])
         }
         else if (s == "--wrap-blanks")
             wrap_blanks = true;
+        else if (s == "--discard-blank-output")
+            discard_blank_output = true;
         else if (s == "--stdout-prefix")
         {
             if (++argi >= argc)
@@ -120,7 +123,9 @@ main(int argc, char *argv[])
         close(stdout_pipes[1]);
         close(stderr_pipes[1]);
         bool stdout_done(false), stdout_prefix_shown(false), stdout_had_interesting_char(false),
-             stderr_done(false), stderr_prefix_shown(false), stderr_had_interesting_char(false);
+             stderr_done(false), stderr_prefix_shown(false), stderr_had_interesting_char(false),
+             stdout_had_non_blanks(! discard_blank_output), stderr_had_non_blanks(! discard_blank_output);
+        unsigned stdout_blanks(0), stderr_blanks(0);
         while ((! stdout_done) || (! stderr_done))
         {
             fd_set fds;
@@ -151,7 +156,20 @@ main(int argc, char *argv[])
                         for (std::string::size_type p(0) ; p < to_write.length() ; ++p)
                         {
                             if (to_write.at(p) != '\n')
+                            {
+                                if (! stdout_had_non_blanks)
+                                {
+                                    for (unsigned x(0) ; x < stdout_blanks ; ++x)
+                                        if (wrap_blanks)
+                                            std::cout << stdout_prefix << std::endl;
+                                        else
+                                            std::cout << std::endl;
+                                    stdout_had_non_blanks = true;
+                                }
                                 stdout_had_interesting_char = true;
+                            }
+                            else if (! stdout_had_non_blanks)
+                                ++stdout_blanks;
 
                             if (! stdout_prefix_shown)
                             {
@@ -185,7 +203,20 @@ main(int argc, char *argv[])
                         for (std::string::size_type p(0) ; p < to_write.length() ; ++p)
                         {
                             if (to_write.at(p) != '\n')
+                            {
+                                if (! stderr_had_non_blanks)
+                                {
+                                    for (unsigned x(0) ; x < stderr_blanks ; ++x)
+                                        if (wrap_blanks)
+                                            std::cerr << stderr_prefix << std::endl;
+                                        else
+                                            std::cerr << std::endl;
+                                    stderr_had_non_blanks = true;
+                                }
                                 stderr_had_interesting_char = true;
+                            }
+                            else if (! stderr_had_non_blanks)
+                                ++stderr_blanks;
 
                             if (! stderr_prefix_shown)
                             {

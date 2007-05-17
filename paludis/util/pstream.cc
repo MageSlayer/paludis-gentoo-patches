@@ -128,7 +128,10 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
 
         if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
             c = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
-                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' -- " + c;
+                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
+                + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
+                + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
+                + " -- " + c;
 
         cmd.echo_to_stderr();
         Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c

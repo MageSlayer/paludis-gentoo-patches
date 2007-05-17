@@ -613,6 +613,12 @@ Command
 EbuildPretendCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
+            .with_stdout_prefix(stringify(params.db_entry->name.package) + "-" +
+                stringify(params.db_entry->version) + "> ")
+            .with_stderr_prefix(stringify(params.db_entry->name.package) + "-" +
+                stringify(params.db_entry->version) + "> ")
+            .with_prefix_discard_blank_output()
+            .with_prefix_blank_lines()
             .with_setenv("USE", pretend_params.use)
             .with_setenv("USE_EXPAND", pretend_params.use_expand)
             .with_setenv("ROOT", pretend_params.root)

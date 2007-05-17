@@ -153,6 +153,17 @@ namespace paludis
              */
             Command & with_stderr_prefix(const std::string &);
 
+            /**
+             * If prefixing, and if the output contains only blanks, don't display
+             * any output.
+             */
+            Command & with_prefix_discard_blank_output();
+
+            /**
+             * If prefixing, prefix blank lines too.
+             */
+            Command & with_prefix_blank_lines();
+
             ///\}
 
             ///\name Fetch command execution options
@@ -192,6 +203,17 @@ namespace paludis
              * The stderr prefix.
              */
             std::string stderr_prefix() const;
+
+            /**
+             * If prefixing, and if the output contains only blanks, don't display
+             * any output?
+             */
+            bool prefix_discard_blank_output() const;
+
+            /**
+             * Prefix blank lines?
+             */
+            bool prefix_blank_lines() const;
 
             ///\}
 
