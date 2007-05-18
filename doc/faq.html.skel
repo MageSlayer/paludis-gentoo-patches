@@ -513,7 +513,7 @@ the like, you should look into what <code>chmod +s</code> does to directories.</
 
 <p>Gentoolkit provides a script for rebuilding broken binaries and shared libraries
 using portage, Paludis provides a ruby script, check_linkage.rb. Install Paludis
-with the ruby USE flag enabled, and run ruby <code>/usr/share/paludis/ruby/demos/check_linkage.rb</code>.
+with the ruby USE flag enabled, and run ruby <code>/usr/share/paludis/ruby/demos/check_linkage.rb</code>.</p>
 
 <h2 id="repos">Repository Questions</h2>
 
