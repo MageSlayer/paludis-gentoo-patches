@@ -502,7 +502,6 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 	CHECK_CXXFLAG([-Wconversion])
 	CHECK_CXXFLAG([-Wlogical-op])
-	CHECK_CXXFLAG([-Waggregate-return])
 	CHECK_CXXFLAG([-Wvla])
 	CHECK_CXXFLAG([-pedantic])
 else
