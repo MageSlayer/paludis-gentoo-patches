@@ -509,6 +509,12 @@ does not grant back-door root access to all users in a particular group.</p>
 <p>Incidentally, if you want to let multiple users do Paludis cache writes and
 the like, you should look into what <code>chmod +s</code> does to directories.</p>
 
+<h3 id="revdep_rebuild">Revdep-rebuild Equivalent</h3>
+
+<p>Gentoolkit provides a script for rebuilding broken binaries and shared libraries
+using portage, Paludis provides a ruby script, check_linkage.rb. Install Paludis
+with the ruby USE flag enabled, and run ruby <code>/usr/share/paludis/ruby/demos/check_linkage.rb</code>.
+
 <h2 id="repos">Repository Questions</h2>
 
 <h3 id="profiles">Profiles vs Profiles</h3>
