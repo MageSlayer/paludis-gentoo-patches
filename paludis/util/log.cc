@@ -140,7 +140,7 @@ Log::message(const LogLevel l, const LogContext c, const std::string & s)
 LogMessageHandler
 Log::message(const LogLevel l, const LogContext c)
 {
-    return LogMessageHandler(l, c);
+    return LogMessageHandler(this, l, c);
 }
 
 void
@@ -183,7 +183,8 @@ Log::set_program_name(const std::string & s)
     _imp->program_name = s;
 }
 
-LogMessageHandler::LogMessageHandler(const LogLevel l, const LogContext c) :
+LogMessageHandler::LogMessageHandler(Log * const ll, const LogLevel l, const LogContext c) :
+    _log(ll),
     _log_level(l),
     _log_context(c)
 {
@@ -198,6 +199,6 @@ LogMessageHandler::_append(const std::string & s)
 LogMessageHandler::~LogMessageHandler()
 {
     if (! std::uncaught_exception() && ! _message.empty())
-        Log::get_instance()->_message(_log_level, _log_context, _message);
+        _log->_message(_log_level, _log_context, _message);
 }
 

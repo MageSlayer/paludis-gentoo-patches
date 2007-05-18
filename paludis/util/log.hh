@@ -129,12 +129,13 @@ namespace paludis
         friend LogMessageHandler Log::message(const LogLevel, const LogContext);
 
         private:
+            Log * _log;
             std::string _message;
             LogLevel _log_level;
             LogContext _log_context;
 
             LogMessageHandler(const LogMessageHandler &);
-            LogMessageHandler(const LogLevel, const LogContext);
+            LogMessageHandler(Log * const, const LogLevel, const LogContext);
             void operator= (const LogMessageHandler &);
 
             void _append(const std::string & s);

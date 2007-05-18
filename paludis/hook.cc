@@ -74,8 +74,9 @@ Hook::operator() (const std::string & k, const std::string & v) const
 std::string
 Hook::get(const std::string & k) const
 {
-     if (_imp->extra_env.end() != _imp->extra_env.find(k))
-         return _imp->extra_env.at(k);
+    std::map<std::string, std::string>::const_iterator i(_imp->extra_env.find(k));
+     if (i != _imp->extra_env.end())
+         return i->second;
      else
          return std::string("");
 }
