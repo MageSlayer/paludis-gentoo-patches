@@ -384,7 +384,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading keywords file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->keywords_conf->add(*file);
@@ -409,7 +409,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading use file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->use_conf->add(*file);
@@ -434,7 +434,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading licenses file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->licenses_conf->add(*file);
@@ -459,7 +459,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading package_mask file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->package_mask_conf->add(*file);
@@ -484,7 +484,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading package_unmask file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->package_unmask_conf->add(*file);
@@ -509,7 +509,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading mirrors file '" + stringify(*file) + "':");
 
-            if (! file->is_regular_file())
+            if (! file->exists())
                 continue;
 
             _imp->mirrors_conf->add(*file);
