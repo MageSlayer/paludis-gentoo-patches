@@ -50,11 +50,11 @@ namespace
     {
 #if defined(__GLIBC__)
         void * bt[50];
-        size_t sz = backtrace(bt, 50);
+        int sz = backtrace(bt, 50);
         char * * symbols = backtrace_symbols(bt, sz);
 
         std::cerr << "Stack dump:" << std::endl;
-        for (unsigned n(0) ; n < sz ; ++n)
+        for (int n(0) ; n < sz ; ++n)
         {
             std::string sym(symbols[n]);
 
