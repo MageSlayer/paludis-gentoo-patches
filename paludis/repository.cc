@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repository.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>

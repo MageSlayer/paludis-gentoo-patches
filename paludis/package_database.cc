@@ -23,7 +23,6 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/query.hh>
 
 #include <list>
@@ -483,23 +482,15 @@ namespace
 
         bool operator() (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
         {
-            switch (compare(lhs.name, rhs.name))
-            {
-                case -1:
-                    return true;
+            if (lhs.name < rhs.name)
+                return true;
+            if (lhs.name > rhs.name)
+                return false;
 
-                case 1:
-                    return false;
-            }
-
-            switch (compare(lhs.version, rhs.version))
-            {
-                case -1:
-                    return true;
-
-                case 1:
-                    return false;
-            }
+            if (lhs.version < rhs.version)
+                return true;
+            if (lhs.version > rhs.version)
+                return false;
 
             std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs.repository)));
             if (l == rank.end())
@@ -509,14 +500,8 @@ namespace
             if (r == rank.end())
                 throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs.repository) + "' not in rank");
 
-            switch (compare(l->second, r->second))
-            {
-                case -1:
-                    return true;
-
-                case 1:
-                    return false;
-            }
+            if (l->second < r->second)
+                return true;
 
             return false;
         }

@@ -18,7 +18,6 @@
  */
 
 #include "dep_tag.hh"
-#include <paludis/util/compare.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 
 /** \file
@@ -139,14 +138,24 @@ NoSuchDepTagCategory::NoSuchDepTagCategory(const std::string & s) throw () :
 {
 }
 
-DepTag::DepTag() :
-    ComparisonPolicy<DepTag, comparison_mode::FullComparisonTag,
-        comparison_method::CompareByMemberFetchFunctionTag<std::string> >(&DepTag::short_text)
+DepTag::DepTag()
 {
 }
 
 DepTag::~DepTag()
 {
+}
+
+bool
+DepTag::operator== (const DepTag & other) const
+{
+    return short_text() == other.short_text();
+}
+
+bool
+DepTag::operator< (const DepTag & other) const
+{
+    return short_text() < other.short_text();
 }
 
 GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title) :

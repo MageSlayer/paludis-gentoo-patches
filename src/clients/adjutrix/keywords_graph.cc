@@ -23,7 +23,6 @@
 
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/query.hh>
 
 #include <set>

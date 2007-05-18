@@ -57,14 +57,10 @@ namespace paludis
         bool
         operator() (const VREntry & a, const VREntry & b) const
         {
-            switch (a.compare(b))
-            {
-                case -1:
-                    return true;
-
-                case 1:
-                    return false;
-            }
+            if (a < b)
+                return true;
+            if (a > b)
+                return false;
 
             if (a.provided_by_repository != b.provided_by_repository)
             {

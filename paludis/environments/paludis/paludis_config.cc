@@ -27,7 +27,6 @@
 
 #include <paludis/config_file.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/iterator.hh>

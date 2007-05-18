@@ -21,7 +21,6 @@
 #include "command_line.hh"
 
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>

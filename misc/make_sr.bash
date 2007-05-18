@@ -170,8 +170,25 @@ while read a ; do
             echo -n "class PALUDIS_VISIBLE ${a}"
         fi
 
-        if [[ 0 != "${#want_inherit[@]}" ]] ; then
+        if [[ 0 != "${#want_inherit[@]}" ]] || [[ -n "${want_comparison_operators}" ]] ; then
             echo " :"
+            if [[ -n "${want_comparison_operators}" ]] ; then
+                if [[ "${want_comparison_operators}" == "all" ]] ; then
+                    echo -n "        public paludis::relational_operators::HasRelationalOperators"
+                elif [[ "${want_comparison_operators}" == "equality" ]] ; then
+                    echo -n "        public paludis::equality_operators::HasEqualityOperators"
+                else
+                    echo "bad first parameter for comparison_operators" 1>&2
+                    exit 1
+                fi
+
+                if [[ 0 == ${#want_inherit[@]} ]] ; then
+                    echo
+                else
+                    echo ","
+                fi
+            fi
+
             for (( k = 0 ; k < ${#want_inherit[@]} ; k++ )) ; do
                 echo -n "        ${want_inherit[${k}]}"
                 if [[ ${k} == $(( ${#want_inherit[@]} - 1 )) ]] ; then
@@ -235,19 +252,14 @@ while read a ; do
             echo
 
             if [[ "${want_comparison_operators}" == "all" ]] ; then
-                want_comparison_operators=( "==" "!=" "<" ">" "<=" ">=" )
-                echo "        int compare (const ${a} & other) const;"
+                echo "        bool operator== (const ${a} & other) const;"
+                echo "        bool operator< (const ${a} & other) const;"
             elif [[ "${want_comparison_operators}" == "equality" ]] ; then
-                want_comparison_operators=( "==" "!=" )
+                echo "        bool operator== (const ${a} & other) const;"
             else
                 echo "bad first parameter for comparison_operators" 1>&2
                 exit 1
             fi
-
-            for (( k = 0 ; k < ${#want_comparison_operators[@]} ; k++ )) ; do
-                echo "        bool operator${want_comparison_operators[${k}]} (const ${a} & other) const"
-                echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
-            done
 
             echo
             echo "        ///\\}"
@@ -522,47 +534,48 @@ while read a ; do
         if [[ -n "${want_comparison_operators}" ]] ; then
 
             if [[ "${want_comparison_operators}" == "all" ]] ; then
-                want_comparison_operators=( "==" "!=" "<" ">" "<=" ">=" )
-                echo "int"
-                echo "${a}::compare(const ${a} & other) const"
-                echo "{"
-                for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
-                    w=${want_comparison_fields[${k}]}
-                    echo "    switch (paludis::compare(${w}, ${w//[^\*]}other.${w#\*}))"
-                    echo "    {"
-                    echo "        case -1:"
-                    echo "            return -1;"
-                    echo "        case 1:"
-                    echo "            return 1;"
-                    echo "    }"
-                    echo
-                done
-                echo "    return 0;"
-                echo "}"
-                echo
-                for (( k = 0 ; k < ${#want_comparison_operators[@]} ; k++ )) ; do
-                    echo "bool"
-                    echo "${a}::operator${want_comparison_operators[${k}]} (const ${a} & other) const"
-                    echo "{"
-                    echo "    return compare(other) ${want_comparison_operators[${k}]} 0;"
-                    echo "}"
-                    echo
-                done
-            elif [[ "${want_comparison_operators}" == "equality" ]] ; then
                 echo "bool"
                 echo "${a}::operator== (const ${a} & other) const"
                 echo "{"
                 for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
-                    echo "    if (${want_comparison_fields[${k}]} != other.${want_comparison_fields[${k}]})"
+                    w="${want_comparison_fields[${k}]}"
+                    s=${w//[^*]}
+                    w=${w#\*}
+                    echo "    if (${want_comparison_fields[${k}]} != ${s}other.${w})"
                     echo "        return false;"
                 done
                 echo "    return true;"
                 echo "}"
                 echo
                 echo "bool"
-                echo "${a}::operator!= (const ${a} & other) const"
+                echo "${a}::operator< (const ${a} & other) const"
                 echo "{"
-                echo "    return ! operator== (other);"
+                echo "    using namespace std::rel_ops;"
+                echo
+                for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
+                    w="${want_comparison_fields[${k}]}"
+                    s=${w//[^*]}
+                    w=${w#\*}
+                    echo "    if (${want_comparison_fields[${k}]} < ${s}other.${w})"
+                    echo "        return true;"
+                    echo "    if (${want_comparison_fields[${k}]} > ${s}other.${w})"
+                    echo "        return false;"
+                done
+                echo "    return false;"
+                echo "}"
+                echo
+            elif [[ "${want_comparison_operators}" == "equality" ]] ; then
+                echo "bool"
+                echo "${a}::operator== (const ${a} & other) const"
+                echo "{"
+                for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
+                    w="${want_comparison_fields[${k}]}"
+                    s=${w//[^*]}
+                    w=${w#\*}
+                    echo "    if (${want_comparison_fields[${k}]} != ${s}other.${w})"
+                    echo "        return false;"
+                done
+                echo "    return true;"
                 echo "}"
                 echo
             else

@@ -21,17 +21,15 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_VALIDATED_FWD_HH 1
 
 #include <iosfwd>
-#include <paludis/util/comparison_policy-fwd.hh>
 
 namespace paludis
 {
-    template <typename, typename,
-             typename ComparisonMode_ = comparison_mode::FullComparisonTag>
+    template <typename, typename, bool = true>
     class Validated;
 
-    template <typename D_, typename V_, typename C_>
+    template <typename D_, typename V_, bool c_>
     std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_, C_> & v);
+    operator<< (std::ostream & s, const Validated<D_, V_, c_> & v);
 }
 
 #endif

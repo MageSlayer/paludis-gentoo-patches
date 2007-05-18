@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -139,7 +139,11 @@ namespace
         {
             QualifiedPackageName l = value_to_qualified_package_name(left);
             QualifiedPackageName r = value_to_qualified_package_name(right);
-            return INT2FIX(paludis::compare(l,r));
+            if (l < r)
+                return INT2FIX(-1);
+            if (l > r)
+                return INT2FIX(1);
+            return INT2FIX(0);
         }
         catch (const std::exception & e)
         {

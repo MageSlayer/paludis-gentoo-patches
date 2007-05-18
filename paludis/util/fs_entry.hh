@@ -22,8 +22,8 @@
 #define PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH 1
 
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/operators.hh>
 #include <string>
 #include <iosfwd>
 #include <tr1/memory>
@@ -63,10 +63,8 @@ namespace paludis
      * \ingroup grpfilesystem
      */
     class PALUDIS_VISIBLE FSEntry :
-        public ComparisonPolicy<
-            FSEntry,
-            comparison_mode::FullComparisonTag,
-            comparison_method::CompareByMemberTag<std::string> >
+        public relational_operators::HasRelationalOperators,
+        public arithmetic_operators::HasArithmeticOperators
     {
         friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
 
@@ -109,21 +107,9 @@ namespace paludis
             ///\{
 
             /**
-             * Join with another FSEntry.
-             */
-            FSEntry operator/ (const FSEntry & rhs) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
              * Append another FSEntry.
              */
             const FSEntry & operator/= (const FSEntry & rhs);
-
-            /**
-             * Join with another path.
-             */
-            FSEntry operator/ (const std::string & rhs) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Append another path.
@@ -132,6 +118,23 @@ namespace paludis
             {
                 return operator/= (FSEntry(rhs));
             }
+
+            /**
+             * Join with another path.
+             */
+            FSEntry operator/ (const std::string & rhs) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+
+            ///\name Comparison operators
+            ///\{
+
+            bool operator< (const FSEntry &) const;
+            bool operator== (const FSEntry &) const;
+
+            ///\}
 
             /**
              * Return the last part of our path (eg '/foo/bar' => 'bar').

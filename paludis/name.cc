@@ -19,7 +19,7 @@
 
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/compare.hh>
+#include <paludis/util/operators.hh>
 #include <paludis/util/log.hh>
 #include <ostream>
 

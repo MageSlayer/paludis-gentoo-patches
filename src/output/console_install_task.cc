@@ -24,7 +24,6 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>

@@ -21,7 +21,6 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 
-#include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/log.hh>

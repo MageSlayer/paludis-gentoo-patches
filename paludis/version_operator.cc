@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/stringify.hh>
+#include <paludis/util/operators.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
@@ -123,31 +124,43 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
     return s;
 }
 
-bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const VersionSpec &) const
+namespace
+{
+    template <bool (VersionSpec::* m_) (const VersionSpec &) const>
+    bool
+    member_to_comparator(const VersionSpec & a, const VersionSpec & b)
+    {
+        return (a.*m_)(b);
+    }
+}
+
+VersionOperator::VersionSpecComparator
+VersionOperator::as_version_spec_comparator() const
 {
     switch (_v)
     {
         case vo_less:
-            return &VersionSpec::operator<;
+            return &member_to_comparator<&VersionSpec::operator<>;
         case vo_less_equal:
-            return &VersionSpec::operator<=;
+            return &relational_operators::operator<= <const VersionSpec>;
         case vo_equal:
-            return &VersionSpec::operator==;
+            return &member_to_comparator<&VersionSpec::operator==>;
         case vo_tilde:
-            return &VersionSpec::tilde_compare;
+            return &member_to_comparator<&VersionSpec::tilde_compare>;
         case vo_greater:
-            return &VersionSpec::operator>;
+            return &relational_operators::operator> <const VersionSpec>;
         case vo_greater_equal:
-            return &VersionSpec::operator>=;
+            return &relational_operators::operator>= <const VersionSpec>;
         case vo_equal_star:
-            return &VersionSpec::equal_star_compare;
+            return &member_to_comparator<&VersionSpec::equal_star_compare>;
         case vo_tilde_greater:
-            return &VersionSpec::tilde_greater_compare;
+            return &member_to_comparator<&VersionSpec::tilde_greater_compare>;
         case last_vo:
             break;
     }
 
     throw InternalError(PALUDIS_HERE, "_v is " + stringify(_v));
+
 }
 
 BadVersionOperatorError::BadVersionOperatorError(const std::string & msg) throw () :

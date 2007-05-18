@@ -44,9 +44,7 @@ namespace paludis
      * \ingroup grpversions
      */
     class PALUDIS_VISIBLE VersionOperator :
-        public ComparisonPolicy<VersionOperator,
-            comparison_mode::EqualityComparisonTag,
-            comparison_method::CompareByMemberTag<VersionOperatorValue> >
+        public equality_operators::HasEqualityOperators
     {
         friend std::ostream & operator<< (std::ostream &, const VersionOperator &);
 
@@ -60,7 +58,6 @@ namespace paludis
              * Constructor.
              */
             VersionOperator(const VersionOperatorValue v) :
-                ComparisonPolicyType(&VersionOperator::_v),
                 _v(v)
             {
             }
@@ -69,7 +66,6 @@ namespace paludis
              * Copy constructor.
              */
             VersionOperator(const VersionOperator & other) :
-                ComparisonPolicyType(other),
                 _v(other._v)
             {
             }
@@ -78,7 +74,6 @@ namespace paludis
              * Constructor, from a string.
              */
             explicit VersionOperator(const std::string & v) :
-                ComparisonPolicyType(&VersionOperator::_v),
                 _v(_decode(v))
             {
             }
@@ -101,10 +96,24 @@ namespace paludis
             }
 
             /**
-             * Return a pointer to member operator for VersionSpec that
-             * corresponds to a particular operator.
+             * A VersionSpec comparator function.
              */
-            bool (VersionSpec::* as_version_spec_operator() const)(const VersionSpec &) const;
+            typedef bool (* VersionSpecComparator) (const VersionSpec &, const VersionSpec &);
+
+            /**
+             * Fetch a VersionSpecComparator.
+             */
+            VersionSpecComparator as_version_spec_comparator() const;
+
+            ///\name Comparison operators
+            ///\{
+
+            bool operator== (const VersionOperator & other) const
+            {
+                return _v == other._v;
+            }
+
+            ///\}
     };
 
     /**

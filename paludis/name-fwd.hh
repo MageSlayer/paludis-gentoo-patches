@@ -131,7 +131,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef Validated<std::string, RepositoryNameValidator, comparison_mode::EqualityComparisonTag> RepositoryName;
+    typedef Validated<std::string, RepositoryNameValidator, false> RepositoryName;
 
     /**
      * Holds a collection of RepositoryName instances.

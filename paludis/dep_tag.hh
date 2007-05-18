@@ -33,6 +33,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/operators.hh>
 
 #include <string>
 #include <tr1/memory>
@@ -162,9 +163,7 @@ namespace paludis
     class PALUDIS_VISIBLE DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public virtual VisitableInterface<DepTagVisitorTypes>,
-        public ComparisonPolicy<DepTag,
-            comparison_mode::FullComparisonTag,
-            comparison_method::CompareByMemberFetchFunctionTag<std::string> >
+        public relational_operators::HasRelationalOperators
     {
         protected:
             ///\name Basic operations
@@ -187,6 +186,14 @@ namespace paludis
              * Fetch our DepTagCategory's tag.
              */
             virtual std::string category() const = 0;
+
+            ///\name Comparison operators
+            ///\{
+
+            bool operator< (const DepTag &) const;
+            bool operator== (const DepTag &) const;
+
+            ///\}
     };
 
     /**

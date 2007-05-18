@@ -29,7 +29,7 @@ namespace bp = boost::python;
 bool
 compare(const VersionOperator & self, const VersionSpec & v1, const VersionSpec & v2)
 {
-    return (v1.*(self.as_version_spec_operator()))(v2);
+    return self.as_version_spec_comparator()(v1, v2);
 }
 
 void PALUDIS_VISIBLE expose_version_operator()

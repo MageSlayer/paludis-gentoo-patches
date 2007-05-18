@@ -18,7 +18,6 @@
  */
 
 #include <algorithm>
-#include <paludis/util/compare.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -105,8 +104,7 @@ namespace paludis
 }
 
 VersionSpec::VersionSpec(const std::string & text) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>),
-    ComparisonPolicyType(&VersionSpec::compare)
+    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>)
 {
     Context c("When parsing version spec '" + text + "':");
 
@@ -315,8 +313,7 @@ VersionSpec::VersionSpec(const std::string & text) :
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :
-    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>),
-    ComparisonPolicyType(other)
+    PrivateImplementationPattern<VersionSpec>(new Implementation<VersionSpec>)
 {
     _imp->text = other._imp->text;
     _imp->parts = other._imp->parts;
@@ -423,7 +420,7 @@ VersionSpec::compare(const VersionSpec & other) const
         /* stringwise compare (also for integers with the same size) */
         int c(p1s.compare(p2s));
         if (c != 0)
-            return c;
+            return c < 0 ? -1 : 1;
     }
 
     return 0;
@@ -725,6 +722,18 @@ VersionSpec::bump() const
 bool
 VersionSpec::tilde_greater_compare(const VersionSpec & v) const
 {
-    return operator>= (v) && operator< (v.bump());
+    return (*this >= v) && (*this < v.bump());
+}
+
+bool
+VersionSpec::operator< (const VersionSpec & v) const
+{
+    return -1 == compare(v);
+}
+
+bool
+VersionSpec::operator== (const VersionSpec & v) const
+{
+    return 0 == compare(v);
 }
 

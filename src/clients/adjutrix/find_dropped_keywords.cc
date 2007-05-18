@@ -21,7 +21,6 @@
 #include "command_line.hh"
 
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>

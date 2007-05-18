@@ -27,8 +27,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/compare.hh>
-#include <paludis/package_database.hh>
 #include <paludis/mask_reasons.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
@@ -146,7 +144,11 @@ namespace paludis
                 T_ * left_ptr, * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
-                return INT2FIX(paludis::compare(*left_ptr, *right_ptr));
+                if (*left_ptr < *right_ptr)
+                    return INT2FIX(-1);
+                if (*left_ptr > *right_ptr)
+                    return INT2FIX(1);
+                return INT2FIX(0);
             }
 
             static VALUE equal(VALUE left, VALUE right)

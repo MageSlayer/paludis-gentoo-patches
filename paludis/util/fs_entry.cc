@@ -45,7 +45,6 @@ FSError::FSError(const std::string & our_message) throw () :
 }
 
 FSEntry::FSEntry(const std::string & path) :
-    ComparisonPolicyType(&FSEntry::_path),
     _path(path),
     _exists(false),
     _checked(false)
@@ -54,7 +53,6 @@ FSEntry::FSEntry(const std::string & path) :
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
-    ComparisonPolicyType(&FSEntry::_path),
     _path(other._path),
     _stat_info(other._stat_info),
     _exists(other._exists),
@@ -77,18 +75,6 @@ FSEntry::operator= (const FSEntry & other)
     return *this;
 }
 
-FSEntry
-FSEntry::operator/ (const FSEntry & rhs) const
-{
-    return FSEntry(_path + "/" + rhs._path);
-}
-
-FSEntry
-FSEntry::operator/ (const std::string & rhs) const
-{
-    return operator/ (FSEntry(rhs));
-}
-
 const FSEntry &
 FSEntry::operator/= (const FSEntry & rhs)
 {
@@ -108,6 +94,24 @@ FSEntry::operator/= (const FSEntry & rhs)
     _stat_info.reset();
 
     return *this;
+}
+
+FSEntry
+FSEntry::operator/ (const std::string & rhs) const
+{
+    return *this / FSEntry(rhs);
+}
+
+bool
+FSEntry::operator< (const FSEntry & other) const
+{
+    return _path < other._path;
+}
+
+bool
+FSEntry::operator== (const FSEntry & other) const
+{
+    return _path == other._path;
 }
 
 bool

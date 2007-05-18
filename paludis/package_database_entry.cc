@@ -18,7 +18,6 @@
  */
 
 #include "package_database_entry.hh"
-#include <paludis/util/compare.hh>
 
 using namespace paludis;
 
@@ -28,32 +27,18 @@ bool
 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator::operator () (
         const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
 {
-    switch (compare(lhs.name, rhs.name))
-    {
-        case -1:
-            return true;
+    if (lhs.name < rhs.name)
+        return false;
+    if (lhs.name > rhs.name)
+        return true;
 
-        case 1:
-            return false;
-    }
+    if (lhs.version < rhs.version)
+        return false;
+    if (lhs.version > rhs.version)
+        return true;
 
-    switch (compare(lhs.version, rhs.version))
-    {
-        case -1:
-            return true;
-
-        case 1:
-            return false;
-    }
-
-    switch (compare(lhs.repository.data(), rhs.repository.data()))
-    {
-        case -1:
-            return true;
-
-        case 1:
-            return false;
-    }
+    if (lhs.repository.data() < rhs.repository.data())
+        return true;
 
     return false;
 }

@@ -307,8 +307,8 @@ namespace test_cases
         {
             expected.push_back("foo/moo-3::installed");
             expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
             expected.push_back("foo/oink-1::installed");
+            expected.push_back("foo/baz-2::installed");
         }
 
         UninstallListOptions options()

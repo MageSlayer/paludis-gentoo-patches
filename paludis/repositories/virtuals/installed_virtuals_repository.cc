@@ -23,7 +23,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/hook.hh>
 #include <vector>

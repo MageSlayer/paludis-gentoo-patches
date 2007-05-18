@@ -199,11 +199,11 @@ namespace
             our_op = vo_greater_equal;
 
         if (-1 != our_op)
-            return (e.version.*(VersionOperator(our_op).as_version_spec_operator()))(VersionSpec(ver));
+            return (VersionOperator(our_op).as_version_spec_comparator()(e.version, VersionSpec(ver)));
 
         if (0 == r.op.compare(0, 1, "r"))
         {
-            return (e.version.*(VersionOperator(vo_tilde).as_version_spec_operator()))(VersionSpec(ver)) &&
+            return (VersionOperator(our_op).as_version_spec_comparator()(e.version, VersionSpec(ver))) &&
                 match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version));
         }
 

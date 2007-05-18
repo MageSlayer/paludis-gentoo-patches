@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/query.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 
 #include <set>

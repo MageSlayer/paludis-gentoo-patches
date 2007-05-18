@@ -58,9 +58,9 @@ class TestCase_Names(unittest.TestCase):
 
         self.assertEqual(str(IUseFlag("foo", UseFlagState.ENABLED)), "+foo")
 
-    def test_4_operators(self):
-        self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
-        self.assert_(IUseFlag("foo", UseFlagState.ENABLED) == IUseFlag("+foo", IUseFlagParseMode.PERMISSIVE))
+#    def test_4_operators(self):
+#        self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
+#        self.assert_(IUseFlag("foo", UseFlagState.ENABLED) == IUseFlag("+foo", IUseFlagParseMode.PERMISSIVE))
 
 
     def test_5_data_members(self):

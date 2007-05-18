@@ -23,7 +23,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/compare.hh>
+#include <paludis/util/operators.hh>
 #include <utility>
 #include <string>
 #include <set>

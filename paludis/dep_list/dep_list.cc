@@ -27,7 +27,6 @@
 #include <paludis/query.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/util/compare.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>

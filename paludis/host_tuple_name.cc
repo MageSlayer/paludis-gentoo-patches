@@ -19,7 +19,7 @@
 
 #include <paludis/host_tuple_name.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/compare.hh>
+#include <paludis/util/operators.hh>
 #include <paludis/util/tokeniser.hh>
 #include <vector>
 #include <ostream>

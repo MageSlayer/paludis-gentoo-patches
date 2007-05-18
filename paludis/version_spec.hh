@@ -21,10 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH 1
 
 #include <paludis/version_spec-fwd.hh>
-#include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/collection.hh>
+#include <paludis/util/operators.hh>
 
 #include <iosfwd>
 #include <string>
@@ -63,16 +63,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VersionSpec :
         private PrivateImplementationPattern<VersionSpec>,
-        public ComparisonPolicy<VersionSpec, comparison_mode::FullComparisonTag,
-            comparison_method::CompareByMemberComparisonFunctionTag>
+        public relational_operators::HasRelationalOperators
     {
         friend std::ostream & operator<< (std::ostream &, const VersionSpec &);
-
-        protected:
-            /**
-             * Compare to another version.
-             */
-            int compare(const VersionSpec & other) const;
 
         public:
             /**
@@ -95,6 +88,9 @@ namespace paludis
              */
             const VersionSpec & operator= (const VersionSpec & other);
 
+            ///\name Comparison operators
+            ///\{
+
             /**
              * Comparison function for ~ depend operator.
              */
@@ -109,6 +105,17 @@ namespace paludis
              * Comparison function for =* depend operator.
              */
             bool equal_star_compare(const VersionSpec & other) const;
+
+            /**
+             * Compare to another version.
+             */
+            int compare(const VersionSpec & other) const;
+
+            bool operator== (const VersionSpec &) const;
+
+            bool operator< (const VersionSpec &) const;
+
+            ///\}
 
             /**
              * Fetch a hash value, used to avoid exposing our internals to

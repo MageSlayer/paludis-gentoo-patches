@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_INDIRECT_ITERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_INDIRECT_ITERATOR_HH 1
 
-#include <paludis/util/comparison_policy.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/operators.hh>
 
 #include <iterator>
 #include <functional>
@@ -100,42 +100,6 @@ namespace paludis
         typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
     class IndirectIterator;
 
-    namespace
-    {
-        /**
-         * Determine the comparison class to use for IndirectIterator.
-         *
-         * \ingroup grpiterators
-         */
-        template <typename IterCategory_, typename Iter_, typename Value_>
-        struct Comparisons
-        {
-            /**
-             * Default to providing == and !=.
-             */
-            typedef ComparisonPolicy<IndirectIterator<Iter_, Value_>,
-                    comparison_mode::EqualityComparisonTag,
-                    comparison_method::CompareByMemberTag<Iter_> > Type;
-        };
-
-        /**
-         * Determine the comparison class to use for IndirectIterator
-         * (specialisation for random access iterators).
-         *
-         * \ingroup grpiterators
-         */
-        template <typename Iter_, typename Value_>
-        struct Comparisons<std::random_access_iterator_tag, Iter_, Value_>
-        {
-            /**
-             * Provide the full range of comparison operators.
-             */
-            typedef ComparisonPolicy<IndirectIterator<Iter_, Value_>,
-                    comparison_mode::FullComparisonTag,
-                    comparison_method::CompareByMemberTag<Iter_> > Type;
-        };
-    }
-
     /**
      * An IndirectIterator is an iterator adapter that does one additional level
      * of dereferencing.
@@ -146,8 +110,14 @@ namespace paludis
     template <typename Iter_, typename Value_>
     class IndirectIterator :
         public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,
-        public Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type
+        public relational_operators::HasRelationalOperators
     {
+        template <typename A_, typename B_> friend bool operator< (
+                const IndirectIterator<A_, B_> &, const IndirectIterator<A_, B_> &);
+
+        template <typename A_, typename B_> friend bool operator== (
+                const IndirectIterator<A_, B_> &, const IndirectIterator<A_, B_> &);
+
         private:
             Iter_ _i;
 
@@ -156,15 +126,11 @@ namespace paludis
             ///\{
 
             IndirectIterator(const Iter_ & i) :
-                Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type(
-                        &IndirectIterator<Iter_, Value_>::_i),
                 _i(i)
             {
             }
 
             IndirectIterator(const IndirectIterator & other) :
-                Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type(
-                        &IndirectIterator<Iter_, Value_>::_i),
                 _i(other._i)
             {
             }
@@ -220,6 +186,18 @@ namespace paludis
 
             ///\}
     };
+
+    template <typename Iter_, typename Value_>
+    bool operator< (const IndirectIterator<Iter_, Value_> & a, const IndirectIterator<Iter_, Value_> & b)
+    {
+        return a._i < b._i;
+    }
+
+    template <typename Iter_, typename Value_>
+    bool operator== (const IndirectIterator<Iter_, Value_> & a, const IndirectIterator<Iter_, Value_> & b)
+    {
+        return a._i == b._i;
+    }
 
     /**
      * Convenience constructor for an IndirectIterator.

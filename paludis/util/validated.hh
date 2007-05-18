@@ -22,7 +22,8 @@
 
 #include <iosfwd>
 #include <paludis/util/validated-fwd.hh>
-#include <paludis/util/comparison_policy.hh>
+#include <paludis/util/operators.hh>
+#include <paludis/util/sr.hh>
 
 /** \file
  * Validated declarations.
@@ -38,10 +39,11 @@ namespace paludis
      *
      * \ingroup grpvalidated
      */
-    template <typename ValidatedDataType_, typename Validator_, typename ComparisonMode_>
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
     class Validated :
-        public ComparisonPolicy<Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
-            ComparisonMode_, comparison_method::CompareByMemberTag<ValidatedDataType_> >
+        public Select<full_comparison_,
+            relational_operators::HasRelationalOperators,
+            equality_operators::HasEqualityOperators>::Type
     {
         private:
             ValidatedDataType_ _value;
@@ -53,7 +55,7 @@ namespace paludis
             /**
              * Copy constructor (no validation needed).
              */
-            Validated(const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other);
+            Validated(const Validated<ValidatedDataType_, Validator_, full_comparison_> & other);
 
             /**
              * Constructor (validation needed).
@@ -63,8 +65,8 @@ namespace paludis
             /**
              * Assignment (no validation needed).
              */
-            const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & operator=
-                (const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other)
+            const Validated<ValidatedDataType_, Validator_, full_comparison_> & operator=
+                (const Validated<ValidatedDataType_, Validator_, full_comparison_> & other)
             {
                 _value = other._value;
                 return *this;
@@ -82,28 +84,35 @@ namespace paludis
             }
     };
 
-    template <typename ValidatedDataType_, typename Validator_, typename ComparisonMode_>
-    Validated<ValidatedDataType_, Validator_, ComparisonMode_>::Validated(
-            const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other) :
-        ComparisonPolicy<
-            Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
-            ComparisonMode_,
-            comparison_method::CompareByMemberTag<ValidatedDataType_> >
-                (other),
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+    Validated<ValidatedDataType_, Validator_, full_comparison_>::Validated(
+            const Validated<ValidatedDataType_, Validator_, full_comparison_> & other) :
         _value(other._value)
     {
     }
 
-    template <typename ValidatedDataType_, typename Validator_, typename ComparisonMode_>
-    Validated<ValidatedDataType_, Validator_, ComparisonMode_>::Validated(const ValidatedDataType_ & value) :
-        ComparisonPolicy<
-            Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
-            ComparisonMode_,
-            comparison_method::CompareByMemberTag<ValidatedDataType_> >
-                (&Validated<ValidatedDataType_, Validator_, ComparisonMode_>::_value),
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+    Validated<ValidatedDataType_, Validator_, full_comparison_>::Validated(
+            const ValidatedDataType_ & value) :
         _value(value)
     {
         Validator_::validate(_value);
+    }
+
+    template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+    bool operator== (
+            const Validated<ValidatedDataType_, Validator_, full_comparison_> & a,
+            const Validated<ValidatedDataType_, Validator_, full_comparison_> & b)
+    {
+        return a.data() == b.data();
+    }
+
+    template <typename ValidatedDataType_, typename Validator_>
+    bool operator< (
+            const Validated<ValidatedDataType_, Validator_, true> & a,
+            const Validated<ValidatedDataType_, Validator_, true> & b)
+    {
+        return a.data() < b.data();
     }
 
     /**
@@ -111,9 +120,9 @@ namespace paludis
      *
      * \ingroup grpvalidated
      */
-    template <typename D_, typename V_, typename C_>
+    template <typename D_, typename V_, bool c_>
     std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_, C_> & v)
+    operator<< (std::ostream & s, const Validated<D_, V_, c_> & v)
     {
         s << v.data();
         return s;
