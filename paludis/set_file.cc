@@ -29,6 +29,7 @@
 #include <list>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 using namespace paludis;
 
