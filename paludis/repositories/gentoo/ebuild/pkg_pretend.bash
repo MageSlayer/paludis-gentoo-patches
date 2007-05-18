@@ -28,6 +28,7 @@ ebuild_f_pretend()
     elif hasq "pretend" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_pretend (SKIP_FUNCTIONS)"
     else
+        echo
         if [[ $(type -t pre_pkg_pretend ) == "function" ]] ; then
             pre_pkg_pretend
         fi
@@ -37,9 +38,9 @@ ebuild_f_pretend()
         if [[ $(type -t post_pkg_pretend ) == "function" ]] ; then
             post_pkg_pretend
         fi
+        echo
     fi
 
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
     true
 }
 
