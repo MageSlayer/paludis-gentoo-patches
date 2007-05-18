@@ -26,20 +26,20 @@ image=$(tr -s / <<<"${IMAGE}" )
 case "${HOOK}" in
 
     merger_check_sym_post)
-        target=$(readlink ${INSTALL_SOURCE} | tr -s / )
+        target=$(readlink "${INSTALL_SOURCE}" | tr -s / )
         [[ "${target#${image}}" == "${target}" ]] && exit 0
 
-        ewarn "Bad symlink ${INSTALL_SOURCE} -> $(readlink ${INSTALL_SOURCE} ) will be rewritten"
+        ewarn "Bad symlink ${INSTALL_SOURCE} -> $(readlink "${INSTALL_SOURCE}" ) will be rewritten"
     ;;
 
     merger_install_sym_post)
-        target=$(readlink ${INSTALL_DESTINATION} | tr -s / )
+        target=$(readlink "${INSTALL_DESTINATION}" | tr -s / )
         [[ "${target#${image}}" == "${target}" ]] && exit 0
 
         new_target=${target#${image}}
         new_target=/${new_target##+(/)}
         ewarn "Relinking bad symlink ${INSTALL_DESTINATION} -> $(readlink \
-            ${INSTALL_DESTINATION} ) to ${new_target}"
+            "${INSTALL_DESTINATION}" ) to ${new_target}"
         echo rm -f "${INSTALL_DESTINATION}" 1>&2
         rm -f "${INSTALL_DESTINATION}"
         echo ln -s "${new_target}" "${INSTALL_DESTINATION}" 1>&2
