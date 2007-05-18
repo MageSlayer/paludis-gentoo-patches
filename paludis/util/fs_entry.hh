@@ -337,7 +337,7 @@ namespace paludis
              *
              * \exception FSError If the chown failed.
              */
-            void chown(const uid_t owner, const gid_t group = -1);
+            void chown(const uid_t owner, const gid_t group = static_cast<gid_t>(-1));
 
             /**
              * Change our permissions.
