@@ -169,7 +169,10 @@ main(int argc, char *argv[])
                                 stdout_had_interesting_char = true;
                             }
                             else if (! stdout_had_non_blanks)
+                            {
                                 ++stdout_blanks;
+                                continue;
+                            }
 
                             if (! stdout_prefix_shown)
                             {
@@ -216,7 +219,10 @@ main(int argc, char *argv[])
                                 stderr_had_interesting_char = true;
                             }
                             else if (! stderr_had_non_blanks)
+                            {
                                 ++stderr_blanks;
+                                continue;
+                            }
 
                             if (! stderr_prefix_shown)
                             {
