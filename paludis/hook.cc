@@ -75,10 +75,10 @@ std::string
 Hook::get(const std::string & k) const
 {
     std::map<std::string, std::string>::const_iterator i(_imp->extra_env.find(k));
-     if (i != _imp->extra_env.end())
-         return i->second;
-     else
-         return std::string("");
+    if (i != _imp->extra_env.end())
+        return i->second;
+    else
+        return std::string("");
 }
 
 Hook
