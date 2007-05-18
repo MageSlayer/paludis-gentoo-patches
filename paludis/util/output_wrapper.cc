@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>

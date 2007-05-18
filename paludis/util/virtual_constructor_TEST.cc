@@ -49,7 +49,7 @@ namespace
             Cookie(CookieSize sz) :
                 _size(sz)
             {
-            };
+            }
 
         public:
             virtual std::string flavour() const = 0;
