@@ -32,6 +32,9 @@
 #include <paludis/environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/query.hh>
+#include <paludis/repository.hh>
+#include <paludis/contents.hh>
+#include <paludis/dep_tag.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa/qa.hh>
