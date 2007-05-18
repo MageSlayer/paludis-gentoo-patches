@@ -45,22 +45,13 @@ namespace paludis
         time_t installed_time;
 
         /// Turn a CRAN package name into a paludis package name.
-        static void normalise_name(std::string & s)
-        {
-            std::replace_if(s.begin(), s.end(), std::bind2nd(std::equal_to<char>(), '.'), '-');
-        }
+        static void normalise_name(std::string & s);
 
         /// Turn a paludis package name into a CRAN package name.
-        static void denormalise_name(std::string & s)
-        {
-            std::replace_if(s.begin(), s.end(), std::bind2nd(std::equal_to<char>(), '-'), '.');
-        }
+        static void denormalise_name(std::string & s);
 
         /// Turn a CRAN package version into a paludis package version.
-        static void normalise_version(std::string & s)
-        {
-            std::replace_if(s.begin(), s.end(), std::bind2nd(std::equal_to<char>(), '-'), '.');
-        }
+        static void normalise_version(std::string & s);
 
         /// Constructor
         CRANDescription(const std::string & n, const FSEntry & f, bool installed);

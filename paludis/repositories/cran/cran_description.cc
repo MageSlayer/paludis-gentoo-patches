@@ -25,8 +25,31 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <string>
+#include <algorithm>
+#include <tr1/functional>
 
 using namespace paludis;
+
+void
+CRANDescription::normalise_name(std::string & s)
+{
+    using namespace std::tr1::placeholders;
+    std::replace_if(s.begin(), s.end(), std::tr1::bind(std::equal_to<char>(), _1, '.'), '-');
+}
+
+void
+CRANDescription::denormalise_name(std::string & s)
+{
+    using namespace std::tr1::placeholders;
+    std::replace_if(s.begin(), s.end(), std::tr1::bind(std::equal_to<char>(), _1, '-'), '.');
+}
+
+void
+CRANDescription::normalise_version(std::string & s)
+{
+    using namespace std::tr1::placeholders;
+    std::replace_if(s.begin(), s.end(), std::tr1::bind(std::equal_to<char>(), _1, '-'), '.');
+}
 
 CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool installed) :
     name("cran/" + n),
