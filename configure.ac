@@ -206,7 +206,7 @@ need_pointer_wrappers=no
 AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
 AC_COMPILE_IFELSE([
 #include <tr1/memory>
-int main(int, char *[])
+int main(int, char **)
 {
 	std::tr1::shared_ptr<int> x(new int(10));
 	return *x;
@@ -217,7 +217,7 @@ int main(int, char *[])
 	 AC_MSG_CHECKING([for boost::shared_ptr<>])
 	 AC_COMPILE_IFELSE([
 #include <boost/shared_ptr.hpp>
-int main(int, char *[])
+int main(int, char **)
 {
 	boost::shared_ptr<int> x(new int(10));
 	return *x;
@@ -235,7 +235,7 @@ need_type_traits_wrappers=no
 AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
 AC_COMPILE_IFELSE([
 #include <tr1/type_traits>
-int main(int, char *[])
+int main(int, char **)
 {
 	std::tr1::remove_pointer<int *>::type x(10);
 	return x;
@@ -246,7 +246,7 @@ int main(int, char *[])
 	 AC_MSG_CHECKING([for boost::remove_pointer<>])
 	 AC_COMPILE_IFELSE([
 #include <boost/type_traits.hpp>
-int main(int, char *[])
+int main(int, char **)
 {
 	boost::remove_pointer<int *>::type x(10);
 	return x;
@@ -273,7 +273,7 @@ struct S
 	{
 	}
 };
-int main(int, char *[])
+int main(int, char **)
 {
 	using namespace std::tr1::placeholders;
 	std::list<int> l;
@@ -297,7 +297,7 @@ struct S
 	{
 	}
 };
-int main(int, char *[])
+int main(int, char **)
 {
 	std::list<int> l;
 	S s;
@@ -366,7 +366,7 @@ dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
 AC_COMPILE_IFELSE([
 #include <cxxabi.h>
-int main(int, char *[])
+int main(int, char **)
 {
     int status(0);
     char * const name(abi::__cxa_demangle(
@@ -853,7 +853,7 @@ if echo $repositories | tr ' ' '\n' | sort | uniq | grep '^gems$' >/dev/null ; t
 	AC_MSG_CHECKING([for libyaml])
 	AC_COMPILE_IFELSE([
 #include <yaml.h>
-int main(int, char *[])
+int main(int, char **)
 {
 	yaml_get_version_string();
 	return 0;
