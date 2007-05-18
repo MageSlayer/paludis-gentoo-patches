@@ -22,6 +22,10 @@
 #
 # You should ensure that it has execute permissions.
 
+case "${EBUILD_PHASE}" in
+    config|pretend|metadata) return
+esac
+
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 logfile="${PALUDIS_HOOKS_TMPDIR:-${ROOT}/var/tmp/paludis}/elog.${PALUDIS_PID}"

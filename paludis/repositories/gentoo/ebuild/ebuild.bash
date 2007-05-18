@@ -339,6 +339,7 @@ ebuild_main()
     done
 
     if [[ $1 == metadata ]] || [[ $1 == variable ]] ; then
+        export EBUILD_PHASE="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 != variable ]] || [[ -n "${ebuild}" ]] ; then
             for f in cut tr date ; do
