@@ -20,6 +20,7 @@
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/util/graph.hh>
+#include <paludis/util/graph-impl.hh>
 #include <iostream>
 #include <fstream>
 
