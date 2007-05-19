@@ -23,6 +23,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/extract_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
 
 using namespace paludis;

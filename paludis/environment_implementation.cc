@@ -22,7 +22,9 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/eapi.hh>
+#include <algorithm>
 
 using namespace paludis;
 

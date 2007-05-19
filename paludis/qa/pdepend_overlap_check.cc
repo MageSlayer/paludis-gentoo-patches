@@ -24,7 +24,9 @@
 #include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/util/join.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <set>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;

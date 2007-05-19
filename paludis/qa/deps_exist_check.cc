@@ -24,7 +24,9 @@
 #include <paludis/qa/deps_exist_check.hh>
 #include <paludis/util/save.hh>
 #include <paludis/query.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;

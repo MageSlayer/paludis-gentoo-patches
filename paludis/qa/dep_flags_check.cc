@@ -23,6 +23,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <set>
 #include <algorithm>

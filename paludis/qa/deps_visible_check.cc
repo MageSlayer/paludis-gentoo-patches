@@ -24,10 +24,12 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/query.hh>
 
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;

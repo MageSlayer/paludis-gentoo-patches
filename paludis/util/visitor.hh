@@ -28,14 +28,6 @@
 
 #include <paludis/util/visitor-fwd.hh>
 
-namespace std
-{
-#ifndef DOXYGEN
-    template <typename A_, typename B_>
-    B_ for_each(A_, A_, B_);
-#endif
-}
-
 namespace paludis
 {
     template <typename NodePtrType_>
@@ -396,10 +388,7 @@ namespace paludis
     struct VisitorTypes<N1_, N2_, N3_, N4_, N5_, N6_, N7_, N8_, N9_>::ConstVisitor::VisitChildren :
         virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<C1_ *>::Type>
     {
-        virtual void visit(typename visitor_internals::MakePointerToConst<C1_ *>::Type const c)
-        {
-            std::for_each(c->begin(), c->end(), accept_visitor(static_cast<OurType_ *>(this)));
-        }
+        virtual void visit(typename visitor_internals::MakePointerToConst<C1_ *>::Type const c);
     };
 }
 

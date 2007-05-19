@@ -24,6 +24,7 @@
 #include <paludis/qa/dep_packages_check.hh>
 #include <paludis/config_file.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <set>

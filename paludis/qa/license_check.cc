@@ -24,6 +24,7 @@
 #include <paludis/qa/license_check.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

@@ -31,7 +31,7 @@ namespace test_cases
      */
     struct CRCHashTest : TestCase
     {
-        CRCHashTest() : TestCase("crc hash") { };
+        CRCHashTest() : TestCase("crc hash") { }
 
         void run()
         {

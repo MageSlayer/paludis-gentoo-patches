@@ -23,8 +23,10 @@
 #include <paludis/environment.hh>
 #include <paludis/qa/src_uri_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <set>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;

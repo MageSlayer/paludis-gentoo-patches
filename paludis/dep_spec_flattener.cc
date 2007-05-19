@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <list>
+#include <algorithm>
 
 /** \file
  * Implementation of dep_spec_flattener.hh.

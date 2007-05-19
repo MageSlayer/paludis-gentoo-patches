@@ -21,6 +21,8 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;

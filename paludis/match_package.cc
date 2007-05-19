@@ -22,6 +22,7 @@
 #include <paludis/environment.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/package_database.hh>
+#include <algorithm>
 
 using namespace paludis;
 
