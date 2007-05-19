@@ -99,7 +99,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/ruby/.libs\`" \
+			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/ruby/.libs\`:$$LD_LIBRARY_PATH" \
 			| tr -d ' '` \
 	bash $(top_srcdir)/test/run_test.sh "$(RUBY) -I ./.libs/"
 

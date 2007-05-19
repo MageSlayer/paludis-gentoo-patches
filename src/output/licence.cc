@@ -20,6 +20,7 @@
 #include "licence.hh"
 #include "colour.hh"
 #include <ostream>
+#include <algorithm>
 
 void
 LicenceDisplayer::visit(const paludis::AllDepSpec * spec)

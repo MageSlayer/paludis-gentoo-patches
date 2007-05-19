@@ -21,6 +21,7 @@
 #include <paludis/args/args_error.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::args;

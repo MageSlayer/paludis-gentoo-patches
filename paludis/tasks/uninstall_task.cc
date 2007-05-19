@@ -23,6 +23,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/tasks/exceptions.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <list>

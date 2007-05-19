@@ -22,6 +22,7 @@
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <set>
 

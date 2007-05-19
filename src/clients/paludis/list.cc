@@ -31,6 +31,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <algorithm>
 
 using namespace paludis;
 

@@ -84,7 +84,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the GNU binutils as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 
@@ -108,7 +108,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the kernel headers as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 
@@ -132,7 +132,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building a minimal GNU C compiler as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 
@@ -156,7 +156,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the C standard library headers as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 
@@ -180,7 +180,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the C standard library as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 
@@ -205,7 +205,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the full GNU compiler collection as part of the cross toolchain";
-            };
+            }
 
             virtual bool is_rebuild() const;
 

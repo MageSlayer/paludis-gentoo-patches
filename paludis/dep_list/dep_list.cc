@@ -33,6 +33,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <algorithm>
 #include <functional>

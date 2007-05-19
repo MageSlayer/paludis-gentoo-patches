@@ -24,6 +24,7 @@
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_database.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <set>
 #include <map>

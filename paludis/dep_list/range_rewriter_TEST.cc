@@ -25,6 +25,8 @@
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 
+#include <algorithm>
+
 using namespace test;
 using namespace paludis;
 

@@ -24,6 +24,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <list>
 
 #include <yaml.h>

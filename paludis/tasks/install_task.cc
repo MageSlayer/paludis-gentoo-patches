@@ -27,6 +27,7 @@
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/tasks/exceptions.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <list>
 
 using namespace paludis;

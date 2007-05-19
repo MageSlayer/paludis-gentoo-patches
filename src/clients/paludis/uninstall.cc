@@ -52,7 +52,7 @@ namespace
                 _count(0),
                 _current_count(0)
             {
-            };
+            }
 
             virtual void on_build_unmergelist_pre()
             {

@@ -30,6 +30,7 @@
 #include <list>
 #include <set>
 #include <iostream>
+#include <algorithm>
 
 using namespace paludis;
 using namespace inquisitio;

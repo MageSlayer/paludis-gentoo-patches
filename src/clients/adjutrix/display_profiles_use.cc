@@ -32,6 +32,7 @@
 #include <iomanip>
 #include <vector>
 #include <cstdlib>
+#include <algorithm>
 #include <set>
 #include <map>
 
