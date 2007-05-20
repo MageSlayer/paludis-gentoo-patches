@@ -83,5 +83,5 @@ QualudisCommandLine::app_description() const
 {
     return
         "qualudis is a QA assistant for ebuilds and ebuild repositories. It checks for "
-        "many common and potential mistakes and displays a summary of its findings."
+        "many common and potential mistakes and displays a summary of its findings.";
 }
