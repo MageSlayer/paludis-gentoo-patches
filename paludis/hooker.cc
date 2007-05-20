@@ -361,7 +361,7 @@ namespace paludis
     {
         const Environment * const env;
         std::list<std::pair<FSEntry, bool> > dirs;
-        mutable std::map<std::string, std::list<std::tr1::shared_ptr<HookFile> > > hook_files;
+        mutable std::map<std::string, std::list<tr1::shared_ptr<HookFile> > > hook_files;
 
         Implementation(const Environment * const e) :
             env(e)
@@ -440,13 +440,13 @@ Hooker::perform_hook(const Hook & hook) const
 
     /* file hooks, but only if necessary */
 
-    std::map<std::string, std::list<std::tr1::shared_ptr<HookFile> > >::iterator h(_imp->hook_files.find(hook.name()));
+    std::map<std::string, std::list<tr1::shared_ptr<HookFile> > >::iterator h(_imp->hook_files.find(hook.name()));
 
     if (h == _imp->hook_files.end())
     {
-        h = _imp->hook_files.insert(std::make_pair(hook.name(), std::list<std::tr1::shared_ptr<HookFile> >())).first;
+        h = _imp->hook_files.insert(std::make_pair(hook.name(), std::list<tr1::shared_ptr<HookFile> >())).first;
 
-        std::map<std::string, std::tr1::shared_ptr<HookFile> > hook_files;
+        std::map<std::string, tr1::shared_ptr<HookFile> > hook_files;
 
         for (std::list<std::pair<FSEntry, bool> >::const_iterator d(_imp->dirs.begin()), d_end(_imp->dirs.end()) ;
                 d != d_end ; ++d)
@@ -458,14 +458,14 @@ Hooker::perform_hook(const Hook & hook) const
             {
                 if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
-                                    std::tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
+                                    tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name()) + "'");
 
                 if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
-                                    std::tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
+                                    tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name()) + "'");
@@ -473,7 +473,7 @@ Hooker::perform_hook(const Hook & hook) const
                 std::string so_suffix(".so." + stringify(100 * PALUDIS_VERSION_MAJOR + PALUDIS_VERSION_MINOR));
                 if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
                      if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
-                                     std::tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
+                                     tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
                         Log::get_instance()->message(ll_warning, lc_context, "Discarding hook file '" + stringify(*e)
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
@@ -484,11 +484,11 @@ Hooker::perform_hook(const Hook & hook) const
         DirectedGraph<std::string, int> hook_deps;
         {
             Context context_local("When determining hook dependencies for '" + hook.name() + "':");
-            for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+            for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
                     f != f_end ; ++f)
                 hook_deps.add_node(f->first);
 
-            for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+            for (std::map<std::string, tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
                     f != f_end ; ++f)
                 f->second->add_dependencies(hook, hook_deps);
         }
@@ -521,13 +521,13 @@ Hooker::perform_hook(const Hook & hook) const
             switch (hook.output_dest)
             {
                 case hod_stdout:
-                    for (std::list<std::tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
+                    for (std::list<tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
                             f_end(h->second.end()) ; f != f_end ; ++f)
                         result.max_exit_status = std::max(result.max_exit_status, (*f)->run(hook).max_exit_status);
                     continue;
 
                 case hod_grab:
-                    for (std::list<std::tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
+                    for (std::list<tr1::shared_ptr<HookFile> >::const_iterator f(h->second.begin()),
                             f_end(h->second.end()) ; f != f_end ; ++f)
                     {
                         HookResult tmp((*f)->run(hook));

@@ -30,7 +30,7 @@ make_class_EAPI()
     visible
 
     key name std::string
-    key supported "std::tr1::shared_ptr<const SupportedEAPI>"
+    key supported "tr1::shared_ptr<const SupportedEAPI>"
 
     allow_named_args
 

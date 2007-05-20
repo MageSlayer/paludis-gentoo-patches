@@ -79,7 +79,7 @@ namespace paludis
         /**
          * Create a new text spec from the provided string.
          */
-        virtual std::tr1::shared_ptr<DepSpec> new_text_spec(const std::string &) const = 0;
+        virtual tr1::shared_ptr<DepSpec> new_text_spec(const std::string &) const = 0;
 
         /**
          * Are || ( ) deps permitted?
@@ -116,13 +116,13 @@ namespace paludis
                 private:
                     const bool _permit_any_deps;
                     const PackageDepSpecParseMode _parse_mode;
-                    std::tr1::shared_ptr<StringDepSpec> (Policy::* const _create_func) (const std::string &) const;
+                    tr1::shared_ptr<StringDepSpec> (Policy::* const _create_func) (const std::string &) const;
 
-                    std::tr1::shared_ptr<StringDepSpec> _create_text_dep_spec(const std::string &) const;
-                    std::tr1::shared_ptr<StringDepSpec> _create_package_dep_spec(const std::string &) const;
+                    tr1::shared_ptr<StringDepSpec> _create_text_dep_spec(const std::string &) const;
+                    tr1::shared_ptr<StringDepSpec> _create_package_dep_spec(const std::string &) const;
 
                     Policy(const bool, const PackageDepSpecParseMode,
-                            std::tr1::shared_ptr<StringDepSpec> (Policy::* const) (const std::string &) const);
+                            tr1::shared_ptr<StringDepSpec> (Policy::* const) (const std::string &) const);
 
                 public:
                     /**
@@ -140,7 +140,7 @@ namespace paludis
                     /**
                      * Create a text dep spec.
                      */
-                    std::tr1::shared_ptr<StringDepSpec> create(const std::string &) const;
+                    tr1::shared_ptr<StringDepSpec> create(const std::string &) const;
 
                     /**
                      * Whether any deps are permitted.
@@ -152,19 +152,19 @@ namespace paludis
              * Parse a given dependency string, and return an appropriate
              * DepSpec tree.
              */
-            static std::tr1::shared_ptr<CompositeDepSpec> parse(const std::string & s,
+            static tr1::shared_ptr<CompositeDepSpec> parse(const std::string & s,
                     const Policy &);
 
             /**
              * Convenience wrapper for parse for depend strings, for VersionMetadata.
              */
-            static std::tr1::shared_ptr<const CompositeDepSpec> parse_depend(const std::string & s,
+            static tr1::shared_ptr<const CompositeDepSpec> parse_depend(const std::string & s,
                     const PackageDepSpecParseMode);
 
             /**
              * Convenience wrapper for parse for license strings, for VersionMetadata.
              */
-            static std::tr1::shared_ptr<const CompositeDepSpec> parse_license(const std::string & s);
+            static tr1::shared_ptr<const CompositeDepSpec> parse_license(const std::string & s);
     };
 }
 

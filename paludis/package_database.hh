@@ -263,18 +263,18 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(int importance, const std::tr1::shared_ptr<Repository>);
+            void add_repository(int importance, const tr1::shared_ptr<Repository>);
 
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+            tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+            tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -306,7 +306,7 @@ namespace paludis
              *
              * \deprecated use the Query form
              */
-            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
+            tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepSpec & a,
                     const InstallState,
                     const QueryOrder) const
@@ -315,7 +315,7 @@ namespace paludis
             /**
              * Query the repository.
              */
-            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
+            tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const Query &, const QueryOrder) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -328,7 +328,7 @@ namespace paludis
             ///\name Iterate over our repositories
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageDatabase, const std::tr1::shared_ptr<Repository> > RepositoryIterator;
+            typedef libwrapiter::ForwardIterator<PackageDatabase, const tr1::shared_ptr<Repository> > RepositoryIterator;
 
             RepositoryIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

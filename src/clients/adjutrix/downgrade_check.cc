@@ -42,7 +42,7 @@ namespace
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(
                 env.package_database()->query(query::NotMasked(), qo_group_by_slot));
 
         QualifiedPackageName old_package("dummy/dummy");
@@ -136,12 +136,12 @@ namespace
             if (after.end() == a)
             {
                 if (! env.package_database()->query(query::Matches(PackageDepSpec(
-                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(b->first.name)),
-                                    std::tr1::shared_ptr<CategoryNamePart>(),
-                                    std::tr1::shared_ptr<PackageNamePart>(),
-                                    std::tr1::shared_ptr<VersionRequirements>(),
+                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(b->first.name)),
+                                    tr1::shared_ptr<CategoryNamePart>(),
+                                    tr1::shared_ptr<PackageNamePart>(),
+                                    tr1::shared_ptr<VersionRequirements>(),
                                     vr_and,
-                                    std::tr1::shared_ptr<SlotName>(new SlotName(b->first.slot)))),
+                                    tr1::shared_ptr<SlotName>(new SlotName(b->first.slot)))),
                             qo_whatever)->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));

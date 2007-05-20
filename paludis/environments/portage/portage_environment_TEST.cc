@@ -44,7 +44,7 @@ namespace
     bool accept_keyword(const TestPortageEnvironment & env,
             const KeywordName & k, const PackageDatabaseEntry & e)
     {
-        std::tr1::shared_ptr<KeywordNameCollection> kk(new KeywordNameCollection::Concrete);
+        tr1::shared_ptr<KeywordNameCollection> kk(new KeywordNameCollection::Concrete);
         kk->insert(k);
         return env.accept_keywords(kk, e);
     }
@@ -88,7 +88,7 @@ namespace test_cases
             PortageEnvironment env("portage_environment_TEST_dir/known_use_expand_names");
 
             PackageDatabaseEntry pde1(QualifiedPackageName("app/one"), VersionSpec("1"), RepositoryName("foo"));
-            std::tr1::shared_ptr<const UseFlagNameCollection> k1(env.known_use_expand_names(UseFlagName("foo_cards"), pde1));
+            tr1::shared_ptr<const UseFlagNameCollection> k1(env.known_use_expand_names(UseFlagName("foo_cards"), pde1));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three");
         }
     } test_known_use_expand;

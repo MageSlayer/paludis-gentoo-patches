@@ -25,7 +25,7 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 using namespace test;
 using namespace paludis;
@@ -66,14 +66,14 @@ namespace test_cases
      */
     struct IndirectIteratorVecCPIntTest : TestCase
     {
-        IndirectIteratorVecCPIntTest() : TestCase("vector<std::tr1::shared_ptr<int> >") { }
+        IndirectIteratorVecCPIntTest() : TestCase("vector<tr1::shared_ptr<int> >") { }
 
         void run()
         {
-            std::vector<std::tr1::shared_ptr<int> > v;
-            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
-            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
-            IndirectIterator<std::vector<std::tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
+            std::vector<tr1::shared_ptr<int> > v;
+            v.push_back(tr1::shared_ptr<int>(new int(5)));
+            v.push_back(tr1::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::vector<tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK(vi < vi_end);
             TEST_CHECK(! (vi > vi_end));
@@ -92,14 +92,14 @@ namespace test_cases
      */
     struct IndirectIteratorListCPIntTest : TestCase
     {
-        IndirectIteratorListCPIntTest() : TestCase("list<std::tr1::shared_ptr<int> >") { }
+        IndirectIteratorListCPIntTest() : TestCase("list<tr1::shared_ptr<int> >") { }
 
         void run()
         {
-            std::list<std::tr1::shared_ptr<int> > v;
-            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
-            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
-            IndirectIterator<std::list<std::tr1::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
+            std::list<tr1::shared_ptr<int> > v;
+            v.push_back(tr1::shared_ptr<int>(new int(5)));
+            v.push_back(tr1::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::list<tr1::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK_EQUAL(*vi, 5);
             TEST_CHECK(++vi != vi_end);

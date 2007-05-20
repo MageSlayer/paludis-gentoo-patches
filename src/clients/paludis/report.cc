@@ -40,7 +40,7 @@ namespace
             int _n_errors;
 
         public:
-            OurReportTask(std::tr1::shared_ptr<Environment> env) :
+            OurReportTask(tr1::shared_ptr<Environment> env) :
                 ReportTask(env.get()),
                 _n_packages(0),
                 _n_errors(0)
@@ -159,7 +159,7 @@ namespace
     }
 }
 
-int do_report(std::tr1::shared_ptr<Environment> env)
+int do_report(tr1::shared_ptr<Environment> env)
 {
     Context context("When performing report action from command line:");
 

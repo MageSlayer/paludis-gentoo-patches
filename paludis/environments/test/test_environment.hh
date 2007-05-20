@@ -44,7 +44,7 @@ namespace paludis
         public EnvironmentImplementation
     {
         protected:
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -60,10 +60,10 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+            virtual tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const

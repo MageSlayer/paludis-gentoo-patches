@@ -62,14 +62,14 @@ namespace paludis
             /**
              * Find an appropriate destination for a package.
              */
-            std::tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
-                    std::tr1::shared_ptr<const DestinationsCollection>);
+            tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
+                    tr1::shared_ptr<const DestinationsCollection>);
 
             /**
              * Add a DepSpec with role context.
              */
-            void add_in_role(std::tr1::shared_ptr<const DepSpec>, const std::string & role,
-                    std::tr1::shared_ptr<const DestinationsCollection>);
+            void add_in_role(tr1::shared_ptr<const DepSpec>, const std::string & role,
+                    tr1::shared_ptr<const DestinationsCollection>);
 
             /**
              * Return whether we prefer the first parameter, which is installed,
@@ -81,14 +81,14 @@ namespace paludis
             /**
              * Add a package to the list.
              */
-            void add_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an already installed package to the list.
              */
-            void add_already_installed_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_already_installed_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an error package to the list.
@@ -99,19 +99,19 @@ namespace paludis
              * Add a suggested package to the list.
              */
             void add_suggested_package(const PackageDatabaseEntry &,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add predependencies.
              */
-            void add_predeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_predeps(tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add postdependencies.
              */
-            void add_postdeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_postdeps(tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Return whether the specified PackageDatabaseEntry is matched by
@@ -132,14 +132,14 @@ namespace paludis
             /**
              * Our options.
              */
-            std::tr1::shared_ptr<DepListOptions> options();
+            tr1::shared_ptr<DepListOptions> options();
 
             /**
              * Add the packages required to resolve an additional dependency
              * spec.
              */
-            void add(std::tr1::shared_ptr<const DepSpec>,
-                    std::tr1::shared_ptr<const DestinationsCollection> target_destinations);
+            void add(tr1::shared_ptr<const DepSpec>,
+                    tr1::shared_ptr<const DestinationsCollection> target_destinations);
 
             /**
              * Clear the list.
@@ -150,7 +150,7 @@ namespace paludis
              * Return whether a spec structure is already installed.
              */
             bool already_installed(const DepSpec &,
-                    std::tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
+                    tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
 
             /**
              * Whether we have any errors.
@@ -174,8 +174,8 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      */
-    std::tr1::shared_ptr<DestinationsCollection> extract_dep_list_entry_destinations(
-            std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >) PALUDIS_VISIBLE;
+    tr1::shared_ptr<DestinationsCollection> extract_dep_list_entry_destinations(
+            tr1::shared_ptr<SortedCollection<DepListEntryDestination> >) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -87,7 +87,7 @@ namespace
 
 int
 do_one_owner(
-        const std::tr1::shared_ptr<Environment> env,
+        const tr1::shared_ptr<Environment> env,
         const std::string & query)
 {
     bool found_owner=false;
@@ -101,20 +101,20 @@ do_one_owner(
         if (! (*r)->contents_interface)
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cats((*r)->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cats((*r)->category_names());
         for (CategoryNamePartCollection::Iterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*r)->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*r)->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
-                std::tr1::shared_ptr<const VersionSpecCollection> vers((*r)->version_specs(*p));
+                tr1::shared_ptr<const VersionSpecCollection> vers((*r)->version_specs(*p));
                 for (VersionSpecCollection::Iterator v(vers->begin()),
                         v_end(vers->end()) ; v != v_end ; ++v)
                 {
                     PackageDatabaseEntry e(*p, *v, (*r)->name());
-                    std::tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(*p, *v));
+                    tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(*p, *v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
                     if (d.found)
@@ -133,7 +133,7 @@ do_one_owner(
 
 
 int
-do_owner(std::tr1::shared_ptr<Environment> env)
+do_owner(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
     Context context("When performing owner action from command line:");

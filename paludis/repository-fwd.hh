@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_FWD_HH 1
 
 #include <paludis/util/collection-fwd.hh>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {

@@ -26,10 +26,10 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<PortageRepository>
+tr1::shared_ptr<PortageRepository>
 paludis::make_ebin_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -40,8 +40,8 @@ paludis::make_ebin_repository(
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::tr1::shared_ptr<const RepositoryName> master_repository_name;
-    std::tr1::shared_ptr<const PortageRepository> master_repository;
+    tr1::shared_ptr<const RepositoryName> master_repository_name;
+    tr1::shared_ptr<const PortageRepository> master_repository;
     if (m->end() != m->find("master_repository") && ! m->find("master_repository")->second.empty())
     {
         Context context_local("When finding configuration information for master_repository '"
@@ -49,14 +49,14 @@ paludis::make_ebin_repository(
 
         master_repository_name.reset(new RepositoryName(m->find("master_repository")->second));
 
-        std::tr1::shared_ptr<const Repository> master_repository_uncasted(
+        tr1::shared_ptr<const Repository> master_repository_uncasted(
                 env->package_database()->fetch_repository(*master_repository_name));
 
         if (master_repository_uncasted->format() != "ebuild" && master_repository_uncasted->format() != "ebin")
             throw PortageRepositoryConfigurationError("Master repository format is '" +
                     stringify(master_repository_uncasted->format()) + "', not 'ebuild' or 'ebin'");
 
-        master_repository = std::tr1::static_pointer_cast<const PortageRepository>(master_repository_uncasted);
+        master_repository = tr1::static_pointer_cast<const PortageRepository>(master_repository_uncasted);
 
         if (master_repository->params().master_repository)
             throw PortageRepositoryConfigurationError("Requested master repository has a master_repository of '" +
@@ -64,7 +64,7 @@ paludis::make_ebin_repository(
                     "be used as a master repository");
     }
 
-    std::tr1::shared_ptr<FSEntryCollection> profiles(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntryCollection> profiles(new FSEntryCollection::Concrete);
     if (m->end() != m->find("profiles"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
@@ -78,7 +78,7 @@ paludis::make_ebin_repository(
             throw PortageRepositoryConfigurationError("No profiles have been specified");
     }
 
-    std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
 
     std::string pkgdir;
     if (m->end() == m->find("pkgdir") || ((pkgdir = m->find("pkgdir")->second)).empty())
@@ -141,7 +141,7 @@ paludis::make_ebin_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return std::tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
+    return tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebin")
                 .layout(layout)
                 .environment(env)
@@ -150,7 +150,7 @@ paludis::make_ebin_repository(
                 .cache(FSEntry("/var/empty"))
                 .write_cache(FSEntry("/var/empty"))
                 .names_cache(names_cache)
-                .eclassdirs(std::tr1::shared_ptr<const FSEntryCollection>(new FSEntryCollection::Concrete))
+                .eclassdirs(tr1::shared_ptr<const FSEntryCollection>(new FSEntryCollection::Concrete))
                 .distdir(FSEntry("/var/empty"))
                 .pkgdir(pkgdir)
                 .securitydir(securitydir)
@@ -164,10 +164,10 @@ paludis::make_ebin_repository(
                 .buildroot(buildroot)));
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 paludis::make_ebin_repository_wrapped(
         Environment * const env,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     return make_ebin_repository(env, m);
 }

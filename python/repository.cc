@@ -32,7 +32,7 @@ struct RepositoryWrapper :
     Repository,
     bp::wrapper<Repository>
 {
-    std::tr1::shared_ptr<const RepositoryInfo>
+    tr1::shared_ptr<const RepositoryInfo>
     info(bool verbose) const
     {
         if (bp::override info = this->get_override("info"))
@@ -40,7 +40,7 @@ struct RepositoryWrapper :
         return Repository::info(verbose);
     }
 
-    std::tr1::shared_ptr<const RepositoryInfo>
+    tr1::shared_ptr<const RepositoryInfo>
     default_info(bool verbose) const
     {
         return Repository::info(verbose);
@@ -168,7 +168,7 @@ struct RepositoryLicensesInterfaceWrapper :
     static PyObject *
     license_exists(const RepositoryLicensesInterface & self, const std::string & license)
     {
-        std::tr1::shared_ptr<FSEntry> p(self.license_exists(license));
+        tr1::shared_ptr<FSEntry> p(self.license_exists(license));
         if (p)
             return to_string<FSEntry>::convert(*p);
         else

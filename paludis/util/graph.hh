@@ -109,13 +109,13 @@ namespace paludis
     {
         private:
             class RemainingNodes;
-            std::tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
+            tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
 
         public:
             ///\name Basic operations
             ///\{
 
-            NoGraphTopologicalOrderExistsError(std::tr1::shared_ptr<const RemainingNodes>) throw ();
+            NoGraphTopologicalOrderExistsError(tr1::shared_ptr<const RemainingNodes>) throw ();
             ~NoGraphTopologicalOrderExistsError() throw ();
 
             ///\}
@@ -123,7 +123,7 @@ namespace paludis
             /**
              * The nodes remaining in the graph.
              */
-            std::tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
+            tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
     };
 
     /**

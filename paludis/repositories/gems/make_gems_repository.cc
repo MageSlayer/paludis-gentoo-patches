@@ -22,9 +22,9 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 paludis::make_gems_repository(Environment * const env,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -47,7 +47,7 @@ paludis::make_gems_repository(Environment * const env,
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return std::tr1::shared_ptr<Repository>(new GemsRepository(GemsRepositoryParams::create()
+    return tr1::shared_ptr<Repository>(new GemsRepository(GemsRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .distdir(distdir)

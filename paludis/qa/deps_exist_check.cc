@@ -104,7 +104,7 @@ DepsExistCheck::operator() (const EbuildCheckData & e) const
     {
         PackageDatabaseEntry ee(e.name, e.version,
                 e.environment->main_repository()->name());
-        std::tr1::shared_ptr<const VersionMetadata> metadata(
+        tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Checker depend_checker(result, "DEPEND", e.environment);

@@ -21,7 +21,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <algorithm>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -33,12 +33,12 @@ EbuildCountCheck::EbuildCountCheck()
 CheckResult
 EbuildCountCheck::operator() (const FSEntry & d) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     CheckResult result(d, identifier());
 
     std::size_t count(std::count_if(DirIterator(d), DirIterator(),
-                std::tr1::bind(&is_file_with_extension, _1, ".ebuild", IsFileWithOptions())));
+                tr1::bind(&is_file_with_extension, _1, ".ebuild", IsFileWithOptions())));
     if (count > 20)
         result << Message(qal_minor, "Found " + stringify(count) +
                 " ebuilds, which is too many to count on both hands and both feet");

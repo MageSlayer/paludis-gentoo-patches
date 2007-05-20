@@ -44,7 +44,7 @@ namespace paludis
 
         const PackageDatabaseEntry * const pkg;
 
-        std::tr1::shared_ptr<const DepSpec> a;
+        tr1::shared_ptr<const DepSpec> a;
 
         mutable std::list<const StringDepSpec *> specs;
 
@@ -52,7 +52,7 @@ namespace paludis
 
         Implementation(const Environment * const e,
                 const PackageDatabaseEntry * const p,
-                std::tr1::shared_ptr<const DepSpec> aa) :
+                tr1::shared_ptr<const DepSpec> aa) :
             env(e),
             pkg(p),
             a(aa),
@@ -65,7 +65,7 @@ namespace paludis
 DepSpecFlattener::DepSpecFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
-        std::tr1::shared_ptr<const DepSpec> a) :
+        tr1::shared_ptr<const DepSpec> a) :
     PrivateImplementationPattern<DepSpecFlattener>(new Implementation<DepSpecFlattener>(
                 env, pkg, a))
 {

@@ -25,8 +25,8 @@
 
 #include <iterator>
 #include <functional>
-#include <tr1/type_traits>
-#include <tr1/memory>
+#include <paludis/util/tr1_type_traits.hh>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for various iterator helpers.
@@ -61,43 +61,43 @@ namespace paludis
     }
 
     /**
-     * Like std::tr1::remove_pointer, for std::tr1::shared_ptr.
+     * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
      * \ingroup grpiterators
      */
     template <typename T_>
     struct RemoveSharedPointer
     {
-        /// Our type, with std::tr1::shared_ptr removed.
+        /// Our type, with tr1::shared_ptr removed.
         typedef T_ Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer, for std::tr1::shared_ptr.
+     * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
      * \ingroup grpiterators
      */
     template <typename T_>
-    struct RemoveSharedPointer<std::tr1::shared_ptr<T_> >
+    struct RemoveSharedPointer<tr1::shared_ptr<T_> >
     {
-        /// Our type, with std::tr1::shared_ptr removed.
+        /// Our type, with tr1::shared_ptr removed.
         typedef T_ Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer, for std::tr1::shared_ptr.
+     * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
      * \ingroup grpiterators
      */
     template <typename T_>
-    struct RemoveSharedPointer<const std::tr1::shared_ptr<T_> >
+    struct RemoveSharedPointer<const tr1::shared_ptr<T_> >
     {
-        /// Our type, with std::tr1::shared_ptr removed.
+        /// Our type, with tr1::shared_ptr removed.
         typedef T_ Type;
     };
 
     template <typename Iter_, typename Value_ =
-        typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
+        typename RemoveSharedPointer<typename tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
     class IndirectIterator;
 
     /**
@@ -206,11 +206,11 @@ namespace paludis
      */
     template <typename Iter_>
     IndirectIterator<Iter_,
-        typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
+        typename RemoveSharedPointer<typename tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
     indirect_iterator(const Iter_ & i)
     {
         return IndirectIterator<Iter_,
-            typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>(i);
+            typename RemoveSharedPointer<typename tr1::remove_pointer<typename Iter_::value_type>::type>::Type>(i);
     }
 
     /**

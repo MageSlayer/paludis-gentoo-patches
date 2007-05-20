@@ -27,17 +27,17 @@ namespace paludis
     template<>
     struct Implementation<EclassMtimes>
     {
-        std::tr1::shared_ptr<const FSEntryCollection> eclass_dirs;
+        tr1::shared_ptr<const FSEntryCollection> eclass_dirs;
         mutable MakeHashedMap<std::string, time_t>::Type eclass_mtimes;
 
-        Implementation(std::tr1::shared_ptr<const FSEntryCollection> d) :
+        Implementation(tr1::shared_ptr<const FSEntryCollection> d) :
             eclass_dirs(d)
         {
         }
     };
 }
 
-EclassMtimes::EclassMtimes(std::tr1::shared_ptr<const FSEntryCollection> d) :
+EclassMtimes::EclassMtimes(tr1::shared_ptr<const FSEntryCollection> d) :
     PrivateImplementationPattern<EclassMtimes>(new Implementation<EclassMtimes>(d))
 {
 }

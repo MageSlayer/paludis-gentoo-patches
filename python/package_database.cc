@@ -53,7 +53,7 @@ void PALUDIS_VISIBLE expose_package_database()
                 "A PackageDatabase can be queried for Package instances.\n",
                 bp::no_init
           );
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection>
+    tr1::shared_ptr<PackageDatabaseEntryCollection>
         (PackageDatabase::*query)(const Query &, const QueryOrder) const = &PackageDatabase::query;
     pd.def("query", query,
             "query(Query, QueryOrder) -> PackageDatabaseEntryCollection\n"
@@ -63,7 +63,7 @@ void PALUDIS_VISIBLE expose_package_database()
             "[ro] RepositoryName\n"
             "Name of our 'favourite' repository"
           );
-    std::tr1::shared_ptr<const Repository>
+    tr1::shared_ptr<const Repository>
         (PackageDatabase::* fetch_repository)(const RepositoryName &) const =
         &PackageDatabase::fetch_repository;
     pd.def("fetch_repository", fetch_repository,
@@ -84,7 +84,7 @@ void PALUDIS_VISIBLE expose_package_database()
             "Our repositories"
             );
 
-    bp::register_ptr_to_python<std::tr1::shared_ptr<PackageDatabaseEntry> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<PackageDatabaseEntry> >();
     bp::class_<PackageDatabaseEntry>
         pde("PackageDatabaseEntry",
                 "Holds an entry in a PackageDatabase, and used to identify"

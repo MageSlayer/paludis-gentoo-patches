@@ -41,15 +41,15 @@
 
 using namespace paludis;
 
-int do_has_version(std::tr1::shared_ptr<Environment> env)
+int do_has_version(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_whatever));
 
     if (entries->empty())
@@ -58,21 +58,21 @@ int do_has_version(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_best_version(std::tr1::shared_ptr<Environment> env)
+int do_best_version(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
     {
-        std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
+        tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
                     entries->last()->repository)->version_metadata(entries->last()->name,
                     entries->last()->version));
         if (! metadata->virtual_interface)
@@ -82,7 +82,7 @@ int do_best_version(std::tr1::shared_ptr<Environment> env)
                 "' resolves to '" + stringify(*entries->last()) + "', which is a virtual for '"
                 + stringify(metadata->virtual_interface->virtual_for) + "'. This will break with "
                 "new style virtuals.");
-        std::tr1::shared_ptr<PackageDatabaseEntryCollection> new_entries(
+        tr1::shared_ptr<PackageDatabaseEntryCollection> new_entries(
                 new PackageDatabaseEntryCollection::Concrete);
         new_entries->push_back(metadata->virtual_interface->virtual_for);
         entries = new_entries;
@@ -102,7 +102,7 @@ int do_best_version(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_environment_variable(std::tr1::shared_ptr<Environment> env)
+int do_environment_variable(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
@@ -110,9 +110,9 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str, pds_pm_permissive));
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str, pds_pm_permissive));
 
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     if (entries->empty())
@@ -121,7 +121,7 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
     if (entries->empty())
         throw NoSuchPackageError(spec_str);
 
-    std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
+    tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
                 entries->begin()->repository));
     RepositoryEnvironmentVariableInterface * env_if(
             repo->environment_variable_interface);
@@ -138,7 +138,7 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
-int do_configuration_variable(std::tr1::shared_ptr<Environment> env)
+int do_configuration_variable(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
@@ -147,7 +147,7 @@ int do_configuration_variable(std::tr1::shared_ptr<Environment> env)
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
 
-    std::tr1::shared_ptr<const RepositoryInfo> info(env->package_database()->fetch_repository(
+    tr1::shared_ptr<const RepositoryInfo> info(env->package_database()->fetch_repository(
                 RepositoryName(repo_str))->info(false));
 
     return_code = 1;
@@ -183,11 +183,11 @@ int do_list_repository_formats()
     return return_code;
 }
 
-int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
+int do_list_sync_protocols(tr1::shared_ptr<Environment> env)
 {
     std::map<std::string, std::string> syncers;
 
-    std::tr1::shared_ptr<const FSEntryCollection> sd(env->syncers_dirs());
+    tr1::shared_ptr<const FSEntryCollection> sd(env->syncers_dirs());
     for (FSEntryCollection::Iterator d(sd->begin()),
             d_end(sd->end()) ; d != d_end ; ++d)
     {
@@ -246,7 +246,7 @@ int do_list_dep_tag_categories()
     return return_code;
 }
 
-int do_regenerate_cache(std::tr1::shared_ptr<Environment> env, bool installed)
+int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");
 

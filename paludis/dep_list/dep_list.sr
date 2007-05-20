@@ -51,7 +51,7 @@ make_class_DepListEntryDestination()
 {
     visible
 
-    key destination "std::tr1::shared_ptr<Repository>"
+    key destination "tr1::shared_ptr<Repository>"
     key generation long
 
     allow_named_args
@@ -78,9 +78,9 @@ make_class_DepListEntry()
 
     key package PackageDatabaseEntry
     key associated_entry "const DepListEntry *"
-    key metadata "std::tr1::shared_ptr<const VersionMetadata>"
-    key tags "std::tr1::shared_ptr<DepListEntryTags>"
-    key destinations "std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >"
+    key metadata "tr1::shared_ptr<const VersionMetadata>"
+    key tags "tr1::shared_ptr<DepListEntryTags>"
+    key destinations "tr1::shared_ptr<SortedCollection<DepListEntryDestination> >"
 
     key generation long
     key state DepListEntryState

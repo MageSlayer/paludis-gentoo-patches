@@ -32,7 +32,7 @@ namespace paludis
 }
 
 /// Handle --sync.
-int do_sync(std::tr1::shared_ptr<paludis::Environment>);
+int do_sync(paludis::tr1::shared_ptr<paludis::Environment>);
 
 #endif
 

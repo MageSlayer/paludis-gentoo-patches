@@ -42,7 +42,7 @@ namespace paludis
     struct Implementation<VDBMerger>
     {
         VDBMergerOptions options;
-        std::tr1::shared_ptr<std::ofstream> contents_file;
+        tr1::shared_ptr<std::ofstream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
@@ -84,7 +84,7 @@ VDBMerger::extend_hook(const Hook & h)
                 _imp->options.environment->package_database()->fetch_repository(
                     pde->repository)->version_metadata(pde->name, pde->version)->slot));
 
-    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
 
     return Merger::extend_hook(h)
         ("P", pn + "-" + pv)

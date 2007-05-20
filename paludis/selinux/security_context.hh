@@ -85,12 +85,12 @@ namespace paludis
             /**
              * Returns a SecurityContext referring to the current process's context
              */
-            static std::tr1::shared_ptr<const SecurityContext> current_context();
+            static tr1::shared_ptr<const SecurityContext> current_context();
 
             /**
              * Returns a SecurityContext referring to the current filesystem creation context
              */
-            static std::tr1::shared_ptr<const SecurityContext> fs_create_context();
+            static tr1::shared_ptr<const SecurityContext> fs_create_context();
     };
 
     /**
@@ -115,14 +115,14 @@ namespace paludis
     class PALUDIS_VISIBLE FSCreateCon
     {
         private:
-            std::tr1::shared_ptr<const SecurityContext> _context;
-            std::tr1::shared_ptr<const SecurityContext> _prev_context;
+            tr1::shared_ptr<const SecurityContext> _context;
+            tr1::shared_ptr<const SecurityContext> _prev_context;
 
         public:
             /**
              * Constructor
              */
-            FSCreateCon(std::tr1::shared_ptr<const SecurityContext>);
+            FSCreateCon(tr1::shared_ptr<const SecurityContext>);
 
             /**
              * Destructor
@@ -155,7 +155,7 @@ namespace paludis
             /**
              * Retrieve the default context for a given pathname
              */
-            std::tr1::shared_ptr<const SecurityContext> match(const std::string &, mode_t = 0) const;
+            tr1::shared_ptr<const SecurityContext> match(const std::string &, mode_t = 0) const;
 
             /**
              * Did the initialisation succeed?

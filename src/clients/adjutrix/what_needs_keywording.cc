@@ -45,7 +45,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
+        tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
                     RepositoryName("fake_destination")));
         env.package_database()->add_repository(1, fake_destination);
     }
@@ -72,12 +72,12 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
     {
         if (std::string::npos == p->find('/'))
-            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+            d.add(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                     env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))))),
                     env.default_destinations());
         else
-            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p, pds_pm_permissive)),
+            d.add(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p, pds_pm_permissive)),
                     env.default_destinations());
     }
 
@@ -100,12 +100,12 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string current;
 
-            std::tr1::shared_ptr<const VersionMetadata> m(env.package_database()->fetch_repository(
+            tr1::shared_ptr<const VersionMetadata> m(env.package_database()->fetch_repository(
                         p->package.repository)->version_metadata(p->package.name,
                             p->package.version));
             if (m->ebuild_interface)
             {
-                std::tr1::shared_ptr<const KeywordNameCollection> keywords(m->ebuild_interface->keywords());
+                tr1::shared_ptr<const KeywordNameCollection> keywords(m->ebuild_interface->keywords());
                 for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")

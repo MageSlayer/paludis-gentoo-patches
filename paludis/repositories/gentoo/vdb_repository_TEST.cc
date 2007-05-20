@@ -46,13 +46,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env, keys));
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_vdb_repository_repo_name;
@@ -68,13 +68,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
 
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
@@ -94,13 +94,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
 
             PackageDatabaseEntry e1(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"),
@@ -126,14 +126,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-new-file");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
             repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-new-file");
@@ -152,14 +152,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-empty");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
             repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-empty");
@@ -178,14 +178,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
             repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match");
@@ -204,14 +204,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-match");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
             repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-match");
@@ -230,14 +230,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
                         &env, keys));
             repo->world_interface->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match-no-eol");

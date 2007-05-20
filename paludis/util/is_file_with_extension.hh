@@ -71,7 +71,7 @@ namespace paludis
      * given filename prefix.
      *
      * \ingroup grpfilesystem
-     * \deprecated Use is_file_with_extension and std::tr1::bind.
+     * \deprecated Use is_file_with_extension and tr1::bind.
      */
 #ifdef DOXYGEN
     class IsFileWithExtension :

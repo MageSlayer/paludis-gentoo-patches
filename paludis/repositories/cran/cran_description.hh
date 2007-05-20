@@ -39,7 +39,7 @@ namespace paludis
         VersionSpec version;
 
         /// Our metadata, may be zero.
-        std::tr1::shared_ptr<VersionMetadata> metadata;
+        tr1::shared_ptr<VersionMetadata> metadata;
 
         /// Our installed date.
         time_t installed_time;

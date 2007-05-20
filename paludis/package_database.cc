@@ -157,12 +157,12 @@ namespace paludis
         /**
          * Our Repository instances.
          */
-        std::list<std::tr1::shared_ptr<Repository> > repositories;
+        std::list<tr1::shared_ptr<Repository> > repositories;
 
         /**
          * Repository importances.
          */
-        std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator> repository_importances;
+        std::multimap<int, std::list<tr1::shared_ptr<Repository> >::iterator> repository_importances;
 
         /// Our environment.
         const Environment * environment;
@@ -180,7 +180,7 @@ PackageDatabase::~PackageDatabase()
 }
 
 void
-PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
+PackageDatabase::add_repository(int i, const tr1::shared_ptr<Repository> r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
@@ -189,8 +189,8 @@ PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
         if (r_c->name() == r->name())
             throw DuplicateRepositoryError(stringify(r->name()));
 
-    std::list<std::tr1::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
-    for (std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator>::iterator
+    std::list<tr1::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
+    for (std::multimap<int, std::list<tr1::shared_ptr<Repository> >::iterator>::iterator
             p(_imp->repository_importances.begin()), p_end(_imp->repository_importances.end()) ;
             p != p_end ; ++p)
         if (p->first > i)
@@ -208,14 +208,14 @@ PackageDatabase::fetch_unique_qualified_package_name(
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
     for (IndirectIterator<RepositoryIterator> r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cats(r->category_names_containing_package(p));
+        tr1::shared_ptr<const CategoryNamePartCollection> cats(r->category_names_containing_package(p));
         for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
             result->insert(*c + p);
@@ -229,7 +229,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
     return *(result->begin());
 }
 
-std::tr1::shared_ptr<PackageDatabaseEntryCollection>
+tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state,
         const QueryOrder query_order) const
 {
@@ -272,7 +272,7 @@ namespace
             if (a.name != b.name)
                 return false;
 
-            std::tr1::shared_ptr<const VersionMetadata>
+            tr1::shared_ptr<const VersionMetadata>
                 ma(db->fetch_repository(a.repository)->version_metadata(a.name, a.version)),
                 mb(db->fetch_repository(b.repository)->version_metadata(b.name, b.version));
 
@@ -281,12 +281,12 @@ namespace
     };
 }
 
-std::tr1::shared_ptr<PackageDatabaseEntryCollection>
+tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 {
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection::Concrete> result(new PackageDatabaseEntryCollection::Concrete);
+    tr1::shared_ptr<PackageDatabaseEntryCollection::Concrete> result(new PackageDatabaseEntryCollection::Concrete);
 
-    std::tr1::shared_ptr<RepositoryNameCollection> repos(q.repositories(*_imp->environment));
+    tr1::shared_ptr<RepositoryNameCollection> repos(q.repositories(*_imp->environment));
     if (! repos)
     {
         repos.reset(new RepositoryNameCollection::Concrete);
@@ -297,21 +297,21 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     if (repos->empty())
         return result;
 
-    std::tr1::shared_ptr<CategoryNamePartCollection> cats(q.categories(*_imp->environment, repos));
+    tr1::shared_ptr<CategoryNamePartCollection> cats(q.categories(*_imp->environment, repos));
     if (! cats)
     {
         cats.reset(new CategoryNamePartCollection::Concrete);
         for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
-            std::tr1::shared_ptr<const CategoryNamePartCollection> local_cats(fetch_repository(*r)->category_names());
+            tr1::shared_ptr<const CategoryNamePartCollection> local_cats(fetch_repository(*r)->category_names());
             std::copy(local_cats->begin(), local_cats->end(), cats->inserter());
         }
     }
     if (cats->empty())
         return result;
 
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> pkgs(q.packages(*_imp->environment, repos, cats));
+    tr1::shared_ptr<QualifiedPackageNameCollection> pkgs(q.packages(*_imp->environment, repos, cats));
     if (! pkgs)
     {
         pkgs.reset(new QualifiedPackageNameCollection::Concrete);
@@ -320,14 +320,14 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
                     c != c_end ; ++c)
             {
-                std::tr1::shared_ptr<const QualifiedPackageNameCollection> local_pkgs(fetch_repository(*r)->package_names(*c));
+                tr1::shared_ptr<const QualifiedPackageNameCollection> local_pkgs(fetch_repository(*r)->package_names(*c));
                 std::copy(local_pkgs->begin(), local_pkgs->end(), pkgs->inserter());
             }
     }
     if (pkgs->empty())
         return result;
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> pdes(q.versions(*_imp->environment, repos, pkgs));
+    tr1::shared_ptr<PackageDatabaseEntryCollection> pdes(q.versions(*_imp->environment, repos, pkgs));
     if (! pdes)
     {
         for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
@@ -335,7 +335,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
-                std::tr1::shared_ptr<const VersionSpecCollection> local_vers(fetch_repository(*r)->version_specs(*p));
+                tr1::shared_ptr<const VersionSpecCollection> local_vers(fetch_repository(*r)->version_specs(*p));
                 for (VersionSpecCollection::Iterator v(local_vers->begin()), v_end(local_vers->end()) ;
                         v != v_end ; ++v)
                     result->push_back(PackageDatabaseEntry(*p, *v, *r));
@@ -399,7 +399,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 }
 
 
-std::tr1::shared_ptr<const Repository>
+tr1::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
     for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
@@ -410,7 +410,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
     throw NoSuchRepositoryError(n);
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n)
 {
     for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;

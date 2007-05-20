@@ -22,6 +22,8 @@ AC_SUBST([VERSION_LIB_REVISION])
 
 AM_INIT_AUTOMAKE(paludis, [$VERSION_FULL])
 AC_LANG([C++])
+
+PALUDIS_CXXFLAGS=
 dnl }}}
 
 dnl {{{ monolithic build
@@ -212,7 +214,9 @@ int main(int, char **)
 	return *x;
 }
 ],
-	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_STD_TR1=1"
+	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::shared_ptr<>])
 	 AC_COMPILE_IFELSE([
@@ -224,6 +228,7 @@ int main(int, char **)
 }
 ],
 	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_BOOST=1"
 	 need_pointer_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -241,7 +246,9 @@ int main(int, char **)
 	return x;
 }
 ],
-	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1"
+	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::remove_pointer<>])
 	 AC_COMPILE_IFELSE([
@@ -253,6 +260,7 @@ int main(int, char **)
 }
 ],
 	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_BOOST=1"
 	 need_type_traits_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -282,7 +290,9 @@ int main(int, char **)
 		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
 }
 ],
-	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1"
+	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::bind<>])
 	 AC_COMPILE_IFELSE([
@@ -306,6 +316,7 @@ int main(int, char **)
 }
 ],
 	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_BOOST=1"
 	 need_bind_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -420,7 +431,6 @@ then
 	AC_MSG_RESULT([no])
 fi
 
-PALUDIS_CXXFLAGS=
 PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
 PALUDIS_CXXFLAGS_NO_WSHADOW=
@@ -1116,7 +1126,6 @@ AC_OUTPUT(
 	src/clients/qualudis/Makefile
 	src/clients/adjutrix/Makefile
 	test/Makefile
-	tr1/Makefile
 	vim/Makefile
 	vim/ftdetect/Makefile
 	vim/syntax/Makefile

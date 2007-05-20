@@ -146,7 +146,7 @@ PortageRepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                std::tr1::shared_ptr<const FSEntryCollection> c(_imp->params.profiles);
+                tr1::shared_ptr<const FSEntryCollection> c(_imp->params.profiles);
                 for (FSEntryCollection::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

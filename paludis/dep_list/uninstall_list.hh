@@ -50,12 +50,12 @@ namespace paludis
             void add_unused_dependencies();
             void add_dependencies(const PackageDatabaseEntry &);
 
-            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_depped_upon(
-                    const std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> targets) const;
+            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_depped_upon(
+                    const tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> targets) const;
 
-            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_all_installed() const;
+            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_all_installed() const;
 
-            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_world() const;
+            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_world() const;
 
         public:
             ///\name Basic operations

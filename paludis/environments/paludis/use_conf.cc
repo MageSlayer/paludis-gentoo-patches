@@ -39,8 +39,8 @@ using namespace paludis;
 typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseFlagWithStateMap;
 typedef std::list<std::string> MinusStarPrefixList;
 typedef std::pair<UseFlagWithStateMap, MinusStarPrefixList> UseInfo;
-typedef std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
-typedef std::pair<std::tr1::shared_ptr<const DepSpec>, UseInfo> DSWithUseInfo;
+typedef std::pair<tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
+typedef std::pair<tr1::shared_ptr<const DepSpec>, UseInfo> DSWithUseInfo;
 typedef std::list<PDSWithUseInfo> PDSWithUseInfoList;
 typedef MakeHashedMap<QualifiedPackageName, PDSWithUseInfoList>::Type Qualified;
 typedef std::list<PDSWithUseInfo> Unqualified;
@@ -77,7 +77,7 @@ UseConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a use file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -122,7 +122,7 @@ UseConf::add(const FSEntry & filename)
         }
         else
         {
-            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
 
             if (d->use_requirements_ptr())
             {
@@ -192,10 +192,10 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
     UseFlagState result(use_unspecified);
 
     bool ignore_empty_minus_star(false);
-    std::tr1::shared_ptr<const Repository> repo(_imp->env->package_database()->fetch_repository(e.repository));
+    tr1::shared_ptr<const Repository> repo(_imp->env->package_database()->fetch_repository(e.repository));
     if (repo->use_interface)
     {
-        std::tr1::shared_ptr<const UseFlagNameCollection> prefixes(repo->use_interface->use_expand_prefixes());
+        tr1::shared_ptr<const UseFlagNameCollection> prefixes(repo->use_interface->use_expand_prefixes());
         for (UseFlagNameCollection::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
@@ -305,12 +305,12 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
     return result;
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabaseEntry & e) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
-    std::tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");

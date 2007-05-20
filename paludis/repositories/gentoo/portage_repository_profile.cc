@@ -47,11 +47,11 @@ namespace
 {
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
     typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepSpec> > >::Type PackageMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<tr1::shared_ptr<const PackageDepSpec> > >::Type PackageMaskMap;
 
     typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
-    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
+    typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
     {
@@ -123,8 +123,8 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<AllDepSpec> system_packages;
-            std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
+            tr1::shared_ptr<AllDepSpec> system_packages;
+            tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
 
@@ -384,7 +384,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                 continue;
 
             Context context_spec("When parsing '" + *i + "':");
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
+            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
             spec->set_tag(system_tag);
             system_packages->add_child(spec);
         }
@@ -407,7 +407,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
             QualifiedPackageName v(tokens[0]);
             virtuals.erase(v);
-            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
+            virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
                                 pds_pm_eapi_0))));
         }
     }
@@ -425,7 +425,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
+            tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(a);
             else
@@ -496,7 +496,7 @@ Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & fil
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin(), pds_pm_eapi_0));
+            tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin(), pds_pm_eapi_0));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
@@ -662,7 +662,7 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
 
     if (use_unspecified == result && _imp->repository->has_version(e.name, e.version))
     {
-        std::tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e.name, e.version));
+        tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e.name, e.version));
         if (m->ebuild_interface)
         {
             IUseFlagCollection::Iterator i(m->ebuild_interface->iuse()->find(IUseFlag(u, use_unspecified)));
@@ -684,7 +684,7 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-std::tr1::shared_ptr<AllDepSpec>
+tr1::shared_ptr<AllDepSpec>
 PortageRepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
@@ -736,7 +736,7 @@ PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
     else
     {
         PackageDatabaseEntry dbe(n, v, r);
-        for (std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator k(rr->second.begin()),
+        for (std::list<tr1::shared_ptr<const PackageDepSpec> >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, **k, dbe))
                 return true;

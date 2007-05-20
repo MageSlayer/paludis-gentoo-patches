@@ -46,20 +46,20 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
@@ -79,9 +79,9 @@ namespace paludis
             /**
              * Create an InstalledVirtualsRepository instance.
              */
-            static std::tr1::shared_ptr<Repository> make_installed_virtuals_repository(
+            static tr1::shared_ptr<Repository> make_installed_virtuals_repository(
                     Environment * const env,
-                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
 
             virtual void invalidate();
 

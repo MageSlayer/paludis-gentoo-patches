@@ -19,8 +19,8 @@
 
 #include <map>
 #include <utility>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/util/tr1_functional.hh>
 
 #include <paludis/util/stringify.hh>
 
@@ -34,9 +34,9 @@ namespace bp = boost::python;
 
 namespace paludis
 {
-    // Make Boost.Python work with std::tr1::shared_ptr<>
+    // Make Boost.Python work with tr1::shared_ptr<>
     template <typename T_>
-    inline T_ * get_pointer(std::tr1::shared_ptr<T_> const & p)
+    inline T_ * get_pointer(tr1::shared_ptr<T_> const & p)
     {
         return p.get();
     }

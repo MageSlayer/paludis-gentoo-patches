@@ -58,7 +58,7 @@ using std::endl;
 
 namespace
 {
-    std::string make_resume_command(std::tr1::shared_ptr<Environment> env, const InstallTask & task, bool skip_first)
+    std::string make_resume_command(tr1::shared_ptr<Environment> env, const InstallTask & task, bool skip_first)
     {
         std::string resume_command = env->paludis_command()
             + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
@@ -99,7 +99,7 @@ namespace
         return resume_command;
     }
 
-    void show_resume_command(std::tr1::shared_ptr<Environment> env, const InstallTask & task)
+    void show_resume_command(tr1::shared_ptr<Environment> env, const InstallTask & task)
     {
         if (CommandLine::get_instance()->a_fetch.specified() ||
                 CommandLine::get_instance()->a_pretend.specified())
@@ -161,11 +161,11 @@ namespace
         public ConsoleInstallTask
     {
         private:
-            std::tr1::shared_ptr<Environment> _env;
+            tr1::shared_ptr<Environment> _env;
 
         public:
-            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options,
-                    std::tr1::shared_ptr<const DestinationsCollection> destinations) :
+            OurInstallTask(tr1::shared_ptr<Environment> env, const DepListOptions & options,
+                    tr1::shared_ptr<const DestinationsCollection> destinations) :
                 ConsoleInstallTask(env.get(), options, destinations),
                 _env(env)
             {
@@ -247,14 +247,14 @@ namespace
         private:
             static const InstallTask * _task;
 
-            static std::tr1::shared_ptr<Environment> _env;
+            static tr1::shared_ptr<Environment> _env;
 
             static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
 
             sig_t _old;
 
         public:
-            InstallKilledCatcher(std::tr1::shared_ptr<Environment> env, const InstallTask & task) :
+            InstallKilledCatcher(tr1::shared_ptr<Environment> env, const InstallTask & task) :
                 _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
             {
                 _task = &task;
@@ -269,7 +269,7 @@ namespace
     };
 
     const InstallTask * InstallKilledCatcher::_task(0);
-    std::tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
+    tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
 
     void
     InstallKilledCatcher::_signal_handler(int sig)
@@ -326,7 +326,7 @@ namespace
 }
 
 int
-do_install(std::tr1::shared_ptr<Environment> env)
+do_install(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
@@ -497,17 +497,17 @@ do_install(std::tr1::shared_ptr<Environment> env)
             (CommandLine::get_instance()->a_show_reasons.argument() == "full"))
         options.dependency_tags = true;
 
-    std::tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<const DestinationsCollection> destinations;
     if (CommandLine::get_instance()->a_destinations.specified())
     {
         Context local_context("When building destinations collection:");
 
-        std::tr1::shared_ptr<DestinationsCollection> d(new DestinationsCollection::Concrete);
+        tr1::shared_ptr<DestinationsCollection> d(new DestinationsCollection::Concrete);
         for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
                 i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
                 i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
+            tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
                         RepositoryName(*i)));
             if (repo->destination_interface)
                 d->insert(repo);
@@ -611,7 +611,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
     {
         try
         {
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
+            tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     env->package_database()->query(
                         query::Matches(e.query()) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
             if (p->empty())
@@ -655,7 +655,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
                             }
                             else if (mr_license == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(
+                                tr1::shared_ptr<const VersionMetadata> meta(
                                         env->package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                                 pp->name, pp->version));
@@ -670,13 +670,13 @@ do_install(std::tr1::shared_ptr<Environment> env)
                             }
                             else if (mr_keyword == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(env->
+                                tr1::shared_ptr<const VersionMetadata> meta(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));
                                 if (meta->ebuild_interface)
                                 {
-                                    std::tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                                    tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
                                     cerr << " ( " << colour(cl_masked, join(keywords->begin(),
                                                     keywords->end(), " ")) << " )";
                                 }

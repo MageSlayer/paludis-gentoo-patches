@@ -41,7 +41,7 @@
 using namespace paludis;
 using namespace paludis::qa;
 
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<EbuildCheck> (*) (),
+template class VirtualConstructor<std::string, tr1::shared_ptr<EbuildCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >;
 
 #include <paludis/qa/ebuild_check-sr.cc>

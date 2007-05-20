@@ -57,7 +57,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, const PackageDatabaseEntry * di
 {
     /* prefer the best installed version, then the best visible version, then
      * the best version */
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+    tr1::shared_ptr<const PackageDatabaseEntryCollection>
         entries(_imp->env->package_database()->query(query::Matches(a), qo_order_by_version)),
         preferred_entries(_imp->env->package_database()->query(
                     query::Matches(a) & query::InstalledAtRoot(_imp->env->root()), qo_order_by_version));
@@ -93,7 +93,7 @@ ConsoleQueryTask::display_header(const PackageDepSpec & a, const PackageDatabase
 
 void
 ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries,
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> entries,
         const PackageDatabaseEntry & display_entry) const
 {
     /* find all repository names. */
@@ -115,7 +115,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
 
             if (e->repository == *r)
             {
-                std::tr1::shared_ptr<const VersionMetadata> metadata(
+                tr1::shared_ptr<const VersionMetadata> metadata(
                         _imp->env->package_database()->fetch_repository(e->repository)->version_metadata(e->name,
                             e->version));
 
@@ -196,7 +196,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
 void
 ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabaseEntry & e) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
             version_metadata(e.name, e.version));
 
     display_metadata_dep("Homepage", "HOMEPAGE", metadata->homepage(), true);
@@ -264,7 +264,7 @@ ConsoleQueryTask::display_metadata_key(const std::string & k, const std::string 
 }
 
 void
-ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, std::tr1::shared_ptr<const DepSpec> l,
+ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, tr1::shared_ptr<const DepSpec> l,
         const PackageDatabaseEntry & display_entry) const
 {
     output_left_column((want_raw() ? kk : k) + ":");
@@ -318,7 +318,7 @@ namespace
         }
     };
 
-    bool is_spec_empty(std::tr1::shared_ptr<const DepSpec> d)
+    bool is_spec_empty(tr1::shared_ptr<const DepSpec> d)
     {
         IsEmpty e;
         d->accept(&e);
@@ -328,7 +328,7 @@ namespace
 
 void
 ConsoleQueryTask::display_metadata_dep(const std::string & k, const std::string & kk,
-        std::tr1::shared_ptr<const DepSpec> d, const bool one_line) const
+        tr1::shared_ptr<const DepSpec> d, const bool one_line) const
 {
     if (is_spec_empty(d))
         return;

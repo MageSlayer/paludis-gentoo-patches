@@ -17,21 +17,35 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_TR1_TR1_TYPE_TRAITS_HH
-#define PALUDIS_GUARD_TR1_TR1_TYPE_TRAITS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_TR1_TYPE_TRAITS_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_TR1_TYPE_TRAITS_HH 1
 
-/*
- * Used if we have boost but not std::tr1::type_traits<>.
- */
+#if defined(PALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1)
+
+#include <tr1/type_traits>
+
+namespace paludis
+{
+    namespace tr1
+    {
+        using std::tr1::remove_pointer;
+    }
+}
+
+#elif defined(PALUDIS_TR1_TYPE_TRAITS_IS_BOOST)
 
 #include <boost/type_traits.hpp>
 
-namespace std
+namespace paludis
 {
     namespace tr1
     {
         using boost::remove_pointer;
     }
 }
+
+#else
+#  error Either PALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1 or PALUDIS_TR1_TYPE_TRAITS_IS_BOOST should be defined
+#endif
 
 #endif

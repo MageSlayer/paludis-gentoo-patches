@@ -116,7 +116,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<RepositoryInfo,
-                    const std::tr1::shared_ptr<const RepositoryInfoSection> > SectionIterator;
+                    const tr1::shared_ptr<const RepositoryInfoSection> > SectionIterator;
 
             SectionIterator begin_sections() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -127,7 +127,7 @@ namespace paludis
             ///\}
 
             /// Add a section.
-            RepositoryInfo & add_section(std::tr1::shared_ptr<const RepositoryInfoSection>);
+            RepositoryInfo & add_section(tr1::shared_ptr<const RepositoryInfoSection>);
 
             /// Fetch a value from any of our sections, with default.
             std::string get_key_with_default(const std::string &, const std::string &) const;
@@ -160,7 +160,7 @@ namespace paludis
             /**
              * Our information.
              */
-            mutable std::tr1::shared_ptr<RepositoryInfo> _info;
+            mutable tr1::shared_ptr<RepositoryInfo> _info;
 
             ///\}
 
@@ -182,7 +182,7 @@ namespace paludis
             /**
              * Override in descendents: fetch the metadata.
              */
-            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -197,28 +197,28 @@ namespace paludis
             /**
              * Override in descendents: fetch version specs.
              */
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch package names.
              */
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch category names.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents if a fast implementation is available: fetch category names
              * that contain a particular package.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -250,7 +250,7 @@ namespace paludis
             /**
              * Fetch information about the repository.
              */
-            virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const
+            virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -297,7 +297,7 @@ namespace paludis
             /**
              * Fetch our category names.
              */
-            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
+            tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
             {
                 return do_category_names();
             }
@@ -305,7 +305,7 @@ namespace paludis
             /**
              * Fetch categories that contain a named package.
              */
-            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
+            tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
                     const PackageNamePart & p) const
             {
                 return do_category_names_containing_package(p);
@@ -314,7 +314,7 @@ namespace paludis
             /**
              * Fetch our package names.
              */
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
+            tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
                     const CategoryNamePart & c) const
             {
                 return do_package_names(c);
@@ -323,7 +323,7 @@ namespace paludis
             /**
              * Fetch our versions.
              */
-            std::tr1::shared_ptr<const VersionSpecCollection> version_specs(
+            tr1::shared_ptr<const VersionSpecCollection> version_specs(
                     const QualifiedPackageName & p) const
             {
                 return do_version_specs(p);
@@ -340,7 +340,7 @@ namespace paludis
             /**
              * Fetch metadata.
              */
-            std::tr1::shared_ptr<const VersionMetadata> version_metadata(
+            tr1::shared_ptr<const VersionMetadata> version_metadata(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {
@@ -454,25 +454,25 @@ namespace paludis
             /**
              * Override in descendents: fetch all arch flags.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand flags.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand hidden prefixes.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand prefixes.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -506,22 +506,22 @@ namespace paludis
             /**
              * Fetch all arch flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const;
+            tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const;
 
             /**
              * Fetch all expand flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const;
+            tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const;
 
             /**
              * Fetch all expand hidden flags.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const;
 
             /**
              * Fetch all use expand prefixes.
              */
-            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const;
 
             /**
              * Describe a use flag.
@@ -678,7 +678,7 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const
+            virtual tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -690,7 +690,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            std::tr1::shared_ptr<DepSpec> package_set(const SetName & s) const
+            tr1::shared_ptr<DepSpec> package_set(const SetName & s) const
             {
                 return do_package_set(s);
             }
@@ -698,7 +698,7 @@ namespace paludis
             /**
              * Gives a list of the names of all the sets provided by this repo.
              */
-            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -866,13 +866,13 @@ namespace paludis
             /**
              * Fetch our virtual packages.
              */
-            virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const
+            virtual tr1::shared_ptr<const VirtualsCollection> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch version metadata for a virtual
              */
-            virtual std::tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -904,13 +904,13 @@ namespace paludis
             /**
              * Fetch our provided packages.
              */
-            virtual std::tr1::shared_ptr<const ProvidesCollection> provided_packages() const
+            virtual tr1::shared_ptr<const ProvidesCollection> provided_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch version metadata for a provided package.
              */
-            virtual std::tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -981,7 +981,7 @@ namespace paludis
             /**
              * Override in descendents: fetch the contents.
              */
-            virtual std::tr1::shared_ptr<const Contents> do_contents(
+            virtual tr1::shared_ptr<const Contents> do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -995,7 +995,7 @@ namespace paludis
             /**
              * Fetch contents.
              */
-            std::tr1::shared_ptr<const Contents> contents(
+            tr1::shared_ptr<const Contents> contents(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {
@@ -1105,7 +1105,7 @@ namespace paludis
             /**
              * Override in descendents: do the actual check,
              */
-            virtual std::tr1::shared_ptr<FSEntry>
+            virtual tr1::shared_ptr<FSEntry>
             do_license_exists(const std::string & license) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -1118,7 +1118,7 @@ namespace paludis
             /**
              * Check if a license exists
              */
-            std::tr1::shared_ptr<FSEntry>
+            tr1::shared_ptr<FSEntry>
             license_exists(const std::string & license) const
             {
                 return do_license_exists(license);
@@ -1148,7 +1148,7 @@ namespace paludis
             virtual std::string profile_variable(const std::string &) const = 0;
 
             typedef libwrapiter::ForwardIterator<RepositoryPortageInterface, std::pair<
-                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > OurVirtualsIterator;
+                const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > OurVirtualsIterator;
 
             virtual const PortageRepositoryParams & params() const = 0;
 

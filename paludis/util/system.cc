@@ -142,8 +142,8 @@ namespace paludis
         std::map<std::string, std::string> setenv_values;
         std::string chdir;
         bool echo_to_stderr;
-        std::tr1::shared_ptr<uid_t> uid;
-        std::tr1::shared_ptr<gid_t> gid;
+        tr1::shared_ptr<uid_t> uid;
+        tr1::shared_ptr<gid_t> gid;
         std::string stdout_prefix;
         std::string stderr_prefix;
         bool prefix_discard_blank_output;
@@ -152,8 +152,8 @@ namespace paludis
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
                 const std::string & d = "", bool e = false,
-                std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
-                std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
+                tr1::shared_ptr<uid_t> u = tr1::shared_ptr<uid_t>(),
+                tr1::shared_ptr<gid_t> g = tr1::shared_ptr<gid_t>(),
                 const std::string & p = "", const std::string & q = "",
                 const bool b = false, const bool bb = false) :
             command(c),
@@ -197,8 +197,8 @@ Command::operator= (const Command & other)
     {
         _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
                     other._imp->chdir, other._imp->echo_to_stderr,
-                    std::tr1::shared_ptr<uid_t>(),
-                    std::tr1::shared_ptr<gid_t>(),
+                    tr1::shared_ptr<uid_t>(),
+                    tr1::shared_ptr<gid_t>(),
                     other._imp->stdout_prefix,
                     other._imp->stderr_prefix,
                     other._imp->prefix_discard_blank_output,
@@ -253,13 +253,13 @@ Command::with_sandbox()
     return *this;
 }
 
-std::tr1::shared_ptr<const uid_t>
+tr1::shared_ptr<const uid_t>
 Command::uid() const
 {
     return _imp->uid;
 }
 
-std::tr1::shared_ptr<const gid_t>
+tr1::shared_ptr<const gid_t>
 Command::gid() const
 {
     return _imp->gid;

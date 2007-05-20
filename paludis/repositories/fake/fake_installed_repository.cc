@@ -56,28 +56,28 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry 
     return true;
 }
 
-std::tr1::shared_ptr<const FakeInstalledRepository::ProvidesCollection>
+tr1::shared_ptr<const FakeInstalledRepository::ProvidesCollection>
 FakeInstalledRepository::provided_packages() const
 {
-    std::tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
+    tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
 
-    std::tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
+    tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(package_names(*c));
+        tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(package_names(*c));
         for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<const VersionSpecCollection> vers(version_specs(*p));
+            tr1::shared_ptr<const VersionSpecCollection> vers(version_specs(*p));
             for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
-                std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p, *v));
+                tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p, *v));
                 if (! m->ebuild_interface)
                     continue;
 
-                std::tr1::shared_ptr<const DepSpec> provide(m->ebuild_interface->provide());
+                tr1::shared_ptr<const DepSpec> provide(m->ebuild_interface->provide());
                 PackageDatabaseEntry dbe(*p, *v, name());
                 DepSpecFlattener f(environment(), &dbe, provide);
 
@@ -93,11 +93,11 @@ FakeInstalledRepository::provided_packages() const
     return result;
 }
 
-std::tr1::shared_ptr<const VersionMetadata>
+tr1::shared_ptr<const VersionMetadata>
 FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_name, p.version));
-    std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
+    tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_name, p.version));
+    tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
     result->eapi = m->eapi;

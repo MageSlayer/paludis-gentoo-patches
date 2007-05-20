@@ -39,7 +39,7 @@
 #include <set>
 #include <sys/types.h>
 #include <grp.h>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 #include <functional>
 
 using namespace paludis;
@@ -58,7 +58,7 @@ namespace paludis
         PortageRepository * const portage_repository;
         const PortageRepositoryParams params;
 
-        std::tr1::shared_ptr<EclassMtimes> eclass_mtimes;
+        tr1::shared_ptr<EclassMtimes> eclass_mtimes;
         time_t master_mtime;
 
         Implementation(const Environment * const e, PortageRepository * const p,
@@ -86,13 +86,13 @@ EbuildEntries::~EbuildEntries()
 {
 }
 
-std::tr1::shared_ptr<VersionMetadata>
+tr1::shared_ptr<VersionMetadata>
 EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
     Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
 
-    std::tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
+    tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
 
     FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
             stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
@@ -209,7 +209,7 @@ namespace
             }
 
         public:
-            AAFinder(const std::tr1::shared_ptr<const DepSpec> a)
+            AAFinder(const tr1::shared_ptr<const DepSpec> a)
             {
                 a->accept(static_cast<DepSpecVisitorTypes::ConstVisitor *>(this));
             }
@@ -232,7 +232,7 @@ namespace
 namespace
 {
     FSEntry
-    get_root(std::tr1::shared_ptr<const DestinationsCollection> destinations)
+    get_root(tr1::shared_ptr<const DestinationsCollection> destinations)
     {
         if (destinations)
             for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
@@ -245,8 +245,8 @@ namespace
 
     std::string make_use(const Environment * const env,
             const PackageDatabaseEntry & pde,
-            std::tr1::shared_ptr<const VersionMetadata> metadata,
-            std::tr1::shared_ptr<const PortageRepositoryProfile> profile)
+            tr1::shared_ptr<const VersionMetadata> metadata,
+            tr1::shared_ptr<const PortageRepositoryProfile> profile)
     {
         std::string use;
 
@@ -260,13 +260,13 @@ namespace
         return use;
     }
 
-    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
+    tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
     make_expand(const Environment * const env,
             const PackageDatabaseEntry & e,
-            std::tr1::shared_ptr<const PortageRepositoryProfile> profile,
+            tr1::shared_ptr<const PortageRepositoryProfile> profile,
             std::string & use)
     {
-        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
+        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
 
         for (PortageRepositoryProfile::UseExpandIterator x(profile->begin_use_expand()),
@@ -283,7 +283,7 @@ namespace
                     create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
             /* possible values from environment */
-            std::tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(
+            tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(
                     env->known_use_expand_names(*x, e));
             for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
                     i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
@@ -317,9 +317,9 @@ namespace
 
 void
 EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
-        const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
+        const InstallOptions & o, tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     Context context("When installing '" + stringify(q) + "-" + stringify(v) + "':");
 
@@ -329,7 +329,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 + stringify(v) + "' since has_version failed");
     }
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
 
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
@@ -338,21 +338,21 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         DepSpecFlattener restricts(_imp->params.environment, &e, metadata->ebuild_interface->restrictions());
         fetch_restrict =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nofetch"));
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nofetch"));
 
         userpriv_restrict =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
 
         no_mirror =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "mirror")) ||
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "mirror")) ||
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    std::tr1::bind(std::equal_to<std::string>(), std::tr1::bind(std::tr1::mem_fn(&StringDepSpec::text), _1), "nomirror"));
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nomirror"));
     }
 
     std::string archives, all_archives, flat_src_uri;
@@ -360,7 +360,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        std::tr1::shared_ptr<const DepSpec> f_spec(metadata->ebuild_interface->src_uri());
+        tr1::shared_ptr<const DepSpec> f_spec(metadata->ebuild_interface->src_uri());
         DepSpecFlattener f(_imp->params.environment, &e, f_spec);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
@@ -385,7 +385,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             archives.append(" ");
 
             /* add * mirror entries */
-            std::tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
+            tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
             for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
                 flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
@@ -398,7 +398,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
 
-                std::tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
+                tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
                         mirrors->empty())
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
@@ -422,7 +422,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             std::string master_mirror(strip_trailing_string(stringify(_imp->portage_repository->name()), "x-"));
             if (! no_mirror && _imp->portage_repository->is_mirror(master_mirror))
             {
-                std::tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
+                tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
 
                 for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
                     flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
@@ -436,7 +436,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        std::tr1::shared_ptr<const DepSpec> g_spec(metadata->ebuild_interface->src_uri());
+        tr1::shared_ptr<const DepSpec> g_spec(metadata->ebuild_interface->src_uri());
         AAFinder g(g_spec);
         std::set<std::string> already_in_all_archives;
 
@@ -475,7 +475,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, e, p, use));
 
     EbuildCommandParams command_params(EbuildCommandParams::create()
@@ -649,7 +649,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 std::string
 EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
         const VersionSpec & v, const std::string & var,
-        std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+        tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
     PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
 
@@ -675,11 +675,11 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
     return cmd.result();
 }
 
-std::tr1::shared_ptr<PortageRepositoryEntries>
+tr1::shared_ptr<PortageRepositoryEntries>
 EbuildEntries::make_ebuild_entries(
         const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
 {
-    return std::tr1::shared_ptr<PortageRepositoryEntries>(new EbuildEntries(e, r, p));
+    return tr1::shared_ptr<PortageRepositoryEntries>(new EbuildEntries(e, r, p));
 }
 
 void
@@ -703,9 +703,9 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 
 bool
 EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
-        std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
+        tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     Context context("When running pretend for '" + stringify(q) + "-" + stringify(v) + "':");
 
@@ -715,7 +715,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
                 + stringify(v) + "' since has_version failed");
     }
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
 
     if (! metadata->eapi.supported)
         return true;
@@ -725,7 +725,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
     std::string use(make_use(_imp->params.environment, e, metadata, p));
-    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, e, p, use));
 
     EbuildCommandParams command_params(EbuildCommandParams::create()

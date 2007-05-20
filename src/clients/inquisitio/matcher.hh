@@ -50,7 +50,7 @@ namespace inquisitio
         public paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>,
         public paludis::VirtualConstructor<
             std::string,
-            std::tr1::shared_ptr<Matcher> (*) (const std::string &),
+            paludis::tr1::shared_ptr<Matcher> (*) (const std::string &),
             paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >
     {
         friend class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;

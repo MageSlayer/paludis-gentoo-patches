@@ -32,7 +32,7 @@ namespace paludis
 }
 
 /// Handle --report.
-int do_report(std::tr1::shared_ptr<paludis::Environment>);
+int do_report(paludis::tr1::shared_ptr<paludis::Environment>);
 
 #endif
 

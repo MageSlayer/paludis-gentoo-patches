@@ -33,7 +33,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
+            tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
             TEST_CHECK(glsa);
 
             TEST_CHECK_EQUAL("123456-78", glsa->id());
@@ -63,7 +63,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
+            tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
             TEST_CHECK(glsa);
 
             TEST_CHECK_EQUAL("987654-32", glsa->id());

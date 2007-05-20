@@ -61,7 +61,7 @@ namespace
 
         void visit(const UseDepSpec * const u)
         {
-            std::tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(env->package_database()->
+            tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository()));
 
             if (! r->use_interface)
@@ -84,7 +84,7 @@ namespace
                 do
                 {
                     bool found_match(false);
-                    std::tr1::shared_ptr<const UseFlagNameCollection> c(r->use_interface->use_expand_prefixes());
+                    tr1::shared_ptr<const UseFlagNameCollection> c(r->use_interface->use_expand_prefixes());
 
                     for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ;
                             i != i_end ; ++i)
@@ -133,7 +133,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
     {
         PackageDatabaseEntry ee(e.name, e.version,
                 e.environment->main_repository()->name());
-        std::tr1::shared_ptr<const VersionMetadata> metadata(
+        tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         if (metadata->ebuild_interface == 0)

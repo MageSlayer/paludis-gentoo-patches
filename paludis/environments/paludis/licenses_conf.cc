@@ -35,8 +35,8 @@
 using namespace paludis;
 
 typedef std::list<std::string> LicensesList;
-typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
-typedef std::pair<std::tr1::shared_ptr<const DepSpec>, LicensesList> SetNameEntry;
+typedef std::map<tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
+typedef std::pair<tr1::shared_ptr<const DepSpec>, LicensesList> SetNameEntry;
 
 typedef MakeHashedMap<QualifiedPackageName, PDSToLicensesList>::Type SpecificMap;
 typedef PDSToLicensesList UnspecificMap;
@@ -74,7 +74,7 @@ LicensesConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a licenses file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -96,7 +96,7 @@ LicensesConf::add(const FSEntry & filename)
         if (std::string::npos == tokens.at(0).find("/"))
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                std::tr1::shared_ptr<DepSpec>(), LicensesList()))).first);
+                                tr1::shared_ptr<DepSpec>(), LicensesList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -104,7 +104,7 @@ LicensesConf::add(const FSEntry & filename)
         }
         else
         {
-            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
             if (d->package_ptr())
             {
                 LicensesList & k(_imp->qualified[*d->package_ptr()][d]);

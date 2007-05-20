@@ -41,7 +41,7 @@ namespace paludis
 
             void add(const FSEntry &);
 
-            std::tr1::shared_ptr<const MirrorsCollection> query(const std::string &) const
+            tr1::shared_ptr<const MirrorsCollection> query(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

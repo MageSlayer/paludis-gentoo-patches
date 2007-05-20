@@ -211,7 +211,7 @@ namespace paludis
                 return 0 != _items.erase(v);
             }
 
-            virtual bool merge(typename std::tr1::shared_ptr<const SortedCollection<T_, C_> > o)
+            virtual bool merge(typename tr1::shared_ptr<const SortedCollection<T_, C_> > o)
             {
                 bool result(true);
                 Iterator o_begin(o->begin()), o_end(o->end());

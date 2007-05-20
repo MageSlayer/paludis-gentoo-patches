@@ -94,7 +94,7 @@ namespace paludis
 MetadataFile::MetadataFile(const FSEntry & f) :
     PrivateImplementationPattern<MetadataFile>(new Implementation<MetadataFile>)
 {
-    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(stringify(f).c_str(), 0, 0), &xmlFreeDoc);
+    tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(stringify(f).c_str(), 0, 0), &xmlFreeDoc);
     if (! xml_doc)
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "Couldn't parse xml file '" +
@@ -108,7 +108,7 @@ MetadataFile::MetadataFile(const FSEntry & f) :
 MetadataFile::MetadataFile(const std::string & text) :
     PrivateImplementationPattern<MetadataFile>(new Implementation<MetadataFile>)
 {
-    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadDoc(reinterpret_cast<const xmlChar *>(text.c_str()),
+    tr1::shared_ptr<xmlDoc> xml_doc(xmlReadDoc(reinterpret_cast<const xmlChar *>(text.c_str()),
                 "file:///var/empty/", 0, 0), &xmlFreeDoc);
     if (! xml_doc)
     {

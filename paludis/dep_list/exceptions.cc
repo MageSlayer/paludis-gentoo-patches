@@ -60,7 +60,7 @@ DowngradeNotAllowedError::~DowngradeNotAllowedError() throw ()
 namespace
 {
     std::string
-    destinations_to_string(std::tr1::shared_ptr<const DestinationsCollection> dd)
+    destinations_to_string(tr1::shared_ptr<const DestinationsCollection> dd)
     {
         std::string result;
         bool need_comma(false);
@@ -78,7 +78,7 @@ namespace
 }
 
 NoDestinationError::NoDestinationError(const PackageDatabaseEntry & p,
-        std::tr1::shared_ptr<const DestinationsCollection> d) throw () :
+        tr1::shared_ptr<const DestinationsCollection> d) throw () :
     DepListError("No suitable destination for '" + stringify(p) + "' in (" +
             destinations_to_string(d) + ")")
 {

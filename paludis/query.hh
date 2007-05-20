@@ -62,7 +62,7 @@ namespace paludis
              *
              * Default behaviour: return all repositories.
              */
-            virtual std::tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment &) const;
+            virtual tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment &) const;
 
             /**
              * Fetch the names of categories potentially containing matches.
@@ -70,8 +70,8 @@ namespace paludis
              * Default behaviour: return all categories in the provided
              * repository collection.
              */
-            virtual std::tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment &,
-                    std::tr1::shared_ptr<const RepositoryNameCollection>) const;
+            virtual tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameCollection>) const;
 
             /**
              * Fetch the names of packages potentially containing matches.
@@ -82,9 +82,9 @@ namespace paludis
              * Note that some entries in the categories collection (but not in
              * the repositories collection) may not exist.
              */
-            virtual std::tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment &,
-                    std::tr1::shared_ptr<const RepositoryNameCollection>,
-                    std::tr1::shared_ptr<const CategoryNamePartCollection>) const;
+            virtual tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameCollection>,
+                    tr1::shared_ptr<const CategoryNamePartCollection>) const;
 
             /**
              * Fetch the versions of matching packages.
@@ -94,9 +94,9 @@ namespace paludis
              * Note that some entries in the qualified package name collection
              * (but not in the repositories collection) may not exist.
              */
-            virtual std::tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment &,
-                    std::tr1::shared_ptr<const RepositoryNameCollection>,
-                    std::tr1::shared_ptr<const QualifiedPackageNameCollection>) const;
+            virtual tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameCollection>,
+                    tr1::shared_ptr<const QualifiedPackageNameCollection>) const;
     };
 
     /**
@@ -115,13 +115,13 @@ namespace paludis
         friend Query operator& (const Query &, const Query &);
 
         private:
-            std::tr1::shared_ptr<const QueryDelegate> _d;
+            tr1::shared_ptr<const QueryDelegate> _d;
 
         protected:
             ///\name Basic operations
             ///\{
 
-            Query(std::tr1::shared_ptr<const QueryDelegate>);
+            Query(tr1::shared_ptr<const QueryDelegate>);
 
         public:
             ~Query();
@@ -131,27 +131,27 @@ namespace paludis
             ///\name Delegate-implemented functions
             ///\{
 
-            std::tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment & e) const
+            tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment & e) const
             {
                 return _d->repositories(e);
             }
 
-            std::tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment & e,
-                    std::tr1::shared_ptr<const RepositoryNameCollection> r) const
+            tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameCollection> r) const
             {
                 return _d->categories(e, r);
             }
 
-            std::tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment & e,
-                    std::tr1::shared_ptr<const RepositoryNameCollection> r,
-                    std::tr1::shared_ptr<const CategoryNamePartCollection> c) const
+            tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameCollection> r,
+                    tr1::shared_ptr<const CategoryNamePartCollection> c) const
             {
                 return _d->packages(e, r, c);
             }
 
-            std::tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment & e,
-                    std::tr1::shared_ptr<const RepositoryNameCollection> r,
-                    std::tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
+            tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameCollection> r,
+                    tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
             {
                 return _d->versions(e, r, q);
             }

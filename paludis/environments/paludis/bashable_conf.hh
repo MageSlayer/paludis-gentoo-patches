@@ -20,14 +20,14 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_BASHABLE_CONF_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_BASHABLE_CONF_HH 1
 
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
     class LineConfigFile;
     class FSEntry;
 
-    std::tr1::shared_ptr<LineConfigFile> make_bashable_conf(const FSEntry &);
+    tr1::shared_ptr<LineConfigFile> make_bashable_conf(const FSEntry &);
 }
 
 #endif

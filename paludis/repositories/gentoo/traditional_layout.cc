@@ -30,7 +30,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
 
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 #include <functional>
 #include <algorithm>
 
@@ -38,7 +38,7 @@ using namespace paludis;
 
 typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
-typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<VersionSpecCollection> >::Type VersionsMap;
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type VersionsMap;
 
 namespace paludis
 {
@@ -53,11 +53,11 @@ namespace paludis
         mutable PackagesMap package_names;
         mutable VersionsMap version_specs;
 
-        mutable std::tr1::shared_ptr<CategoryNamePartCollection> category_names_collection;
-        std::tr1::shared_ptr<const PortageRepositoryEntries> entries;
+        mutable tr1::shared_ptr<CategoryNamePartCollection> category_names_collection;
+        tr1::shared_ptr<const PortageRepositoryEntries> entries;
 
         Implementation(const RepositoryName & n, const FSEntry & t,
-                std::tr1::shared_ptr<const PortageRepositoryEntries> e) :
+                tr1::shared_ptr<const PortageRepositoryEntries> e) :
             name(n),
             tree_root(t),
             has_category_names(false),
@@ -68,7 +68,7 @@ namespace paludis
 }
 
 TraditionalLayout::TraditionalLayout(const RepositoryName & name, const FSEntry & tree_root,
-        std::tr1::shared_ptr<const PortageRepositoryEntries> e) :
+        tr1::shared_ptr<const PortageRepositoryEntries> e) :
     PrivateImplementationPattern<TraditionalLayout>(new Implementation<TraditionalLayout>(name, tree_root, e))
 {
 }
@@ -151,7 +151,7 @@ TraditionalLayout::need_version_specs(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(_imp->name) + ":");
 
-    std::tr1::shared_ptr<VersionSpecCollection> v(new VersionSpecCollection::Concrete);
+    tr1::shared_ptr<VersionSpecCollection> v(new VersionSpecCollection::Concrete);
 
     FSEntry path(_imp->tree_root / stringify(n.category) / stringify(n.package));
 
@@ -236,7 +236,7 @@ TraditionalLayout::need_category_names_collection() const
                 SelectFirst<const CategoryNamePart, bool>()));
 }
 
-std::tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartCollection>
 TraditionalLayout::category_names() const
 {
     Context context("When fetching category names in " + stringify(stringify(_imp->name)) + ":");
@@ -245,10 +245,10 @@ TraditionalLayout::category_names() const
     return _imp->category_names_collection;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameCollection>
 TraditionalLayout::package_names(const CategoryNamePart & c) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     /* this isn't particularly fast because it isn't called very often. avoid
      * changing the data structures used to make this faster at the expense of
@@ -260,7 +260,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return std::tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
+        return tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
     if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->tree_root / stringify(c)), d_end ; d != d_end ; ++d)
@@ -271,7 +271,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
                     continue;
 
                 if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                            std::tr1::bind(&PortageRepositoryEntries::is_package_file, _imp->entries.get(),
+                            tr1::bind(&PortageRepositoryEntries::is_package_file, _imp->entries.get(),
                                 c + PackageNamePart(d->basename()), _1)))
                     continue;
 
@@ -287,18 +287,18 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
 
     _imp->category_names[c] = true;
 
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
     std::copy(_imp->package_names.begin(), _imp->package_names.end(),
             transform_inserter(filter_inserter(result->inserter(),
-                    std::tr1::bind(std::equal_to<CategoryNamePart>(), c,
-                        std::tr1::bind(SelectMember<const QualifiedPackageName, CategoryNamePart, &QualifiedPackageName::category>(), _1))),
+                    tr1::bind(std::equal_to<CategoryNamePart>(), c,
+                        tr1::bind(SelectMember<const QualifiedPackageName, CategoryNamePart, &QualifiedPackageName::category>(), _1))),
                 SelectFirst<const QualifiedPackageName, bool>()));
 
     return result;
 }
 
-std::tr1::shared_ptr<const VersionSpecCollection>
+tr1::shared_ptr<const VersionSpecCollection>
 TraditionalLayout::version_specs(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->name) + ":");
@@ -309,7 +309,7 @@ TraditionalLayout::version_specs(const QualifiedPackageName & n) const
         return _imp->version_specs.find(n)->second;
     }
     else
-        return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
+        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
 }
 
 bool
@@ -321,7 +321,7 @@ TraditionalLayout::has_version(const QualifiedPackageName & q, const VersionSpec
     if (has_package_named(q))
     {
         need_version_specs(q);
-        std::tr1::shared_ptr<VersionSpecCollection> vv(_imp->version_specs.find(q)->second);
+        tr1::shared_ptr<VersionSpecCollection> vv(_imp->version_specs.find(q)->second);
         return vv->end() != vv->find(v);
     }
     else

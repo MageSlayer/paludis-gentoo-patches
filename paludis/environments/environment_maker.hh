@@ -111,7 +111,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE EnvironmentMaker :
         public VirtualConstructor<std::string,
-            std::tr1::shared_ptr<Environment> (*) (const std::string &),
+            tr1::shared_ptr<Environment> (*) (const std::string &),
             virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >,
         public InstantiationPolicy<EnvironmentMaker, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<EnvironmentMaker>
@@ -150,7 +150,7 @@ namespace paludis
              * \see Environment
              * \ingroup grpenvironment
              */
-            std::tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
+            tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
     };
 }
 

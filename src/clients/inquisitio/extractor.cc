@@ -26,7 +26,7 @@ using namespace inquisitio;
 using namespace paludis;
 
 template class paludis::VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
+         tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
          paludis::virtual_constructor_not_found::ThrowException<NoSuchExtractorError> >;
 
 NoSuchExtractorError::NoSuchExtractorError(const std::string & m) throw () :
@@ -37,10 +37,10 @@ NoSuchExtractorError::NoSuchExtractorError(const std::string & m) throw () :
 namespace
 {
     template <typename M_>
-    std::tr1::shared_ptr<Extractor>
+    tr1::shared_ptr<Extractor>
     make(const Environment & e)
     {
-        return std::tr1::shared_ptr<Extractor>(new M_(e));
+        return tr1::shared_ptr<Extractor>(new M_(e));
     }
 }
 

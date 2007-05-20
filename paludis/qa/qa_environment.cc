@@ -85,7 +85,7 @@ QAEnvironment::clear_forced_use()
 }
 
 void
-QAEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>,
+QAEnvironment::force_use(tr1::shared_ptr<const PackageDepSpec>,
         const UseFlagName &, const UseFlagState)
 {
     throw InternalError(PALUDIS_HERE, "force_use not currently available for QAEnvironment");

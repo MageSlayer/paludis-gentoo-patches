@@ -64,7 +64,7 @@ namespace paludis
              * fall back to Repository::do_category_names_containing_package or
              * its own implementation.
              */
-            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
+            tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**

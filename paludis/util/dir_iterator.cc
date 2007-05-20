@@ -44,10 +44,10 @@ namespace paludis
     {
         FSEntry base;
         bool ignore_dotfiles;
-        std::tr1::shared_ptr<std::set<FSEntry> > items;
+        tr1::shared_ptr<std::set<FSEntry> > items;
         std::set<FSEntry>::iterator iter;
 
-        Implementation(const FSEntry & b, bool i, std::tr1::shared_ptr<std::set<FSEntry> > ii) :
+        Implementation(const FSEntry & b, bool i, tr1::shared_ptr<std::set<FSEntry> > ii) :
             base(b),
             ignore_dotfiles(i),
             items(ii)
@@ -63,7 +63,7 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 
 DirIterator::DirIterator(const FSEntry & base, bool ignore_dotfiles) :
     PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
-                base, ignore_dotfiles, std::tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
+                base, ignore_dotfiles, tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
 {
     DIR * d(opendir(stringify(_imp->base).c_str()));
     if (0 == d)
@@ -94,7 +94,7 @@ DirIterator::DirIterator(const DirIterator & other) :
 
 DirIterator::DirIterator() :
     PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
-                FSEntry(""), true, std::tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
+                FSEntry(""), true, tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
 {
     _imp->iter = _imp->items->end();
 }

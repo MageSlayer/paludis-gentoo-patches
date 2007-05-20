@@ -108,7 +108,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<AllDepSpec> system_packages() const;
+            tr1::shared_ptr<AllDepSpec> system_packages() const;
 
             ///\}
 
@@ -116,7 +116,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<PortageRepositoryProfile,
-                const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > VirtualsIterator;
+                const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsIterator;
 
             VirtualsIterator begin_virtuals() const;
             VirtualsIterator end_virtuals() const;

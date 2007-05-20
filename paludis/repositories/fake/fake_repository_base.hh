@@ -105,10 +105,10 @@ namespace paludis
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
             virtual std::string do_describe_use_flag(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             /* end of RepositoryUseInterface */
@@ -117,18 +117,18 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -138,8 +138,8 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
-            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
+            virtual tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
         protected:
             /**
@@ -169,7 +169,7 @@ namespace paludis
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata.
              */
-            std::tr1::shared_ptr<VersionMetadata> add_version(
+            tr1::shared_ptr<VersionMetadata> add_version(
                     const QualifiedPackageName &, const VersionSpec &);
 
             /**
@@ -177,7 +177,7 @@ namespace paludis
              * default values for its metadata, and return said metadata (convenience
              * overload taking strings).
              */
-            std::tr1::shared_ptr<VersionMetadata> add_version(
+            tr1::shared_ptr<VersionMetadata> add_version(
                     const std::string & c, const std::string & p, const std::string & v)
             {
                 return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v));
@@ -186,7 +186,7 @@ namespace paludis
             /**
              * Add a package set.
              */
-            void add_package_set(const SetName &, std::tr1::shared_ptr<DepSpec>);
+            void add_package_set(const SetName &, tr1::shared_ptr<DepSpec>);
 
             virtual void invalidate();
 

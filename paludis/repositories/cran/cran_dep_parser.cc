@@ -9,12 +9,12 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<const CompositeDepSpec>
+tr1::shared_ptr<const CompositeDepSpec>
 CRANDepParser::parse(const std::string & s, const PackageDepSpecParseMode mode)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::tr1::shared_ptr<CompositeDepSpec> result(new AllDepSpec);
+    tr1::shared_ptr<CompositeDepSpec> result(new AllDepSpec);
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> spec_tokeniser(",");
 
     std::list<std::string> specs;
@@ -53,7 +53,7 @@ CRANDepParser::parse(const std::string & s, const PackageDepSpecParseMode mode)
             spec_string = name;
         else
             spec_string = range + name + "-" + version;
-        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string, mode));
+        tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string, mode));
         result->add_child(spec);
     }
 

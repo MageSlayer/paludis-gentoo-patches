@@ -17,23 +17,37 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_TR1_TR1_MEMORY_HH
-#define PALUDIS_GUARD_TR1_TR1_MEMORY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_TR1_MEMORY_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_TR1_MEMORY_HH 1
 
-/*
- * Used if we have boost but not std::tr1::shared_ptr<>.
- */
+#if defined(PALUDIS_TR1_MEMORY_IS_STD_TR1)
+
+#include <tr1/memory>
+
+namespace paludis
+{
+    namespace tr1
+    {
+        using std::tr1::shared_ptr;
+        using std::tr1::static_pointer_cast;
+    }
+}
+
+#elif defined(PALUDIS_TR1_MEMORY_IS_BOOST)
 
 #include <boost/shared_ptr.hpp>
 
-namespace std
+namespace paludis
 {
     namespace tr1
     {
         using boost::shared_ptr;
         using boost::static_pointer_cast;
-        using boost::enable_shared_from_this;
     }
 }
+
+#else
+#  error Either PALUDIS_TR1_MEMORY_IS_STD_TR1 or PALUDIS_TR1_MEMORY_IS_BOOST should be defined
+#endif
 
 #endif

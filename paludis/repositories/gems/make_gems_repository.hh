@@ -24,9 +24,9 @@
 
 namespace paludis
 {
-    std::tr1::shared_ptr<Repository>
+    tr1::shared_ptr<Repository>
     make_gems_repository(Environment * const,
-            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
+            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
 }
 
 #endif

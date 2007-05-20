@@ -181,7 +181,7 @@ namespace paludis
             ///\{
 
             NoDestinationError(const PackageDatabaseEntry &,
-                    std::tr1::shared_ptr<const DestinationsCollection>) throw ();
+                    tr1::shared_ptr<const DestinationsCollection>) throw ();
 
             ///\}
     };

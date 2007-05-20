@@ -80,7 +80,7 @@ VDBUnmerger::extend_hook(const Hook & h)
     std::string pv(stringify(_imp->options.version.remove_revision()));
     std::string slot(stringify(_imp->options.repository->version_metadata(_imp->options.package_name, _imp->options.version)->slot));
 
-    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
 
     return Unmerger::extend_hook(h)
         ("P", pn + "-" + pv)

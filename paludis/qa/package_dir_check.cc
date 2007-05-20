@@ -31,7 +31,7 @@
 using namespace paludis;
 using namespace paludis::qa;
 
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<PackageDirCheck> (*) (),
+template class VirtualConstructor<std::string, tr1::shared_ptr<PackageDirCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> >;
 
 PackageDirCheck::PackageDirCheck()

@@ -73,7 +73,7 @@ void PALUDIS_VISIBLE expose_environment()
             "Options for Environment.mask_reasons()."
        );
 
-    bp::class_<Environment, std::tr1::shared_ptr<Environment>, boost::noncopyable>
+    bp::class_<Environment, tr1::shared_ptr<Environment>, boost::noncopyable>
         e("Environment",
                 "Represents a working environment, which contains an available packages database\n"
                 "and provides various methods for querying package visibility and options.",
@@ -83,7 +83,7 @@ void PALUDIS_VISIBLE expose_environment()
             "default_destinations() -> DestinationsCollection\n"
             "Default destination candidates for installing packages."
          );
-    std::tr1::shared_ptr<PackageDatabase> (Environment::* package_database)() =
+    tr1::shared_ptr<PackageDatabase> (Environment::* package_database)() =
         &Environment::package_database;
     e.add_property("package_database", bp::make_function(package_database,
                 bp::with_custodian_and_ward_postcall<0, 1>()),
@@ -133,13 +133,13 @@ void PALUDIS_VISIBLE expose_environment()
                         "master_repository_dir=\"/var/empty\")"
                     )
           );
-    std::tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)() =
+    tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)() =
         &NoConfigEnvironment::main_repository;
     nce.add_property("main_repository", main_repository,
             "[ro] Repository\n"
             "Main repository."
             );
-    std::tr1::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
+    tr1::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
         = &NoConfigEnvironment::master_repository;
     nce.add_property("master_repository", master_repository,
             "[ro] Repository\n"

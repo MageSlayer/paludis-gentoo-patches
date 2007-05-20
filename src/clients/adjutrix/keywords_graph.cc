@@ -58,19 +58,19 @@ namespace
         cout << "Keywords for " << package << ":" << endl;
         cout << endl;
 
-        std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
+        tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
                 query::Matches(PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
-                        std::tr1::shared_ptr<CategoryNamePart>(),
-                        std::tr1::shared_ptr<PackageNamePart>(),
-                        std::tr1::shared_ptr<VersionRequirements>(),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<VersionRequirements>(),
                         vr_and,
-                        std::tr1::shared_ptr<SlotName>(),
-                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(repo.name())))),
+                        tr1::shared_ptr<SlotName>(),
+                        tr1::shared_ptr<RepositoryName>(new RepositoryName(repo.name())))),
                 qo_group_by_slot));
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -78,7 +78,7 @@ namespace
         if (! repo.use_interface)
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags(repo.use_interface->arch_flags());
+        tr1::shared_ptr<const UseFlagNameCollection> arch_flags(repo.use_interface->arch_flags());
         if (arch_flags->empty())
             return;
 
@@ -128,7 +128,7 @@ namespace
         for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, p->version));
+            tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, p->version));
             if (! metadata->ebuild_interface)
                 continue;
 
@@ -140,7 +140,7 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
-            std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
+            tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
 
             for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
@@ -183,7 +183,7 @@ void do_keywords_graph(const Environment & env)
         if (r->name() == RepositoryName("virtuals"))
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -194,7 +194,7 @@ void do_keywords_graph(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

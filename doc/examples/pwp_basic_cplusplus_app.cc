@@ -4,7 +4,6 @@
 #include <paludis/environments/environment_maker.hh>
 
 #include <iostream>
-#include <tr1/memory>
 #include <cstdlib>
 
 using std::cout;
@@ -15,10 +14,10 @@ int main(int, char *[])
 {
     try
     {
-        std::tr1::shared_ptr<paludis::Environment> env(
+        paludis::tr1::shared_ptr<paludis::Environment> env(
                 paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
-        std::tr1::shared_ptr<const paludis::PackageDatabaseEntryCollection> packages(
+        paludis::tr1::shared_ptr<const paludis::PackageDatabaseEntryCollection> packages(
                 env->package_database()->query(
                     paludis::query::Matches(paludis::PackageDepSpec("app-editors/vim", paludis::pds_pm_eapi_0_strict)) &
                     paludis::query::InstalledAtRoot(env->root()), paludis::qo_order_by_version));

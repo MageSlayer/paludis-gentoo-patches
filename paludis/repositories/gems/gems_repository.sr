@@ -18,6 +18,6 @@ make_class_GemsRepositoryEntry()
 {
     visible
 
-    key metadata "std::tr1::shared_ptr<VersionMetadata>"
+    key metadata "tr1::shared_ptr<VersionMetadata>"
 }
 

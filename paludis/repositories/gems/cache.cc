@@ -72,7 +72,7 @@ namespace
     };
 
     std::string
-    as_string(std::tr1::shared_ptr<const YamlNode> n, const std::string & join = "")
+    as_string(tr1::shared_ptr<const YamlNode> n, const std::string & join = "")
     {
         AsStringVisitor v;
         v.join = join;
@@ -107,13 +107,13 @@ namespace
     struct RequirementsVisitor :
         YamlNodeVisitorTypes::ConstVisitor
     {
-        std::tr1::shared_ptr<VersionRequirements> r;
+        tr1::shared_ptr<VersionRequirements> r;
         bool top_level;
 
         std::string op;
         std::string v;
 
-        RequirementsVisitor(std::tr1::shared_ptr<VersionRequirements> rr) :
+        RequirementsVisitor(tr1::shared_ptr<VersionRequirements> rr) :
             r(rr),
             top_level(true)
         {
@@ -190,7 +190,7 @@ namespace
         std::string summary;
         std::string description;
         std::string homepage;
-        std::tr1::shared_ptr<VersionRequirements> required_ruby_version;
+        tr1::shared_ptr<VersionRequirements> required_ruby_version;
 
         EntryVisitor(const std::string & _id) :
             id(_id),
@@ -210,9 +210,9 @@ namespace
                 .description(description)
                 .homepage(homepage)
                 .required_ruby_version(required_ruby_version)
-                .authors(std::tr1::shared_ptr<SequentialCollection<std::string> >())
-                .dependencies(std::tr1::shared_ptr<SequentialCollection<std::string> >())
-                .requirements(std::tr1::shared_ptr<SequentialCollection<std::string> >());
+                .authors(tr1::shared_ptr<SequentialCollection<std::string> >())
+                .dependencies(tr1::shared_ptr<SequentialCollection<std::string> >())
+                .requirements(tr1::shared_ptr<SequentialCollection<std::string> >());
         }
 
         void visit(const YamlSequenceNode *) PALUDIS_ATTRIBUTE((noreturn))

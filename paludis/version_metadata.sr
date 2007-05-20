@@ -45,7 +45,7 @@ END
 
     extra_methods <<END
         private:
-            std::tr1::shared_ptr<const DepSpec> _make_depend(const std::string &) const;
+            tr1::shared_ptr<const DepSpec> _make_depend(const std::string &) const;
 END
 
     doxygen_comment << "END"
@@ -82,7 +82,7 @@ END
 
     extra_methods <<END
         private:
-            std::tr1::shared_ptr<const DepSpec> _make_license(const std::string &) const;
+            tr1::shared_ptr<const DepSpec> _make_license(const std::string &) const;
 END
 }
 
@@ -92,8 +92,8 @@ make_class_VersionMetadataOriginsInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key "source" "std::tr1::shared_ptr<PackageDatabaseEntry>"
-    key "binary" "std::tr1::shared_ptr<PackageDatabaseEntry>"
+    key "source" "tr1::shared_ptr<PackageDatabaseEntry>"
+    key "binary" "tr1::shared_ptr<PackageDatabaseEntry>"
 
     extra_constructors <<END
             VersionMetadataOriginsInterface();
@@ -134,7 +134,7 @@ END
 
     extra_methods <<END
         private:
-            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
 END
 }
 
@@ -169,12 +169,12 @@ END
 
     extra_methods <<END
         private:
-            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
 
             template <typename Item_, typename Container_>
-            std::tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
+            tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
 
-            std::tr1::shared_ptr<const IUseFlagCollection> _make_iuse_collection(const std::string &) const;
+            tr1::shared_ptr<const IUseFlagCollection> _make_iuse_collection(const std::string &) const;
 END
 }
 
@@ -203,7 +203,7 @@ END
 
     extra_methods <<END
         private:
-            std::tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
 END
 }
 
@@ -233,7 +233,7 @@ END
     extra_methods <<END
         private:
             template <typename Item_, typename Container_>
-            std::tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
+            tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
 END
 }
 

@@ -77,7 +77,7 @@ namespace paludis
     struct Implementation<DepList>
     {
         const Environment * const env;
-        std::tr1::shared_ptr<DepListOptions> opts;
+        tr1::shared_ptr<DepListOptions> opts;
 
         MergeList merge_list;
         MergeList::const_iterator current_merge_list_entry;
@@ -86,7 +86,7 @@ namespace paludis
 
         MergeListIndex merge_list_index;
 
-        std::tr1::shared_ptr<const DepSpec> current_top_level_target;
+        tr1::shared_ptr<const DepSpec> current_top_level_target;
 
         bool throw_on_blocker;
 
@@ -173,7 +173,7 @@ namespace
             /* see EffSTL 9 for why this is so painful */
             if (e.tags->empty())
                 return;
-            std::tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags::Concrete);
+            tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags::Concrete);
             GenerationGreaterThan pred(g);
             for (DepListEntryTags::Iterator i(e.tags->begin()), i_end(e.tags->end()) ;
                     i != i_end ; ++i)
@@ -284,7 +284,7 @@ namespace
         {
         }
 
-        bool operator() (std::tr1::shared_ptr<const DepSpec> spec)
+        bool operator() (tr1::shared_ptr<const DepSpec> spec)
         {
             const UseDepSpec * const u(spec->as_use_dep_spec());
             if (0 != u)
@@ -303,13 +303,13 @@ namespace
         {
         }
 
-        bool operator() (std::tr1::shared_ptr<const DepSpec> spec)
+        bool operator() (tr1::shared_ptr<const DepSpec> spec)
         {
             const PackageDepSpec * const u(spec->as_package_dep_spec());
             if (0 != u && u->package_ptr())
             {
                 return ! env->package_database()->query(PackageDepSpec(
-                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr()))),
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr()))),
                         is_installed_only, qo_whatever)->empty();
             }
             else
@@ -323,9 +323,9 @@ struct DepList::QueryVisitor :
 {
     bool result;
     const DepList * const d;
-    std::tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    QueryVisitor(const DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
+    QueryVisitor(const DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
         result(true),
         d(dd),
         destinations(ddd)
@@ -356,14 +356,14 @@ DepList::QueryVisitor::visit(const PackageDepSpec * const a)
     result = false;
 
     // TODO: check destinations
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_whatever));
 
     for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
             m != m_end ; ++m)
     {
         /* check that we haven't been replaced by something in the same slot */
-        std::tr1::shared_ptr<const VersionMetadata> vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
+        tr1::shared_ptr<const VersionMetadata> vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
                 version_metadata(m->name, m->version));
         SlotName slot(vm->slot);
 
@@ -371,7 +371,7 @@ DepList::QueryVisitor::visit(const PackageDepSpec * const a)
                 d->_imp->merge_list_index.equal_range(m->name));
 
         bool replaced(false);
-        PackageDepSpec spec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m->name)));
+        PackageDepSpec spec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m->name)));
         while (p.second != ((p.first = std::find_if(p.first, p.second,
                             MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, &spec)))))
         {
@@ -430,7 +430,7 @@ void
 DepList::QueryVisitor::visit(const AnyDepSpec * const a)
 {
     /* empty || ( ) must resolve to true */
-    std::list<std::tr1::shared_ptr<const DepSpec> > viable_children;
+    std::list<tr1::shared_ptr<const DepSpec> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                 IsViableAnyDepSpecChild(d->_imp->env, d->_imp->current_pde())));
 
@@ -443,7 +443,7 @@ DepList::QueryVisitor::visit(const AnyDepSpec * const a)
     }
 
     result = true;
-    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
+    for (std::list<tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         (*c)->accept(this);
@@ -475,9 +475,9 @@ struct DepList::AddVisitor :
     DepSpecVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepSpec>
 {
     DepList * const d;
-    std::tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    AddVisitor(DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
+    AddVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
         d(dd),
         destinations(ddd)
     {
@@ -504,7 +504,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
 
     /* find already installed things */
     // TODO: check destinations
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_order_by_version));
 
     /* are we already on the merge list? */
@@ -528,7 +528,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
 
         if (d->_imp->opts->dependency_tags && d->_imp->current_pde())
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde())))
+                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde())))
                     .generation(d->_imp->merge_list_generation));
 
         /* add an appropriate destination */
@@ -560,7 +560,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
 
     /* find installable candidates, and find the best visible candidate */
     const PackageDatabaseEntry * best_visible_candidate(0);
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> installable_candidates(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> installable_candidates(
             d->_imp->env->package_database()->query(*a, is_installable_only, qo_order_by_version));
 
     for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
@@ -662,7 +662,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
             if (! a->use_requirements_ptr())
                 throw AllMaskedError(*a);
 
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> match_except_reqs(d->_imp->env->package_database()->query(
+            tr1::shared_ptr<const PackageDatabaseEntryCollection> match_except_reqs(d->_imp->env->package_database()->query(
                         *a->without_use_requirements(), is_any, qo_whatever));
 
             for (PackageDatabaseEntryCollection::Iterator i(match_except_reqs->begin()),
@@ -682,7 +682,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
         }
     }
 
-    std::tr1::shared_ptr<const VersionMetadata> best_visible_candidate_metadata(
+    tr1::shared_ptr<const VersionMetadata> best_visible_candidate_metadata(
             d->_imp->env->package_database()->fetch_repository(best_visible_candidate->repository)->
             version_metadata(best_visible_candidate->name, best_visible_candidate->version));
     SlotName slot(best_visible_candidate_metadata->slot);
@@ -691,7 +691,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
         best_visible_candidate_as_string.append(" (for " + stringify(
                         best_visible_candidate_metadata->virtual_interface->virtual_for) + ")");
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
+    tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
             new PackageDatabaseEntryCollection::Concrete);
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
@@ -747,15 +747,15 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
         case dl_downgrade_error:
         case dl_downgrade_warning:
             {
-                std::tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
+                tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
                         d->_imp->env->package_database()->query(PackageDepSpec(
-                                std::tr1::shared_ptr<QualifiedPackageName>(
+                                tr1::shared_ptr<QualifiedPackageName>(
                                     new QualifiedPackageName(best_visible_candidate->name)),
-                                std::tr1::shared_ptr<CategoryNamePart>(),
-                                std::tr1::shared_ptr<PackageNamePart>(),
-                                std::tr1::shared_ptr<VersionRequirements>(),
+                                tr1::shared_ptr<CategoryNamePart>(),
+                                tr1::shared_ptr<PackageNamePart>(),
+                                tr1::shared_ptr<VersionRequirements>(),
                                 vr_and,
-                                std::tr1::shared_ptr<SlotName>(new SlotName(slot))),
+                                tr1::shared_ptr<SlotName>(new SlotName(slot))),
                             is_installed_only, qo_order_by_version));
 
                 if (are_we_downgrading->empty())
@@ -764,7 +764,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
                 if (are_we_downgrading->last()->version <= best_visible_candidate->version)
                     break;
 
-                std::tr1::shared_ptr<const VersionMetadata> are_we_downgrading_last_metadata(
+                tr1::shared_ptr<const VersionMetadata> are_we_downgrading_last_metadata(
                         d->_imp->env->package_database()->fetch_repository(
                             are_we_downgrading->last()->repository)->version_metadata(
                             are_we_downgrading->last()->name, are_we_downgrading->last()->version));
@@ -821,7 +821,7 @@ void
 DepList::AddVisitor::visit(const AnyDepSpec * const a)
 {
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
-    std::list<std::tr1::shared_ptr<const DepSpec> > viable_children;
+    std::list<tr1::shared_ptr<const DepSpec> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                 IsViableAnyDepSpecChild(d->_imp->env, d->_imp->current_pde())));
 
@@ -838,7 +838,7 @@ DepList::AddVisitor::visit(const AnyDepSpec * const a)
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */
-    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
+    for (std::list<tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         if (d->already_installed(**c, destinations))
@@ -850,11 +850,11 @@ DepList::AddVisitor::visit(const AnyDepSpec * const a)
 
     /* if we have something like || ( a >=b-2 ) and b-1 is installed, try to go for
      * the b-2 bit first */
-    std::list<std::tr1::shared_ptr<const DepSpec> > pda_children;
+    std::list<tr1::shared_ptr<const DepSpec> > pda_children;
     std::copy(viable_children.begin(), viable_children.end(),
             filter_inserter(std::back_inserter(pda_children), IsInterestingPDADepSpecChild(d->_imp->env)));
 
-    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(pda_children.begin()),
+    for (std::list<tr1::shared_ptr<const DepSpec> >::const_iterator c(pda_children.begin()),
             c_end(pda_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -871,7 +871,7 @@ DepList::AddVisitor::visit(const AnyDepSpec * const a)
     }
 
     /* install first available viable option */
-    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
+    for (std::list<tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -907,11 +907,11 @@ DepList::AddVisitor::visit(const BlockDepSpec * const a)
 
     bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed;
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed;
 
     if (a->blocked_spec()->package_ptr())
     {
-        PackageDepSpec just_package(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+        PackageDepSpec just_package(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                         *a->blocked_spec()->package_ptr())));
         already_installed = d->_imp->env->package_database()->query(
                 just_package, is_installed_only, qo_whatever);
@@ -951,7 +951,7 @@ DepList::AddVisitor::visit(const BlockDepSpec * const a)
         if (! match_package(*d->_imp->env, *a->blocked_spec(), *aa))
             continue;
 
-        std::tr1::shared_ptr<const VersionMetadata> metadata(d->_imp->env->package_database()->fetch_repository(
+        tr1::shared_ptr<const VersionMetadata> metadata(d->_imp->env->package_database()->fetch_repository(
                     aa->repository)->version_metadata(aa->name, aa->version));
         bool replaced(false);
         for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
@@ -1063,9 +1063,9 @@ struct DepList::ShowSuggestVisitor :
     DepSpecVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepSpec>
 {
     DepList * const d;
-    std::tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    ShowSuggestVisitor(DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
+    ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
         d(dd),
         destinations(ddd)
     {
@@ -1102,7 +1102,7 @@ DepList::ShowSuggestVisitor::visit(const PackageDepSpec * const a)
 {
     Context context("When adding suggested dep '" + stringify(*a) + "':");
 
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
                 *a, is_installable_only, qo_order_by_version));
     if (matches->empty())
     {
@@ -1132,7 +1132,7 @@ DepList::~DepList()
 {
 }
 
-std::tr1::shared_ptr<DepListOptions>
+tr1::shared_ptr<DepListOptions>
 DepList::options()
 {
     return _imp->opts;
@@ -1146,19 +1146,19 @@ DepList::clear()
 }
 
 void
-DepList::add_in_role(std::tr1::shared_ptr<const DepSpec> spec, const std::string & role,
-        std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_in_role(tr1::shared_ptr<const DepSpec> spec, const std::string & role,
+        tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding " + role + ":");
     add(spec, destinations);
 }
 
 void
-DepList::add(std::tr1::shared_ptr<const DepSpec> spec, std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add(tr1::shared_ptr<const DepSpec> spec, tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
-    Save<std::tr1::shared_ptr<const DepSpec> > save_current_top_level_target(&_imp->current_top_level_target,
+    Save<tr1::shared_ptr<const DepSpec> > save_current_top_level_target(&_imp->current_top_level_target,
             _imp->current_top_level_target ? _imp->current_top_level_target : spec);
 
     AddVisitor visitor(this, destinations);
@@ -1167,20 +1167,20 @@ DepList::add(std::tr1::shared_ptr<const DepSpec> spec, std::tr1::shared_ptr<cons
 }
 
 void
-DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag,
-        std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+        tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding package '" + stringify(p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                 p.repository)->version_metadata(p.name, p.version));
 
     /* create our merge list entry. insert pre deps before ourself in the list. insert
      * post deps after ourself, and after any provides. */
 
-    std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
+    tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
             new SortedCollection<DepListEntryDestination>::Concrete);
     if (! metadata->virtual_interface)
         our_merge_entry_destinations->insert(
@@ -1193,7 +1193,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                 .metadata(metadata)
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .destinations(our_merge_entry_destinations)
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
@@ -1208,7 +1208,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1222,12 +1222,12 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
         DepSpecFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
         for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
             v->push_back(VersionRequirement(vo_equal, p.version));
-            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*i)->text())),
-                        std::tr1::shared_ptr<CategoryNamePart>(),
-                        std::tr1::shared_ptr<PackageNamePart>(),
+            tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*i)->text())),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
                         v, vr_and));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z;
@@ -1242,7 +1242,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
             if (zz != z.second)
                 continue;
 
-            std::tr1::shared_ptr<const VersionMetadata> m;
+            tr1::shared_ptr<const VersionMetadata> m;
 
             if (_imp->env->package_database()->fetch_repository(RepositoryName("virtuals"))->has_version(
                         QualifiedPackageName((*i)->text()), p.version))
@@ -1250,7 +1250,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                         QualifiedPackageName((*i)->text()), p.version);
             else
             {
-                std::tr1::shared_ptr<VersionMetadata> mm(new FakedVirtualVersionMetadata(metadata->slot,
+                tr1::shared_ptr<VersionMetadata> mm(new FakedVirtualVersionMetadata(metadata->slot,
                             PackageDatabaseEntry(p.name, p.version, RepositoryName("virtuals"))));
                 m = mm;
             }
@@ -1261,8 +1261,8 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                         .metadata(m)
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
-                        .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                        .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                        .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                        .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
                                 new SortedCollection<DepListEntryDestination>::Concrete))
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
@@ -1319,7 +1319,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
         {
             if (_imp->current_pde())
                 pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                         .generation(_imp->merge_list_generation));
             return;
         }
@@ -1333,15 +1333,15 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                         p.repository)->version_metadata(p.name, p.version))
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
                         new SortedCollection<DepListEntryDestination>::Concrete))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -1349,7 +1349,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
 
 void
 DepList::add_suggested_package(const PackageDatabaseEntry & p,
-        const std::tr1::shared_ptr<const DestinationsCollection> destinations)
+        const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
@@ -1362,7 +1362,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
             return;
     }
 
-    std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
+    tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
             new SortedCollection<DepListEntryDestination>::Concrete);
     our_merge_entry_destinations->insert(DepListEntryDestination(find_destination(p, destinations),
                 _imp->merge_list_generation));
@@ -1375,22 +1375,22 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
                         p.repository)->version_metadata(p.name, p.version))
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .destinations(our_merge_entry_destinations)
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
 }
 
 void
-DepList::add_predeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
-        std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_predeps(tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
+        tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
     {
@@ -1410,8 +1410,8 @@ DepList::add_predeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOpt
 }
 
 void
-DepList::add_postdeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
-        std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_postdeps(tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
+        tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
     {
@@ -1443,13 +1443,13 @@ DepList::add_postdeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOp
 }
 
 void
-DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag,
-        const std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_already_installed_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+        const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding installed package '" + stringify(p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                 p.repository)->version_metadata(p.name, p.version));
 
     MergeList::iterator our_merge_entry(_imp->merge_list.insert(_imp->merge_list_insert_position,
@@ -1457,9 +1457,9 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
                 .package(p)
                 .metadata(metadata)
                 .generation(_imp->merge_list_generation)
-                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
                         new SortedCollection<DepListEntryDestination>::Concrete))
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
@@ -1472,7 +1472,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1625,7 +1625,7 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 }
 
 bool
-DepList::already_installed(const DepSpec & spec, std::tr1::shared_ptr<const DestinationsCollection> destinations) const
+DepList::already_installed(const DepSpec & spec, tr1::shared_ptr<const DestinationsCollection> destinations) const
 {
     QueryVisitor visitor(this, destinations);
     spec.accept(&visitor);
@@ -1688,9 +1688,9 @@ DepList::has_errors() const
     return end() != std::find_if(begin(), end(), IsError());
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 DepList::find_destination(const PackageDatabaseEntry & p,
-        std::tr1::shared_ptr<const DestinationsCollection> dd)
+        tr1::shared_ptr<const DestinationsCollection> dd)
 {
     for (DestinationsCollection::Iterator d(dd->begin()), d_end(dd->end()) ;
              d != d_end ; ++d)
@@ -1701,10 +1701,10 @@ DepList::find_destination(const PackageDatabaseEntry & p,
     throw NoDestinationError(p, dd);
 }
 
-std::tr1::shared_ptr<DestinationsCollection>
-paludis::extract_dep_list_entry_destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > d)
+tr1::shared_ptr<DestinationsCollection>
+paludis::extract_dep_list_entry_destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> > d)
 {
-    std::tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
+    tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
     for (SortedCollection<DepListEntryDestination>::Iterator i(d->begin()), i_end(d->end()) ;
             i != i_end ; ++i)
         result->insert(i->destination);

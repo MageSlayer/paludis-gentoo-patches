@@ -115,15 +115,15 @@ namespace
         typedef std::map<SlotName, VersionsEntry> VersionsInSlots;
         VersionsInSlots versions_in_slots;
 
-        std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
+        tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
-            std::tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, *v));
+            tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, *v));
             if (! metadata->ebuild_interface)
                 continue;
 
-            std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());;
+            tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());;
             /* ensure that there's an entry for this SLOT */
             versions_in_slots.insert(std::make_pair(metadata->slot, VersionsEntry(
                             VersionsEntry::create()
@@ -177,7 +177,7 @@ void do_find_dropped_keywords(const Environment & env)
 
         write_repository_header(keyword, r->name());
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -188,7 +188,7 @@ void do_find_dropped_keywords(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

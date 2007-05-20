@@ -43,7 +43,7 @@ namespace
             int _return_code;
 
         public:
-            OurSyncTask(std::tr1::shared_ptr<Environment> env) :
+            OurSyncTask(tr1::shared_ptr<Environment> env) :
                 SyncTask(env.get()),
                 _return_code(0)
             {
@@ -110,7 +110,7 @@ namespace
     }
 }
 
-int do_sync(std::tr1::shared_ptr<Environment> env)
+int do_sync(tr1::shared_ptr<Environment> env)
 {
     Context context("When performing sync action from command line:");
 

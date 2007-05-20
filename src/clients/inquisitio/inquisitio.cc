@@ -103,7 +103,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_no_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
+        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);
 
         if (CommandLine::get_instance()->begin_parameters() == CommandLine::get_instance()->end_parameters())

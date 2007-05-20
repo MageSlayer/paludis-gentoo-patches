@@ -40,7 +40,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            EclassMtimes(std::tr1::shared_ptr<const FSEntryCollection>);
+            EclassMtimes(tr1::shared_ptr<const FSEntryCollection>);
             ~EclassMtimes();
 
             ///\}

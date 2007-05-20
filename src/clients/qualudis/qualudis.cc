@@ -31,7 +31,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
@@ -525,7 +525,7 @@ namespace
     bool
     do_check(const FSEntry & dir)
     {
-        using namespace std::tr1::placeholders;
+        using namespace tr1::placeholders;
 
         Context context("When checking directory '" + stringify(dir) + "':");
 
@@ -544,7 +544,7 @@ namespace
         }
 
         if (std::count_if(DirIterator(dir), DirIterator(),
-                    std::tr1::bind(&is_file_with_prefix_extension, _1, dir.basename() + "-", ".ebuild", IsFileWithOptions())))
+                    tr1::bind(&is_file_with_prefix_extension, _1, dir.basename() + "-", ".ebuild", IsFileWithOptions())))
         {
             qa::QAEnvironment env(dir.dirname().dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
                     QualudisCommandLine::get_instance()->a_master_repository_dir.argument());

@@ -24,10 +24,10 @@ using namespace paludis;
 
 namespace
 {
-    std::tr1::shared_ptr<Environment>
+    tr1::shared_ptr<Environment>
     make_paludis_environment(const std::string & s)
     {
-        return std::tr1::shared_ptr<Environment>(new PaludisEnvironment(s));
+        return tr1::shared_ptr<Environment>(new PaludisEnvironment(s));
     }
 }
 

@@ -73,7 +73,7 @@ namespace paludis
         template <typename T_>
         struct MakeFileCheck
         {
-            static std::tr1::shared_ptr<FileCheck> make_file_check();
+            static tr1::shared_ptr<FileCheck> make_file_check();
         };
 
         /**
@@ -82,7 +82,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE FileCheckMaker :
-            public VirtualConstructor<std::string, std::tr1::shared_ptr<FileCheck> (*) (),
+            public VirtualConstructor<std::string, tr1::shared_ptr<FileCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >,
             public InstantiationPolicy<FileCheckMaker, instantiation_method::SingletonTag>
         {
@@ -96,10 +96,10 @@ namespace paludis
 }
 
 template <typename T_>
-std::tr1::shared_ptr<paludis::qa::FileCheck>
+paludis::tr1::shared_ptr<paludis::qa::FileCheck>
 paludis::qa::MakeFileCheck<T_>::make_file_check()
 {
-    return std::tr1::shared_ptr<paludis::qa::FileCheck>(new T_);
+    return tr1::shared_ptr<paludis::qa::FileCheck>(new T_);
 }
 
 #endif

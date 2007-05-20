@@ -8,7 +8,7 @@ make_class_PackageDatabasesEntry()
     key arch UseFlagName
     key location FSEntry
     key status std::string
-    key package_database "std::tr1::shared_ptr<PackageDatabase>"
+    key package_database "tr1::shared_ptr<PackageDatabase>"
 
     allow_named_args
 

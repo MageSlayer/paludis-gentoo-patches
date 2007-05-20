@@ -42,10 +42,10 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec("foo/bar", pds_pm_permissive));
+            tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec("foo/bar", pds_pm_permissive));
             TEST_CHECK(0 == x->as_use_dep_spec());
 
-            std::tr1::shared_ptr<UseDepSpec> y(new UseDepSpec(UseFlagName("foo"), x));
+            tr1::shared_ptr<UseDepSpec> y(new UseDepSpec(UseFlagName("foo"), x));
             TEST_CHECK(0 != y->as_use_dep_spec());
             TEST_CHECK(y.get() == y->as_use_dep_spec());
         }
@@ -61,14 +61,14 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<AllDepSpec> x(new AllDepSpec);
+            tr1::shared_ptr<AllDepSpec> x(new AllDepSpec);
             TEST_CHECK(x->begin() == x->end());
 
-            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
+            x->add_child(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
 
-            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
+            x->add_child(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
         }

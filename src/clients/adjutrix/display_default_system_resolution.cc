@@ -114,7 +114,7 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
+        tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
                     RepositoryName("fake_destination")));
         env.package_database()->add_repository(1, fake_destination);
     }

@@ -36,7 +36,7 @@ namespace paludis
         public DepSpecVisitorTypes::ConstVisitor
     {
         private:
-            std::tr1::shared_ptr<PackageDepSpec> _spec;
+            tr1::shared_ptr<PackageDepSpec> _spec;
             bool _invalid;
 
         public:
@@ -52,10 +52,10 @@ namespace paludis
              * Our rewritten spec, or a zero pointer if we couldn't do any
              * rewriting.
              */
-            std::tr1::shared_ptr<const PackageDepSpec> spec() const
+            tr1::shared_ptr<const PackageDepSpec> spec() const
             {
                 if (_invalid)
-                    return std::tr1::shared_ptr<const PackageDepSpec>();
+                    return tr1::shared_ptr<const PackageDepSpec>();
 
                 return _spec;
             }

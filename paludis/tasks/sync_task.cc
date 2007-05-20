@@ -88,7 +88,7 @@ SyncTask::execute()
                 throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
             on_sync_pre(*r);
 
-            std::tr1::shared_ptr<const Repository> rr(_imp->env->package_database()->fetch_repository(*r));
+            tr1::shared_ptr<const Repository> rr(_imp->env->package_database()->fetch_repository(*r));
 
             if (rr->syncable_interface && rr->syncable_interface->sync())
                 on_sync_succeed(*r);

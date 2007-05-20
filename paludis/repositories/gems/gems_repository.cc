@@ -69,7 +69,7 @@ namespace paludis
         for (GemsCache::Iterator g(cache.begin()), g_end(cache.end()) ;
                 g != g_end ; ++g)
         {
-            std::tr1::shared_ptr<VersionMetadata> m(new GemsVersionMetadata(g->version));
+            tr1::shared_ptr<VersionMetadata> m(new GemsVersionMetadata(g->version));
             m->set_homepage(g->homepage);
             if (g->description.empty())
                 m->description = g->summary;
@@ -102,25 +102,25 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & c) const
     return false;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartCollection>
 GemsRepository::do_category_names() const
 {
-    static std::tr1::shared_ptr<CategoryNamePartCollection> names(new CategoryNamePartCollection::Concrete);
+    static tr1::shared_ptr<CategoryNamePartCollection> names(new CategoryNamePartCollection::Concrete);
     if (names->empty())
         names->insert(CategoryNamePart("gems"));
 
     return names;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameCollection>
 GemsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (! has_category_named(c))
-        return std::tr1::shared_ptr<const QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
+        return tr1::shared_ptr<const QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
     _imp->need_entries();
 
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     for (Packages::const_iterator i(_imp->packages.begin()), i_end(_imp->packages.end()) ;
             i != i_end ; ++i)
         result->insert(c + i->first);
@@ -128,15 +128,15 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-std::tr1::shared_ptr<const VersionSpecCollection>
+tr1::shared_ptr<const VersionSpecCollection>
 GemsRepository::do_version_specs(const QualifiedPackageName & p) const
 {
     if (! has_category_named(p.category))
-        return std::tr1::shared_ptr<const VersionSpecCollection>(new VersionSpecCollection::Concrete);
+        return tr1::shared_ptr<const VersionSpecCollection>(new VersionSpecCollection::Concrete);
 
     _imp->need_entries();
 
-    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
+    tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     Packages::const_iterator i(_imp->packages.find(p.package));
     if (i != _imp->packages.end())
         std::copy(i->second.begin(), i->second.end(), transform_inserter(
@@ -156,7 +156,7 @@ GemsRepository::do_has_version(const QualifiedPackageName & q, const VersionSpec
     return false;
 }
 
-std::tr1::shared_ptr<const VersionMetadata>
+tr1::shared_ptr<const VersionMetadata>
 GemsRepository::do_version_metadata(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     if (! has_category_named(q.category))
@@ -180,16 +180,16 @@ GemsRepository::do_install(const QualifiedPackageName &, const VersionSpec &, co
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 GemsRepository::do_package_set(const SetName &) const
 {
-    return std::tr1::shared_ptr<DepSpec>();
+    return tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 GemsRepository::sets_list() const
 {
-    return std::tr1::shared_ptr<SetNameCollection>(new SetNameCollection::Concrete);
+    return tr1::shared_ptr<SetNameCollection>(new SetNameCollection::Concrete);
 }
 
 bool
@@ -211,7 +211,7 @@ GemsRepository::do_sync() const
 
     FSEntry fetcher("/var/empty");
     bool ok(false);
-    std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(_imp->params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(_imp->params.environment->fetchers_dirs());
     for (FSEntryCollection::Iterator d(fetchers_dirs->begin()),
             d_end(fetchers_dirs->end()) ; d != d_end && ! ok; ++d)
     {
@@ -276,9 +276,9 @@ GemsRepository::regenerate_cache() const
 {
 }
 
-std::tr1::shared_ptr<const RepositoryInfo>
+tr1::shared_ptr<const RepositoryInfo>
 GemsRepository::info(bool) const
 {
-    return std::tr1::shared_ptr<RepositoryInfo>(new RepositoryInfo);
+    return tr1::shared_ptr<RepositoryInfo>(new RepositoryInfo);
 }
 

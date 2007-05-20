@@ -30,10 +30,10 @@ namespace paludis
      * \see PortageRepository
      * \ingroup grpportagerepository
      */
-    std::tr1::shared_ptr<PortageRepository>
+    tr1::shared_ptr<PortageRepository>
     make_ebuild_repository(
             Environment * const,
-            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
+            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
 
     /**
      * Create an ebuild format repository (wrapper for our virtual constructor).
@@ -41,10 +41,10 @@ namespace paludis
      * \see PortageRepository
      * \ingroup grpportagerepository
      */
-    std::tr1::shared_ptr<Repository>
+    tr1::shared_ptr<Repository>
     make_ebuild_repository_wrapped(
             Environment * const env,
-            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
+            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
 }
 
 #endif

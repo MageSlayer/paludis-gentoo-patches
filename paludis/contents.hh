@@ -24,7 +24,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -225,12 +225,12 @@ namespace paludis
             ///\}
 
             /// Add a new entry.
-            void add(std::tr1::shared_ptr<const ContentsEntry> c);
+            void add(tr1::shared_ptr<const ContentsEntry> c);
 
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Contents, const std::tr1::shared_ptr<const ContentsEntry> > Iterator;
+            typedef libwrapiter::ForwardIterator<Contents, const tr1::shared_ptr<const ContentsEntry> > Iterator;
 
             Iterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

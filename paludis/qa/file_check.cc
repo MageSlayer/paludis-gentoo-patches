@@ -39,7 +39,7 @@
 using namespace paludis;
 using namespace paludis::qa;
 
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<FileCheck> (*) (),
+template class VirtualConstructor<std::string, tr1::shared_ptr<FileCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >;
 
 FileCheck::FileCheck()

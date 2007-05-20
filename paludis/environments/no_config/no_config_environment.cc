@@ -43,12 +43,12 @@ namespace paludis
         bool accept_unstable;
         bool is_vdb;
 
-        std::tr1::shared_ptr<Repository> main_repo;
-        std::tr1::shared_ptr<Repository> master_repo;
+        tr1::shared_ptr<Repository> main_repo;
+        tr1::shared_ptr<Repository> master_repo;
 
         std::string paludis_command;
 
-        std::tr1::shared_ptr<PackageDatabase> package_database;
+        tr1::shared_ptr<PackageDatabase> package_database;
 
         Implementation(NoConfigEnvironment * const env, const NoConfigEnvironmentParams & params);
         void initialise(NoConfigEnvironment * const env);
@@ -134,7 +134,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         if (FSEntry("/var/empty") != params.master_repository_dir)
         {
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
 
             keys->insert("format", "ebuild");
@@ -147,7 +147,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         }
 
-        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
         keys->insert("format", "ebuild");
@@ -161,13 +161,13 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+                    tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
     else
     {
         Log::get_instance()->message(ll_debug, lc_context, "VDB, using vdb_db");
 
-        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
         keys->insert("format", "vdb");
@@ -177,7 +177,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
 
-        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
+        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
         iv_keys->insert("root", "/");
         package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
@@ -218,37 +218,37 @@ NoConfigEnvironment::set_accept_unstable(const bool value)
     _imp->accept_unstable = value;
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 NoConfigEnvironment::main_repository()
 {
     return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<const Repository>
+tr1::shared_ptr<const Repository>
 NoConfigEnvironment::main_repository() const
 {
     return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 NoConfigEnvironment::master_repository()
 {
     return _imp->master_repo;
 }
 
-std::tr1::shared_ptr<const Repository>
+tr1::shared_ptr<const Repository>
 NoConfigEnvironment::master_repository() const
 {
     return _imp->master_repo;
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+tr1::shared_ptr<PackageDatabase>
 NoConfigEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+tr1::shared_ptr<const PackageDatabase>
 NoConfigEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -267,7 +267,7 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-NoConfigEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> keywords,
+NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> keywords,
         const PackageDatabaseEntry &) const
 {
     if (_imp->is_vdb)

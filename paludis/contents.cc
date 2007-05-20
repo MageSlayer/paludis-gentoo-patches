@@ -90,7 +90,7 @@ namespace paludis
     template<>
     struct Implementation<Contents>
     {
-        std::list<std::tr1::shared_ptr<const ContentsEntry> > c;
+        std::list<tr1::shared_ptr<const ContentsEntry> > c;
     };
 }
 
@@ -104,7 +104,7 @@ Contents::~Contents()
 }
 
 void
-Contents::add(std::tr1::shared_ptr<const ContentsEntry> c)
+Contents::add(tr1::shared_ptr<const ContentsEntry> c)
 {
     _imp->c.push_back(c);
 }

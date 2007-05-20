@@ -30,7 +30,7 @@
 
 #include <iosfwd>
 #include <string>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -335,7 +335,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile>);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const KeyValueConfigFile>);
 
     /**
      * Use a string pair collection for defaults.
@@ -343,7 +343,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
 
     /**
      * Use another KeyValueConfigFile for defaults (non-const).
@@ -351,7 +351,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile>);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<KeyValueConfigFile>);
 
     /**
      * Use a string pair collection for defaults (non-const).
@@ -359,7 +359,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<AssociativeCollection<std::string, std::string> >);
 }
 
 #endif

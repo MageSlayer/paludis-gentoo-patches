@@ -28,7 +28,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -37,7 +37,7 @@ namespace paludis
     class PALUDIS_VISIBLE Layout
     {
         private:
-            std::tr1::shared_ptr<FSEntryCollection> _profiles_dirs;
+            tr1::shared_ptr<FSEntryCollection> _profiles_dirs;
 
         protected:
             Layout();
@@ -70,14 +70,14 @@ namespace paludis
             virtual bool has_package_named(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> version_specs(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -126,8 +126,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LayoutMaker :
         public VirtualConstructor<std::string,
-            std::tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
-                    std::tr1::shared_ptr<const PortageRepositoryEntries>),
+            tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+                    tr1::shared_ptr<const PortageRepositoryEntries>),
             virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
         public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
     {

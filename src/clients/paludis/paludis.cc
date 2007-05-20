@@ -107,7 +107,7 @@ namespace
 #endif
     }
 
-    void display_info(std::tr1::shared_ptr<Environment> env)
+    void display_info(tr1::shared_ptr<Environment> env)
     {
         for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
                 r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
@@ -115,7 +115,7 @@ namespace
         {
             cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
 
-            std::tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
+            tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
             for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
                     i_end(ii->end_sections()) ; i != i_end ; ++i)
             {
@@ -341,7 +341,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_no_safe_resume.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_safe_resume.long_name());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
+        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);
 
         try

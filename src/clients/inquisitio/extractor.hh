@@ -51,7 +51,7 @@ namespace inquisitio
         public paludis::InstantiationPolicy<ExtractorMaker, paludis::instantiation_method::SingletonTag>,
         public paludis::VirtualConstructor<
             std::string,
-            std::tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
+            paludis::tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
             paludis::virtual_constructor_not_found::ThrowException<NoSuchExtractorError> >
     {
         friend class paludis::InstantiationPolicy<ExtractorMaker, paludis::instantiation_method::SingletonTag>;

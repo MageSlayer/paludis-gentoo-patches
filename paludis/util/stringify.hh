@@ -23,7 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <sstream>
 #include <string>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Stringify functions.
@@ -70,7 +70,7 @@ namespace paludis
          * \ingroup grpstringify
          */
         template <typename T_>
-        struct CheckType<std::tr1::shared_ptr<T_> >
+        struct CheckType<tr1::shared_ptr<T_> >
         {
         };
 

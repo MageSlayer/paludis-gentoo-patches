@@ -48,11 +48,11 @@ namespace
     VALUE
     dependency_dep_tag_new(VALUE self, VALUE pde)
     {
-        std::tr1::shared_ptr<const DependencyDepTag> * ptr(0);
+        tr1::shared_ptr<const DependencyDepTag> * ptr(0);
         try
         {
-            ptr = new std::tr1::shared_ptr<const DependencyDepTag>(new DependencyDepTag(value_to_package_database_entry(pde)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free, ptr));
+            ptr = new tr1::shared_ptr<const DependencyDepTag>(new DependencyDepTag(value_to_package_database_entry(pde)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free, ptr));
             rb_obj_call_init(tdata, 1, &pde);
             return tdata;
         }
@@ -69,11 +69,11 @@ namespace
         if (2 != argc)
             rb_raise(rb_eArgError, "GLSADepTag expects two arguments, but got %d",argc);
 
-        std::tr1::shared_ptr<const GLSADepTag> * ptr(0);
+        tr1::shared_ptr<const GLSADepTag> * ptr(0);
         try
         {
-            ptr = new std::tr1::shared_ptr<const GLSADepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const GLSADepTag> >::free, ptr));
+            ptr = new tr1::shared_ptr<const GLSADepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1])));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const GLSADepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -90,11 +90,11 @@ namespace
         if (2 != argc)
             rb_raise(rb_eArgError, "GeneralSetDepTag expects two arguments, but got %d",argc);
 
-        std::tr1::shared_ptr<const GeneralSetDepTag> * ptr(0);
+        tr1::shared_ptr<const GeneralSetDepTag> * ptr(0);
         try
         {
-            ptr = new std::tr1::shared_ptr<const GeneralSetDepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const GeneralSetDepTag> >::free, ptr));
+            ptr = new tr1::shared_ptr<const GeneralSetDepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -144,8 +144,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<const T_> * ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const T_>, ptr);
+            tr1::shared_ptr<const T_> * ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const T_>, ptr);
             return rb_str_new2((((**ptr).*m_)()).c_str());
         }
     };
@@ -197,39 +197,39 @@ namespace
 }
 
 VALUE
-paludis::ruby::dep_tag_to_value(std::tr1::shared_ptr<const DepTag> m)
+paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
 {
     struct V :
         DepTagVisitorTypes::ConstVisitor
     {
         VALUE value;
-        std::tr1::shared_ptr<const DepTag> mm;
+        tr1::shared_ptr<const DepTag> mm;
 
-        V(std::tr1::shared_ptr<const DepTag> _m) :
+        V(tr1::shared_ptr<const DepTag> _m) :
             mm(_m)
         {
         }
 
         void visit(const DependencyDepTag *)
         {
-            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<std::tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new std::tr1::shared_ptr<const DependencyDepTag>(std::tr1::static_pointer_cast<const DependencyDepTag>(mm)));
+            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new tr1::shared_ptr<const DependencyDepTag>(tr1::static_pointer_cast<const DependencyDepTag>(mm)));
         }
 
         void visit(const GLSADepTag *)
         {
-            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<std::tr1::shared_ptr<const GLSADepTag> >::free,
-                    new std::tr1::shared_ptr<const GLSADepTag>(std::tr1::static_pointer_cast<const GLSADepTag>(mm)));
+            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<tr1::shared_ptr<const GLSADepTag> >::free,
+                    new tr1::shared_ptr<const GLSADepTag>(tr1::static_pointer_cast<const GLSADepTag>(mm)));
         }
 
         void visit(const GeneralSetDepTag *)
         {
-            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<std::tr1::shared_ptr<const GeneralSetDepTag> >::free,
-                    new std::tr1::shared_ptr<const GeneralSetDepTag>(std::tr1::static_pointer_cast<const GeneralSetDepTag>(mm)));
+            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free,
+                    new tr1::shared_ptr<const GeneralSetDepTag>(tr1::static_pointer_cast<const GeneralSetDepTag>(mm)));
         }
     };
 
-    std::tr1::shared_ptr<const DepTag> * m_ptr(0);
+    tr1::shared_ptr<const DepTag> * m_ptr(0);
     try
     {
         V v(m);

@@ -9,20 +9,20 @@ make_class_PortageRepositoryParams()
     key layout std::string
     key environment "Environment *"
     key location FSEntry
-    key profiles "std::tr1::shared_ptr<const FSEntryCollection>"
+    key profiles "tr1::shared_ptr<const FSEntryCollection>"
     key cache FSEntry
     key write_cache FSEntry
     key names_cache FSEntry
     key distdir FSEntry
     key pkgdir FSEntry
-    key eclassdirs "std::tr1::shared_ptr<const FSEntryCollection>"
+    key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
     key setsdir FSEntry
     key securitydir FSEntry
     key newsdir FSEntry
     key sync std::string
     key sync_options std::string
     key buildroot FSEntry
-    key master_repository "std::tr1::shared_ptr<const PortageRepository>"
+    key master_repository "tr1::shared_ptr<const PortageRepository>"
     key enable_destinations bool
     key write_bin_uri_prefix std::string
 

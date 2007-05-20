@@ -26,7 +26,7 @@ using namespace inquisitio;
 using namespace paludis;
 
 template class paludis::VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Matcher> (*) (const std::string &),
+         tr1::shared_ptr<Matcher> (*) (const std::string &),
          paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >;
 
 Matcher::Matcher()
@@ -45,10 +45,10 @@ NoSuchMatcherError::NoSuchMatcherError(const std::string & msg) throw () :
 namespace
 {
     template <typename M_>
-    static std::tr1::shared_ptr<Matcher>
+    static tr1::shared_ptr<Matcher>
     make(const std::string & s)
     {
-        return std::tr1::shared_ptr<Matcher>(new M_(s));
+        return tr1::shared_ptr<Matcher>(new M_(s));
     }
 }
 

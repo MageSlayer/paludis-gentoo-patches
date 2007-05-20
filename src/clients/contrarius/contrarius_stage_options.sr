@@ -3,17 +3,17 @@
 
 make_class_ContrariusStageOptions()
 {
-    key environment "std::tr1::shared_ptr<Environment>"
+    key environment "tr1::shared_ptr<Environment>"
     key target HostTupleName
 
-    key binutils "std::tr1::shared_ptr<const PackageDepSpec>"
-    key gcc "std::tr1::shared_ptr<const PackageDepSpec>"
-    key headers "std::tr1::shared_ptr<const PackageDepSpec>"
-    key libc "std::tr1::shared_ptr<const PackageDepSpec>"
+    key binutils "tr1::shared_ptr<const PackageDepSpec>"
+    key gcc "tr1::shared_ptr<const PackageDepSpec>"
+    key headers "tr1::shared_ptr<const PackageDepSpec>"
+    key libc "tr1::shared_ptr<const PackageDepSpec>"
 
     extra_constructors <<END
         ContrariusStageOptions(
-                    std::tr1::shared_ptr<Environment>,
+                    tr1::shared_ptr<Environment>,
                     const HostTupleName & target,
                     const std::string & binutils_name,
                     const std::string & binutils_version,

@@ -5,7 +5,7 @@ make_class_SetFileParams()
     key file_name FSEntry
     key type SetFileType
     key parse_mode PackageDepSpecParseMode
-    key tag "std::tr1::shared_ptr<const DepTag>"
+    key tag "tr1::shared_ptr<const DepTag>"
     key environment "const Environment *"
 
     allow_named_args

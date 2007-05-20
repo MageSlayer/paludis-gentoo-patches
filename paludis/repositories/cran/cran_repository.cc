@@ -79,7 +79,7 @@ namespace paludis
     typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
     /// Map for metadata.
-    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
+    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
 
     /**
      * Implementation data for a CRANRepository.
@@ -186,7 +186,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {
-    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
+    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->location));
     config_info->add_kv("distdir", stringify(_imp->distdir));
@@ -225,18 +225,18 @@ CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.end() != _imp->package_names.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartCollection>
 CRANRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
 
-    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("cran"));
 
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameCollection>
 CRANRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
@@ -244,7 +244,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
 
     need_packages();
 
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     if (! do_has_category_named(c))
         return result;
 
@@ -255,7 +255,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-std::tr1::shared_ptr<const VersionSpecCollection>
+tr1::shared_ptr<const VersionSpecCollection>
 CRANRepository::do_version_specs(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
@@ -263,7 +263,7 @@ CRANRepository::do_version_specs(const QualifiedPackageName & n) const
 
     need_packages();
 
-    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
+    tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     if (_imp->version_specs.end() != _imp->version_specs.find(n))
         result->insert(_imp->version_specs.find(n)->second);
 
@@ -382,7 +382,7 @@ CRANRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("cran-" + modified_location);
 }
 
-std::tr1::shared_ptr<const VersionMetadata>
+tr1::shared_ptr<const VersionMetadata>
 CRANRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
@@ -396,7 +396,7 @@ CRANRepository::do_version_metadata(
     if (! has_version(q, v))
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 
-    std::tr1::shared_ptr<VersionMetadata> result(new CRANVersionMetadata(false));
+    tr1::shared_ptr<VersionMetadata> result(new CRANVersionMetadata(false));
 
     FSEntry d(_imp->location);
     PackageNamePart p(q.package);
@@ -422,10 +422,10 @@ CRANRepository::do_version_metadata(
     return result;
 }
 
-std::tr1::shared_ptr<Repository>
+tr1::shared_ptr<Repository>
 CRANRepository::make_cran_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     Context context("When making CRAN repository from repo_file '" +
             (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
@@ -454,7 +454,7 @@ CRANRepository::make_cran_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return std::tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
+    return tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .distdir(distdir)
@@ -473,7 +473,7 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 namespace
 {
     FSEntry
-    get_root(std::tr1::shared_ptr<const DestinationsCollection> destinations)
+    get_root(tr1::shared_ptr<const DestinationsCollection> destinations)
     {
         if (destinations)
             for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
@@ -491,7 +491,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
 {
     PackageNamePart pn(q.package);
     CategoryNamePart c("cran");
-    std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, vn));
+    tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, vn));
 
     if (vm->cran_interface->is_bundle_member)
         return;
@@ -499,7 +499,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     std::string p(vm->cran_interface->package);
     std::string v(vm->cran_interface->version);
 
-    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
             .with_setenv("CATEGORY", "cran")
@@ -580,7 +580,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     return;
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 CRANRepository::do_package_set(const SetName & s) const
 {
     if ("base" == s.data())
@@ -589,18 +589,18 @@ CRANRepository::do_package_set(const SetName & s) const
          * \todo Implement system as all package which are installed
          * by dev-lang/R by default.
          */
-        return std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
+        return tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
     }
     else
-        return std::tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 CRANRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("base"));
     return result;
 }

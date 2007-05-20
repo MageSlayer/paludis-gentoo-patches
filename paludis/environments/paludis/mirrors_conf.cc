@@ -62,7 +62,7 @@ MirrorsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a mirrors file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -81,10 +81,10 @@ MirrorsConf::add(const FSEntry & filename)
     }
 }
 
-std::tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsCollection>
 MirrorsConf::query(const std::string & m) const
 {
-    std::tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
+    tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
     std::copy(p.first, p.second, transform_inserter(result->inserter(), SelectSecond<std::string, std::string>()));
     return result;

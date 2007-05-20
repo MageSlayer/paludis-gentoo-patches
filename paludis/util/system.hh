@@ -187,12 +187,12 @@ namespace paludis
             /**
              * The uid for setuid.
              */
-            std::tr1::shared_ptr<const uid_t> uid() const;
+            tr1::shared_ptr<const uid_t> uid() const;
 
             /**
              * The gid for setgid.
              */
-            std::tr1::shared_ptr<const gid_t> gid() const;
+            tr1::shared_ptr<const gid_t> gid() const;
 
             /**
              * The stdout prefix.

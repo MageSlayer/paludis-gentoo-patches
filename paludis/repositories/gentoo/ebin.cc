@@ -95,10 +95,10 @@ EbinCommand::operator() ()
     if (use_sandbox())
         cmd.with_sandbox();
 
-    std::tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
-    std::tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
-    std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
-    std::tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
+    tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
 
     cmd = extend_command(cmd
             .with_setenv("P", stringify(params.db_entry->name.package) + "-" +

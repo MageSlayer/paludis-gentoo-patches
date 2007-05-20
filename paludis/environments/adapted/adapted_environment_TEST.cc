@@ -33,7 +33,7 @@ namespace test_cases
 
         void run()
         {
-            AdaptedEnvironment e(std::tr1::shared_ptr<TestEnvironment>(new TestEnvironment));
+            AdaptedEnvironment e(tr1::shared_ptr<TestEnvironment>(new TestEnvironment));
         }
     } test_adapted_environment;
 }

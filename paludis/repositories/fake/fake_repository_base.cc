@@ -45,19 +45,19 @@ namespace paludis
         private InstantiationPolicy<Implementation<FakeRepositoryBase>, instantiation_method::NonCopyableTag>
     {
         /// Our category names.
-        std::tr1::shared_ptr<CategoryNamePartCollection> category_names;
+        tr1::shared_ptr<CategoryNamePartCollection> category_names;
 
         /// Our package names.
-        std::map<CategoryNamePart, std::tr1::shared_ptr<PackageNamePartCollection> > package_names;
+        std::map<CategoryNamePart, tr1::shared_ptr<PackageNamePartCollection> > package_names;
 
         /// Our versions.
-        std::map<QualifiedPackageName, std::tr1::shared_ptr<VersionSpecCollection> > versions;
+        std::map<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> > versions;
 
         /// Our metadata.
-        std::map<std::string, std::tr1::shared_ptr<VersionMetadata> > metadata;
+        std::map<std::string, tr1::shared_ptr<VersionMetadata> > metadata;
 
         /// Our sets.
-        std::map<SetName, std::tr1::shared_ptr<DepSpec> > sets;
+        std::map<SetName, tr1::shared_ptr<DepSpec> > sets;
 
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
@@ -83,7 +83,7 @@ FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
     RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e))
 {
-    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
+    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("format", "fake");
 
     _info->add_section(config_info);
@@ -107,16 +107,16 @@ FakeRepositoryBase::do_has_package_named(const QualifiedPackageName & q) const
          _imp->package_names.find(q.category)->second->find(q.package));
 }
 
-std::tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartCollection>
 FakeRepositoryBase::do_category_names() const
 {
     return _imp->category_names;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameCollection>
 FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
 {
-    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     if (! has_category_named(c))
         return result;
 
@@ -127,13 +127,13 @@ FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-std::tr1::shared_ptr<const VersionSpecCollection>
+tr1::shared_ptr<const VersionSpecCollection>
 FakeRepositoryBase::do_version_specs(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category))
-        return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
+        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
     if (! has_package_named(n))
-        return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
+        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
     return _imp->versions.find(n)->second;
 }
 
@@ -163,21 +163,21 @@ FakeRepositoryBase::add_package(const QualifiedPackageName & q)
     _imp->versions.insert(std::make_pair(q, new VersionSpecCollection::Concrete));
 }
 
-std::tr1::shared_ptr<VersionMetadata>
+tr1::shared_ptr<VersionMetadata>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
     _imp->versions.find(q)->second->insert(v);
     _imp->metadata.insert(
             std::make_pair(stringify(q) + "-" + stringify(v),
-                std::tr1::shared_ptr<VersionMetadata>(new FakeVersionMetadata)));
-    std::tr1::shared_ptr<VersionMetadata> r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
+                tr1::shared_ptr<VersionMetadata>(new FakeVersionMetadata)));
+    tr1::shared_ptr<VersionMetadata> r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
     r->slot = SlotName("0");
     r->eapi = EAPIData::get_instance()->eapi_from_string("0");
     return r;
 }
 
-std::tr1::shared_ptr<const VersionMetadata>
+tr1::shared_ptr<const VersionMetadata>
 FakeRepositoryBase::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
@@ -217,10 +217,10 @@ FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageDatabas
     return false;
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 FakeRepositoryBase::do_arch_flags() const
 {
-    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
 void
@@ -228,46 +228,46 @@ FakeRepositoryBase::invalidate()
 {
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 FakeRepositoryBase::do_use_expand_flags() const
 {
-    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 FakeRepositoryBase::do_use_expand_hidden_prefixes() const
 {
-    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 FakeRepositoryBase::do_use_expand_prefixes() const
 {
-    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
 void
-FakeRepositoryBase::add_package_set(const SetName & n, std::tr1::shared_ptr<DepSpec> s)
+FakeRepositoryBase::add_package_set(const SetName & n, tr1::shared_ptr<DepSpec> s)
 {
     _imp->sets.insert(std::make_pair(n, s));
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 FakeRepositoryBase::do_package_set(const SetName & id) const
 {
-    std::map<SetName, std::tr1::shared_ptr<DepSpec> >::const_iterator i(_imp->sets.find(id));
+    std::map<SetName, tr1::shared_ptr<DepSpec> >::const_iterator i(_imp->sets.find(id));
     if (_imp->sets.end() == i)
-        return std::tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<DepSpec>();
     else
         return i->second;
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 FakeRepositoryBase::sets_list() const
 {
-    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     std::copy(_imp->sets.begin(), _imp->sets.end(),
-            transform_inserter(result->inserter(), SelectFirst<SetName, std::tr1::shared_ptr<DepSpec> >()));
+            transform_inserter(result->inserter(), SelectFirst<SetName, tr1::shared_ptr<DepSpec> >()));
     return result;
 }
 

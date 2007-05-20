@@ -39,7 +39,7 @@ namespace paludis
 
         public:
             TraditionalLayout(const RepositoryName &, const FSEntry &,
-                    std::tr1::shared_ptr<const PortageRepositoryEntries>);
+                    tr1::shared_ptr<const PortageRepositoryEntries>);
 
             virtual ~TraditionalLayout();
 
@@ -49,14 +49,14 @@ namespace paludis
             virtual bool has_package_named(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> version_specs(
                     const QualifiedPackageName & n) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

@@ -107,7 +107,7 @@ namespace paludis
              * the specified prefix or merely all enabled use flags. It is not safe to assume
              * that all flags in the returned value will be enabled for the specified package.
              */
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+            virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
                     const UseFlagName &, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -140,7 +140,7 @@ namespace paludis
              *
              * Default behaviour: true if the collection includes "*".
              */
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -148,10 +148,10 @@ namespace paludis
             ///\name Database-related functions
             ///\{
 
-            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+            virtual tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -163,25 +163,25 @@ namespace paludis
              * Return a collection of bashrc files to be used by the various components
              * that are implemented in bash.
              */
-            virtual std::tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
+            virtual tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for syncer scripts.
              */
-            virtual std::tr1::shared_ptr<const FSEntryCollection> syncers_dirs() const
+            virtual tr1::shared_ptr<const FSEntryCollection> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for fetcher scripts.
              */
-            virtual std::tr1::shared_ptr<const FSEntryCollection> fetchers_dirs() const
+            virtual tr1::shared_ptr<const FSEntryCollection> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for hooks.
              */
-            virtual std::tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
+            virtual tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -218,7 +218,7 @@ namespace paludis
             /**
              * Return the mirror URI prefixes for a named mirror.
              */
-            virtual std::tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
+            virtual tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -229,7 +229,7 @@ namespace paludis
             /**
              * Return all known named sets.
              */
-            virtual std::tr1::shared_ptr<const SetNameCollection> set_names() const
+            virtual tr1::shared_ptr<const SetNameCollection> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -237,7 +237,7 @@ namespace paludis
              *
              * If the named set is not known, returns a zero pointer.
              */
-            virtual std::tr1::shared_ptr<DepSpec> set(const SetName &) const
+            virtual tr1::shared_ptr<DepSpec> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -248,7 +248,7 @@ namespace paludis
             /**
              * Default destination candidates for installing packages.
              */
-            virtual std::tr1::shared_ptr<const DestinationsCollection> default_destinations() const
+            virtual tr1::shared_ptr<const DestinationsCollection> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

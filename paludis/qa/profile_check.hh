@@ -77,7 +77,7 @@ namespace paludis
         template <typename T_>
         struct MakeProfileCheck
         {
-            static std::tr1::shared_ptr<ProfileCheck> make_profile_check();
+            static tr1::shared_ptr<ProfileCheck> make_profile_check();
         };
 
         /**
@@ -86,7 +86,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE ProfileCheckMaker :
-            public VirtualConstructor<std::string, std::tr1::shared_ptr<ProfileCheck> (*) (),
+            public VirtualConstructor<std::string, tr1::shared_ptr<ProfileCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchProfileCheckTypeError> >,
             public InstantiationPolicy<ProfileCheckMaker, instantiation_method::SingletonTag>
         {
@@ -100,10 +100,10 @@ namespace paludis
 }
 
 template <typename T_>
-std::tr1::shared_ptr<paludis::qa::ProfileCheck>
+paludis::tr1::shared_ptr<paludis::qa::ProfileCheck>
 paludis::qa::MakeProfileCheck<T_>::make_profile_check()
 {
-    return std::tr1::shared_ptr<paludis::qa::ProfileCheck>(new T_);
+    return tr1::shared_ptr<paludis::qa::ProfileCheck>(new T_);
 }
 
 #endif

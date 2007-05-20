@@ -36,7 +36,7 @@
 #include <paludis/util/operators.hh>
 
 #include <string>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -127,7 +127,7 @@ namespace paludis
      * \ingroup grpdeptag
      */
     class PALUDIS_VISIBLE DepTagCategoryMaker :
-        public VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
+        public VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
         public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>
     {

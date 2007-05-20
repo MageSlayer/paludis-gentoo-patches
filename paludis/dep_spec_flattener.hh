@@ -68,7 +68,7 @@ namespace paludis
 
             DepSpecFlattener(const Environment * const,
                     const PackageDatabaseEntry * const,
-                    const std::tr1::shared_ptr<const DepSpec>);
+                    const tr1::shared_ptr<const DepSpec>);
 
             ~DepSpecFlattener();
 

@@ -358,7 +358,7 @@ namespace paludis
 
                 if (done.size() < c)
                 {
-                    std::tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
+                    tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
                             new NoGraphTopologicalOrderExistsError::RemainingNodes);
                     for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                         if (done.end() == done.find(*n))

@@ -102,7 +102,7 @@ EnvironmentImplementation::accept_eapi(const EAPI & e, const PackageDatabaseEntr
 }
 
 bool
-EnvironmentImplementation::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> k,
+EnvironmentImplementation::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k,
         const PackageDatabaseEntry &) const
 {
     return k->end() != k->find(KeywordName("*"));
@@ -150,42 +150,42 @@ EnvironmentImplementation::~EnvironmentImplementation()
 }
 
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 EnvironmentImplementation::known_use_expand_names(const UseFlagName &, const PackageDatabaseEntry &) const
 {
-    static std::tr1::shared_ptr<const UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    static tr1::shared_ptr<const UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 EnvironmentImplementation::bashrc_files() const
 {
-    static std::tr1::shared_ptr<const FSEntryCollection> result(new FSEntryCollection::Concrete);
+    static tr1::shared_ptr<const FSEntryCollection> result(new FSEntryCollection::Concrete);
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 EnvironmentImplementation::syncers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
     result->push_back(FSEntry(DATADIR "/paludis/syncers"));
     result->push_back(FSEntry(LIBEXECDIR "/paludis/syncers"));
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 EnvironmentImplementation::fetchers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
     result->push_back(FSEntry(DATADIR "/paludis/fetchers"));
     result->push_back(FSEntry(LIBEXECDIR "/paludis/fetchers"));
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 EnvironmentImplementation::hook_dirs() const
 {
-    static std::tr1::shared_ptr<const FSEntryCollection> result(new FSEntryCollection::Concrete);
+    static tr1::shared_ptr<const FSEntryCollection> result(new FSEntryCollection::Concrete);
     return result;
 }
 
@@ -207,17 +207,17 @@ EnvironmentImplementation::reduced_gid() const
     return getgid();
 }
 
-std::tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsCollection>
 EnvironmentImplementation::mirrors(const std::string &) const
 {
-    static std::tr1::shared_ptr<const MirrorsCollection> result(new MirrorsCollection::Concrete);
+    static tr1::shared_ptr<const MirrorsCollection> result(new MirrorsCollection::Concrete);
     return result;
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 EnvironmentImplementation::set_names() const
 {
-    static std::tr1::shared_ptr<const SetNameCollection> result(new SetNameCollection::Concrete);
+    static tr1::shared_ptr<const SetNameCollection> result(new SetNameCollection::Concrete);
     return result;
 }
 
@@ -227,10 +227,10 @@ EnvironmentImplementation::perform_hook(const Hook &) const
     return HookResult(0, "");
 }
 
-std::tr1::shared_ptr<const DestinationsCollection>
+tr1::shared_ptr<const DestinationsCollection>
 EnvironmentImplementation::default_destinations() const
 {
-    std::tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
+    tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -248,7 +248,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
     Context context("When checking for mask reasons for '" + stringify(e) + "':");
 
     MaskReasons result;
-    std::tr1::shared_ptr<const VersionMetadata> metadata(package_database()->fetch_repository(
+    tr1::shared_ptr<const VersionMetadata> metadata(package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
     if (! accept_eapi(metadata->eapi, e))
@@ -272,14 +272,14 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
 
     if (metadata->ebuild_interface)
     {
-        std::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
+        tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
         if (! accept_keywords(keywords, e))
         {
             do
             {
                 if (options[mro_override_unkeyworded])
                 {
-                    std::tr1::shared_ptr<KeywordNameCollection> minus_keywords(new KeywordNameCollection::Concrete);
+                    tr1::shared_ptr<KeywordNameCollection> minus_keywords(new KeywordNameCollection::Concrete);
                     for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                             k != k_end ; ++k)
                         if ('-' == stringify(*k).at(0))
@@ -291,7 +291,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
 
                 if (options[mro_override_tilde_keywords])
                 {
-                    std::tr1::shared_ptr<KeywordNameCollection> detildeified_keywords(new KeywordNameCollection::Concrete);
+                    tr1::shared_ptr<KeywordNameCollection> detildeified_keywords(new KeywordNameCollection::Concrete);
                     for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                             k != k_end ; ++k)
                     {
@@ -322,7 +322,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
         if (masked_by_user(e))
             result += mr_user_mask;
 
-        std::tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
+        tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
         if (repo->mask_interface)
         {
             if (repo->mask_interface->query_profile_masks(e.name, e.version))
@@ -336,10 +336,10 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
     return result;
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 EnvironmentImplementation::set(const SetName & s) const
 {
-    std::tr1::shared_ptr<CompositeDepSpec> result(local_set(s));
+    tr1::shared_ptr<CompositeDepSpec> result(local_set(s));
     if (result)
         return result;
 
@@ -354,7 +354,7 @@ EnvironmentImplementation::set(const SetName & s) const
         if (! (*r)->sets_interface)
             continue;
 
-        std::tr1::shared_ptr<DepSpec> add((*r)->sets_interface->package_set(s));
+        tr1::shared_ptr<DepSpec> add((*r)->sets_interface->package_set(s));
         if (0 != add)
         {
             if (! result)
@@ -376,7 +376,7 @@ EnvironmentImplementation::set(const SetName & s) const
 bool
 EnvironmentImplementation::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
-    std::tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
+    tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
 
     if (repo && repo->use_interface)
     {
@@ -407,9 +407,9 @@ EnvironmentImplementation::query_use(const UseFlagName & f, const PackageDatabas
         return false;
 }
 
-std::tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<CompositeDepSpec>
 EnvironmentImplementation::local_set(const SetName &) const
 {
-    return std::tr1::shared_ptr<CompositeDepSpec>();
+    return tr1::shared_ptr<CompositeDepSpec>();
 }
 

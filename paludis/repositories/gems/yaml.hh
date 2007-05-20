@@ -23,7 +23,7 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -84,14 +84,14 @@ namespace paludis
         public:
             YamlMappingNode();
 
-            void add(std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode>);
+            void add(tr1::shared_ptr<YamlScalarNode>, tr1::shared_ptr<YamlNode>);
 
             typedef libwrapiter::ForwardIterator<YamlMappingNode,
-                    const std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > > Iterator;
+                    const std::pair<tr1::shared_ptr<YamlScalarNode>, tr1::shared_ptr<YamlNode> > > Iterator;
             Iterator begin() const;
             Iterator end() const;
 
-            std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > & back();
+            std::pair<tr1::shared_ptr<YamlScalarNode>, tr1::shared_ptr<YamlNode> > & back();
 
             bool empty() const
             {
@@ -107,11 +107,11 @@ namespace paludis
         public:
             YamlSequenceNode();
 
-            typedef libwrapiter::ForwardIterator<YamlSequenceNode, const std::tr1::shared_ptr<YamlNode> > Iterator;
+            typedef libwrapiter::ForwardIterator<YamlSequenceNode, const tr1::shared_ptr<YamlNode> > Iterator;
             Iterator begin() const;
             Iterator end() const;
 
-            void add(std::tr1::shared_ptr<YamlNode>);
+            void add(tr1::shared_ptr<YamlNode>);
     };
 
     class PALUDIS_VISIBLE YamlDocument :
@@ -123,7 +123,7 @@ namespace paludis
             YamlDocument(const FSEntry &);
             ~YamlDocument();
 
-            std::tr1::shared_ptr<const YamlNode> top() const;
+            tr1::shared_ptr<const YamlNode> top() const;
     };
 }
 

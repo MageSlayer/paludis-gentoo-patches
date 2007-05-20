@@ -77,7 +77,7 @@ paludis::match_package(
 
     if (spec.slot_ptr() || spec.use_requirements_ptr())
     {
-        std::tr1::shared_ptr<const VersionMetadata> metadata(env.package_database()->fetch_repository(
+        tr1::shared_ptr<const VersionMetadata> metadata(env.package_database()->fetch_repository(
                     entry.repository)->version_metadata(
                     entry.name, entry.version));
 

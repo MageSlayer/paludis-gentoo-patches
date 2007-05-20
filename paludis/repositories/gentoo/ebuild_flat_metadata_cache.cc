@@ -25,14 +25,14 @@
 #include <fstream>
 #include <set>
 #include <list>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 #include <functional>
 #include <algorithm>
 
 using namespace paludis;
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
-        const FSEntry & e, time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
+        const FSEntry & e, time_t t, tr1::shared_ptr<const EclassMtimes> m, bool s) :
     _filename(f),
     _ebuild(e),
     _master_mtime(t),
@@ -42,9 +42,9 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
 }
 
 bool
-EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result)
+EbuildFlatMetadataCache::load(tr1::shared_ptr<EbuildVersionMetadata> result)
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     Context context("When loading version metadata to '" + stringify(_filename) + "':");
 
@@ -73,8 +73,8 @@ EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result
         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
         bool ok = _ebuild.mtime() <= cache_time &&
             result->inherited()->end() == std::find_if(result->inherited()->begin(), result->inherited()->end(),
-                    std::tr1::bind(std::greater<time_t>(), std::tr1::bind(
-                            std::tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
+                    tr1::bind(std::greater<time_t>(), tr1::bind(
+                            tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
 
         if (! ok)
             Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
@@ -100,7 +100,7 @@ namespace
         return join(tokens.begin(), tokens.end(), " ");
     }
 
-    std::string normalise(std::tr1::shared_ptr<const DepSpec> d)
+    std::string normalise(tr1::shared_ptr<const DepSpec> d)
     {
         DepSpecPrettyPrinter p(0, false);
         d->accept(&p);
@@ -109,7 +109,7 @@ namespace
 }
 
 void
-EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> v)
+EbuildFlatMetadataCache::save(tr1::shared_ptr<const EbuildVersionMetadata> v)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 

@@ -33,19 +33,19 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
 
-std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+tr1::shared_ptr<const PackageDatabaseEntryCollection>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
+    tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
                 query::Matches(PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
-                        std::tr1::shared_ptr<CategoryNamePart>(),
-                        std::tr1::shared_ptr<PackageNamePart>(),
-                        std::tr1::shared_ptr<VersionRequirements>(),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<VersionRequirements>(),
                         vr_and,
-                        std::tr1::shared_ptr<SlotName>(),
-                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(_repo->name())))),
+                        tr1::shared_ptr<SlotName>(),
+                        tr1::shared_ptr<RepositoryName>(new RepositoryName(_repo->name())))),
                 qo_group_by_slot));
 
     SlotName old_slot("I_am_a_slot");
@@ -53,7 +53,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
     for (PackageDatabaseEntryCollection::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
             p != p_end ; ++p)
     {
-        std::tr1::shared_ptr<const VersionMetadata> metadata(_repo->version_metadata(package, p->version));
+        tr1::shared_ptr<const VersionMetadata> metadata(_repo->version_metadata(package, p->version));
         if (! metadata->ebuild_interface)
             continue;
 
@@ -63,7 +63,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
             old_slot = metadata->slot;
         }
 
-        std::tr1::shared_ptr<const KeywordNameCollection> current_keywords(metadata->ebuild_interface->keywords());
+        tr1::shared_ptr<const KeywordNameCollection> current_keywords(metadata->ebuild_interface->keywords());
         bool used(false);
         for (KeywordNameCollection::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)

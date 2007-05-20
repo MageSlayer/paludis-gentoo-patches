@@ -113,16 +113,16 @@ namespace paludis
 
         private:
             int _counts[last_count];
-            std::tr1::shared_ptr<SortedCollection<DepTagEntry> > _all_tags;
-            std::tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
-            std::tr1::shared_ptr<UseFlagNameCollection> _all_expand_prefixes;
+            tr1::shared_ptr<SortedCollection<DepTagEntry> > _all_tags;
+            tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
+            tr1::shared_ptr<UseFlagNameCollection> _all_expand_prefixes;
 
-            void _add_descriptions(std::tr1::shared_ptr<const UseFlagNameCollection>,
+            void _add_descriptions(tr1::shared_ptr<const UseFlagNameCollection>,
                     const PackageDatabaseEntry &, UseDescriptionState);
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
-                    std::tr1::shared_ptr<const DestinationsCollection>);
+                    tr1::shared_ptr<const DestinationsCollection>);
 
         public:
             virtual void on_build_deplist_pre();
@@ -187,11 +187,11 @@ namespace paludis
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_for(const PackageDatabaseEntry &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
-                    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
-                    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
+                    tr1::shared_ptr<const PackageDatabaseEntryCollection>,
+                    tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
-                    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
-                    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
+                    tr1::shared_ptr<const PackageDatabaseEntryCollection>,
+                    tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
             virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
 
@@ -200,7 +200,7 @@ namespace paludis
             virtual void display_tag_summary_start();
             virtual void display_tag_summary_tag_title(const DepTagCategory &);
             virtual void display_tag_summary_tag_pre_text(const DepTagCategory &);
-            virtual void display_tag_summary_tag(std::tr1::shared_ptr<const DepTag>);
+            virtual void display_tag_summary_tag(tr1::shared_ptr<const DepTag>);
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 
@@ -228,12 +228,12 @@ namespace paludis
                 _counts[count_] = value;
             }
 
-            std::tr1::shared_ptr<SortedCollection<DepTagEntry> > all_tags()
+            tr1::shared_ptr<SortedCollection<DepTagEntry> > all_tags()
             {
                 return _all_tags;
             }
 
-            std::tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > all_use_descriptions()
+            tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > all_use_descriptions()
             {
                 return _all_use_descriptions;
             }
@@ -257,9 +257,9 @@ namespace paludis
             ///\name Makers
             ///\{
 
-            std::tr1::shared_ptr<DepTagSummaryDisplayer> make_dep_tag_summary_displayer();
-            std::tr1::shared_ptr<EntryDepTagDisplayer> make_entry_dep_tag_displayer();
-            std::tr1::shared_ptr<UseFlagPrettyPrinter> make_use_flag_pretty_printer();
+            tr1::shared_ptr<DepTagSummaryDisplayer> make_dep_tag_summary_displayer();
+            tr1::shared_ptr<EntryDepTagDisplayer> make_entry_dep_tag_displayer();
+            tr1::shared_ptr<UseFlagPrettyPrinter> make_use_flag_pretty_printer();
 
             ///\}
     };

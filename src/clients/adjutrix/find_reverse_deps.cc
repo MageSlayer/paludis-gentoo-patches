@@ -47,7 +47,7 @@ namespace
         public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>
     {
         private:
-            std::tr1::shared_ptr<const PackageDatabase> _db;
+            tr1::shared_ptr<const PackageDatabase> _db;
             const PackageDatabaseEntryCollection & _entries;
             std::string _depname;
             std::string _p;
@@ -61,7 +61,7 @@ namespace
         public:
             using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>::visit;
 
-            ReverseDepChecker(std::tr1::shared_ptr<const PackageDatabase> db,
+            ReverseDepChecker(tr1::shared_ptr<const PackageDatabase> db,
                     const PackageDatabaseEntryCollection & entries,
                     const std::string & p) :
                 _db(db),
@@ -74,7 +74,7 @@ namespace
             {
             }
 
-            void check(std::tr1::shared_ptr<const DepSpec> spec, const std::string & depname)
+            void check(tr1::shared_ptr<const DepSpec> spec, const std::string & depname)
             {
                 _depname = depname;
                 spec->accept(this);
@@ -120,9 +120,9 @@ namespace
     void
     ReverseDepChecker::visit(const PackageDepSpec * const a)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
                     query::Matches(*a), qo_order_by_version));
-        std::tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
+        tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
 
@@ -180,7 +180,7 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        std::tr1::shared_ptr<PackageDatabaseEntryCollection> p_entries(env.package_database()->query(
+        tr1::shared_ptr<PackageDatabaseEntryCollection> p_entries(env.package_database()->query(
                 query::Package(p), qo_order_by_version));
 
         bool found_matches(false);
@@ -190,7 +190,7 @@ namespace
         {
             try
             {
-                std::tr1::shared_ptr<const VersionMetadata> metadata(r.version_metadata(e->name, e->version));
+                tr1::shared_ptr<const VersionMetadata> metadata(r.version_metadata(e->name, e->version));
                 ReverseDepChecker checker(env.package_database(), entries,
                         stringify(p) + "-" + stringify(e->version));
 
@@ -221,13 +221,13 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 
-    std::tr1::shared_ptr<PackageDepSpec> spec;
+    tr1::shared_ptr<PackageDepSpec> spec;
     try
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
         {
             spec.reset(new PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                 env.package_database()->fetch_unique_qualified_package_name(
                                     PackageNamePart(*CommandLine::get_instance()->begin_parameters()))))));
         }
@@ -247,7 +247,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(
+    tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(
                 query::Matches(*spec), qo_order_by_version));
     int ret(0);
 
@@ -267,7 +267,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 
         write_repository_header(stringify(*spec), stringify(r->name()));
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -280,7 +280,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

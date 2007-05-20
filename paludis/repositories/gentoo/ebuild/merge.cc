@@ -142,7 +142,7 @@ namespace
             mode_t mode(src_dir.permissions());
 
 //#ifdef HAVE_SELINUX
-            std::tr1::shared_ptr<FSCreateCon> createcon;
+            tr1::shared_ptr<FSCreateCon> createcon;
             if (MatchPathCon::get_instance()->good())
             {
                 FSCreateCon *p = new FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()),
@@ -247,7 +247,7 @@ namespace
              * disk write may not have synced. */
             {
 //#ifdef HAVE_SELINUX
-                std::tr1::shared_ptr<FSCreateCon> createcon;
+                tr1::shared_ptr<FSCreateCon> createcon;
                 if (MatchPathCon::get_instance()->good())
                     createcon.reset(new 
                             FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
@@ -328,7 +328,7 @@ namespace
 //#ifdef HAVE_SELINUX
         // permissions() on a symlink does weird things, but matchpathcon only cares about the file type,
         // so just pass S_IFLNK.
-        std::tr1::shared_ptr<FSCreateCon> createcon;
+        tr1::shared_ptr<FSCreateCon> createcon;
         if (MatchPathCon::get_instance()->good())
             createcon.reset(new
                     FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"

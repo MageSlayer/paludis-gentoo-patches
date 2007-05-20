@@ -38,7 +38,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
             TEST_CHECK(env->query_use(UseFlagName("foo"), x));
@@ -70,10 +70,10 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             PackageDatabaseEntry pde1(QualifiedPackageName("cat/one"), VersionSpec("1"), RepositoryName("foo"));
-            std::tr1::shared_ptr<const UseFlagNameCollection> k1(env->known_use_expand_names(UseFlagName("foo_cards"), pde1));
+            tr1::shared_ptr<const UseFlagNameCollection> k1(env->known_use_expand_names(UseFlagName("foo_cards"), pde1));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
         }
     } paludis_environment_use_test_known;
@@ -87,7 +87,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
             TEST_CHECK(env->query_use(UseFlagName("foo"), x));
@@ -119,7 +119,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
             TEST_CHECK(env->query_use(UseFlagName("foo"), x));
@@ -151,7 +151,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("first")));
             TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("second")));

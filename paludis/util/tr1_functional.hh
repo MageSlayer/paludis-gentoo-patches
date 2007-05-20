@@ -17,18 +17,44 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_TR1_TR1_FUNCTIONAL_HH
-#define PALUDIS_GUARD_TR1_TR1_FUNCTIONAL_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_TR1_FUNCTIONAL_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_TR1_FUNCTIONAL_HH 1
 
-/*
- * Used if we have boost but not std::tr1::bind<> etc.
- */
+#if defined(PALUDIS_TR1_FUNCTIONAL_IS_STD_TR1)
+
+#include <tr1/functional>
+
+namespace paludis
+{
+    namespace tr1
+    {
+        using std::tr1::bind;
+        using std::tr1::mem_fn;
+        using std::tr1::ref;
+        using std::tr1::cref;
+
+        namespace placeholders
+        {
+            using std::tr1::placeholders::_1;
+            using std::tr1::placeholders::_2;
+            using std::tr1::placeholders::_3;
+            using std::tr1::placeholders::_4;
+            using std::tr1::placeholders::_5;
+            using std::tr1::placeholders::_6;
+            using std::tr1::placeholders::_7;
+            using std::tr1::placeholders::_8;
+            using std::tr1::placeholders::_9;
+        }
+    }
+}
+
+#elif defined(PALUDIS_TR1_FUNCTIONAL_IS_BOOST)
 
 #include <boost/bind.hpp>
 #include <boost/mem_fn.hpp>
 #include <boost/ref.hpp>
 
-namespace std
+namespace paludis
 {
     namespace tr1
     {
@@ -42,5 +68,9 @@ namespace std
         }
     }
 }
+
+#else
+#  error Either PALUDIS_TR1_FUNCTIONAL_IS_STD_TR1 or PALUDIS_TR1_FUNCTIONAL_IS_BOOST should be defined
+#endif
 
 #endif

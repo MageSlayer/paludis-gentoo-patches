@@ -40,14 +40,14 @@ namespace paludis
     {
         private:
             const std::string _t;
-            const std::tr1::shared_ptr<const PackageDatabaseEntryCollection> _p;
+            const tr1::shared_ptr<const PackageDatabaseEntryCollection> _p;
 
         public:
             ///\name Basic operations
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches) throw () :
+                    const tr1::shared_ptr<const PackageDatabaseEntryCollection> matches) throw () :
                 Exception("Ambiguous unmerge target '" + our_target + "'"),
                 _t(our_target),
                 _p(matches)
@@ -157,7 +157,7 @@ namespace paludis
             ///\{
 
             virtual void world_remove_set(const SetName &);
-            virtual void world_remove_packages(std::tr1::shared_ptr<const DepSpec>);
+            virtual void world_remove_packages(tr1::shared_ptr<const DepSpec>);
 
             ///\}
 

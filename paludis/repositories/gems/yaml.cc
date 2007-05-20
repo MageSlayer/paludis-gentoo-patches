@@ -44,13 +44,13 @@ namespace paludis
     template<>
     struct Implementation<YamlMappingNode>
     {
-        std::list<std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > > nodes;
+        std::list<std::pair<tr1::shared_ptr<YamlScalarNode>, tr1::shared_ptr<YamlNode> > > nodes;
     };
 
     template<>
     struct Implementation<YamlSequenceNode>
     {
-        std::list<std::tr1::shared_ptr<YamlNode> > nodes;
+        std::list<tr1::shared_ptr<YamlNode> > nodes;
     };
 }
 
@@ -72,7 +72,7 @@ YamlMappingNode::end() const
     return Iterator(_imp->nodes.end());
 }
 
-std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > &
+std::pair<tr1::shared_ptr<YamlScalarNode>, tr1::shared_ptr<YamlNode> > &
 YamlMappingNode::back()
 {
     return _imp->nodes.back();
@@ -96,13 +96,13 @@ YamlSequenceNode::end() const
 }
 
 void
-YamlSequenceNode::add(std::tr1::shared_ptr<YamlNode> node)
+YamlSequenceNode::add(tr1::shared_ptr<YamlNode> node)
 {
     _imp->nodes.push_back(node);
 }
 
 void
-YamlMappingNode::add(std::tr1::shared_ptr<YamlScalarNode> a, std::tr1::shared_ptr<YamlNode> b)
+YamlMappingNode::add(tr1::shared_ptr<YamlScalarNode> a, tr1::shared_ptr<YamlNode> b)
 {
     _imp->nodes.push_back(std::make_pair(a, b));
 }
@@ -112,10 +112,10 @@ namespace paludis
     template<>
     struct Implementation<YamlDocument>
     {
-        std::tr1::shared_ptr<YamlSequenceNode> top;
+        tr1::shared_ptr<YamlSequenceNode> top;
 
         void parse(yaml_parser_t * parser);
-        std::tr1::shared_ptr<YamlScalarNode> parse_scalar(yaml_parser_t * parser);
+        tr1::shared_ptr<YamlScalarNode> parse_scalar(yaml_parser_t * parser);
 
         Implementation() :
             top(new YamlSequenceNode)
@@ -164,9 +164,9 @@ namespace
     struct ScalarAdder :
         YamlNodeVisitorTypes::Visitor
     {
-        std::tr1::shared_ptr<YamlScalarNode> a;
+        tr1::shared_ptr<YamlScalarNode> a;
 
-        ScalarAdder(std::tr1::shared_ptr<YamlScalarNode> aa) :
+        ScalarAdder(tr1::shared_ptr<YamlScalarNode> aa) :
             a(aa)
         {
         }
@@ -174,7 +174,7 @@ namespace
         void visit(YamlMappingNode * n)
         {
             if (n->empty() || n->back().second)
-                n->add(a, std::tr1::shared_ptr<YamlNode>());
+                n->add(a, tr1::shared_ptr<YamlNode>());
             else
                 n->back().second = a;
         }
@@ -193,9 +193,9 @@ namespace
     struct NonScalarAdder :
         YamlNodeVisitorTypes::Visitor
     {
-        std::tr1::shared_ptr<YamlNode> a;
+        tr1::shared_ptr<YamlNode> a;
 
-        NonScalarAdder(std::tr1::shared_ptr<YamlNode> aa) :
+        NonScalarAdder(tr1::shared_ptr<YamlNode> aa) :
             a(aa)
         {
         }
@@ -256,7 +256,7 @@ YamlDocument::YamlDocument(const FSEntry & loc) :
 void
 Implementation<YamlDocument>::parse(yaml_parser_t * parser)
 {
-    std::list<std::tr1::shared_ptr<YamlNode> > stack;
+    std::list<tr1::shared_ptr<YamlNode> > stack;
     stack.push_back(top);
 
     bool done(false);
@@ -281,7 +281,7 @@ Implementation<YamlDocument>::parse(yaml_parser_t * parser)
 
             case YAML_MAPPING_START_EVENT:
                 {
-                    std::tr1::shared_ptr<YamlMappingNode> node(new YamlMappingNode);
+                    tr1::shared_ptr<YamlMappingNode> node(new YamlMappingNode);
                     if (stack.empty())
                         throw YamlError("Error building tree: stack empty on YAML_SEQUENCE_START_EVENT");
 
@@ -305,7 +305,7 @@ Implementation<YamlDocument>::parse(yaml_parser_t * parser)
 
             case YAML_SEQUENCE_START_EVENT:
                 {
-                    std::tr1::shared_ptr<YamlSequenceNode> node(new YamlSequenceNode);
+                    tr1::shared_ptr<YamlSequenceNode> node(new YamlSequenceNode);
                     if (stack.empty())
                         throw YamlError("Error building tree: stack empty on YAML_SEQUENCE_START_EVENT");
                     if (stack.back())
@@ -323,7 +323,7 @@ Implementation<YamlDocument>::parse(yaml_parser_t * parser)
                 {
                     if (stack.empty())
                         throw YamlError("Error building tree: stack empty on YAML_SCALAR_EVENT");
-                    std::tr1::shared_ptr<YamlScalarNode> node(new YamlScalarNode(
+                    tr1::shared_ptr<YamlScalarNode> node(new YamlScalarNode(
                                 event->data.scalar.value ? reinterpret_cast<const char *>(event->data.scalar.value) : "",
                                 event->data.scalar.tag ? reinterpret_cast<const char *>(event->data.scalar.tag) : ""));
                     if (stack.back())
@@ -355,7 +355,7 @@ YamlDocument::~YamlDocument()
 {
 }
 
-std::tr1::shared_ptr<const YamlNode>
+tr1::shared_ptr<const YamlNode>
 YamlDocument::top() const
 {
     return _imp->top;

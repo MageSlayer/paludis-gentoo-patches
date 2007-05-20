@@ -39,12 +39,12 @@ namespace paludis
     struct EntriesComparator
     {
         /// Our PackageDatabase instance.
-        std::tr1::shared_ptr<const PackageDatabase> const db;
+        tr1::shared_ptr<const PackageDatabase> const db;
 
         ///\name Basic operations
         ///\{
 
-        EntriesComparator(std::tr1::shared_ptr<const PackageDatabase> const d) :
+        EntriesComparator(tr1::shared_ptr<const PackageDatabase> const d) :
             db(d)
         {
         }

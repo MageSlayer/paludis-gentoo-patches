@@ -68,7 +68,7 @@ namespace
 
 void
 do_one_contents_entry(
-        const std::tr1::shared_ptr<Environment> env,
+        const tr1::shared_ptr<Environment> env,
         const PackageDatabaseEntry & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
@@ -78,7 +78,7 @@ do_one_contents_entry(
             contents_interface);
     if (contents_interface)
     {
-        std::tr1::shared_ptr<const Contents> contents(contents_interface->contents(
+        tr1::shared_ptr<const Contents> contents(contents_interface->contents(
                     e.name, e.version));
         ContentsDisplayer d;
         std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
@@ -91,19 +91,19 @@ do_one_contents_entry(
 
 void
 do_one_contents(
-        const std::tr1::shared_ptr<Environment> env,
+        const tr1::shared_ptr<Environment> env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. either should work. */
-    std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
-            new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+    tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
+            new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                         env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))) :
             new PackageDepSpec(q, pds_pm_permissive));
 
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+    tr1::shared_ptr<const PackageDatabaseEntryCollection>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
                         env->root()), qo_order_by_version));
 
@@ -116,7 +116,7 @@ do_one_contents(
 }
 
 int
-do_contents(std::tr1::shared_ptr<Environment> env)
+do_contents(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 

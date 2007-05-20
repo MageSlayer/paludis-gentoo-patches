@@ -66,7 +66,7 @@ namespace paludis
             /**
              * Generate version metadata.
              */
-            virtual std::tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
+            virtual tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
             /**
@@ -74,19 +74,19 @@ namespace paludis
              */
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
              * Handle an install.
              */
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    const InstallOptions &, tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
              * Handle a pretend.
              */
             virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
              * Handle a merge.
@@ -117,7 +117,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PortageRepositoryEntriesMaker :
         public VirtualConstructor<std::string,
-            std::tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
+            tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
                     const PortageRepositoryParams &),
             virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >,
         public InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonTag>

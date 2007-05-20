@@ -54,7 +54,7 @@ namespace paludis
         private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
     {
         protected:
-            virtual bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -88,29 +88,29 @@ namespace paludis
             /**
              * Fetch our 'main' repository.
              */
-            std::tr1::shared_ptr<Repository> main_repository();
+            tr1::shared_ptr<Repository> main_repository();
 
             /**
              * Fetch our 'main' repository.
              */
-            std::tr1::shared_ptr<const Repository> main_repository() const;
+            tr1::shared_ptr<const Repository> main_repository() const;
 
             /**
              * Fetch our 'master' repository (may be zero).
              */
-            std::tr1::shared_ptr<Repository> master_repository();
+            tr1::shared_ptr<Repository> master_repository();
 
             /**
              * Fetch our 'master' repository (may be zero).
              */
-            std::tr1::shared_ptr<const Repository> master_repository() const;
+            tr1::shared_ptr<const Repository> master_repository() const;
 
             ///\}
 
-            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+            virtual tr1::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual tr1::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string paludis_command() const

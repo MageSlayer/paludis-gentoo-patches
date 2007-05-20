@@ -227,7 +227,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
 
             std::stringstream t;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > t_defs(
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > t_defs(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             t_defs->insert("a", "moo");
             t_defs->insert("d", "bar");
@@ -261,7 +261,7 @@ namespace test_cases
 
             std::stringstream d_s;
             d_s << "foo=oink" << std::endl;
-            std::tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(), &getenv_with_default));
+            tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(), &getenv_with_default));
 
             std::stringstream s;
             s << "x=${foo}" << std::endl;

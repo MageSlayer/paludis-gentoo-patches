@@ -25,7 +25,7 @@
 using namespace paludis;
 
 template class VirtualConstructor<std::string,
-         std::tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
+         tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
                  const PortageRepositoryParams &),
          virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >;
 

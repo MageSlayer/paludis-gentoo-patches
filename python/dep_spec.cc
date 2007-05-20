@@ -103,7 +103,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
     ur.def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end));
     register_shared_ptrs_to_python<UseRequirements>();
 
-    bp::class_<PackageDepSpec, std::tr1::shared_ptr<const PackageDepSpec>, bp::bases<StringDepSpec> >
+    bp::class_<PackageDepSpec, tr1::shared_ptr<const PackageDepSpec>, bp::bases<StringDepSpec> >
         pkgds("PackageDepSpec",
                 "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
                 " possibly with associated version and SLOT restrictions.",
@@ -123,7 +123,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
             "[ro] CategoryNamePart\n"
             "Category name part (may be None)."
            );
-    std::tr1::shared_ptr<const VersionRequirements> (PackageDepSpec::*version_requirements)() const =
+    tr1::shared_ptr<const VersionRequirements> (PackageDepSpec::*version_requirements)() const =
         &PackageDepSpec::version_requirements_ptr;
     pkgds.add_property("version_requirements", version_requirements,
             "[ro] VersionRequirements\n"
@@ -158,7 +158,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
         bds("BlockDepSpec",
                 "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'),"
                 "possibly with associated version and SLOT restrictions.",
-                bp::init<std::tr1::shared_ptr<const PackageDepSpec> >("__init__(PackageDepSpec)")
+                bp::init<tr1::shared_ptr<const PackageDepSpec> >("__init__(PackageDepSpec)")
            );
     bds.add_property("blocked_spec", &BlockDepSpec::blocked_spec,
             "[ro] PackageDepSpec\n"

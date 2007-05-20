@@ -24,7 +24,7 @@
  * Declaration for the do_contents function.
  */
 
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -32,6 +32,6 @@ namespace paludis
 }
 
 /// Handle --contents.
-int do_contents(std::tr1::shared_ptr<paludis::Environment>);
+int do_contents(paludis::tr1::shared_ptr<paludis::Environment>);
 
 #endif

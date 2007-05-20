@@ -39,7 +39,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const CompositeDepSpec> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2", pds_pm_permissive));
+            tr1::shared_ptr<const CompositeDepSpec> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2", pds_pm_permissive));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());

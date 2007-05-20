@@ -73,20 +73,20 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+            tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart & p) const;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
+            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -96,23 +96,23 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<FSEntry> do_license_exists(
+            virtual tr1::shared_ptr<FSEntry> do_license_exists(
                     const std::string & license) const;
 
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName &) const;
+            virtual tr1::shared_ptr<DepSpec> do_package_set(const SetName &) const;
 
-            virtual std::tr1::shared_ptr<const SetNameCollection> sets_list() const;
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
             virtual bool do_sync() const;
 
             virtual bool do_pretend(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
+            virtual tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const;
 
             /* RepositoryUseInterface */
@@ -120,10 +120,10 @@ namespace paludis
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
             virtual std::string do_describe_use_flag(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             /* end of RepositoryUseInterface */
@@ -138,7 +138,7 @@ namespace paludis
             /* end of RepositoryDestinationInterface */
 
         public:
-            virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
+            virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
 
             /**
              * Constructor.

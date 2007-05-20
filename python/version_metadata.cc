@@ -72,7 +72,7 @@ struct VersionMetadataWrapper
 
 void PALUDIS_VISIBLE expose_version_metadata()
 {
-    bp::register_ptr_to_python<std::tr1::shared_ptr<const VersionMetadata> >();
+    bp::register_ptr_to_python<tr1::shared_ptr<const VersionMetadata> >();
     bp::class_<VersionMetadata, boost::noncopyable>
         vm("VersionMetadata",
                 "Version metadata.",

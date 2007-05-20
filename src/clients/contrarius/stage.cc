@@ -25,7 +25,7 @@
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/query.hh>
 #include <string>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 #include "stage.hh"
 #include "target_config.hh"
@@ -63,7 +63,7 @@ BinutilsStage::build(const StageOptions &) const
 {
     Context context("When building BinutilsStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(TargetConfig::get_instance()->binutils(),
+    tr1::shared_ptr<PackageDepSpec> binutils(new PackageDepSpec(TargetConfig::get_instance()->binutils(),
                 pds_pm_permissive));
 
     _env->clear_adaptions();
@@ -85,7 +85,7 @@ KernelHeadersStage::build(const StageOptions &) const
 {
     Context context("When building KernelHeadersStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(TargetConfig::get_instance()->headers(),
+    tr1::shared_ptr<PackageDepSpec> headers(new PackageDepSpec(TargetConfig::get_instance()->headers(),
                 pds_pm_permissive));
 
     _env->clear_adaptions();
@@ -109,7 +109,7 @@ MinimalStage::build(const StageOptions &) const
 {
     Context context("When executing MinimalStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
+    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
                 pds_pm_permissive));
 
     _env->clear_adaptions();
@@ -141,7 +141,7 @@ LibCHeadersStage::build(const StageOptions &) const
 {
     Context context("When building LIbCHeaderStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
+    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
                 pds_pm_unspecific));
 
     _env->clear_adaptions();
@@ -154,7 +154,7 @@ LibCHeadersStage::build(const StageOptions &) const
 bool
 LibCHeadersStage::is_rebuild() const
 {
-    return (! std::tr1::shared_ptr<const PackageDatabaseEntryCollection>(_env->package_database()->query(
+    return (! tr1::shared_ptr<const PackageDatabaseEntryCollection>(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_unspecific)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever))->empty());
@@ -165,7 +165,7 @@ LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
+    tr1::shared_ptr<PackageDepSpec> libc(new PackageDepSpec(TargetConfig::get_instance()->libc(),
                 pds_pm_permissive));
 
     _env->clear_adaptions();
@@ -176,7 +176,7 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));
@@ -192,7 +192,7 @@ FullStage::build(const StageOptions &) const
 {
     Context context("When building FullStage:");
 
-    std::tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
+    tr1::shared_ptr<PackageDepSpec> gcc(new PackageDepSpec(TargetConfig::get_instance()->gcc(),
                 pds_pm_permissive));
 
     _env->clear_adaptions();
@@ -210,7 +210,7 @@ FullStage::build(const StageOptions &) const
 bool
 FullStage::is_rebuild() const
 {
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
+    tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));

@@ -68,7 +68,7 @@ namespace
         {
             FindUnusedPackagesTask * ptr;
             Data_Get_Struct(self, FindUnusedPackagesTask, ptr);
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(ptr->execute(value_to_qualified_package_name(qpn)));
+            tr1::shared_ptr<const PackageDatabaseEntryCollection> c(ptr->execute(value_to_qualified_package_name(qpn)));
             VALUE result(rb_ary_new());
             for (PackageDatabaseEntryCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_database_entry_to_value(*i));

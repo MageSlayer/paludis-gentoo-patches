@@ -73,10 +73,10 @@ namespace paludis
         template <typename T_>
         struct MakePackageDirCheck
         {
-            static std::tr1::shared_ptr<PackageDirCheck>
+            static tr1::shared_ptr<PackageDirCheck>
             make_package_dir_check()
             {
-                return std::tr1::shared_ptr<PackageDirCheck>(new T_);
+                return tr1::shared_ptr<PackageDirCheck>(new T_);
             }
         };
 
@@ -86,7 +86,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE PackageDirCheckMaker :
-            public VirtualConstructor<std::string, std::tr1::shared_ptr<PackageDirCheck> (*) (),
+            public VirtualConstructor<std::string, tr1::shared_ptr<PackageDirCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> >,
             public InstantiationPolicy<PackageDirCheckMaker, instantiation_method::SingletonTag>
         {

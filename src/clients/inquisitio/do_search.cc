@@ -38,8 +38,8 @@ using namespace inquisitio;
 int
 do_search(const Environment & env)
 {
-    std::list<std::tr1::shared_ptr<Matcher> > matchers;
-    std::list<std::tr1::shared_ptr<Extractor> > extractors;
+    std::list<tr1::shared_ptr<Matcher> > matchers;
+    std::list<tr1::shared_ptr<Extractor> > extractors;
 
     for (CommandLine::ParametersIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
@@ -72,7 +72,7 @@ do_search(const Environment & env)
                         r->format()))
                 continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -83,7 +83,7 @@ do_search(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs.insert(*p);
@@ -93,7 +93,7 @@ do_search(const Environment & env)
     for (std::set<QualifiedPackageName>::const_iterator p(pkgs.begin()), p_end(pkgs.end()) ;
             p != p_end ; ++p)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+        tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(env.package_database()->query(
                         query::Package(*p), qo_order_by_version)),
             preferred_entries(env.package_database()->query(query::Package(*p) &
@@ -111,11 +111,11 @@ do_search(const Environment & env)
                 display_entry = *i;
 
         bool match(false);
-        for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
+        for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
                 x_end(extractors.end()) ; x != x_end && ! match ; ++x)
         {
             std::string xx((**x)(display_entry));
-            for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
+            for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
                     m_end(matchers.end()) ; m != m_end && ! match ; ++m)
                 if ((**m)(xx))
                     match = true;
@@ -126,7 +126,7 @@ do_search(const Environment & env)
 
         InquisitioQueryTask query(&env);
         query.show(PackageDepSpec(
-                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry.name))),
+                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry.name))),
                 &display_entry);
     }
 

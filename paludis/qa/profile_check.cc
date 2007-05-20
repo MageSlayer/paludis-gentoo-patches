@@ -25,7 +25,7 @@
 using namespace paludis;
 using namespace paludis::qa;
 
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<ProfileCheck> (*) (),
+template class VirtualConstructor<std::string, tr1::shared_ptr<ProfileCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchProfileCheckTypeError> >;
 
 #include <paludis/qa/profile_check-sr.cc>

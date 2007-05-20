@@ -30,7 +30,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <list>
 #include <algorithm>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 
 using namespace paludis;
 
@@ -40,7 +40,7 @@ namespace paludis
     struct Implementation<PackageMaskConf>
     {
         const PaludisEnvironment * const env;
-        std::list<std::tr1::shared_ptr<const PackageDepSpec> > masks;
+        std::list<tr1::shared_ptr<const PackageDepSpec> > masks;
 
         Implementation(const PaludisEnvironment * const e) :
             env(e)
@@ -63,22 +63,22 @@ PackageMaskConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a package mask or unmask file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
     for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
-        _imp->masks.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*line, pds_pm_unspecific)));
+        _imp->masks.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*line, pds_pm_unspecific)));
 }
 
 bool
 PackageMaskConf::query(const PackageDatabaseEntry & e) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
     return indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            std::tr1::bind(&match_package, std::tr1::ref(*_imp->env), _1, e));
+            tr1::bind(&match_package, tr1::ref(*_imp->env), _1, e));
 }
 

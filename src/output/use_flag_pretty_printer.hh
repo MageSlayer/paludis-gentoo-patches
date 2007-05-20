@@ -34,14 +34,14 @@ namespace paludis
             const Environment * const _env;
             bool _need_space;
 
-            std::tr1::shared_ptr<UseFlagNameCollection> _new_flags;
-            std::tr1::shared_ptr<UseFlagNameCollection> _changed_flags;
-            std::tr1::shared_ptr<UseFlagNameCollection> _unchanged_flags;
-            std::tr1::shared_ptr<UseFlagNameCollection> _expand_prefixes;
+            tr1::shared_ptr<UseFlagNameCollection> _new_flags;
+            tr1::shared_ptr<UseFlagNameCollection> _changed_flags;
+            tr1::shared_ptr<UseFlagNameCollection> _unchanged_flags;
+            tr1::shared_ptr<UseFlagNameCollection> _expand_prefixes;
 
         protected:
             std::string::size_type use_expand_delim_pos(const UseFlagName & u,
-                    const std::tr1::shared_ptr<const UseFlagNameCollection> c) const;
+                    const tr1::shared_ptr<const UseFlagNameCollection> c) const;
 
         public:
             UseFlagPrettyPrinter(const Environment * const);
@@ -65,10 +65,10 @@ namespace paludis
             const Environment * environment() const;
             bool need_space() const;
 
-            std::tr1::shared_ptr<const UseFlagNameCollection> new_flags() const;
-            std::tr1::shared_ptr<const UseFlagNameCollection> changed_flags() const;
-            std::tr1::shared_ptr<const UseFlagNameCollection> unchanged_flags() const;
-            std::tr1::shared_ptr<const UseFlagNameCollection> expand_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameCollection> new_flags() const;
+            tr1::shared_ptr<const UseFlagNameCollection> changed_flags() const;
+            tr1::shared_ptr<const UseFlagNameCollection> unchanged_flags() const;
+            tr1::shared_ptr<const UseFlagNameCollection> expand_prefixes() const;
     };
 }
 

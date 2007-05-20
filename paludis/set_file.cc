@@ -51,7 +51,7 @@ namespace
         public:
             virtual ~SetFileHandler();
 
-            virtual std::tr1::shared_ptr<CompositeDepSpec> contents() const = 0;
+            virtual tr1::shared_ptr<CompositeDepSpec> contents() const = 0;
             virtual void add(const std::string &) = 0;
             virtual void remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
@@ -63,14 +63,14 @@ namespace
         private:
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<CompositeDepSpec> _contents;
+            mutable tr1::shared_ptr<CompositeDepSpec> _contents;
 
             void _create_contents() const;
 
         public:
             PaludisConfHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<CompositeDepSpec> contents() const;
+            virtual tr1::shared_ptr<CompositeDepSpec> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
@@ -81,12 +81,12 @@ namespace
     {
         private:
             const SetFileParams _p;
-            std::tr1::shared_ptr<CompositeDepSpec> _contents;
+            tr1::shared_ptr<CompositeDepSpec> _contents;
 
         public:
             PaludisBashHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<CompositeDepSpec> contents() const;
+            virtual tr1::shared_ptr<CompositeDepSpec> contents() const;
             virtual void add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
@@ -98,20 +98,20 @@ namespace
         private:
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<CompositeDepSpec> _contents;
+            mutable tr1::shared_ptr<CompositeDepSpec> _contents;
 
             void _create_contents() const;
 
         public:
             SimpleHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<CompositeDepSpec> contents() const;
+            virtual tr1::shared_ptr<CompositeDepSpec> contents() const;
             virtual void add(const std::string &);
             virtual void remove(const std::string &);
             virtual void rewrite() const;
     };
 
-    std::tr1::shared_ptr<SetFileHandler>
+    tr1::shared_ptr<SetFileHandler>
     make_handler(const SetFileParams & p)
     {
         Context context("When making SetFileHandler for '" + stringify(p.file_name) + "':");
@@ -119,13 +119,13 @@ namespace
         switch (p.type)
         {
             case sft_simple:
-                return std::tr1::shared_ptr<SetFileHandler>(new SimpleHandler(p));
+                return tr1::shared_ptr<SetFileHandler>(new SimpleHandler(p));
 
             case sft_paludis_conf:
-                return std::tr1::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
+                return tr1::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
 
             case sft_paludis_bash:
-                return std::tr1::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
+                return tr1::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
 
             case last_sft:
                 break;
@@ -153,7 +153,7 @@ namespace
     };
 
     void
-    do_one_conf_line(const std::string & line, std::tr1::shared_ptr<CompositeDepSpec> result,
+    do_one_conf_line(const std::string & line, tr1::shared_ptr<CompositeDepSpec> result,
             const SetFileParams & params)
     {
         if (line.empty())
@@ -177,21 +177,21 @@ namespace
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + stringify(line) +
                         "' should start with '?' or '*', assuming '*'");
 
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), params.parse_mode));
                 if (params.tag)
                     spec->set_tag(params.tag);
                 result->add_child(spec);
             }
             else if ("*" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
                 if (params.tag)
                     spec->set_tag(params.tag);
                 result->add_child(spec);
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), params.parse_mode));
                 if (params.tag)
                     spec->set_tag(params.tag);
 
@@ -261,7 +261,7 @@ SimpleHandler::_create_contents() const
         {
             if (_p.environment && std::string::npos == i->find('/'))
             {
-                std::tr1::shared_ptr<DepSpec> p(_p.environment->set(SetName(*i)));
+                tr1::shared_ptr<DepSpec> p(_p.environment->set(SetName(*i)));
                 if (p)
                     _contents->add_child(p);
                 else
@@ -270,7 +270,7 @@ SimpleHandler::_create_contents() const
             }
             else
             {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(stringify(*i), _p.parse_mode));
+                tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(stringify(*i), _p.parse_mode));
                 if (_p.tag)
                     p->set_tag(_p.tag);
                 _contents->add_child(p);
@@ -284,7 +284,7 @@ SimpleHandler::_create_contents() const
     }
 }
 
-std::tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<CompositeDepSpec>
 SimpleHandler::contents() const
 {
     if (! _contents)
@@ -348,7 +348,7 @@ PaludisConfHandler::_create_contents() const
         do_one_conf_line(*i, _contents, _p);
 }
 
-std::tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<CompositeDepSpec>
 PaludisConfHandler::contents() const
 {
     if (! _contents)
@@ -418,7 +418,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     }
 }
 
-std::tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<CompositeDepSpec>
 PaludisBashHandler::contents() const
 {
     return _contents;
@@ -448,7 +448,7 @@ namespace paludis
     struct Implementation<SetFile>
     {
         const SetFileParams params;
-        std::tr1::shared_ptr<SetFileHandler> handler;
+        tr1::shared_ptr<SetFileHandler> handler;
 
         Implementation(const SetFileParams & p) :
             params(p),
@@ -467,7 +467,7 @@ SetFile::~SetFile()
 {
 }
 
-std::tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<CompositeDepSpec>
 SetFile::contents() const
 {
     return _imp->handler->contents();

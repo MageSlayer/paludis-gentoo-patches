@@ -25,7 +25,7 @@
 #include <libwrapiter/libwrapiter.hh>
 #include <iterator>
 #include <functional>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Various wrappers around collections of items, for convenience and
@@ -240,7 +240,7 @@ namespace paludis
             /**
              * Insert all items from another container.
              */
-            virtual bool merge(typename std::tr1::shared_ptr<const SortedCollection<T_, C_> > o) = 0;
+            virtual bool merge(typename tr1::shared_ptr<const SortedCollection<T_, C_> > o) = 0;
 
             /**
              * Our insert iterator type.

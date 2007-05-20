@@ -24,24 +24,24 @@
 
 using namespace paludis;
 
-typedef MakeHashedMultiMap<UseFlagName, std::pair<std::tr1::shared_ptr<const PackageDepSpec>, UseFlagState> >::Type Use;
+typedef MakeHashedMultiMap<UseFlagName, std::pair<tr1::shared_ptr<const PackageDepSpec>, UseFlagState> >::Type Use;
 
 namespace paludis
 {
     template<>
     struct Implementation<AdaptedEnvironment>
     {
-        std::tr1::shared_ptr<Environment> env;
+        tr1::shared_ptr<Environment> env;
         Use use;
 
-        Implementation(std::tr1::shared_ptr<Environment> e) :
+        Implementation(tr1::shared_ptr<Environment> e) :
             env(e)
         {
         }
     };
 }
 
-AdaptedEnvironment::AdaptedEnvironment(std::tr1::shared_ptr<Environment> e) :
+AdaptedEnvironment::AdaptedEnvironment(tr1::shared_ptr<Environment> e) :
     PrivateImplementationPattern<AdaptedEnvironment>(new Implementation<AdaptedEnvironment>(e))
 {
 }
@@ -51,7 +51,7 @@ AdaptedEnvironment::~AdaptedEnvironment()
 }
 
 void
-AdaptedEnvironment::adapt_use(std::tr1::shared_ptr<const PackageDepSpec> p,
+AdaptedEnvironment::adapt_use(tr1::shared_ptr<const PackageDepSpec> p,
         const UseFlagName & u, const UseFlagState s)
 {
     _imp->use.insert(std::make_pair(u, std::make_pair(p, s)));
@@ -63,13 +63,13 @@ AdaptedEnvironment::clear_adaptions()
     _imp.reset(new Implementation<AdaptedEnvironment>(_imp->env));
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+tr1::shared_ptr<PackageDatabase>
 AdaptedEnvironment::package_database()
 {
     return _imp->env->package_database();
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+tr1::shared_ptr<const PackageDatabase>
 AdaptedEnvironment::package_database() const
 {
     return _imp->env->package_database();
@@ -102,7 +102,7 @@ AdaptedEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry 
     throw InternalError(PALUDIS_HERE, "Bad state");
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageDatabaseEntry & e) const
 {
     return _imp->env->known_use_expand_names(u, e);
@@ -121,30 +121,30 @@ AdaptedEnvironment::accept_license(const std::string & l, const PackageDatabaseE
 }
 
 bool
-AdaptedEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
+AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
 {
     return _imp->env->accept_keywords(k, e);
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 AdaptedEnvironment::bashrc_files() const
 {
     return _imp->env->bashrc_files();
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 AdaptedEnvironment::syncers_dirs() const
 {
     return _imp->env->syncers_dirs();
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 AdaptedEnvironment::fetchers_dirs() const
 {
     return _imp->env->fetchers_dirs();
 }
 
-std::tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntryCollection>
 AdaptedEnvironment::hook_dirs() const
 {
     return _imp->env->hook_dirs();
@@ -180,25 +180,25 @@ AdaptedEnvironment::reduced_gid() const
     return _imp->env->reduced_gid();
 }
 
-std::tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsCollection>
 AdaptedEnvironment::mirrors(const std::string & m) const
 {
     return _imp->env->mirrors(m);
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 AdaptedEnvironment::set_names() const
 {
     return _imp->env->set_names();
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 AdaptedEnvironment::set(const SetName & s) const
 {
     return _imp->env->set(s);
 }
 
-std::tr1::shared_ptr<const DestinationsCollection>
+tr1::shared_ptr<const DestinationsCollection>
 AdaptedEnvironment::default_destinations() const
 {
     return _imp->env->default_destinations();

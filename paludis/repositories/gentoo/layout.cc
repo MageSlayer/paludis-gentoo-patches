@@ -27,8 +27,8 @@
 using namespace paludis;
 
 template class VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
-                 std::tr1::shared_ptr<const PortageRepositoryEntries>),
+         tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+                 tr1::shared_ptr<const PortageRepositoryEntries>),
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
 
 Layout::Layout() :
@@ -61,11 +61,11 @@ Layout::add_profiles_dir(const FSEntry & f)
 namespace
 {
     template <typename T_>
-    std::tr1::shared_ptr<Layout>
+    tr1::shared_ptr<Layout>
     make_layout(const RepositoryName & n, const FSEntry & b,
-            std::tr1::shared_ptr<const PortageRepositoryEntries> e)
+            tr1::shared_ptr<const PortageRepositoryEntries> e)
     {
-        return std::tr1::shared_ptr<Layout>(new T_(n, b, e));
+        return tr1::shared_ptr<Layout>(new T_(n, b, e));
     }
 }
 

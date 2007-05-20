@@ -36,9 +36,9 @@ namespace paludis
         public RepositoryProvidesInterface
     {
         protected:
-            virtual std::tr1::shared_ptr<const ProvidesCollection> provided_packages() const;
+            virtual tr1::shared_ptr<const ProvidesCollection> provided_packages() const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const;
 
         public:

@@ -28,13 +28,13 @@ GraphError::GraphError(const std::string & msg) throw () :
 }
 
 NoGraphTopologicalOrderExistsError::NoGraphTopologicalOrderExistsError(
-        std::tr1::shared_ptr<const RemainingNodes> r) throw () :
+        tr1::shared_ptr<const RemainingNodes> r) throw () :
     GraphError("No topological order exists"),
     _remaining_nodes(r)
 {
 }
 
-std::tr1::shared_ptr<const NoGraphTopologicalOrderExistsError::RemainingNodes>
+tr1::shared_ptr<const NoGraphTopologicalOrderExistsError::RemainingNodes>
 NoGraphTopologicalOrderExistsError::remaining_nodes() const
 {
     return _remaining_nodes;

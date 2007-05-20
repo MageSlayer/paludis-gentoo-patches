@@ -26,7 +26,7 @@
 #include <paludis/util/operators.hh>
 #include <string>
 #include <iosfwd>
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for paludis::Filesystem.
@@ -71,7 +71,7 @@ namespace paludis
         private:
             std::string _path;
 
-            mutable std::tr1::shared_ptr<struct ::stat> _stat_info;
+            mutable tr1::shared_ptr<struct ::stat> _stat_info;
 
             mutable bool _exists;
 

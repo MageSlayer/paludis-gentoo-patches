@@ -81,21 +81,21 @@ MetadataCheck::operator() (const FSEntry & f) const
                         "' -- you should remove this file manually before continuing");
         }
 
-        std::tr1::shared_ptr<xmlParserCtxt> xml_parser_context(xmlNewParserCtxt(), &xmlFreeParserCtxt);
-        std::tr1::shared_ptr<xmlDtd> xml_dtd(
+        tr1::shared_ptr<xmlParserCtxt> xml_parser_context(xmlNewParserCtxt(), &xmlFreeParserCtxt);
+        tr1::shared_ptr<xmlDtd> xml_dtd(
                 xmlParseDTD(0, reinterpret_cast<const xmlChar *>(stringify(dtd).c_str())), &xmlFreeDtd);
 
         if (! xml_dtd)
             result << Message(qal_major, "Unable to parse DTD '" + stringify(dtd) + "'");
         else
         {
-            std::tr1::shared_ptr<xmlDoc> xml_doc(xmlCtxtReadFile(
+            tr1::shared_ptr<xmlDoc> xml_doc(xmlCtxtReadFile(
                         xml_parser_context.get(), stringify(f).c_str(), 0, XML_PARSE_NONET), &xmlFreeDoc);
             if (! xml_doc)
                 result << Message(qal_major, "Unable to parse '" + stringify(f) + "'");
             else
             {
-                std::tr1::shared_ptr<xmlValidCtxt> xml_valid_context(xmlNewValidCtxt(), &xmlFreeValidCtxt);
+                tr1::shared_ptr<xmlValidCtxt> xml_valid_context(xmlNewValidCtxt(), &xmlFreeValidCtxt);
                 if (! xmlValidateDtd(xml_valid_context.get(), xml_doc.get(), xml_dtd.get()))
                     result << Message(qal_major, "Validation of '" + stringify(f) + "' against '"
                             + stringify(dtd) + "' failed");

@@ -42,7 +42,7 @@ namespace paludis
             /**
              * Create an EbinEntries instance.
              */
-            static std::tr1::shared_ptr<PortageRepositoryEntries> make_ebin_entries(const Environment * const,
+            static tr1::shared_ptr<PortageRepositoryEntries> make_ebin_entries(const Environment * const,
                     PortageRepository * const, const PortageRepositoryParams &);
 
             ///\name Basic operations
@@ -56,21 +56,21 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
+            virtual tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const
                 PALUDIS_ATTRIBUTE((noreturn));
 
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    const InstallOptions &, tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void merge(const MergeOptions &);
 
             virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

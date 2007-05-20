@@ -62,7 +62,7 @@ namespace paludis
             /**
              * Run the task.
              */
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> execute(const QualifiedPackageName &);
+            tr1::shared_ptr<const PackageDatabaseEntryCollection> execute(const QualifiedPackageName &);
     };
 }
 

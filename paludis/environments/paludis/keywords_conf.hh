@@ -40,7 +40,7 @@ namespace paludis
 
             void add(const FSEntry &);
 
-            bool query(std::tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
+            bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
     };
 }
 

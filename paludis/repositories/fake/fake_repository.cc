@@ -55,13 +55,13 @@ FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &,
 {
 }
 
-std::tr1::shared_ptr<const FakeRepository::VirtualsCollection>
+tr1::shared_ptr<const FakeRepository::VirtualsCollection>
 FakeRepository::virtual_packages() const
 {
     return _virtual_packages;
 }
 
-std::tr1::shared_ptr<const VersionMetadata>
+tr1::shared_ptr<const VersionMetadata>
 FakeRepository::virtual_package_version_metadata(
         const RepositoryVirtualsEntry & p, const VersionSpec & v) const
 {
@@ -71,8 +71,8 @@ FakeRepository::virtual_package_version_metadata(
     if (! p.provided_by_spec->package_ptr())
         throw ConfigurationError("Virtual provider atom does not specify an unambiguous package");
 
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
-    std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
+    tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
+    tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
 
     result->eapi = m->eapi;
@@ -85,7 +85,7 @@ FakeRepository::virtual_package_version_metadata(
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepSpec> p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, tr1::shared_ptr<const PackageDepSpec> p)
 {
     _virtual_packages->insert(RepositoryVirtualsEntry(q, p));
 }

@@ -32,28 +32,28 @@ namespace paludis
 }
 
 /// Handle --has-version.
-int do_has_version(std::tr1::shared_ptr<paludis::Environment>);
+int do_has_version(paludis::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --best-version.
-int do_best_version(std::tr1::shared_ptr<paludis::Environment>);
+int do_best_version(paludis::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --environment-variable.
-int do_environment_variable(std::tr1::shared_ptr<paludis::Environment>);
+int do_environment_variable(paludis::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --configuration-variable.
-int do_configuration_variable(std::tr1::shared_ptr<paludis::Environment>);
+int do_configuration_variable(paludis::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --list-repository-formats
 int do_list_repository_formats();
 
 /// Handle --list-sync-protocols
-int do_list_sync_protocols(std::tr1::shared_ptr<paludis::Environment>);
+int do_list_sync_protocols(paludis::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --list-dep-tag-categories
 int do_list_dep_tag_categories();
 
 /// Handle cache regeneration
-int do_regenerate_cache(std::tr1::shared_ptr<paludis::Environment>, bool installed);
+int do_regenerate_cache(paludis::tr1::shared_ptr<paludis::Environment>, bool installed);
 
 #endif
 

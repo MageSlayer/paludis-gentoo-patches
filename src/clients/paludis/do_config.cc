@@ -33,9 +33,9 @@ namespace
     struct AmbiguousConfigTarget :
         public Exception
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches;
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> matches;
 
-        AmbiguousConfigTarget(std::tr1::shared_ptr<const PackageDatabaseEntryCollection> & m) throw () :
+        AmbiguousConfigTarget(tr1::shared_ptr<const PackageDatabaseEntryCollection> & m) throw () :
             Exception("Ambiguous config target"),
             matches(m)
         {
@@ -47,11 +47,11 @@ namespace
     };
 
     int
-    do_one_config_entry(std::tr1::shared_ptr<Environment> env, const PackageDatabaseEntry & p)
+    do_one_config_entry(tr1::shared_ptr<Environment> env, const PackageDatabaseEntry & p)
     {
         int return_code(0);
 
-        std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(p.repository));
+        tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(p.repository));
         const RepositoryConfigInterface * conf_if(repo->config_interface);
 
         if (! conf_if)
@@ -67,19 +67,19 @@ namespace
     }
 
     int
-    do_one_config(std::tr1::shared_ptr<Environment> env, const std::string & target)
+    do_one_config(tr1::shared_ptr<Environment> env, const std::string & target)
     {
         Context local_context("When handling query '" + target + "':");
 
         /* we might have a dep spec, but we might just have a simple package name
          * without a category. either should work. */
-        std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
-                new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+        tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
+                new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                             env->package_database()->fetch_unique_qualified_package_name(
                                 PackageNamePart(target))))) :
                 new PackageDepSpec(target, pds_pm_permissive));
 
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+        tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
         if (entries->empty())
@@ -93,7 +93,7 @@ namespace
 }
 
 int
-do_config(std::tr1::shared_ptr<Environment> env)
+do_config(tr1::shared_ptr<Environment> env)
 {
     int ret_code(0);
 

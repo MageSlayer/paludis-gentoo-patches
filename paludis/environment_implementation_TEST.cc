@@ -32,14 +32,14 @@ namespace
         public EnvironmentImplementation
     {
         private:
-            std::tr1::shared_ptr<PackageDatabase> _package_database;
+            tr1::shared_ptr<PackageDatabase> _package_database;
 
         public:
             EITestEnvironment() :
                 _package_database(new PackageDatabase(this))
             {
-                std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(this, RepositoryName("repo")));
-                _package_database->add_repository(1, std::tr1::shared_ptr<Repository>(repo));
+                tr1::shared_ptr<FakeRepository> repo(new FakeRepository(this, RepositoryName("repo")));
+                _package_database->add_repository(1, tr1::shared_ptr<Repository>(repo));
 
                 repo->add_version("foo", "one", "0")->ebuild_interface->set_keywords("test foo");
                 repo->add_version("foo", "two", "0")->ebuild_interface->set_keywords("~test foo");
@@ -51,12 +51,12 @@ namespace
             {
             }
 
-            std::tr1::shared_ptr<PackageDatabase> package_database()
+            tr1::shared_ptr<PackageDatabase> package_database()
             {
                 return _package_database;
             }
 
-            std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            tr1::shared_ptr<const PackageDatabase> package_database() const
             {
                 return _package_database;
             }
@@ -70,7 +70,7 @@ namespace
             {
             }
 
-            bool accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
+            bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
             {
                 return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
             }

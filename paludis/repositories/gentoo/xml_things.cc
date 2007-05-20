@@ -30,7 +30,7 @@ using namespace paludis;
 
 extern "C"
 {
-    std::tr1::shared_ptr<GLSA> PALUDIS_VISIBLE create_glsa_from_xml_file(const std::string &);
+    tr1::shared_ptr<GLSA> PALUDIS_VISIBLE create_glsa_from_xml_file(const std::string &);
 }
 
 namespace
@@ -50,7 +50,7 @@ namespace
     class Handler
     {
         private:
-            std::tr1::shared_ptr<GLSA> _glsa;
+            tr1::shared_ptr<GLSA> _glsa;
 
         public:
             Handler() :
@@ -86,7 +86,7 @@ namespace
                 }
             }
 
-            void handle_package_archs(xmlDocPtr doc, xmlAttr * const attr, std::tr1::shared_ptr<GLSAPackage> pkg)
+            void handle_package_archs(xmlDocPtr doc, xmlAttr * const attr, tr1::shared_ptr<GLSAPackage> pkg)
             {
                 for (xmlAttr * a(attr) ; a ; a = a->next)
                 {
@@ -122,7 +122,7 @@ namespace
                 }
             }
 
-            void handle_package_children(xmlDocPtr doc, xmlNode * const node, std::tr1::shared_ptr<GLSAPackage> pkg)
+            void handle_package_children(xmlDocPtr doc, xmlNode * const node, tr1::shared_ptr<GLSAPackage> pkg)
             {
                 for (xmlNode * n(node) ; n ; n = n->next)
                 {
@@ -166,7 +166,7 @@ namespace
                         {
                             std::string m;
                             handle_package_name(doc, n->properties, m);
-                            std::tr1::shared_ptr<GLSAPackage> pkg(new GLSAPackage(QualifiedPackageName(m)));
+                            tr1::shared_ptr<GLSAPackage> pkg(new GLSAPackage(QualifiedPackageName(m)));
                             handle_package_archs(doc, n->properties, pkg);
                             handle_package_children(doc, n->children, pkg);
                             _glsa->add_package(pkg);
@@ -180,17 +180,17 @@ namespace
 
             }
 
-            std::tr1::shared_ptr<GLSA> glsa()
+            tr1::shared_ptr<GLSA> glsa()
             {
                 return _glsa;
             }
     };
 }
 
-std::tr1::shared_ptr<GLSA>
+tr1::shared_ptr<GLSA>
 create_glsa_from_xml_file(const std::string & filename)
 {
-    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(filename.c_str(), 0, 0), &xmlFreeDoc);
+    tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(filename.c_str(), 0, 0), &xmlFreeDoc);
     if (! xml_doc)
         throw GLSAError("Could not parse GLSA", filename);
 

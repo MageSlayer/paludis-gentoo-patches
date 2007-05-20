@@ -32,7 +32,7 @@
 using namespace paludis;
 
 template class VirtualConstructor<std::string,
-         std::tr1::shared_ptr<Environment> (*) (const std::string &),
+         tr1::shared_ptr<Environment> (*) (const std::string &),
          virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >;
 
 NoSuchEnvironmentTypeError::NoSuchEnvironmentTypeError(const std::string & format) throw ():
@@ -128,7 +128,7 @@ EnvironmentMaker::~EnvironmentMaker()
 {
 }
 
-std::tr1::shared_ptr<Environment>
+tr1::shared_ptr<Environment>
 EnvironmentMaker::make_from_spec(const std::string & s) const
 {
     Context context("When making environment from specification '" + s + "':");

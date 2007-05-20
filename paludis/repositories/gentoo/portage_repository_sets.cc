@@ -35,7 +35,7 @@
 #include <paludis/util/tokeniser.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 #include <set>
 
 #include "config.h"
@@ -77,7 +77,7 @@ PortageRepositorySets::~PortageRepositorySets()
 }
 
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 PortageRepositorySets::package_set(const SetName & s) const
 {
     if ("system" == s.data())
@@ -88,7 +88,7 @@ PortageRepositorySets::package_set(const SetName & s) const
         return security_set(true);
     else if ((_imp->params.setsdir / (stringify(s) + ".conf")).exists())
     {
-        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
+        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
 
         FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
@@ -104,26 +104,26 @@ PortageRepositorySets::package_set(const SetName & s) const
         return f.contents();
     }
     else
-        return std::tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<DepSpec>();
 }
 
-std::tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameCollection>
 PortageRepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
 
     try
     {
-        using namespace std::tr1::placeholders;
+        using namespace tr1::placeholders;
 
         std::list<FSEntry> repo_sets;
         std::copy(DirIterator(_imp->params.setsdir), DirIterator(),
-            filter_inserter(std::back_inserter(repo_sets), std::tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+            filter_inserter(std::back_inserter(repo_sets), tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
 
         std::list<FSEntry>::const_iterator f(repo_sets.begin()),
             f_end(repo_sets.end());
@@ -233,16 +233,16 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<DepSpec>
 PortageRepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    std::tr1::shared_ptr<AllDepSpec> security_packages(new AllDepSpec);
+    tr1::shared_ptr<AllDepSpec> security_packages(new AllDepSpec);
 
     if (!_imp->params.securitydir.is_directory_or_symlink_to_directory())
         return security_packages;
 
-    std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;
+    std::map<std::string, tr1::shared_ptr<GLSADepTag> > glsa_tags;
 
     for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
     {
@@ -253,14 +253,14 @@ PortageRepositorySets::security_set(bool insecurity) const
 
         try
         {
-            std::tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
+            tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
             Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
                     stringify(*f) + "':");
 
             for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates;
+                tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates;
                 if (insecurity)
                     candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
                 else
@@ -274,20 +274,20 @@ PortageRepositorySets::security_set(bool insecurity) const
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
-                        glsa_tags.insert(std::make_pair(glsa->id(), std::tr1::shared_ptr<GLSADepTag>(
+                        glsa_tags.insert(std::make_pair(glsa->id(), tr1::shared_ptr<GLSADepTag>(
                                         new GLSADepTag(glsa->id(), glsa->title()))));
 
                     if (insecurity)
                     {
-                        std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
                         v->push_back(VersionRequirement(vo_equal, c->version));
-                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(c->name)),
-                                    std::tr1::shared_ptr<CategoryNamePart>(),
-                                    std::tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(c->name)),
+                                    tr1::shared_ptr<CategoryNamePart>(),
+                                    tr1::shared_ptr<PackageNamePart>(),
                                     v, vr_and,
-                                    std::tr1::shared_ptr<SlotName>(),
-                                    std::tr1::shared_ptr<RepositoryName>(new RepositoryName(c->repository))));
+                                    tr1::shared_ptr<SlotName>(),
+                                    tr1::shared_ptr<RepositoryName>(new RepositoryName(c->repository))));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->add_child(spec);
                     }
@@ -298,16 +298,16 @@ PortageRepositorySets::security_set(bool insecurity) const
                         bool ok(false);
                         SlotName wanted_slot(_imp->environment->package_database()->fetch_repository(
                                     c->repository)->version_metadata(c->name, c->version)->slot);
-                        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
+                        tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
                                 _imp->environment->package_database()->query(
                                     query::Matches(PackageDepSpec(
-                                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                                     glsa_pkg->name())),
-                                            std::tr1::shared_ptr<CategoryNamePart>(),
-                                            std::tr1::shared_ptr<PackageNamePart>(),
-                                            std::tr1::shared_ptr<VersionRequirements>(),
+                                            tr1::shared_ptr<CategoryNamePart>(),
+                                            tr1::shared_ptr<PackageNamePart>(),
+                                            tr1::shared_ptr<VersionRequirements>(),
                                             vr_and,
-                                            std::tr1::shared_ptr<SlotName>(new SlotName(wanted_slot)))) &
+                                            tr1::shared_ptr<SlotName>(new SlotName(wanted_slot)))) &
                                     query::RepositoryHasInstallableInterface() &
                                     query::NotMasked(),
                                     qo_order_by_version));
@@ -322,15 +322,15 @@ PortageRepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
                             v->push_back(VersionRequirement(vo_equal, r->version));
-                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(r->name)),
-                                        std::tr1::shared_ptr<CategoryNamePart>(),
-                                        std::tr1::shared_ptr<PackageNamePart>(),
+                            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(r->name)),
+                                        tr1::shared_ptr<CategoryNamePart>(),
+                                        tr1::shared_ptr<PackageNamePart>(),
                                         v, vr_and,
-                                        std::tr1::shared_ptr<SlotName>(),
-                                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(r->repository))));
+                                        tr1::shared_ptr<SlotName>(),
+                                        tr1::shared_ptr<RepositoryName>(new RepositoryName(r->repository))));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->add_child(spec);
                             ok = true;

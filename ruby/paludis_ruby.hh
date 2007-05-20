@@ -63,29 +63,29 @@ namespace paludis
         /* constructors */
 
         VALUE mask_reasons_to_value(const MaskReasons &);
-        VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
+        VALUE package_database_to_value(tr1::shared_ptr<PackageDatabase>);
         VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
-        VALUE repository_to_value(std::tr1::shared_ptr<Repository>);
+        VALUE repository_to_value(tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
-        VALUE version_metadata_to_value(std::tr1::shared_ptr<const VersionMetadata>);
-        VALUE dep_spec_to_value(std::tr1::shared_ptr<const DepSpec>);
+        VALUE version_metadata_to_value(tr1::shared_ptr<const VersionMetadata>);
+        VALUE dep_spec_to_value(tr1::shared_ptr<const DepSpec>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
-        VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
-        VALUE contents_entry_to_value(std::tr1::shared_ptr<const ContentsEntry>);
-        VALUE dep_tag_to_value(std::tr1::shared_ptr<const DepTag>);
+        VALUE contents_to_value(tr1::shared_ptr<const Contents>);
+        VALUE contents_entry_to_value(tr1::shared_ptr<const ContentsEntry>);
+        VALUE dep_tag_to_value(tr1::shared_ptr<const DepTag>);
 
         VersionSpec value_to_version_spec(VALUE v);
-        std::tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
-        std::tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
-        std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
+        tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
+        tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
+        tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
-        std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
-        std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
+        tr1::shared_ptr<Environment> value_to_environment(VALUE v);
+        tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryPortageInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
-        std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
+        tr1::shared_ptr<Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();
@@ -93,17 +93,17 @@ namespace paludis
         qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
         qa::PerProfileEbuildCheckData value_to_per_profile_ebuild_check_data(VALUE v);
         qa::ProfileCheckData value_to_profile_check_data(VALUE v);
-        std::tr1::shared_ptr<qa::QAEnvironment> value_to_qa_environment(VALUE v);
+        tr1::shared_ptr<qa::QAEnvironment> value_to_qa_environment(VALUE v);
         VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
         VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
         VALUE profile_check_data_to_value(const qa::ProfileCheckData &);
         VALUE check_result_to_value(const qa::CheckResult &);
-        VALUE package_dir_check_to_value(std::tr1::shared_ptr<qa::PackageDirCheck>);
-        VALUE file_check_to_value(std::tr1::shared_ptr<qa::FileCheck>);
-        VALUE ebuild_check_to_value(std::tr1::shared_ptr<qa::EbuildCheck>);
-        VALUE per_profile_ebuild_check_to_value(std::tr1::shared_ptr<qa::PerProfileEbuildCheck>);
-        VALUE profiles_check_to_value(std::tr1::shared_ptr<qa::ProfilesCheck>);
-        VALUE profile_check_to_value(std::tr1::shared_ptr<qa::ProfileCheck>);
+        VALUE package_dir_check_to_value(tr1::shared_ptr<qa::PackageDirCheck>);
+        VALUE file_check_to_value(tr1::shared_ptr<qa::FileCheck>);
+        VALUE ebuild_check_to_value(tr1::shared_ptr<qa::EbuildCheck>);
+        VALUE per_profile_ebuild_check_to_value(tr1::shared_ptr<qa::PerProfileEbuildCheck>);
+        VALUE profiles_check_to_value(tr1::shared_ptr<qa::ProfilesCheck>);
+        VALUE profile_check_to_value(tr1::shared_ptr<qa::ProfileCheck>);
         VALUE message_to_value(const qa::Message &);
         VALUE metadata_file_to_value(const qa::MetadataFile &);
 #endif

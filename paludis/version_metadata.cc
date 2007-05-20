@@ -74,7 +74,7 @@ VersionMetadataHasInterfaces::~VersionMetadataHasInterfaces()
 {
 }
 
-std::tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::_make_depend(const std::string & s) const
 {
     if (version_metadata()->eapi.supported)
@@ -83,41 +83,41 @@ VersionMetadataDepsInterface::_make_depend(const std::string & s) const
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
             "Don't know how to parse dependency strings for EAPI '" + version_metadata()->eapi.name + "'";
-        return std::tr1::shared_ptr<DepSpec>(new AllDepSpec);
+        return tr1::shared_ptr<DepSpec>(new AllDepSpec);
     }
 }
 
-std::tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DepSpec>
 VersionMetadataLicenseInterface::_make_license(const std::string & s) const
 {
     return parser(s);
 }
 
-std::tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DepSpec>
 VersionMetadataBase::_make_text(const std::string & s) const
 {
     return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
 }
 
-std::tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DepSpec>
 VersionMetadataEbuildInterface::_make_text(const std::string & s) const
 {
     return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
 }
 
 template <typename Item_, typename Container_>
-std::tr1::shared_ptr<const Container_>
+tr1::shared_ptr<const Container_>
 VersionMetadataEbuildInterface::_make_collection(const std::string & s) const
 {
-    std::tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
+    tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
     WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<Item_>(result->inserter()));
     return result;
 }
 
-std::tr1::shared_ptr<const IUseFlagCollection>
+tr1::shared_ptr<const IUseFlagCollection>
 VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) const
 {
-    std::tr1::shared_ptr<IUseFlagCollection> result(new IUseFlagCollection::Concrete);
+    tr1::shared_ptr<IUseFlagCollection> result(new IUseFlagCollection::Concrete);
     std::list<std::string> t;
     WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(t));
 
@@ -135,17 +135,17 @@ VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) con
     return result;
 }
 
-std::tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DepSpec>
 VersionMetadataEbinInterface::_make_text(const std::string & s) const
 {
     return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
 }
 
 template <typename Item_, typename Container_>
-std::tr1::shared_ptr<const Container_>
+tr1::shared_ptr<const Container_>
 VersionMetadataCRANInterface::_make_collection(const std::string & s) const
 {
-    std::tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
+    tr1::shared_ptr<Container_> result(new typename Container_::Concrete);
     WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<Item_>(result->inserter()));
     return result;
 }

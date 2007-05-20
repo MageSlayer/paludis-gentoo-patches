@@ -26,12 +26,12 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<LineConfigFile>
+tr1::shared_ptr<LineConfigFile>
 paludis::make_bashable_conf(const FSEntry & f)
 {
     Context context("When making a config file out of '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<LineConfigFile> result;
+    tr1::shared_ptr<LineConfigFile> result;
 
     if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
     {

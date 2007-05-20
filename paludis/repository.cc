@@ -139,12 +139,12 @@ namespace paludis
     template<>
     struct Implementation<RepositoryInfo>
     {
-        std::list<std::tr1::shared_ptr<const RepositoryInfoSection> > sections;
+        std::list<tr1::shared_ptr<const RepositoryInfoSection> > sections;
     };
 }
 
 RepositoryInfo &
-RepositoryInfo::add_section(std::tr1::shared_ptr<const RepositoryInfoSection> s)
+RepositoryInfo::add_section(tr1::shared_ptr<const RepositoryInfoSection> s)
 {
     _imp->sections.push_back(s);
     return *this;
@@ -195,7 +195,7 @@ RepositoryInfoSection::get_key_with_default(const std::string & k, const std::st
         return d;
 }
 
-std::tr1::shared_ptr<const RepositoryInfo>
+tr1::shared_ptr<const RepositoryInfo>
 Repository::info(bool) const
 {
     return _info;
@@ -231,13 +231,13 @@ RepositoryInfo::get_key_with_default(const std::string & k, const std::string & 
     return result;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartCollection>
 Repository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
-    std::tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
+    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))
@@ -362,25 +362,25 @@ RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageData
     return do_query_use_force(u, pde);
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 RepositoryUseInterface::arch_flags() const
 {
     return do_arch_flags();
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 RepositoryUseInterface::use_expand_flags() const
 {
     return do_use_expand_flags();
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 RepositoryUseInterface::use_expand_hidden_prefixes() const
 {
     return do_use_expand_hidden_prefixes();
 }
 
-std::tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameCollection>
 RepositoryUseInterface::use_expand_prefixes() const
 {
     return do_use_expand_prefixes();

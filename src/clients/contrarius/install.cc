@@ -54,7 +54,7 @@ namespace
         public ConsoleInstallTask
     {
         public:
-            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options) :
+            OurInstallTask(tr1::shared_ptr<Environment> env, const DepListOptions & options) :
                 ConsoleInstallTask(env.get(), options, env->default_destinations())
             {
             }
@@ -96,7 +96,7 @@ namespace
             }
     };
 
-    void show_resume_command(std::tr1::shared_ptr<Environment> env, const InstallTask & task)
+    void show_resume_command(tr1::shared_ptr<Environment> env, const InstallTask & task)
     {
         if (CommandLine::get_instance()->a_fetch.specified() ||
                 CommandLine::get_instance()->a_pretend.specified())
@@ -141,14 +141,14 @@ namespace
         private:
             static const InstallTask * _task;
 
-            static std::tr1::shared_ptr<Environment> _env;
+            static tr1::shared_ptr<Environment> _env;
 
             static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
 
             sig_t _old;
 
         public:
-            InstallKilledCatcher(std::tr1::shared_ptr<Environment> env, const InstallTask & task) :
+            InstallKilledCatcher(tr1::shared_ptr<Environment> env, const InstallTask & task) :
                 _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
             {
                 _task = &task;
@@ -163,7 +163,7 @@ namespace
     };
 
     const InstallTask * InstallKilledCatcher::_task(0);
-    std::tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
+    tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
 
     void
     InstallKilledCatcher::_signal_handler(int sig)
@@ -203,7 +203,7 @@ namespace
 }
 
 int
-do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
+do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
 {
     int return_code(0);
 
@@ -293,7 +293,7 @@ do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
     {
         try
         {
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
+            tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     env->package_database()->query(
                         query::Matches(e.query()) &
                         query::RepositoryHasInstallableInterface(),
@@ -337,7 +337,7 @@ do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
                             }
                             else if (mr_license == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(env->
+                                tr1::shared_ptr<const VersionMetadata> meta(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                                 pp->name, pp->version));
@@ -352,13 +352,13 @@ do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
                             }
                             else if (mr_keyword == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(env->
+                                tr1::shared_ptr<const VersionMetadata> meta(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));
                                 if (meta->ebuild_interface)
                                 {
-                                    std::tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                                    tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
                                     cerr << " ( " << colour(cl_masked, join(keywords->begin(),
                                                     keywords->end(), " ")) << " )";
                                 }

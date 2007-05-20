@@ -49,13 +49,13 @@ namespace
     static VALUE c_dep_list_entry;
     static VALUE c_dep_list_override_masks;
 
-    std::tr1::shared_ptr<DepListOptions>
+    tr1::shared_ptr<DepListOptions>
     value_to_dep_list_options(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_dep_list_options))
         {
-            std::tr1::shared_ptr<DepListOptions> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<DepListOptions>, v_ptr);
+            tr1::shared_ptr<DepListOptions> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<DepListOptions>, v_ptr);
             return *v_ptr;
         }
         else
@@ -65,13 +65,13 @@ namespace
     }
 
     VALUE
-    dep_list_options_to_value(std::tr1::shared_ptr<DepListOptions> m)
+    dep_list_options_to_value(tr1::shared_ptr<DepListOptions> m)
     {
-        std::tr1::shared_ptr<DepListOptions> * m_ptr(0);
+        tr1::shared_ptr<DepListOptions> * m_ptr(0);
         try
         {
-            m_ptr = new std::tr1::shared_ptr<DepListOptions>(m);
-            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, m_ptr);
+            m_ptr = new tr1::shared_ptr<DepListOptions>(m);
+            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<tr1::shared_ptr<DepListOptions> >::free, m_ptr);
         }
         catch (const std::exception & e)
         {
@@ -150,13 +150,13 @@ namespace
     VALUE
     dep_list_options_new(int argc, VALUE *argv, VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * ptr(0);
+        tr1::shared_ptr<DepListOptions> * ptr(0);
         if (0 == argc)
         {
             try
             {
-                ptr = new std::tr1::shared_ptr<DepListOptions>(new DepListOptions);
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
+                ptr = new tr1::shared_ptr<DepListOptions>(new DepListOptions);
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -340,7 +340,7 @@ namespace
                 if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
                     rb_raise(rb_eArgError, "blocks out of range");
 
-                ptr = new std::tr1::shared_ptr<DepListOptions>(
+                ptr = new tr1::shared_ptr<DepListOptions>(
                          new DepListOptions(
                             static_cast<DepListReinstallOption>(value_for_reinstall),
                             static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
@@ -365,7 +365,7 @@ namespace
                             )
                         );
 
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -679,16 +679,16 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<DepListOptions> * p;
-            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+            tr1::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
             return INT2FIX((**p).*m_);
         }
 
         static VALUE
         set (VALUE self, VALUE val)
         {
-            std::tr1::shared_ptr<DepListOptions> * p;
-            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+            tr1::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
             try
             {
                 ((**p).*m_) = static_cast<T_>(NUM2INT(val));
@@ -710,8 +710,8 @@ namespace
     VALUE
     dep_list_options_override_masks(VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
         return dep_list_override_masks_to_value((*p)->override_masks);
     }
 
@@ -724,8 +724,8 @@ namespace
     VALUE
     dep_list_options_override_masks_set(VALUE self, VALUE mr)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
         try
         {
             (*p)->override_masks = value_to_dep_list_override_masks(mr);
@@ -746,8 +746,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags(VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
         return (*p)->dependency_tags ? Qtrue : Qfalse;
     }
 
@@ -760,8 +760,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags_set(VALUE self, VALUE tags)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
         try
         {
             if (Qtrue == tags)
@@ -837,7 +837,7 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+            tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
 
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
@@ -895,7 +895,7 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+            tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
 
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));

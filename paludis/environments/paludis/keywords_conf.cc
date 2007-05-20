@@ -35,8 +35,8 @@
 using namespace paludis;
 
 typedef std::list<KeywordName> KeywordsList;
-typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
-typedef std::pair<std::tr1::shared_ptr<const DepSpec>, KeywordsList> SetNameEntry;
+typedef std::map<tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
+typedef std::pair<tr1::shared_ptr<const DepSpec>, KeywordsList> SetNameEntry;
 
 typedef MakeHashedMap<QualifiedPackageName, PDSToKeywordsList>::Type SpecificMap;
 typedef PDSToKeywordsList UnspecificMap;
@@ -74,7 +74,7 @@ KeywordsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a keywords file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
+    tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename));
     if (! f)
         return;
 
@@ -96,7 +96,7 @@ KeywordsConf::add(const FSEntry & filename)
         if (std::string::npos == tokens.at(0).find("/"))
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                std::tr1::shared_ptr<DepSpec>(), KeywordsList()))).first);
+                                tr1::shared_ptr<DepSpec>(), KeywordsList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -104,7 +104,7 @@ KeywordsConf::add(const FSEntry & filename)
         }
         else
         {
-            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
+            tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
             if (d->package_ptr())
             {
                 KeywordsList & k(_imp->qualified[*d->package_ptr()][d]);
@@ -124,7 +124,7 @@ KeywordsConf::add(const FSEntry & filename)
 }
 
 bool
-KeywordsConf::query(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
+KeywordsConf::query(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
 {
     static const KeywordName star_keyword("*");
     static const KeywordName minus_star_keyword("-*");

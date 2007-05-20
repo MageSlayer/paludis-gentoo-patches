@@ -28,7 +28,7 @@
 
 using namespace paludis;
 
-template class VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
+template class VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
 
 #include <paludis/dep_tag-sr.cc>
@@ -42,10 +42,10 @@ namespace
      *
      * \ingroup grpdeptag
      */
-    std::tr1::shared_ptr<const DepTagCategory>
+    tr1::shared_ptr<const DepTagCategory>
     make_glsa_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     true,
                     "glsa",
                     "Security advisories",
@@ -60,10 +60,10 @@ namespace
      *
      * \ingroup grpdeptag
      */
-    std::tr1::shared_ptr<const DepTagCategory>
+    tr1::shared_ptr<const DepTagCategory>
     make_general_set_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     true,
                     "general",
                     "General sets",
@@ -78,10 +78,10 @@ namespace
      *
      * \ingroup grpdeptag
      */
-    std::tr1::shared_ptr<const DepTagCategory>
+    tr1::shared_ptr<const DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return std::tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
                     false,
                     "dependency",
                     "Dependencies",

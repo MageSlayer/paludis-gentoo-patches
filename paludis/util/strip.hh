@@ -74,7 +74,7 @@ namespace paludis
      * issue with std::bind2nd).
      *
      * \ingroup grpstrippers
-     * \deprecated Use the function with std::tr1::bind.
+     * \deprecated Use the function with tr1::bind.
      * \nosubgrouping
      */
     template <std::string (* f_)(const std::string &, const std::string &)>
@@ -108,7 +108,7 @@ namespace paludis
      * Adapt strip_leading_string to a functor by binding its second argument.
      *
      * \ingroup grpstrippers
-     * \deprecated Use std::tr1::bind
+     * \deprecated Use tr1::bind
      */
     typedef StripAdapter<&strip_leading_string> StripLeadingString PALUDIS_ATTRIBUTE((deprecated));
 
@@ -116,7 +116,7 @@ namespace paludis
      * Adapt strip_leading to a functor by binding its second argument.
      *
      * \ingroup grpstrippers
-     * \deprecated Use std::tr1::bind
+     * \deprecated Use tr1::bind
      */
     typedef StripAdapter<&strip_leading> StripLeading PALUDIS_ATTRIBUTE((deprecated));
 
@@ -124,7 +124,7 @@ namespace paludis
      * Adapt strip_trailing_string to a functor by binding its second argument.
      *
      * \ingroup grpstrippers
-     * \deprecated Use std::tr1::bind
+     * \deprecated Use tr1::bind
      */
     typedef StripAdapter<&strip_trailing_string> StripTrailingString PALUDIS_ATTRIBUTE((deprecated));
 
@@ -132,7 +132,7 @@ namespace paludis
      * Adapt strip_trailing to a functor by binding its second argument.
      *
      * \ingroup grpstrippers
-     * \deprecated Use std::tr1::bind
+     * \deprecated Use tr1::bind
      */
     typedef StripAdapter<&strip_trailing> StripTrailing PALUDIS_ATTRIBUTE((deprecated));
 }

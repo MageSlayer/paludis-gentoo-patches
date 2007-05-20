@@ -44,7 +44,7 @@ namespace
         public ConsoleQueryTask
     {
         public:
-            QueryTask(const std::tr1::shared_ptr<Environment> e) :
+            QueryTask(const tr1::shared_ptr<Environment> e) :
                 ConsoleQueryTask(e.get())
             {
             }
@@ -62,9 +62,9 @@ namespace
 }
 
 void do_one_package_query(
-        const std::tr1::shared_ptr<Environment> env,
+        const tr1::shared_ptr<Environment> env,
         MaskReasons & mask_reasons_to_explain,
-        std::tr1::shared_ptr<PackageDepSpec> spec)
+        tr1::shared_ptr<PackageDepSpec> spec)
 {
     QueryTask query(env);
     query.show(*spec);
@@ -73,10 +73,10 @@ void do_one_package_query(
 }
 
 void do_one_set_query(
-        const std::tr1::shared_ptr<Environment>,
+        const tr1::shared_ptr<Environment>,
         const std::string & q,
         MaskReasons &,
-        std::tr1::shared_ptr<DepSpec> set)
+        tr1::shared_ptr<DepSpec> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     DepSpecPrettyPrinter packages(12);
@@ -86,7 +86,7 @@ void do_one_set_query(
 }
 
 void do_one_query(
-        const std::tr1::shared_ptr<Environment> env,
+        const tr1::shared_ptr<Environment> env,
         const std::string & q,
         MaskReasons & mask_reasons_to_explain)
 {
@@ -94,8 +94,8 @@ void do_one_query(
 
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. or it might be a set... all should work. */
-    std::tr1::shared_ptr<PackageDepSpec> spec;
-    std::tr1::shared_ptr<DepSpec> set;
+    tr1::shared_ptr<PackageDepSpec> spec;
+    tr1::shared_ptr<DepSpec> set;
     if (std::string::npos == q.find('/'))
     {
         try
@@ -106,7 +106,7 @@ void do_one_query(
         {
         }
         if (0 == set)
-            spec.reset(new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+            spec.reset(new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                 env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))));
     }
     else
@@ -118,7 +118,7 @@ void do_one_query(
         do_one_set_query(env, q, mask_reasons_to_explain, set);
 }
 
-int do_query(std::tr1::shared_ptr<Environment> env)
+int do_query(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 

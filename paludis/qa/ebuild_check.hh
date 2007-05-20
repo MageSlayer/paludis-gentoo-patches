@@ -73,10 +73,10 @@ namespace paludis
         template <typename T_>
         struct MakeEbuildCheck
         {
-            static std::tr1::shared_ptr<EbuildCheck>
+            static tr1::shared_ptr<EbuildCheck>
             make_ebuild_check()
             {
-                return std::tr1::shared_ptr<EbuildCheck>(new T_);
+                return tr1::shared_ptr<EbuildCheck>(new T_);
             }
         };
 
@@ -86,7 +86,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE EbuildCheckMaker :
-            public VirtualConstructor<std::string, std::tr1::shared_ptr<EbuildCheck> (*) (),
+            public VirtualConstructor<std::string, tr1::shared_ptr<EbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >,
             public InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonTag>
         {

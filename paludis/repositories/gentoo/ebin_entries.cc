@@ -64,13 +64,13 @@ EbinEntries::~EbinEntries()
 {
 }
 
-std::tr1::shared_ptr<VersionMetadata>
+tr1::shared_ptr<VersionMetadata>
 EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
     Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
 
-    std::tr1::shared_ptr<EbinVersionMetadata> result(new EbinVersionMetadata(SlotName("unset")));
+    tr1::shared_ptr<EbinVersionMetadata> result(new EbinVersionMetadata(SlotName("unset")));
 
     KeyValueConfigFile f(_imp->params.location / stringify(q.category) /
             stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebin"),
@@ -106,7 +106,7 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
 namespace
 {
     FSEntry
-    get_root(std::tr1::shared_ptr<const DestinationsCollection> destinations)
+    get_root(tr1::shared_ptr<const DestinationsCollection> destinations)
     {
         if (destinations)
             for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
@@ -120,13 +120,13 @@ namespace
 
 void
 EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
-        const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+        const InstallOptions & o, tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
     if (! _imp->portage_repository->has_version(q, v))
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                 + stringify(v) + "' since has_version failed");
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
+    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
     std::string binaries, flat_bin_uri;
@@ -134,7 +134,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_binaries;
 
         /* make B and FLAT_BIN_URI */
-        std::tr1::shared_ptr<const DepSpec> b_spec(metadata->ebin_interface->bin_uri());
+        tr1::shared_ptr<const DepSpec> b_spec(metadata->ebin_interface->bin_uri());
         DepSpecFlattener f(_imp->params.environment, &e, b_spec);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
@@ -159,7 +159,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             binaries.append(" ");
 
             /* add * mirror entries */
-            std::tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
+            tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
             for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
                 flat_bin_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
@@ -172,7 +172,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since BIN_URI is broken");
 
-                std::tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
+                tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
                         mirrors->empty())
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
@@ -196,7 +196,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             std::string master_mirror(strip_trailing_string(stringify(_imp->portage_repository->name()), "x-"));
             if (_imp->portage_repository->is_mirror(master_mirror))
             {
-                std::tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
+                tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
                 for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
                     flat_bin_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
 
@@ -330,16 +330,16 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     tidyup_cmd();
 }
 
-std::tr1::shared_ptr<PortageRepositoryEntries>
+tr1::shared_ptr<PortageRepositoryEntries>
 EbinEntries::make_ebin_entries(
         const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
 {
-    return std::tr1::shared_ptr<PortageRepositoryEntries>(new EbinEntries(e, r, p));
+    return tr1::shared_ptr<PortageRepositoryEntries>(new EbinEntries(e, r, p));
 }
 
 std::string
 EbinEntries::get_environment_variable(const QualifiedPackageName & q,
-        const VersionSpec & v, const std::string & var, std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+        const VersionSpec & v, const std::string & var, tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
     PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
 
@@ -367,7 +367,7 @@ EbinEntries::merge(const MergeOptions & m)
     if (! ebin_file)
         throw PackageInstallActionError("Cannot write to '" + stringify(ebin_file_name) + "'");
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata(
+    tr1::shared_ptr<const VersionMetadata> metadata(
             _imp->params.environment->package_database()->fetch_repository(m.package.repository)->
             version_metadata(m.package.name, m.package.version));
 
@@ -462,7 +462,7 @@ EbinEntries::extract_package_file_version(const QualifiedPackageName & n, const 
 
 bool
 EbinEntries::pretend(const QualifiedPackageName &, const VersionSpec &,
-        std::tr1::shared_ptr<const PortageRepositoryProfile>) const
+        tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
     return true;
 }

@@ -65,7 +65,7 @@ namespace paludis
     template<>
     struct Implementation<CompositeDepSpec>
     {
-        std::list<std::tr1::shared_ptr<const DepSpec> > children;
+        std::list<tr1::shared_ptr<const DepSpec> > children;
     };
 
     template<>
@@ -73,26 +73,26 @@ namespace paludis
     {
         bool unique;
 
-        std::tr1::shared_ptr<QualifiedPackageName> package_ptr;
-        std::tr1::shared_ptr<CategoryNamePart> category_name_part_ptr;
-        std::tr1::shared_ptr<PackageNamePart> package_name_part_ptr;
-        std::tr1::shared_ptr<VersionRequirements> version_requirements;
+        tr1::shared_ptr<QualifiedPackageName> package_ptr;
+        tr1::shared_ptr<CategoryNamePart> category_name_part_ptr;
+        tr1::shared_ptr<PackageNamePart> package_name_part_ptr;
+        tr1::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
-        std::tr1::shared_ptr<SlotName> slot;
-        std::tr1::shared_ptr<RepositoryName> repository;
-        std::tr1::shared_ptr<UseRequirements> use_requirements;
-        std::tr1::shared_ptr<const DepTag> tag;
+        tr1::shared_ptr<SlotName> slot;
+        tr1::shared_ptr<RepositoryName> repository;
+        tr1::shared_ptr<UseRequirements> use_requirements;
+        tr1::shared_ptr<const DepTag> tag;
 
         Implementation(
-                std::tr1::shared_ptr<QualifiedPackageName> q,
-                std::tr1::shared_ptr<CategoryNamePart> c,
-                std::tr1::shared_ptr<PackageNamePart> p,
-                std::tr1::shared_ptr<VersionRequirements> v,
+                tr1::shared_ptr<QualifiedPackageName> q,
+                tr1::shared_ptr<CategoryNamePart> c,
+                tr1::shared_ptr<PackageNamePart> p,
+                tr1::shared_ptr<VersionRequirements> v,
                 VersionRequirementsMode m,
-                std::tr1::shared_ptr<SlotName> s,
-                std::tr1::shared_ptr<RepositoryName> r,
-                std::tr1::shared_ptr<UseRequirements> u,
-                std::tr1::shared_ptr<const DepTag> t) :
+                tr1::shared_ptr<SlotName> s,
+                tr1::shared_ptr<RepositoryName> r,
+                tr1::shared_ptr<UseRequirements> u,
+                tr1::shared_ptr<const DepTag> t) :
             unique(false),
             package_ptr(q),
             category_name_part_ptr(c),
@@ -118,7 +118,7 @@ CompositeDepSpec::~CompositeDepSpec()
 }
 
 void
-CompositeDepSpec::add_child(std::tr1::shared_ptr<const DepSpec> c)
+CompositeDepSpec::add_child(tr1::shared_ptr<const DepSpec> c)
 {
     _imp->children.push_back(c);
 }
@@ -179,7 +179,7 @@ PackageDepSpec::as_package_dep_spec() const
     return this;
 }
 
-BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
+BlockDepSpec::BlockDepSpec(tr1::shared_ptr<const PackageDepSpec> a) :
     StringDepSpec("!" + a->text()),
     _spec(a)
 {
@@ -188,15 +188,15 @@ BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
 PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
     StringDepSpec(stringify(our_package)),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
-                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(our_package)),
-                std::tr1::shared_ptr<CategoryNamePart>(),
-                std::tr1::shared_ptr<PackageNamePart>(),
-                std::tr1::shared_ptr<VersionRequirements>(),
+                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(our_package)),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
+                tr1::shared_ptr<VersionRequirements>(),
                 vr_and,
-                std::tr1::shared_ptr<SlotName>(),
-                std::tr1::shared_ptr<RepositoryName>(),
-                std::tr1::shared_ptr<UseRequirements>(),
-                std::tr1::shared_ptr<const DepTag>()))
+                tr1::shared_ptr<SlotName>(),
+                tr1::shared_ptr<RepositoryName>(),
+                tr1::shared_ptr<UseRequirements>(),
+                tr1::shared_ptr<const DepTag>()))
 {
 }
 
@@ -220,15 +220,15 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
 PackageDepSpec::PackageDepSpec(const std::string & ss) :
     StringDepSpec(ss),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
-                std::tr1::shared_ptr<QualifiedPackageName>(),
-                std::tr1::shared_ptr<CategoryNamePart>(),
-                std::tr1::shared_ptr<PackageNamePart>(),
-                std::tr1::shared_ptr<VersionRequirements>(),
+                tr1::shared_ptr<QualifiedPackageName>(),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
+                tr1::shared_ptr<VersionRequirements>(),
                 vr_and,
-                std::tr1::shared_ptr<SlotName>(),
-                std::tr1::shared_ptr<RepositoryName>(),
-                std::tr1::shared_ptr<UseRequirements>(),
-                std::tr1::shared_ptr<const DepTag>()))
+                tr1::shared_ptr<SlotName>(),
+                tr1::shared_ptr<RepositoryName>(),
+                tr1::shared_ptr<UseRequirements>(),
+                tr1::shared_ptr<const DepTag>()))
 {
     _do_parse(ss, pds_pm_permissive);
     _imp->unique = true;
@@ -237,30 +237,30 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
 PackageDepSpec::PackageDepSpec(const std::string & ss, const PackageDepSpecParseMode p) :
     StringDepSpec(ss),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
-                std::tr1::shared_ptr<QualifiedPackageName>(),
-                std::tr1::shared_ptr<CategoryNamePart>(),
-                std::tr1::shared_ptr<PackageNamePart>(),
-                std::tr1::shared_ptr<VersionRequirements>(),
+                tr1::shared_ptr<QualifiedPackageName>(),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
+                tr1::shared_ptr<VersionRequirements>(),
                 vr_and,
-                std::tr1::shared_ptr<SlotName>(),
-                std::tr1::shared_ptr<RepositoryName>(),
-                std::tr1::shared_ptr<UseRequirements>(),
-                std::tr1::shared_ptr<const DepTag>()))
+                tr1::shared_ptr<SlotName>(),
+                tr1::shared_ptr<RepositoryName>(),
+                tr1::shared_ptr<UseRequirements>(),
+                tr1::shared_ptr<const DepTag>()))
 {
     _do_parse(ss, p);
     _imp->unique = true;
 }
 
 PackageDepSpec::PackageDepSpec(
-        std::tr1::shared_ptr<QualifiedPackageName> q,
-        std::tr1::shared_ptr<CategoryNamePart> c,
-        std::tr1::shared_ptr<PackageNamePart> p,
-        std::tr1::shared_ptr<VersionRequirements> v,
+        tr1::shared_ptr<QualifiedPackageName> q,
+        tr1::shared_ptr<CategoryNamePart> c,
+        tr1::shared_ptr<PackageNamePart> p,
+        tr1::shared_ptr<VersionRequirements> v,
         VersionRequirementsMode m,
-        std::tr1::shared_ptr<SlotName> s,
-        std::tr1::shared_ptr<RepositoryName> r,
-        std::tr1::shared_ptr<UseRequirements> u,
-        std::tr1::shared_ptr<const DepTag> t) :
+        tr1::shared_ptr<SlotName> s,
+        tr1::shared_ptr<RepositoryName> r,
+        tr1::shared_ptr<UseRequirements> u,
+        tr1::shared_ptr<const DepTag> t) :
     StringDepSpec(""),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
                 q, c, p, v, m, s, r, u, t))
@@ -791,40 +791,40 @@ UseRequirements::state(const UseFlagName & u) const
     return i->second;
 }
 
-std::tr1::shared_ptr<PackageDepSpec>
+tr1::shared_ptr<PackageDepSpec>
 PackageDepSpec::without_use_requirements() const
 {
-    std::tr1::shared_ptr<PackageDepSpec> result(new PackageDepSpec(*this));
+    tr1::shared_ptr<PackageDepSpec> result(new PackageDepSpec(*this));
     result->_make_unique();
     result->_imp->use_requirements.reset();
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageName>
+tr1::shared_ptr<const QualifiedPackageName>
 PackageDepSpec::package_ptr() const
 {
     return _imp->package_ptr;
 }
 
-std::tr1::shared_ptr<const PackageNamePart>
+tr1::shared_ptr<const PackageNamePart>
 PackageDepSpec::package_name_part_ptr() const
 {
     return _imp->package_name_part_ptr;
 }
 
-std::tr1::shared_ptr<const CategoryNamePart>
+tr1::shared_ptr<const CategoryNamePart>
 PackageDepSpec::category_name_part_ptr() const
 {
     return _imp->category_name_part_ptr;
 }
 
-std::tr1::shared_ptr<const VersionRequirements>
+tr1::shared_ptr<const VersionRequirements>
 PackageDepSpec::version_requirements_ptr() const
 {
     return _imp->version_requirements;
 }
 
-std::tr1::shared_ptr<VersionRequirements>
+tr1::shared_ptr<VersionRequirements>
 PackageDepSpec::version_requirements_ptr()
 {
     _make_unique();
@@ -843,32 +843,32 @@ PackageDepSpec::set_version_requirements_mode(const VersionRequirementsMode m)
     _imp->version_requirements_mode = m;
 }
 
-std::tr1::shared_ptr<const SlotName>
+tr1::shared_ptr<const SlotName>
 PackageDepSpec::slot_ptr() const
 {
     return _imp->slot;
 }
 
-std::tr1::shared_ptr<const RepositoryName>
+tr1::shared_ptr<const RepositoryName>
 PackageDepSpec::repository_ptr() const
 {
     return _imp->repository;
 }
 
-std::tr1::shared_ptr<const UseRequirements>
+tr1::shared_ptr<const UseRequirements>
 PackageDepSpec::use_requirements_ptr() const
 {
     return _imp->use_requirements;
 }
 
-std::tr1::shared_ptr<const DepTag>
+tr1::shared_ptr<const DepTag>
 PackageDepSpec::tag() const
 {
     return _imp->tag;
 }
 
 void
-PackageDepSpec::set_tag(const std::tr1::shared_ptr<const DepTag> & s)
+PackageDepSpec::set_tag(const tr1::shared_ptr<const DepTag> & s)
 {
     _imp->tag = s;
 }
@@ -890,7 +890,7 @@ PackageDepSpec::_make_unique()
 
     if (_imp->version_requirements && ! _imp->version_requirements.unique())
     {
-        std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
         std::copy(_imp->version_requirements->begin(), _imp->version_requirements->end(), v->inserter());
         _imp->version_requirements = v;
     }
@@ -907,7 +907,7 @@ PackageDepSpec::_make_unique()
     _imp->unique = true;
 }
 
-std::tr1::shared_ptr<const PackageDepSpec>
+tr1::shared_ptr<const PackageDepSpec>
 BlockDepSpec::blocked_spec() const
 {
     return _spec;

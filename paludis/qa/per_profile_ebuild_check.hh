@@ -73,10 +73,10 @@ namespace paludis
         template <typename T_>
         struct MakePerProfileEbuildCheck
         {
-            static std::tr1::shared_ptr<PerProfileEbuildCheck>
+            static tr1::shared_ptr<PerProfileEbuildCheck>
             make_per_profile_ebuild_check()
             {
-                return std::tr1::shared_ptr<PerProfileEbuildCheck>(new T_);
+                return tr1::shared_ptr<PerProfileEbuildCheck>(new T_);
             }
         };
 
@@ -86,7 +86,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE PerProfileEbuildCheckMaker :
-            public VirtualConstructor<std::string, std::tr1::shared_ptr<PerProfileEbuildCheck> (*) (),
+            public VirtualConstructor<std::string, tr1::shared_ptr<PerProfileEbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> >,
             public InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonTag>
         {

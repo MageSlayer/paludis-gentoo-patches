@@ -29,7 +29,7 @@ namespace paludis
     template<>
     struct Implementation<TestEnvironment>
     {
-        std::tr1::shared_ptr<PackageDatabase> package_database;
+        tr1::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
 
         Implementation(Environment * const e) :
@@ -56,18 +56,18 @@ TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry &) 
 }
 
 bool
-TestEnvironment::accept_keywords(std::tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
+TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+tr1::shared_ptr<PackageDatabase>
 TestEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+tr1::shared_ptr<const PackageDatabase>
 TestEnvironment::package_database() const
 {
     return _imp->package_database;

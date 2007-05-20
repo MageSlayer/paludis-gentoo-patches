@@ -39,7 +39,7 @@ namespace test_cases
                     .file_name(FSEntry("set_file_TEST_dir/simple1"))
                     .type(sft_simple)
                     .parse_mode(pds_pm_eapi_0)
-                    .tag(std::tr1::shared_ptr<DepTag>())
+                    .tag(tr1::shared_ptr<DepTag>())
                     .environment(0));
 
             {
@@ -100,7 +100,7 @@ namespace test_cases
                     .file_name(FSEntry("set_file_TEST_dir/paludisconf1"))
                     .type(sft_paludis_conf)
                     .parse_mode(pds_pm_eapi_0)
-                    .tag(std::tr1::shared_ptr<DepTag>())
+                    .tag(tr1::shared_ptr<DepTag>())
                     .environment(0));
 
             {

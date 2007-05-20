@@ -182,7 +182,7 @@ namespace paludis
         public EbuildCommand
     {
         private:
-            std::tr1::shared_ptr<EbuildVersionMetadata> _metadata;
+            tr1::shared_ptr<EbuildVersionMetadata> _metadata;
 
         protected:
             virtual std::string commands() const;
@@ -203,7 +203,7 @@ namespace paludis
              * Return a pointer to our generated metadata. If operator() has not
              * yet been called, will be a zero pointer.
              */
-            std::tr1::shared_ptr<EbuildVersionMetadata> metadata() const
+            tr1::shared_ptr<EbuildVersionMetadata> metadata() const
             {
                 return _metadata;
             }

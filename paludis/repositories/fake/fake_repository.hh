@@ -35,15 +35,15 @@ namespace paludis
         public RepositoryVirtualsInterface
     {
         private:
-            std::tr1::shared_ptr<VirtualsCollection> _virtual_packages;
+            tr1::shared_ptr<VirtualsCollection> _virtual_packages;
 
         protected:
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
+            virtual tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
 
-            virtual std::tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
+            virtual tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const;
 
         public:
@@ -57,7 +57,7 @@ namespace paludis
             /**
              * Add a virtual package.
              */
-            void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepSpec>);
+            void add_virtual_package(const QualifiedPackageName &, tr1::shared_ptr<const PackageDepSpec>);
     };
 }
 

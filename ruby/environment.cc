@@ -38,13 +38,13 @@ namespace
     static VALUE c_adapted_environment;
     static VALUE c_environment_maker;
 
-    std::tr1::shared_ptr<AdaptedEnvironment>
+    tr1::shared_ptr<AdaptedEnvironment>
     value_to_adapted_environment(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_adapted_environment))
         {
-            std::tr1::shared_ptr<AdaptedEnvironment> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<AdaptedEnvironment>, v_ptr);
+            tr1::shared_ptr<AdaptedEnvironment> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<AdaptedEnvironment>, v_ptr);
             return *v_ptr;
         }
         else
@@ -164,7 +164,7 @@ namespace
         try
         {
             PackageDatabaseEntry pde = value_to_package_database_entry(p);
-            std::tr1::shared_ptr<KeywordNameCollection> knc (new KeywordNameCollection::Concrete);
+            tr1::shared_ptr<KeywordNameCollection> knc (new KeywordNameCollection::Concrete);
             long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
             for (long i = 0; i < len; i++)
             {
@@ -202,7 +202,7 @@ namespace
     VALUE
     environment_default_destinations(VALUE self)
     {
-        std::tr1::shared_ptr<const DestinationsCollection> dc (value_to_environment(self)->default_destinations());
+        tr1::shared_ptr<const DestinationsCollection> dc (value_to_environment(self)->default_destinations());
         VALUE result(rb_ary_new());
         for (DestinationsCollection::Iterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
             rb_ary_push(result, repository_to_value(*i));
@@ -211,13 +211,13 @@ namespace
 
     }
 
-    std::tr1::shared_ptr<PaludisEnvironment>
+    tr1::shared_ptr<PaludisEnvironment>
     value_to_paludis_environment(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_paludis_environment))
         {
-            std::tr1::shared_ptr<PaludisEnvironment> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<PaludisEnvironment>, v_ptr);
+            tr1::shared_ptr<PaludisEnvironment> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<PaludisEnvironment>, v_ptr);
             return *v_ptr;
         }
         else
@@ -250,8 +250,8 @@ namespace
             else if (0 != argc)
                 rb_raise(rb_eArgError, "PaludisEnvironment.new expects one or zero arguments, but got %d", argc);
 
-            std::tr1::shared_ptr<PaludisEnvironment> * e = new std::tr1::shared_ptr<PaludisEnvironment>(new PaludisEnvironment(config_suffix));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<PaludisEnvironment> >::free, e));
+            tr1::shared_ptr<PaludisEnvironment> * e = new tr1::shared_ptr<PaludisEnvironment>(new PaludisEnvironment(config_suffix));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<PaludisEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -321,13 +321,13 @@ namespace
             else
                 path = StringValuePtr(argv[0]);
 
-            std::tr1::shared_ptr<NoConfigEnvironment> * e = new std::tr1::shared_ptr<NoConfigEnvironment>(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
+            tr1::shared_ptr<NoConfigEnvironment> * e = new tr1::shared_ptr<NoConfigEnvironment>(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
                         .repository_dir(FSEntry(path))
                         .write_cache(write_cache)
                         .accept_unstable(false)
                         .repository_type(ncer_auto)
                         .master_repository_dir(FSEntry(master_repository_dir))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<NoConfigEnvironment> >::free, e));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<NoConfigEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -407,8 +407,8 @@ namespace
             rb_raise(rb_eArgError, "AdaptedEnvironment.new expects one argument, but got %d", argc);
         try
         {
-            std::tr1::shared_ptr<AdaptedEnvironment> * e = new std::tr1::shared_ptr<AdaptedEnvironment>(new AdaptedEnvironment(value_to_environment(argv[0])));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<AdaptedEnvironment> >::free, e));
+            tr1::shared_ptr<AdaptedEnvironment> * e = new tr1::shared_ptr<AdaptedEnvironment>(new AdaptedEnvironment(value_to_environment(argv[0])));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<AdaptedEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -476,10 +476,10 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Environment> * e = new std::tr1::shared_ptr<Environment>(EnvironmentMaker::get_instance()->make_from_spec(
+            tr1::shared_ptr<Environment> * e = new tr1::shared_ptr<Environment>(EnvironmentMaker::get_instance()->make_from_spec(
                         StringValuePtr(spec)));
 
-            VALUE tdata(Data_Wrap_Struct(c_environment, 0, &Common<std::tr1::shared_ptr<Environment> >::free, e));
+            VALUE tdata(Data_Wrap_Struct(c_environment, 0, &Common<tr1::shared_ptr<Environment> >::free, e));
             return tdata;
         }
         catch (const std::exception & e)
@@ -558,13 +558,13 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<Environment>
+tr1::shared_ptr<Environment>
 paludis::ruby::value_to_environment(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_environment))
     {
-        std::tr1::shared_ptr<Environment> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<Environment>, v_ptr);
+        tr1::shared_ptr<Environment> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<Environment>, v_ptr);
         return *v_ptr;
     }
     else
@@ -573,13 +573,13 @@ paludis::ruby::value_to_environment(VALUE v)
     }
 }
 
-std::tr1::shared_ptr<NoConfigEnvironment>
+tr1::shared_ptr<NoConfigEnvironment>
 paludis::ruby::value_to_no_config_environment(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_no_config_environment))
     {
-        std::tr1::shared_ptr<NoConfigEnvironment> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<NoConfigEnvironment>, v_ptr);
+        tr1::shared_ptr<NoConfigEnvironment> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<NoConfigEnvironment>, v_ptr);
         return *v_ptr;
     }
     else

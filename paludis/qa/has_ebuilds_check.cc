@@ -21,7 +21,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <algorithm>
-#include <tr1/functional>
+#include <paludis/util/tr1_functional.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -35,10 +35,10 @@ HasEbuildsCheck::operator() (const FSEntry & d) const
 {
     CheckResult result(d, identifier());
 
-    using namespace std::tr1::placeholders;
+    using namespace tr1::placeholders;
 
     if (DirIterator() == std::find_if(DirIterator(d), DirIterator(),
-                std::tr1::bind(&is_file_with_prefix_extension, _1, d.basename() + "-", ".ebuild", IsFileWithOptions())))
+                tr1::bind(&is_file_with_prefix_extension, _1, d.basename() + "-", ".ebuild", IsFileWithOptions())))
         result << Message(qal_fatal, "No ebuilds found");
 
     return result;

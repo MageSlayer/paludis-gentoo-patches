@@ -44,8 +44,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->favourite_repository()).c_str());
         }
         catch (const std::exception & e)
@@ -65,8 +65,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
                             PackageNamePart(StringValuePtr(pkg)))).c_str());
         }
@@ -87,7 +87,7 @@ namespace
     VALUE
     package_database_query(int argc, VALUE *argv, VALUE self)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> items;
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> items;
         try
         {
             if (2 == argc && is_kind_of_query(argv[0]))
@@ -95,8 +95,8 @@ namespace
                 Query q = value_to_query(argv[0]);
                 QueryOrder qo = static_cast<QueryOrder>(NUM2INT(argv[1]));
 
-                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+                tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
 
                 items = ((*self_ptr)->query(q, qo));
             }
@@ -132,8 +132,8 @@ namespace
                     rb_warn("Calling query with (PackageDepSpec, InstallState, QueryOrder) has been deprecated");
                 }
 
-                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+                tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
 
                 items = ((*self_ptr)->query(q, qo));
 
@@ -167,8 +167,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             if (rb_block_given_p())
             {
@@ -201,8 +201,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(StringValuePtr(name))));
         }
@@ -223,8 +223,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            tr1::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
 
             return (*self_ptr)->more_important_than(RepositoryName(StringValuePtr(name1)),
                     RepositoryName(StringValuePtr(name2))) ? Qtrue : Qfalse;
@@ -283,13 +283,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::package_database_to_value(std::tr1::shared_ptr<PackageDatabase> m)
+paludis::ruby::package_database_to_value(tr1::shared_ptr<PackageDatabase> m)
 {
-    std::tr1::shared_ptr<PackageDatabase> * m_ptr(0);
+    tr1::shared_ptr<PackageDatabase> * m_ptr(0);
     try
     {
-        m_ptr = new std::tr1::shared_ptr<PackageDatabase>(m);
-        return Data_Wrap_Struct(c_package_database, 0, &Common<std::tr1::shared_ptr<PackageDatabase> >::free, m_ptr);
+        m_ptr = new tr1::shared_ptr<PackageDatabase>(m);
+        return Data_Wrap_Struct(c_package_database, 0, &Common<tr1::shared_ptr<PackageDatabase> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {

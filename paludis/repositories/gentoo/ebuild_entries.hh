@@ -48,7 +48,7 @@ namespace paludis
             /**
              * Create an EbuildEntries instance.
              */
-            static std::tr1::shared_ptr<PortageRepositoryEntries> make_ebuild_entries(const Environment * const,
+            static tr1::shared_ptr<PortageRepositoryEntries> make_ebuild_entries(const Environment * const,
                         PortageRepository * const, const PortageRepositoryParams &);
 
             ///\name Basic operations
@@ -62,18 +62,18 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
+            virtual tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    const InstallOptions &, tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
-                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void merge(const MergeOptions &) PALUDIS_ATTRIBUTE((noreturn));
 

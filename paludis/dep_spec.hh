@@ -32,7 +32,7 @@
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
-#include <tr1/memory>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for the DepSpec classes.
@@ -116,14 +116,14 @@ namespace paludis
             /**
              * Append a child to our collection.
              */
-            virtual void add_child(std::tr1::shared_ptr<const DepSpec>);
+            virtual void add_child(tr1::shared_ptr<const DepSpec>);
 
             ///\}
 
             ///\name Iterate over our children
             ///\{
 
-            typedef libwrapiter::ForwardIterator<CompositeDepSpec, const std::tr1::shared_ptr<const DepSpec> > Iterator;
+            typedef libwrapiter::ForwardIterator<CompositeDepSpec, const tr1::shared_ptr<const DepSpec> > Iterator;
 
             Iterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -326,15 +326,15 @@ namespace paludis
             PackageDepSpec(const std::string &, const PackageDepSpecParseMode);
 
             explicit PackageDepSpec(
-                std::tr1::shared_ptr<QualifiedPackageName> q = std::tr1::shared_ptr<QualifiedPackageName>(),
-                std::tr1::shared_ptr<CategoryNamePart> c = std::tr1::shared_ptr<CategoryNamePart>(),
-                std::tr1::shared_ptr<PackageNamePart> p = std::tr1::shared_ptr<PackageNamePart>(),
-                std::tr1::shared_ptr<VersionRequirements> v = std::tr1::shared_ptr<VersionRequirements>(),
+                tr1::shared_ptr<QualifiedPackageName> q = tr1::shared_ptr<QualifiedPackageName>(),
+                tr1::shared_ptr<CategoryNamePart> c = tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart> p = tr1::shared_ptr<PackageNamePart>(),
+                tr1::shared_ptr<VersionRequirements> v = tr1::shared_ptr<VersionRequirements>(),
                 VersionRequirementsMode m = vr_and,
-                std::tr1::shared_ptr<SlotName> s = std::tr1::shared_ptr<SlotName>(),
-                std::tr1::shared_ptr<RepositoryName> r = std::tr1::shared_ptr<RepositoryName>(),
-                std::tr1::shared_ptr<UseRequirements> u = std::tr1::shared_ptr<UseRequirements>(),
-                std::tr1::shared_ptr<const DepTag> t = std::tr1::shared_ptr<const DepTag>());
+                tr1::shared_ptr<SlotName> s = tr1::shared_ptr<SlotName>(),
+                tr1::shared_ptr<RepositoryName> r = tr1::shared_ptr<RepositoryName>(),
+                tr1::shared_ptr<UseRequirements> u = tr1::shared_ptr<UseRequirements>(),
+                tr1::shared_ptr<const DepTag> t = tr1::shared_ptr<const DepTag>());
 
             PackageDepSpec(const PackageDepSpec &);
 
@@ -345,27 +345,27 @@ namespace paludis
             /**
              * Fetch the package name.
              */
-            std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
+            tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
 
             /**
              * Fetch the package name part, if wildcarded.
              */
-            std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+            tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
 
             /**
              * Fetch the category name part, if wildcarded.
              */
-            std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+            tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
+            tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<VersionRequirements> version_requirements_ptr();
+            tr1::shared_ptr<VersionRequirements> version_requirements_ptr();
 
             /**
              * Fetch the version requirements mode.
@@ -380,32 +380,32 @@ namespace paludis
             /**
              * Fetch the slot name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const SlotName> slot_ptr() const;
+            tr1::shared_ptr<const SlotName> slot_ptr() const;
 
             /**
              * Fetch the repo name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const RepositoryName> repository_ptr() const;
+            tr1::shared_ptr<const RepositoryName> repository_ptr() const;
 
             /**
              * Fetch the use requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const;
+            tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const;
 
             /**
              * Fetch our tag.
              */
-            std::tr1::shared_ptr<const DepTag> tag() const;
+            tr1::shared_ptr<const DepTag> tag() const;
 
             /**
              * Set our tag.
              */
-            void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
+            void set_tag(const tr1::shared_ptr<const DepTag> & s);
 
             /**
              * Fetch a copy of ourself without the USE requirements.
              */
-            std::tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
+            tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
     };
@@ -462,20 +462,20 @@ namespace paludis
         public Visitable<BlockDepSpec, DepSpecVisitorTypes>
     {
         private:
-            std::tr1::shared_ptr<const PackageDepSpec> _spec;
+            tr1::shared_ptr<const PackageDepSpec> _spec;
 
         public:
             ///\name Basic operations
             ///\{
 
-            BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> spec);
+            BlockDepSpec(tr1::shared_ptr<const PackageDepSpec> spec);
 
             ///\}
 
             /**
              * Fetch the spec we're blocking.
              */
-            std::tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
+            tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
     };
 
 }

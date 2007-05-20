@@ -67,7 +67,7 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
-        std::tr1::shared_ptr<const DestinationsCollection> d) :
+        tr1::shared_ptr<const DestinationsCollection> d) :
     InstallTask(env, options, d),
     _all_tags(new SortedCollection<DepTagEntry>::Concrete),
     _all_use_descriptions(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete),
@@ -213,29 +213,29 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         throw InternalError(PALUDIS_HERE, "Bad d.kind");
     } while (false);
 
-    std::tr1::shared_ptr<RepositoryName> repo;
+    tr1::shared_ptr<RepositoryName> repo;
     if (d.destinations && ! d.destinations->empty())
         repo.reset(new RepositoryName((d.destinations->begin()->destination)->name()));
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
+    tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
             query(query::Matches(PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
-                        std::tr1::shared_ptr<CategoryNamePart>(),
-                        std::tr1::shared_ptr<PackageNamePart>(),
-                        std::tr1::shared_ptr<VersionRequirements>(),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<VersionRequirements>(),
                         vr_and,
-                        std::tr1::shared_ptr<SlotName>(),
+                        tr1::shared_ptr<SlotName>(),
                         repo)),
                 qo_order_by_version));
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
+    tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
             query(query::Matches(PackageDepSpec(
-                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
-                        std::tr1::shared_ptr<CategoryNamePart>(),
-                        std::tr1::shared_ptr<PackageNamePart>(),
-                        std::tr1::shared_ptr<VersionRequirements>(),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<VersionRequirements>(),
                         vr_and,
-                        std::tr1::shared_ptr<SlotName>(new SlotName(d.metadata->slot)),
+                        tr1::shared_ptr<SlotName>(new SlotName(d.metadata->slot)),
                         repo)),
                 qo_order_by_version));
 
@@ -471,7 +471,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
     for (std::set<std::string>::iterator cat(tag_categories.begin()),
             cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
     {
-        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
+        tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
                 find_maker(*cat)());
 
         if (! c->visible())
@@ -503,7 +503,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
     bool started(false);
     UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
 
-    std::tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > group(
+    tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > group(
             new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
     for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
@@ -644,9 +644,9 @@ ConsoleInstallTask::display_tag_summary_tag_pre_text(const DepTagCategory & c)
 }
 
 void
-ConsoleInstallTask::display_tag_summary_tag(std::tr1::shared_ptr<const DepTag> t)
+ConsoleInstallTask::display_tag_summary_tag(tr1::shared_ptr<const DepTag> t)
 {
-    std::tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
+    tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
     t->accept(displayer.get());
 }
 
@@ -801,8 +801,8 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
         const DisplayMode m)
 {
     bool need_comma(false);
@@ -830,7 +830,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                     output_no_endl(render_as_update_mode(", "));
 
                 std::string destination_str;
-                std::tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
+                tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
                 if (default_destinations->end() == default_destinations->find(dest->destination))
                     destination_str = " ::" + stringify(dest->destination->name());
 
@@ -903,7 +903,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 }
 
 void
-ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameCollection> c,
+ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameCollection> c,
         const PackageDatabaseEntry & p, UseDescriptionState s)
 {
     for (UseFlagNameCollection::Iterator f(c->begin()), f_end(c->end()) ;
@@ -926,15 +926,15 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameColl
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
         return;
 
     output_no_endl(" ");
-    std::tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
+    tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
     printer->print_package_flags(d.package, ! existing_slot_repo->empty() ? &*existing_slot_repo->last() :
                                  ! existing_repo->empty() ? &*existing_repo->last() : 0);
 
@@ -963,7 +963,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
 
         all_tags()->insert(*tag);
 
-        std::tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
+        tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
         tag->tag->accept(displayer.get());
         tag_titles.append(displayer->text());
         tag_titles.append(", ");
@@ -1039,22 +1039,22 @@ ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const Dis
     output_endl();
 }
 
-std::tr1::shared_ptr<DepTagSummaryDisplayer>
+tr1::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return std::tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
+    return tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
 }
 
-std::tr1::shared_ptr<EntryDepTagDisplayer>
+tr1::shared_ptr<EntryDepTagDisplayer>
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
-    return std::tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
+    return tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
 }
 
-std::tr1::shared_ptr<UseFlagPrettyPrinter>
+tr1::shared_ptr<UseFlagPrettyPrinter>
 ConsoleInstallTask::make_use_flag_pretty_printer()
 {
-    return std::tr1::shared_ptr<UseFlagPrettyPrinter>(new UseFlagPrettyPrinter(environment()));
+    return tr1::shared_ptr<UseFlagPrettyPrinter>(new UseFlagPrettyPrinter(environment()));
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()
@@ -1109,7 +1109,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_license == mm)
             {
-                std::tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->fetch_repository(
+                tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->fetch_repository(
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
 
                 if (metadata->license_interface)
@@ -1122,11 +1122,11 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_keyword == mm)
             {
-                std::tr1::shared_ptr<const VersionMetadata> meta(environment()->package_database()->fetch_repository(
+                tr1::shared_ptr<const VersionMetadata> meta(environment()->package_database()->fetch_repository(
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
                 if (meta->ebuild_interface)
                 {
-                    std::tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                    tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
                     output_no_endl(" ( " + render_as_masked(join(keywords->begin(), keywords->end(), " ")) + " )");
                 }
             }

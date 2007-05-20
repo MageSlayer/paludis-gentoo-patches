@@ -44,9 +44,9 @@ namespace paludis
         UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        std::tr1::shared_ptr<AllDepSpec> targets;
-        std::tr1::shared_ptr<std::string> add_to_world_spec;
-        std::tr1::shared_ptr<const DestinationsCollection> destinations;
+        tr1::shared_ptr<AllDepSpec> targets;
+        tr1::shared_ptr<std::string> add_to_world_spec;
+        tr1::shared_ptr<const DestinationsCollection> destinations;
 
         bool pretend;
         bool preserve_world;
@@ -56,11 +56,11 @@ namespace paludis
         bool override_target_type;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
-                std::tr1::shared_ptr<const DestinationsCollection> d) :
+                tr1::shared_ptr<const DestinationsCollection> d) :
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none, false, std::tr1::shared_ptr<const DestinationsCollection>()),
+            install_options(false, false, ido_none, false, tr1::shared_ptr<const DestinationsCollection>()),
             uninstall_options(false),
             targets(new AllDepSpec),
             destinations(d),
@@ -75,7 +75,7 @@ namespace paludis
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
-        const std::tr1::shared_ptr<const DestinationsCollection> d) :
+        const tr1::shared_ptr<const DestinationsCollection> d) :
     PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
@@ -99,7 +99,7 @@ InstallTask::add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    std::tr1::shared_ptr<DepSpec> s;
+    tr1::shared_ptr<DepSpec> s;
     std::string modified_target(target);
 
     bool done(false);
@@ -141,8 +141,8 @@ InstallTask::add_target(const std::string & target)
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
-            _imp->targets->add_child(std::tr1::shared_ptr<DepSpec>(new PackageDepSpec(
-                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))));
+            _imp->targets->add_child(tr1::shared_ptr<DepSpec>(new PackageDepSpec(
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))));
         }
     }
 
@@ -341,7 +341,7 @@ InstallTask::execute()
                 ((*r).get())->invalidate();
 
         // look for packages with the same name in the same slot in the destination repos
-        std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
+        tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
 
         if (dep->destinations)
             for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
@@ -349,13 +349,13 @@ InstallTask::execute()
                 if (d->destination->uninstallable_interface)
                     collision_list = _imp->env->package_database()->query(
                             query::Matches(PackageDepSpec(
-                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
-                                    std::tr1::shared_ptr<CategoryNamePart>(),
-                                    std::tr1::shared_ptr<PackageNamePart>(),
-                                    std::tr1::shared_ptr<VersionRequirements>(),
+                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
+                                    tr1::shared_ptr<CategoryNamePart>(),
+                                    tr1::shared_ptr<PackageNamePart>(),
+                                    tr1::shared_ptr<VersionRequirements>(),
                                     vr_and,
-                                    std::tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
-                                    std::tr1::shared_ptr<RepositoryName>(new RepositoryName(d->destination->name())))) &
+                                    tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
+                                    tr1::shared_ptr<RepositoryName>(new RepositoryName(d->destination->name())))) &
                             query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
@@ -670,7 +670,7 @@ namespace
 }
 
 void
-InstallTask::world_update_packages(std::tr1::shared_ptr<const DepSpec> a)
+InstallTask::world_update_packages(tr1::shared_ptr<const DepSpec> a)
 {
     WorldTargetFinder w(this);
     a->accept(&w);

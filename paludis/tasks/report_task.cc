@@ -37,12 +37,12 @@ namespace
         public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>
     {
         private:
-            std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag>,
+            std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag>,
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
             const Environment & _env;
 
         public:
-            typedef std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
+            typedef std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
 
             using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepSpec>::visit;
             using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>::visit;
@@ -82,7 +82,7 @@ namespace
     void
     VulnerableChecker::visit(const PackageDepSpec * const a)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
+        tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
                 _env.package_database()->query(query::Matches(*a), qo_order_by_version));
         for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
@@ -130,13 +130,13 @@ ReportTask::execute()
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
+        tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
         if (! rr->sets_interface)
             continue;
 
         try
         {
-            std::tr1::shared_ptr<const DepSpec> insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            tr1::shared_ptr<const DepSpec> insecure(rr->sets_interface->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
             insecure->accept(&vuln);
@@ -163,21 +163,21 @@ ReportTask::execute()
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
+        tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
         if (! rr->installed_interface)
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(rr->category_names());
+        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(rr->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameCollection> packages(rr->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameCollection> packages(rr->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 on_report_check_package_pre(*p);
 
-                std::tr1::shared_ptr<const VersionSpecCollection> vers(rr->version_specs(*p));
+                tr1::shared_ptr<const VersionSpecCollection> vers(rr->version_specs(*p));
                 for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
                         v != v_end ; ++v)
                 {
@@ -190,7 +190,7 @@ ReportTask::execute()
                     MaskReasons mr;
                     try
                     {
-                        std::tr1::shared_ptr<const VersionMetadata> m(rr->version_metadata(pde.name, pde.version));
+                        tr1::shared_ptr<const VersionMetadata> m(rr->version_metadata(pde.name, pde.version));
 
                         if (m->origins_interface && m->origins_interface->source)
                         {

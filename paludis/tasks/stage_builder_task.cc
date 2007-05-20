@@ -29,7 +29,7 @@ namespace paludis
     template<>
     struct Implementation<StageBuilderTask>
     {
-        std::list<std::tr1::shared_ptr<const StageBase> > stages;
+        std::list<tr1::shared_ptr<const StageBase> > stages;
 
         const StageOptions options;
 
@@ -61,7 +61,7 @@ StageBuilderTask::~StageBuilderTask()
 }
 
 void
-StageBuilderTask::queue_stage(std::tr1::shared_ptr<const StageBase> p)
+StageBuilderTask::queue_stage(tr1::shared_ptr<const StageBase> p)
 {
     Context context("When queuing stage in build list:");
     _imp->stages.push_back(p);
@@ -86,7 +86,7 @@ StageBuilderTask::execute()
 
     on_build_all_pre();
 
-    for (std::list<std::tr1::shared_ptr<const StageBase> >::const_iterator
+    for (std::list<tr1::shared_ptr<const StageBase> >::const_iterator
             s(_imp->stages.begin()), s_end(_imp->stages.end()) ;
             s != s_end ; ++s)
     {
