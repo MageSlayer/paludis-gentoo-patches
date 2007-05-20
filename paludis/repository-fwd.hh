@@ -57,7 +57,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      */
-    typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
+    typedef SortedCollection<paludis::tr1::shared_ptr<Repository> > DestinationsCollection;
 
     /**
      * What debug build option to use when installing a package.

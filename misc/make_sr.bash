@@ -214,7 +214,7 @@ while read a ; do
             else
                 echo "    protected:"
                 echo "        ${want_key_types[${k}]% ->*} raw_${want_keys[${k}]};"
-                echo "        mutable std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> cached_${want_keys[${k}]};"
+                echo "        mutable paludis::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> cached_${want_keys[${k}]};"
                 echo
             fi
         done
@@ -236,7 +236,7 @@ while read a ; do
                 echo "        const ${want_key_types[${k}]%-> *} get_raw_${want_keys[${k}]}() const"
                 echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
                 echo
-                echo "        std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> ${want_keys[${k}]}() const"
+                echo "        paludis::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }> ${want_keys[${k}]}() const"
                 echo "                PALUDIS_ATTRIBUTE((warn_unused_result));"
                 echo
             fi
@@ -493,7 +493,7 @@ while read a ; do
                 echo "    return raw_${want_keys[${k}]};"
                 echo "}"
                 echo
-                echo "std::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }>"
+                echo "paludis::tr1::shared_ptr<const ${want_key_types[${k}]#*-> }>"
                 echo "${a}::${want_keys[${k}]}() const"
                 echo "{"
                 echo "    if (! cached_${want_keys[${k}]})"
