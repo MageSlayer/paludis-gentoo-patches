@@ -83,6 +83,5 @@ QualudisCommandLine::app_description() const
 {
     return
         "qualudis is a QA assistant for ebuilds and ebuild repositories. It checks for "
-        "many common and potential mistakes and displays a summary of its findings. It "
-        "can also be used to commit changes to a repository's VCS.";
+        "many common and potential mistakes and displays a summary of its findings."
 }
