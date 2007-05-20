@@ -227,10 +227,14 @@ namespace test_cases
             std::vector<int> v;
             v.push_back(1);
             v.push_back(2);
+            v.push_back(3);
             std::vector<int>::iterator iter(v.begin());
 
             TEST_CHECK(*(next(iter)) == 2);
-            TEST_CHECK(next(next(iter)) == v.end());
+            TEST_CHECK(next(next(next(iter))) == v.end());
+            TEST_CHECK(next(iter, 3) == v.end());
+            iter = next(iter);
+            TEST_CHECK(*(next(iter, 1)) == 3);
             iter = next(iter);
             TEST_CHECK(++iter == v.end());
         }

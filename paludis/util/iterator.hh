@@ -48,6 +48,19 @@ namespace paludis
         return ++result;
     }
 
+     /**
+     * Return a new iterator advanced by a distance of n.
+     *
+     * \ingroup grpiterators
+     */
+    template <typename T_>
+    T_ next(const T_ & i, const int & n)
+    {
+        T_ result(i);
+        std::advance(result, n);
+        return result;
+    }
+
     /**
      * Return a new iterator pointing to the item before i.
      *
