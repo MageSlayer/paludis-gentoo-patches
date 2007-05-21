@@ -499,6 +499,7 @@ namespace paludis
                             RepositoryName(repo)));
         }
 
+        try
         {
             Context local_context("When loading key 'USE':");
             std::string raw_use(file_contents(location, p->name, p->version, "USE"));
@@ -506,6 +507,12 @@ namespace paludis
             WhitespaceTokeniser::get_instance()->tokenise(raw_use,
                     filter_inserter(create_inserter<UseFlagName>(
                             std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context) << "Error loading USE from VDB "
+                "entry '" << p->name << "-" << p->version << "' at '" << location << "' due to exception '"
+                << e.message() << "' (" << e.what() << "), pretending USE is empty for this package";
         }
     }
 }
