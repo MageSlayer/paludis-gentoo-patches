@@ -41,9 +41,9 @@ namespace paludis
         return p.get();
     }
 
-    // Make Boost.Python work with std::tr1::shared_ptr<const>
+    // Make Boost.Python work with tr1::shared_ptr<const>
     template <typename T_>
-    inline T_ * get_pointer(std::tr1::shared_ptr<const T_> const & p)
+    inline T_ * get_pointer(tr1::shared_ptr<const T_> const & p)
     {
         return const_cast<T_*>(p.get());
     }
@@ -53,16 +53,16 @@ namespace boost
 {
     namespace python
     {
-        // Make Boost.Python work with std::tr1::shared_ptr<>
+        // Make Boost.Python work with tr1::shared_ptr<>
         template <typename T_>
-        struct pointee<std::tr1::shared_ptr<T_> >
+        struct pointee<tr1::shared_ptr<T_> >
         {
             typedef T_ type;
         };
 
-        // Make Boost.Python work with std::tr1::shared_ptr<const>
+        // Make Boost.Python work with tr1::shared_ptr<const>
         template <typename T_>
-        struct pointee<std::tr1::shared_ptr<const T_> >
+        struct pointee<tr1::shared_ptr<const T_> >
         {
             typedef T_ type;
         };
@@ -78,9 +78,9 @@ namespace paludis
         void
         register_shared_ptrs_to_python()
         {
-            bp::register_ptr_to_python<std::tr1::shared_ptr<T_> >();
-            bp::register_ptr_to_python<std::tr1::shared_ptr<const T_> >();
-            bp::implicitly_convertible<std::tr1::shared_ptr<T_>, std::tr1::shared_ptr<const T_> >();
+            bp::register_ptr_to_python<tr1::shared_ptr<T_> >();
+            bp::register_ptr_to_python<tr1::shared_ptr<const T_> >();
+            bp::implicitly_convertible<tr1::shared_ptr<T_>, tr1::shared_ptr<const T_> >();
         }
 
         // expose stringifyable enums
@@ -135,8 +135,8 @@ namespace paludis
                     _e = PyErr_NewException(const_cast<char*>(_longname.c_str()), NULL, NULL);
                     PyModule_AddObject(bp::detail::current_scope, const_cast<char*>(_name.c_str()), _e);
                     bp::register_exception_translator<Ex_>(
-                            std::tr1::bind(std::tr1::mem_fn(&register_exception<Ex_>::translator),
-                                this, std::tr1::placeholders::_1)
+                            tr1::bind(tr1::mem_fn(&register_exception<Ex_>::translator),
+                                this, tr1::placeholders::_1)
                             );
                 }
 
