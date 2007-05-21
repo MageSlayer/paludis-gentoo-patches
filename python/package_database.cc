@@ -95,9 +95,7 @@ void PALUDIS_VISIBLE expose_package_database()
            );
     pde.def(bp::self_ns::str(bp::self));
     pde.def("__eq__", &PackageDatabaseEntry::operator==);
-#ifdef CIARANM_REMOVED_THIS
-    pde.def("__ne__", &PackageDatabaseEntry::operator!=);
-#endif
+    pde.def("__ne__", &__ne__<PackageDatabaseEntry>);
 
     class_collection<PackageDatabaseEntryCollection>
         pdec("PackageDatabaseEntryCollection",

@@ -27,7 +27,7 @@ using namespace paludis::python;
 namespace bp = boost::python;
 
 bool
-compare(const VersionOperator & self, const VersionSpec & v1, const VersionSpec & v2)
+vo_compare(const VersionOperator & self, const VersionSpec & v1, const VersionSpec & v2)
 {
     return self.as_version_spec_comparator()(v1, v2);
 }
@@ -48,7 +48,7 @@ void PALUDIS_VISIBLE expose_version_operator()
     vo.add_property("value", &VersionOperator::value,
             "[ro] VersionOperatorValue"
             );
-    vo.def("compare", &compare,
+    vo.def("compare", &vo_compare,
             "compare(VersionSpec, VersionSpec) -> bool\n"
             "Compare two VersionSpecs with this operator."
           );

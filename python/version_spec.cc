@@ -53,10 +53,7 @@ void PALUDIS_VISIBLE expose_version_spec()
             "revision_only() -> string\n"
             "Revision part only (or \"r0\")."
           );
-#ifdef CIARANM_REMOVED_THIS
-    int (*compare_ptr)(const VersionSpec &, const VersionSpec &) = &compare;
-    vs.def("__cmp__", compare_ptr);
-#endif
+    vs.def("__cmp__", &VersionSpec::compare);
     vs.def(bp::self_ns::str(bp::self));
 
     bp::implicitly_convertible<std::string, VersionSpec>();

@@ -98,6 +98,25 @@ namespace paludis
             }
         }
 
+        // Compare
+        template <typename T_>
+        int __cmp__(T_ & a, T_ & b)
+        {
+            if (a == b)
+                return 0;
+            else if (a < b)
+                return -1;
+            else
+                return 1;
+        }
+
+        // Not equal
+        template <typename T_>
+        bool __ne__(T_ & a, T_ & b)
+        {
+            return ! (a == b);
+        }
+
         // Translates Paludis C++ exception to a Python one with output of message() and backtrace() saved
         // in the corresponding string attributes of the Python exception.
         template <typename Ex_>

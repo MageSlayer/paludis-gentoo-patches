@@ -40,9 +40,7 @@ void PALUDIS_VISIBLE expose_version_requirements()
             "[rw] VersionSpec"
             );
     vr.def("__eq__", &VersionRequirement::operator==);
-#ifdef CIARANM_REMOVED_THIS
-    vr.def("__neq__", &VersionRequirement::operator!=);
-#endif
+    vr.def("__ne__", &__ne__<VersionRequirement>);
 
     enum_auto("VersionRequirementsMode", last_vr);
 

@@ -38,9 +38,9 @@ class TestCase_VersionRequirements(unittest.TestCase):
         v1 = VersionRequirement("<", "0")
         v2 = VersionRequirement("<", "0")
 
-#        self.assert_(v1 == v2)
-#        v1.version_operator = ">"
-#        self.assert_(v1 != v2)
+        self.assert_(v1 == v2)
+        v1.version_operator = ">"
+        self.assert_(v1 != v2)
 
 if __name__ == "__main__":
     unittest.main()
