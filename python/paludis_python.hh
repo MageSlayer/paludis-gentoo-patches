@@ -17,17 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <map>
-#include <utility>
+#ifndef PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH
+#define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
+
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_functional.hh>
 
 #include <paludis/util/stringify.hh>
 
 #include <boost/python.hpp>
-
-#ifndef PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH
-#define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
 
 using namespace paludis;
 namespace bp = boost::python;
