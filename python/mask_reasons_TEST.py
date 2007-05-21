@@ -26,10 +26,10 @@ class TestCase_MaskReasons(unittest.TestCase):
         MaskReasons()
 
     def test_02_none(self):
-        self.assert_(MaskReasons().none);
+        self.assert_(MaskReasons().none)
 
     def test_03_any(self):
-        self.assert_(not MaskReasons().any);
+        self.assert_(not MaskReasons().any)
 
     def test_04_add(self):
         m1 = MaskReasons()

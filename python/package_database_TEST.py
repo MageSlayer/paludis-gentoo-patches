@@ -25,7 +25,7 @@ os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "package_database_TEST_di
 from paludis import *
 import unittest
 
-Log.instance.log_level = LogLevel.WARNING;
+Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_PackageDatabase(unittest.TestCase):
     def get_db(self):

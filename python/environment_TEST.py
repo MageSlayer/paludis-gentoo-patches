@@ -28,7 +28,7 @@ os.environ["PALUDIS_HOME"] = ph
 from paludis import *
 import unittest
 
-Log.instance.log_level = LogLevel.WARNING;
+Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_Environments(unittest.TestCase):
     def get_envs(self):

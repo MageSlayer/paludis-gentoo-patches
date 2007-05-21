@@ -26,7 +26,7 @@ irepo = os.path.join(os.getcwd(), "version_metadata_TEST_dir/installed")
 from paludis import *
 import unittest
 
-Log.instance.log_level = LogLevel.WARNING;
+Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_VersionMetadata(unittest.TestCase):
     e = NoConfigEnvironment(repo)

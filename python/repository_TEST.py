@@ -26,7 +26,7 @@ os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "repository_TEST_dir/home
 from paludis import *
 import unittest
 
-Log.instance.log_level = LogLevel.WARNING;
+Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_Repository(unittest.TestCase):
     def get_foo(self):
