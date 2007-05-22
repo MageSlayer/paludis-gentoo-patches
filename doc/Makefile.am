@@ -35,7 +35,7 @@ htmlfiles = \
 	man-adjutrix.html \
 	man-inquisitio.html
 
-EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
+EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css epydoc.css \
 	$(docfiles) $(tagfiles) $(images) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
@@ -89,6 +89,22 @@ rdoc :
 	exit 1
 
 endif
+
+if ENABLE_PYTHON
+
+epydoc : epydoc.css www all-built-sources
+	mkdir -p www/python/doc
+	epydoc -n Paludis -o www/python/doc -u http://paludis.pioto.org --no-frames -c epydoc.css \
+		$(top_builddir)/python/paludis.so
+
+else
+
+epydoc :
+	@echo "You don't have python turned on!"
+	exit 1
+
+endif
+
 
 cleanauthors : $(top_srcdir)/AUTHORS
 	sed -e '1,3d' \
@@ -298,7 +314,7 @@ htmlpages : $(htmlfiles) paludis.css www
 dothtaccess : htaccess
 	cp $(srcdir)/htaccess www/.htaccess
 
-homepage : doxygen rdoc htmlpages dothtaccess images
+homepage : doxygen rdoc epydoc htmlpages dothtaccess images
 
 images : $(images)
 	for s in $(images) ; do cp $(srcdir)/$$s www/ ; done

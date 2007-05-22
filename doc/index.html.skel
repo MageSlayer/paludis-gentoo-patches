@@ -80,8 +80,9 @@
             documentation</a>. This is also available via <code>make
             doxygen</code>.</li>
 
-        <li>Similarly, the <a href="ruby/">Ruby API documentation</a> is
-        available via <code>make rdoc</code>.</li>
+        <li>Similarly, the <a href="ruby/">Ruby API documentation</a> is available
+        via <code>make rdoc</code> and the <a href="python/doc/">Python API documentation</a>
+        via <code>make epydoc</code>.</li>
 
         <li><strong>Development questions</strong> should be asked in <code>#paludis</code> on
         <code>irc.freenode.net</code> or on the <a

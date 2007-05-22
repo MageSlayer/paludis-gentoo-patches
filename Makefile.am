@@ -34,7 +34,7 @@ automake-deps-dist-hack.tmp : built-sources-subdirs
 dist-hook :
 	rm $(distdir)/automake-deps-dist-hack.tmp
 
-doxygen rdoc homepage htmlpages upload-homepage :
+doxygen rdoc epydoc homepage htmlpages upload-homepage :
 	$(MAKE) -C doc $@
 
 check-local :
