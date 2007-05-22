@@ -30,7 +30,7 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
-class TestCase_Environments(unittest.TestCase):
+class TestCase_01_Environments(unittest.TestCase):
     def get_envs(self):
         self.e = EnvironmentMaker.instance.make_from_spec("")
         self.nce = NoConfigEnvironment(repo)
@@ -118,6 +118,43 @@ class TestCase_Environments(unittest.TestCase):
         self.get_envs()
 
         self.assert_(isinstance(self.e.config_dir, str))
+
+class TestCase_02_AdaptedEnvironment(unittest.TestCase):
+    def test_01_create(self):
+        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+
+    def test_02_adapt_use(self):
+        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
+        pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
+
+        self.assert_(env.query_use("enabled", pde))
+        self.assert_(not env.query_use("not_enabled", pde))
+        self.assert_(env.query_use("sometimes_enabled", pde))
+
+        env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
+        self.assert_(not env.query_use("enabled", pde))
+
+        env.adapt_use(pds, "not_enabled", UseFlagState.ENABLED)
+        self.assert_(env.query_use("not_enabled", pde))
+
+        env.adapt_use(pds, "sometimes_enabled", UseFlagState.ENABLED)
+        self.assert_(env.query_use("sometimes_enabled", pde))
+
+    def test_03_clear_adaptions(self):
+        env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
+        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
+        pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
+
+        self.assert_(env.query_use("enabled", pde))
+
+        env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
+        self.assert_(not env.query_use("enabled", pde))
+
+        env.clear_adaptions()
+        self.assert_(env.query_use("enabled", pde))
+
+
 
 if __name__ == "__main__":
     unittest.main()

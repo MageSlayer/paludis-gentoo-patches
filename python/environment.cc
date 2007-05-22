@@ -21,6 +21,7 @@
 
 #include <paludis/environment.hh>
 #include <paludis/environments/environment_maker.hh>
+#include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -113,15 +114,30 @@ void PALUDIS_VISIBLE expose_environment()
             "Return all known named sets."
          );
 
+    bp::class_<AdaptedEnvironment, bp::bases<Environment>, boost::noncopyable>
+        ae("AdaptedEnvironment",
+                "An Environment that allows you to change aspects of an existing Environment,"
+                " e.g. the state of a USE flag for a package.",
+                bp::init<tr1::shared_ptr<Environment> >("__init__(Environment)")
+          );
+    ae.def("adapt_use", &AdaptedEnvironment::adapt_use,
+            "adapt_use(PackageDepSpeec, UseFlagName, UseFlagState)\n"
+            "Set the state of a USE flag for the given PackageDepSpec."
+          );
+    ae.def("clear_adaptions", &AdaptedEnvironment::clear_adaptions,
+            "clear_adaptions()\n"
+            "Clear all adaptions from this Environemnt."
+          );
+
     bp::class_<PaludisEnvironment, bp::bases<Environment>, boost::noncopyable>
         pe("PaludisEnvironment",
                 "The PaludisEnvironment is an Environment that corresponds to the normal operating evironment.",
                 bp::init<const std::string &>("__init__(string)")
           );
-        pe.add_property("config_dir", &PaludisEnvironment::config_dir,
-                "[ro] string\n"
-                "The config directory."
-              );
+    pe.add_property("config_dir", &PaludisEnvironment::config_dir,
+            "[ro] string\n"
+            "The config directory."
+            );
 
     bp::class_<NoConfigEnvironmentWrapper, bp::bases<Environment>, boost::noncopyable>
         nce("NoConfigEnvironment",
@@ -133,8 +149,8 @@ void PALUDIS_VISIBLE expose_environment()
                         "master_repository_dir=\"/var/empty\")"
                     )
           );
-    tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)() =
-        &NoConfigEnvironment::main_repository;
+    tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)()
+        = &NoConfigEnvironment::main_repository;
     nce.add_property("main_repository", main_repository,
             "[ro] Repository\n"
             "Main repository."
