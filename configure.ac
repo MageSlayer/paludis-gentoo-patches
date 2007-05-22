@@ -842,7 +842,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran fake gentoo gems virtuals"
+ALL_REPOSITORIES="cran fake gentoo virtuals"
 DEFAULT_REPOSITORIES="fake gentoo virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -852,7 +852,6 @@ AC_ARG_WITH([repositories],
 
 			  cran            The Comprehensive R Archive Network
 			  fake            A fake repository for test cases and adjutrix
-			  gems            Ruby Gems (requires libyaml) (UNUSABLE)
 			  gentoo          Gentoo packages (ebuilds, vdb)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -862,27 +861,6 @@ AC_MSG_RESULT([$repositories])
 BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
 AC_SUBST([BUILD_REPOSITORIES])
-dnl }}}
-
-dnl {{{ gems
-AC_MSG_CHECKING([whether we're building the gems repository])
-if echo $repositories | tr ' ' '\n' | sort | uniq | grep '^gems$' >/dev/null ; then
-	AC_MSG_RESULT([yes])
-	AC_MSG_CHECKING([for libyaml])
-	AC_COMPILE_IFELSE([
-#include <yaml.h>
-int main(int, char **)
-{
-	yaml_get_version_string();
-	return 0;
-}
-],
-		[AC_MSG_RESULT([yes])],
-		[AC_MSG_RESULT([no])
-		 AC_MSG_ERROR([libyaml (http://pyyaml.org/wiki/LibYAML) is required for gems support])])
-else
-	AC_MSG_RESULT([no])
-fi
 dnl }}}
 
 dnl {{{ environments
@@ -1101,7 +1079,6 @@ AC_OUTPUT(
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/fake/Makefile
-	paludis/repositories/gems/Makefile
 	paludis/repositories/gentoo/Makefile
 	paludis/repositories/gentoo/ebuild/Makefile
 	paludis/repositories/gentoo/ebuild/digests/Makefile
