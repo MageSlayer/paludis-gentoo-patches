@@ -199,24 +199,23 @@ struct RepositoryPortageInterfaceWrapper :
 
 void PALUDIS_VISIBLE expose_repository()
 {
-    static register_exception<PackageActionError>
-        PackageActionError("PackageActionError");
-    static register_exception<PackageInstallActionError>
-        PackageInstallActionError("PackageInstallActionError");
-    static register_exception<PackageFetchActionError>
-        PackageFetchActionError("PackageFetchActionError");
-    static register_exception<PackageUninstallActionError>
-        PackageUninstallActionError("PackageUninstallActionError");
-    static register_exception<PackageConfigActionError>
-        PackageConfigActionError("PackageConfigActionError");
-    static register_exception<EnvironmentVariableActionError>
-        EnvironmentVariableActionError("EnvironmentVariableActionError");
+    ExceptionRegister::get_instance()->add_exception<PackageActionError>
+        ("PackageActionError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<PackageInstallActionError>
+        ("PackageInstallActionError", "PackageActionError");
+    ExceptionRegister::get_instance()->add_exception<PackageFetchActionError>
+        ("PackageFetchActionError", "PackageActionError");
+    ExceptionRegister::get_instance()->add_exception<PackageUninstallActionError>
+        ("PackageUninstallActionError", "PackageActionError");
+    ExceptionRegister::get_instance()->add_exception<PackageConfigActionError>
+        ("PackageConfigActionError", "PackageActionError");
+    ExceptionRegister::get_instance()->add_exception<EnvironmentVariableActionError>
+        ("EnvironmentVariableActionError", "PackageActionError");
 
     class_collection<DestinationsCollection>
         dc("DestinationsCollection",
                 "Iterable of Repository.\n"
                 "A set of Destinations."
-
           );
 
     bp::to_python_converter<std::pair<const std::string, std::string>,

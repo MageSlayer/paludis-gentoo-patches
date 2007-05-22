@@ -27,24 +27,24 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_name()
 {
-    static register_exception<PackageNamePartError>
-        PackageNamePartError("PackageNamePartError");
-    static register_exception<CategoryNamePartError>
-        CategoryNamePartError("CategoryNamePartError");
-    static register_exception<QualifiedPackageNameError>
-        QualifiedPackageNameError("QualifiedPackageNameError");
-    static register_exception<UseFlagNameError>
-        UseFlagNameError("UseFlagNameError");
-    static register_exception<IUseFlagNameError>
-        IUseFlagNameError("IUseFlagNameError");
-    static register_exception<SlotNameError>
-        SlotNameError("SlotNameError");
-    static register_exception<RepositoryNameError>
-        RepositoryNameError("RepositoryNameError");
-    static register_exception<KeywordNameError>
-        KeywordNameError("KeywordNameError");
-    static register_exception<SetNameError>
-        SetNameError("SetNameError");
+    ExceptionRegister::get_instance()->add_exception<PackageNamePartError>
+        ("PackageNamePartError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<CategoryNamePartError>
+        ("CategoryNamePartError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<QualifiedPackageNameError>
+        ("QualifiedPackageNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<UseFlagNameError>
+        ("UseFlagNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<IUseFlagNameError>
+        ("IUseFlagNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<SlotNameError>
+        ("SlotNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<RepositoryNameError>
+        ("RepositoryNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<KeywordNameError>
+        ("KeywordNameError", "NameError");
+    ExceptionRegister::get_instance()->add_exception<SetNameError>
+        ("SetNameError", "NameError");
 
     class_validated<PackageNamePart>
         pnp("PackageNamePart",

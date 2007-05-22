@@ -27,8 +27,8 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_dep_spec()
 {
-    static register_exception<PackageDepSpecError>
-        PackageDepSpecError("PackageDepSpecError");
+    ExceptionRegister::get_instance()->add_exception<PackageDepSpecError>
+        ("PackageDepSpecError", "BaseException");
 
     enum_auto("PackageDepSpecParseMode", last_pds_pm);
 

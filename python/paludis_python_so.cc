@@ -22,6 +22,7 @@
 void expose_contents();
 void expose_dep_spec();
 void expose_environment();
+void expose_exception();
 void expose_fs_entry();
 void expose_log();
 void expose_mask_reasons();
@@ -37,6 +38,7 @@ void expose_version_spec();
 
 BOOST_PYTHON_MODULE(paludis)
 {
+    expose_exception();
     expose_version_spec();
     expose_version_operator();
     expose_version_requirements();

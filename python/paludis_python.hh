@@ -20,9 +20,8 @@
 #ifndef PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH
 #define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
 
+#include <exception.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/util/tr1_functional.hh>
-
 #include <paludis/util/stringify.hh>
 
 #include <boost/python.hpp>
@@ -114,43 +113,6 @@ namespace paludis
         {
             return ! (a == b);
         }
-
-        // Translates Paludis C++ exception to a Python one with output of message() and backtrace() saved
-        // in the corresponding string attributes of the Python exception.
-        template <typename Ex_>
-        class register_exception
-        {
-            private:
-                PyObject * _e;
-                const std::string _name;
-                const std::string _longname;
-
-            public:
-                register_exception(const std::string & name) :
-                    _name(name),
-                    _longname("paludis."+name)
-                {
-                    _e = PyErr_NewException(const_cast<char*>(_longname.c_str()), NULL, NULL);
-                    PyModule_AddObject(bp::detail::current_scope, const_cast<char*>(_name.c_str()), _e);
-                    bp::register_exception_translator<Ex_>(
-                            tr1::bind(tr1::mem_fn(&register_exception<Ex_>::translator),
-                                this, tr1::placeholders::_1)
-                            );
-                }
-
-                void
-                translator(const Ex_ & x) const
-                {
-                    PyObject * backtrace = PyString_FromString(x.backtrace("\n").c_str());
-                    PyObject * message = PyString_FromString(x.message().c_str());
-                    PyObject * what = PyString_FromString(x.what());
-                    PyObject_SetAttrString(_e, "backtrace", backtrace);
-                    PyObject_SetAttrString(_e, "message", message);
-                    PyObject_SetAttrString(_e, "what", what);
-
-                    PyErr_SetString(_e, x.message().c_str());
-                }
-        };
 
         // expose Validated classes
         template <typename V_, typename Data_=std::string>

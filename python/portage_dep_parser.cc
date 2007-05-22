@@ -27,10 +27,12 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_portage_dep_parser()
 {
-    static register_exception<DepStringParseError>
-        DepStringParseError("DepStringParseError");
-    static register_exception<DepStringNestingError>
-        DepStringNestingError("DepStringNestingError");
+    ExceptionRegister::get_instance()->add_exception<DepStringError>
+        ("DepStringError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<DepStringParseError>
+        ("DepStringParseError", "DepStringError");
+    ExceptionRegister::get_instance()->add_exception<DepStringNestingError>
+        ("DepStringNestingError", "DepStringParseError");
 
     bp::class_<PortageDepParser, boost::noncopyable>
         pdp("PortageDepParser",

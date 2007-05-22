@@ -43,16 +43,16 @@ struct NoConfigEnvironmentWrapper :
 
 void PALUDIS_VISIBLE expose_environment()
 {
-    static register_exception<NoSuchEnvironmentTypeError>
-        NoSuchEnvironmentTypeError("NoSuchEnvironmentTypeError");
-    static register_exception<PaludisEnvironmentSoDirNotADirectoryError>
-        PaludisEnvironmentSoDirNotADirectoryError("PaludisEnvironmentSoDirNotADirectoryError");
-    static register_exception<PaludisEnvironmentSoDirCannotDlopenError>
-        PaludisEnvironmentSoDirCannotDlopenError("PaludisEnvironmentSoDirCannotDlopenError");
-    static register_exception<PaludisConfigError>
-        PaludisConfigError("PaludisConfigError");
-    static register_exception<PaludisConfigNoDirectoryError>
-        PaludisConfigNoDirectoryError("PaludisConfigNoDirectoryError");
+    ExceptionRegister::get_instance()->add_exception<NoSuchEnvironmentTypeError>
+        ("NoSuchEnvironmentTypeError", "ConfigurationError");
+    ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirNotADirectoryError>
+        ("PaludisEnvironmentSoDirNotADirectoryError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirCannotDlopenError>
+        ("PaludisEnvironmentSoDirCannotDlopenError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<PaludisConfigError>
+        ("PaludisConfigError", "ConfigurationError");
+    ExceptionRegister::get_instance()->add_exception<PaludisConfigNoDirectoryError>
+        ("PaludisConfigNoDirectoryError", "PaludisConfigError");
 
     bp::class_<EnvironmentMaker, boost::noncopyable> em("EnvironmentMaker",
             "Virtual constructor for environments.",
