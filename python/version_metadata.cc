@@ -87,11 +87,9 @@ void PALUDIS_VISIBLE expose_version_metadata()
     vm.def_readonly("description", &VersionMetadata::description,
             "[ro] string"
             );
-#ifdef CIARANM_REMOVED_THIS
     vm.def_readonly("eapi", &VersionMetadata::eapi,
-            "[ro] string"
+            "[ro] EAPI"
             );
-#endif
     vm.add_property("ebuild_interface", bp::make_function(&VersionMetadataWrapper::get_ebuild_interface,
             bp::return_internal_reference<>()),
             "[ro] EbuildInterface"

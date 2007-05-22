@@ -50,7 +50,7 @@ class TestCase_VersionMetadata(unittest.TestCase):
         self.assertEquals(str(vmd.slot), "0")
         self.assertEquals(str(iter(vmd.homepage).next()), "http://paludis.pioto.org/")
         self.assertEquals(vmd.description, "Test package")
-#        self.assertEquals(vmd.eapi, "0")
+        self.assertEquals(vmd.eapi.name, "0")
 
     def test_04_ebuild_interface(self):
         ei = self.vmd("1.0").ebuild_interface

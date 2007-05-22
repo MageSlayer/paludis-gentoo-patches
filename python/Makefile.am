@@ -27,6 +27,7 @@ IF_PYTHON_TESTS = \
 	mask_reasons_TEST.py \
 	contents_TEST.py \
 	dep_spec_TEST.py \
+	eapi_TEST.py \
 	portage_dep_parser_TEST.py \
 	log_TEST.py \
 	name_TEST.py \
@@ -39,10 +40,11 @@ IF_PYTHON_TESTS = \
 IF_PYTHON_QA_TESTS =
 
 IF_PYTHON_SOURCES = \
-	exception.cc \
 	contents.cc \
 	dep_spec.cc \
+	eapi.cc \
 	environment.cc \
+	exception.cc \
 	fs_entry.cc \
 	mask_reasons.cc \
 	name.cc \
