@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_eapi()
+void PALUDIS_VISIBLE expose_eapi()
 {
     register_shared_ptrs_to_python<SupportedEAPI>();
     bp::class_<SupportedEAPI, boost::noncopyable>
