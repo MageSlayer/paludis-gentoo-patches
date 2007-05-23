@@ -413,6 +413,10 @@ module Paludis
 
         def test_set_accept_unstable
             assert_respond_to env, :accept_unstable=
+	    assert_nothing_raised do
+	    	env.accept_unstable=true
+	    	env.accept_unstable=false
+	    end
         end
     end
 end
