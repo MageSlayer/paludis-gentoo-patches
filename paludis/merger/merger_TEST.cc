@@ -19,13 +19,59 @@
 
 #include "merger.hh"
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/hooker.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
 #include <iterator>
+#include <list>
 
 using namespace paludis;
 using namespace test;
+
+namespace paludis
+{
+    class HookTestEnvironment :
+        public TestEnvironment
+    {
+        private:
+            mutable std::tr1::shared_ptr<Hooker> hooker;
+            mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
+
+        public:
+            HookTestEnvironment(const FSEntry & hooks);
+
+            virtual ~HookTestEnvironment();
+
+            virtual HookResult perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+    };
+
+    HookTestEnvironment::HookTestEnvironment(const FSEntry & hooks)
+    {
+        if (hooks.is_directory())
+            hook_dirs.push_back(std::make_pair(hooks, false));
+    }
+
+    HookTestEnvironment::~HookTestEnvironment()
+    {
+    }
+
+    HookResult
+    HookTestEnvironment::perform_hook(const Hook & hook) const
+    {
+        if (! hooker)
+        {
+            hooker.reset(new Hooker(this));
+            for (std::list<std::pair<FSEntry, bool> >::const_iterator h(hook_dirs.begin()),
+                    h_end(hook_dirs.end()) ; h != h_end ; ++h)
+                hooker->add_dir(h->first, h->second);
+        }
+        return hooker->perform_hook(hook);
+    }
+}
+
 
 namespace
 {
@@ -61,6 +107,10 @@ namespace
         {
         }
 
+        void display_skip(const std::string &) const
+        {
+        }
+
         bool config_protected(const FSEntry &, const FSEntry &)
         {
             return false;
@@ -78,7 +128,7 @@ namespace
         public:
             FSEntry image_dir;
             FSEntry root_dir;
-            TestEnvironment env;
+            HookTestEnvironment env;
             TestMerger merger;
 
             bool repeatable() const
@@ -87,13 +137,14 @@ namespace
             }
 
         protected:
-            MergerTest(MergerEntryType src_type, MergerEntryType dst_type, int n = 0) :
+            MergerTest(EntryType src_type, EntryType dst_type, int n = 0) :
                 TestCase("merge " + stringify(src_type) + " over " + stringify(dst_type) + (0 == n ? "" : " "
                             + stringify(n))),
                 image_dir("merger_TEST_dir/image_" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n))),
                 root_dir("merger_TEST_dir/root_" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n))),
+                env(FSEntry("merger_TEST_dir/hooks")),
                 merger(MergerOptions::create()
                         .image(image_dir)
                         .root(root_dir)
@@ -101,6 +152,20 @@ namespace
                         .no_chown(true))
             {
             }
+
+            MergerTest(const std::string & custom_test) :
+                TestCase("merge " + custom_test + " test"),
+                image_dir("merger_TEST_dir/image_" + custom_test),
+                root_dir("merger_TEST_dir/root_" + custom_test),
+                env(FSEntry("merger_TEST_dir/hooks")),
+                merger(MergerOptions::create()
+                        .image(image_dir)
+                        .root(root_dir)
+                        .environment(&env)
+                        .no_chown(true))
+            {
+            }
+ 
     };
 }
 
@@ -108,7 +173,7 @@ namespace test_cases
 {
     struct MergerTestSymNothing : MergerTest
     {
-        MergerTestSymNothing() : MergerTest(met_sym, met_nothing) { }
+        MergerTestSymNothing() : MergerTest(et_sym, et_nothing) { }
 
         void run()
         {
@@ -124,7 +189,7 @@ namespace test_cases
 
     struct MergerTestSymSym : MergerTest
     {
-        MergerTestSymSym() : MergerTest(met_sym, met_sym) { }
+        MergerTestSymSym() : MergerTest(et_sym, et_sym) { }
 
         void run()
         {
@@ -141,7 +206,7 @@ namespace test_cases
 
     struct MergerTestSymFile : MergerTest
     {
-        MergerTestSymFile() : MergerTest(met_sym, met_file) { }
+        MergerTestSymFile() : MergerTest(et_sym, et_file) { }
 
         void run()
         {
@@ -157,7 +222,7 @@ namespace test_cases
 
     struct MergerTestSymDir : MergerTest
     {
-        MergerTestSymDir() : MergerTest(met_sym, met_dir) { }
+        MergerTestSymDir() : MergerTest(et_sym, et_dir) { }
 
         void run()
         {
@@ -172,7 +237,7 @@ namespace test_cases
 
     struct MergerTestDirNothing : MergerTest
     {
-        MergerTestDirNothing() : MergerTest(met_dir, met_nothing) { }
+        MergerTestDirNothing() : MergerTest(et_dir, et_nothing) { }
 
         void run()
         {
@@ -187,7 +252,7 @@ namespace test_cases
 
     struct MergerTestDirDir : MergerTest
     {
-        MergerTestDirDir() : MergerTest(met_dir, met_dir) { }
+        MergerTestDirDir() : MergerTest(et_dir, et_dir) { }
 
         void run()
         {
@@ -202,7 +267,7 @@ namespace test_cases
 
     struct MergerTestDirFile : MergerTest
     {
-        MergerTestDirFile() : MergerTest(met_dir, met_file) { }
+        MergerTestDirFile() : MergerTest(et_dir, et_file) { }
 
         void run()
         {
@@ -217,7 +282,7 @@ namespace test_cases
 
     struct MergerTestDirSym1 : MergerTest
     {
-        MergerTestDirSym1() : MergerTest(met_dir, met_sym, 1) { }
+        MergerTestDirSym1() : MergerTest(et_dir, et_sym, 1) { }
 
         void run()
         {
@@ -236,7 +301,7 @@ namespace test_cases
 
     struct MergerTestDirSym2 : MergerTest
     {
-        MergerTestDirSym2() : MergerTest(met_dir, met_sym, 2) { }
+        MergerTestDirSym2() : MergerTest(et_dir, et_sym, 2) { }
 
         void run()
         {
@@ -253,7 +318,7 @@ namespace test_cases
 
     struct MergerTestDirSym3 : MergerTest
     {
-        MergerTestDirSym3() : MergerTest(met_dir, met_sym, 3) { }
+        MergerTestDirSym3() : MergerTest(et_dir, et_sym, 3) { }
 
         void run()
         {
@@ -270,7 +335,7 @@ namespace test_cases
 
     struct MergerTestFileNothing : MergerTest
     {
-        MergerTestFileNothing() : MergerTest(met_file, met_nothing) { }
+        MergerTestFileNothing() : MergerTest(et_file, et_nothing) { }
 
         void run()
         {
@@ -289,7 +354,7 @@ namespace test_cases
 
     struct MergerTestFileFile : MergerTest
     {
-        MergerTestFileFile() : MergerTest(met_file, met_file) { }
+        MergerTestFileFile() : MergerTest(et_file, et_file) { }
 
         void run()
         {
@@ -312,7 +377,7 @@ namespace test_cases
 
     struct MergerTestFileSym : MergerTest
     {
-        MergerTestFileSym() : MergerTest(met_file, met_sym) { }
+        MergerTestFileSym() : MergerTest(et_file, et_sym) { }
 
         void run()
         {
@@ -345,7 +410,7 @@ namespace test_cases
 
     struct MergerTestFileDir : MergerTest
     {
-        MergerTestFileDir() : MergerTest(met_file, met_dir) { }
+        MergerTestFileDir() : MergerTest(et_file, et_dir) { }
 
         void run()
         {
@@ -357,5 +422,31 @@ namespace test_cases
             TEST_CHECK((root_dir / "file").is_directory());
         }
     } test_merger_file_dir;
+
+    struct MergerSkipTest : MergerTest
+    {
+        MergerSkipTest() : MergerTest("skip") { }
+
+        void run()
+        {
+            TEST_CHECK((image_dir / "dir_skip_me").is_directory());
+            TEST_CHECK((image_dir / "dir_noskip_me").is_directory());
+            TEST_CHECK((image_dir / "file_skip_me").is_regular_file());
+            TEST_CHECK((image_dir / "file_noskip_me").is_regular_file());
+            TEST_CHECK((image_dir / "sym_skip_me").is_symbolic_link());
+            TEST_CHECK((image_dir / "sym_noskip_me").is_symbolic_link());
+
+            TEST_CHECK(merger.check());
+            merger.merge();
+
+
+            TEST_CHECK(! (root_dir / "dir_skip_me").exists());
+            TEST_CHECK((root_dir / "dir_noskip_me").is_directory());
+            TEST_CHECK(! (root_dir / "file_skip_me").exists());
+            TEST_CHECK((root_dir / "file_noskip_me").is_regular_file());
+            TEST_CHECK(! (root_dir / "sym_skip_me").exists());
+            TEST_CHECK((root_dir / "sym_noskip_me").is_symbolic_link());
+        }
+    } test_merger_skip;
 }
 

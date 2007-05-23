@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,25 +58,25 @@ namespace paludis
      * \ingroup grpvdbrepository
      * \nosubgrouping
      */
-    class VDBUnmerger :
-        private PrivateImplementationPattern<VDBUnmerger>,
-        public Unmerger
+    class PALUDIS_VISIBLE VDBUnmerger :
+        public Unmerger,
+        private PrivateImplementationPattern<VDBUnmerger>
     {
+        private:
+            Implementation<VDBUnmerger> * _imp;
+
         protected:
-            bool config_protected(const FSEntry &);
+            bool config_protected(const FSEntry &) const;
             std::string make_tidy(const FSEntry &) const;
 
-            /**
-             * Unmerge non-directories.
-             */
-            template <typename I_>
-            void unmerge_non_directories(I_ begin, const I_ end);
+            void populate_unmerge_set();
 
-            /**
-             * Unmerge directories.
-             */
-            template <typename I_>
-            void unmerge_directories(I_ begin, const I_ end);
+            void display(const std::string &) const;
+
+            bool check_file(const FSEntry &) const;
+            bool check_dir(const FSEntry &) const;
+            bool check_sym(const FSEntry &) const;
+            bool check_misc(const FSEntry &) const;
 
         public:
             ///\name Basic operations
@@ -86,12 +87,7 @@ namespace paludis
 
             ///\}
 
-            virtual Hook extend_hook(const Hook &);
-
-            /**
-             * Perform the unmerge.
-             */
-            void unmerge();
+            virtual Hook extend_hook(const Hook &) const;
     };
 
 }

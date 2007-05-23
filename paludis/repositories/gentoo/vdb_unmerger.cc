@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +32,7 @@ using namespace paludis;
 #include <paludis/package_database.hh>
 #include <paludis/util/join.hh>
 #include <list>
+#include <map>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -48,6 +50,8 @@ namespace paludis
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
+        std::multimap<std::string, std::string> extra_info;
+
         Implementation(const VDBUnmergerOptions & o) :
             options(o)
         {
@@ -57,13 +61,16 @@ namespace paludis
                     std::back_inserter(config_protect_mask));
         }
     };
+
+    typedef std::multimap<std::string, std::string>::iterator ExtraInfoIterator;
 }
 
 VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
-    PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
     Unmerger(UnmergerOptions::create()
             .environment(o.environment)
-            .root(o.root))
+            .root(o.root)),
+    PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
+    _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.operator-> ())
 {
 }
 
@@ -72,17 +79,16 @@ VDBUnmerger::~VDBUnmerger()
 }
 
 Hook
-VDBUnmerger::extend_hook(const Hook & h)
+VDBUnmerger::extend_hook(const Hook & h) const
 {
     std::string cat(stringify(_imp->options.package_name.category));
     std::string pn(stringify(_imp->options.package_name.package));
     std::string pvr(stringify(_imp->options.version));
     std::string pv(stringify(_imp->options.version.remove_revision()));
-    std::string slot(stringify(_imp->options.repository->version_metadata(_imp->options.package_name, _imp->options.version)->slot));
 
     tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
 
-    return Unmerger::extend_hook(h)
+    Hook result(Unmerger::extend_hook(h)
         ("P", pn + "-" + pv)
         ("PN", pn)
         ("CATEGORY", cat)
@@ -90,40 +96,22 @@ VDBUnmerger::extend_hook(const Hook & h)
         ("PV", pv)
         ("PVR", pvr)
         ("PF", pn + "-" + pvr)
-        ("SLOT", slot)
         ("CONFIG_PROTECT", _imp->options.config_protect)
         ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
-        ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
-}
+        ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
-void
-VDBUnmerger::unmerge()
-{
-    std::ifstream c(stringify(_imp->options.contents_file).c_str());
-    if (! c)
-        throw VDBUnmergerError("Cannot read '" + stringify(_imp->options.contents_file) + "'");
-
-    std::list<std::string> lines;
-    std::string line;
-    while (std::getline(c, line))
-        lines.push_back(line);
-
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
-                              Hook("unmerger_unlink_pre")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
-
-    unmerge_non_directories(lines.begin(), lines.end());
-    unmerge_directories(lines.rbegin(), lines.rend());
-
-    if (0 != _imp->options.environment->perform_hook(extend_hook(
-                              Hook("unmerger_unlink_post")
-                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
+    if (0 != _imp->options.repository)
+    {
+        std::string slot(stringify(_imp->options.repository->version_metadata(
+                        _imp->options.package_name, _imp->options.version)->slot));
+        return result("SLOT", slot);
+    }
+    else
+        return result;
 }
 
 bool
-VDBUnmerger::config_protected(const FSEntry & f)
+VDBUnmerger::config_protected(const FSEntry & f) const
 {
     std::string tidy(make_tidy(f));
 
@@ -152,14 +140,18 @@ VDBUnmerger::make_tidy(const FSEntry & f) const
     return f_str.substr(root_str.length());
 }
 
-template <typename I_>
 void
-VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
+VDBUnmerger::populate_unmerge_set()
 {
-    for ( ; cur != end ; ++cur)
+    std::ifstream c(stringify(_imp->options.contents_file).c_str());
+    if (! c)
+        throw VDBUnmergerError("Cannot read '" + stringify(_imp->options.contents_file) + "'");
+
+    std::string line;
+    while (std::getline(c, line))
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(*cur, std::back_inserter(tokens));
+        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
         if (tokens.empty())
             continue;
 
@@ -171,79 +163,50 @@ VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
                     break;
 
                 tokens.at(1).append(" " + tokens.at(2));
-                for (unsigned i = 2 ; i < tokens.size() - 1 ; ++i)
-                    tokens.at(i) = tokens.at(i + 1);
-                tokens.pop_back();
+                tokens.erase(next(tokens.begin(), 2));
             }
 
             if (tokens.size() != 4)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + *cur + "'");
-            else if (! (_imp->options.root / tokens.at(1)).is_regular_file())
-                std::cout << "--- [!type] " << tokens.at(1) << std::endl;
-            else if (stringify((_imp->options.root / tokens.at(1)).mtime()) != tokens.at(3))
-                std::cout << "--- [!time] " << tokens.at(1) << std::endl;
+                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                std::ifstream md5_file(stringify(_imp->options.root / tokens.at(1)).c_str());
-                if (! md5_file)
-                {
-                    Log::get_instance()->message(ll_warning, lc_no_context, "Cannot get md5 for '" +
-                            stringify(_imp->options.root / tokens.at(1)) + "'");
-                    std::cout << "--- [!md5?] " << tokens.at(1) << std::endl;
-                }
-                else if (MD5(md5_file).hexsum() != tokens.at(2))
-                    std::cout << "--- [!md5 ] " << tokens.at(1) << std::endl;
-                else if (config_protected(_imp->options.root / tokens.at(1)))
-                    std::cout << "--- [cfgpr] " << tokens.at(1) << std::endl;
-                else
-                {
-                    std::cout << "<<<         " << tokens.at(1) << std::endl;
-                    unlink_file(_imp->options.root / tokens.at(1));
-                }
+                add_unmerge_entry(tokens.at(1), et_file);
+
+                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
+                        i != i_end ; ++i)
+                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
             }
+
         }
         else if ("sym" == tokens.at(0))
         {
             while (tokens.size() > 5)
             {
-                if (std::string::npos != tokens.at(2).find('='))
-                    break;
-
                 if (tokens.at(2) == "->")
                     break;
 
                 tokens.at(1).append(" " + tokens.at(2));
-                for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
-                    tokens.at(i) = tokens.at(i + 1);
-                tokens.pop_back();
+                tokens.erase(next(tokens.begin(), 2));
             }
 
             while (tokens.size() > 5)
             {
-                if (std::string::npos != tokens.at(2).find('='))
-                    break;
-
-                if (tokens.at(4) == "->")
+                if (std::string::npos != tokens.at(5).find('='))
                     break;
 
                 tokens.at(3).append(" " + tokens.at(4));
-                for (unsigned i = 4 ; i < tokens.size() - 1; ++i)
-                    tokens.at(i) = tokens.at(i + 1);
-                tokens.pop_back();
+                tokens.erase(next(tokens.begin(), 4));
             }
 
-            if (tokens.size() != 5)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + *cur + "'");
-            else if (! (_imp->options.root / tokens.at(1)).is_symbolic_link())
-                std::cout << "--- [!type] " << tokens.at(1) << std::endl;
-            else if (stringify((_imp->options.root / tokens.at(1)).mtime()) != tokens.at(4))
-                std::cout << "--- [!time] " << tokens.at(1) << std::endl;
-            else if ((_imp->options.root / tokens.at(1)).readlink() != tokens.at(3))
-                std::cout << "--- [!dest] " << tokens.at(1) << std::endl;
+            if (tokens.size() != 5 || tokens.at(2) != "->")
+                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                std::cout << "<<<         " << tokens.at(1) << std::endl;
-                unlink_sym(_imp->options.root / tokens.at(1));
+                add_unmerge_entry(tokens.at(1), et_sym);
+
+                for (std::vector<std::string>::iterator i(next(tokens.begin(), 3)), i_end(tokens.end()) ;
+                        i != i_end ; ++i)
+                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
             }
         }
         else if ("misc" == tokens.at(0))
@@ -257,67 +220,126 @@ VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
                     break;
 
                 tokens.at(1).append(" " + tokens.at(2));
-                for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
-                    tokens.at(i) = tokens.at(i + 1);
-                tokens.pop_back();
+                tokens.erase(next(tokens.begin(), 2));
             }
 
             if (tokens.size() != 2)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + *cur + "'");
-            else if ("fif" == tokens.at(0) && ! (_imp->options.root / tokens.at(1)).is_fifo())
-                std::cout << "--- [!type] " << tokens.at(1) << std::endl;
-            else if ("dev" == tokens.at(0) && ! (_imp->options.root / tokens.at(1)).is_device())
-                std::cout << "--- [!type] " << tokens.at(1) << std::endl;
+                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                std::cout << "<<<         " << tokens.at(1) << std::endl;
-                unlink_misc(_imp->options.root / tokens.at(1));
+                add_unmerge_entry(tokens.at(1), et_misc);
+
+                _imp->extra_info.insert(std::make_pair(tokens.at(1), tokens.at(0)));
+                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
+                        i != i_end ; ++i)
+                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
             }
         }
         else if ("dir" == tokens.at(0))
-            /* nothing */ ;
+        {
+            while (tokens.size() > 2)
+            {
+                if (std::string::npos != tokens.at(2).find('='))
+                    break;
+
+                tokens.at(1).append(" " + tokens.at(2));
+                tokens.erase(next(tokens.begin(), 2));
+            }
+
+            if (tokens.size() != 2)
+                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
+            else
+            {
+                add_unmerge_entry(tokens.at(1), et_dir);
+
+                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
+                        i != i_end ; ++i)
+                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
+            }
+        }
         else
-            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + *cur + "'");
+            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
     }
 }
 
-template <typename I_>
-void
-VDBUnmerger::unmerge_directories(I_ cur, const I_ end)
+bool
+VDBUnmerger::check_file(const FSEntry & f) const
 {
-    for ( ; cur != end ; ++cur)
+    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+
+    if (! (_imp->options.root / f).is_regular_file())
+        display("--- [!type] " + stringify(f));
+    else if (stringify((_imp->options.root / f).mtime()) != next(i)->second)
+        display("--- [!time] " + stringify(f));
+    else
     {
-        std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(*cur, std::back_inserter(tokens));
-        if (tokens.empty())
-            continue;
-
-        if ("dir" != tokens.at(0))
-            continue;
-
-        while (tokens.size() > 2)
+        std::ifstream md5_file(stringify(_imp->options.root / f).c_str());
+        if (! md5_file)
         {
-            if (std::string::npos != tokens.at(2).find('='))
-                break;
-
-            tokens.at(1).append(" " + tokens.at(2));
-            for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
-                tokens.at(i) = tokens.at(i + 1);
-            tokens.pop_back();
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot get md5 for '" +
+                    stringify(_imp->options.root / f) + "'");
+            display("--- [!md5?] " + stringify(f));
         }
-
-        if (tokens.size() != 2)
-            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + *cur + "'");
-        else if (! (_imp->options.root / tokens.at(1)).is_directory())
-            std::cout << "--- [!type] " << tokens.at(1) << std::endl;
-        else if (DirIterator(_imp->options.root / tokens.at(1), false) != DirIterator())
-            std::cout << "--- [!empt] " << tokens.at(1) << std::endl;
+        else if (MD5(md5_file).hexsum() != i->second)
+            display("--- [!md5 ] " + stringify(f));
+        else if (config_protected(_imp->options.root / f))
+            display("--- [cfgpr] " + stringify(f));
         else
-        {
-            std::cout << "<<<         " << tokens.at(1) << std::endl;
-            unlink_dir(_imp->options.root / tokens.at(1));
-        }
+            return true;
     }
+
+    return false;
+}
+
+bool
+VDBUnmerger::check_sym(const FSEntry & f) const
+{
+    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+
+    if (! (_imp->options.root / f).is_symbolic_link())
+        display("--- [!type] " + stringify(f));
+    else if (stringify((_imp->options.root / f).mtime()) != next(i)->second)
+        display("--- [!time] " + stringify(f));
+    else if ((_imp->options.root / f).readlink() !=  i->second)
+        display("--- [!dest] " + stringify(f));
+    else
+        return true;
+
+    return false;
+}
+
+bool
+VDBUnmerger::check_misc(const FSEntry & f) const
+{
+    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+
+    if ("fif" == i->second && ! (_imp->options.root / f).is_fifo())
+        display("--- [!type] " + stringify(f));
+    else if ("dev" == i->second && ! (_imp->options.root / f).is_device())
+        display("--- [!type] " + stringify(f));
+    else
+        return true;
+
+    return false;
+}
+
+bool
+VDBUnmerger::check_dir(const FSEntry & f) const
+{
+    if (! (_imp->options.root / f).is_directory())
+        display("--- [!type] " + stringify(f));
+    else if (DirIterator(_imp->options.root / f, false) != DirIterator())
+        display("--- [!empt] " + stringify(f));
+    else
+        return true;
+
+    return false;
+}
+
+void
+VDBUnmerger::display(const std::string & message) const
+{
+    std::cout << message << std::endl;
 }
 
 VDBUnmergerError::VDBUnmergerError(const std::string & s) throw () :

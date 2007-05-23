@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_EntryType()
+{
+    prefix et
+
+    key et_nothing          "Does not exist"
+    key et_file             "A regular file"
+    key et_dir              "A directory"
+    key et_sym              "A symlink"
+    key et_misc             "Something else"
+
+    doxygen_comment << "END"
+        /**
+        * The type of file.
+         *
+         * \see Merger
+         * \ingroup grpdepresolver
+         */
+END
+}
+

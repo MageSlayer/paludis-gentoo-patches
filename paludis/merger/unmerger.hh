@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +24,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/merger/entry_type.hh>
 
 namespace paludis
 {
@@ -56,11 +59,9 @@ namespace paludis
      * \ingroup grpunmerger
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Unmerger
+    class PALUDIS_VISIBLE Unmerger :
+        private PrivateImplementationPattern<Unmerger>
     {
-        private:
-            UnmergerOptions _options;
-
         protected:
             ///\name Basic operations
             ///\{
@@ -70,27 +71,79 @@ namespace paludis
             ///\}
 
             /**
+             * Add entry to the unmerge set.
+             */
+            void add_unmerge_entry(const std::string &, EntryType);
+
+            /**
+             * Populate the unmerge set.
+             */
+            virtual void populate_unmerge_set() = 0;
+
+            /**
              * Extend a hook with extra options.
              */
-            virtual Hook extend_hook(const Hook &);
+            virtual Hook extend_hook(const Hook &) const;
+
+            ///\name Unmerge operations
+            ///\{
+
+            virtual void unmerge_file(FSEntry &) const;
+            virtual void unmerge_dir(FSEntry &) const;
+            virtual void unmerge_sym(FSEntry &) const;
+            virtual void unmerge_misc(FSEntry &) const;
+
+            ///\}
+
+            ///\name Check operations
+            ///\{
+
+            virtual bool check_file(const FSEntry &) const
+            {
+                return true;
+            }
+
+            virtual bool check_dir(const FSEntry &) const
+            {
+                return true;
+            }
+
+            virtual bool check_sym(const FSEntry &) const
+            {
+                return true;
+            }
+
+            virtual bool check_misc(const FSEntry &) const
+            {
+                return true;
+            }
+
+            ///\}
 
             ///\name Unlink operations
             ///\{
 
-            virtual void unlink_file(FSEntry);
-            virtual void unlink_dir(FSEntry);
-            virtual void unlink_sym(FSEntry);
-            virtual void unlink_misc(FSEntry);
+            virtual void unlink_file(FSEntry &) const;
+            virtual void unlink_dir(FSEntry &) const;
+            virtual void unlink_sym(FSEntry &) const;
+            virtual void unlink_misc(FSEntry &) const;
 
             ///\}
+
+            virtual void display(const std::string &) const = 0;
 
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~Unmerger();
+            virtual ~Unmerger() = 0;
 
             ///\}
+
+            /**
+             * Perform the unmerge.
+             */
+            void unmerge();
     };
 }
 

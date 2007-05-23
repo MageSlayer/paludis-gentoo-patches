@@ -23,6 +23,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/merger/entry_type.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -30,7 +31,6 @@ namespace paludis
     class Environment;
     class Hook;
 
-#include <paludis/merger/merger-se.hh>
 #include <paludis/merger/merger-sr.hh>
 
     /**
@@ -64,6 +64,7 @@ namespace paludis
         private:
             MergerOptions _options;
             bool _result;
+            bool _skip_dir;
 
         protected:
             ///\name Basic operations
@@ -86,7 +87,7 @@ namespace paludis
             /**
              * Determine the entry type of a filesystem entry.
              */
-            virtual MergerEntryType entry_type(const FSEntry &);
+            virtual EntryType entry_type(const FSEntry &);
 
             /**
              * Handle a directory, recursively.
@@ -153,6 +154,8 @@ namespace paludis
              * What to do when a warning occurs.
              */
             virtual void on_warn(bool is_check, const std::string &) = 0;
+
+            virtual void display_skip(const std::string &) const = 0;
 
             ///\name Configuration protection
             ///\{

@@ -240,3 +240,9 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
     std::cout << ".";
 }
 
+void
+VDBMerger::display_skip(const std::string & message) const
+{
+    std::cout << message << std::endl;
+}
+

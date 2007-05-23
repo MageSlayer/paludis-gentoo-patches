@@ -40,6 +40,9 @@ namespace paludis
         public Merger,
         private PrivateImplementationPattern<VDBMerger>
     {
+        private:
+            void display_skip(const std::string &) const;
+
         public:
             ///\name Basic operations
             ///\{

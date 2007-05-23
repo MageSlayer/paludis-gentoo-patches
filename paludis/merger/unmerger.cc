@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,10 +25,29 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <map>
 
 using namespace paludis;
 
 #include <paludis/merger/unmerger-sr.cc>
+
+namespace paludis
+{
+    template<>
+    struct Implementation<Unmerger>
+    {
+        UnmergerOptions options;
+
+        std::map<std::string, EntryType> unmerge_set;
+
+        Implementation(const UnmergerOptions & o) :
+            options(o)
+        {
+        }
+    };
+
+    typedef std::map<std::string, EntryType>::reverse_iterator UnmergeListIterator;
+}
 
 UnmergerError::UnmergerError(const std::string & s) throw () :
     Exception(s)
@@ -35,7 +55,7 @@ UnmergerError::UnmergerError(const std::string & s) throw () :
 }
 
 Unmerger::Unmerger(const UnmergerOptions & o) :
-    _options(o)
+    PrivateImplementationPattern<Unmerger>(new Implementation<Unmerger>(o))
 {
 }
 
@@ -44,84 +64,234 @@ Unmerger::~Unmerger()
 }
 
 void
-Unmerger::unlink_file(FSEntry d)
+Unmerger::add_unmerge_entry(const std::string & f, EntryType et)
 {
-    if (0 != _options.environment->perform_hook(extend_hook(
-                         Hook("unmerger_unlink_file_pre")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+    if (! _imp->unmerge_set.insert(std::make_pair(f, et)).second)
+        throw UnmergerError("Entry '" + stringify(f) + "' already in the unmerge set");
+}
 
-    if (d.is_regular_file())
+void
+Unmerger::unmerge()
+{
+    populate_unmerge_set();
+
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
+                              Hook("unmerger_unlink_pre")
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
+        throw UnmergerError("Unmerge from '" + stringify(_imp->options.root) + "' aborted by hook");
+
+    for (UnmergeListIterator  i(_imp->unmerge_set.rbegin()), i_end(_imp->unmerge_set.rend()) ; i != i_end ; ++i)
     {
-        mode_t mode(d.permissions());
+        FSEntry f(i->first);
+        switch (i->second)
+        {
+            case et_dir:
+                unmerge_dir(f);
+                continue;
+
+            case et_file:
+                unmerge_file(f);
+                continue;
+
+            case et_sym:
+                unmerge_sym(f);
+                continue;
+
+            case et_misc:
+                unmerge_misc(f);
+                continue;
+
+            case et_nothing:
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify((*i).second) + "'");
+    }
+
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
+                              Hook("unmerger_unlink_post")
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
+        throw UnmergerError("Unmerge from '" + stringify(_imp->options.root) + "' aborted by hook");
+}
+
+void
+Unmerger::unmerge_file(FSEntry & f) const
+{
+    FSEntry f_real(_imp->options.root / f);
+
+    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+                    Hook("unmerger_unlink_file_skip")
+                    ("UNLINK_TARGET", stringify(f_real))
+                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+
+    if (hr.max_exit_status != 0)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
+    else if (hr.output == "skip")
+        display("--- [skip ] " + stringify(f));
+    else if (hr.output == "noskip")
+    {
+        display("<<< [force] " + stringify(f));
+        unlink_file(f_real);
+    }
+    else if (check_file(f))
+    {
+        display("<<<         " + stringify(f));
+        unlink_sym(f_real);
+    }
+}
+
+void
+Unmerger::unmerge_sym(FSEntry & f) const
+{
+    FSEntry f_real(_imp->options.root / f);
+
+    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+                    Hook("unmerger_unlink_sym_skip")
+                    ("UNLINK_TARGET", stringify(f_real))
+                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+
+    if (hr.max_exit_status != 0)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
+    else if (hr.output == "skip")
+        display("--- [skip ] " + stringify(f));
+    else if (hr.output == "noskip")
+    {
+        display("<<< [force] " + stringify(f));
+        unlink_sym(f_real);
+    }
+    else if (check_sym(f))
+    {
+        display("<<<         " + stringify(f));
+        unlink_sym(f_real);
+    }
+}
+
+void
+Unmerger::unmerge_dir(FSEntry & f) const
+{
+    FSEntry f_real(_imp->options.root / f);
+
+    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+                    Hook("unmerger_unlink_dir_skip")
+                    ("UNLINK_TARGET", stringify(f_real))
+                    .grab_output(Hook::AllowedOutputValues()("skip")))));
+
+    if (hr.max_exit_status != 0)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
+    else if (hr.output == "skip")
+        display("--- [skip ] " + stringify(f));
+    else if (check_dir(f))
+    {
+        display("<<<         " + stringify(f));
+        unlink_dir(f_real);
+    }
+}
+
+void
+Unmerger::unmerge_misc(FSEntry & f) const
+{
+    FSEntry f_real(_imp->options.root / f);
+
+    HookResult hr(_imp->options.environment->perform_hook(extend_hook(
+                    Hook("unmerger_unlink_misc_skip")
+                    ("UNLINK_TARGET", stringify(f_real))
+                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+
+    if (hr.max_exit_status != 0)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
+    else if (hr.output == "skip")
+        display("--- [skip ] " + stringify(f));
+    else if (hr.output == "noskip")
+    {
+        display("<<< [force] " + stringify(f));
+        unlink_misc(f_real);
+    }
+    else if (check_misc(f))
+    {
+        display("<<<         " + stringify(f));
+        unlink_misc(f_real);
+    }
+}
+
+void
+Unmerger::unlink_file(FSEntry & f) const
+{
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
+                         Hook("unmerger_unlink_file_pre")
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
+
+    if (f.is_regular_file())
+    {
+        mode_t mode(f.permissions());
         if ((mode & S_ISUID) || (mode & S_ISGID))
         {
             mode &= 0400;
-            d.chmod(mode);
+            f.chmod(mode);
         }
     }
 
-    d.unlink();
+    f.unlink();
 
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_post")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 }
 
 void
-Unmerger::unlink_sym(FSEntry d)
+Unmerger::unlink_sym(FSEntry & f) const
 {
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
-    d.unlink();
+    f.unlink();
 
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_post")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 }
 
 void
-Unmerger::unlink_dir(FSEntry d)
+Unmerger::unlink_dir(FSEntry & f) const
 {
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
-    d.rmdir();
+    f.rmdir();
 
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_post")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 }
 
 void
-Unmerger::unlink_misc(FSEntry d)
+Unmerger::unlink_misc(FSEntry & f) const
 {
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 
-    d.unlink();
+    f.unlink();
 
-    if (0 != _options.environment->perform_hook(extend_hook(
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_post")
-                         ("UNLINK_TARGET", stringify(d)))).max_exit_status)
-        throw UnmergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+                         ("UNLINK_TARGET", stringify(f)))).max_exit_status)
+        throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
 }
 
 Hook
-Unmerger::extend_hook(const Hook & h)
+Unmerger::extend_hook(const Hook & h) const
 {
     return h
-        ("ROOT", stringify(_options.root));
+        ("ROOT", stringify(_imp->options.root));
 }
-
 

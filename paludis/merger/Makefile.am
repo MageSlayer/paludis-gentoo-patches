@@ -1,7 +1,7 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 
 DISTCLEANFILES = \
-	merger-sr.hh merger-sr.cc merger-se.hh merger-se.cc \
+	merger-sr.hh merger-sr.cc entry_type-se.hh entry_type-se.cc \
 	unmerger-sr.hh unmerger-sr.cc
 
 BUILT_SOURCES = $(DISTCLEANFILES)
@@ -16,13 +16,14 @@ DEFS= \
 
 paludis_merger_includedir = $(includedir)/paludis/merger
 paludis_merger_include_HEADERS = \
+	entry_type.hh \
 	merger.hh \
 	merger-sr.hh \
-	merger-se.hh \
 	unmerger.hh \
 	unmerger-sr.hh
 
 libpaludismerger_la_SOURCES = \
+	entry_type.cc entry_type.hh \
 	merger.cc merger.hh \
 	unmerger.cc unmerger.hh
 
@@ -38,7 +39,7 @@ lib_LTLIBRARIES = libpaludismerger.la
 EXTRA_DIST = \
 	merger_TEST.cc merger_TEST_setup.sh merger_TEST_cleanup.sh \
 	merger-sr.hh merger-sr.cc merger.sr \
-	merger-se.hh merger-se.cc merger.se \
+	entry_type-se.hh entry_type-se.cc entry_type.se \
 	unmerger-sr.hh unmerger-sr.cc unmerger.sr
 
 TESTS = \
@@ -48,6 +49,8 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 
@@ -78,9 +81,9 @@ unmerger-sr.hh : unmerger.sr $(top_srcdir)/misc/make_sr.bash
 unmerger-sr.cc : unmerger.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/unmerger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
-merger-se.hh : merger.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/merger.se > $@ ; then rm -f $@ ; exit 1 ; fi
+entry_type-se.hh : entry_type.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/entry_type.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
-merger-se.cc : merger.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/merger.se > $@ ; then rm -f $@ ; exit 1 ; fi
+entry_type-se.cc : entry_type.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/entry_type.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

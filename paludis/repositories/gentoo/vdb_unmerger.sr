@@ -3,6 +3,8 @@
 
 make_class_VDBUnmergerOptions()
 {
+    visible
+
     key environment "Environment *"
     key root "FSEntry"
     key contents_file "FSEntry"

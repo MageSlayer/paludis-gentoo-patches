@@ -32,7 +32,6 @@
 
 using namespace paludis;
 
-#include <paludis/merger/merger-se.cc>
 #include <paludis/merger/merger-sr.cc>
 
 MergerError::MergerError(const std::string & s) throw () :
@@ -42,7 +41,8 @@ MergerError::MergerError(const std::string & s) throw () :
 
 Merger::Merger(const MergerOptions & o) :
     _options(o),
-    _result(true)
+    _result(true),
+    _skip_dir(false)
 {
 }
 
@@ -117,24 +117,24 @@ Merger::merge()
                 "Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' post hooks returned non-zero");
 }
 
-MergerEntryType
+EntryType
 Merger::entry_type(const FSEntry & f)
 {
     Context context("When checking type of '" + stringify(f) + "':");
 
     if (! f.exists())
-        return met_nothing;
+        return et_nothing;
 
     if (f.is_symbolic_link())
-        return met_sym;
+        return et_sym;
 
     if (f.is_regular_file())
-        return met_file;
+        return et_file;
 
     if (f.is_directory())
-        return met_dir;
+        return et_dir;
 
-    return met_misc;
+    return et_misc;
 }
 
 void
@@ -152,29 +152,35 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     for (DirIterator d(src, false), d_end ; d != d_end ; ++d)
     {
-        MergerEntryType m(entry_type(*d));
+        EntryType m(entry_type(*d));
         switch (m)
         {
-            case met_sym:
+            case et_sym:
                 on_sym(is_check, *d, dst);
                 continue;
 
-            case met_file:
+            case et_file:
                 on_file(is_check, *d, dst);
                 continue;
 
-            case met_dir:
+            case et_dir:
                 on_dir(is_check, *d, dst);
                 if (_result)
-                    do_dir_recursive(is_check, *d, is_check ? (dst / d->basename()) : (dst / d->basename()).realpath());
+                {
+                    if (! _skip_dir)
+                        do_dir_recursive(is_check, *d,
+                                is_check ? (dst / d->basename()) : (dst / d->basename()).realpath());
+                    else
+                        _skip_dir = false;
+                }
                 continue;
 
-            case met_misc:
+            case et_misc:
                 on_misc(is_check, *d, dst);
                 continue;
 
-            case met_nothing:
-            case last_met:
+            case et_nothing:
+            case last_et:
                 ;
         }
 
@@ -189,7 +195,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
-    MergerEntryType m(entry_type(dst / src.basename()));
+    EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
         0 != _options.environment->perform_hook(extend_hook(
@@ -198,31 +204,50 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
         make_check_fail();
 
+    if (! is_check)
+    {
+        HookResult hr(_options.environment->perform_hook(extend_hook(
+                        Hook("merger_install_file_skip")
+                        ("INSTALL_SOURCE", stringify(src))
+                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+
+        if (hr.max_exit_status != 0)
+            Log::get_instance()->message(ll_warning, lc_context) << "Merge of '"
+                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
+        else if (hr.output == "skip")
+        {
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            display_skip("--- [skp] " + tidy);
+            return;
+        }
+    }
+
     do
     {
         switch (m)
         {
-            case met_nothing:
+            case et_nothing:
                 on_file_over_nothing(is_check, src, dst);
                 continue;
 
-            case met_sym:
+            case et_sym:
                 on_file_over_sym(is_check, src, dst);
                 continue;
 
-            case met_dir:
+            case et_dir:
                 on_file_over_dir(is_check, src, dst);
                 continue;
 
-            case met_misc:
+            case et_misc:
                 on_file_over_misc(is_check, src, dst);
                 continue;
 
-            case met_file:
+            case et_file:
                 on_file_over_file(is_check, src, dst);
                 continue;
 
-            case last_met:
+            case last_et:
                 ;
         }
 
@@ -242,7 +267,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
-    MergerEntryType m(entry_type(dst / src.basename()));
+    EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
         0 != _options.environment->perform_hook(extend_hook(
@@ -251,31 +276,51 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
         make_check_fail();
 
+    if (! is_check)
+    {
+        HookResult hr(_options.environment->perform_hook(extend_hook(
+                        Hook("merger_install_dir_skip")
+                        ("INSTALL_SOURCE", stringify(src))
+                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+
+        if (hr.max_exit_status != 0)
+            Log::get_instance()->message(ll_warning, lc_context) << "Merge of '"
+                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
+        else if (hr.output == "skip")
+        {
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            display_skip("--- [skp] " + tidy);
+            _skip_dir = true;
+            return;
+        }
+    }
+
     do
     {
         switch (m)
         {
-            case met_nothing:
+            case et_nothing:
                 on_dir_over_nothing(is_check, src, dst);
                 continue;
 
-            case met_sym:
+            case et_sym:
                 on_dir_over_sym(is_check, src, dst);
                 continue;
 
-            case met_dir:
+            case et_dir:
                 on_dir_over_dir(is_check, src, dst);
                 continue;
 
-            case met_misc:
+            case et_misc:
                 on_dir_over_misc(is_check, src, dst);
                 continue;
 
-            case met_file:
+            case et_file:
                 on_dir_over_file(is_check, src, dst);
                 continue;
 
-            case last_met:
+            case last_et:
                 ;
         }
 
@@ -296,7 +341,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
-    MergerEntryType m(entry_type(dst / src.basename()));
+    EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
         0 != _options.environment->perform_hook(extend_hook(
@@ -305,31 +350,50 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status)
         make_check_fail();
 
+    if (! is_check)
+    {
+        HookResult hr(_options.environment->perform_hook(extend_hook(
+                        Hook("merger_install_sym_skip")
+                        ("INSTALL_SOURCE", stringify(src))
+                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+
+        if (hr.max_exit_status != 0)
+            Log::get_instance()->message(ll_warning, lc_context) << "Merge of '"
+                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
+        else if (hr.output == "skip")
+        {
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            display_skip("--- [skp] " + tidy);
+            return;
+        }
+    }
+
     do
     {
         switch (m)
         {
-            case met_nothing:
+            case et_nothing:
                 on_sym_over_nothing(is_check, src, dst);
                 continue;
 
-            case met_sym:
+            case et_sym:
                 on_sym_over_sym(is_check, src, dst);
                 continue;
 
-            case met_dir:
+            case et_dir:
                 on_sym_over_dir(is_check, src, dst);
                 continue;
 
-            case met_misc:
+            case et_misc:
                 on_sym_over_misc(is_check, src, dst);
                 continue;
 
-            case met_file:
+            case et_file:
                 on_sym_over_file(is_check, src, dst);
                 continue;
 
-            case last_met:
+            case last_et:
                 ;
         }
 
@@ -451,17 +515,17 @@ Merger::on_dir_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 Merger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
-    MergerEntryType m;
+    EntryType m;
     try
     {
         m = entry_type((dst / src.basename()).realpath());
     }
     catch (const FSError &)
     {
-        m = met_nothing;
+        m = et_nothing;
     }
 
-    if (m == met_dir)
+    if (m == et_dir)
     {
         on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
                 "' to be a directory but found a symlink to a directory");
