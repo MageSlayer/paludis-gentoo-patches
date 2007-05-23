@@ -33,7 +33,8 @@ IF_RUBY_TESTS = \
 	dep_tag_TEST.rb \
 	query_TEST.rb \
 	package_database_TEST.rb \
-	find_unused_packages_task_TEST.rb
+	find_unused_packages_task_TEST.rb \
+	eapi_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -59,7 +60,9 @@ IF_RUBY_SOURCES = \
 	dep_list.cc \
 	dep_tag.cc \
 	query.cc \
-	find_unused_packages_task.cc
+	find_unused_packages_task.cc \
+	eapi.cc \
+	name.cc
 
 IF_RUBY_QA_SOURCES = \
 	message.cc \
