@@ -207,7 +207,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (! is_check)
     {
         HookResult hr(_options.environment->perform_hook(extend_hook(
-                        Hook("merger_install_file_skip")
+                        Hook("merger_install_file_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
                         .grab_output(Hook::AllowedOutputValues()("skip")))));
@@ -218,7 +218,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         else if (hr.output == "skip")
         {
             std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
-            display_skip("--- [skp] " + tidy);
+            display_override("--- [skp] " + tidy);
             return;
         }
     }
@@ -279,7 +279,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (! is_check)
     {
         HookResult hr(_options.environment->perform_hook(extend_hook(
-                        Hook("merger_install_dir_skip")
+                        Hook("merger_install_dir_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
                         .grab_output(Hook::AllowedOutputValues()("skip")))));
@@ -290,7 +290,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
         else if (hr.output == "skip")
         {
             std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
-            display_skip("--- [skp] " + tidy);
+            display_override("--- [skp] " + tidy);
             _skip_dir = true;
             return;
         }
@@ -353,7 +353,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (! is_check)
     {
         HookResult hr(_options.environment->perform_hook(extend_hook(
-                        Hook("merger_install_sym_skip")
+                        Hook("merger_install_sym_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
                         .grab_output(Hook::AllowedOutputValues()("skip")))));
@@ -364,7 +364,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         else if (hr.output == "skip")
         {
             std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
-            display_skip("--- [skp] " + tidy);
+            display_override("--- [skp] " + tidy);
             return;
         }
     }

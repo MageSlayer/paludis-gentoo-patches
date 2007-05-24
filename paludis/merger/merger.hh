@@ -155,7 +155,7 @@ namespace paludis
              */
             virtual void on_warn(bool is_check, const std::string &) = 0;
 
-            virtual void display_skip(const std::string &) const = 0;
+            virtual void display_override(const std::string &) const = 0;
 
             ///\name Configuration protection
             ///\{

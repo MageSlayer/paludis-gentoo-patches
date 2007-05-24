@@ -41,7 +41,7 @@ namespace paludis
         private PrivateImplementationPattern<VDBMerger>
     {
         private:
-            void display_skip(const std::string &) const;
+            void display_override(const std::string &) const;
 
         public:
             ///\name Basic operations

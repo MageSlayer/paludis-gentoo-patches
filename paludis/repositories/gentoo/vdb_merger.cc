@@ -241,7 +241,7 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
 }
 
 void
-VDBMerger::display_skip(const std::string & message) const
+VDBMerger::display_override(const std::string & message) const
 {
     std::cout << message << std::endl;
 }

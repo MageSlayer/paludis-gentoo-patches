@@ -121,15 +121,15 @@ Unmerger::unmerge_file(FSEntry & f) const
     FSEntry f_real(_imp->options.root / f);
 
     HookResult hr(_imp->options.environment->perform_hook(extend_hook(
-                    Hook("unmerger_unlink_file_skip")
+                    Hook("unmerger_unlink_file_override")
                     ("UNLINK_TARGET", stringify(f_real))
-                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+                    .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
 
     if (hr.max_exit_status != 0)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
     else if (hr.output == "skip")
         display("--- [skip ] " + stringify(f));
-    else if (hr.output == "noskip")
+    else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
         unlink_file(f_real);
@@ -147,15 +147,15 @@ Unmerger::unmerge_sym(FSEntry & f) const
     FSEntry f_real(_imp->options.root / f);
 
     HookResult hr(_imp->options.environment->perform_hook(extend_hook(
-                    Hook("unmerger_unlink_sym_skip")
+                    Hook("unmerger_unlink_sym_override")
                     ("UNLINK_TARGET", stringify(f_real))
-                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+                    .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
 
     if (hr.max_exit_status != 0)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
     else if (hr.output == "skip")
         display("--- [skip ] " + stringify(f));
-    else if (hr.output == "noskip")
+    else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
         unlink_sym(f_real);
@@ -173,7 +173,7 @@ Unmerger::unmerge_dir(FSEntry & f) const
     FSEntry f_real(_imp->options.root / f);
 
     HookResult hr(_imp->options.environment->perform_hook(extend_hook(
-                    Hook("unmerger_unlink_dir_skip")
+                    Hook("unmerger_unlink_dir_override")
                     ("UNLINK_TARGET", stringify(f_real))
                     .grab_output(Hook::AllowedOutputValues()("skip")))));
 
@@ -194,15 +194,15 @@ Unmerger::unmerge_misc(FSEntry & f) const
     FSEntry f_real(_imp->options.root / f);
 
     HookResult hr(_imp->options.environment->perform_hook(extend_hook(
-                    Hook("unmerger_unlink_misc_skip")
+                    Hook("unmerger_unlink_misc_override")
                     ("UNLINK_TARGET", stringify(f_real))
-                    .grab_output(Hook::AllowedOutputValues()("skip")("noskip")))));
+                    .grab_output(Hook::AllowedOutputValues()("skip")("force")))));
 
     if (hr.max_exit_status != 0)
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
     else if (hr.output == "skip")
         display("--- [skip ] " + stringify(f));
-    else if (hr.output == "noskip")
+    else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
         unlink_misc(f_real);

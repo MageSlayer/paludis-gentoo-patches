@@ -71,42 +71,42 @@ mkdir image_file_over_dir root_file_over_dir
 > image_file_over_dir/file
 mkdir root_file_over_dir/file
 
-mkdir image_skip root_skip
-mkdir image_skip/dir_skip_me/
-mkdir image_skip/dir_noskip_me/
-> image_skip/file_skip_me
-> image_skip/file_noskip_me
-ln -s image_skip/file_skip_me image_skip/sym_skip_me
-ln -s image_skip/file_noskip_me image_skip/sym_noskip_me
+mkdir image_override root_override
+mkdir image_override/dir_skip_me/
+mkdir image_override/dir_force_me/
+> image_override/file_skip_me
+> image_override/file_force_me
+ln -s image_override/file_skip_me image_override/sym_skip_me
+ln -s image_override/file_force_me image_override/sym_force_me
 
 
 mkdir hooks
 cd hooks
 mkdir \
-merger_install_file_skip \
-merger_install_sym_skip \
-merger_install_dir_skip
+merger_install_file_override \
+merger_install_sym_override \
+merger_install_dir_override
 
-cat <<"END" > universal_skip.hook
-hook_run_merger_install_file_skip() {
+cat <<"END" > universal_override.hook
+hook_run_merger_install_file_override() {
     if [[ "${INSTALL_DESTINATION}" == *"/file_skip_me" ]]; then
         echo "skip"
     fi
 }
 
-hook_run_merger_install_sym_skip() {
+hook_run_merger_install_sym_override() {
     if [[ "${INSTALL_DESTINATION}" == *"/sym_skip_me" ]]; then
         echo "skip"
     fi
 }
 
-hook_run_merger_install_dir_skip() {
+hook_run_merger_install_dir_override() {
     if [[ "${INSTALL_DESTINATION}" == *"/dir_skip_me" ]]; then
         echo "skip"
     fi
 }
 END
-chmod +x universal_skip.hook
-for dir in merger_install_*_skip; do
-    ln -s ../universal_skip.hook  ${dir}
+chmod +x universal_override.hook
+for dir in merger_install_*_override; do
+    ln -s ../universal_override.hook  ${dir}
 done
