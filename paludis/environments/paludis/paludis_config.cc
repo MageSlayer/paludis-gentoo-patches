@@ -265,7 +265,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
-            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions());
+            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
         }
         else if ((local_config_dir / "repository_defaults.bash").exists())
@@ -275,7 +275,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
                     .with_stderr_prefix("repository_defaults.bash> "));
             PStream s(cmd);
-            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions());
+            KeyValueConfigFile defaults_file(s, KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
         }
 
