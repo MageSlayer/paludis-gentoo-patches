@@ -94,7 +94,8 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
 
     tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
 
-    FSEntry ebuild_file(_imp->layout->package_directory(q) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
+    FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
+            stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
 
     FSEntry cache_file(_imp->params.cache);
     cache_file /= stringify(q.category);
@@ -136,8 +137,10 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         EbuildMetadataCommand cmd(EbuildCommandParams::create()
                 .environment(_imp->environment)
                 .db_entry(&e)
-                .ebuild_dir(_imp->layout->package_directory(q))
-                .files_dir(_imp->layout->package_directory(q) / "files")
+                .ebuild_dir(_imp->params.location / stringify(q.category) /
+                            stringify(q.package))
+                .files_dir(_imp->params.location / stringify(q.category) /
+                            stringify(q.package) / "files")
                 .eclassdirs(_imp->params.eclassdirs)
                 .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                     _imp->params.location)
@@ -478,8 +481,10 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
             .db_entry(&e)
-            .ebuild_dir(_imp->layout->package_directory(q))
-            .files_dir(_imp->layout->package_directory(q) / "files")
+            .ebuild_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .files_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
@@ -651,8 +656,10 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
     EbuildVariableCommand cmd(EbuildCommandParams::create()
             .environment(_imp->params.environment)
             .db_entry(&for_package)
-            .ebuild_dir(_imp->layout->package_directory(q))
-            .files_dir(_imp->layout->package_directory(q) / "files")
+            .ebuild_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .files_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
@@ -724,8 +731,10 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
     EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
             .db_entry(&e)
-            .ebuild_dir(_imp->layout->package_directory(q))
-            .files_dir(_imp->layout->package_directory(q) / "files")
+            .ebuild_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .files_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)

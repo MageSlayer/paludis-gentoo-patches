@@ -99,12 +99,6 @@ namespace paludis
             virtual FSEntry info_variables_file(const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry package_directory(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual FSEntry category_directory(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
             ///\}
     };
 

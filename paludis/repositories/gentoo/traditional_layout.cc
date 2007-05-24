@@ -358,14 +358,3 @@ TraditionalLayout::info_variables_file(const FSEntry & dir) const
     return dir / "info_vars";
 }
 
-FSEntry
-TraditionalLayout::package_directory(const QualifiedPackageName & qpn) const
-{
-    return _imp->params.location / stringify(qpn.category) / stringify(qpn.package);
-}
-
-FSEntry
-TraditionalLayout::category_directory(const CategoryNamePart & cat) const
-{
-    return _imp->params.location / stringify(qpn.category);
-}
