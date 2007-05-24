@@ -430,22 +430,22 @@ namespace test_cases
         void run()
         {
             TEST_CHECK((image_dir / "dir_skip_me").is_directory());
-            TEST_CHECK((image_dir / "dir_force_me").is_directory());
+            TEST_CHECK((image_dir / "dir_install_me").is_directory());
             TEST_CHECK((image_dir / "file_skip_me").is_regular_file());
-            TEST_CHECK((image_dir / "file_force_me").is_regular_file());
+            TEST_CHECK((image_dir / "file_install_me").is_regular_file());
             TEST_CHECK((image_dir / "sym_skip_me").is_symbolic_link());
-            TEST_CHECK((image_dir / "sym_force_me").is_symbolic_link());
+            TEST_CHECK((image_dir / "sym_install_me").is_symbolic_link());
 
             TEST_CHECK(merger.check());
             merger.merge();
 
 
             TEST_CHECK(! (root_dir / "dir_skip_me").exists());
-            TEST_CHECK((root_dir / "dir_force_me").is_directory());
+            TEST_CHECK((root_dir / "dir_install_me").is_directory());
             TEST_CHECK(! (root_dir / "file_skip_me").exists());
-            TEST_CHECK((root_dir / "file_force_me").is_regular_file());
+            TEST_CHECK((root_dir / "file_install_me").is_regular_file());
             TEST_CHECK(! (root_dir / "sym_skip_me").exists());
-            TEST_CHECK((root_dir / "sym_force_me").is_symbolic_link());
+            TEST_CHECK((root_dir / "sym_install_me").is_symbolic_link());
         }
     } test_merger_override;
 }

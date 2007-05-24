@@ -73,11 +73,11 @@ mkdir root_file_over_dir/file
 
 mkdir image_override root_override
 mkdir image_override/dir_skip_me/
-mkdir image_override/dir_force_me/
+mkdir image_override/dir_install_me/
 > image_override/file_skip_me
-> image_override/file_force_me
+> image_override/file_install_me
 ln -s image_override/file_skip_me image_override/sym_skip_me
-ln -s image_override/file_force_me image_override/sym_force_me
+ln -s image_override/file_install_me image_override/sym_install_me
 
 
 mkdir hooks
