@@ -32,6 +32,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <list>
@@ -131,7 +132,7 @@ PortageRepositorySets::sets_list() const
         for ( ; f != f_end ; ++f)
             try
             {
-                result->insert(SetName(stringify(*f)));
+                result->insert(SetName(strip_trailing_string(f->basename(), ".conf")));
             }
             catch (const NameError & e)
             {
@@ -203,7 +204,7 @@ namespace
 
         if (0 == r.op.compare(0, 1, "r"))
         {
-            return (VersionOperator(our_op).as_version_spec_comparator()(e.version, VersionSpec(ver))) &&
+            return e.version.remove_revision() == VersionSpec(ver).remove_revision() &&
                 match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version));
         }
 

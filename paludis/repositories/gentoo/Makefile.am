@@ -130,6 +130,20 @@ vdb_unmerger_TEST_LDADD = \
 
 vdb_unmerger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
+portage_repository_sets_TEST_SOURCES = portage_repository_sets_TEST.cc
+
+portage_repository_sets_TEST_LDADD = \
+	libpaludisgentoorepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+portage_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
 EXTRA_DIST = \
 	ebuild.sr \
 	ebuild-sr.hh \
@@ -194,7 +208,8 @@ BUILT_SOURCES = \
 check_SCRIPTS = \
 	portage_repository_TEST_setup.sh portage_repository_TEST_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
-	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh
+	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
+	portage_repository_sets_TEST_setup.sh portage_repository_sets_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gentoo/ebuild/`" \
@@ -287,7 +302,7 @@ xml_things_TEST_LDADD = \
 
 endif
 
-TESTS = portage_repository_TEST vdb_unmerger_TEST $(GLSA_TESTS)
+TESTS = portage_repository_TEST vdb_unmerger_TEST $(GLSA_TESTS) portage_repository_sets_TEST
 check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)
