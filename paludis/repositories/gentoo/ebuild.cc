@@ -118,7 +118,10 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
-    if (do_run_command(add_portage_vars(cmd)))
+    if (params.want_portage_emulation_vars)
+        cmd = add_portage_vars(cmd);
+
+    if (do_run_command(cmd))
         return success();
     else
         return failure();

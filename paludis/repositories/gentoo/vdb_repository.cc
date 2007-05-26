@@ -956,6 +956,7 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
             .eclassdirs(eclassdirs)
             .portdir(_imp->location)
             .distdir(pkg_dir)
+            .want_portage_emulation_vars(true)
             .buildroot(_imp->buildroot));
 
     EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
@@ -1041,6 +1042,7 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
             .eclassdirs(eclassdirs)
             .portdir(_imp->location)
             .distdir(pkg_dir)
+            .want_portage_emulation_vars(metadata->eapi.supported->want_portage_emulation_vars)
             .buildroot(_imp->buildroot),
 
             EbuildConfigCommandParams::create()

@@ -146,6 +146,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                 .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                     _imp->params.location)
                 .distdir(_imp->params.distdir)
+                .want_portage_emulation_vars(false)
                 .buildroot(_imp->params.buildroot));
 
         if (! cmd())
@@ -225,7 +226,8 @@ namespace
             if (env->query_use(i->flag, pde))
                 use += stringify(i->flag) + " ";
 
-        use += profile->environment_variable("ARCH") + " ";
+        if (metadata->eapi.supported->want_arch_var)
+            use += profile->environment_variable("ARCH") + " ";
 
         return use;
     }
@@ -233,6 +235,7 @@ namespace
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
     make_expand(const Environment * const env,
             const PackageDatabaseEntry & e,
+            tr1::shared_ptr<const VersionMetadata> metadata,
             tr1::shared_ptr<const PortageRepositoryProfile> profile,
             std::string & use)
     {
@@ -265,7 +268,8 @@ namespace
                 if (! env->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
                     continue;
 
-                use.append(lower_x + "_" + stringify(*u) + " ");
+                if (! metadata->eapi.supported->require_use_expand_in_iuse)
+                    use.append(lower_x + "_" + stringify(*u) + " ");
 
                 std::string value;
                 AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
@@ -407,31 +411,36 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        AAFinder g;
-        metadata->ebuild_interface->src_uri()->accept(g);
-        std::set<std::string> already_in_all_archives;
-
-        for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+        if (metadata->eapi.supported->want_aa_var)
         {
-            std::string::size_type pos((*gg)->text().rfind('/'));
-            if (std::string::npos == pos)
+            AAFinder g;
+            metadata->ebuild_interface->src_uri()->accept(g);
+            std::set<std::string> already_in_all_archives;
+
+            for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
-                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text()))
+                std::string::size_type pos((*gg)->text().rfind('/'));
+                if (std::string::npos == pos)
                 {
-                    all_archives.append((*gg)->text());
-                    already_in_all_archives.insert((*gg)->text());
+                    if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text()))
+                    {
+                        all_archives.append((*gg)->text());
+                        already_in_all_archives.insert((*gg)->text());
+                    }
                 }
-            }
-            else
-            {
-                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(pos + 1)))
+                else
                 {
-                    all_archives.append((*gg)->text().substr(pos + 1));
-                    already_in_all_archives.insert((*gg)->text().substr(pos + 1));
+                    if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(pos + 1)))
+                    {
+                        all_archives.append((*gg)->text().substr(pos + 1));
+                        already_in_all_archives.insert((*gg)->text().substr(pos + 1));
+                    }
                 }
+                all_archives.append(" ");
             }
-            all_archives.append(" ");
         }
+        else
+            all_archives = "AA-not-set-for-this-EAPI";
     }
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
@@ -447,7 +456,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, e, p, use));
+                _imp->params.environment, e, metadata, p, use));
 
     EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
@@ -460,6 +469,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
+            .want_portage_emulation_vars(metadata->eapi.supported->want_portage_emulation_vars)
             .buildroot(_imp->params.buildroot));
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
@@ -635,6 +645,7 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
+            .want_portage_emulation_vars(false)
             .buildroot(_imp->params.buildroot),
 
             var);
@@ -697,7 +708,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
 
     std::string use(make_use(_imp->params.environment, e, metadata, p));
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, e, p, use));
+                _imp->params.environment, e, metadata, p, use));
 
     EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
@@ -710,6 +721,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
+            .want_portage_emulation_vars(metadata->eapi.supported->want_portage_emulation_vars)
             .buildroot(_imp->params.buildroot));
 
     EbuildPretendCommand pretend_cmd(command_params,

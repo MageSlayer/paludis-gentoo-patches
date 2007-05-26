@@ -11,6 +11,7 @@ make_class_EbuildCommandParams()
     key portdir FSEntry
     key distdir FSEntry
     key buildroot FSEntry
+    key want_portage_emulation_vars bool
 
     doxygen_comment << "END"
         /**
