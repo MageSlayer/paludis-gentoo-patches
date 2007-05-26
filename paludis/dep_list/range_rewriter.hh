@@ -33,7 +33,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RangeRewriter :
-        public DepSpecVisitorTypes::ConstVisitor
+        public ConstVisitor<DependencySpecTree>
     {
         private:
             tr1::shared_ptr<PackageDepSpec> _spec;
@@ -52,23 +52,29 @@ namespace paludis
              * Our rewritten spec, or a zero pointer if we couldn't do any
              * rewriting.
              */
-            tr1::shared_ptr<const PackageDepSpec> spec() const
+            tr1::shared_ptr<PackageDepSpec> spec() const
             {
-                if (_invalid)
-                    return tr1::shared_ptr<const PackageDepSpec>();
-
                 return _spec;
             }
 
             ///\name Visit methods
             ///\{
 
-            void visit(const AllDepSpec *);
-            void visit(const AnyDepSpec *);
-            void visit(const UseDepSpec *);
-            void visit(const PlainTextDepSpec *);
-            void visit(const PackageDepSpec *);
-            void visit(const BlockDepSpec *);
+            void visit_sequence(const AllDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
+
+            void visit_sequence(const AnyDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
+
+            void visit_sequence(const UseDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
+
+            void visit_leaf(const PackageDepSpec &);
+
+            void visit_leaf(const BlockDepSpec &);
 
             ///\}
     };

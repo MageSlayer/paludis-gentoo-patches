@@ -325,7 +325,7 @@ PaludisEnvironment::syncers_dirs() const
     return result;
 }
 
-tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisEnvironment::local_set(const SetName & s) const
 {
     Context context("When looking for package set '" + stringify(s) + "' in paludis environment:");
@@ -354,7 +354,7 @@ PaludisEnvironment::local_set(const SetName & s) const
         return f.contents();
     }
     else
-        return tr1::shared_ptr<AllDepSpec>();
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 tr1::shared_ptr<const SetNameCollection>

@@ -43,8 +43,8 @@ using std::endl;
 namespace
 {
     class ReverseDepChecker :
-        public DepSpecVisitorTypes::ConstVisitor,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>
+        public ConstVisitor<DependencySpecTree>,
+        public ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>
     {
         private:
             tr1::shared_ptr<const PackageDatabase> _db;
@@ -59,7 +59,7 @@ namespace
             bool _found_matches;
 
         public:
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>::visit;
+            using ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>::visit_sequence;
 
             ReverseDepChecker(tr1::shared_ptr<const PackageDatabase> db,
                     const PackageDatabaseEntryCollection & entries,
@@ -74,10 +74,10 @@ namespace
             {
             }
 
-            void check(tr1::shared_ptr<const DepSpec> spec, const std::string & depname)
+            void check(tr1::shared_ptr<const DependencySpecTree::ConstItem> spec, const std::string & depname)
             {
                 _depname = depname;
-                spec->accept(this);
+                spec->accept(*this);
             }
 
             bool found_matches()
@@ -85,43 +85,50 @@ namespace
                 return _found_matches;
             }
 
-            void visit(const AnyDepSpec * const);
+            void visit_sequence(const AnyDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
 
-            void visit(const UseDepSpec * const);
+            void visit_sequence(const UseDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
 
-            void visit(const PackageDepSpec * const);
+            void visit_leaf(const PackageDepSpec &);
 
-            void visit(const PlainTextDepSpec * const); 
-
-            void visit(const BlockDepSpec * const);
+            void visit_leaf(const BlockDepSpec &)
+            {
+            }
     };
 
     void
-    ReverseDepChecker::visit(const AnyDepSpec * const a)
+    ReverseDepChecker::visit_sequence(const AnyDepSpec &,
+            DependencySpecTree::ConstSequenceIterator cur,
+            DependencySpecTree::ConstSequenceIterator end)
     {
         Save<bool> in_any_save(&_in_any, true);
-
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        std::for_each(cur, end, accept_visitor(*this));
     }
 
     void
-    ReverseDepChecker::visit(const UseDepSpec * const a)
+    ReverseDepChecker::visit_sequence(const UseDepSpec & a,
+            DependencySpecTree::ConstSequenceIterator cur,
+            DependencySpecTree::ConstSequenceIterator end)
     {
         Save<bool> in_use_save(&_in_use, true);
         Save<std::string> flag_save(&_flags);
 
         if (! _flags.empty())
             _flags += " ";
-        _flags += (a->inverse() ? "!" : "") + stringify(a->flag());
+        _flags += (a.inverse() ? "!" : "") + stringify(a.flag());
 
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        std::for_each(cur, end, accept_visitor(*this));
     }
 
     void
-    ReverseDepChecker::visit(const PackageDepSpec * const a)
+    ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
         tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
-                    query::Matches(*a), qo_order_by_version));
+                    query::Matches(a), qo_order_by_version));
         tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
@@ -158,16 +165,6 @@ namespace
                 std::cout << std::endl;
             }
         }
-    }
-
-    void
-    ReverseDepChecker::visit(const PlainTextDepSpec * const)
-    {
-    }
-
-    void
-    ReverseDepChecker::visit(const BlockDepSpec * const)
-    {
     }
 
     void write_repository_header(std::string spec, const std::string &)

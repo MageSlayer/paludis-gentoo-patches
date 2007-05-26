@@ -138,7 +138,7 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
             virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
         protected:
@@ -186,7 +186,7 @@ namespace paludis
             /**
              * Add a package set.
              */
-            void add_package_set(const SetName &, tr1::shared_ptr<DepSpec>);
+            void add_package_set(const SetName &, tr1::shared_ptr<SetSpecTree::ConstItem>);
 
             virtual void invalidate();
 

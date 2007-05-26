@@ -21,6 +21,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/visitor-impl.hh>
 
 /** \file
  * Implementation of dep_spec_pretty_printer.hh.
@@ -68,7 +69,9 @@ paludis::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 }
 
 void
-DepSpecPrettyPrinter::visit(const AllDepSpec * const a)
+DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
+        GenericSpecTree::ConstSequenceIterator cur,
+        GenericSpecTree::ConstSequenceIterator end)
 {
     if (! _imp->outer_block)
     {
@@ -78,7 +81,7 @@ DepSpecPrettyPrinter::visit(const AllDepSpec * const a)
 
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 4);
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        std::for_each(cur, end, accept_visitor(*this));
     }
 
     if (! _imp->outer_block)
@@ -89,7 +92,9 @@ DepSpecPrettyPrinter::visit(const AllDepSpec * const a)
 }
 
 void
-DepSpecPrettyPrinter::visit(const AnyDepSpec * const a)
+DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
+        GenericSpecTree::ConstSequenceIterator cur,
+        GenericSpecTree::ConstSequenceIterator end)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
 
@@ -97,45 +102,47 @@ DepSpecPrettyPrinter::visit(const AnyDepSpec * const a)
     _imp->s << newline();
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        std::for_each(cur, end, accept_visitor(*this));
     }
     _imp->s << indent() << ")";
     _imp->s << newline();
 }
 
 void
-DepSpecPrettyPrinter::visit(const UseDepSpec * const a)
+DepSpecPrettyPrinter::visit_sequence(const UseDepSpec & a,
+        GenericSpecTree::ConstSequenceIterator cur,
+        GenericSpecTree::ConstSequenceIterator end)
 {
     Save<bool> old_outer(&_imp->outer_block, false);
 
-    _imp->s << indent() << (a->inverse() ? "!" : "") << a->flag() << "? (";
+    _imp->s << indent() << (a.inverse() ? "!" : "") << a.flag() << "? (";
     _imp->s << newline();
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        std::for_each(cur, end, accept_visitor(*this));
     }
     _imp->s << indent() << ")";
     _imp->s << newline();
 }
 
 void
-DepSpecPrettyPrinter::visit(const PackageDepSpec * const p)
+DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 {
-    _imp->s << indent() << *p;
+    _imp->s << indent() << p;
     _imp->s << newline();
 }
 
 void
-DepSpecPrettyPrinter::visit(const PlainTextDepSpec * const p)
+DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 {
-    _imp->s << indent() << p->text();
+    _imp->s << indent() << p.text();
     _imp->s << newline();
 }
 
 void
-DepSpecPrettyPrinter::visit(const BlockDepSpec * const b)
+DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 {
-    _imp->s << indent() << "!" << *b->blocked_spec();
+    _imp->s << indent() << "!" << *b.blocked_spec();
     _imp->s << newline();
 }
 

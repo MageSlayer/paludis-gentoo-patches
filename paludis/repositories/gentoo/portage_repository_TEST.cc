@@ -22,6 +22,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

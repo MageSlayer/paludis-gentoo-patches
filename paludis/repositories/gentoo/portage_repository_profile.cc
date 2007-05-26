@@ -123,7 +123,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            tr1::shared_ptr<AllDepSpec> system_packages;
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > system_packages;
             tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
@@ -159,7 +159,8 @@ namespace paludis
                     const RepositoryName & name, const FSEntryCollection & dirs) :
                 env(e),
                 repository(p),
-                system_packages(new AllDepSpec),
+                system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
                 load_environment();
@@ -386,7 +387,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
             Context context_spec("When parsing '" + *i + "':");
             tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
             spec->set_tag(system_tag);
-            system_packages->add_child(spec);
+            system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
         }
     }
     catch (const Exception & e)
@@ -684,7 +685,7 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-tr1::shared_ptr<AllDepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageRepositoryProfile::system_packages() const
 {
     return _imp->system_packages;

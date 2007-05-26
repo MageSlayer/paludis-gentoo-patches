@@ -34,6 +34,7 @@ void PALUDIS_VISIBLE expose_portage_dep_parser()
     ExceptionRegister::get_instance()->add_exception<DepStringNestingError>
         ("DepStringNestingError", "DepStringParseError");
 
+#if CIARANM_REMOVED_THIS
     bp::class_<PortageDepParser, boost::noncopyable>
         pdp("PortageDepParser",
                 "The PortageDepParser converts string representations "
@@ -74,4 +75,5 @@ void PALUDIS_VISIBLE expose_portage_dep_parser()
             );
     pdpp.staticmethod("text_is_package_dep_spec");
     pdpp.add_property("permit_any_deps", &PortageDepParser::Policy::permit_any_deps);
+#endif
 }

@@ -107,6 +107,7 @@ namespace
         return version_metadata_get_interface(self, &VersionMetadata::origins_interface);
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     license
@@ -124,6 +125,7 @@ namespace
         else
             return Qnil;
     }
+#endif
 
     /*
      * Document-method: slot
@@ -169,6 +171,8 @@ namespace
         Data_Get_Struct(self, tr1::shared_ptr<const VersionMetadata>, self_ptr);
         return eapi_to_value((*self_ptr)->eapi);
     }
+
+#if CIARANM_REMOVED_THIS
     /*
      * Document-method: homepage
      *
@@ -184,6 +188,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<const VersionMetadata>, self_ptr);
             return dep_spec_to_value((*self_ptr)->homepage());
     }
+#endif
 
     /*
      * call-seq:
@@ -199,6 +204,7 @@ namespace
         return (*self_ptr)-> interactive ? Qtrue : Qfalse;
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * Document-method: provide
      *
@@ -237,6 +243,7 @@ namespace
                 return Qnil;
         }
     };
+#endif
 
     /*
      * Document-method: eclass_keywords
@@ -314,6 +321,7 @@ namespace
         }
     };
 
+#if CIARANM_REMOVED_THIS
     /*
      * Document-method: build_depend
      *
@@ -364,6 +372,7 @@ namespace
                 return Qnil;
         }
     };
+#endif
 
     /*
      * Document-method: origin_source
@@ -462,15 +471,20 @@ namespace
         rb_define_method(c_version_metadata, "deps_interface", RUBY_FUNC_CAST(&version_metadata_deps_interface), 0);
         rb_define_method(c_version_metadata, "origins_interface", RUBY_FUNC_CAST(&version_metadata_origins_interface), 0);
 
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "license", RUBY_FUNC_CAST(&version_metadata_license), 0);
+#endif
 
         rb_define_method(c_version_metadata, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName, &VersionMetadataBase::slot>::fetch)), 0);
         rb_define_method(c_version_metadata, "eapi", RUBY_FUNC_CAST(&version_metadata_eapi), 0);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "homepage", RUBY_FUNC_CAST(&version_metadata_homepage), 0);
+#endif
         rb_define_method(c_version_metadata, "description", RUBY_FUNC_CAST((&BaseValue<std::string,
                         &VersionMetadataBase::description>::fetch)), 0);
         rb_define_method(c_version_metadata, "interactive?", RUBY_FUNC_CAST(&version_metadata_interactive), 0);
 
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_version_metadata, "provide", RUBY_FUNC_CAST((&EbuildValue<&VersionMetadataEbuildInterface::provide>::fetch)), 0);
         rb_define_method(c_version_metadata, "src_uri", RUBY_FUNC_CAST((&EbuildValue<&VersionMetadataEbuildInterface::src_uri>::fetch)), 0);
         rb_define_method(c_version_metadata, "restrictions", RUBY_FUNC_CAST((&EbuildValue<&VersionMetadataEbuildInterface::restrictions>::fetch)), 0);
@@ -489,7 +503,7 @@ namespace
                         &VersionMetadataDepsInterface::suggested_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDepsInterface::post_depend>::fetch)), 0);
-
+#endif
 
         rb_define_method(c_version_metadata, "origin_source", RUBY_FUNC_CAST((&VMOrigins<
                         &VersionMetadataOriginsInterface::source>::fetch)), 0);

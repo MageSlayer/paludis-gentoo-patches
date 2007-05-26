@@ -83,7 +83,7 @@ namespace paludis
             /**
              * Fetch our contents.
              */
-            tr1::shared_ptr<CompositeDepSpec> contents() const;
+            tr1::shared_ptr<SetSpecTree::ConstItem> contents() const;
 
             /**
              * Rewrite our contents.

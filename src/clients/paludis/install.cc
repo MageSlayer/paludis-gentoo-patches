@@ -665,7 +665,7 @@ do_install(tr1::shared_ptr<Environment> env)
                                     cerr << " ";
 
                                     LicenceDisplayer ld(cerr, env.get(), *pp);
-                                    meta->license_interface->license()->accept(&ld);
+                                    meta->license_interface->license()->accept(ld);
                                 }
                             }
                             else if (mr_keyword == mm)

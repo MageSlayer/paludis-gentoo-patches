@@ -192,7 +192,7 @@ AdaptedEnvironment::set_names() const
     return _imp->env->set_names();
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 AdaptedEnvironment::set(const SetName & s) const
 {
     return _imp->env->set(s);

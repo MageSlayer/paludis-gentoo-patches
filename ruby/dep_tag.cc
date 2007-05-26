@@ -196,6 +196,7 @@ namespace
     }
 }
 
+#if CIARANM_REMOVED_THIS
 VALUE
 paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
 {
@@ -242,6 +243,7 @@ paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
         exception_to_ruby_exception(e);
     }
 }
+#endif
 
 RegisterRubyClass::Register paludis_ruby_register_dep_tag PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_tag);

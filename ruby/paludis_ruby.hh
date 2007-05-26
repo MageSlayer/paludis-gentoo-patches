@@ -69,11 +69,13 @@ namespace paludis
         VALUE repository_to_value(tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(tr1::shared_ptr<const VersionMetadata>);
+#if CIARANM_REMOVED_THIS
         VALUE dep_spec_to_value(tr1::shared_ptr<const DepSpec>);
-        VALUE qualified_package_name_to_value(const QualifiedPackageName &);
-        VALUE contents_to_value(tr1::shared_ptr<const Contents>);
         VALUE contents_entry_to_value(tr1::shared_ptr<const ContentsEntry>);
         VALUE dep_tag_to_value(tr1::shared_ptr<const DepTag>);
+#endif
+        VALUE qualified_package_name_to_value(const QualifiedPackageName &);
+        VALUE contents_to_value(tr1::shared_ptr<const Contents>);
         VALUE eapi_to_value(const EAPI &);
 
         VersionSpec value_to_version_spec(VALUE v);

@@ -41,10 +41,12 @@ namespace paludis
          * \ingroup grplibpaludisargs
          */
         class PALUDIS_VISIBLE ArgsDumper :
-            public ArgsVisitorTypes::ConstVisitor
+            public ConstVisitor<ArgsVisitorTypes>
         {
             private:
                 std::ostream & _os;
+
+                void generic_visit(const ArgsOption &);
 
             public:
                 /**
@@ -52,26 +54,23 @@ namespace paludis
                  */
                 ArgsDumper(std::ostream & os);
 
-                /// Visit an ArgsOption.
-                void visit(const ArgsOption * const);
-
                 /// Visit a SwitchArg.
-                void visit(const SwitchArg * const);
+                void visit(const SwitchArg &);
 
                 /// Visit a StringArg.
-                void visit(const StringArg * const);
+                void visit(const StringArg &);
 
                 /// Visit an IntegerArg.
-                void visit(const IntegerArg * const);
+                void visit(const IntegerArg &);
 
                 /// Visit an AliasArg.
-                void visit(const AliasArg * const);
+                void visit(const AliasArg &);
 
                 /// Visit an EnumArg.
-                void visit(const EnumArg * const);
+                void visit(const EnumArg &);
 
                 /// Visit a StringSetArg.
-                void visit(const StringSetArg * const);
+                void visit(const StringSetArg &);
         };
     }
 }

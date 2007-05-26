@@ -20,6 +20,7 @@
 #include "args_error.hh"
 
 #include <paludis/util/visitor.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
@@ -35,7 +36,31 @@
  */
 
 using namespace paludis;
-using namespace args;
+using namespace paludis::args;
+
+template class MutableVisitor<ArgsVisitorTypes>;
+template class MutableAcceptInterface<ArgsVisitorTypes>;
+
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>;
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>;
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>;
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>;
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>;
+template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>;
+
+template class Visits<IntegerArg>;
+template class Visits<EnumArg>;
+template class Visits<StringArg>;
+template class Visits<StringSetArg>;
+template class Visits<AliasArg>;
+template class Visits<SwitchArg>;
+
+template class Visits<const IntegerArg>;
+template class Visits<const EnumArg>;
+template class Visits<const StringArg>;
+template class Visits<const StringSetArg>;
+template class Visits<const AliasArg>;
+template class Visits<const SwitchArg>;
 
 ArgsVisitor::ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> * ai,
         libwrapiter::ForwardIterator<ArgsVisitor, std::string> ae,
@@ -47,79 +72,90 @@ ArgsVisitor::ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> 
 }
 
 const std::string &
-ArgsVisitor::get_param(const ArgsOption * const arg)
+ArgsVisitor::get_param(const ArgsOption & arg)
 {
     if (++(*_args_index) == _args_end)
-        throw MissingValue("--" + arg->long_name());
+        throw MissingValue("--" + arg.long_name());
 
     return **_args_index;
 }
 
-void ArgsVisitor::visit(ArgsOption * const arg)
+void ArgsVisitor::visit(StringArg & arg)
 {
-    arg->set_specified(true);
+    arg.set_specified(true);
 
     if (! _env_prefix.empty())
-        setenv(env_name(arg->long_name()).c_str(), "1", 1);
-}
+        setenv(env_name(arg.long_name()).c_str(), "1", 1);
 
-void ArgsVisitor::visit(StringArg * const arg)
-{
-    visit(static_cast<ArgsOption *>(arg));
     std::string p(get_param(arg));
-    arg->set_argument(p);
+    arg.set_argument(p);
 
     if (! _env_prefix.empty())
-        setenv(env_name(arg->long_name()).c_str(), p.c_str(), 1);
+        setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
 }
 
-void ArgsVisitor::visit(AliasArg * const arg)
+void ArgsVisitor::visit(AliasArg & arg)
 {
-    arg->other()->accept(this);
+    arg.other()->accept(*this);
 }
 
-void ArgsVisitor::visit(SwitchArg * const arg)
+void ArgsVisitor::visit(SwitchArg & arg)
 {
-    visit(static_cast<ArgsOption *>(arg));
+    arg.set_specified(true);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), "1", 1);
 }
 
-void ArgsVisitor::visit(IntegerArg * const arg)
+void ArgsVisitor::visit(IntegerArg & arg)
 {
-    visit(static_cast<ArgsOption*>(arg));
+    arg.set_specified(true);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), "1", 1);
+
     std::string param = get_param(arg);
     try
     {
         int a(destringify<int>(param));
-        arg->set_argument(a);
+        arg.set_argument(a);
 
         if (! _env_prefix.empty())
-            setenv(env_name(arg->long_name()).c_str(), stringify(a).c_str(), 1);
+            setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
     }
     catch (const DestringifyError &)
     {
-        throw BadValue("--" + arg->long_name(), param);
+        throw BadValue("--" + arg.long_name(), param);
     }
 }
 
-void ArgsVisitor::visit(EnumArg * const arg)
+void ArgsVisitor::visit(EnumArg & arg)
 {
-    visit(static_cast<ArgsOption*>(arg));
-    std::string p(get_param(arg));
-    arg->set_argument(p);
+    arg.set_specified(true);
 
     if (! _env_prefix.empty())
-        setenv(env_name(arg->long_name()).c_str(), p.c_str(), 1);
+        setenv(env_name(arg.long_name()).c_str(), "1", 1);
+
+    std::string p(get_param(arg));
+    arg.set_argument(p);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
 }
 
-void ArgsVisitor::visit(StringSetArg * const arg)
+void ArgsVisitor::visit(StringSetArg & arg)
 {
-    visit(static_cast<ArgsOption *>(arg));
-    std::string param = get_param(arg);
-    arg->add_argument(param);
+    arg.set_specified(true);
 
     if (! _env_prefix.empty())
-        setenv(env_name(arg->long_name()).c_str(), join(arg->begin_args(),
-                    arg->end_args(), " ").c_str(), 1);
+        setenv(env_name(arg.long_name()).c_str(), "1", 1);
+
+    std::string param = get_param(arg);
+    arg.add_argument(param);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
+                    arg.end_args(), " ").c_str(), 1);
 }
 
 std::string

@@ -18,6 +18,7 @@
  */
 
 #include "man.hh"
+#include <paludis/util/visitor-impl.hh>
 #include <ostream>
 #include <sstream>
 
@@ -28,7 +29,7 @@ using std::endl;
 namespace
 {
     struct ExtraText :
-        ArgsVisitorTypes::ConstVisitor
+        ConstVisitor<ArgsVisitorTypes>
     {
         DocWriter & _dw;
 
@@ -37,50 +38,50 @@ namespace
         {
         }
 
-        void visit(const ArgsOption * const)
+        void visit(const ArgsOption &)
         {
         }
 
-        void visit(const StringArg * const)
+        void visit(const StringArg &)
         {
         }
 
-        void visit(const AliasArg * const)
+        void visit(const AliasArg &)
         {
         }
 
-        void visit(const SwitchArg * const)
+        void visit(const SwitchArg &)
         {
         }
 
-        void visit(const IntegerArg * const)
+        void visit(const IntegerArg &)
         {
         }
 
-        void visit(const EnumArg * const e)
+        void visit(const EnumArg & e)
         {
-            if (e->begin_allowed_args() == e->end_allowed_args())
+            if (e.begin_allowed_args() == e.end_allowed_args())
                 return;
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
+            for (EnumArg::AllowedArgIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
             {
-                _dw.extra_arg_enum(a->first, a->second, e->default_arg());
+                _dw.extra_arg_enum(a->first, a->second, e.default_arg());
             }
 
             _dw.end_extra_arg();
         }
 
-        void visit(const StringSetArg * const e)
+        void visit(const StringSetArg & e)
         {
-            if (e->begin_allowed_args() == e->end_allowed_args())
+            if (e.begin_allowed_args() == e.end_allowed_args())
                 return;
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
+            for (EnumArg::AllowedArgIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
             {
                 _dw.extra_arg_string_set(a->first, a->second);
@@ -116,7 +117,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
             dw.arg_group_item((*b)->short_name(), (*b)->long_name(), (*b)->description());
 
             ExtraText t(dw);
-            (*b)->accept(&t);
+            (*b)->accept(t);
 
             dw.end_arg_group();
         }

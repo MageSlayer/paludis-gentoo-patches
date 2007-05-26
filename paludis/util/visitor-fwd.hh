@@ -22,54 +22,138 @@
 
 namespace paludis
 {
-    template <typename NodePtrType_>
-    class Visits;
-
     namespace visitor_internals
     {
-        template <unsigned n_>
-        struct NoType;
+        template <unsigned u_>
+        class NoType;
 
-        template <typename>
-        struct MakePointerToConst;
+        template <typename H_>
+        class ConstAcceptInterface;
+
+        template <typename H_>
+        class MutableAcceptInterface;
+
+        template <typename H_, typename T_>
+        class ConstAcceptInterfaceVisitsThis;
+
+        template <typename H_, typename T_>
+        class MutableAcceptInterfaceVisitsThis;
+
+        template <typename H_, typename I_>
+        class TreeLeaf;
+
+        template <typename H_, typename I_>
+        class TreeSequence;
+
+        template <typename H_, typename I_>
+        class ConstTreeSequence;
 
         template <typename T_>
-        struct MakePointerToConst<T_ *>;
-
-        template <typename NodePtrType_>
         class Visits;
 
-        template <unsigned n_>
-        class Visits<const visitor_internals::NoType<n_> * >;
+        template <unsigned u_>
+        class Visits<NoType<u_> >;
 
-        template <unsigned n_>
-        class Visits<visitor_internals::NoType<n_> * >;
+        template <unsigned u_>
+        class Visits<const NoType<u_> >;
+
+        template <typename H_, typename T_>
+        class Visits<TreeLeaf<H_, T_> >;
+
+        template <typename H_, typename T_>
+        class Visits<const TreeLeaf<H_, T_> >;
+
+        template <typename H_, typename T_>
+        class Visits<TreeSequence<H_, T_> >;
+
+        template <typename H_, typename T_>
+        class Visits<const TreeSequence<H_, T_> >;
+
+        template <typename H_, typename T_>
+        class Visits<const ConstTreeSequence<H_, T_> >;
+
+        template <typename H_>
+        class TreeSequenceIteratorTypes;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits;
+
+        template <typename H_, typename LargerH_, unsigned u_>
+        class ProxyVisits<H_, LargerH_, NoType<u_> >;
+
+        template <typename H_, typename LargerH_, unsigned u_>
+        class ProxyVisits<H_, LargerH_, const NoType<u_> >;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits<H_, LargerH_, TreeLeaf<H_, T_> >;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits<H_, LargerH_, const TreeLeaf<H_, T_> >;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits<H_, LargerH_, TreeSequence<H_, T_> >;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits<H_, LargerH_, const TreeSequence<H_, T_> >;
+
+        template <typename H_, typename LargerH_, typename T_>
+        class ProxyVisits<H_, LargerH_, const ConstTreeSequence<H_, T_> >;
+
+        template <typename H_, typename LargerH_>
+        class ConstProxyVisitor;
+
+        template <typename H_, typename LargerH_>
+        class ConstProxyIterator;
+
+        template <typename H_, typename LargerH_>
+        class MutableProxyVisitor;
+
+        template <typename H_, typename LargerH_>
+        class MutableProxyIterator;
+
+        template <typename H_>
+        class ConstVisitor;
+
+        template <typename H_>
+        class MutableVisitor;
+
+        template <
+            typename Heirarchy_,
+            typename BasicNode_,
+            typename ContainedItem1_ = visitor_internals::NoType<1>,
+            typename ContainedItem2_ = visitor_internals::NoType<2>,
+            typename ContainedItem3_ = visitor_internals::NoType<3>,
+            typename ContainedItem4_ = visitor_internals::NoType<4>,
+            typename ContainedItem5_ = visitor_internals::NoType<5>,
+            typename ContainedItem6_ = visitor_internals::NoType<6>,
+            typename ContainedItem7_ = visitor_internals::NoType<7>,
+            typename ContainedItem8_ = visitor_internals::NoType<8>,
+            typename ContainedItem9_ = visitor_internals::NoType<9> >
+        class VisitorTypes;
+
+        template <typename I_>
+        const typename I_::Heirarchy::BasicNode *
+        get_const_item(const I_ & i);
     }
 
-    template <typename VisitorType_>
-    class VisitableInterface;
+    using visitor_internals::TreeSequence;
+    using visitor_internals::ConstTreeSequence;
+    using visitor_internals::TreeLeaf;
+    using visitor_internals::VisitorTypes;
+    using visitor_internals::MutableVisitor;
+    using visitor_internals::ConstVisitor;
+    using visitor_internals::Visits;
+    using visitor_internals::ConstAcceptInterface;
+    using visitor_internals::MutableAcceptInterface;
+    using visitor_internals::ConstAcceptInterfaceVisitsThis;
+    using visitor_internals::MutableAcceptInterfaceVisitsThis;
+    using visitor_internals::get_const_item;
 
-    template <typename OurType_, typename VisitorType_>
-    class Visitable;
-
-    template <
-        typename N1_,
-        typename N2_ = visitor_internals::NoType<2> *,
-        typename N3_ = visitor_internals::NoType<3> *,
-        typename N4_ = visitor_internals::NoType<4> *,
-        typename N5_ = visitor_internals::NoType<5> *,
-        typename N6_ = visitor_internals::NoType<6> *,
-        typename N7_ = visitor_internals::NoType<7> *,
-        typename N8_ = visitor_internals::NoType<8> *,
-        typename N9_ = visitor_internals::NoType<9> *>
-    class VisitorTypes;
-
-    template <typename VisitorPointer_>
+    template <typename Visitor_>
     class AcceptVisitor;
 
-    template <typename VisitorPointer_>
-    AcceptVisitor<VisitorPointer_> accept_visitor(VisitorPointer_ * const p);
+    template <typename Visitor_>
+    AcceptVisitor<Visitor_> accept_visitor(Visitor_ &);
 }
-
 
 #endif

@@ -27,6 +27,7 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <string>
 
 /** \file
@@ -76,11 +77,11 @@ void do_one_set_query(
         const tr1::shared_ptr<Environment>,
         const std::string & q,
         MaskReasons &,
-        tr1::shared_ptr<DepSpec> set)
+        tr1::shared_ptr<const SetSpecTree::ConstItem> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     DepSpecPrettyPrinter packages(12);
-    set->accept(&packages);
+    set->accept(packages);
     cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
         << endl << packages << endl;
 }
@@ -95,7 +96,7 @@ void do_one_query(
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. or it might be a set... all should work. */
     tr1::shared_ptr<PackageDepSpec> spec;
-    tr1::shared_ptr<DepSpec> set;
+    tr1::shared_ptr<const SetSpecTree::ConstItem> set;
     if (std::string::npos == q.find('/'))
     {
         try

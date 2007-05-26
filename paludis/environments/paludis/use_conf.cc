@@ -40,7 +40,7 @@ typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseFlagWithStateMap;
 typedef std::list<std::string> MinusStarPrefixList;
 typedef std::pair<UseFlagWithStateMap, MinusStarPrefixList> UseInfo;
 typedef std::pair<tr1::shared_ptr<const PackageDepSpec>, UseInfo> PDSWithUseInfo;
-typedef std::pair<tr1::shared_ptr<const DepSpec>, UseInfo> DSWithUseInfo;
+typedef std::pair<tr1::shared_ptr<const SetSpecTree::ConstItem>, UseInfo> DSWithUseInfo;
 typedef std::list<PDSWithUseInfo> PDSWithUseInfoList;
 typedef MakeHashedMap<QualifiedPackageName, PDSWithUseInfoList>::Type Qualified;
 typedef std::list<PDSWithUseInfo> Unqualified;
@@ -247,11 +247,12 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
             {
                 Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
                     << r->first << "' does not exist";
-                r->second.first.reset(new AllDepSpec);
+                r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             }
         }
 
-        if (! match_package_in_heirarchy(*_imp->env, *r->second.first, e))
+        if (! match_package_in_set(*_imp->env, *r->second.first, e))
             continue;
 
         UseFlagWithStateMap::const_iterator i(r->second.second.first.find(f));
@@ -337,11 +338,12 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
             {
                 Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
                     << r->first << "' does not exist";
-                r->second.first.reset(new AllDepSpec);
+                r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             }
         }
 
-        if (! match_package_in_heirarchy(*_imp->env, *r->second.first, e))
+        if (! match_package_in_set(*_imp->env, *r->second.first, e))
             continue;
 
         for (UseFlagWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;

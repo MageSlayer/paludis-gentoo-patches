@@ -14,12 +14,12 @@
  */
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/dep_spec-fwd.hh>
 
 namespace paludis
 {
     class Environment;
-    class DepSpec;
-    class PackageDepSpec;
     class PackageDatabaseEntry;
 
     /**
@@ -38,9 +38,9 @@ namespace paludis
      *
      * \ingroup grpmatchpackage
      */
-    bool match_package_in_heirarchy(
+    bool match_package_in_set(
             const Environment & env,
-            const DepSpec & spec,
+            const SetSpecTree::ConstItem & spec,
             const PackageDatabaseEntry & target)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }

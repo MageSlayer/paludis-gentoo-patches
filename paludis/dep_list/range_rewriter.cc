@@ -31,45 +31,45 @@ RangeRewriter::~RangeRewriter()
 }
 
 void
-RangeRewriter::visit(const AllDepSpec * a)
+RangeRewriter::visit_sequence(const AllDepSpec &,
+        DependencySpecTree::ConstSequenceIterator cur,
+        DependencySpecTree::ConstSequenceIterator end)
 {
-    if (a->begin() != a->end())
+    if (cur != end)
         _invalid = true;
 }
 
 void
-RangeRewriter::visit(const AnyDepSpec * a)
+RangeRewriter::visit_sequence(const AnyDepSpec &,
+        DependencySpecTree::ConstSequenceIterator cur,
+        DependencySpecTree::ConstSequenceIterator end)
 {
-    if (a->begin() != a->end())
+    if (cur != end)
         _invalid = true;
 }
 
 void
-RangeRewriter::visit(const UseDepSpec *)
+RangeRewriter::visit_sequence(const UseDepSpec &,
+        DependencySpecTree::ConstSequenceIterator,
+        DependencySpecTree::ConstSequenceIterator)
 {
     _invalid = true;
 }
 
 void
-RangeRewriter::visit(const PlainTextDepSpec *)
-{
-    _invalid = true;
-}
-
-void
-RangeRewriter::visit(const PackageDepSpec * a)
+RangeRewriter::visit_leaf(const PackageDepSpec & a)
 {
     if (_invalid)
         return;
 
-    if (a->use_requirements_ptr() || a->slot_ptr() || a->use_requirements_ptr() || ! a->version_requirements_ptr())
+    if (a.use_requirements_ptr() || a.slot_ptr() || a.use_requirements_ptr() || ! a.version_requirements_ptr())
     {
         _invalid = true;
         return;
     }
 
-    if (a->version_requirements_mode() != vr_or && 1 != std::distance(a->version_requirements_ptr()->begin(),
-                a->version_requirements_ptr()->end()))
+    if (a.version_requirements_mode() != vr_or && 1 != std::distance(a.version_requirements_ptr()->begin(),
+                a.version_requirements_ptr()->end()))
     {
         _invalid = true;
         return;
@@ -77,25 +77,25 @@ RangeRewriter::visit(const PackageDepSpec * a)
 
     if (_spec)
     {
-        if ((! a->package_ptr()) || (! _spec->package_ptr()) || (*a->package_ptr() != *_spec->package_ptr()))
+        if ((! a.package_ptr()) || (! _spec->package_ptr()) || (*a.package_ptr() != *_spec->package_ptr()))
         {
             _invalid = true;
             return;
         }
 
-        for (VersionRequirements::Iterator v(a->version_requirements_ptr()->begin()),
-                v_end(a->version_requirements_ptr()->end()) ; v != v_end ; ++v)
+        for (VersionRequirements::Iterator v(a.version_requirements_ptr()->begin()),
+                v_end(a.version_requirements_ptr()->end()) ; v != v_end ; ++v)
             _spec->version_requirements_ptr()->push_back(*v);
     }
     else
     {
-        _spec.reset(new PackageDepSpec(*a));
+        _spec.reset(new PackageDepSpec(a));
         _spec->set_version_requirements_mode(vr_or);
     }
 }
 
 void
-RangeRewriter::visit(const BlockDepSpec *)
+RangeRewriter::visit_leaf(const BlockDepSpec &)
 {
     _invalid = true;
 }

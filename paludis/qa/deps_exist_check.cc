@@ -26,6 +26,7 @@
 #include <paludis/query.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -34,12 +35,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
 
         CheckResult & result;
         const std::string role;
@@ -54,38 +55,36 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const p)
+        void visit_leaf(const PackageDepSpec & p)
         {
-            if (p->package_ptr() &&
-                    env->package_database()->query(query::Package(*p->package_ptr()), qo_whatever)->empty())
+            if (p.package_ptr() &&
+                    env->package_database()->query(query::Package(*p.package_ptr()), qo_whatever)->empty())
             {
                 if (in_any)
                     result << Message(qal_maybe, "No match for " + role + " entry '"
-                            + stringify(*p) + "' inside || ( ) block");
+                            + stringify(p) + "' inside || ( ) block");
                 else
                     result << Message(qal_major, "No match for " + role + " entry '"
-                            + stringify(*p) + "'");
+                            + stringify(p) + "'");
             }
         }
 
-        void visit(const AnyDepSpec * const a)
+        void visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
             /// \todo VV make this smarter
             Save<bool> save_in_any(&in_any, true);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
+            std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const BlockDepSpec * const b)
+        void visit_leaf(const BlockDepSpec & b)
         {
-            if (b->blocked_spec()->package_ptr() &&
-                    env->package_database()->query(query::Package(*b->blocked_spec()->package_ptr()),
+            if (b.blocked_spec()->package_ptr() &&
+                    env->package_database()->query(query::Package(*b.blocked_spec()->package_ptr()),
                         qo_whatever)->empty())
                 result << Message(qal_maybe, "No match for " + role + " block '!"
-                        + stringify(*b->blocked_spec()->package_ptr()) + "'");
-        }
-
-        void visit(const PlainTextDepSpec * const)
-        {
+                        + stringify(*b.blocked_spec()->package_ptr()) + "'");
         }
     };
 }
@@ -108,13 +107,13 @@ DepsExistCheck::operator() (const EbuildCheckData & e) const
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Checker depend_checker(result, "DEPEND", e.environment);
-        metadata->deps_interface->build_depend()->accept(&depend_checker);
+        metadata->deps_interface->build_depend()->accept(depend_checker);
 
         Checker rdepend_checker(result, "RDEPEND", e.environment);
-        metadata->deps_interface->run_depend()->accept(&rdepend_checker);
+        metadata->deps_interface->run_depend()->accept(rdepend_checker);
 
         Checker pdepend_checker(result, "PDEPEND", e.environment);
-        metadata->deps_interface->post_depend()->accept(&pdepend_checker);
+        metadata->deps_interface->post_depend()->accept(pdepend_checker);
     }
     catch (const InternalError &)
     {

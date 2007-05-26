@@ -159,22 +159,12 @@ namespace paludis
             ///\name Dereference operators
             ///\{
 
-            Value_ & operator*()
+            Value_ & operator*() const
             {
                 return **_i;
             }
 
-            Value_ * operator->()
-            {
-                return &**_i;
-            }
-
-            const Value_ & operator*() const
-            {
-                return **_i;
-            }
-
-            const Value_ * operator->() const
+            Value_ * operator->() const
             {
                 return &**_i;
             }

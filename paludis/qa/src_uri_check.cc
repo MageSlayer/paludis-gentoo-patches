@@ -34,12 +34,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
+        ConstVisitor<URISpecTree>,
+        ConstVisitor<URISpecTree>::VisitConstSequence<Checker, UseDepSpec>,
+        ConstVisitor<URISpecTree>::VisitConstSequence<Checker, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using ConstVisitor<URISpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<URISpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
 
         CheckResult & result;
         const QAEnvironment * const env;
@@ -50,73 +50,52 @@ namespace
         {
         }
 
-        void visit(const PlainTextDepSpec * const a)
+        void visit_leaf(const PlainTextDepSpec & a)
         {
-            if (a->text().empty())
+            if (a.text().empty())
                 return;
 
             std::string::size_type p(std::string::npos);
             if ((std::string::npos != p) &&
-                    (("http" != a->text().substr(0, p)) &&
-                     ("https" != a->text().substr(0, p)) &&
-                     ("mirror" != a->text().substr(0, p)) &&
-                     ("ftp" != a->text().substr(0, p))))
-                result << Message(qal_major, "Unrecognised protocol for '" + a->text() + "'");
+                    (("http" != a.text().substr(0, p)) &&
+                     ("https" != a.text().substr(0, p)) &&
+                     ("mirror" != a.text().substr(0, p)) &&
+                     ("ftp" != a.text().substr(0, p))))
+                result << Message(qal_major, "Unrecognised protocol for '" + a.text() + "'");
 
-            else if ((std::string::npos != a->text().find("dev.gentoo.org")) ||
-                    (std::string::npos != a->text().find("cvs.gentoo.org")) ||
-                    (std::string::npos != a->text().find("toucan.gentoo.org")) ||
-                    (std::string::npos != a->text().find("emu.gentoo.org")) ||
-                    (std::string::npos != a->text().find("alpha.gnu.org")) ||
-                    (std::string::npos != a->text().find("geocities.com")))
-                result << Message(qal_major, "Unreliable host for '" + a->text() + "'");
+            else if ((std::string::npos != a.text().find("dev.gentoo.org")) ||
+                    (std::string::npos != a.text().find("cvs.gentoo.org")) ||
+                    (std::string::npos != a.text().find("toucan.gentoo.org")) ||
+                    (std::string::npos != a.text().find("emu.gentoo.org")) ||
+                    (std::string::npos != a.text().find("alpha.gnu.org")) ||
+                    (std::string::npos != a.text().find("geocities.com")))
+                result << Message(qal_major, "Unreliable host for '" + a.text() + "'");
 
             else
             {
-                if (0 == a->text().compare(0, 9, "mirror://"))
+                if (0 == a.text().compare(0, 9, "mirror://"))
                 {
-                    std::string mirror_host(a->text().substr(9));
+                    std::string mirror_host(a.text().substr(9));
                     std::string::size_type pos(mirror_host.find('/'));
                     if (std::string::npos == pos)
-                        result << Message(qal_major, "Malformed SRC_URI component '" + a->text() + "'");
+                        result << Message(qal_major, "Malformed SRC_URI component '" + a.text() + "'");
                     else
                     {
                         mirror_host.erase(pos);
                         RepositoryMirrorsInterface * m(env->package_database()->fetch_repository(
                                     env->main_repository()->name())->mirrors_interface);
                         if (! m)
-                            result << Message(qal_major, "Mirror '" + a->text() + "' used, but repository '"
+                            result << Message(qal_major, "Mirror '" + a.text() + "' used, but repository '"
                                     + stringify(env->main_repository()->name())
                                     + "' defines no mirrors interface");
                         else if (! m->is_mirror(mirror_host))
                             result << Message(qal_major, "Unknown mirror '" + mirror_host
-                                    + "' for '" + a->text() + "'");
+                                    + "' for '" + a.text() + "'");
                     }
                 }
             }
         }
-
-        void visit(const AnyDepSpec * const u)
-        {
-            result << Message(qal_major, "Unexpected || dep block");
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const PackageDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
     };
-
-    void
-    Checker::visit(const BlockDepSpec * const)
-    {
-        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepSpec");
-    }
-
-    void
-    Checker::visit(const PackageDepSpec * const)
-    {
-        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepSpec");
-    }
 }
 
 SrcUriCheck::SrcUriCheck()
@@ -141,7 +120,7 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
             try
             {
                 Checker checker(result, e.environment);
-                metadata->ebuild_interface->src_uri()->accept(&checker);
+                metadata->ebuild_interface->src_uri()->accept(checker);
             }
             catch (const DepStringError & err)
             {

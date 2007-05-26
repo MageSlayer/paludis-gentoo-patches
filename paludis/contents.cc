@@ -18,6 +18,7 @@
  */
 
 #include "contents.hh"
+#include <paludis/util/visitor-impl.hh>
 #include <list>
 
 /** \file
@@ -27,6 +28,23 @@
  */
 
 using namespace paludis;
+
+template class ConstVisitor<ContentsVisitorTypes>;
+template class ConstAcceptInterface<ContentsVisitorTypes>;
+
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>;
+template class ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>;
+
+template class Visits<const ContentsFileEntry>;
+template class Visits<const ContentsDirEntry>;
+template class Visits<const ContentsSymEntry>;
+template class Visits<const ContentsFifoEntry>;
+template class Visits<const ContentsDevEntry>;
+template class Visits<const ContentsMiscEntry>;
 
 ContentsEntry::ContentsEntry(const std::string & n) :
     _name(n)

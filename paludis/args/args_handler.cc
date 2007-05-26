@@ -21,6 +21,8 @@
 #include "args_dumper.hh"
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <algorithm>
 #include <sstream>
 #include <list>
@@ -133,7 +135,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
             std::map<std::string, ArgsOption *>::iterator it = _imp->longopts.find(arg);
             if (it == _imp->longopts.end())
                 throw BadArgument("--" + arg);
-            (*it).second->accept(&visitor);
+            it->second->accept(visitor);
         }
         else if (arg[0] == '-')
         {
@@ -145,7 +147,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
                 {
                     throw BadArgument(std::string("-") + *c);
                 }
-                (*it).second->accept(&visitor);
+                it->second->accept(visitor);
             }
         }
         else
@@ -171,7 +173,7 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
     {
         s << (*g)->name() << ":" << std::endl;
 
-        std::for_each((*g)->begin(), (*g)->end(), accept_visitor(&dump));
+        std::for_each(indirect_iterator((*g)->begin()), indirect_iterator((*g)->end()), accept_visitor(dump));
 
         s << std::endl;
     }

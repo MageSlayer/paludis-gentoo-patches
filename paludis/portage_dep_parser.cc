@@ -22,6 +22,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <stack>
 
 /** \file
@@ -45,11 +46,6 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 
 namespace
 {
-    /**
-     * Our current state.
-     *
-     * \ingroup grpdepparser
-     */
     enum PortageDepParserState
     {
         dps_initial,
@@ -59,15 +55,159 @@ namespace
         dps_had_use_flag,
         dps_had_use_flag_space
     };
+
+    template <typename H_>
+    struct Composite
+    {
+        virtual tr1::shared_ptr<typename H_::ConstItem> as_const_item() const = 0;
+        virtual void add(tr1::shared_ptr<ConstAcceptInterface<H_> >) = 0;
+
+        virtual ~Composite()
+        {
+        }
+    };
+
+    template <typename H_, typename E_>
+    struct RealComposite :
+        Composite<H_>
+    {
+        tr1::shared_ptr<ConstTreeSequence<H_, E_> > _i;
+
+        virtual tr1::shared_ptr<typename H_::ConstItem> as_const_item() const
+        {
+            return tr1::static_pointer_cast<typename H_::ConstItem>(_i);
+        }
+
+        virtual void add(tr1::shared_ptr<ConstAcceptInterface<H_> > i)
+        {
+            _i->add(i);
+        }
+
+        RealComposite(tr1::shared_ptr<ConstTreeSequence<H_, E_> > e) :
+            _i(e)
+        {
+        }
+    };
+
+    struct ParsePackageDepSpec
+    {
+        PackageDepSpecParseMode _parse_mode;
+
+        ParsePackageDepSpec(PackageDepSpecParseMode m) :
+            _parse_mode(m)
+        {
+        }
+
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        {
+            p->add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
+        }
+    };
+
+    struct ParsePackageOrBlockDepSpec
+    {
+        PackageDepSpecParseMode _parse_mode;
+
+        ParsePackageOrBlockDepSpec(PackageDepSpecParseMode m) :
+            _parse_mode(m)
+        {
+        }
+
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        {
+            if (s.empty() || '!' != s.at(0))
+                p->add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
+            else
+                p->add(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
+                                tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
+                                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode)))))));
+        }
+    };
+
+    struct ParseTextDepSpec
+    {
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        {
+            p->add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
+                            tr1::shared_ptr<PlainTextDepSpec>(new PlainTextDepSpec(s)))));
+        }
+    };
+
+    template <typename H_, bool>
+    struct HandleUse
+    {
+        static void handle(const std::string & s, const std::string & i, std::stack<tr1::shared_ptr<Composite<H_> > > & stack)
+        {
+            std::string f(i);
+            bool inv(f.length() && ('!' == f.at(0)));
+            if (inv)
+                f.erase(0, 1);
+
+            if (f.empty())
+                throw DepStringParseError(s,
+                        "Bad use flag name '" + i + "'");
+            if ('?' != f.at(f.length() - 1))
+                throw DepStringParseError(s,
+                        "Use flag name '" + i + "' missing '?'");
+
+            f.erase(f.length() - 1);
+            tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > a(
+                    new ConstTreeSequence<H_, UseDepSpec>(tr1::shared_ptr<UseDepSpec>(
+                            new UseDepSpec(UseFlagName(f), inv))));
+            stack.top()->add(a);
+            stack.push(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, UseDepSpec>(a)));
+        }
+    };
+
+    template <typename H_>
+    struct HandleUse<H_, false>
+    {
+        static void handle(const std::string & s, const std::string &, std::stack<tr1::shared_ptr<Composite<H_> > > &)
+        {
+            throw DepStringParseError(s, "use? group is not allowed here");
+        }
+    };
+
+    template <typename H_, bool>
+    struct HandleAny
+    {
+        static void handle(const std::string &, std::stack<tr1::shared_ptr<Composite<H_> > > & stack)
+        {
+             tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > a(new ConstTreeSequence<H_, AnyDepSpec>(
+                         tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
+             stack.top()->add(a);
+             stack.push(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, AnyDepSpec>(a)));
+        }
+    };
+
+    template <typename H_>
+    struct HandleAny<H_, false>
+    {
+        static void handle(const std::string & s, std::stack<tr1::shared_ptr<Composite<H_> > > &)
+        {
+             throw DepStringParseError(s, "|| is not allowed here");
+        }
+    };
 }
 
-tr1::shared_ptr<CompositeDepSpec>
-PortageDepParser::parse(const std::string & s, const Policy & policy)
+template <typename H_, typename I_, bool any_, bool use_>
+tr1::shared_ptr<typename H_::ConstItem>
+PortageDepParser::_parse(const std::string & s, const I_ & p)
 {
     Context context("When parsing dependency string '" + s + "':");
 
-    std::stack<tr1::shared_ptr<CompositeDepSpec> > stack;
-    stack.push(tr1::shared_ptr<CompositeDepSpec>(new AllDepSpec));
+    std::stack<tr1::shared_ptr<Composite<H_> > > stack;
+    stack.push(tr1::shared_ptr<RealComposite<H_, AllDepSpec> >(new RealComposite<H_, AllDepSpec>(
+                    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> >(new ConstTreeSequence<H_, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))));
 
     PortageDepParserState state(dps_initial);
     PortageDepLexer lexer(s);
@@ -93,15 +233,16 @@ PortageDepParser::parse(const std::string & s, const Policy & policy)
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
-                                     stack.top()->add_child(policy.create(i->second));
+                                     p.template add<H_>(i->second, stack.top());
                                  }
                                  continue;
 
                             case dpl_open_paren:
                                  {
-                                     tr1::shared_ptr<CompositeDepSpec> a(new AllDepSpec);
-                                     stack.top()->add_child(a);
-                                     stack.push(a);
+                                     tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
+                                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                     stack.top()->add(a);
+                                     stack.push(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, AllDepSpec>(a)));
                                      state = dps_had_paren;
                                  }
                                  continue;
@@ -116,39 +257,13 @@ PortageDepParser::parse(const std::string & s, const Policy & policy)
                                  continue;
 
                             case dpl_double_bar:
-                                 if (policy.permit_any_deps())
-                                 {
-                                     tr1::shared_ptr<CompositeDepSpec> a(new AnyDepSpec);
-                                     stack.top()->add_child(a);
-                                     stack.push(a);
-                                     state = dps_had_double_bar;
-                                 }
-                                 else
-                                     throw DepStringParseError(s, "|| is not allowed here");
-
+                                 HandleAny<H_, any_>::handle(s, stack);
+                                 state = dps_had_double_bar;
                                  continue;
 
                             case dpl_use_flag:
-                                 {
-                                     std::string f(i->second);
-                                     bool inv(f.length() && ('!' == f.at(0)));
-                                     if (inv)
-                                         f.erase(0, 1);
-
-                                     if (f.empty())
-                                         throw DepStringParseError(s,
-                                                 "Bad use flag name '" + i->second + "'");
-                                     if ('?' != f.at(f.length() - 1))
-                                         throw DepStringParseError(s,
-                                                 "Use flag name '" + i->second + "' missing '?'");
-
-                                     f.erase(f.length() - 1);
-                                     tr1::shared_ptr<CompositeDepSpec> a(
-                                             new UseDepSpec(UseFlagName(f), inv));
-                                     stack.top()->add_child(a);
-                                     stack.push(a);
-                                     state = dps_had_use_flag;
-                                 }
+                                 HandleUse<H_, use_>::handle(s, i->second, stack);
+                                 state = dps_had_use_flag;
                                  continue;
 
                         }
@@ -272,70 +387,40 @@ PortageDepParser::parse(const std::string & s, const Policy & policy)
 
     if (stack.empty())
         throw DepStringNestingError(s);
-    tr1::shared_ptr<CompositeDepSpec> result(stack.top());
+    tr1::shared_ptr<Composite<H_> > result(stack.top());
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
-    return result;
+    return result->as_const_item();
 }
 
-tr1::shared_ptr<const CompositeDepSpec>
-PortageDepParser::parse_depend(const std::string & s, const PackageDepSpecParseMode mode)
+tr1::shared_ptr<DependencySpecTree::ConstItem>
+PortageDepParser::parse_depend(const std::string & s, const PackageDepSpecParseMode m)
 {
-    return PortageDepParser::parse(s, Policy::text_is_package_dep_spec(true, mode));
+    return _parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true>(s, ParsePackageOrBlockDepSpec(m));
 }
 
-tr1::shared_ptr<const CompositeDepSpec>
+tr1::shared_ptr<ProvideSpecTree::ConstItem>
+PortageDepParser::parse_provide(const std::string & s)
+{
+    return _parse<ProvideSpecTree, ParsePackageDepSpec, false, true>(s, ParsePackageDepSpec(pds_pm_eapi_0));
+}
+
+tr1::shared_ptr<RestrictSpecTree::ConstItem>
+PortageDepParser::parse_restrict(const std::string & s)
+{
+    return _parse<RestrictSpecTree, ParseTextDepSpec, false, true>(s);
+}
+
+tr1::shared_ptr<URISpecTree::ConstItem>
+PortageDepParser::parse_uri(const std::string & s)
+{
+    return _parse<URISpecTree, ParseTextDepSpec, false, true>(s);
+}
+
+tr1::shared_ptr<LicenseSpecTree::ConstItem>
 PortageDepParser::parse_license(const std::string & s)
 {
-    return PortageDepParser::parse(s, Policy::text_is_text_dep_spec(true));
-}
-
-PortageDepParser::Policy::Policy(const bool p, const PackageDepSpecParseMode m,
-        tr1::shared_ptr<StringDepSpec> (Policy::* const f) (const std::string &) const) :
-    _permit_any_deps(p),
-    _parse_mode(m),
-    _create_func(f)
-{
-}
-
-tr1::shared_ptr<StringDepSpec>
-PortageDepParser::Policy::_create_text_dep_spec(const std::string & s) const
-{
-    return tr1::shared_ptr<StringDepSpec>(new PlainTextDepSpec(s));
-}
-
-tr1::shared_ptr<StringDepSpec>
-PortageDepParser::Policy::_create_package_dep_spec(const std::string & s) const
-{
-    if (s.empty() || '!' != s.at(0))
-        return tr1::shared_ptr<StringDepSpec>(new PackageDepSpec(s, _parse_mode));
-    else
-        return tr1::shared_ptr<StringDepSpec>(new BlockDepSpec(
-                    tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode))));
-}
-
-PortageDepParser::Policy
-PortageDepParser::Policy::text_is_text_dep_spec(bool permit_any_deps)
-{
-    return Policy(permit_any_deps, pds_pm_permissive, &Policy::_create_text_dep_spec);
-}
-
-PortageDepParser::Policy
-PortageDepParser::Policy::text_is_package_dep_spec(bool permit_any_deps, PackageDepSpecParseMode mode)
-{
-    return Policy(permit_any_deps, mode, &Policy::_create_package_dep_spec);
-}
-
-tr1::shared_ptr<StringDepSpec>
-PortageDepParser::Policy::create(const std::string & s) const
-{
-    return (this->*_create_func)(s);
-}
-
-bool
-PortageDepParser::Policy::permit_any_deps() const
-{
-    return _permit_any_deps;
+    return _parse<LicenseSpecTree, ParseTextDepSpec, true, true>(s);
 }
 

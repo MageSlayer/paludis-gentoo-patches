@@ -315,37 +315,37 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentPackageSet < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
+###    class TestCase_EnvironmentPackageSet < Test::Unit::TestCase
+###        def env
+###            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+###        end
+###
+###        def test_package_set
+###            assert_kind_of DepSpec, env.set('everything')
+###        end
+###
+###        def test_package_set_error
+###            assert_raise SetNameError do
+###                env.set('broken*')
+###            end
+###        end
+###    end
 
-        def test_package_set
-            assert_kind_of DepSpec, env.set('everything')
-        end
-
-        def test_package_set_error
-            assert_raise SetNameError do
-                env.set('broken*')
-            end
-        end
-    end
-
-    class TestCase_NoConfigEnvironmentPackageSet < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_package_set
-            assert_kind_of DepSpec, env.set('everything')
-        end
-
-        def test_package_set_error
-            assert_raise SetNameError do
-                env.set('broken*')
-            end
-        end
-    end
+###    class TestCase_NoConfigEnvironmentPackageSet < Test::Unit::TestCase
+###        def env
+###            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+###        end
+###
+###        def test_package_set
+###            assert_kind_of DepSpec, env.set('everything')
+###        end
+###
+###        def test_package_set_error
+###            assert_raise SetNameError do
+###                env.set('broken*')
+###            end
+###        end
+###    end
 
     class TestCase_NoConfigEnvirontmentPortageRepository < Test::Unit::TestCase
         def env

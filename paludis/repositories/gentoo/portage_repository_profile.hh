@@ -108,7 +108,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            tr1::shared_ptr<AllDepSpec> system_packages() const;
+            tr1::shared_ptr<SetSpecTree::ConstItem> system_packages() const;
 
             ///\}
 

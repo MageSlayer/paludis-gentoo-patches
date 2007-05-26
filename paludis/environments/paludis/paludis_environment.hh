@@ -60,8 +60,7 @@ namespace paludis
             virtual bool unmasked_by_user(const PackageDatabaseEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<CompositeDepSpec> local_set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & id) const;
 
         public:
             ///\name Basic operations

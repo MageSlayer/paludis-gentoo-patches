@@ -28,6 +28,7 @@
 #include <paludis/name.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -39,7 +40,6 @@ namespace paludis
 {
     class PackageDatabase;
     class PackageDatabaseEntry;
-    class DepSpec;
 
 #include <paludis/environment-se.hh>
 
@@ -237,7 +237,7 @@ namespace paludis
              *
              * If the named set is not known, returns a zero pointer.
              */
-            virtual tr1::shared_ptr<DepSpec> set(const SetName &) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

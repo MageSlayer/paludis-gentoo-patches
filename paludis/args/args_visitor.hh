@@ -50,8 +50,18 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        typedef VisitorTypes<ArgsOption *, StringArg *, AliasArg *, SwitchArg *,
-                IntegerArg *, EnumArg *, StringSetArg *> ArgsVisitorTypes;
+        struct ArgsVisitorTypes :
+            VisitorTypes<
+                ArgsVisitorTypes,
+                ArgsOption,
+                StringArg,
+                AliasArg,
+                SwitchArg,
+                IntegerArg,
+                EnumArg,
+                StringSetArg>
+        {
+        };
 
         /**
          * Visitor class. Processes command-line options as they are found.
@@ -59,13 +69,13 @@ namespace paludis
          * \ingroup grplibpaludisargs
          */
         class PALUDIS_VISIBLE ArgsVisitor :
-            public ArgsVisitorTypes::Visitor
+            public MutableVisitor<ArgsVisitorTypes>
         {
             private:
                 libwrapiter::ForwardIterator<ArgsVisitor, std::string> * _args_index, _args_end;
                 std::string _env_prefix;
 
-                const std::string & get_param(const ArgsOption * const);
+                const std::string & get_param(const ArgsOption &);
 
                 std::string env_name(const std::string & long_name) const;
 
@@ -77,26 +87,23 @@ namespace paludis
                         libwrapiter::ForwardIterator<ArgsVisitor, std::string>,
                         const std::string & env_prefix = "");
 
-                /// Visit an ArgsOption.
-                void visit(ArgsOption * const);
-
                 /// Visit a StringArg.
-                void visit(StringArg * const);
+                void visit(StringArg &);
 
                 /// Visit an AliasArg.
-                void visit(AliasArg * const);
+                void visit(AliasArg &);
 
                 /// Visit a SwitchArg.
-                void visit(SwitchArg * const);
+                void visit(SwitchArg &);
 
                 /// Visit an IntegerArg.
-                void visit(IntegerArg * const);
+                void visit(IntegerArg &);
 
                 /// Visit an EnumArg.
-                void visit(EnumArg * const);
+                void visit(EnumArg &);
 
                 /// Visit a StringSetArg.
-                void visit(StringSetArg * const);
+                void visit(StringSetArg &);
         };
     }
 }

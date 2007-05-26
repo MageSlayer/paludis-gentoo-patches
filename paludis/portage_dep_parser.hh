@@ -104,67 +104,36 @@ namespace paludis
     class PALUDIS_VISIBLE PortageDepParser :
         private InstantiationPolicy<PortageDepParser, instantiation_method::NonInstantiableTag>
     {
+        private:
+            template <typename H_, typename I_, bool any_, bool use_>
+            static tr1::shared_ptr<typename H_::ConstItem> _parse(const std::string &, const I_ & = I_());
+
         public:
             /**
-             * Controls how a PortageDepParser treats any and text groups.
-             *
-             * \see PortageDepParser
-             * \ingroup grpdepparser
+             * Parse a dependency heirarchy.
              */
-            class PALUDIS_VISIBLE Policy
-            {
-                private:
-                    const bool _permit_any_deps;
-                    const PackageDepSpecParseMode _parse_mode;
-                    tr1::shared_ptr<StringDepSpec> (Policy::* const _create_func) (const std::string &) const;
-
-                    tr1::shared_ptr<StringDepSpec> _create_text_dep_spec(const std::string &) const;
-                    tr1::shared_ptr<StringDepSpec> _create_package_dep_spec(const std::string &) const;
-
-                    Policy(const bool, const PackageDepSpecParseMode,
-                            tr1::shared_ptr<StringDepSpec> (Policy::* const) (const std::string &) const);
-
-                public:
-                    /**
-                     * Return a Policy object that makes text specs
-                     * PlainTextDepSpec instances.
-                     */
-                    static Policy text_is_text_dep_spec(bool permit_any_deps);
-
-                    /**
-                     * Return a Policy object that makes text specs
-                     * PackageDepSpec instances.
-                     */
-                    static Policy text_is_package_dep_spec(bool permit_any_deps, PackageDepSpecParseMode);
-
-                    /**
-                     * Create a text dep spec.
-                     */
-                    tr1::shared_ptr<StringDepSpec> create(const std::string &) const;
-
-                    /**
-                     * Whether any deps are permitted.
-                     */
-                    bool permit_any_deps() const;
-            };
-
-            /**
-             * Parse a given dependency string, and return an appropriate
-             * DepSpec tree.
-             */
-            static tr1::shared_ptr<CompositeDepSpec> parse(const std::string & s,
-                    const Policy &);
-
-            /**
-             * Convenience wrapper for parse for depend strings, for VersionMetadata.
-             */
-            static tr1::shared_ptr<const CompositeDepSpec> parse_depend(const std::string & s,
+            static tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
                     const PackageDepSpecParseMode);
 
             /**
-             * Convenience wrapper for parse for license strings, for VersionMetadata.
+             * Parse a provide heirarchy.
              */
-            static tr1::shared_ptr<const CompositeDepSpec> parse_license(const std::string & s);
+            static tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s);
+
+            /**
+             * Parse a restrict.
+             */
+            static tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s);
+
+            /**
+             * Parse a uri heirarchy.
+             */
+            static tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s);
+
+            /**
+             * Parse a license heirarchy.
+             */
+            static tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s);
     };
 }
 

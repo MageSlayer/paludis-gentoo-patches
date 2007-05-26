@@ -19,8 +19,8 @@
 
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -39,16 +39,19 @@ namespace test_cases
 
         void run()
         {
-            tr1::shared_ptr<const CompositeDepSpec> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2", pds_pm_permissive));
+            tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > a(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
+                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("=a/b-1", pds_pm_permissive))));
+            tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > b(new TreeLeaf<DependencySpecTree, PackageDepSpec>(
+                        tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("=a/b-2", pds_pm_permissive))));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());
-            std::for_each(p->begin(), p->end(), accept_visitor(&r));
+            a->accept(r);
+            b->accept(r);
             TEST_CHECK(r.spec());
 
-            DepSpecPrettyPrinter w(0, false);
-            r.spec()->accept(&w);
-            TEST_CHECK_STRINGIFY_EQUAL(w, "a/b[=1|=2]");
+            TEST_CHECK(r.spec());
+            TEST_CHECK_STRINGIFY_EQUAL(*r.spec(), "a/b[=1|=2]");
         }
     } test_range_rewriter;
 }

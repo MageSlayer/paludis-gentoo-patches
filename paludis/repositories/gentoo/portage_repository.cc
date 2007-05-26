@@ -576,7 +576,7 @@ PortageRepository::do_pretend(const QualifiedPackageName & q, const VersionSpec 
     return _imp->entries_ptr->pretend(q, v, _imp->profile_ptr);
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageRepository::do_package_set(const SetName & s) const
 {
     if (s.data() == "system")

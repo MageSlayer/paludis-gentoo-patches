@@ -18,6 +18,7 @@
  */
 
 #include "dep_list_TEST.hh"
+#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
 using namespace test;
@@ -843,7 +844,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/three-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -864,7 +865,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -884,7 +885,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -904,7 +905,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -924,7 +925,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -944,14 +945,14 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
         }
 
         void check_lists()
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(merge_target, pds_pm_permissive),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -971,14 +972,14 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
         }
 
         void check_lists()
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(merge_target, pds_pm_permissive),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -998,7 +999,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -1018,7 +1019,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
@@ -1038,14 +1039,14 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
         }
 
         void check_lists()
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(merge_target, pds_pm_permissive),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1065,14 +1066,14 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
         }
 
         void check_lists()
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec(merge_target, pds_pm_permissive),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1092,7 +1093,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/one-1:0::repo");
             expected.push_back("cat/two-1:0::repo");
         }
@@ -1113,7 +1114,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/one-1:0::repo");
             expected.push_back("cat/three-1:0::repo");
             expected.push_back("cat/two-1:0::repo");
@@ -1134,7 +1135,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/one-1:0::repo");
             expected.push_back("cat/two-1:0::repo");
         }
@@ -1155,7 +1156,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/four-1:0::virtuals");
             expected.push_back("cat/one-1:0::repo");
@@ -1252,12 +1253,14 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->ebuild_interface->set_provide("virtual/foo");
-            repo->add_version("cat", "two", "2")->ebuild_interface->set_provide("virtual/foo");
+            tr1::shared_ptr<VersionMetadata> m(repo->add_version("cat", "two", "2"));
+            m->ebuild_interface->set_provide("virtual/foo");
+            m->deps_interface->set_build_depend("cat/one");
         }
 
         void populate_expected()
         {
-            merge_target = "cat/one cat/two";
+            merge_target = "cat/two";
             expected.push_back("cat/one-1:0::repo");
             expected.push_back("virtual/foo-1:0::virtuals");
             expected.push_back("cat/two-2:0::repo");
@@ -1291,11 +1294,11 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->deps_interface->set_build_depend("cat/doesnotexist");
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
+            d.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/five", pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec("cat/five", pds_pm_permissive),
                         env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
@@ -1329,11 +1332,11 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->deps_interface->set_post_depend("cat/doesnotexist");
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
+            d.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/five", pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec("cat/five", pds_pm_permissive),
                         env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
@@ -1363,7 +1366,7 @@ namespace test_cases
             installed_repo->add_version("cat", "one", "2");
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
+            d.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/one-1:0::repo");
         }
     } test_dep_list_forced_downgrade_of_installed;
@@ -1390,7 +1393,7 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.options()->fall_back = dl_fall_back_never;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive),
+            TEST_CHECK_THROWS(d.add(PackageDepSpec("cat/one", pds_pm_permissive),
                         env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_never;
@@ -1417,8 +1420,8 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.options()->fall_back = dl_fall_back_as_needed;
-            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
-            d.add(PortageDepParser::parse_depend("cat/two", pds_pm_permissive), env.default_destinations());
+            d.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
+            d.add(PackageDepSpec("cat/two", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
         }
     } test_dep_list_fall_back_as_needed;
@@ -1446,25 +1449,34 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            d1.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
+            d1.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
-            TEST_CHECK_THROWS(d1.add(PortageDepParser::parse_depend("cat/three", pds_pm_permissive),
+            TEST_CHECK_THROWS(d1.add(PackageDepSpec("cat/three", pds_pm_permissive),
                         env.default_destinations()), DepListError);
 
             DepList d2(&env, DepListOptions());
             d2.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d2.add(PortageDepParser::parse_depend("cat/two", pds_pm_permissive),
+            TEST_CHECK_THROWS(d2.add(PackageDepSpec("cat/two", pds_pm_permissive),
                         env.default_destinations()), DepListError);
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d3.add(PortageDepParser::parse_depend("( cat/one cat/two )", pds_pm_permissive),
-                        env.default_destinations()), DepListError);
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t3(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t3->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/one", pds_pm_permissive)))));
+            t3->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/two", pds_pm_permissive)))));
+            TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            d4.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d4.add(PortageDepParser::parse_depend("( cat/one cat/three )", pds_pm_permissive),
-                        env.default_destinations()), DepListError);
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t4(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t4->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/one", pds_pm_permissive)))));
+            t4->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/three", pds_pm_permissive)))));
+            TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
 
@@ -1491,12 +1503,19 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->upgrade = dl_upgrade_as_needed;
-            d1.add(PortageDepParser::parse_depend("cat/one", pds_pm_permissive), env.default_destinations());
+            d1.add(PackageDepSpec("cat/one", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-0:0::installed_repo cat/one-1:0::repo");
 
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade = dl_upgrade_as_needed;
-            d2.add(PortageDepParser::parse_depend("( cat/one cat/two )", pds_pm_permissive), env.default_destinations());
+
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > t2(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            t2->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/one", pds_pm_permissive)))));
+            t2->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("cat/two", pds_pm_permissive)))));
+            d2.add(*t2, env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
     } test_dep_list_upgrade_as_needed;
@@ -1535,7 +1554,7 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->reinstall_scm = dl_reinstall_scm_always;
-            d1.add(PortageDepParser::parse_depend("cat/zero", pds_pm_permissive), env.default_destinations());
+            d1.add(PackageDepSpec("cat/zero", pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
                     "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/six-darcs-0:0::repo "
                     "cat/zero-1:0::repo");

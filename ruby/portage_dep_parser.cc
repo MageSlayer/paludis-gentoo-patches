@@ -29,30 +29,8 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_portage_dep_parser;
-    static VALUE c_portage_dep_parser_policy;
 
-    VALUE
-    portage_dep_parser_policy_to_value(const PortageDepParser::Policy & p)
-    {
-        PortageDepParser::Policy * p2 (new PortageDepParser::Policy(p));
-        return Data_Wrap_Struct(c_portage_dep_parser_policy, 0, &Common<PortageDepParser::Policy>::free, p2);
-    }
-
-    PortageDepParser::Policy
-    value_to_portage_dep_parser_policy(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_portage_dep_parser_policy))
-        {
-            PortageDepParser::Policy * v_ptr;
-            Data_Get_Struct(v, PortageDepParser::Policy, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into PortageDepParserPolicy", rb_obj_classname(v));
-        }
-    }
-
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     PortageDepParser::parse(dep_string, spec_type, permit_any_deps, package_dep_parse_mode = PmPermissive) -> CompositeDepSpec
@@ -151,6 +129,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     void do_register_portage_dep_parser()
     {
@@ -163,25 +142,15 @@ namespace
          * dependency specification into a DepSpec instance.
          */
         c_portage_dep_parser = rb_define_module_under(paludis_module(), "PortageDepParser");
+
+#if CIARANM_REMOVED_THIS
         rb_define_singleton_method(c_portage_dep_parser, "parse",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse), 2);
         rb_define_singleton_method(c_portage_dep_parser, "parse_depend",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse_depend), 2);
         rb_define_singleton_method(c_portage_dep_parser, "parse_license",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse_license), 1);
-
-        /*
-         * Document-class: Paludis::PortageDepParser::Policy
-         *
-         * The Policy class describes how to convert a string representation of a 
-         * dependency specification into a DepSpec instance.
-         */
-        c_portage_dep_parser_policy = rb_define_class_under(c_portage_dep_parser, "Policy", rb_cObject);
-        rb_funcall(c_portage_dep_parser_policy, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_singleton_method(c_portage_dep_parser_policy, "text_is_text_dep_spec",
-                RUBY_FUNC_CAST(&portage_dep_parser_policy_text_is_text_dep_spec), 1);
-        rb_define_singleton_method(c_portage_dep_parser_policy, "text_is_package_dep_spec",
-                RUBY_FUNC_CAST(&portage_dep_parser_policy_text_is_package_dep_spec), 2);
+#endif
     }
 }
 

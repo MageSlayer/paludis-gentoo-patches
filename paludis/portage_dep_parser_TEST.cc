@@ -18,6 +18,7 @@
  */
 
 #include <paludis/paludis.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -43,7 +44,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_empty;
@@ -59,7 +60,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("   \n   \t", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("   \n   \t", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_blank;
@@ -75,7 +76,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("app-editors/vim", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("app-editors/vim", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
         }
     } test_dep_spec_parser_package;
@@ -91,15 +92,15 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d1(0, false);
-            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha", pds_pm_permissive)->accept(&d1);
+            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha", pds_pm_permissive)->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
 
             DepSpecPrettyPrinter d2(0, false);
-            PortageDepParser::parse_depend("=app-editors/vim-6.4_alpha-r1", pds_pm_permissive)->accept(&d2);
+            PortageDepParser::parse_depend("=app-editors/vim-6.4_alpha-r1", pds_pm_permissive)->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
 
             DepSpecPrettyPrinter d3(0, false);
-            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha:one", pds_pm_permissive)->accept(&d3);
+            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha:one", pds_pm_permissive)->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
         }
     } test_dep_spec_parser_decorated_package;
@@ -115,7 +116,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
         }
     } test_dep_spec_parser_packages;
@@ -131,7 +132,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("|| ( one/one two/two )", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("|| ( one/one two/two )", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
@@ -147,7 +148,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend(" ( one/one two/two )    ", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend(" ( one/one two/two )    ", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
         }
     } test_dep_spec_parser_all;
@@ -163,7 +164,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("foo? ( one/one )", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("foo? ( one/one )", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
         }
     } test_dep_spec_parser_use;
@@ -179,7 +180,7 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("!foo? ( one/one )", pds_pm_permissive)->accept(&d);
+            PortageDepParser::parse_depend("!foo? ( one/one )", pds_pm_permissive)->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
         }
     } test_dep_spec_parser_inv_use;
@@ -195,11 +196,11 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one ) )", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) )", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) ) ) )", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")", pds_pm_permissive)->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one ) )", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) )", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) ) ) )", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")", pds_pm_permissive)->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_nesting;
 
@@ -214,10 +215,10 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ||", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(((", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")", pds_pm_permissive)->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(foo/bar)", pds_pm_permissive)->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ||", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(((", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")", pds_pm_permissive)->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(foo/bar)", pds_pm_permissive)->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_values;
 }

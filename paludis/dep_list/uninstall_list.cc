@@ -239,12 +239,12 @@ UninstallList::collect_all_installed() const
 namespace
 {
     struct DepCollector :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepSpec>
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AllDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AnyDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepSpec>::visit;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AllDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<DepCollector, AnyDepSpec>::visit_sequence;
 
         const Environment * const env;
         const PackageDatabaseEntry pkg;
@@ -257,20 +257,22 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const a)
+        void visit_leaf(const PackageDepSpec & a)
         {
             tr1::shared_ptr<const PackageDatabaseEntryCollection> m(env->package_database()->query(
-                        *a, is_installed_only, qo_order_by_version));
+                        a, is_installed_only, qo_order_by_version));
             matches->insert(m->begin(), m->end());
         }
 
-        void visit(const UseDepSpec * const u)
+        void visit_sequence(const UseDepSpec & u,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(UseFlagName(u->flag()), pkg) ^ u->inverse())
-                std::for_each(u->begin(), u->end(), accept_visitor(this));
+            if (env->query_use(UseFlagName(u.flag()), pkg) ^ u.inverse())
+                std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const BlockDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
 
@@ -305,10 +307,10 @@ UninstallList::collect_depped_upon(tr1::shared_ptr<const ArbitrarilyOrderedPacka
                         i->repository)->version_metadata(i->name, i->version));
             if (metadata->deps_interface)
             {
-                metadata->deps_interface->build_depend()->accept(&c);
-                metadata->deps_interface->run_depend()->accept(&c);
-                metadata->deps_interface->post_depend()->accept(&c);
-                metadata->deps_interface->suggested_depend()->accept(&c);
+                metadata->deps_interface->build_depend()->accept(c);
+                metadata->deps_interface->run_depend()->accept(c);
+                metadata->deps_interface->post_depend()->accept(c);
+                metadata->deps_interface->suggested_depend()->accept(c);
             }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>(c.matches))).first;
@@ -364,11 +366,11 @@ UninstallList::add_unused_dependencies()
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        tr1::shared_ptr<DepSpec> world(_imp->env->set(SetName("world")));
+        tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
         for (PackageDatabaseEntryCollection::Iterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
-            if (match_package_in_heirarchy(*_imp->env, *world, *i))
+            if (match_package_in_set(*_imp->env, *world, *i))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -403,10 +405,10 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
                         i->repository)->version_metadata(i->name, i->version));
             if (metadata->deps_interface)
             {
-                metadata->deps_interface->build_depend()->accept(&c);
-                metadata->deps_interface->run_depend()->accept(&c);
-                metadata->deps_interface->post_depend()->accept(&c);
-                metadata->deps_interface->suggested_depend()->accept(&c);
+                metadata->deps_interface->build_depend()->accept(c);
+                metadata->deps_interface->run_depend()->accept(c);
+                metadata->deps_interface->post_depend()->accept(c);
+                metadata->deps_interface->suggested_depend()->accept(c);
             }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>(c.matches))).first;
@@ -431,10 +433,10 @@ UninstallList::collect_world() const
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
 
-    tr1::shared_ptr<DepSpec> world(_imp->env->set(SetName("world")));
+    tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
-        if (match_package_in_heirarchy(*_imp->env, *world, *i))
+        if (match_package_in_set(*_imp->env, *world, *i))
             result->insert(*i);
 
     return result;

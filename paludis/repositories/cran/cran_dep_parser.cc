@@ -1,6 +1,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -9,12 +10,14 @@
 
 using namespace paludis;
 
-tr1::shared_ptr<const CompositeDepSpec>
+tr1::shared_ptr<DependencySpecTree::ConstItem>
 CRANDepParser::parse(const std::string & s, const PackageDepSpecParseMode mode)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    tr1::shared_ptr<CompositeDepSpec> result(new AllDepSpec);
+    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
+            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> spec_tokeniser(",");
 
     std::list<std::string> specs;
@@ -53,9 +56,12 @@ CRANDepParser::parse(const std::string & s, const PackageDepSpecParseMode mode)
             spec_string = name;
         else
             spec_string = range + name + "-" + version;
-        tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string, mode));
-        result->add_child(spec);
+        tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
+                new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                        new PackageDepSpec(spec_string, mode))));
+        result->add(spec);
     }
 
     return result;
 }
+

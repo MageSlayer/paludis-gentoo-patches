@@ -538,7 +538,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
         throw PackageUninstallActionError("Couldn't unmerge '" + stringify(q) + "-" + stringify(v) + "'");
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 CRANInstalledRepository::do_package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -546,23 +546,27 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
         if (! _imp->entries_valid)
             _imp->load_entries();
 
         for (std::vector<CRANDescription>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
-            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(
-                            new QualifiedPackageName(p->name))));
-            result->add_child(spec);
+            tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
+                    new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                            new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(
+                                    new QualifiedPackageName(p->name))))));
+            result->add(spec);
         }
 
         return result;
     }
     else if ("world" == s.data())
     {
-        tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
         if (_imp->world_file.exists())
         {
@@ -575,9 +579,9 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
                 {
                     if (std::string::npos == line->find('/'))
                     {
-                        tr1::shared_ptr<DepSpec> spec(_imp->env->set(SetName(*line)));
+                        tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(*line)));
                         if (spec)
-                            result->add_child(spec);
+                            result->add(spec);
                         else
                             Log::get_instance()->message(ll_warning, lc_no_context,
                                     "Entry '" + stringify(*line) + "' in world file '" + stringify(_imp->world_file)
@@ -585,8 +589,10 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
                     }
                     else
                     {
-                        tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(*line, pds_pm_unspecific));
-                        result->add_child(spec);
+                        tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
+                                new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                                        new PackageDepSpec(*line, pds_pm_unspecific))));
+                        result->add(spec);
                     }
                 }
                 catch (const NameError & e)
@@ -604,7 +610,7 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
         return result;
     }
     else
-        return tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 tr1::shared_ptr<const SetNameCollection>

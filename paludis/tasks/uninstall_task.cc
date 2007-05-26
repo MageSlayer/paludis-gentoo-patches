@@ -112,7 +112,7 @@ UninstallTask::add_target(const std::string & target)
     else
         try
         {
-            tr1::shared_ptr<DepSpec> spec(_imp->env->set(SetName(target)));
+            tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(target)));
             if (spec)
             {
                 if (_imp->had_package_targets)
@@ -122,7 +122,8 @@ UninstallTask::add_target(const std::string & target)
                     throw MultipleSetTargetsSpecified();
 
                 _imp->had_set_targets = true;
-                DepSpecFlattener f(_imp->env, 0, spec);
+                DepSpecFlattener f(_imp->env, 0);
+                spec->accept(f);
                 for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
                     _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     stringify((*i)->text()), pds_pm_permissive)));
@@ -232,7 +233,8 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        tr1::shared_ptr<AllDepSpec> all(new AllDepSpec);
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
@@ -253,8 +255,9 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->add_child(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))));
+                all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                                tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))))));
         }
 
         world_remove_packages(all);
@@ -359,10 +362,10 @@ UninstallTask::world_remove_set(const SetName & s)
 namespace
 {
     struct WorldTargetFinder :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>
+        ConstVisitor<SetSpecTree>,
+        ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>::visit;
+        using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
 
         UninstallTask * const task;
         std::list<const PackageDepSpec *> items;
@@ -376,42 +379,23 @@ namespace
         {
         }
 
-        void visit(const AnyDepSpec * a)
+        void visit_leaf(const PackageDepSpec & a)
         {
-            Save<bool> save_inside_any(&inside_any, true);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const UseDepSpec * a)
-        {
-            Save<bool> save_inside_use(&inside_use, true);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PlainTextDepSpec *)
-        {
-        }
-
-        void visit(const PackageDepSpec * a)
-        {
-            if (! (inside_any || inside_use || a->slot_ptr() || (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())))
+            if (! (inside_any || inside_use || a.slot_ptr() ||
+                        (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
             {
-                items.push_back(a);
-                task->on_update_world(*a);
+                items.push_back(&a);
+                task->on_update_world(a);
             }
-        }
-
-        void visit(const BlockDepSpec *)
-        {
         }
     };
 }
 
 void
-UninstallTask::world_remove_packages(tr1::shared_ptr<const DepSpec> a)
+UninstallTask::world_remove_packages(tr1::shared_ptr<const SetSpecTree::ConstItem> a)
 {
     WorldTargetFinder w(this);
-    a->accept(&w);
+    a->accept(w);
     for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {

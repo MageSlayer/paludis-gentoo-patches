@@ -17,12 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <algorithm>
+#include <list>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <algorithm>
 #include <vector>
 
 using namespace paludis;
@@ -33,44 +34,27 @@ using namespace test;
  *
  */
 
-#ifndef DOXYGEN
-
 namespace
 {
-    class Deleter
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            Deleter()
-            {
-            }
-
-            /**
-             * Delete an item.
-             */
-            template <typename T_>
-            void operator() (T_ t)
-            {
-                delete t;
-            }
-    };
-
     class Node;
     class FooNode;
     class BarNode;
 
-    typedef VisitorTypes<FooNode *, BarNode *> NodeVisitorTypes;
+    struct NodeVisitorTypes :
+        VisitorTypes<
+            NodeVisitorTypes,
+            Node,
+            TreeLeaf<NodeVisitorTypes, FooNode>,
+            TreeLeaf<NodeVisitorTypes, BarNode> >
+    {
+    };
 
-    struct Node :
-        virtual VisitableInterface<NodeVisitorTypes>
+    struct Node
     {
     };
 
     struct FooNode :
-        Node,
-        Visitable<FooNode, NodeVisitorTypes>
+        Node
     {
         std::string c_foo() const
         {
@@ -84,8 +68,7 @@ namespace
     };
 
     struct BarNode :
-        Node,
-        Visitable<BarNode, NodeVisitorTypes>
+        Node
     {
         std::string c_bar() const
         {
@@ -99,39 +82,37 @@ namespace
     };
 
     struct NodeCVisitor :
-        NodeVisitorTypes::ConstVisitor
+        ConstVisitor<NodeVisitorTypes>
     {
         std::string r;
 
-        virtual void visit(const FooNode * const f)
+        virtual void visit_leaf(const FooNode & f)
         {
-            r.append(f->c_foo());
+            r.append(f.c_foo());
         }
 
-        virtual void visit(const BarNode * const b)
+        virtual void visit_leaf(const BarNode & b)
         {
-            r.append(b->c_bar());
+            r.append(b.c_bar());
         }
     };
 
     struct NodeVisitor :
-        NodeVisitorTypes::Visitor
+        MutableVisitor<NodeVisitorTypes>
     {
         std::string r;
 
-        virtual void visit(FooNode * const f)
+        virtual void visit_leaf(FooNode & f)
         {
-            r.append(f->foo());
+            r.append(f.foo());
         }
 
-        virtual void visit(BarNode * const b)
+        virtual void visit_leaf(BarNode & b)
         {
-            r.append(b->bar());
+            r.append(b.bar());
         }
     };
 }
-
-#endif
 
 namespace test_cases
 {
@@ -145,18 +126,19 @@ namespace test_cases
 
         void run()
         {
-            std::vector<Node *> v;
+            std::vector<tr1::shared_ptr<NodeVisitorTypes::ConstItem> > v;
 
-            v.push_back(new FooNode);
-            v.push_back(new BarNode);
-            v.push_back(new FooNode);
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, BarNode>(tr1::shared_ptr<BarNode>(new BarNode))));
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::ConstItem>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
 
             NodeCVisitor c;
             TEST_CHECK_EQUAL(c.r, "");
-            std::for_each(v.begin(), v.end(), accept_visitor(&c));
+            std::for_each(indirect_iterator(v.begin()), indirect_iterator(v.end()), accept_visitor(c));
             TEST_CHECK_EQUAL(c.r, "c_fooc_barc_foo");
-
-            std::for_each(v.begin(), v.end(), Deleter());
         }
     } test_const_visitor;
 
@@ -170,18 +152,19 @@ namespace test_cases
 
         void run()
         {
-            std::vector<Node *> v;
+            std::vector<tr1::shared_ptr<NodeVisitorTypes::Item> > v;
 
-            v.push_back(new FooNode);
-            v.push_back(new BarNode);
-            v.push_back(new FooNode);
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::Item>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::Item>(
+                        new TreeLeaf<NodeVisitorTypes, BarNode>(tr1::shared_ptr<BarNode>(new BarNode))));
+            v.push_back(tr1::shared_ptr<NodeVisitorTypes::Item>(
+                        new TreeLeaf<NodeVisitorTypes, FooNode>(tr1::shared_ptr<FooNode>(new FooNode))));
 
             NodeVisitor c;
             TEST_CHECK_EQUAL(c.r, "");
-            std::for_each(v.begin(), v.end(), accept_visitor(&c));
+            std::for_each(indirect_iterator(v.begin()), indirect_iterator(v.end()), accept_visitor(c));
             TEST_CHECK_EQUAL(c.r, "foobarfoo");
-
-            std::for_each(v.begin(), v.end(), Deleter());
         }
     } test_visitor;
 }

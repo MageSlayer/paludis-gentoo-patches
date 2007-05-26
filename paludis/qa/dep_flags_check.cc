@@ -25,6 +25,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <set>
 #include <algorithm>
 
@@ -34,12 +35,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>
+        ConstVisitor<GenericSpecTree>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AnyDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
 
         CheckResult & result;
         const std::string role;
@@ -55,11 +56,13 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const)
+        void visit_leaf(const PackageDepSpec &)
         {
         }
 
-        void visit(const UseDepSpec * const u)
+        void visit_sequence(const UseDepSpec & u,
+                GenericSpecTree::ConstSequenceIterator cur,
+                GenericSpecTree::ConstSequenceIterator end)
         {
             tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository()));
@@ -67,16 +70,16 @@ namespace
             if (! r->use_interface)
                 throw InternalError(PALUDIS_HERE, "Confused: Repository does not have a UseInterface.");
 
-            if (r->use_interface->arch_flags()->count(u->flag()))
+            if (r->use_interface->arch_flags()->count(u.flag()))
             {
                 if (role == "DEPEND" || role == "RDEPEND" || role == "PDEPEND")
                 {
-                    if (u->inverse())
-                        result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
+                    if (u.inverse())
+                        result << Message(qal_maybe, "Inverse arch flag '" + stringify(u.flag()) +
                                 "' in " + role);
                 }
                 else if (role != "SRC_URI")
-                    result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
+                    result << Message(qal_major, "Arch flag '" + stringify(u.flag()) +
                             "' in " + role);
             }
             else
@@ -89,7 +92,7 @@ namespace
                     for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ;
                             i != i_end ; ++i)
                     {
-                        std::string prefix(stringify(*i)), flag(stringify(u->flag()));
+                        std::string prefix(stringify(*i)), flag(stringify(u.flag()));
                         if (0 == flag.compare(0, prefix.length(), prefix))
                         {
                             found_match = true;
@@ -100,20 +103,20 @@ namespace
                     if (found_match)
                         break;
 
-                    if (iuse.end() == iuse.find(u->flag()))
-                        result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
+                    if (iuse.end() == iuse.find(u.flag()))
+                        result << Message(qal_major, "Conditional flag '" + stringify(u.flag()) +
                                 "' in " + role + " not in IUSE");
                 } while (false);
             }
 
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
+            std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const PlainTextDepSpec * const)
+        void visit_leaf(const PlainTextDepSpec &)
         {
         }
 
-        void visit(const BlockDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
@@ -148,22 +151,22 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
             iuse.insert(UseFlagName("build"));
 
             Checker depend_checker(result, "DEPEND", e.environment, iuse);
-            metadata->deps_interface->build_depend()->accept(&depend_checker);
+            metadata->deps_interface->build_depend()->accept(depend_checker);
 
             Checker rdepend_checker(result, "RDEPEND", e.environment, iuse);
-            metadata->deps_interface->run_depend()->accept(&rdepend_checker);
+            metadata->deps_interface->run_depend()->accept(rdepend_checker);
 
             Checker pdepend_checker(result, "PDEPEND", e.environment, iuse);
-            metadata->deps_interface->post_depend()->accept(&pdepend_checker);
+            metadata->deps_interface->post_depend()->accept(pdepend_checker);
 
             Checker provide_checker(result, "PROVIDE", e.environment, iuse);
-            metadata->ebuild_interface->provide()->accept(&provide_checker);
+            metadata->ebuild_interface->provide()->accept(provide_checker);
 
             Checker license_checker(result, "LICENSE", e.environment, iuse);
-            metadata->license_interface->license()->accept(&license_checker);
+            metadata->license_interface->license()->accept(license_checker);
 
             Checker src_uri_checker(result, "SRC_URI", e.environment, iuse);
-            metadata->ebuild_interface->src_uri()->accept(&src_uri_checker);
+            metadata->ebuild_interface->src_uri()->accept(src_uri_checker);
         }
     }
     catch (const InternalError &)

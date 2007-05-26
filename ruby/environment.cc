@@ -113,6 +113,7 @@ namespace
         }
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     set(set_name) -> DepSpec
@@ -131,6 +132,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * call-seq:
@@ -503,7 +505,9 @@ namespace
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
         rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
+#endif
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);

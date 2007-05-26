@@ -29,6 +29,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
 
 #include <algorithm>
@@ -647,7 +648,7 @@ void
 ConsoleInstallTask::display_tag_summary_tag(tr1::shared_ptr<const DepTag> t)
 {
     tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
-    t->accept(displayer.get());
+    t->accept(*displayer.get());
 }
 
 void
@@ -672,29 +673,29 @@ DepTagSummaryDisplayer::~DepTagSummaryDisplayer()
 }
 
 void
-DepTagSummaryDisplayer::visit(const GLSADepTag * const tag)
+DepTagSummaryDisplayer::visit(const GLSADepTag & tag)
 {
-    task()->output_starred_item(task()->render_as_tag(tag->short_text()) + ": "
-            + tag->glsa_title());
+    task()->output_starred_item(task()->render_as_tag(tag.short_text()) + ": "
+            + tag.glsa_title());
 }
 
 void
-DepTagSummaryDisplayer::visit(const DependencyDepTag * const)
+DepTagSummaryDisplayer::visit(const DependencyDepTag &)
 {
 }
 
 void
-DepTagSummaryDisplayer::visit(const GeneralSetDepTag * const tag)
+DepTagSummaryDisplayer::visit(const GeneralSetDepTag & tag)
 {
     std::string desc;
-    if (tag->short_text() == "world")
+    if (tag.short_text() == "world")
         desc = ":           Packages that have been explicitly installed";
-    else if (tag->short_text() == "everything")
+    else if (tag.short_text() == "everything")
         desc = ":      All installed packages";
-    else if (tag->short_text() == "system")
+    else if (tag.short_text() == "system")
         desc = ":          Packages that are part of the base system";
 
-    task()->output_starred_item(task()->render_as_tag(tag->short_text()) + desc);
+    task()->output_starred_item(task()->render_as_tag(tag.short_text()) + desc);
 }
 
 void
@@ -964,7 +965,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
         all_tags()->insert(*tag);
 
         tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
-        tag->tag->accept(displayer.get());
+        tag->tag->accept(*displayer.get());
         tag_titles.append(displayer->text());
         tag_titles.append(", ");
     }
@@ -1066,20 +1067,20 @@ EntryDepTagDisplayer::~EntryDepTagDisplayer()
 }
 
 void
-EntryDepTagDisplayer::visit(const GLSADepTag * const tag)
+EntryDepTagDisplayer::visit(const GLSADepTag & tag)
 {
-    text() = tag->short_text();
+    text() = tag.short_text();
 }
 
 void
-EntryDepTagDisplayer::visit(const DependencyDepTag * const)
+EntryDepTagDisplayer::visit(const DependencyDepTag &)
 {
 }
 
 void
-EntryDepTagDisplayer::visit(const GeneralSetDepTag * const tag)
+EntryDepTagDisplayer::visit(const GeneralSetDepTag & tag)
 {
-    text() = tag->short_text(); // + "<" + tag->source() + ">";
+    text() = tag.short_text(); // + "<" + tag->source() + ">";
 }
 
 void
@@ -1117,7 +1118,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
                     output_no_endl(" ");
 
                     LicenceDisplayer ld(output_stream(), environment(), e.package);
-                    metadata->license_interface->license()->accept(&ld);
+                    metadata->license_interface->license()->accept(ld);
                 }
             }
             else if (mr_keyword == mm)

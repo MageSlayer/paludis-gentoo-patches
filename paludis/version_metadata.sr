@@ -34,10 +34,10 @@ make_class_VersionMetadataDepsInterface()
 
     key parser DepParserFunction
 
-    cache_key build_depend std::string DepSpec _make_depend
-    cache_key run_depend std::string DepSpec _make_depend
-    cache_key post_depend std::string DepSpec _make_depend
-    cache_key suggested_depend std::string DepSpec _make_depend
+    cache_key build_depend std::string DependencySpecTree::ConstItem _make_depend
+    cache_key run_depend std::string DependencySpecTree::ConstItem _make_depend
+    cache_key post_depend std::string DependencySpecTree::ConstItem _make_depend
+    cache_key suggested_depend std::string DependencySpecTree::ConstItem _make_depend
 
     extra_constructors <<END
             VersionMetadataDepsInterface(const DepParserFunction &);
@@ -45,7 +45,7 @@ END
 
     extra_methods <<END
         private:
-            tr1::shared_ptr<const DepSpec> _make_depend(const std::string &) const;
+            tr1::shared_ptr<const DependencySpecTree::ConstItem> _make_depend(const std::string &) const;
 END
 
     doxygen_comment << "END"
@@ -64,11 +64,11 @@ make_class_VersionMetadataLicenseInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key parser TextParserFunction
-    cache_key license std::string DepSpec _make_license
+    key parser LicenseParserFunction
+    cache_key license std::string LicenseSpecTree::ConstItem _make_license
 
     extra_constructors <<END
-            VersionMetadataLicenseInterface(const TextParserFunction &);
+            VersionMetadataLicenseInterface(const LicenseParserFunction &);
 END
 
     doxygen_comment << "END"
@@ -82,7 +82,7 @@ END
 
     extra_methods <<END
         private:
-            tr1::shared_ptr<const DepSpec> _make_license(const std::string &) const;
+            tr1::shared_ptr<const LicenseSpecTree::ConstItem> _make_license(const std::string &) const;
 END
 }
 
@@ -116,7 +116,7 @@ make_class_VersionMetadataBase()
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key slot SlotName
-    cache_key homepage std::string DepSpec _make_text
+    cache_key homepage std::string URISpecTree::ConstItem _make_text
     key description std::string
     key eapi EAPI
     key interactive bool
@@ -134,7 +134,7 @@ END
 
     extra_methods <<END
         private:
-            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const URISpecTree::ConstItem> _make_text(const std::string &) const;
 END
 }
 
@@ -144,9 +144,9 @@ make_class_VersionMetadataEbuildInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    cache_key provide std::string DepSpec _make_text
-    cache_key src_uri std::string DepSpec _make_text
-    cache_key restrictions std::string DepSpec _make_text
+    cache_key provide std::string ProvideSpecTree::ConstItem _make_provide
+    cache_key src_uri std::string URISpecTree::ConstItem _make_uri
+    cache_key restrictions std::string RestrictSpecTree::ConstItem _make_restrict
     cache_key keywords std::string KeywordNameCollection "_make_collection<KeywordName, KeywordNameCollection>"
     cache_key eclass_keywords std::string KeywordNameCollection "_make_collection<KeywordName, KeywordNameCollection>"
     cache_key iuse std::string IUseFlagCollection "_make_iuse_collection"
@@ -169,7 +169,9 @@ END
 
     extra_methods <<END
         private:
-            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const ProvideSpecTree::ConstItem> _make_provide(const std::string &) const;
+            tr1::shared_ptr<const URISpecTree::ConstItem> _make_uri(const std::string &) const;
+            tr1::shared_ptr<const RestrictSpecTree::ConstItem> _make_restrict(const std::string &) const;
 
             template <typename Item_, typename Container_>
             tr1::shared_ptr<const Container_> _make_collection(const std::string &) const;
@@ -184,7 +186,7 @@ make_class_VersionMetadataEbinInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    cache_key bin_uri std::string DepSpec _make_text
+    cache_key bin_uri std::string URISpecTree::ConstItem _make_uri
 
     extra_constructors <<END
             VersionMetadataEbinInterface();
@@ -203,7 +205,7 @@ END
 
     extra_methods <<END
         private:
-            tr1::shared_ptr<const DepSpec> _make_text(const std::string &) const;
+            tr1::shared_ptr<const URISpecTree::ConstItem> _make_uri(const std::string &) const;
 END
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include "owner.hh"
+#include <paludis/util/visitor-impl.hh>
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
@@ -32,7 +33,7 @@ using std::endl;
 namespace
 {
     struct ContentsFinder :
-        ContentsVisitorTypes::ConstVisitor
+        ConstVisitor<ContentsVisitorTypes>
     {
         bool found;
         const std::string query;
@@ -53,34 +54,34 @@ namespace
                 found |= (std::string::npos != e.find(query));
         }
 
-        void visit(const ContentsFileEntry * const e)
+        void visit(const ContentsFileEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
 
-        void visit(const ContentsDirEntry * const e)
+        void visit(const ContentsDirEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
 
-        void visit(const ContentsSymEntry * const e)
+        void visit(const ContentsSymEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
 
-        void visit(const ContentsMiscEntry * const e)
+        void visit(const ContentsMiscEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
 
-        void visit(const ContentsFifoEntry * const e)
+        void visit(const ContentsFifoEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
 
-        void visit(const ContentsDevEntry * const e)
+        void visit(const ContentsDevEntry & e)
         {
-            handle(e->name());
+            handle(e.name());
         }
     };
 }
@@ -116,7 +117,7 @@ do_one_owner(
                     PackageDatabaseEntry e(*p, *v, (*r)->name());
                     tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(*p, *v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
-                    std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
+                    std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
                     if (d.found)
                     {
                         cout << "    " << e << endl;

@@ -32,14 +32,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+        ConstVisitor<GenericSpecTree>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AnyDepSpec>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
 
         bool need_zip;
         bool have_zip;
@@ -50,20 +50,20 @@ namespace
         {
         }
 
-        void visit(const PlainTextDepSpec * const a)
+        void visit_leaf(const PlainTextDepSpec & a)
         {
-            if (a->text().length() >= 4)
-                if (a->text().substr(a->text().length() - 4) == ".zip")
+            if (a.text().length() >= 4)
+                if (a.text().substr(a.text().length() - 4) == ".zip")
                     need_zip = true;
         }
 
-        void visit(const BlockDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
 
-        void visit(const PackageDepSpec * const p)
+        void visit_leaf(const PackageDepSpec & p)
         {
-            if (p->package_ptr() && *p->package_ptr() == QualifiedPackageName("app-arch/unzip"))
+            if (p.package_ptr() && *p.package_ptr() == QualifiedPackageName("app-arch/unzip"))
                 have_zip = true;
         }
     };
@@ -89,8 +89,8 @@ ExtractCheck::operator() (const EbuildCheckData & e) const
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
             Checker checker;
-            metadata->ebuild_interface->src_uri()->accept(&checker);
-            metadata->deps_interface->build_depend()->accept(&checker);
+            metadata->ebuild_interface->src_uri()->accept(checker);
+            metadata->deps_interface->build_depend()->accept(checker);
 
             if (checker.need_zip && ! checker.have_zip)
                 result << Message(qal_major, "Found .zip in SRC_URI but app-arch/unzip is not in DEPEND");
@@ -116,6 +116,4 @@ ExtractCheck::identifier()
     static const std::string id("extract");
     return id;
 }
-
-
 

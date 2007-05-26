@@ -22,6 +22,7 @@
 #include <paludis/environment.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/package_database.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -119,15 +120,15 @@ paludis::match_package(
 namespace
 {
     struct IsInHeirarchy :
-        DepSpecVisitorTypes::ConstVisitor,
+        ConstVisitor<SetSpecTree>,
         std::unary_function<PackageDatabaseEntry, bool>
     {
         const Environment & env;
-        const DepSpec & target;
+        const SetSpecTree::ConstItem & target;
         const PackageDatabaseEntry * dbe;
         bool matched;
 
-        IsInHeirarchy(const Environment & e, const DepSpec & t) :
+        IsInHeirarchy(const Environment & e, const SetSpecTree::ConstItem & t) :
             env(e),
             target(t),
             matched(false)
@@ -138,61 +139,38 @@ namespace
         {
             dbe = &e;
             matched = false;
-            target.accept(this);
+            target.accept(*this);
             return matched;
         }
 
-        void visit(const AllDepSpec * const a)
+        void visit_sequence(const AllDepSpec &,
+                SetSpecTree::ConstSequenceIterator begin,
+                SetSpecTree::ConstSequenceIterator end)
         {
             if (matched)
                 return;
 
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
+            std::for_each(begin, end, accept_visitor(*this));
         }
 
-        void visit(const PackageDepSpec * const a)
+        void visit_leaf(const PackageDepSpec & a)
         {
             if (matched)
                 return;
 
-            if (match_package(env, *a, *dbe))
+            if (match_package(env, a, *dbe))
                 matched = true;
-        }
-
-        void visit(const UseDepSpec * const u)
-        {
-            if (matched)
-                return;
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepSpec * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepSpec * const)
-        {
-        }
-
-        void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
         }
     };
 }
 
 bool
-paludis::match_package_in_heirarchy(
+paludis::match_package_in_set(
         const Environment & env,
-        const DepSpec & spec,
+        const SetSpecTree::ConstItem & target,
         const PackageDatabaseEntry & entry)
 {
-    IsInHeirarchy h(env, spec);
+    IsInHeirarchy h(env, target);
     return h(entry);
 }
 

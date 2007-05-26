@@ -36,7 +36,7 @@ using namespace paludis;
 
 typedef std::list<KeywordName> KeywordsList;
 typedef std::map<tr1::shared_ptr<const PackageDepSpec>, KeywordsList> PDSToKeywordsList;
-typedef std::pair<tr1::shared_ptr<const DepSpec>, KeywordsList> SetNameEntry;
+typedef std::pair<tr1::shared_ptr<const SetSpecTree::ConstItem>, KeywordsList> SetNameEntry;
 
 typedef MakeHashedMap<QualifiedPackageName, PDSToKeywordsList>::Type SpecificMap;
 typedef PDSToKeywordsList UnspecificMap;
@@ -96,7 +96,7 @@ KeywordsConf::add(const FSEntry & filename)
         if (std::string::npos == tokens.at(0).find("/"))
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                tr1::shared_ptr<DepSpec>(), KeywordsList()))).first);
+                                tr1::shared_ptr<SetSpecTree::ConstItem>(), KeywordsList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -175,11 +175,12 @@ KeywordsConf::query(tr1::shared_ptr<const KeywordNameCollection> k, const Packag
                 {
                     Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
-                    i->second.first.reset(new AllDepSpec);
+                    i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 }
             }
 
-            if (! match_package_in_heirarchy(*_imp->env, *i->second.first, e))
+            if (! match_package_in_set(*_imp->env, *i->second.first, e))
                 continue;
 
             for (KeywordsList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;

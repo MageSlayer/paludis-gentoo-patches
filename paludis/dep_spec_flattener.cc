@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <list>
 #include <algorithm>
 
@@ -44,19 +45,12 @@ namespace paludis
 
         const PackageDatabaseEntry * const pkg;
 
-        tr1::shared_ptr<const DepSpec> a;
-
         mutable std::list<const StringDepSpec *> specs;
 
-        mutable bool done;
-
         Implementation(const Environment * const e,
-                const PackageDatabaseEntry * const p,
-                tr1::shared_ptr<const DepSpec> aa) :
+                const PackageDatabaseEntry * const p) :
             env(e),
-            pkg(p),
-            a(aa),
-            done(false)
+            pkg(p)
         {
         }
     };
@@ -64,10 +58,9 @@ namespace paludis
 
 DepSpecFlattener::DepSpecFlattener(
         const Environment * const env,
-        const PackageDatabaseEntry * const pkg,
-        tr1::shared_ptr<const DepSpec> a) :
+        const PackageDatabaseEntry * const pkg) :
     PrivateImplementationPattern<DepSpecFlattener>(new Implementation<DepSpecFlattener>(
-                env, pkg, a))
+                env, pkg))
 {
 }
 
@@ -76,14 +69,8 @@ DepSpecFlattener::~DepSpecFlattener()
 }
 
 DepSpecFlattener::Iterator
-DepSpecFlattener::begin()
+DepSpecFlattener::begin() const
 {
-    if (! _imp->done)
-    {
-        _imp->a->accept(static_cast<DepSpecVisitorTypes::ConstVisitor *>(this));
-        _imp->done = true;
-    }
-
     return Iterator(_imp->specs.begin());
 }
 
@@ -93,36 +80,26 @@ DepSpecFlattener::end() const
     return Iterator(_imp->specs.end());
 }
 
-void DepSpecFlattener::visit(const AllDepSpec * a)
+void DepSpecFlattener::visit_sequence(const UseDepSpec & u,
+        FlattenableSpecTree::ConstSequenceIterator cur,
+        FlattenableSpecTree::ConstSequenceIterator e)
 {
-    std::for_each(a->begin(), a->end(), accept_visitor(
-                static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
+    if (_imp->env->query_use(u.flag(), *_imp->pkg) ^ u.inverse())
+        std::for_each(cur, e, accept_visitor(*this));
 }
 
-void DepSpecFlattener::visit(const AnyDepSpec *)
+void DepSpecFlattener::visit_leaf(const PlainTextDepSpec & p)
 {
-    throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepSpec");
+    _imp->specs.push_back(&p);
 }
 
-void DepSpecFlattener::visit(const UseDepSpec * u)
+void DepSpecFlattener::visit_leaf(const PackageDepSpec & p)
 {
-    if (_imp->env->query_use(u->flag(), *_imp->pkg) ^ u->inverse())
-        std::for_each(u->begin(), u->end(), accept_visitor(
-                    static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
+    _imp->specs.push_back(&p);
 }
 
-void DepSpecFlattener::visit(const PlainTextDepSpec * p)
+void DepSpecFlattener::visit_leaf(const BlockDepSpec & p)
 {
-    _imp->specs.push_back(p);
-}
-
-void DepSpecFlattener::visit(const PackageDepSpec * p)
-{
-    _imp->specs.push_back(p);
-}
-
-void DepSpecFlattener::visit(const BlockDepSpec * p)
-{
-    _imp->specs.push_back(p);
+    _imp->specs.push_back(&p);
 }
 

@@ -148,7 +148,16 @@ namespace paludis
      * \ingroup grpdeptag
      * \see DepTag
      */
-    typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *, DependencyDepTag *> DepTagVisitorTypes;
+    struct DepTagVisitorTypes :
+        VisitorTypes<
+            DepTagVisitorTypes,
+            DepTag,
+            GLSADepTag,
+            GeneralSetDepTag,
+            DependencyDepTag
+        >
+    {
+    };
 
     /**
      * A DepTag can be associated with a PackageDepSpec, and is transferred
@@ -162,8 +171,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
-        public virtual VisitableInterface<DepTagVisitorTypes>,
-        public relational_operators::HasRelationalOperators
+        public relational_operators::HasRelationalOperators,
+        public virtual ConstAcceptInterface<DepTagVisitorTypes>
     {
         protected:
             ///\name Basic operations
@@ -204,7 +213,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GLSADepTag :
         public DepTag,
-        public Visitable<GLSADepTag, DepTagVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>
     {
         private:
             const std::string _id;
@@ -237,7 +246,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
-        public Visitable<GeneralSetDepTag, DepTagVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>
     {
         private:
             const SetName _id;
@@ -269,7 +278,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
-        public Visitable<DependencyDepTag, DepTagVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>
     {
         private:
             const PackageDatabaseEntry _dbe;

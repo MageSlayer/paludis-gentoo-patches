@@ -94,7 +94,7 @@ namespace paludis
             /**
              * Return the environment-specific named set, or a zero pointer if no such set is available.
              */
-            virtual tr1::shared_ptr<CompositeDepSpec> local_set(const SetName &) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -149,7 +149,7 @@ namespace paludis
             virtual tr1::shared_ptr<const SetNameCollection> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<DepSpec> set(const SetName &) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const DestinationsCollection> default_destinations() const

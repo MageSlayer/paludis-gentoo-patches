@@ -52,29 +52,6 @@ namespace test_cases
     } test_dep_spec_as;
 
     /**
-     * \test Test DepSpec composite functions.
-     *
-     */
-    struct DepSpecCompositeTest : TestCase
-    {
-        DepSpecCompositeTest() : TestCase("dep spec composite") { }
-
-        void run()
-        {
-            tr1::shared_ptr<AllDepSpec> x(new AllDepSpec);
-            TEST_CHECK(x->begin() == x->end());
-
-            x->add_child(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
-            TEST_CHECK(x->begin() != x->end());
-            TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
-
-            x->add_child(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
-            TEST_CHECK(x->begin() != x->end());
-            TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
-        }
-    } test_dep_spec_composite;
-
-    /**
      * \test Test PackageDepSpec.
      *
      */

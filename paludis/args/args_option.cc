@@ -29,6 +29,7 @@
  * \ingroup grplibpaludisargs
  */
 
+using namespace paludis;
 using namespace paludis::args;
 
 namespace

@@ -24,6 +24,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -325,8 +326,11 @@ namespace test_cases
         UninstallListWithUnusedDepsWorldTest() :
             UninstallListTestCaseBase("with unused deps world")
         {
-            installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
-                        "foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_permissive)));
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > world(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/moo", pds_pm_permissive)))));
+            installed_repo->add_package_set(SetName("world"), world);
         }
 
         void populate_targets()
@@ -361,8 +365,13 @@ namespace test_cases
         UninstallListWithUnusedDepsWorldTargetTest() :
             UninstallListTestCaseBase("with unused deps world target")
         {
-            installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
-                        "foo/bar foo/moo", PortageDepParser::Policy::text_is_package_dep_spec(true, pds_pm_permissive)));
+            tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > world(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                        tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/moo", pds_pm_permissive)))));
+            world->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(
+                            tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("foo/bar", pds_pm_permissive)))));
+            installed_repo->add_package_set(SetName("world"), world);
         }
 
         void populate_targets()

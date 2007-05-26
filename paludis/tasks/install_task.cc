@@ -20,14 +20,18 @@
 #include "install_task.hh"
 #include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
 #include <list>
 
 using namespace paludis;
@@ -44,7 +48,7 @@ namespace paludis
         UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        tr1::shared_ptr<AllDepSpec> targets;
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
         tr1::shared_ptr<std::string> add_to_world_spec;
         tr1::shared_ptr<const DestinationsCollection> destinations;
 
@@ -62,7 +66,7 @@ namespace paludis
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none, false, tr1::shared_ptr<const DestinationsCollection>()),
             uninstall_options(false),
-            targets(new AllDepSpec),
+            targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
             pretend(false),
             preserve_world(false),
@@ -87,7 +91,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new AllDepSpec);
+    _imp->targets.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -99,7 +103,7 @@ InstallTask::add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    tr1::shared_ptr<DepSpec> s;
+    tr1::shared_ptr<SetSpecTree::ConstItem> s;
     std::string modified_target(target);
 
     bool done(false);
@@ -107,6 +111,10 @@ InstallTask::add_target(const std::string & target)
     {
         if ((target != "insecurity") && ((s = ((_imp->env->set(SetName(target)))))))
         {
+            DepSpecPrettyPrinter p(0, false);
+            s->accept(p);
+            Log::get_instance()->message(ll_debug, lc_context) << "target '" << target << "' is set '" << p << "'";
+
             if (_imp->had_set_targets)
                 throw MultipleSetTargetsSpecified();
 
@@ -116,7 +124,7 @@ InstallTask::add_target(const std::string & target)
             _imp->had_set_targets = true;
             if (! _imp->override_target_type)
                 _imp->dep_list.options()->target_type = dl_target_set;
-            _imp->targets->add_child(s);
+            _imp->targets->add(s);
             done = true;
         }
     }
@@ -126,6 +134,8 @@ InstallTask::add_target(const std::string & target)
 
     if (! done)
     {
+        Log::get_instance()->message(ll_debug, lc_context) << "target '" << target << "' is a package";
+
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();
 
@@ -134,15 +144,17 @@ InstallTask::add_target(const std::string & target)
             _imp->dep_list.options()->target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
-            _imp->targets->add_child(PortageDepParser::parse(target, PortageDepParser::Policy::text_is_package_dep_spec(
-                            true, pds_pm_permissive)));
+            _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                                new PackageDepSpec(target, pds_pm_permissive)))));
         else
         {
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
-            _imp->targets->add_child(tr1::shared_ptr<DepSpec>(new PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))));
+            _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                                new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))))));
         }
     }
 
@@ -156,7 +168,10 @@ InstallTask::execute()
 
     /* build up our dep list */
     on_build_deplist_pre();
-    _imp->dep_list.add(_imp->targets, _imp->destinations);
+    DepSpecPrettyPrinter p(0, false);
+    _imp->targets->accept(p);
+    Log::get_instance()->message(ll_debug, lc_context) << "_imp->targets is '" << p << "'";
+    _imp->dep_list.add(*_imp->targets, _imp->destinations);
     on_build_deplist_post();
 
     /* we're about to display our task list */
@@ -446,8 +461,24 @@ InstallTask::execute()
             if (_imp->had_package_targets)
             {
                 if (_imp->add_to_world_spec)
-                    world_update_packages(PortageDepParser::parse_depend(
-                                *_imp->add_to_world_spec, pds_pm_permissive));
+                {
+                    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                    std::list<std::string> tokens;
+                    WhitespaceTokeniser::get_instance()->tokenise(*_imp->add_to_world_spec, std::back_inserter(tokens));
+                    if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
+                    {
+                        tokens.erase(tokens.begin());
+                        tokens.erase(previous(tokens.end()));
+                    }
+
+                    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                        all->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                                            new PackageDepSpec(*t, pds_pm_permissive)))));
+                    world_update_packages(all);
+                }
                 else
                     world_update_packages(_imp->targets);
             }
@@ -613,10 +644,10 @@ InstallTask::world_update_set(const SetName & s)
 namespace
 {
     struct WorldTargetFinder :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>
+        ConstVisitor<SetSpecTree>,
+        ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>::visit;
+        using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
 
         InstallTask * const task;
         std::list<const PackageDepSpec *> items;
@@ -630,50 +661,30 @@ namespace
         {
         }
 
-        void visit(const AnyDepSpec * a)
+        void visit_leaf(const PackageDepSpec & a)
         {
-            Save<bool> save_inside_any(&inside_any, true);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const UseDepSpec * a)
-        {
-            Save<bool> save_inside_use(&inside_use, true);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PlainTextDepSpec *)
-        {
-        }
-
-        void visit(const PackageDepSpec * a)
-        {
-            if (inside_any)
-                task->on_update_world_skip(*a, "inside || ( ) block");
-            else if (inside_use)
-                task->on_update_world_skip(*a, "inside use? ( ) block");
-            else if (a->slot_ptr())
-                task->on_update_world_skip(*a, ":slot restrictions");
-            else if (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())
-                task->on_update_world_skip(*a, "version restrictions");
+            if (a.slot_ptr())
+                task->on_update_world_skip(a, ":slot restrictions");
+            else if (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())
+                task->on_update_world_skip(a, "version restrictions");
             else
             {
-                items.push_back(a);
-                task->on_update_world(*a);
+                items.push_back(&a);
+                task->on_update_world(a);
             }
         }
 
-        void visit(const BlockDepSpec *)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
 }
 
 void
-InstallTask::world_update_packages(tr1::shared_ptr<const DepSpec> a)
+InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem> a)
 {
     WorldTargetFinder w(this);
-    a->accept(&w);
+    a->accept(w);
     for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {

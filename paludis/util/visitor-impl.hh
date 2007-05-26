@@ -20,25 +20,628 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_IMPL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_IMPL_HH 1
 
-#include <algorithm>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
 
-template <
-    typename N1_,
-    typename N2_,
-    typename N3_,
-    typename N4_,
-    typename N5_,
-    typename N6_,
-    typename N7_,
-    typename N8_,
-    typename N9_>
-template <typename OurType_, typename C1_>
-void
-paludis::VisitorTypes<N1_, N2_, N3_, N4_, N5_, N6_, N7_, N8_, N9_>::ConstVisitor::VisitChildren<OurType_, C1_>::visit(
-        typename paludis::visitor_internals::MakePointerToConst<C1_ *>::Type const c)
+namespace paludis
 {
-    std::for_each(c->begin(), c->end(), paludis::accept_visitor(static_cast<OurType_ *>(this)));
+    namespace visitor_internals
+    {
+        template <typename H_>
+        template <bool b_, typename T_>
+        void
+        ConstAcceptInterface<H_>::ConstAccept<b_, T_>::forward(const ConstAcceptInterface * const h, T_ & t)
+        {
+            h->real_const_accept(t);
+        }
+
+        template <typename H_>
+        template <typename T_>
+        void
+        ConstAcceptInterface<H_>::ConstAccept<false, T_>::forward(const ConstAcceptInterface * const h, T_ & t)
+        {
+            ConstProxyVisitor<typename H_::Heirarchy, typename T_::Heirarchy> p(&t);
+            h->accept(p);
+        }
+
+        template <typename H_>
+        ConstAcceptInterface<H_>::~ConstAcceptInterface()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        ConstAcceptInterfaceVisitsThis<H_, T_>::real_const_accept(ConstVisitor<H_> & v) const
+        {
+            static_cast<Visits<const T_> *>(&v)->visit(*static_cast<const T_ *>(this));
+        }
+
+        template <typename H_>
+        template <bool b_, typename T_>
+        void
+        MutableAcceptInterface<H_>::Accept<b_, T_>::forward(MutableAcceptInterface * const h, T_ & t)
+        {
+            h->mutable_accept(t);
+        }
+
+        template <typename H_>
+        template <typename T_>
+        void
+        MutableAcceptInterface<H_>::Accept<true, T_>::forward(MutableAcceptInterface * const h, T_ & t)
+        {
+            h->const_accept(t);
+        }
+
+        template <typename H_>
+        template <bool b_, typename T_>
+        void
+        MutableAcceptInterface<H_>::MutableAccept<b_, T_>::forward(MutableAcceptInterface * const h, T_ & t)
+        {
+            h->real_mutable_accept(t);
+        }
+
+        template <typename H_>
+        template <typename T_>
+        void
+        MutableAcceptInterface<H_>::MutableAccept<false, T_>::forward(MutableAcceptInterface * const h, T_ & t)
+        {
+            MutableProxyVisitor<typename H_::Heirarchy, typename T_::Heirarchy> p(&t);
+            h->accept(p);
+        }
+
+        template <typename H_>
+        MutableAcceptInterface<H_>::~MutableAcceptInterface()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        MutableAcceptInterfaceVisitsThis<H_, T_>::real_const_accept(ConstVisitor<H_> & v) const
+        {
+            static_cast<Visits<const T_> *>(&v)->visit(*static_cast<const T_ *>(this));
+        }
+
+        template <typename H_, typename T_>
+        void
+        MutableAcceptInterfaceVisitsThis<H_, T_>::real_mutable_accept(MutableVisitor<H_> & v)
+        {
+            static_cast<Visits<T_> *>(&v)->visit(*static_cast<T_ *>(this));
+        }
+
+        template <typename H_, typename T_>
+        void
+        TreeLeaf<H_, T_>::real_mutable_accept(MutableVisitor<H_> & v)
+        {
+            static_cast<Visits<TreeLeaf<H_, T_> > *>(&v)->visit(*this);
+        }
+
+        template <typename H_, typename T_>
+        void
+        TreeLeaf<H_, T_>::real_const_accept(ConstVisitor<H_> & v) const
+        {
+            static_cast<Visits<const TreeLeaf<H_, T_> > *>(&v)->visit(*this);
+        }
+
+        template <typename H_, typename T_>
+        TreeLeaf<H_, T_>::~TreeLeaf()
+        {
+        }
+
+        template <typename H_, typename T_>
+        TreeLeaf<H_, T_>::TreeLeaf(const tr1::shared_ptr<T_> & i) :
+            _item(i)
+        {
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<T_>
+        TreeLeaf<H_, T_>::item()
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<const T_>
+        TreeLeaf<H_, T_>::item() const
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        void
+        TreeSequence<H_, T_>::real_mutable_accept(MutableVisitor<H_> & v)
+        {
+            static_cast<Visits<TreeSequence<H_, T_> > *>(&v)->visit(*this);
+        }
+
+        template <typename H_, typename T_>
+        void
+        TreeSequence<H_, T_>::real_const_accept(ConstVisitor<H_> & v) const
+        {
+            static_cast<Visits<const TreeSequence<H_, T_> > *>(&v)->visit(*this);
+        }
+
+        template <typename H_, typename T_>
+        TreeSequence<H_, T_>::~TreeSequence()
+        {
+        }
+
+        template <typename H_, typename T_>
+        TreeSequence<H_, T_>::TreeSequence(tr1::shared_ptr<T_> i) :
+            _item(i),
+            _items(new typename SequentialCollection<tr1::shared_ptr<MutableAcceptInterface<H_> > >::Concrete)
+        {
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<const T_>
+        TreeSequence<H_, T_>::item() const
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<T_>
+        TreeSequence<H_, T_>::item()
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        void
+        TreeSequence<H_, T_>::add(tr1::shared_ptr<MutableAcceptInterface<H_> > i)
+        {
+            _items->push_back(i);
+        }
+
+        template <typename H_, typename T_>
+        typename H_::ConstSequenceIterator
+        TreeSequence<H_, T_>::const_begin() const
+        {
+            return typename H_::ConstSequenceIterator(
+                    paludis::indirect_iterator(_items->begin()));
+        }
+
+        template <typename H_, typename T_>
+        typename H_::ConstSequenceIterator
+        TreeSequence<H_, T_>::const_end() const
+        {
+            return typename H_::ConstSequenceIterator(
+                    paludis::indirect_iterator(_items->end()));
+        }
+
+        template <typename H_, typename T_>
+        typename H_::MutableSequenceIterator
+        TreeSequence<H_, T_>::mutable_begin()
+        {
+            return typename H_::MutableSequenceIterator(
+                    paludis::indirect_iterator(_items->begin()));
+        }
+
+        template <typename H_, typename T_>
+        typename H_::MutableSequenceIterator
+        TreeSequence<H_, T_>::mutable_end()
+        {
+            return typename H_::MutableSequenceIterator(
+                    paludis::indirect_iterator(_items->end()));
+        }
+
+        template <typename H_, typename T_>
+        void
+        ConstTreeSequence<H_, T_>::real_const_accept(ConstVisitor<H_> & v) const
+        {
+            static_cast<Visits<const ConstTreeSequence<H_, T_> > *>(&v)->visit(*this);
+        }
+
+        template <typename H_, typename T_>
+        ConstTreeSequence<H_, T_>::~ConstTreeSequence()
+        {
+        }
+
+        template <typename H_, typename T_>
+        ConstTreeSequence<H_, T_>::ConstTreeSequence(tr1::shared_ptr<T_> i) :
+            _item(i),
+            _items(new typename SequentialCollection<tr1::shared_ptr<const ConstAcceptInterface<H_> > >::Concrete)
+        {
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<T_>
+        ConstTreeSequence<H_, T_>::item()
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        tr1::shared_ptr<const T_>
+        ConstTreeSequence<H_, T_>::item() const
+        {
+            return _item;
+        }
+
+        template <typename H_, typename T_>
+        void
+        ConstTreeSequence<H_, T_>::add(tr1::shared_ptr<const ConstAcceptInterface<H_> > i)
+        {
+            _items->push_back(i);
+        }
+
+        template <typename H_, typename T_>
+        typename H_::ConstSequenceIterator
+        ConstTreeSequence<H_, T_>::const_begin() const
+        {
+            return typename H_::ConstSequenceIterator(
+                    paludis::indirect_iterator(_items->begin()));
+        }
+
+        template <typename H_, typename T_>
+        typename H_::ConstSequenceIterator
+        ConstTreeSequence<H_, T_>::const_end() const
+        {
+            return typename H_::ConstSequenceIterator(
+                    paludis::indirect_iterator(_items->end()));
+        }
+
+        template <typename T_>
+        Visits<T_>::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        Visits<TreeLeaf<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<TreeLeaf<H_, T_> >::visit(TreeLeaf<H_, T_> & l)
+        {
+            visit_leaf(*l.item());
+        }
+
+        template <typename H_, typename T_>
+        Visits<const TreeLeaf<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<const TreeLeaf<H_, T_> >::visit(const TreeLeaf<H_, T_> & l)
+        {
+            visit_leaf(*l.item());
+        }
+
+        template <typename H_, typename T_>
+        Visits<TreeSequence<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<TreeSequence<H_, T_> >::visit(TreeSequence<H_, T_> & s)
+        {
+            visit_sequence(*s.item(), s.mutable_begin(), s.mutable_end());
+        }
+
+        template <typename H_, typename T_>
+        Visits<const TreeSequence<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<const TreeSequence<H_, T_> >::visit(const TreeSequence<H_, T_> & s)
+        {
+            visit_sequence(*s.item(), s.const_begin(), s.const_end());
+        }
+
+        template <typename H_, typename T_>
+        Visits<ConstTreeSequence<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<ConstTreeSequence<H_, T_> >::visit(ConstTreeSequence<H_, T_> & s)
+        {
+            visit_sequence(*s.item(), s.const_begin(), s.const_end());
+        }
+
+        template <typename H_, typename T_>
+        Visits<const ConstTreeSequence<H_, T_> >::~Visits()
+        {
+        }
+
+        template <typename H_, typename T_>
+        void
+        Visits<const ConstTreeSequence<H_, T_> >::visit(const ConstTreeSequence<H_, T_> & s)
+        {
+            visit_sequence(*s.item(), s.const_begin(), s.const_end());
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        ProxyVisits<H_, LargerH_, const TreeLeaf<H_, T_> >::~ProxyVisits()
+        {
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        void
+        ProxyVisits<H_, LargerH_, const TreeLeaf<H_, T_> >::visit_leaf(const T_ & v)
+        {
+            static_cast<Visits<const TreeLeaf<LargerH_, T_> > *>(
+                    static_cast<ConstProxyVisitor<H_, LargerH_> *>(this)->larger_visitor())->visit_leaf(v);
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        ProxyVisits<H_, LargerH_, TreeLeaf<H_, T_> >::~ProxyVisits()
+        {
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        void
+        ProxyVisits<H_, LargerH_, TreeLeaf<H_, T_> >::visit_leaf(T_ & v)
+        {
+            static_cast<Visits<TreeLeaf<LargerH_, T_> > *>(
+                    static_cast<MutableProxyVisitor<H_, LargerH_> *>(this)->larger_visitor())->visit_leaf(v);
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        ProxyVisits<H_, LargerH_, const ConstTreeSequence<H_, T_> >::~ProxyVisits()
+        {
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        void
+        ProxyVisits<H_, LargerH_, const ConstTreeSequence<H_, T_> >::visit_sequence(const T_ & t,
+                typename TreeSequenceIteratorTypes<H_>::ConstIterator c,
+                typename TreeSequenceIteratorTypes<H_>::ConstIterator e)
+        {
+            static_cast<Visits<const ConstTreeSequence<LargerH_, T_> > *>(
+                    static_cast<ConstProxyVisitor<H_, LargerH_> *>(this)->larger_visitor())->visit_sequence(t,
+                    typename TreeSequenceIteratorTypes<LargerH_>::ConstIterator(ConstProxyIterator<H_, LargerH_>(c)),
+                    typename TreeSequenceIteratorTypes<LargerH_>::ConstIterator(ConstProxyIterator<H_, LargerH_>(e)));
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        ProxyVisits<H_, LargerH_, const TreeSequence<H_, T_> >::~ProxyVisits()
+        {
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        void
+        ProxyVisits<H_, LargerH_, const TreeSequence<H_, T_> >::visit_sequence(const T_ & t,
+                typename TreeSequenceIteratorTypes<H_>::ConstIterator c,
+                typename TreeSequenceIteratorTypes<H_>::ConstIterator e)
+        {
+            static_cast<Visits<const TreeSequence<LargerH_, T_> > *>(
+                    static_cast<ConstProxyVisitor<H_, LargerH_> *>(this)->larger_visitor())->visit_sequence(t,
+                    typename TreeSequenceIteratorTypes<LargerH_>::ConstIterator(ConstProxyIterator<H_, LargerH_>(c)),
+                    typename TreeSequenceIteratorTypes<LargerH_>::ConstIterator(ConstProxyIterator<H_, LargerH_>(e)));
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        ProxyVisits<H_, LargerH_, TreeSequence<H_, T_> >::~ProxyVisits()
+        {
+        }
+
+        template <typename H_, typename LargerH_, typename T_>
+        void
+        ProxyVisits<H_, LargerH_, TreeSequence<H_, T_> >::visit_sequence(T_ & t,
+                typename TreeSequenceIteratorTypes<H_>::MutableIterator c,
+                typename TreeSequenceIteratorTypes<H_>::MutableIterator e)
+        {
+            static_cast<Visits<TreeSequence<LargerH_, T_> > *>(
+                    static_cast<MutableProxyVisitor<H_, LargerH_> *>(this)->larger_visitor())->visit_sequence(t,
+                    typename TreeSequenceIteratorTypes<LargerH_>::MutableIterator(MutableProxyIterator<H_, LargerH_>(c)),
+                    typename TreeSequenceIteratorTypes<LargerH_>::MutableIterator(MutableProxyIterator<H_, LargerH_>(e)));
+        }
+
+        template <typename H_, typename LargerH_>
+        ConstProxyVisitor<H_, LargerH_>::ConstProxyVisitor(ConstVisitor<LargerH_> * const l) :
+            _larger_h(l)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        ConstVisitor<LargerH_> *
+        ConstProxyVisitor<H_, LargerH_>::larger_visitor() const
+        {
+            return _larger_h;
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableProxyVisitor<H_, LargerH_>::MutableProxyVisitor(MutableVisitor<LargerH_> * const l) :
+            _larger_h(l)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableVisitor<LargerH_> *
+        MutableProxyVisitor<H_, LargerH_>::larger_visitor() const
+        {
+            return _larger_h;
+        }
+
+        template <typename H_, typename LargerH_>
+        ConstProxyIterator<H_, LargerH_>::Adapter::Adapter(const ConstAcceptInterface<H_> & i) :
+            _i(i)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        void
+        ConstProxyIterator<H_, LargerH_>::Adapter::real_const_accept(ConstVisitor<LargerH_> & v) const
+        {
+            _i.accept(v);
+        }
+
+        template <typename H_, typename LargerH_>
+        ConstProxyIterator<H_, LargerH_>::ConstProxyIterator(typename TreeSequenceIteratorTypes<H_>::ConstIterator i) :
+            _i(i)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        bool
+        ConstProxyIterator<H_, LargerH_>::operator== (const ConstProxyIterator & other) const
+        {
+            return _i == other._i;
+        }
+
+        template <typename H_, typename LargerH_>
+        const ConstAcceptInterface<LargerH_> *
+        ConstProxyIterator<H_, LargerH_>::operator-> () const
+        {
+            if (! _c)
+                _c.reset(new Adapter(*_i));
+            return _c.get();
+        }
+
+        template <typename H_, typename LargerH_>
+        const ConstAcceptInterface<LargerH_> &
+        ConstProxyIterator<H_, LargerH_>::operator* () const
+        {
+            return *operator-> ();
+        }
+
+        template <typename H_, typename LargerH_>
+        ConstProxyIterator<H_, LargerH_> &
+        ConstProxyIterator<H_, LargerH_>::operator++ ()
+        {
+            _c.reset();
+            _i++;
+            return *this;
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableProxyIterator<H_, LargerH_>::Adapter::Adapter(MutableAcceptInterface<H_> & i) :
+            _i(i)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        void
+        MutableProxyIterator<H_, LargerH_>::Adapter::real_const_accept(ConstVisitor<LargerH_> & v) const
+        {
+            _i.accept(v);
+        }
+
+        template <typename H_, typename LargerH_>
+        void
+        MutableProxyIterator<H_, LargerH_>::Adapter::real_mutable_accept(MutableVisitor<LargerH_> & v)
+        {
+            _i.accept(v);
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableProxyIterator<H_, LargerH_>::MutableProxyIterator(typename TreeSequenceIteratorTypes<H_>::MutableIterator i) :
+            _i(i)
+        {
+        }
+
+        template <typename H_, typename LargerH_>
+        bool
+        MutableProxyIterator<H_, LargerH_>::operator== (const MutableProxyIterator & other) const
+        {
+            return _i == other._i;
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableAcceptInterface<LargerH_> *
+        MutableProxyIterator<H_, LargerH_>::operator-> () const
+        {
+            if (! _c)
+                _c.reset(new Adapter(*_i));
+            return _c.get();
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableAcceptInterface<LargerH_> &
+        MutableProxyIterator<H_, LargerH_>::operator* () const
+        {
+            return *operator-> ();
+        }
+
+        template <typename H_, typename LargerH_>
+        MutableProxyIterator<H_, LargerH_> &
+        MutableProxyIterator<H_, LargerH_>::operator++ ()
+        {
+            _c.reset();
+            _i++;
+            return *this;
+        }
+
+        template <typename H_>
+        template <typename A_, typename B_>
+        void
+        ConstVisitor<H_>::VisitConstSequence<A_, B_>::visit_sequence(const B_ &,
+                typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator c,
+                typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator e)
+        {
+            std::for_each(c, e, accept_visitor(*static_cast<A_ *>(this)));
+        }
+
+        template <typename H_>
+        template <typename A_, typename B_>
+        void
+        ConstVisitor<H_>::VisitSequence<A_, B_>::visit_sequence(const B_ &,
+                typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator c,
+                typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator e)
+        {
+            std::for_each(c, e, accept_visitor(*static_cast<A_ *>(this)));
+        }
+
+        template <typename H_>
+        template <typename A_, typename B_>
+        void
+        MutableVisitor<H_>::VisitSequence<A_, B_>::visit_sequence(B_ &,
+                typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator c,
+                typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator e)
+        {
+            std::for_each(c, e, accept_visitor(*static_cast<A_ *>(this)));
+        }
+
+        template <typename I_, typename T_, typename H_>
+        void
+        GetConstItemVisits<I_, H_, const TreeLeaf<H_, T_> >::visit_leaf(const T_ & t)
+        {
+            static_cast<I_ *>(this)->item = &t;
+        }
+
+        template <typename I_, typename H_, typename T_>
+        void
+        GetConstItemVisits<I_, H_, const ConstTreeSequence<H_, T_> >::visit_sequence(const T_ & t,
+                typename H_::ConstSequenceIterator,
+                typename H_::ConstSequenceIterator)
+        {
+                static_cast<I_ *>(this)->item = &t;
+        }
+
+        template <typename I_, typename H_, typename T_>
+        void
+        GetConstItemVisits<I_, H_, const TreeSequence<H_, T_> >::visit_sequence(const T_ & t,
+                typename H_::ConstSequenceIterator,
+                typename H_::ConstSequenceIterator)
+        {
+            static_cast<I_ *>(this)->item = &t;
+        }
+
+        template <typename I_>
+        GetConstItemVisitor<I_>::GetConstItemVisitor() :
+            item(0)
+        {
+        }
+
+        template <typename I_>
+        const typename I_::Heirarchy::BasicNode *
+        get_const_item(const I_ & i)
+        {
+            GetConstItemVisitor<I_> v;
+            i.accept(v);
+            return v.item;
+        }
+    }
 }
 
 #endif

@@ -48,27 +48,33 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepSpecFlattener :
         private InstantiationPolicy<DepSpecFlattener, instantiation_method::NonCopyableTag>,
-        protected DepSpecVisitorTypes::ConstVisitor,
+        public ConstVisitor<FlattenableSpecTree>,
+        public ConstVisitor<FlattenableSpecTree>::VisitConstSequence<DepSpecFlattener, AllDepSpec>,
         private PrivateImplementationPattern<DepSpecFlattener>
     {
-        protected:
+        public:
             ///\name Visit methods
             ///{
-            void visit(const AllDepSpec *);
-            void visit(const AnyDepSpec *) PALUDIS_ATTRIBUTE((noreturn));
-            void visit(const UseDepSpec *);
-            void visit(const PlainTextDepSpec *);
-            void visit(const PackageDepSpec *);
-            void visit(const BlockDepSpec *);
+
+            using ConstVisitor<FlattenableSpecTree>::VisitConstSequence<DepSpecFlattener, AllDepSpec>::visit_sequence;
+
+            void visit_sequence(const UseDepSpec &,
+                    FlattenableSpecTree::ConstSequenceIterator,
+                    FlattenableSpecTree::ConstSequenceIterator);
+
+            void visit_leaf(const PackageDepSpec &);
+
+            void visit_leaf(const PlainTextDepSpec &);
+
+            void visit_leaf(const BlockDepSpec &);
+
             ///}
 
-        public:
             ///\name Basic operations
             ///\{
 
             DepSpecFlattener(const Environment * const,
-                    const PackageDatabaseEntry * const,
-                    const tr1::shared_ptr<const DepSpec>);
+                    const PackageDatabaseEntry * const);
 
             ~DepSpecFlattener();
 
@@ -79,7 +85,7 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<DepSpecFlattener, const StringDepSpec *> Iterator;
 
-            Iterator begin();
+            Iterator begin() const;
 
             Iterator end() const;
 

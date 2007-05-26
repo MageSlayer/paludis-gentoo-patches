@@ -19,6 +19,7 @@
 
 #include <paludis/args/args_dumper.hh>
 #include <paludis/args/args_option.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <sstream>
 
@@ -36,34 +37,26 @@ ArgsDumper::ArgsDumper(std::ostream & os) :
 {
 }
 
-void ArgsDumper::visit(const ArgsOption * const a)
+void ArgsDumper::generic_visit(const ArgsOption & a)
 {
     std::stringstream p;
-    p << "  --" << a->long_name();
-    if (a->short_name())
-        p << ", -" << a->short_name();
+    p << "  --" << a.long_name();
+    if (a.short_name())
+        p << ", -" << a.short_name();
     if (p.str().length() < 24)
         p << std::string(24 - p.str().length(), ' ');
     else
         p << std::endl << std::string(24, ' ');
     _os << p.str();
-    _os << " " << a->description() << std::endl;
+    _os << " " << a.description() << std::endl;
 }
 
-#define VISIT(type) void ArgsDumper::visit(const type * const a) \
-    { visit(static_cast<const ArgsOption *>(a)); }
-
-VISIT(SwitchArg)
-VISIT(StringArg)
-VISIT(IntegerArg)
-VISIT(AliasArg)
-
-void ArgsDumper::visit(const StringSetArg * const a)
+void ArgsDumper::visit(const StringSetArg & a)
 {
-    visit(static_cast<const ArgsOption *>(a));
+    generic_visit(a);
 
-    if (a->begin_allowed_args() != a->end_allowed_args())
-        for (StringSetArg::AllowedArgIterator it = a->begin_allowed_args(), it_end = a->end_allowed_args();
+    if (a.begin_allowed_args() != a.end_allowed_args())
+        for (StringSetArg::AllowedArgIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
                 it != it_end; ++it)
         {
             std::stringstream p;
@@ -76,10 +69,11 @@ void ArgsDumper::visit(const StringSetArg * const a)
         }
 }
 
-void ArgsDumper::visit(const EnumArg * const a)
+void ArgsDumper::visit(const EnumArg & a)
 {
-    visit(static_cast<const ArgsOption *>(a));
-    for (EnumArg::AllowedArgIterator it = a->begin_allowed_args(), it_end = a->end_allowed_args();
+    generic_visit(a);
+
+    for (EnumArg::AllowedArgIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
             it != it_end; ++it)
     {
         std::stringstream p;
@@ -88,8 +82,33 @@ void ArgsDumper::visit(const EnumArg * const a)
             p << std::string(26 - p.str().length(), ' ');
         _os << p.str();
         _os << " " << (*it).second;
-        if ((*it).first == a->default_arg())
+        if ((*it).first == a.default_arg())
             _os << " (default)";
         _os << std::endl;
     }
 }
+
+void
+ArgsDumper::visit(const SwitchArg & a)
+{
+    generic_visit(a);
+}
+
+void
+ArgsDumper::visit(const StringArg & a)
+{
+    generic_visit(a);
+}
+
+void
+ArgsDumper::visit(const IntegerArg & a)
+{
+    generic_visit(a);
+}
+
+void
+ArgsDumper::visit(const AliasArg & a)
+{
+    generic_visit(a);
+}
+

@@ -23,6 +23,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/log.hh>
 #include <paludis/eapi.hh>
 #include <algorithm>
 
@@ -31,10 +32,10 @@ using namespace paludis;
 namespace
 {
     struct LicenceChecker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepSpec>
+        ConstVisitor<LicenseSpecTree>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepSpec>::visit;
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>::visit_sequence;
 
         bool ok;
         const EnvironmentImplementation * const env;
@@ -51,19 +52,20 @@ namespace
         {
         }
 
-        void visit(const AnyDepSpec * spec)
+        void visit_sequence(const AnyDepSpec &,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
         {
             bool local_ok(false);
 
-            if (spec->begin() == spec->end())
+            if (begin == end)
                 local_ok = true;
             else
             {
-                for (CompositeDepSpec::Iterator i(spec->begin()), i_end(spec->end()) ;
-                        i != i_end ; ++i)
+                for ( ; begin != end ; ++begin)
                 {
                     Save<bool> save_ok(&ok, true);
-                    (*i)->accept(this);
+                    begin->accept(*this);
                     local_ok |= ok;
                 }
             }
@@ -71,26 +73,18 @@ namespace
             ok &= local_ok;
         }
 
-        void visit(const UseDepSpec * spec)
+        void visit_sequence(const UseDepSpec & spec,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(spec->flag(), *db_entry))
-                std::for_each(spec->begin(), spec->end(), accept_visitor(this));
+            if (env->query_use(spec.flag(), *db_entry))
+                std::for_each(begin, end, accept_visitor(*this));
         }
 
-        void visit(const PlainTextDepSpec * spec)
+        void visit_leaf(const PlainTextDepSpec & spec)
         {
-            if (! (env->*func)(spec->text(), *db_entry))
+            if (! (env->*func)(spec.text(), *db_entry))
                 ok = false;
-        }
-
-        void visit(const PackageDepSpec *) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Encountered PackageDepSpec in licence?");
-        }
-
-        void visit(const BlockDepSpec *)  PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Encountered BlockDepSpec in licence?");
         }
     };
 }
@@ -312,7 +306,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
     if (metadata->license_interface)
     {
         LicenceChecker lc(this, &EnvironmentImplementation::accept_license, &e);
-        metadata->license_interface->license()->accept(&lc);
+        metadata->license_interface->license()->accept(lc);
         if (! lc.ok)
             result += mr_license;
     }
@@ -336,16 +330,26 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
     return result;
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 EnvironmentImplementation::set(const SetName & s) const
 {
-    tr1::shared_ptr<CompositeDepSpec> result(local_set(s));
-    if (result)
-        return result;
+    {
+        tr1::shared_ptr<SetSpecTree::ConstItem> l(local_set(s));
+        if (l)
+        {
+            Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' is a local set";
+            return l;
+        }
+    }
+
+    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result;
 
     /* these sets always exist, even if empty */
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
-        result.reset(new AllDepSpec);
+    {
+        Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' is a standard set";
+        result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    }
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -354,22 +358,25 @@ EnvironmentImplementation::set(const SetName & s) const
         if (! (*r)->sets_interface)
             continue;
 
-        tr1::shared_ptr<DepSpec> add((*r)->sets_interface->package_set(s));
-        if (0 != add)
+        tr1::shared_ptr<SetSpecTree::ConstItem> add((*r)->sets_interface->package_set(s));
+        if (add)
         {
+            Log::get_instance()->message(ll_debug, lc_context) << "Set '" << s << "' found in '" << (*r)->name() << "'";
             if (! result)
-                result.reset(new AllDepSpec);
-            result->add_child(add);
+                result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+            result->add(add);
         }
 
         if ("everything" == s.data() || "world" == s.data())
         {
             add = (*r)->sets_interface->package_set(SetName("system"));
-            if (0 != add)
-                result->add_child(add);
+            if (add)
+                result->add(add);
         }
     }
 
+    if (! result)
+        Log::get_instance()->message(ll_debug, lc_context) << "No match for set '" << s << "'";
     return result;
 }
 
@@ -407,9 +414,9 @@ EnvironmentImplementation::query_use(const UseFlagName & f, const PackageDatabas
         return false;
 }
 
-tr1::shared_ptr<CompositeDepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 EnvironmentImplementation::local_set(const SetName &) const
 {
-    return tr1::shared_ptr<CompositeDepSpec>();
+    return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 

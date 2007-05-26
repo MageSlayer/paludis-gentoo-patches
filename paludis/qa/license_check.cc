@@ -32,14 +32,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
+        ConstVisitor<LicenseSpecTree>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, UseDepSpec>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
 
         CheckResult & result;
         const QAEnvironment * const env;
@@ -50,30 +50,15 @@ namespace
         {
         }
 
-        void visit(const PlainTextDepSpec * const a)
+        void visit_leaf(const PlainTextDepSpec & a)
         {
             RepositoryLicensesInterface *li(env->package_database()->fetch_repository(
                         env->main_repository()->name())->licenses_interface);
 
-            if (li && ! li->license_exists(a->text()))
-                result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
+            if (li && ! li->license_exists(a.text()))
+                result << Message(qal_major, "Item '" + a.text() + "' is not a licence");
         }
-
-        void visit(const BlockDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const PackageDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
     };
-
-    void
-    Checker::visit(const BlockDepSpec * const)
-    {
-        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepSpec");
-    }
-
-    void
-    Checker::visit(const PackageDepSpec * const)
-    {
-        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepSpec");
-    }
 }
 
 LicenseCheck::LicenseCheck()
@@ -99,7 +84,7 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
             try
             {
                 Checker checker(result, e.environment);
-                metadata->license_interface->license()->accept(&checker);
+                metadata->license_interface->license()->accept(checker);
             }
             catch (const DepStringError & err)
             {

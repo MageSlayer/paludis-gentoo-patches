@@ -22,44 +22,55 @@
 #include <ostream>
 #include <algorithm>
 
+using namespace paludis;
+
 void
-LicenceDisplayer::visit(const paludis::AllDepSpec * spec)
+LicenceDisplayer::visit_sequence(const AllDepSpec &,
+        LicenseSpecTree::ConstSequenceIterator begin,
+        LicenseSpecTree::ConstSequenceIterator end)
 {
     stream << "( ";
-    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
+    std::for_each(begin, end, accept_visitor(*this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::AnyDepSpec * spec)
+LicenceDisplayer::visit_sequence(const AnyDepSpec &,
+        LicenseSpecTree::ConstSequenceIterator begin,
+        LicenseSpecTree::ConstSequenceIterator end)
 {
     stream << "|| ( ";
-    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
+    std::for_each(begin, end, accept_visitor(*this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::UseDepSpec * spec)
+LicenceDisplayer::visit_sequence(const UseDepSpec & spec,
+        LicenseSpecTree::ConstSequenceIterator begin,
+        LicenseSpecTree::ConstSequenceIterator end)
 {
-    stream << spec->flag() << "? ( ";
-    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
+    if (spec.inverse())
+        stream << "!";
+
+    stream << spec.flag() << "? ( ";
+    std::for_each(begin, end, accept_visitor(*this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::PlainTextDepSpec * spec)
+LicenceDisplayer::visit_leaf(const PlainTextDepSpec & spec)
 {
-    if (env->accept_license(spec->text(), db_entry))
-        stream << colour(cl_not_masked, spec->text());
+    if (env->accept_license(spec.text(), db_entry))
+        stream << colour(cl_not_masked, spec.text());
     else
-        stream << colour(cl_masked, "(" + spec->text() + ")!");
+        stream << colour(cl_masked, "(" + spec.text() + ")!");
     stream << " ";
 }
 
 LicenceDisplayer::LicenceDisplayer(
         std::ostream & s,
-        const paludis::Environment * const e,
-        const paludis::PackageDatabaseEntry & d) :
+        const Environment * const e,
+        const PackageDatabaseEntry & d) :
     stream(s),
     env(e),
     db_entry(d)

@@ -23,29 +23,19 @@
 #include <iosfwd>
 #include <string>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/visitor-fwd.hh>
+#include <paludis/util/visitor.hh>
 
 namespace paludis
 {
     class DepSpec;
-    class CompositeDepSpec;
     class PackageDepSpec;
     class PlainTextDepSpec;
     class AllDepSpec;
     class AnyDepSpec;
     class UseDepSpec;
-    class SetDepSpec;
     class BlockDepSpec;
 
 #include <paludis/dep_spec-se.hh>
-
-    /**
-     * Visitor types for a visitor that can visit a DepSpec heirarchy.
-     *
-     * \ingroup grpdepspecs
-     */
-    typedef VisitorTypes<PackageDepSpec *, PlainTextDepSpec *, AllDepSpec *, AnyDepSpec *,
-            UseDepSpec *, BlockDepSpec *> DepSpecVisitorTypes;
 
     /**
      * A PlainTextDepSpec can be written to an ostream.
@@ -62,7 +52,101 @@ namespace paludis
      * \ingroup grpdepspecs
      */
     std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
-}
 
+    struct GenericSpecTree :
+        VisitorTypes<
+            GenericSpecTree,
+            DepSpec,
+            TreeLeaf<GenericSpecTree, PlainTextDepSpec>,
+            TreeLeaf<GenericSpecTree, PackageDepSpec>,
+            TreeLeaf<GenericSpecTree, BlockDepSpec>,
+            ConstTreeSequence<GenericSpecTree, AllDepSpec>,
+            ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
+            ConstTreeSequence<GenericSpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct LicenseSpecTree :
+        VisitorTypes<
+            LicenseSpecTree,
+            DepSpec,
+            TreeLeaf<LicenseSpecTree, PlainTextDepSpec>,
+            ConstTreeSequence<LicenseSpecTree, AllDepSpec>,
+            ConstTreeSequence<LicenseSpecTree, AnyDepSpec>,
+            ConstTreeSequence<LicenseSpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct URISpecTree :
+        VisitorTypes<
+            URISpecTree,
+            DepSpec,
+            TreeLeaf<URISpecTree, PlainTextDepSpec>,
+            ConstTreeSequence<URISpecTree, AllDepSpec>,
+            ConstTreeSequence<URISpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct FlattenableSpecTree :
+        VisitorTypes<
+            FlattenableSpecTree,
+            DepSpec,
+            TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>,
+            TreeLeaf<FlattenableSpecTree, PackageDepSpec>,
+            TreeLeaf<FlattenableSpecTree, BlockDepSpec>,
+            ConstTreeSequence<FlattenableSpecTree, AllDepSpec>,
+            ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct ProvideSpecTree :
+        VisitorTypes<
+            ProvideSpecTree,
+            DepSpec,
+            TreeLeaf<ProvideSpecTree, PackageDepSpec>,
+            ConstTreeSequence<ProvideSpecTree, AllDepSpec>,
+            ConstTreeSequence<ProvideSpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct RestrictSpecTree :
+        VisitorTypes<
+            RestrictSpecTree,
+            DepSpec,
+            TreeLeaf<RestrictSpecTree, PlainTextDepSpec>,
+            ConstTreeSequence<RestrictSpecTree, AllDepSpec>,
+            ConstTreeSequence<RestrictSpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct DependencySpecTree :
+        VisitorTypes<
+            DependencySpecTree,
+            DepSpec,
+            TreeLeaf<DependencySpecTree, PackageDepSpec>,
+            TreeLeaf<DependencySpecTree, BlockDepSpec>,
+            ConstTreeSequence<DependencySpecTree, AllDepSpec>,
+            ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
+            ConstTreeSequence<DependencySpecTree, UseDepSpec>
+        >
+    {
+    };
+
+    struct SetSpecTree :
+        VisitorTypes<
+            SetSpecTree,
+            DepSpec,
+            TreeLeaf<SetSpecTree, PackageDepSpec>,
+            ConstTreeSequence<SetSpecTree, AllDepSpec>
+        >
+    {
+    };
+}
 
 #endif

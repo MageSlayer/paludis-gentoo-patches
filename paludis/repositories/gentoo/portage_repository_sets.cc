@@ -77,7 +77,7 @@ PortageRepositorySets::~PortageRepositorySets()
 }
 
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageRepositorySets::package_set(const SetName & s) const
 {
     if ("system" == s.data())
@@ -104,7 +104,7 @@ PortageRepositorySets::package_set(const SetName & s) const
         return f.contents();
     }
     else
-        return tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 tr1::shared_ptr<const SetNameCollection>
@@ -233,11 +233,12 @@ namespace
     }
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 PortageRepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    tr1::shared_ptr<AllDepSpec> security_packages(new AllDepSpec);
+    tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(
+            new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
     if (!_imp->params.securitydir.is_directory_or_symlink_to_directory())
         return security_packages;
@@ -289,7 +290,8 @@ PortageRepositorySets::security_set(bool insecurity) const
                                     tr1::shared_ptr<SlotName>(),
                                     tr1::shared_ptr<RepositoryName>(new RepositoryName(c->repository))));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
-                        security_packages->add_child(spec);
+                        security_packages->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                                    new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                     }
                     else
                     {
@@ -332,7 +334,8 @@ PortageRepositorySets::security_set(bool insecurity) const
                                         tr1::shared_ptr<SlotName>(),
                                         tr1::shared_ptr<RepositoryName>(new RepositoryName(r->repository))));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
-                            security_packages->add_child(spec);
+                            security_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(
+                                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                             ok = true;
                             break;
                         }

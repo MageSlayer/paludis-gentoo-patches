@@ -29,6 +29,7 @@ namespace paludis
     namespace tr1
     {
         using std::tr1::remove_pointer;
+        using std::tr1::is_same;
     }
 }
 
@@ -41,6 +42,7 @@ namespace paludis
     namespace tr1
     {
         using boost::remove_pointer;
+        using boost::is_same;
     }
 }
 

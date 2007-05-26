@@ -42,7 +42,7 @@ namespace paludis
          * \ingroup grplibpaludisargs
          */
         class PALUDIS_VISIBLE ArgsOption :
-            public virtual VisitableInterface<ArgsVisitorTypes>
+            public virtual MutableAcceptInterface<ArgsVisitorTypes>
         {
             friend class ArgsHandler;
 
@@ -68,7 +68,7 @@ namespace paludis
                 /**
                  * Destructor.
                  */
-                ~ArgsOption();
+                virtual ~ArgsOption();
 
             public:
                 /**
@@ -129,7 +129,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE SwitchArg :
             public ArgsOption,
-            public Visitable<SwitchArg, ArgsVisitorTypes>
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>
         {
             public:
                 /**
@@ -148,7 +148,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringArg :
             public ArgsOption,
-            public Visitable<StringArg, ArgsVisitorTypes>
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>
         {
             private:
                 std::string _argument;
@@ -187,7 +187,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
-            public Visitable<StringSetArg, ArgsVisitorTypes>,
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>,
             private PrivateImplementationPattern<StringSetArg>
         {
             private:
@@ -285,7 +285,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE AliasArg :
             public ArgsOption,
-            public Visitable<AliasArg, ArgsVisitorTypes>
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>
         {
             private:
                 ArgsOption * const _other;
@@ -322,7 +322,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE IntegerArg :
             public ArgsOption,
-            public Visitable<IntegerArg, ArgsVisitorTypes>
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>
         {
             private:
                 int _argument;
@@ -352,7 +352,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
-            public Visitable<EnumArg, ArgsVisitorTypes>,
+            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>,
             private PrivateImplementationPattern<EnumArg>
         {
             private:
@@ -360,7 +360,6 @@ namespace paludis
                 const std::string _default_arg;
 
             public:
-
                 /**
                  * Helper class for passing available options and associated descriptions
                  * to the EnumArg constructor.

@@ -30,12 +30,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+        ConstVisitor<URISpecTree>,
+        ConstVisitor<URISpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<URISpecTree>::VisitConstSequence<Checker, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using ConstVisitor<URISpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<URISpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
 
         CheckResult & result;
         bool found_one;
@@ -46,14 +46,9 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const)
+        void visit_leaf(const PlainTextDepSpec & t)
         {
-            result << Message(qal_major, "Got a PackageDepSpec in HOMEPAGE");
-        }
-
-        void visit(const PlainTextDepSpec * const t)
-        {
-            std::string text(t->text());
+            std::string text(t.text());
 
             if (std::string::npos == text.find("http://") &&
                     std::string::npos == text.find("https://") &&
@@ -61,17 +56,6 @@ namespace
                 result << Message(qal_major, "HOMEPAGE part '" + text + "' doesn't look like a URL");
 
             found_one = true;
-        }
-
-        void visit(const BlockDepSpec * const)
-        {
-            result << Message(qal_major, "Got a PackageDepSpec in HOMEPAGE");
-        }
-
-        void visit(const AnyDepSpec * const a)
-        {
-            result << Message(qal_major, "Got a || ( ) block in HOMEPAGE");
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
     };
 }
@@ -94,7 +78,7 @@ HomepageCheck::operator() (const EbuildCheckData & e) const
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Checker c(result);
-        metadata->homepage()->accept(&c);
+        metadata->homepage()->accept(c);
 
         if (! c.found_one)
             result << Message(qal_major, "HOMEPAGE empty or unset");

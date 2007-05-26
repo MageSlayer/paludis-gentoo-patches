@@ -31,10 +31,8 @@ using namespace paludis;
 namespace
 {
     class VulnerableChecker :
-        public DepSpecVisitorTypes::ConstVisitor,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepSpec>,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepSpec>,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>
+        public ConstVisitor<SetSpecTree>,
+        public ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>
     {
         private:
             std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag>,
@@ -44,9 +42,7 @@ namespace
         public:
             typedef std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
 
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepSpec>::visit;
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>::visit;
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepSpec>::visit;
+            using ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>::visit;
 
             /**
              * Constructor.
@@ -59,15 +55,8 @@ namespace
             /// \name Visit functions
             ///{
 
-            void visit(const PackageDepSpec * const);
+            void visit_leaf(const PackageDepSpec &);
 
-            void visit(const PlainTextDepSpec * const)
-            {
-            }
-
-            void visit(const BlockDepSpec * const)
-            {
-            }
             ///}
 
             /**
@@ -80,14 +69,14 @@ namespace
     };
 
     void
-    VulnerableChecker::visit(const PackageDepSpec * const a)
+    VulnerableChecker::visit_leaf(const PackageDepSpec & a)
     {
         tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
-                _env.package_database()->query(query::Matches(*a), qo_order_by_version));
+                _env.package_database()->query(query::Matches(a), qo_order_by_version));
         for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
-            if (a->tag())
-                _found.insert(std::make_pair(*i, a->tag()));
+            if (a.tag())
+                _found.insert(std::make_pair(*i, a.tag()));
             else
                 throw InternalError(PALUDIS_HERE, "didn't get a tag");
     }
@@ -136,10 +125,10 @@ ReportTask::execute()
 
         try
         {
-            tr1::shared_ptr<const DepSpec> insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            tr1::shared_ptr<const SetSpecTree::ConstItem> insecure(rr->sets_interface->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
-            insecure->accept(&vuln);
+            insecure->accept(vuln);
         }
         catch (const NotAvailableError &)
         {
@@ -246,3 +235,4 @@ ReportTask::execute()
 
     on_report_all_post();
 }
+

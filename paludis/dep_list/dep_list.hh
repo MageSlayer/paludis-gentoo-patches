@@ -68,7 +68,7 @@ namespace paludis
             /**
              * Add a DepSpec with role context.
              */
-            void add_in_role(tr1::shared_ptr<const DepSpec>, const std::string & role,
+            void add_in_role(DependencySpecTree::ConstItem &, const std::string & role,
                     tr1::shared_ptr<const DestinationsCollection>);
 
             /**
@@ -104,13 +104,13 @@ namespace paludis
             /**
              * Add predependencies.
              */
-            void add_predeps(tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
+            void add_predeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add postdependencies.
              */
-            void add_postdeps(tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
+            void add_postdeps(DependencySpecTree::ConstItem &, const DepListDepsOption, const std::string &,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
@@ -118,6 +118,9 @@ namespace paludis
              * the top level target.
              */
             bool is_top_level_target(const PackageDatabaseEntry &) const;
+
+            void add_not_top_level(DependencySpecTree::ConstItem &,
+                    tr1::shared_ptr<const DestinationsCollection> target_destinations);
 
         public:
             ///\name Basic operations
@@ -138,7 +141,14 @@ namespace paludis
              * Add the packages required to resolve an additional dependency
              * spec.
              */
-            void add(tr1::shared_ptr<const DepSpec>,
+            void add(SetSpecTree::ConstItem &,
+                    tr1::shared_ptr<const DestinationsCollection> target_destinations);
+
+            /**
+             * Add the packages required to resolve an additional dependency
+             * spec.
+             */
+            void add(const PackageDepSpec &,
                     tr1::shared_ptr<const DestinationsCollection> target_destinations);
 
             /**
@@ -149,7 +159,7 @@ namespace paludis
             /**
              * Return whether a spec structure is already installed.
              */
-            bool already_installed(const DepSpec &,
+            bool already_installed(DependencySpecTree::ConstItem &,
                     tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
 
             /**

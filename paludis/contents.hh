@@ -23,9 +23,9 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <string>
 #include <paludis/util/tr1_memory.hh>
 
+#include <string>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
@@ -49,8 +49,19 @@ namespace paludis
      *
      * \ingroup grpcontents
      */
-    typedef VisitorTypes<ContentsFileEntry *, ContentsDirEntry *,
-            ContentsSymEntry *, ContentsFifoEntry *, ContentsDevEntry *, ContentsMiscEntry *> ContentsVisitorTypes;
+    struct ContentsVisitorTypes :
+        VisitorTypes<
+            ContentsVisitorTypes,
+            ContentsEntry,
+            ContentsFileEntry,
+            ContentsDirEntry,
+            ContentsSymEntry,
+            ContentsFifoEntry,
+            ContentsDevEntry,
+            ContentsMiscEntry
+        >
+    {
+    };
 
     /**
      * Base class for a contents entry.
@@ -60,7 +71,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsEntry :
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
-        public virtual VisitableInterface<ContentsVisitorTypes>
+        public virtual ConstAcceptInterface<ContentsVisitorTypes>
     {
         private:
             std::string _name;
@@ -93,7 +104,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsFileEntry :
         public ContentsEntry,
-        public Visitable<ContentsFileEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFileEntry>
     {
         public:
             ///\name Basic operations
@@ -112,7 +123,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsDirEntry :
         public ContentsEntry,
-        public Visitable<ContentsDirEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDirEntry>
     {
         public:
             ///\name Basic operations
@@ -131,7 +142,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsMiscEntry :
         public ContentsEntry,
-        public Visitable<ContentsMiscEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsMiscEntry>
     {
         public:
             ///\name Basic operations
@@ -150,7 +161,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsFifoEntry :
         public ContentsEntry,
-        public Visitable<ContentsFifoEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsFifoEntry>
     {
         public:
             ///\name Basic operations
@@ -169,7 +180,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsDevEntry :
         public ContentsEntry,
-        public Visitable<ContentsDevEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsDevEntry>
     {
         public:
             ///\name Basic operations
@@ -188,7 +199,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
         public ContentsEntry,
-        public Visitable<ContentsSymEntry, ContentsVisitorTypes>
+        public ConstAcceptInterfaceVisitsThis<ContentsVisitorTypes, ContentsSymEntry>
     {
         private:
             std::string _target;

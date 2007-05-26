@@ -49,7 +49,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
-        public virtual VisitableInterface<DepSpecVisitorTypes>,
         private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>
     {
         protected:
@@ -84,65 +83,13 @@ namespace paludis
     };
 
     /**
-     * Class for dependency specs that have a number of child dependency
-     * specs.
-     *
-     * \ingroup grpdepspecs
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE CompositeDepSpec :
-        public DepSpec,
-        private PrivateImplementationPattern<CompositeDepSpec>
-    {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            CompositeDepSpec();
-
-            ///\}
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            ~CompositeDepSpec();
-
-            ///\}
-
-            ///\name Modify our children
-            ///\{
-
-            /**
-             * Append a child to our collection.
-             */
-            virtual void add_child(tr1::shared_ptr<const DepSpec>);
-
-            ///\}
-
-            ///\name Iterate over our children
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<CompositeDepSpec, const tr1::shared_ptr<const DepSpec> > Iterator;
-
-            Iterator begin() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            Iterator end() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
-    };
-
-    /**
      * Represents a "|| ( )" dependency block.
      *
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AnyDepSpec :
-        public CompositeDepSpec,
-        public Visitable<AnyDepSpec, DepSpecVisitorTypes>
+        public DepSpec
     {
         public:
             ///\name Basic operations
@@ -161,8 +108,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AllDepSpec :
-        public CompositeDepSpec,
-        public Visitable<AllDepSpec, DepSpecVisitorTypes>
+        public DepSpec
     {
         public:
             ///\name Basic operations
@@ -180,8 +126,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UseDepSpec :
-        public CompositeDepSpec,
-        public Visitable<UseDepSpec, DepSpecVisitorTypes>
+        public DepSpec
     {
         private:
             const UseFlagName _flag;
@@ -296,7 +241,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PackageDepSpec :
         public StringDepSpec,
-        public Visitable<PackageDepSpec, DepSpecVisitorTypes>,
         private PrivateImplementationPattern<PackageDepSpec>
     {
         private:
@@ -418,8 +362,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PlainTextDepSpec :
-        public StringDepSpec,
-        public Visitable<PlainTextDepSpec, DepSpecVisitorTypes>
+        public StringDepSpec
     {
         public:
             ///\name Basic operations
@@ -458,8 +401,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE BlockDepSpec :
-        public StringDepSpec,
-        public Visitable<BlockDepSpec, DepSpecVisitorTypes>
+        public StringDepSpec
     {
         private:
             tr1::shared_ptr<const PackageDepSpec> _spec;
@@ -477,7 +419,6 @@ namespace paludis
              */
             tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
     };
-
 }
 
 #endif

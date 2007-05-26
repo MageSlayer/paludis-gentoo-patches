@@ -36,7 +36,7 @@ using namespace paludis;
 
 typedef std::list<std::string> LicensesList;
 typedef std::map<tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
-typedef std::pair<tr1::shared_ptr<const DepSpec>, LicensesList> SetNameEntry;
+typedef std::pair<tr1::shared_ptr<const SetSpecTree::ConstItem>, LicensesList> SetNameEntry;
 
 typedef MakeHashedMap<QualifiedPackageName, PDSToLicensesList>::Type SpecificMap;
 typedef PDSToLicensesList UnspecificMap;
@@ -96,7 +96,7 @@ LicensesConf::add(const FSEntry & filename)
         if (std::string::npos == tokens.at(0).find("/"))
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                tr1::shared_ptr<DepSpec>(), LicensesList()))).first);
+                                tr1::shared_ptr<SetSpecTree::ConstItem>(), LicensesList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -169,11 +169,12 @@ LicensesConf::query(const std::string & t, const PackageDatabaseEntry & e) const
                 {
                     Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
-                    i->second.first.reset(new AllDepSpec);
+                    i->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                 }
             }
 
-            if (! match_package_in_heirarchy(*_imp->env, *i->second.first, e))
+            if (! match_package_in_set(*_imp->env, *i->second.first, e))
                 continue;
 
             for (LicensesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;

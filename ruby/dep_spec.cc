@@ -30,7 +30,6 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_dep_spec;
-    static VALUE c_composite_dep_spec;
     static VALUE c_package_dep_spec;
     static VALUE c_plain_text_dep_spec;
     static VALUE c_all_dep_spec;
@@ -73,6 +72,7 @@ namespace
         }
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     blocked_spec -> DepSpec
@@ -86,6 +86,7 @@ namespace
         Data_Get_Struct(self, tr1::shared_ptr<const BlockDepSpec>, p);
         return dep_spec_to_value((*p)->blocked_spec());
     }
+#endif
 
     template <typename A_>
     struct DepSpecThings
@@ -166,6 +167,7 @@ namespace
         return (*p)->inverse() ? Qtrue : Qfalse;
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq: each {|spec| block }
      *
@@ -180,6 +182,7 @@ namespace
             rb_yield(dep_spec_to_value(*i));
         return self;
     }
+#endif
 
     /*
      * call-seq:
@@ -289,23 +292,11 @@ namespace
         rb_funcall(c_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
         /*
-         * Document-class: Paludis::CompositeDepSpec
-         *
-         * Class for dependency specs that have a number of child dependency specs.
-         * Includes Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html]
-         * but not Comparable.
-         */
-        c_composite_dep_spec = rb_define_class_under(paludis_module(), "CompositeDepSpec", c_dep_spec);
-        rb_funcall(c_composite_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_composite_dep_spec, "each", RUBY_FUNC_CAST(&composite_dep_spec_each), 0);
-        rb_include_module(c_composite_dep_spec, rb_mEnumerable);
-
-        /*
          * Document-class: Paludis::AllDepSpec
          *
          * Represents a ( first second third ) or top level group of dependency specs.
          */
-        c_all_dep_spec = rb_define_class_under(paludis_module(), "AllDepSpec", c_composite_dep_spec);
+        c_all_dep_spec = rb_define_class_under(paludis_module(), "AllDepSpec", c_dep_spec);
         rb_funcall(c_all_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
         /*
@@ -313,7 +304,7 @@ namespace
          *
          * Represents a "|| ( )" dependency block.
          */
-        c_any_dep_spec = rb_define_class_under(paludis_module(), "AnyDepSpec", c_composite_dep_spec);
+        c_any_dep_spec = rb_define_class_under(paludis_module(), "AnyDepSpec", c_dep_spec);
         rb_funcall(c_any_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
         /*
@@ -321,7 +312,7 @@ namespace
          *
          * Represents a use? ( ) dependency spec.
          */
-        c_use_dep_spec = rb_define_class_under(paludis_module(), "UseDepSpec", c_composite_dep_spec);
+        c_use_dep_spec = rb_define_class_under(paludis_module(), "UseDepSpec", c_dep_spec);
         rb_funcall(c_use_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_use_dep_spec, "flag", RUBY_FUNC_CAST(&use_dep_spec_flag), 0);
         rb_define_method(c_use_dep_spec, "inverse?", RUBY_FUNC_CAST(&use_dep_spec_inverse), 0);
@@ -370,7 +361,9 @@ namespace
         c_block_dep_spec = rb_define_class_under(paludis_module(), "BlockDepSpec", c_string_dep_spec);
         rb_define_singleton_method(c_block_dep_spec, "new", RUBY_FUNC_CAST(&block_dep_spec_new), 1);
         rb_define_method(c_block_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_block_dep_spec, "blocked_spec", RUBY_FUNC_CAST(&block_dep_spec_blocked_spec), 0);
+#endif
 
         /*
          * Document-module: Paludis::VersionRequirementsMode
@@ -435,6 +428,7 @@ paludis::ruby::value_to_dep_spec(VALUE v)
     }
 }
 
+#if CIARANM_REMOVED_THIS
 VALUE
 paludis::ruby::dep_spec_to_value(tr1::shared_ptr<const DepSpec> m)
 {
@@ -502,6 +496,7 @@ paludis::ruby::dep_spec_to_value(tr1::shared_ptr<const DepSpec> m)
         exception_to_ruby_exception(e);
     }
 }
+#endif
 
 RegisterRubyClass::Register paludis_ruby_register_dep_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_spec);

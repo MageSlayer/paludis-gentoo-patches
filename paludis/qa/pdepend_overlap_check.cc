@@ -34,14 +34,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Collector :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepSpec>
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, AllDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, AnyDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepSpec>::visit;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, UseDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, AllDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Collector, AnyDepSpec>::visit_sequence;
 
         std::set<QualifiedPackageName> result;
 
@@ -49,17 +49,13 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const p)
+        void visit_leaf(const PackageDepSpec & p)
         {
-            if (p->package_ptr())
-                result.insert(*p->package_ptr());
+            if (p.package_ptr())
+                result.insert(*p.package_ptr());
         }
 
-        void visit(const BlockDepSpec * const)
-        {
-        }
-
-        void visit(const PlainTextDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
@@ -83,11 +79,11 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Collector pdepend_collector;
-        metadata->deps_interface->post_depend()->accept(&pdepend_collector);
+        metadata->deps_interface->post_depend()->accept(pdepend_collector);
 
         {
             Collector depend_collector;
-            metadata->deps_interface->build_depend()->accept(&depend_collector);
+            metadata->deps_interface->build_depend()->accept(depend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(depend_collector.result.begin(), depend_collector.result.end(),
@@ -101,7 +97,7 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
 
         {
             Collector rdepend_collector;
-            metadata->deps_interface->run_depend()->accept(&rdepend_collector);
+            metadata->deps_interface->run_depend()->accept(rdepend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(rdepend_collector.result.begin(), rdepend_collector.result.end(),

@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <list>
 #include <map>
@@ -32,6 +33,61 @@
  */
 
 using namespace paludis;
+
+template class ConstVisitor<GenericSpecTree>;
+template class ConstAcceptInterface<GenericSpecTree>;
+template class TreeLeaf<GenericSpecTree, PackageDepSpec>;
+template class TreeLeaf<GenericSpecTree, BlockDepSpec>;
+template class TreeLeaf<GenericSpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<GenericSpecTree, AllDepSpec>;
+template class ConstTreeSequence<GenericSpecTree, AnyDepSpec>;
+template class ConstTreeSequence<GenericSpecTree, UseDepSpec>;
+
+template class ConstVisitor<LicenseSpecTree>;
+template class ConstAcceptInterface<LicenseSpecTree>;
+template class TreeLeaf<LicenseSpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<LicenseSpecTree, AllDepSpec>;
+template class ConstTreeSequence<LicenseSpecTree, AnyDepSpec>;
+template class ConstTreeSequence<LicenseSpecTree, UseDepSpec>;
+
+template class ConstVisitor<URISpecTree>;
+template class ConstAcceptInterface<URISpecTree>;
+template class TreeLeaf<URISpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<URISpecTree, AllDepSpec>;
+template class ConstTreeSequence<URISpecTree, UseDepSpec>;
+
+template class ConstVisitor<FlattenableSpecTree>;
+template class ConstAcceptInterface<FlattenableSpecTree>;
+template class TreeLeaf<FlattenableSpecTree, PackageDepSpec>;
+template class TreeLeaf<FlattenableSpecTree, BlockDepSpec>;
+template class TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<FlattenableSpecTree, AllDepSpec>;
+template class ConstTreeSequence<FlattenableSpecTree, UseDepSpec>;
+
+template class ConstVisitor<ProvideSpecTree>;
+template class ConstAcceptInterface<ProvideSpecTree>;
+template class TreeLeaf<ProvideSpecTree, PackageDepSpec>;
+template class ConstTreeSequence<ProvideSpecTree, AllDepSpec>;
+template class ConstTreeSequence<ProvideSpecTree, UseDepSpec>;
+
+template class ConstVisitor<RestrictSpecTree>;
+template class ConstAcceptInterface<RestrictSpecTree>;
+template class TreeLeaf<RestrictSpecTree, PlainTextDepSpec>;
+template class ConstTreeSequence<RestrictSpecTree, AllDepSpec>;
+template class ConstTreeSequence<RestrictSpecTree, UseDepSpec>;
+
+template class ConstVisitor<DependencySpecTree>;
+template class TreeLeaf<DependencySpecTree, PackageDepSpec>;
+template class TreeLeaf<DependencySpecTree, BlockDepSpec>;
+template class ConstTreeSequence<DependencySpecTree, AllDepSpec>;
+template class ConstTreeSequence<DependencySpecTree, AnyDepSpec>;
+template class ConstTreeSequence<DependencySpecTree, UseDepSpec>;
+template class ConstAcceptInterface<DependencySpecTree>;
+
+template class ConstVisitor<SetSpecTree>;
+template class ConstAcceptInterface<SetSpecTree>;
+template class TreeLeaf<SetSpecTree, PackageDepSpec>;
+template class ConstTreeSequence<SetSpecTree, AllDepSpec>;
 
 #include <paludis/dep_spec-se.cc>
 
@@ -57,17 +113,6 @@ DepSpec::as_package_dep_spec() const
 
 namespace paludis
 {
-    /**
-     * Implementation data for CompositeDepSpec.
-     *
-     * \ingroup grpdepspecs
-     */
-    template<>
-    struct Implementation<CompositeDepSpec>
-    {
-        std::list<tr1::shared_ptr<const DepSpec> > children;
-    };
-
     template<>
     struct Implementation<PackageDepSpec>
     {
@@ -106,33 +151,6 @@ namespace paludis
         {
         }
     };
-}
-
-CompositeDepSpec::CompositeDepSpec() :
-    PrivateImplementationPattern<CompositeDepSpec>(new Implementation<CompositeDepSpec>)
-{
-}
-
-CompositeDepSpec::~CompositeDepSpec()
-{
-}
-
-void
-CompositeDepSpec::add_child(tr1::shared_ptr<const DepSpec> c)
-{
-    _imp->children.push_back(c);
-}
-
-CompositeDepSpec::Iterator
-CompositeDepSpec::begin() const
-{
-    return Iterator(_imp->children.begin());
-}
-
-CompositeDepSpec::Iterator
-CompositeDepSpec::end() const
-{
-    return Iterator(_imp->children.end());
 }
 
 AnyDepSpec::AnyDepSpec()
@@ -201,9 +219,7 @@ PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
 }
 
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
-    VisitableInterface<DepSpecVisitorTypes>(other),
     StringDepSpec(stringify(other)),
-    Visitable<PackageDepSpec, DepSpecVisitorTypes>(other),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
                 other._imp->package_ptr,
                 other._imp->category_name_part_ptr,

@@ -33,6 +33,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <fstream>
 #include <list>
@@ -170,48 +171,17 @@ namespace
 {
     class AAFinder :
         private InstantiationPolicy<AAFinder, instantiation_method::NonCopyableTag>,
-        protected DepSpecVisitorTypes::ConstVisitor
+        public ConstVisitor<URISpecTree>,
+        public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, AllDepSpec>,
+        public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, UseDepSpec>
     {
         private:
             mutable std::list<const StringDepSpec *> _specs;
 
-        protected:
-            void visit(const AllDepSpec * a)
-            {
-                std::for_each(a->begin(), a->end(), accept_visitor(
-                            static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
-            }
-
-            void visit(const AnyDepSpec *) PALUDIS_ATTRIBUTE((noreturn))
-            {
-                throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepSpec");
-            }
-
-            void visit(const UseDepSpec * a)
-            {
-                std::for_each(a->begin(), a->end(), accept_visitor(
-                            static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
-            }
-
-            void visit(const PlainTextDepSpec * a)
-            {
-                _specs.push_back(a);
-            }
-
-            void visit(const PackageDepSpec * a)
-            {
-                _specs.push_back(a);
-            }
-
-            void visit(const BlockDepSpec * a)
-            {
-                _specs.push_back(a);
-            }
-
         public:
-            AAFinder(const tr1::shared_ptr<const DepSpec> a)
+            void visit_leaf(const PlainTextDepSpec & a)
             {
-                a->accept(static_cast<DepSpecVisitorTypes::ConstVisitor *>(this));
+                _specs.push_back(&a);
             }
 
             typedef std::list<const StringDepSpec *>::const_iterator Iterator;
@@ -335,7 +305,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     bool fetch_restrict(false), no_mirror(false), userpriv_restrict;
     {
-        DepSpecFlattener restricts(_imp->params.environment, &e, metadata->ebuild_interface->restrictions());
+        DepSpecFlattener restricts(_imp->params.environment, &e);
+        metadata->ebuild_interface->restrictions()->accept(restricts);
         fetch_restrict =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
@@ -360,8 +331,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        tr1::shared_ptr<const DepSpec> f_spec(metadata->ebuild_interface->src_uri());
-        DepSpecFlattener f(_imp->params.environment, &e, f_spec);
+        DepSpecFlattener f(_imp->params.environment, &e);
+        metadata->ebuild_interface->src_uri()->accept(f);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
@@ -436,8 +407,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        tr1::shared_ptr<const DepSpec> g_spec(metadata->ebuild_interface->src_uri());
-        AAFinder g(g_spec);
+        AAFinder g;
+        metadata->ebuild_interface->src_uri()->accept(g);
         std::set<std::string> already_in_all_archives;
 
         for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)

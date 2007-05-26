@@ -72,13 +72,12 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
     {
         if (std::string::npos == p->find('/'))
-            d.add(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                    env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))))),
+            d.add(PackageDepSpec(
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p))))),
                     env.default_destinations());
         else
-            d.add(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p, pds_pm_permissive)),
-                    env.default_destinations());
+            d.add(PackageDepSpec(*p, pds_pm_permissive), env.default_destinations());
     }
 
     cout << std::setw(30) << std::left << "Package";

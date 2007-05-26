@@ -133,7 +133,7 @@ namespace test_cases
             {
                 DepList d(&env, DepListOptions());
                 set_options(*d.options());
-                d.add(PortageDepParser::parse_depend(merge_target, pds_pm_unspecific), env.default_destinations());
+                d.add(PackageDepSpec(merge_target, pds_pm_unspecific), env.default_destinations());
                 TEST_CHECK(true);
 
                 TestMessageSuffix s("d={ " + join(d.begin(), d.end(), ", ") + " }", false);

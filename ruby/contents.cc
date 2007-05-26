@@ -92,6 +92,7 @@ namespace
         }
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     each {|contents_entry| block}
@@ -108,6 +109,7 @@ namespace
             rb_yield(contents_entry_to_value(*i));
         return self;
     }
+#endif
 
     VALUE
     contents_entry_init(int, VALUE *, VALUE self)
@@ -202,7 +204,9 @@ namespace
         rb_include_module(c_contents, rb_mEnumerable);
         rb_define_singleton_method(c_contents, "new", RUBY_FUNC_CAST(&contents_new), 0);
         rb_define_method(c_contents, "initialize", RUBY_FUNC_CAST(&contents_init), 0);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_contents, "each", RUBY_FUNC_CAST(&contents_each), 0);
+#endif
         rb_define_method(c_contents, "add", RUBY_FUNC_CAST(&contents_add), 1);
 
         /*
@@ -270,6 +274,7 @@ namespace
     }
 }
 
+#if CIARANM_REMOVED_THIS
 VALUE
 paludis::ruby::contents_entry_to_value(tr1::shared_ptr<const ContentsEntry> m)
 {
@@ -334,6 +339,7 @@ paludis::ruby::contents_entry_to_value(tr1::shared_ptr<const ContentsEntry> m)
         exception_to_ruby_exception(e);
     }
 }
+#endif
 
 VALUE
 paludis::ruby::contents_to_value(tr1::shared_ptr<const Contents> m)

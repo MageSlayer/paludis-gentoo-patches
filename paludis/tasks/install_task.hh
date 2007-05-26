@@ -139,7 +139,7 @@ namespace paludis
             ///\{
 
             virtual void world_update_set(const SetName &);
-            virtual void world_update_packages(tr1::shared_ptr<const DepSpec>);
+            virtual void world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>);
 
             ///\}
 

@@ -33,12 +33,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+        ConstVisitor<RestrictSpecTree>,
+        ConstVisitor<RestrictSpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<RestrictSpecTree>::VisitConstSequence<Checker, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<RestrictSpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
 
         CheckResult & result;
         const std::set<std::string> & allowed;
@@ -49,26 +49,10 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const)
+        void visit_leaf(const PlainTextDepSpec & t)
         {
-            result << Message(qal_major, "Got a PackageDepSpec in RESTRICT");
-        }
-
-        void visit(const PlainTextDepSpec * const t)
-        {
-            if (allowed.end() == allowed.find(t->text()))
-                result << Message(qal_major, "Unrecognised RESTRICT value '" + t->text() + "'");
-        }
-
-        void visit(const BlockDepSpec * const)
-        {
-            result << Message(qal_major, "Got a PackageDepSpec in RESTRICT");
-        }
-
-        void visit(const AnyDepSpec * const a)
-        {
-            result << Message(qal_major, "Got a || ( ) block in RESTRICT");
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
+            if (allowed.end() == allowed.find(t.text()))
+                result << Message(qal_major, "Unrecognised RESTRICT value '" + t.text() + "'");
         }
     };
 }
@@ -105,7 +89,7 @@ RestrictCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker c(result, allowed_restricts);
-        metadata->ebuild_interface->restrictions()->accept(&c);
+        metadata->ebuild_interface->restrictions()->accept(c);
     }
     catch (const InternalError &)
     {

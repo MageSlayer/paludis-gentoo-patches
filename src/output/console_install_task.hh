@@ -45,7 +45,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE DepTagSummaryDisplayer :
-        public DepTagVisitorTypes::ConstVisitor
+        public ConstVisitor<DepTagVisitorTypes>
     {
         private:
             ConsoleInstallTask * _task;
@@ -54,9 +54,9 @@ namespace paludis
             DepTagSummaryDisplayer(ConsoleInstallTask *) PALUDIS_ATTRIBUTE((nonnull(1)));
             virtual ~DepTagSummaryDisplayer();
 
-            void visit(const GLSADepTag * const tag);
-            void visit(const DependencyDepTag * const);
-            void visit(const GeneralSetDepTag * const tag);
+            void visit(const GLSADepTag &);
+            void visit(const DependencyDepTag &);
+            void visit(const GeneralSetDepTag &);
 
             ConsoleInstallTask * task()
             {
@@ -65,7 +65,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE EntryDepTagDisplayer :
-        public DepTagVisitorTypes::ConstVisitor
+        public ConstVisitor<DepTagVisitorTypes>
     {
         private:
             std::string _text;
@@ -74,9 +74,9 @@ namespace paludis
             EntryDepTagDisplayer();
             virtual ~EntryDepTagDisplayer();
 
-            void visit(const GLSADepTag * const tag);
-            void visit(const DependencyDepTag * const);
-            void visit(const GeneralSetDepTag * const tag);
+            void visit(const GLSADepTag & tag);
+            void visit(const DependencyDepTag &);
+            void visit(const GeneralSetDepTag & tag);
 
             std::string & text()
             {

@@ -37,7 +37,7 @@ namespace paludis
      * \ingroup grpdepspecprettyprinter
      */
     class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-        public DepSpecVisitorTypes::ConstVisitor,
+        public ConstVisitor<GenericSpecTree>,
         private PrivateImplementationPattern<DepSpecPrettyPrinter>
     {
         friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
@@ -58,17 +58,25 @@ namespace paludis
 
             /// \name Visit functions
             ///{
-            void visit(const AllDepSpec * const);
 
-            void visit(const AnyDepSpec * const);
+            void visit_sequence(const AllDepSpec &,
+                    GenericSpecTree::ConstSequenceIterator,
+                    GenericSpecTree::ConstSequenceIterator);
 
-            void visit(const UseDepSpec * const);
+            void visit_sequence(const AnyDepSpec &,
+                    GenericSpecTree::ConstSequenceIterator,
+                    GenericSpecTree::ConstSequenceIterator);
 
-            void visit(const PackageDepSpec * const);
+            void visit_sequence(const UseDepSpec &,
+                    GenericSpecTree::ConstSequenceIterator,
+                    GenericSpecTree::ConstSequenceIterator);
 
-            void visit(const PlainTextDepSpec * const);
+            void visit_leaf(const PackageDepSpec &);
 
-            void visit(const BlockDepSpec * const);
+            void visit_leaf(const PlainTextDepSpec &);
+
+            void visit_leaf(const BlockDepSpec &);
+
             ///}
     };
 

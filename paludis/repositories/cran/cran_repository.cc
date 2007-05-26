@@ -580,7 +580,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     return;
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 CRANRepository::do_package_set(const SetName & s) const
 {
     if ("base" == s.data())
@@ -589,10 +589,11 @@ CRANRepository::do_package_set(const SetName & s) const
          * \todo Implement system as all package which are installed
          * by dev-lang/R by default.
          */
-        return tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
+        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
     else
-        return tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 tr1::shared_ptr<const SetNameCollection>

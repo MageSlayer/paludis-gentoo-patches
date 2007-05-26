@@ -157,7 +157,7 @@ namespace paludis
             ///\{
 
             virtual void world_remove_set(const SetName &);
-            virtual void world_remove_packages(tr1::shared_ptr<const DepSpec>);
+            virtual void world_remove_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>);
 
             ///\}
 

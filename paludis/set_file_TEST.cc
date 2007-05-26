@@ -22,6 +22,7 @@
 #include <test/test_framework.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <fstream>
 
 using namespace test;
@@ -44,7 +45,7 @@ namespace test_cases
 
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23");
             }
 
@@ -52,7 +53,7 @@ namespace test_cases
             f.add("moo/oink");
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23 moo/oink");
             }
 
@@ -70,7 +71,7 @@ namespace test_cases
 
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar moo/oink");
             }
 
@@ -105,7 +106,7 @@ namespace test_cases
 
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23");
             }
 
@@ -113,7 +114,7 @@ namespace test_cases
             f.add("moo/oink");
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23 moo/oink");
             }
 
@@ -131,7 +132,7 @@ namespace test_cases
 
             {
                 DepSpecPrettyPrinter p(0, false);
-                f.contents()->accept(&p);
+                f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p, "moo/oink");
             }
 

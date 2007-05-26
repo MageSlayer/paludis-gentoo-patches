@@ -78,14 +78,14 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(self.e.package_database, PackageDatabase))
         self.assert_(isinstance(self.nce.package_database, PackageDatabase))
 
-    def test_07_sets(self):
-        self.get_envs()
-
-        self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
-        self.assert_(isinstance(self.nce.set("everything"), AllDepSpec))
-
-        self.assert_(isinstance(self.e.set_names(), SetNameCollection))
-        self.assert_(isinstance(self.nce.set_names(), SetNameCollection))
+#    def test_07_sets(self):
+#        self.get_envs()
+#
+#        self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
+#        self.assert_(isinstance(self.nce.set("everything"), AllDepSpec))
+#
+#        self.assert_(isinstance(self.e.set_names(), SetNameCollection))
+#        self.assert_(isinstance(self.nce.set_names(), SetNameCollection))
 
     def test_08_repositories(self):
         self.get_envs()

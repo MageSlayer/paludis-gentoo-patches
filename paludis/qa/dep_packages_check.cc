@@ -27,6 +27,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <set>
 
 using namespace paludis;
@@ -35,14 +36,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AnyDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AnyDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, UseDepSpec>::visit_sequence;
 
         CheckResult & result;
         const std::string role;
@@ -55,19 +56,15 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const p)
+        void visit_leaf(const PackageDepSpec & p)
         {
-            if (p->package_ptr())
-                if (suspicious.end() != suspicious.find(*p->package_ptr()))
+            if (p.package_ptr())
+                if (suspicious.end() != suspicious.find(*p.package_ptr()))
                     result << Message(qal_maybe, "Suspicious " + role + " entry '"
-                            + stringify(*p->package_ptr()) + "'");
+                            + stringify(*p.package_ptr()) + "'");
         }
 
-        void visit(const PlainTextDepSpec * const)
-        {
-        }
-
-        void visit(const BlockDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
@@ -111,7 +108,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
-        metadata->deps_interface->build_depend()->accept(&depend_checker);
+        metadata->deps_interface->build_depend()->accept(depend_checker);
 
         static std::set<QualifiedPackageName> suspicious_rdepend;
         if (suspicious_rdepend.empty())
@@ -134,7 +131,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
-        metadata->deps_interface->run_depend()->accept(&rdepend_checker);
+        metadata->deps_interface->run_depend()->accept(rdepend_checker);
     }
     catch (const InternalError &)
     {

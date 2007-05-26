@@ -21,6 +21,7 @@
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <iostream>
 #include <algorithm>
 
@@ -32,36 +33,36 @@ using std::endl;
 namespace
 {
     struct ContentsDisplayer :
-        ContentsVisitorTypes::ConstVisitor
+        ConstVisitor<ContentsVisitorTypes>
     {
-        void visit(const ContentsFileEntry * const e)
+        void visit(const ContentsFileEntry & e)
         {
-            cout << "    " << colour(cl_file, e->name()) << endl;
+            cout << "    " << colour(cl_file, e.name()) << endl;
         }
 
-        void visit(const ContentsDirEntry * const e)
+        void visit(const ContentsDirEntry & e)
         {
-            cout << "    " << colour(cl_dir, e->name()) << endl;
+            cout << "    " << colour(cl_dir, e.name()) << endl;
         }
 
-        void visit(const ContentsSymEntry * const e)
+        void visit(const ContentsSymEntry & e)
         {
-            cout << "    " << colour(cl_sym, e->name()) << " -> " << e->target() << endl;
+            cout << "    " << colour(cl_sym, e.name()) << " -> " << e.target() << endl;
         }
 
-        void visit(const ContentsMiscEntry * const e)
+        void visit(const ContentsMiscEntry & e)
         {
-            cout << "    " << colour(cl_misc, e->name()) << endl;
+            cout << "    " << colour(cl_misc, e.name()) << endl;
         }
 
-        void visit(const ContentsFifoEntry * const e)
+        void visit(const ContentsFifoEntry & e)
         {
-            cout << "    " << colour(cl_fifo, e->name()) << endl;
+            cout << "    " << colour(cl_fifo, e.name()) << endl;
         }
 
-        void visit(const ContentsDevEntry * const e)
+        void visit(const ContentsDevEntry & e)
         {
-            cout << "    " << colour(cl_dev, e->name()) << endl;
+            cout << "    " << colour(cl_dev, e.name()) << endl;
         }
     };
 }
@@ -81,7 +82,7 @@ do_one_contents_entry(
         tr1::shared_ptr<const Contents> contents(contents_interface->contents(
                     e.name, e.version));
         ContentsDisplayer d;
-        std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
+        std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
     }
     else
         cout << "    " << colour(cl_error, "(unknown)") << endl;

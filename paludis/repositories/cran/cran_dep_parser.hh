@@ -17,7 +17,7 @@ namespace paludis
         /**
          * Parse function.
          */
-        static tr1::shared_ptr<const CompositeDepSpec> parse(const std::string & s,
+        static tr1::shared_ptr<DependencySpecTree::ConstItem> parse(const std::string & s,
                 const PackageDepSpecParseMode);
     };
 }

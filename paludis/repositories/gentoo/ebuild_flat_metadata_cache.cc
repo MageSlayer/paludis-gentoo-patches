@@ -100,10 +100,11 @@ namespace
         return join(tokens.begin(), tokens.end(), " ");
     }
 
-    std::string normalise(tr1::shared_ptr<const DepSpec> d)
+    template <typename T_>
+    std::string flatten(const T_ & d)
     {
         DepSpecPrettyPrinter p(0, false);
-        d->accept(&p);
+        d->accept(p);
         return stringify(p);
     }
 }
@@ -126,20 +127,20 @@ EbuildFlatMetadataCache::save(tr1::shared_ptr<const EbuildVersionMetadata> v)
 
     if (cache)
     {
-        cache << normalise(v->build_depend()) << std::endl;
-        cache << normalise(v->run_depend()) << std::endl;
+        cache << flatten(v->build_depend()) << std::endl;
+        cache << flatten(v->run_depend()) << std::endl;
         cache << normalise(v->slot) << std::endl;
-        cache << normalise(v->src_uri()) << std::endl;
-        cache << normalise(v->restrictions()) << std::endl;
-        cache << normalise(v->homepage()) << std::endl;
-        cache << normalise(v->license()) << std::endl;
+        cache << flatten(v->src_uri()) << std::endl;
+        cache << flatten(v->restrictions()) << std::endl;
+        cache << flatten(v->homepage()) << std::endl;
+        cache << flatten(v->license()) << std::endl;
         cache << normalise(v->description) << std::endl;
         cache << join(v->keywords()->begin(), v->keywords()->end(), " ") << std::endl;
         cache << join(v->inherited()->begin(), v->inherited()->end(), " ") << std::endl;
         cache << join(v->iuse()->begin(), v->iuse()->end(), " ") << std::endl;
         cache << std::endl;
-        cache << normalise(v->post_depend()) << std::endl;
-        cache << normalise(v->provide()) << std::endl;
+        cache << flatten(v->post_depend()) << std::endl;
+        cache << flatten(v->provide()) << std::endl;
         cache << normalise(v->eapi.name) << std::endl;
     }
     else

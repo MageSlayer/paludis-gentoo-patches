@@ -822,6 +822,7 @@ namespace
         }
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     add(dep_spec, destinations)
@@ -850,6 +851,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * call-seq:
@@ -880,6 +882,7 @@ namespace
         return dep_list_options_to_value(p->options());
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     already_installed?(dep_spec, destinations)
@@ -907,6 +910,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * call-seq:
@@ -987,6 +991,7 @@ namespace
         }
     }
 
+#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     tags -> Array
@@ -1013,6 +1018,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * call-seq:
@@ -1461,9 +1467,11 @@ namespace
         c_dep_list= rb_define_class_under(paludis_module(), "DepList", rb_cObject);
         rb_define_singleton_method(c_dep_list, "new", RUBY_FUNC_CAST(&dep_list_new), -1);
         rb_define_method(c_dep_list, "initialize", RUBY_FUNC_CAST(&dep_list_init), -1);
-        rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 2);
         rb_define_method(c_dep_list, "clear", RUBY_FUNC_CAST(&dep_list_clear), 0);
+#if CIARANM_REMOVED_THIS
+        rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 2);
         rb_define_method(c_dep_list, "already_installed?", RUBY_FUNC_CAST(&dep_list_already_installed), 2);
+#endif
         rb_define_method(c_dep_list, "each", RUBY_FUNC_CAST(&dep_list_each), 0);
         rb_include_module(c_dep_list, rb_mEnumerable);
         rb_define_method(c_dep_list, "options", RUBY_FUNC_CAST(&dep_list_options), 0);
@@ -1479,7 +1487,9 @@ namespace
         rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package), 0);
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata), 0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
+#if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
+#endif
         rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations), 0);
 
         /*

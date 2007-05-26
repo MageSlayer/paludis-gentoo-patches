@@ -678,7 +678,7 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -690,7 +690,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            tr1::shared_ptr<DepSpec> package_set(const SetName & s) const
+            tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const
             {
                 return do_package_set(s);
             }

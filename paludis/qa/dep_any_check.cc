@@ -26,6 +26,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -34,7 +35,7 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor
+        ConstVisitor<DependencySpecTree>
     {
         CheckResult & result;
         const std::string role;
@@ -47,51 +48,49 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const)
+        void visit_leaf(const PackageDepSpec &)
         {
         }
 
-        void visit(const AllDepSpec * const a)
+        void visit_sequence(const AllDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
             /* yes, the following line is correct. */
             Save<bool> in_any_save(&in_any, false);
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
+            std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const AnyDepSpec * const a)
+        void visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
             Save<bool> in_any_save(&in_any, true);
-            if (a->begin() == a->end())
+            if (cur == end)
                 result << Message(qal_minor, "Empty || ( ) block in " + role);
             else
             {
-                if (a->end() == next(a->begin()))
+                if (end == next(cur))
                     result << Message(qal_minor, "One item in || ( ) block in " + role);
 
-                std::for_each(a->begin(), a->end(), accept_visitor(this));
+                std::for_each(cur, end, accept_visitor(*this));
             }
         }
 
-        void visit(const UseDepSpec * const u)
+        void visit_sequence(const UseDepSpec & u,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
             if (in_any)
-                result << Message(qal_maybe, "Conditional on '" + stringify(u->flag()) + 
+                result << Message(qal_maybe, "Conditional on '" + stringify(u.flag()) +
                         "' inside || ( ) block in " + role);
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
+            std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
-
-        void visit(const BlockDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
-
-    void Checker::visit(const PlainTextDepSpec * const t)
-    {
-        throw InternalError(PALUDIS_HERE, "Found unexpected PlainTextDepSpec '"
-                + t->text() + "'");
-    }
 }
 
 DepAnyCheck::DepAnyCheck()
@@ -114,13 +113,13 @@ DepAnyCheck::operator() (const EbuildCheckData & e) const
         if (metadata->deps_interface)
         {
             Checker depend_checker(result, "DEPEND");
-            metadata->deps_interface->build_depend()->accept(&depend_checker);
+            metadata->deps_interface->build_depend()->accept(depend_checker);
 
             Checker rdepend_checker(result, "RDEPEND");
-            metadata->deps_interface->run_depend()->accept(&rdepend_checker);
+            metadata->deps_interface->run_depend()->accept(rdepend_checker);
 
             Checker pdepend_checker(result, "PDEPEND");
-            metadata->deps_interface->post_depend()->accept(&pdepend_checker);
+            metadata->deps_interface->post_depend()->accept(pdepend_checker);
         }
     }
     catch (const InternalError &)

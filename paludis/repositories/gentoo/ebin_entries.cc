@@ -29,6 +29,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <set>
 #include <fstream>
@@ -134,8 +135,8 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_binaries;
 
         /* make B and FLAT_BIN_URI */
-        tr1::shared_ptr<const DepSpec> b_spec(metadata->ebin_interface->bin_uri());
-        DepSpecFlattener f(_imp->params.environment, &e, b_spec);
+        DepSpecFlattener f(_imp->params.environment, &e);
+        metadata->ebin_interface->bin_uri()->accept(f);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
@@ -374,9 +375,9 @@ EbinEntries::merge(const MergeOptions & m)
     if (metadata->deps_interface)
     {
         DepSpecPrettyPrinter r(0, false), p(0, false), s(0, false);
-        metadata->deps_interface->run_depend()->accept(&r);
-        metadata->deps_interface->post_depend()->accept(&p);
-        metadata->deps_interface->suggested_depend()->accept(&s);
+        metadata->deps_interface->run_depend()->accept(r);
+        metadata->deps_interface->post_depend()->accept(p);
+        metadata->deps_interface->suggested_depend()->accept(s);
         ebin_file << "RDEPEND=" << r << std::endl;
         ebin_file << "PDEPEND=" << p << std::endl;
         ebin_file << "SDEPEND=" << s << std::endl;
@@ -385,13 +386,13 @@ EbinEntries::merge(const MergeOptions & m)
     if (metadata->license_interface)
     {
         DepSpecPrettyPrinter l(0, false);
-        metadata->license_interface->license()->accept(&l);
+        metadata->license_interface->license()->accept(l);
         ebin_file << "LICENSE=" << l << std::endl;
     }
 
     ebin_file << "SLOT=" << metadata->slot << std::endl;
     DepSpecPrettyPrinter h(0, false);
-    metadata->homepage()->accept(&h);
+    metadata->homepage()->accept(h);
     ebin_file << "HOMEPAGE=" << h << std::endl;
     ebin_file << "DESCRIPTION=" << metadata->description << std::endl;
     ebin_file << "EAPI=" << metadata->eapi.name << std::endl;
@@ -399,9 +400,9 @@ EbinEntries::merge(const MergeOptions & m)
     if (metadata->ebuild_interface)
     {
         DepSpecPrettyPrinter p(0, false), s(0, false), r(0, false);
-        metadata->ebuild_interface->provide()->accept(&p);
-        metadata->ebuild_interface->src_uri()->accept(&s);
-        metadata->ebuild_interface->restrictions()->accept(&r);
+        metadata->ebuild_interface->provide()->accept(p);
+        metadata->ebuild_interface->src_uri()->accept(s);
+        metadata->ebuild_interface->restrictions()->accept(r);
         ebin_file << "PROVIDE=" << p << std::endl;
         ebin_file << "SRC_URI=" << s << std::endl;
         ebin_file << "RESTRICT=" << r << std::endl;

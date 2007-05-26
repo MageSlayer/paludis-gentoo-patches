@@ -49,27 +49,19 @@ void PALUDIS_VISIBLE expose_dep_spec()
             "Return us as a PackageDepSpec, or None if we are not a UseDepSpec."
           );
 
-    register_shared_ptrs_to_python<CompositeDepSpec>();
-    bp::class_<CompositeDepSpec, bp::bases<DepSpec>, boost::noncopyable>
-        cds("CompositeDepSpec",
-                "Iterable class for dependency specs that have a number of child dependency specs.",
-                bp::no_init
-          );
-    cds.def("__iter__", bp::range(&CompositeDepSpec::begin, &CompositeDepSpec::end));
-
-    bp::class_<AnyDepSpec, bp::bases<CompositeDepSpec>, boost::noncopyable>
+    bp::class_<AnyDepSpec, bp::bases<DepSpec>, boost::noncopyable>
         anyds("AnyDepSpec",
                 "Represents a \"|| ( )\" dependency block.",
                 bp::no_init
           );
 
-    bp::class_<AllDepSpec, bp::bases<CompositeDepSpec>, boost::noncopyable>
+    bp::class_<AllDepSpec, bp::bases<DepSpec>, boost::noncopyable>
         allds("AllDepSpec",
                 "Represents a ( first second third ) or top level group of dependency specs.",
                 bp::no_init
           );
 
-    bp::class_<UseDepSpec, bp::bases<CompositeDepSpec>, boost::noncopyable>
+    bp::class_<UseDepSpec, bp::bases<DepSpec>, boost::noncopyable>
         useds("UseDepSpec",
                 "Represents a use? ( ) dependency spec.",
                 bp::no_init

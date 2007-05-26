@@ -19,6 +19,7 @@
 
 #include "dep_tag.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/visitor-impl.hh>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.
@@ -30,6 +31,17 @@ using namespace paludis;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >;
+
+template class ConstVisitor<DepTagVisitorTypes>;
+template class ConstAcceptInterface<DepTagVisitorTypes>;
+
+template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>;
+template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>;
+template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
+
+template class Visits<const GeneralSetDepTag>;
+template class Visits<const GLSADepTag>;
+template class Visits<const DependencyDepTag>;
 
 #include <paludis/dep_tag-sr.cc>
 

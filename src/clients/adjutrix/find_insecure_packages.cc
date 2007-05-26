@@ -63,10 +63,8 @@ namespace
     }
 
     class ListInsecureVisitor :
-        public DepSpecVisitorTypes::ConstVisitor,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepSpec>,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepSpec>,
-        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepSpec>
+        public ConstVisitor<SetSpecTree>,
+        public ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>
     {
         private:
             const Environment & _env;
@@ -74,33 +72,23 @@ namespace
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
 
         public:
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepSpec>::visit;
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepSpec>::visit;
-            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepSpec>::visit;
+            using ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>::visit;
 
             ListInsecureVisitor(const Environment & e) :
                 _env(e)
             {
             }
 
-            void visit(const PackageDepSpec * const a)
+            void visit_leaf(const PackageDepSpec & a)
             {
                 tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
-                        _env.package_database()->query(query::Matches(*a), qo_order_by_version));
+                        _env.package_database()->query(query::Matches(a), qo_order_by_version));
                 for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
-                    if (a->tag())
-                        _found.insert(std::make_pair(*i, a->tag()->short_text()));
+                    if (a.tag())
+                        _found.insert(std::make_pair(*i, a.tag()->short_text()));
                     else
                         throw InternalError(PALUDIS_HERE, "didn't get a tag");
-            }
-
-            void visit(const PlainTextDepSpec * const)
-            {
-            }
-
-            void visit(const BlockDepSpec * const)
-            {
             }
 
             friend std::ostream & operator<< (std::ostream &, const ListInsecureVisitor &);
@@ -148,11 +136,11 @@ void do_find_insecure_packages(const Environment & env)
 
         write_repository_header(r->name());
 
-        tr1::shared_ptr<const DepSpec> all_insecure(r->sets_interface->package_set(SetName("insecurity")));
+        tr1::shared_ptr<const SetSpecTree::ConstItem> all_insecure(r->sets_interface->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);
-        all_insecure->accept(&v);
+        all_insecure->accept(v);
         cout << v << endl;
     }
 }

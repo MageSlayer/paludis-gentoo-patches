@@ -20,6 +20,7 @@
 #include "fake_installed_repository.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
 
@@ -77,9 +78,9 @@ FakeInstalledRepository::provided_packages() const
                 if (! m->ebuild_interface)
                     continue;
 
-                tr1::shared_ptr<const DepSpec> provide(m->ebuild_interface->provide());
                 PackageDatabaseEntry dbe(*p, *v, name());
-                DepSpecFlattener f(environment(), &dbe, provide);
+                DepSpecFlattener f(environment(), &dbe);
+                m->ebuild_interface->provide()->accept(f);
 
                 for (DepSpecFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->insert(RepositoryProvidesEntry::create()

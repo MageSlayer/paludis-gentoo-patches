@@ -26,6 +26,8 @@
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
 
 #include <list>
@@ -36,52 +38,40 @@ using namespace paludis::qa;
 
 namespace
 {
-    struct IsViableAnyDepSpecChild
+    bool is_viable_any_child(const QAEnvironment & env, const PackageDatabaseEntry & pde,
+            const DepSpec * const spec)
     {
-        const QAEnvironment * const env;
-        const PackageDatabaseEntry pde;
-
-        IsViableAnyDepSpecChild(const QAEnvironment * const e, const PackageDatabaseEntry & p) :
-            env(e),
-            pde(p)
+        const UseDepSpec * const u(spec->as_use_dep_spec());
+        if (u)
         {
-        }
-
-        template <typename T_>
-        bool operator() (T_ spec) const
-        {
-            const UseDepSpec * const u(spec->as_use_dep_spec());
-            if (0 != u)
-            {
-                RepositoryUseInterface * i(env->package_database()->fetch_repository(
-                            pde.repository)->use_interface);
-                if (! i)
-                    return true;
-
-                if (i->query_use_mask(u->flag(), pde) && ! u->inverse())
-                    return false;
-
-                if (i->query_use_force(u->flag(), pde) && u->inverse())
-                    return false;
-
-                /* arch flags aren't necessarily use masked. stupid! */
-                tr1::shared_ptr<const UseFlagNameCollection> arch_flags(i->arch_flags());
-                if (stringify(u->flag()) != env->main_repository()->portage_interface->profile_variable("ARCH"))
-                    if (arch_flags->end() != arch_flags->find(u->flag()))
-                        return u->inverse();
-
+            RepositoryUseInterface * i(env.package_database()->fetch_repository(
+                        pde.repository)->use_interface);
+            if (! i)
                 return true;
-            }
-            else
-                return true;
+
+            if (i->query_use_mask(u->flag(), pde) && ! u->inverse())
+                return false;
+
+            if (i->query_use_force(u->flag(), pde) && u->inverse())
+                return false;
+
+            /* arch flags aren't necessarily use masked. stupid! */
+            tr1::shared_ptr<const UseFlagNameCollection> arch_flags(i->arch_flags());
+            if (stringify(u->flag()) != env.main_repository()->portage_interface->profile_variable("ARCH"))
+                if (arch_flags->end() != arch_flags->find(u->flag()))
+                    return u->inverse();
+
+            return true;
         }
-    };
+        else
+            return true;
+    }
 
     struct Checker :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<Checker, AllDepSpec>::visit_sequence;
 
         CheckResult & result;
         const std::string role;
@@ -99,12 +89,12 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec * const p)
+        void visit_leaf(const PackageDepSpec & p)
         {
             bool found(false);
             std::string candidates;
             tr1::shared_ptr<PackageDatabaseEntryCollection> matches(env->package_database()->query(
-                        query::Matches(*p), qo_order_by_version));
+                        query::Matches(p), qo_order_by_version));
             for (PackageDatabaseEntryCollection::ReverseIterator m(matches->rbegin()),
                     m_end(matches->rend()) ; m != m_end ; ++m)
             {
@@ -128,26 +118,30 @@ namespace
 
             if (! found)
                 result << Message(qal_major, "No visible provider for " + role + " entry '"
-                        + stringify(*p) + "'" + (unstable ? " (unstable)" : "") + " (candidates: "
+                        + stringify(p) + "'" + (unstable ? " (unstable)" : "") + " (candidates: "
                         + candidates + ")");
         }
 
-        void visit(const AnyDepSpec * const a)
+        void visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
-            std::list<tr1::shared_ptr<const DepSpec> > viable_children;
-            std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
-                        IsViableAnyDepSpecChild(env, pde)));
+            using namespace tr1::placeholders;
 
-            if (viable_children.empty())
+            if (end == std::find_if(cur, end,
+                        tr1::bind(&is_viable_any_child, tr1::cref(*env), pde,
+                            tr1::bind(&get_const_item<DependencySpecTree::ConstItem>, _1))))
                 return;
 
             bool found(false);
-            for (std::list<tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
-                    c_end(viable_children.end()) ; c != c_end && ! found ; ++c)
+            for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
             {
+                if (! is_viable_any_child(*env, pde, get_const_item(*c)))
+                    continue;
+
                 Save<CheckResult> save_result(&result);
                 result.clear();
-                (*c)->accept(this);
+                c->accept(*this);
                 if (result.empty())
                     found = true;
             }
@@ -155,23 +149,21 @@ namespace
             if (! found)
             {
                 DepSpecPrettyPrinter printer(0, false);
-                a->accept(&printer);
-                result << Message(qal_major, "No visible provider for " + role + " entry '"
-                        + stringify(printer) + "'" + (unstable ? " (unstable)" : ""));
+                std::for_each(cur, end, accept_visitor(printer));
+                result << Message(qal_major, "No visible provider for " + role + " entry '|| ( "
+                        + stringify(printer) + " )'" + (unstable ? " (unstable)" : ""));
             }
         }
 
-        void visit(const UseDepSpec * const u)
+        void visit_sequence(const UseDepSpec & u,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
         {
-            if (IsViableAnyDepSpecChild(env, pde)(u))
-                std::for_each(u->begin(), u->end(), accept_visitor(this));
+            if (is_viable_any_child(*env, pde, &u))
+                std::for_each(cur, end, accept_visitor(*this));
         }
 
-        void visit(const BlockDepSpec * const)
-        {
-        }
-
-        void visit(const PlainTextDepSpec * const)
+        void visit_leaf(const BlockDepSpec &)
         {
         }
     };
@@ -256,13 +248,13 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
             else
             {
                 Checker depend_checker(result, "DEPEND", e.environment, ee, unstable);
-                metadata->deps_interface->build_depend()->accept(&depend_checker);
+                metadata->deps_interface->build_depend()->accept(depend_checker);
 
                 Checker rdepend_checker(result, "RDEPEND", e.environment, ee, unstable);
-                metadata->deps_interface->run_depend()->accept(&rdepend_checker);
+                metadata->deps_interface->run_depend()->accept(rdepend_checker);
 
                 Checker pdepend_checker(result, "PDEPEND", e.environment, ee, unstable);
-                metadata->deps_interface->post_depend()->accept(&pdepend_checker);
+                metadata->deps_interface->post_depend()->accept(pdepend_checker);
             }
 
             if (unstable)

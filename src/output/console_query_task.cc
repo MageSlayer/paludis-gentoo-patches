@@ -20,6 +20,7 @@
 #include "console_query_task.hh"
 #include "licence.hh"
 #include "use_flag_pretty_printer.hh"
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -199,7 +200,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
     tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
             version_metadata(e.name, e.version));
 
-    display_metadata_dep("Homepage", "HOMEPAGE", metadata->homepage(), true);
+    display_metadata_uri("Homepage", "HOMEPAGE", metadata->homepage(), true);
     display_metadata_key("Description", "DESCRIPTION", metadata->description);
 
     if (metadata->license_interface)
@@ -207,10 +208,10 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
 
     if (want_deps() && metadata->deps_interface)
     {
-        display_metadata_dep("Build dependencies", "DEPEND", metadata->deps_interface->build_depend(), want_raw());
-        display_metadata_dep("Runtime dependencies", "RDEPEND", metadata->deps_interface->run_depend(), want_raw());
-        display_metadata_dep("Post dependencies", "PDEPEND", metadata->deps_interface->post_depend(), want_raw());
-        display_metadata_dep("Suggested dependencies", "SDEPEND", metadata->deps_interface->suggested_depend(), want_raw());
+        display_metadata_dependency("Build dependencies", "DEPEND", metadata->deps_interface->build_depend(), want_raw());
+        display_metadata_dependency("Runtime dependencies", "RDEPEND", metadata->deps_interface->run_depend(), want_raw());
+        display_metadata_dependency("Post dependencies", "PDEPEND", metadata->deps_interface->post_depend(), want_raw());
+        display_metadata_dependency("Suggested dependencies", "SDEPEND", metadata->deps_interface->suggested_depend(), want_raw());
     }
 
     if (metadata->origins_interface)
@@ -227,15 +228,15 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
 
     if (metadata->ebuild_interface)
     {
-        display_metadata_dep("Provides", "PROVIDE", metadata->ebuild_interface->provide(), true);
+        display_metadata_provides("Provides", "PROVIDE", metadata->ebuild_interface->provide(), true);
         display_metadata_iuse("Use flags", "IUSE", join(metadata->ebuild_interface->iuse()->begin(),
                     metadata->ebuild_interface->iuse()->end(), " "), e);
         if (want_raw())
         {
             display_metadata_key("Keywords", "KEYWORDS", join(metadata->ebuild_interface->keywords()->begin(),
                         metadata->ebuild_interface->keywords()->end(), " "));
-            display_metadata_dep("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri(), true);
-            display_metadata_dep("Restrict", "RESTRICT", metadata->ebuild_interface->restrictions(), true);
+            display_metadata_uri("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri(), true);
+            display_metadata_restrict("Restrict", "RESTRICT", metadata->ebuild_interface->restrictions(), true);
         }
     }
 
@@ -264,7 +265,7 @@ ConsoleQueryTask::display_metadata_key(const std::string & k, const std::string 
 }
 
 void
-ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, tr1::shared_ptr<const DepSpec> l,
+ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, tr1::shared_ptr<const LicenseSpecTree::ConstItem> l,
         const PackageDatabaseEntry & display_entry) const
 {
     output_left_column((want_raw() ? kk : k) + ":");
@@ -272,13 +273,13 @@ ConsoleQueryTask::display_metadata_license(const std::string & k, const std::str
     if (want_raw())
     {
         DepSpecPrettyPrinter p(0, false);
-        l->accept(&p);
+        l->accept(p);
         output_right_column(stringify(p));
     }
     else
     {
         LicenceDisplayer d(output_stream(), _imp->env, display_entry);
-        l->accept(&d);
+        l->accept(d);
         output_right_column("");
     }
 }
@@ -286,14 +287,14 @@ ConsoleQueryTask::display_metadata_license(const std::string & k, const std::str
 namespace
 {
     struct IsEmpty :
-        DepSpecVisitorTypes::ConstVisitor,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepSpec>,
-        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepSpec>
+        ConstVisitor<GenericSpecTree>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>,
+        ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, UseDepSpec>
     {
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepSpec>::visit;
-        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepSpec>::visit;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AnyDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, AllDepSpec>::visit_sequence;
+        using ConstVisitor<GenericSpecTree>::VisitConstSequence<IsEmpty, UseDepSpec>::visit_sequence;
 
         bool empty;
 
@@ -302,52 +303,84 @@ namespace
         {
         }
 
-        void visit(const PackageDepSpec *)
+        void visit_leaf(const PackageDepSpec &)
         {
             empty = false;
         }
 
-        void visit(const BlockDepSpec *)
+        void visit_leaf(const BlockDepSpec &)
         {
             empty = false;
         }
 
-        void visit(const PlainTextDepSpec *)
+        void visit_leaf(const PlainTextDepSpec &)
         {
             empty = false;
         }
     };
 
-    bool is_spec_empty(tr1::shared_ptr<const DepSpec> d)
+    template <typename T_>
+    bool is_spec_empty(tr1::shared_ptr<const T_> d)
     {
         IsEmpty e;
-        d->accept(&e);
+        d->accept(e);
         return e.empty;
     }
 }
 
-void
-ConsoleQueryTask::display_metadata_dep(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const DepSpec> d, const bool one_line) const
+namespace
 {
-    if (is_spec_empty(d))
-        return;
-
-    output_left_column((want_raw() ? kk : k) + ":");
-
-    if (one_line)
+    template <typename T_>
+    void display_dep(const ConsoleQueryTask * const q, const std::string & k,
+            const std::string & kk, tr1::shared_ptr<const T_> d, const bool one_line)
     {
-        DepSpecPrettyPrinter p(0, false);
-        d->accept(&p);
-        output_stream() << p << std::endl;
+        if (is_spec_empty(d))
+            return;
+
+        q->output_left_column((q->want_raw() ? kk : k) + ":");
+
+        if (one_line)
+        {
+            DepSpecPrettyPrinter p(0, false);
+            d->accept(p);
+            q->output_stream() << p << std::endl;
+        }
+        else
+        {
+            q->output_right_column("");
+            DepSpecPrettyPrinter p(q->left_column_width() + 5);
+            d->accept(p);
+            q->output_stream() << p;
+        }
     }
-    else
-    {
-        output_right_column("");
-        DepSpecPrettyPrinter p(left_column_width() + 5);
-        d->accept(&p);
-        output_stream() << p;
-    }
+}
+
+void
+ConsoleQueryTask::display_metadata_dependency(const std::string & k, const std::string & kk,
+        tr1::shared_ptr<const DependencySpecTree::ConstItem> d, const bool one_line) const
+{
+    display_dep(this, k, kk, d, one_line);
+}
+
+void
+ConsoleQueryTask::display_metadata_uri(const std::string & k, const std::string & kk,
+        tr1::shared_ptr<const URISpecTree::ConstItem> d, const bool one_line) const
+{
+    display_dep(this, k, kk, d, one_line);
+}
+
+void
+ConsoleQueryTask::display_metadata_provides(const std::string & k, const std::string & kk,
+        tr1::shared_ptr<const ProvideSpecTree::ConstItem> d, const bool one_line) const
+{
+    display_dep(this, k, kk, d, one_line);
+}
+
+void
+ConsoleQueryTask::display_metadata_restrict(const std::string & k, const std::string & kk,
+        tr1::shared_ptr<const RestrictSpecTree::ConstItem> d, const bool one_line) const
+{
+    display_dep(this, k, kk, d, one_line);
 }
 
 void

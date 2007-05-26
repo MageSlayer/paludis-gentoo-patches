@@ -53,7 +53,7 @@ VersionMetadataOriginsInterface::VersionMetadataOriginsInterface()
 {
 }
 
-VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const TextParserFunction & f) :
+VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const LicenseParserFunction & f) :
     parser(f)
 {
 }
@@ -74,7 +74,7 @@ VersionMetadataHasInterfaces::~VersionMetadataHasInterfaces()
 {
 }
 
-tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const DependencySpecTree::ConstItem>
 VersionMetadataDepsInterface::_make_depend(const std::string & s) const
 {
     if (version_metadata()->eapi.supported)
@@ -83,26 +83,43 @@ VersionMetadataDepsInterface::_make_depend(const std::string & s) const
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
             "Don't know how to parse dependency strings for EAPI '" + version_metadata()->eapi.name + "'";
-        return tr1::shared_ptr<DepSpec>(new AllDepSpec);
+        return tr1::shared_ptr<DependencySpecTree::ConstItem>(new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 }
 
-tr1::shared_ptr<const DepSpec>
+tr1::shared_ptr<const RestrictSpecTree::ConstItem>
+VersionMetadataEbuildInterface::_make_restrict(const std::string & s) const
+{
+    if (version_metadata()->eapi.supported)
+        return PortageDepParser::parse_restrict(s);
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "Don't know how to parse restrict strings for EAPI '" + version_metadata()->eapi.name + "'";
+        return tr1::shared_ptr<RestrictSpecTree::ConstItem>(new ConstTreeSequence<RestrictSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    }
+}
+
+tr1::shared_ptr<const ProvideSpecTree::ConstItem>
+VersionMetadataEbuildInterface::_make_provide(const std::string & s) const
+{
+    if (version_metadata()->eapi.supported)
+        return PortageDepParser::parse_provide(s);
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "Don't know how to parse provide strings for EAPI '" + version_metadata()->eapi.name + "'";
+        return tr1::shared_ptr<ProvideSpecTree::ConstItem>(new ConstTreeSequence<ProvideSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    }
+}
+
+tr1::shared_ptr<const LicenseSpecTree::ConstItem>
 VersionMetadataLicenseInterface::_make_license(const std::string & s) const
 {
     return parser(s);
-}
-
-tr1::shared_ptr<const DepSpec>
-VersionMetadataBase::_make_text(const std::string & s) const
-{
-    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
-}
-
-tr1::shared_ptr<const DepSpec>
-VersionMetadataEbuildInterface::_make_text(const std::string & s) const
-{
-    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
 }
 
 template <typename Item_, typename Container_>
@@ -135,10 +152,22 @@ VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) con
     return result;
 }
 
-tr1::shared_ptr<const DepSpec>
-VersionMetadataEbinInterface::_make_text(const std::string & s) const
+tr1::shared_ptr<const URISpecTree::ConstItem>
+VersionMetadataEbinInterface::_make_uri(const std::string & s) const
 {
-    return PortageDepParser::parse(s, PortageDepParser::Policy::text_is_text_dep_spec(false));
+    return PortageDepParser::parse_uri(s);
+}
+
+tr1::shared_ptr<const URISpecTree::ConstItem>
+VersionMetadataEbuildInterface::_make_uri(const std::string & s) const
+{
+    return PortageDepParser::parse_uri(s);
+}
+
+tr1::shared_ptr<const URISpecTree::ConstItem>
+VersionMetadataBase::_make_text(const std::string & s) const
+{
+    return PortageDepParser::parse_uri(s);
 }
 
 template <typename Item_, typename Container_>
@@ -149,5 +178,4 @@ VersionMetadataCRANInterface::_make_collection(const std::string & s) const
     WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<Item_>(result->inserter()));
     return result;
 }
-
 

@@ -27,7 +27,7 @@
  * Display licences.
  */
 struct PALUDIS_VISIBLE LicenceDisplayer :
-    paludis::DepSpecVisitorTypes::ConstVisitor
+    paludis::ConstVisitor<paludis::LicenseSpecTree>
 {
     /// Our stream.
     std::ostream & stream;
@@ -46,21 +46,21 @@ struct PALUDIS_VISIBLE LicenceDisplayer :
 
     ///\name Visit methods
     ///{
-    void visit(const paludis::AllDepSpec * spec);
 
-    void visit(const paludis::AnyDepSpec * spec);
+    void visit_sequence(const paludis::AllDepSpec &,
+            paludis::LicenseSpecTree::ConstSequenceIterator,
+            paludis::LicenseSpecTree::ConstSequenceIterator);
 
-    void visit(const paludis::UseDepSpec * spec);
+    void visit_sequence(const paludis::AnyDepSpec &,
+            paludis::LicenseSpecTree::ConstSequenceIterator,
+            paludis::LicenseSpecTree::ConstSequenceIterator);
 
-    void visit(const paludis::PlainTextDepSpec * spec);
+    void visit_sequence(const paludis::UseDepSpec &,
+            paludis::LicenseSpecTree::ConstSequenceIterator,
+            paludis::LicenseSpecTree::ConstSequenceIterator);
 
-    void visit(const paludis::PackageDepSpec *)
-    {
-    }
+    void visit_leaf(const paludis::PlainTextDepSpec &);
 
-    void visit(const paludis::BlockDepSpec *)
-    {
-    }
     ///}
 };
 

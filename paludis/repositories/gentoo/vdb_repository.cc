@@ -43,6 +43,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
@@ -1049,7 +1050,7 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
     config_cmd();
 }
 
-tr1::shared_ptr<DepSpec>
+tr1::shared_ptr<SetSpecTree::ConstItem>
 VDBRepository::do_package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -1057,7 +1058,8 @@ VDBRepository::do_package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
         tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
 
         if (! _imp->entries_valid)
@@ -1069,7 +1071,7 @@ VDBRepository::do_package_set(const SetName & s) const
             tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p->name))));
             spec->set_tag(tag);
-            result->add_child(spec);
+            result->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
         }
 
         return result;
@@ -1093,10 +1095,11 @@ VDBRepository::do_package_set(const SetName & s) const
                     "World file '" + stringify(_imp->world_file) +
                     "' doesn't exist");
 
-        return tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
+        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
     else
-        return tr1::shared_ptr<DepSpec>();
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
 tr1::shared_ptr<const SetNameCollection>
@@ -1325,9 +1328,9 @@ VDBRepository::load_provided_using_cache() const
             continue;
 
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
-        DepSpecFlattener f(_imp->env, &dbe, PortageDepParser::parse(
-                    join(next(next(tokens.begin())), tokens.end(), " "),
-                    PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive)));
+        DepSpecFlattener f(_imp->env, &dbe);
+        PortageDepParser::parse_provide(
+                join(next(next(tokens.begin())), tokens.end(), " "))->accept(f);
 
         for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             result->insert(RepositoryProvidesEntry::create()
@@ -1360,15 +1363,15 @@ VDBRepository::load_provided_the_slow_way() const
 
         try
         {
-            tr1::shared_ptr<const DepSpec> provide;
+            tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide;
             if (e->metadata)
                 provide = e->metadata->ebuild_interface->provide();
             else
-                provide = PortageDepParser::parse(file_contents(_imp->location, e->name, e->version, "PROVIDE"),
-                        PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive));
+                provide = PortageDepParser::parse_provide(file_contents(_imp->location, e->name, e->version, "PROVIDE"));
 
             PackageDatabaseEntry dbe(e->name, e->version, name());
-            DepSpecFlattener f(_imp->env, &dbe, provide);
+            DepSpecFlattener f(_imp->env, &dbe);
+            provide->accept(f);
 
             for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             {
@@ -1439,15 +1442,14 @@ VDBRepository::regenerate_provides_cache() const
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
             c != c_end ; ++c)
     {
-        tr1::shared_ptr<const DepSpec> provide;
+        tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide;
         if (c->metadata)
             provide = c->metadata->ebuild_interface->provide();
         else
-            provide = PortageDepParser::parse(file_contents(_imp->location, c->name, c->version, "PROVIDE"),
-                    PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive));
+            provide = PortageDepParser::parse_provide(file_contents(_imp->location, c->name, c->version, "PROVIDE"));
 
         DepSpecPrettyPrinter p(0, false);
-        provide->accept(&p);
+        provide->accept(p);
         std::string provide_str(strip_leading(strip_trailing(stringify(p), " \t\r\n"), " \t\r\n"));
         if (provide_str.empty())
             continue;
