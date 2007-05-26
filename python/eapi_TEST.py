@@ -50,7 +50,6 @@ class TestCase_EAPI(unittest.TestCase):
         self.assert_(isinstance(eapi.supported.iuse_flag_parse_mode, IUseFlagParseMode))
         self.assert_(isinstance(eapi.supported.strict_iuse_flag_parse_mode, IUseFlagParseMode))
         self.assert_(isinstance(eapi.supported.breaks_portage, bool))
-        self.assert_(isinstance(eapi.supported.has_pretend_phase, bool))
 
 if __name__ == "__main__":
     unittest.main()

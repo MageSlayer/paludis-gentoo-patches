@@ -307,6 +307,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
         {
             switch (mode)
             {
+                case pds_pm_exheres_0:
                 case pds_pm_unspecific:
                 case pds_pm_permissive:
                 case last_pds_pm:
@@ -432,8 +433,9 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                     Log::get_instance()->message(ll_warning, lc_context, "Repository dependencies not safe for use with this EAPI");
                     break;
 
+                case pds_pm_exheres_0:
                 case pds_pm_eapi_0_strict:
-                    throw PackageDepSpecError("Repository dependencies not safe for use with this EAPI");
+                    throw PackageDepSpecError("Repository dependencies not allowed with this EAPI");
             }
 
             _imp->repository.reset(new RepositoryName(s.substr(repo_p + 2)));
@@ -447,6 +449,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
             {
                 case pds_pm_unspecific:
                 case pds_pm_permissive:
+                case pds_pm_exheres_0:
                 case last_pds_pm:
                     break;
 
@@ -477,6 +480,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                 {
                     case pds_pm_unspecific:
                     case pds_pm_permissive:
+                    case pds_pm_exheres_0:
                     case last_pds_pm:
                         break;
 
@@ -553,6 +557,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                             break;
 
                         case pds_pm_eapi_0_strict:
+                        case pds_pm_exheres_0:
                             throw PackageDepSpecError(
                                     "Package dep spec '" + ss + "' uses * "
                                     "with operator '" + stringify(op) + "'");

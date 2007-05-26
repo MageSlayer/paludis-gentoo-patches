@@ -176,8 +176,6 @@ namespace
                 RUBY_FUNC_CAST((&ParseModeMember<IUseFlagParseMode, &SupportedEAPI::strict_iuse_flag_parse_mode>::fetch)), 0);
         rb_define_method(c_supported_eapi, "breaks_portage?",
                 RUBY_FUNC_CAST((&BoolMember<&SupportedEAPI::breaks_portage>::fetch)), 0);
-        rb_define_method(c_supported_eapi, "has_pretend_phase?",
-                RUBY_FUNC_CAST((&BoolMember<&SupportedEAPI::has_pretend_phase>::fetch)), 0);
 
         rb_require("singleton");
 

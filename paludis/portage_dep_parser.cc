@@ -210,6 +210,7 @@ namespace
                 return false;
 
             case dst_pm_paludis_1:
+            case dst_pm_exheres_0:
                 return true;
 
             case last_dst_pm:

@@ -2,7 +2,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 
 DISTCLEANFILES = \
 	merger-sr.hh merger-sr.cc entry_type-se.hh entry_type-se.cc \
-	unmerger-sr.hh unmerger-sr.cc
+	unmerger-sr.hh unmerger-sr.cc merger-se.hh merger-se.cc
 
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in

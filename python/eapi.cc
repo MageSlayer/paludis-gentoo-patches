@@ -48,9 +48,6 @@ void PALUDIS_VISIBLE expose_eapi()
     se.def_readonly("breaks_portage", &SupportedEAPI::breaks_portage,
             "[ro] bool"
             );
-    se.def_readonly("has_pretend_phase", &SupportedEAPI::has_pretend_phase,
-            "[ro] bool"
-            );
 
     bp::class_<EAPI>
         e("EAPI",

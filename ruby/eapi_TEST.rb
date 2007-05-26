@@ -105,10 +105,6 @@ module Paludis
         def test_breaks_portage?
             assert !supported.breaks_portage?
         end
-
-        def test_has_pretend_phase?
-            assert !supported.has_pretend_phase?
-        end
     end
 end
 

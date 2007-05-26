@@ -6,6 +6,7 @@ make_enum_DependencySpecTreeParseMode()
     prefix dst_pm
 
     key dst_pm_eapi_0        "EAPI 0"
+    key dst_pm_exheres_0     "EAPI exheres-0"
     key dst_pm_paludis_1     "EAPI paludis-1"
 
     doxygen_comment << "END"

@@ -690,7 +690,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
 
     if (! metadata->eapi.supported)
         return true;
-    if (! metadata->eapi.supported->has_pretend_phase)
+    if (! metadata->eapi.supported->has_pkg_pretend)
         return true;
 
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());

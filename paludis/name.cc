@@ -366,6 +366,7 @@ namespace
                     return '-' == s[0] ? use_disabled : use_enabled;
 
                 case iuse_pm_eapi_0_strict:
+                case iuse_pm_exheres_0:
                     throw IUseFlagNameError(s, "+/- prefixed IUSE flag names not allowed in this EAPI");
 
                 case last_iuse_pm:

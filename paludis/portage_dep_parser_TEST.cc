@@ -128,10 +128,6 @@ namespace test_cases
         }
     } test_dep_spec_parser_packages;
 
-    /**
-     * \test Test PortageDepParser with an any group.
-     *
-     */
     struct PortageDepParserAnyTest : TestCase
     {
         PortageDepParserAnyTest() : TestCase("any") { }
@@ -144,6 +140,27 @@ namespace test_cases
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
+
+    struct PortageDepParserAnyUseTest : TestCase
+    {
+        PortageDepParserAnyUseTest() : TestCase("any use") { }
+
+        void run()
+        {
+            DepSpecPrettyPrinter d(0, false);
+            PortageDepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
+                    EAPIData::get_instance()->eapi_from_string("0"))->accept(d);
+            TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
+
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
+                    EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+
+            DepSpecPrettyPrinter e(0, false);
+            PortageDepParser::parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
+                    EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+            TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
+        }
+    } test_dep_spec_parser_any_use;
 
     /**
      * \test Test PortageDepParser with an all group.

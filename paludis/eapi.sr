@@ -5,12 +5,16 @@ make_class_SupportedEAPI()
     key package_dep_spec_parse_mode PackageDepSpecParseMode
     key strict_package_dep_spec_parse_mode PackageDepSpecParseMode
     key dependency_spec_tree_parse_mode DependencySpecTreeParseMode
-
     key iuse_flag_parse_mode IUseFlagParseMode
     key strict_iuse_flag_parse_mode IUseFlagParseMode
 
     key breaks_portage bool
-    key has_pretend_phase bool
+
+    key has_pkg_pretend bool
+    key want_aa_var bool
+    key want_arch_var bool
+    key want_portage_emulation_vars bool
+    key require_use_expand_in_iuse bool
 
     allow_named_args
 
