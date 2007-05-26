@@ -1329,8 +1329,9 @@ VDBRepository::load_provided_using_cache() const
 
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
         DepSpecFlattener f(_imp->env, &dbe);
-        PortageDepParser::parse_provide(
-                join(next(next(tokens.begin())), tokens.end(), " "))->accept(f);
+        tr1::shared_ptr<ProvideSpecTree::ConstItem> p(PortageDepParser::parse_provide(
+                    join(next(next(tokens.begin())), tokens.end(), " ")));
+        p->accept(f);
 
         for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             result->insert(RepositoryProvidesEntry::create()
