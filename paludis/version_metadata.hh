@@ -77,14 +77,15 @@ namespace paludis
      * \ingroup grpversions
      */
     typedef tr1::shared_ptr<DependencySpecTree::ConstItem> (* DepParserFunction) (const std::string &,
-            const PackageDepSpecParseMode);
+            const EAPI &);
 
     /**
      * A pointer to a parse function for text.
      *
      * \ingroup grpversions
      */
-    typedef tr1::shared_ptr<LicenseSpecTree::ConstItem> (* LicenseParserFunction) (const std::string &);
+    typedef tr1::shared_ptr<LicenseSpecTree::ConstItem> (* LicenseParserFunction) (const std::string &,
+            const EAPI &);
 
 #include <paludis/version_metadata-sr.hh>
 

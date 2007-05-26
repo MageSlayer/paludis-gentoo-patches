@@ -4,6 +4,7 @@ make_class_SupportedEAPI()
 
     key package_dep_spec_parse_mode PackageDepSpecParseMode
     key strict_package_dep_spec_parse_mode PackageDepSpecParseMode
+    key dependency_spec_tree_parse_mode DependencySpecTreeParseMode
 
     key iuse_flag_parse_mode IUseFlagParseMode
     key strict_iuse_flag_parse_mode IUseFlagParseMode

@@ -1330,7 +1330,7 @@ VDBRepository::load_provided_using_cache() const
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
         DepSpecFlattener f(_imp->env, &dbe);
         tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(PortageDepParser::parse_provide(
-                    join(next(next(tokens.begin())), tokens.end(), " ")));
+                    join(next(next(tokens.begin())), tokens.end(), " "), EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
         for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -1368,7 +1368,8 @@ VDBRepository::load_provided_the_slow_way() const
             if (e->metadata)
                 provide = e->metadata->ebuild_interface->provide();
             else
-                provide = PortageDepParser::parse_provide(file_contents(_imp->location, e->name, e->version, "PROVIDE"));
+                provide = PortageDepParser::parse_provide(file_contents(_imp->location, e->name, e->version, "PROVIDE"),
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
             PackageDatabaseEntry dbe(e->name, e->version, name());
             DepSpecFlattener f(_imp->env, &dbe);
@@ -1447,7 +1448,8 @@ VDBRepository::regenerate_provides_cache() const
         if (c->metadata)
             provide = c->metadata->ebuild_interface->provide();
         else
-            provide = PortageDepParser::parse_provide(file_contents(_imp->location, c->name, c->version, "PROVIDE"));
+            provide = PortageDepParser::parse_provide(file_contents(_imp->location, c->name, c->version, "PROVIDE"),
+                    EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
         DepSpecPrettyPrinter p(0, false);
         provide->accept(p);

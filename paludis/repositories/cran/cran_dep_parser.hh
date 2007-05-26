@@ -1,7 +1,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CRAN_DEP_PARSER_HH
 #define PALUDIS_GUARD_PALUDIS_CRAN_DEP_PARSER_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/eapi-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -18,7 +19,7 @@ namespace paludis
          * Parse function.
          */
         static tr1::shared_ptr<DependencySpecTree::ConstItem> parse(const std::string & s,
-                const PackageDepSpecParseMode);
+                const EAPI &);
     };
 }
 

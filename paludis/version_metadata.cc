@@ -78,7 +78,7 @@ tr1::shared_ptr<const DependencySpecTree::ConstItem>
 VersionMetadataDepsInterface::_make_depend(const std::string & s) const
 {
     if (version_metadata()->eapi.supported)
-        return parser(s, version_metadata()->eapi.supported->package_dep_spec_parse_mode);
+        return parser(s, version_metadata()->eapi);
     else
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
@@ -92,7 +92,7 @@ tr1::shared_ptr<const RestrictSpecTree::ConstItem>
 VersionMetadataEbuildInterface::_make_restrict(const std::string & s) const
 {
     if (version_metadata()->eapi.supported)
-        return PortageDepParser::parse_restrict(s);
+        return PortageDepParser::parse_restrict(s, version_metadata()->eapi);
     else
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
@@ -106,7 +106,7 @@ tr1::shared_ptr<const ProvideSpecTree::ConstItem>
 VersionMetadataEbuildInterface::_make_provide(const std::string & s) const
 {
     if (version_metadata()->eapi.supported)
-        return PortageDepParser::parse_provide(s);
+        return PortageDepParser::parse_provide(s, version_metadata()->eapi);
     else
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
@@ -119,7 +119,15 @@ VersionMetadataEbuildInterface::_make_provide(const std::string & s) const
 tr1::shared_ptr<const LicenseSpecTree::ConstItem>
 VersionMetadataLicenseInterface::_make_license(const std::string & s) const
 {
-    return parser(s);
+    if (version_metadata()->eapi.supported)
+        return parser(s, version_metadata()->eapi);
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context) <<
+            "Don't know how to parse license strings for EAPI '" + version_metadata()->eapi.name + "'";
+        return tr1::shared_ptr<LicenseSpecTree::ConstItem>(new ConstTreeSequence<LicenseSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    }
 }
 
 template <typename Item_, typename Container_>
@@ -155,19 +163,19 @@ VersionMetadataEbuildInterface::_make_iuse_collection(const std::string & s) con
 tr1::shared_ptr<const URISpecTree::ConstItem>
 VersionMetadataEbinInterface::_make_uri(const std::string & s) const
 {
-    return PortageDepParser::parse_uri(s);
+    return PortageDepParser::parse_uri(s, version_metadata()->eapi);
 }
 
 tr1::shared_ptr<const URISpecTree::ConstItem>
 VersionMetadataEbuildInterface::_make_uri(const std::string & s) const
 {
-    return PortageDepParser::parse_uri(s);
+    return PortageDepParser::parse_uri(s, version_metadata()->eapi);
 }
 
 tr1::shared_ptr<const URISpecTree::ConstItem>
 VersionMetadataBase::_make_text(const std::string & s) const
 {
-    return PortageDepParser::parse_uri(s);
+    return PortageDepParser::parse_uri(s, version_metadata()->eapi);
 }
 
 template <typename Item_, typename Container_>

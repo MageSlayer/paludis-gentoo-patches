@@ -34,16 +34,20 @@ namespace paludis
         Implementation()
         {
             values.insert(std::make_pair("0", EAPI("0", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(
-                                    pds_pm_eapi_0, pds_pm_eapi_0_strict, iuse_pm_eapi_0, iuse_pm_eapi_0_strict, false, false)))));
+                                    pds_pm_eapi_0, pds_pm_eapi_0_strict, dst_pm_eapi_0,
+                                    iuse_pm_eapi_0, iuse_pm_eapi_0_strict, false, false)))));
 
             values.insert(std::make_pair("", EAPI("", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(
-                                    pds_pm_eapi_0, pds_pm_eapi_0_strict, iuse_pm_eapi_0, iuse_pm_eapi_0_strict, false, false)))));
+                                    pds_pm_eapi_0, pds_pm_eapi_0_strict, dst_pm_eapi_0,
+                                    iuse_pm_eapi_0, iuse_pm_eapi_0_strict, false, false)))));
 
             values.insert(std::make_pair("paludis-1", EAPI("paludis-1", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(
-                                    pds_pm_permissive, pds_pm_permissive, iuse_pm_permissive, iuse_pm_permissive, true, true)))));
+                                    pds_pm_permissive, pds_pm_permissive, dst_pm_paludis_1,
+                                    iuse_pm_permissive, iuse_pm_permissive, true, true)))));
 
             values.insert(std::make_pair("CRAN-1", EAPI("CRAN-1", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(
-                                    pds_pm_permissive, pds_pm_permissive, iuse_pm_permissive, iuse_pm_permissive, true, false)))));
+                                    pds_pm_permissive, pds_pm_permissive, dst_pm_eapi_0,
+                                    iuse_pm_permissive, iuse_pm_permissive, true, false)))));
         }
     };
 }

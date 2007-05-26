@@ -27,6 +27,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/portage_dep_parser-fwd.hh>
 
 namespace paludis
 {

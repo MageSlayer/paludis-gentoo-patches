@@ -20,8 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_PARSER_HH
 #define PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_PARSER_HH 1
 
+#include <paludis/portage_dep_parser-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_lexer.hh>
+#include <paludis/eapi-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <string>
@@ -68,33 +70,6 @@ namespace paludis
     };
 
     /**
-     * Interface provided by PortageDepParserPolicy classes.
-     *
-     * \see PortageDepParserPolicy
-     *
-     * \ingroup grpdepparser
-     */
-    struct PALUDIS_VISIBLE PortageDepParserPolicyInterface
-    {
-        /**
-         * Create a new text spec from the provided string.
-         */
-        virtual tr1::shared_ptr<DepSpec> new_text_spec(const std::string &) const = 0;
-
-        /**
-         * Are || ( ) deps permitted?
-         */
-        virtual bool permit_any_deps() const = 0;
-
-        /**
-         * Destructor.
-         */
-        virtual ~PortageDepParserPolicyInterface()
-        {
-        }
-    };
-
-    /**
      * The PortageDepParser converts string representations of a dependency
      * specification into a DepSpec instance. The PortageDepLexer class is
      * used as the first stage.
@@ -106,34 +81,39 @@ namespace paludis
     {
         private:
             template <typename H_, typename I_, bool any_, bool use_>
-            static tr1::shared_ptr<typename H_::ConstItem> _parse(const std::string &, const I_ & = I_());
+            static tr1::shared_ptr<typename H_::ConstItem> _parse(const std::string &,
+                    bool disallow_any_use, const I_ &);
 
         public:
             /**
              * Parse a dependency heirarchy.
              */
             static tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
-                    const PackageDepSpecParseMode);
+                    const EAPI &);
 
             /**
              * Parse a provide heirarchy.
              */
-            static tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s);
+            static tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
+                    const EAPI &);
 
             /**
              * Parse a restrict.
              */
-            static tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s);
+            static tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
+                    const EAPI &);
 
             /**
              * Parse a uri heirarchy.
              */
-            static tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s);
+            static tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s,
+                    const EAPI &);
 
             /**
              * Parse a license heirarchy.
              */
-            static tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s);
+            static tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
+                    const EAPI &);
     };
 }
 
