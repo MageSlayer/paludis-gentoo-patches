@@ -9,6 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`attributes',                        `hh')
+add(`clone',                             `hh', `impl')
 add(`collection',                        `hh', `fwd')
 add(`collection_concrete',               `hh')
 add(`destringify',                       `hh', `cc', `test')

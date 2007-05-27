@@ -17,13 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
-#define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_DEP_SPEC_HH
+#define PALUDIS_GUARD_PALUDIS_DEP_SPEC_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/version_requirements.hh>
@@ -49,7 +50,8 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
-        private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>
+        private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>,
+        public virtual Cloneable<DepSpec>
     {
         protected:
             DepSpec();
@@ -98,6 +100,8 @@ namespace paludis
             AnyDepSpec();
 
             ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -117,6 +121,8 @@ namespace paludis
             AllDepSpec();
 
             ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -151,6 +157,8 @@ namespace paludis
             bool inverse() const;
 
             virtual const UseDepSpec * as_use_dep_spec() const;
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -352,6 +360,8 @@ namespace paludis
             tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
 
             virtual const PackageDepSpec * as_package_dep_spec() const;
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -371,6 +381,8 @@ namespace paludis
             PlainTextDepSpec(const std::string &);
 
             ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -418,6 +430,8 @@ namespace paludis
              * Fetch the spec we're blocking.
              */
             tr1::shared_ptr<const PackageDepSpec> blocked_spec() const;
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

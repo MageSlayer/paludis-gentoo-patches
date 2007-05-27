@@ -235,5 +235,31 @@ namespace test_cases
             TEST_CHECK(! f.category_name_part_ptr());
         }
     } test_package_dep_spec_unspecific;
+
+    struct DepSpecCloneTest : TestCase
+    {
+        DepSpecCloneTest() : TestCase("dep spec clone") { }
+
+        void run()
+        {
+            PackageDepSpec a("cat/pkg:1::repo[=1|>3.2][foo]", pds_pm_permissive);
+
+            tr1::shared_ptr<PackageDepSpec> b(tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            TEST_CHECK_STRINGIFY_EQUAL(a, *b);
+            b->set_version_requirements_mode(vr_and);
+            TEST_CHECK(stringify(a) != stringify(*b));
+
+            tr1::shared_ptr<PackageDepSpec> c(tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            TEST_CHECK_STRINGIFY_EQUAL(a, *c);
+            c->version_requirements_ptr()->append(VersionRequirement(vo_tilde, VersionSpec("1.5")));
+            TEST_CHECK(stringify(a) != stringify(*c));
+
+            BlockDepSpec d(c);
+            tr1::shared_ptr<BlockDepSpec> e(tr1::static_pointer_cast<BlockDepSpec>(d.clone()));
+            TEST_CHECK_STRINGIFY_EQUAL(*(d.blocked_spec()), *(e->blocked_spec()));
+            c->set_version_requirements_mode(vr_and);
+            TEST_CHECK(stringify(*(d.blocked_spec())) != stringify(*(e->blocked_spec())));
+        }
+    } test_dep_spec_clone;
 }
 

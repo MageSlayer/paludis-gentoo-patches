@@ -18,6 +18,7 @@
  */
 
 #include <paludis/dep_spec.hh>
+#include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
@@ -157,8 +158,20 @@ AnyDepSpec::AnyDepSpec()
 {
 }
 
+tr1::shared_ptr<DepSpec>
+AnyDepSpec::clone() const
+{
+    return tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec());
+}
+
 AllDepSpec::AllDepSpec()
 {
+}
+
+tr1::shared_ptr<DepSpec>
+AllDepSpec::clone() const
+{
+    return tr1::shared_ptr<AllDepSpec>(new AllDepSpec());
 }
 
 UseDepSpec::UseDepSpec(const UseFlagName & our_flag, bool is_inverse) :
@@ -183,6 +196,12 @@ bool
 UseDepSpec::inverse() const
 {
     return _inverse;
+}
+
+tr1::shared_ptr<DepSpec>
+UseDepSpec::clone() const
+{
+    return tr1::shared_ptr<UseDepSpec>(new UseDepSpec(_flag, _inverse));
 }
 
 std::string
@@ -219,6 +238,7 @@ PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
 }
 
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
+    Cloneable<DepSpec>(),
     StringDepSpec(stringify(other)),
     PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
                 other._imp->package_ptr,
@@ -750,6 +770,12 @@ PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
 {
 }
 
+tr1::shared_ptr<DepSpec>
+PlainTextDepSpec::clone() const
+{
+    return tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
+}
+
 namespace paludis
 {
     /**
@@ -818,6 +844,15 @@ PackageDepSpec::without_use_requirements() const
     tr1::shared_ptr<PackageDepSpec> result(new PackageDepSpec(*this));
     result->_make_unique();
     result->_imp->use_requirements.reset();
+    return result;
+}
+
+tr1::shared_ptr<DepSpec>
+PackageDepSpec::clone() const
+{
+    tr1::shared_ptr<PackageDepSpec> result(new PackageDepSpec(*this));
+    result->_make_unique();
+    result->set_tag(_imp->tag);
     return result;
 }
 
@@ -932,5 +967,11 @@ tr1::shared_ptr<const PackageDepSpec>
 BlockDepSpec::blocked_spec() const
 {
     return _spec;
+}
+
+tr1::shared_ptr<DepSpec>
+BlockDepSpec::clone() const
+{
+    return tr1::shared_ptr<DepSpec>(new BlockDepSpec(tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
 }
 
