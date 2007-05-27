@@ -23,6 +23,7 @@
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/range_rewriter.hh>
+#include <paludis/dep_list/query_visitor.hh>
 #include <paludis/match_package.hh>
 #include <paludis/query.hh>
 #include <paludis/hashed_containers.hh>
@@ -34,6 +35,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 
 #include <algorithm>
@@ -275,16 +277,6 @@ namespace
         }
     };
 
-    bool is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
-            const DependencySpecTree::ConstItem & i)
-    {
-        const UseDepSpec * const u(get_const_item(i)->as_use_dep_spec());
-        if (0 != u)
-            return (pde ? env.query_use(u->flag(), *pde) : false) ^ u->inverse();
-        else
-            return true;
-    }
-
     bool is_interesting_any_child(const Environment & env,
             const DependencySpecTree::ConstItem & i)
     {
@@ -297,164 +289,6 @@ namespace
         }
         else
             return false;
-    }
-}
-
-struct DepList::QueryVisitor :
-    ConstVisitor<DependencySpecTree>
-{
-    bool result;
-    const DepList * const d;
-    tr1::shared_ptr<const DestinationsCollection> destinations;
-
-    QueryVisitor(const DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
-        result(true),
-        d(dd),
-        destinations(ddd)
-    {
-    }
-
-    void visit_sequence(const AllDepSpec &,
-            DependencySpecTree::ConstSequenceIterator,
-            DependencySpecTree::ConstSequenceIterator);
-
-    void visit_sequence(const AnyDepSpec &,
-            DependencySpecTree::ConstSequenceIterator,
-            DependencySpecTree::ConstSequenceIterator);
-
-    void visit_sequence(const UseDepSpec &,
-            DependencySpecTree::ConstSequenceIterator,
-            DependencySpecTree::ConstSequenceIterator);
-
-    void visit_leaf(const PackageDepSpec &);
-
-    void visit_leaf(const BlockDepSpec &);
-};
-
-void
-DepList::QueryVisitor::visit_leaf(const PackageDepSpec & a)
-{
-    /* a pda matches if we'll be installed by the time we reach the current point. This
-     * means that merely being installed is not enough, if we'll have our version changed
-     * by something in the merge list. */
-
-    result = false;
-
-    // TODO: check destinations
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
-                a, is_installed_only, qo_whatever));
-
-    for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
-            m != m_end ; ++m)
-    {
-        /* check that we haven't been replaced by something in the same slot */
-        tr1::shared_ptr<const VersionMetadata> vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
-                version_metadata(m->name, m->version));
-        SlotName slot(vm->slot);
-
-        std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-                d->_imp->merge_list_index.equal_range(m->name));
-
-        bool replaced(false);
-        PackageDepSpec spec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m->name)));
-        while (p.second != ((p.first = std::find_if(p.first, p.second,
-                            MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, spec)))))
-        {
-            if (p.first->second->metadata->slot != slot)
-                p.first = next(p.first);
-            else
-            {
-                replaced = true;
-                break;
-            }
-        }
-
-        if (! replaced)
-        {
-            result = true;
-            return;
-        }
-    }
-
-    /* check the merge list for any new packages that match */
-    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p;
-    if (a.package_ptr())
-        p = d->_imp->merge_list_index.equal_range(*a.package_ptr());
-    else
-        p = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
-
-    if (p.second != std::find_if(p.first, p.second,
-                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)))
-    {
-        // TODO: check destination
-        result = true;
-        return;
-    }
-}
-
-void
-DepList::QueryVisitor::visit_sequence(const UseDepSpec & a,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
-{
-    /* for use? ( ) dep specs, return true if we're not enabled, so that
-     * weird || ( ) cases work. */
-    if ((d->_imp->current_pde() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_pde()) : false) ^ a.inverse())
-    {
-        result = true;
-        for ( ; cur != end ; ++cur)
-        {
-            cur->accept(*this);
-            if (! result)
-                return;
-        }
-    }
-    else
-        result = true;
-}
-
-void
-DepList::QueryVisitor::visit_sequence(const AnyDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
-{
-    /* empty || ( ) must resolve to true */
-    result = true;
-
-    RangeRewriter r;
-    std::for_each(cur, end, accept_visitor(r));
-
-    if (r.spec())
-        visit_leaf(*r.spec());
-    else
-        for ( ; cur != end ; ++cur)
-        {
-            if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *cur))
-                continue;
-
-            cur->accept(*this);
-            if (result)
-                return;
-        }
-}
-
-void
-DepList::QueryVisitor::visit_leaf(const BlockDepSpec & a)
-{
-    visit_leaf(*a.blocked_spec());
-    result = !result;
-}
-
-void
-DepList::QueryVisitor::visit_sequence(const AllDepSpec &,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
-{
-    for ( ; cur != end ; ++cur)
-    {
-        cur->accept(*this);
-        if (! result)
-            return;
     }
 }
 
@@ -1144,6 +978,12 @@ DepList::options()
     return _imp->opts;
 }
 
+const tr1::shared_ptr<const DepListOptions>
+DepList::options() const
+{
+    return _imp->opts;
+}
+
 void
 DepList::clear()
 {
@@ -1652,9 +1492,9 @@ bool
 DepList::already_installed(const DependencySpecTree::ConstItem & spec,
         tr1::shared_ptr<const DestinationsCollection> destinations) const
 {
-    QueryVisitor visitor(this, destinations);
+    QueryVisitor visitor(this, destinations, _imp->env, _imp->current_pde());
     spec.accept(visitor);
-    return visitor.result;
+    return visitor.result();
 }
 
 DepList::Iterator
@@ -1726,6 +1566,43 @@ DepList::find_destination(const PackageDatabaseEntry & p,
     throw NoDestinationError(p, dd);
 }
 
+bool
+DepList::replaced(const PackageDatabaseEntry & m) const
+{
+    tr1::shared_ptr<const VersionMetadata> vm(
+            _imp->env->package_database()->fetch_repository(
+                m.repository)->version_metadata(m.name, m.version));
+    SlotName slot(vm->slot);
+
+    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
+            _imp->merge_list_index.equal_range(m.name));
+
+    PackageDepSpec spec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m.name)));
+    while (p.second != ((p.first = std::find_if(p.first, p.second,
+                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec)))))
+    {
+        if (p.first->second->metadata->slot != slot)
+            p.first = next(p.first);
+        else
+            return true;
+    }
+
+    return false;
+}
+
+bool
+DepList::match_on_list(const PackageDepSpec & a) const
+{
+    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p;
+    if (a.package_ptr())
+        p = _imp->merge_list_index.equal_range(*a.package_ptr());
+    else
+        p = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
+
+    return p.second != std::find_if(p.first, p.second,
+            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a));
+}
+
 tr1::shared_ptr<DestinationsCollection>
 paludis::extract_dep_list_entry_destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> > d)
 {
@@ -1734,5 +1611,16 @@ paludis::extract_dep_list_entry_destinations(tr1::shared_ptr<SortedCollection<De
             i != i_end ; ++i)
         result->insert(i->destination);
     return result;
+}
+
+bool
+paludis::is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
+        const DependencySpecTree::ConstItem & i)
+{
+    const UseDepSpec * const u(get_const_item(i)->as_use_dep_spec());
+    if (0 != u)
+        return (pde ? env.query_use(u->flag(), *pde) : false) ^ u->inverse();
+    else
+        return true;
 }
 

@@ -20,9 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_list/options.hh>
+#include <paludis/dep_list/dep_list-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -52,11 +53,9 @@ namespace paludis
     {
         protected:
             class AddVisitor;
-            class QueryVisitor;
             class ShowSuggestVisitor;
 
             friend class AddVisitor;
-            friend class QueryVisitor;
             friend class ShowSuggestVisitor;
 
             /**
@@ -138,6 +137,11 @@ namespace paludis
             tr1::shared_ptr<DepListOptions> options();
 
             /**
+             * Our options.
+             */
+            const tr1::shared_ptr<const DepListOptions> options() const;
+
+            /**
              * Add the packages required to resolve an additional dependency
              * spec.
              */
@@ -163,6 +167,16 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
 
             /**
+             * Return whether a PackageDatabaseEntry has been replaced.
+             */
+            bool replaced(const PackageDatabaseEntry &) const;
+
+            /**
+             * Return whether a spec matches an item in the list.
+             */
+            bool match_on_list(const PackageDepSpec &) const;
+
+            /**
              * Whether we have any errors.
              */
             bool has_errors() const;
@@ -178,14 +192,6 @@ namespace paludis
 
             ///\}
     };
-
-    /**
-     * Extract the destinations from a DepListEntry destinations member.
-     *
-     * \ingroup grpdepresolver
-     */
-    tr1::shared_ptr<DestinationsCollection> extract_dep_list_entry_destinations(
-            tr1::shared_ptr<SortedCollection<DepListEntryDestination> >) PALUDIS_VISIBLE;
 }
 
 #endif

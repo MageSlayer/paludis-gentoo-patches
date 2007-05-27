@@ -16,10 +16,12 @@ DEFS= \
 paludis_dep_list_includedir = $(includedir)/paludis/dep_list
 paludis_dep_list_include_HEADERS = \
 	dep_list.hh \
+	query_visitor.hh \
 	uninstall_list.hh \
 	exceptions.hh \
 	options.hh \
 	dep_list-sr.hh \
+	dep_list-fwd.hh \
 	uninstall_list-sr.hh \
 	range_rewriter.hh \
 	options-se.hh
@@ -27,29 +29,18 @@ paludis_dep_list_include_HEADERS = \
 libpaludisdeplist_la_SOURCES = \
 	options.cc        options.hh \
 	exceptions.cc     exceptions.hh \
-	dep_list.cc       dep_list.hh \
+	dep_list.cc       dep_list.hh           dep_list-fwd.hh \
 	uninstall_list.cc uninstall_list.hh \
-	range_rewriter.cc range_rewriter.hh
+	range_rewriter.cc range_rewriter.hh \
+	query_visitor.cc  query_visitor.hh
 
 libpaludisdeplist_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-
-if ! MONOLITHIC
 
 libpaludisdeplist_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 
-endif
-
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludisdeplist.la
-
-else
-
 lib_LTLIBRARIES = libpaludisdeplist.la
-
-endif
 
 EXTRA_DIST = \
 	dep_list_TEST.cc \
