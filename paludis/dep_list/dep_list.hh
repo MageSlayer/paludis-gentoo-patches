@@ -53,10 +53,7 @@ namespace paludis
     {
         protected:
             class AddVisitor;
-            class ShowSuggestVisitor;
-
             friend class AddVisitor;
-            friend class ShowSuggestVisitor;
 
             /**
              * Find an appropriate destination for a package.
@@ -93,12 +90,6 @@ namespace paludis
              * Add an error package to the list.
              */
             void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
-
-            /**
-             * Add a suggested package to the list.
-             */
-            void add_suggested_package(const PackageDatabaseEntry &,
-                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add predependencies.
@@ -180,6 +171,12 @@ namespace paludis
              * Whether we have any errors.
              */
             bool has_errors() const;
+
+            /**
+             * Add a suggested package to the list.
+             */
+            void add_suggested_package(const PackageDatabaseEntry &,
+                    tr1::shared_ptr<const DestinationsCollection> destinations);
 
             ///\name Iterate over our dependency list entries.
             ///\{

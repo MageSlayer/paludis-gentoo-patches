@@ -24,6 +24,7 @@
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_list/query_visitor.hh>
+#include <paludis/dep_list/show_suggest_visitor.hh>
 #include <paludis/match_package.hh>
 #include <paludis/query.hh>
 #include <paludis/hashed_containers.hh>
@@ -897,72 +898,6 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     }
 }
 
-struct DepList::ShowSuggestVisitor :
-    ConstVisitor<DependencySpecTree>,
-    ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>,
-    ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>
-{
-    DepList * const d;
-    tr1::shared_ptr<const DestinationsCollection> destinations;
-
-    ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
-        d(dd),
-        destinations(ddd)
-    {
-    }
-
-    void visit_leaf(const BlockDepSpec &);
-
-    void visit_leaf(const PackageDepSpec &);
-
-    void visit_sequence(const UseDepSpec &,
-            DependencySpecTree::ConstSequenceIterator,
-            DependencySpecTree::ConstSequenceIterator);
-
-    using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>::visit_sequence;
-    using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>::visit_sequence;
-};
-
-void
-DepList::ShowSuggestVisitor::visit_sequence(const UseDepSpec & a,
-        DependencySpecTree::ConstSequenceIterator cur,
-        DependencySpecTree::ConstSequenceIterator end)
-{
-    if ((d->_imp->current_pde() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_pde()) : false) ^ a.inverse())
-        std::for_each(cur, end, accept_visitor(*this));
-}
-
-void
-DepList::ShowSuggestVisitor::visit_leaf(const BlockDepSpec &)
-{
-}
-
-void
-DepList::ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
-{
-    Context context("When adding suggested dep '" + stringify(a) + "':");
-
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
-                a, is_installable_only, qo_order_by_version));
-    if (matches->empty())
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Nothing found for '" + stringify(a) + "'");
-        return;
-    }
-
-    for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
-            m != m_end ; ++m)
-    {
-        if (d->_imp->env->mask_reasons(*m).any())
-            continue;
-
-        d->add_suggested_package(*m, destinations);
-        return;
-    }
-
-    Log::get_instance()->message(ll_warning, lc_context, "Nothing visible found for '" + stringify(a) + "'");
-}
-
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
     PrivateImplementationPattern<DepList>(new Implementation<DepList>(e, o))
 {
@@ -1142,7 +1077,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
             Context c("When showing suggestions:");
             Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                     next(our_merge_entry_position));
-            ShowSuggestVisitor visitor(this, destinations);
+            ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_pde());
             metadata->deps_interface->suggested_depend()->accept(visitor);
         }
 
