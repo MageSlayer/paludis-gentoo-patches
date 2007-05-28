@@ -34,6 +34,21 @@ namespace paludis
 #include <paludis/eapi-sr.hh>
 
     /**
+     * Thrown if an EAPI configuration is broken.
+     *
+     * \see EAPI
+     * \ingroup grpnames
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE EAPIConfigurationError :
+        public ConfigurationError
+    {
+        public:
+            EAPIConfigurationError(const std::string &) throw ();
+    };
+
+    /**
      * Holds information on recognised EAPIs.
      *
      * \see EAPI

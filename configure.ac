@@ -1065,6 +1065,7 @@ AC_OUTPUT(
 	paludis/args/Makefile
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
+	paludis/eapis/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile
 	paludis/environments/paludis/Makefile

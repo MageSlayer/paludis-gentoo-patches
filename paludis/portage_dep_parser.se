@@ -4,6 +4,7 @@
 make_enum_DependencySpecTreeParseMode()
 {
     prefix dst_pm
+    want_destringify
 
     key dst_pm_eapi_0        "EAPI 0"
     key dst_pm_exheres_0     "EAPI exheres-0"

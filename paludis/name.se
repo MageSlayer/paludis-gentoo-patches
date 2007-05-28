@@ -21,6 +21,7 @@ END
 make_enum_IUseFlagParseMode()
 {
     prefix iuse_pm
+    want_destringify
 
     key iuse_pm_eapi_0        "EAPI 0"
     key iuse_pm_eapi_0_strict "EAPI 0, errors for non-permitted things"

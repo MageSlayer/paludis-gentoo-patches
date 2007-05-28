@@ -4,6 +4,7 @@
 make_enum_PackageDepSpecParseMode()
 {
     prefix pds_pm
+    want_destringify
 
     key pds_pm_eapi_0        "EAPI 0"
     key pds_pm_eapi_0_strict "EAPI 0, errors for non-permitted things"

@@ -21,6 +21,13 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/strip.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/config_file.hh>
 
 using namespace paludis;
 
@@ -33,68 +40,56 @@ namespace paludis
 
         Implementation()
         {
-            values.insert(std::make_pair("0", EAPI("0", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(SupportedEAPI::create()
-                                    .package_dep_spec_parse_mode(pds_pm_eapi_0)
-                                    .strict_package_dep_spec_parse_mode(pds_pm_eapi_0_strict)
-                                    .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
-                                    .iuse_flag_parse_mode(iuse_pm_eapi_0)
-                                    .strict_iuse_flag_parse_mode(iuse_pm_eapi_0_strict)
-                                    .breaks_portage(false)
-                                    .has_pkg_pretend(false)
-                                    .uri_supports_arrow(false)
-                                    .want_aa_var(true)
-                                    .want_arch_var(true)
-                                    .want_portage_emulation_vars(true)
-                                    .require_use_expand_in_iuse(false))))));
+            Context c("When loading EAPI data:");
 
-            values.insert(std::make_pair("", values.find("0")->second));
+            for (DirIterator d(getenv_with_default("PALUDIS_EAPIS_DIR", DATADIR "/paludis/eapis")), d_end ;
+                    d != d_end ; ++d)
+            {
+                if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                    continue;
 
-            values.insert(std::make_pair("paludis-1", EAPI("paludis-1", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(SupportedEAPI::create()
-                                    .package_dep_spec_parse_mode(pds_pm_permissive)
-                                    .strict_package_dep_spec_parse_mode(pds_pm_permissive)
-                                    .dependency_spec_tree_parse_mode(dst_pm_paludis_1)
-                                    .iuse_flag_parse_mode(iuse_pm_permissive)
-                                    .strict_iuse_flag_parse_mode(iuse_pm_permissive)
-                                    .breaks_portage(true)
-                                    .has_pkg_pretend(true)
-                                    .want_aa_var(false)
-                                    .want_arch_var(true)
-                                    .uri_supports_arrow(true)
-                                    .want_portage_emulation_vars(false)
-                                    .require_use_expand_in_iuse(false))))));
+                Context cc("When loading EAPI file '" + stringify(*d) + "':");
 
-            values.insert(std::make_pair("CRAN-1", EAPI("CRAN-1", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(SupportedEAPI::create()
-                                    .package_dep_spec_parse_mode(pds_pm_permissive)
-                                    .strict_package_dep_spec_parse_mode(pds_pm_eapi_0_strict)
-                                    .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
-                                    .iuse_flag_parse_mode(iuse_pm_permissive)
-                                    .strict_iuse_flag_parse_mode(iuse_pm_permissive)
-                                    .breaks_portage(true)
-                                    .has_pkg_pretend(false)
-                                    .want_aa_var(false)
-                                    .want_arch_var(false)
-                                    .want_portage_emulation_vars(false)
-                                    .uri_supports_arrow(true)
-                                    .require_use_expand_in_iuse(false))))));
+                KeyValueConfigFile k(*d, KeyValueConfigFileOptions());
 
-            values.insert(std::make_pair("exheres-0", EAPI("exheres-0", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(SupportedEAPI::create()
-                                    .package_dep_spec_parse_mode(pds_pm_exheres_0)
-                                    .strict_package_dep_spec_parse_mode(pds_pm_exheres_0)
-                                    .dependency_spec_tree_parse_mode(dst_pm_exheres_0)
-                                    .iuse_flag_parse_mode(iuse_pm_exheres_0)
-                                    .strict_iuse_flag_parse_mode(iuse_pm_exheres_0)
-                                    .breaks_portage(true)
-                                    .has_pkg_pretend(true)
-                                    .want_aa_var(false)
-                                    .want_arch_var(false)
-                                    .want_portage_emulation_vars(false)
-                                    .uri_supports_arrow(true)
-                                    .require_use_expand_in_iuse(true))))));
+                values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
+                            EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
+                                        SupportedEAPI::create()
+                                        .package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
+                                                k.get("package_dep_spec_parse_mode")))
+                                        .strict_package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
+                                                k.get("strict_package_dep_spec_parse_mode")))
+                                        .dependency_spec_tree_parse_mode(destringify<DependencySpecTreeParseMode>(
+                                                k.get("dependency_spec_tree_parse_mode")))
+                                        .iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
+                                                k.get("iuse_flag_parse_mode")))
+                                        .strict_iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
+                                                k.get("strict_iuse_flag_parse_mode")))
+                                        .breaks_portage(destringify<bool>(k.get("breaks_portage")))
+                                        .has_pkg_pretend(destringify<bool>(k.get("has_pkg_pretend")))
+                                        .uri_supports_arrow(destringify<bool>(k.get("uri_supports_arrow")))
+                                        .want_aa_var(destringify<bool>(k.get("want_aa_var")))
+                                        .want_arch_var(destringify<bool>(k.get("want_arch_var")))
+                                        .want_portage_emulation_vars(destringify<bool>(k.get("want_portage_emulation_vars")))
+                                        .require_use_expand_in_iuse(destringify<bool>(k.get("require_use_expand_in_iuse")))
+                                        )))));
+            }
+
+            MakeHashedMap<std::string, EAPI>::Type::const_iterator i(values.find("0"));
+            if (i == values.end())
+                throw EAPIConfigurationError("No EAPI configuration found for EAPI 0");
+            else
+                values.insert(std::make_pair("", i->second));
         }
     };
 }
 
 #include <paludis/eapi-sr.cc>
+
+EAPIConfigurationError::EAPIConfigurationError(const std::string & s) throw () :
+    ConfigurationError("EAPI configuration error: " + s)
+{
+}
 
 EAPIData::EAPIData() :
     PrivateImplementationPattern<EAPIData>(new Implementation<EAPIData>)
