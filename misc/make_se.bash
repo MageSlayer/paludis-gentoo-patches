@@ -28,6 +28,7 @@ while read a ; do
     want_key_descriptions=( )
     want_prefix_key=
     want_namespace=paludis
+    want_destringify=
 
     key()
     {
@@ -50,6 +51,11 @@ while read a ; do
         :
     }
 
+    want_destringify()
+    {
+        want_destringify=yes
+    }
+
     make_enum_${a}
     if [[ -z "${want_prefix_key}" ]] ; then
         echo "no prefix key set for ${a}" 1>&2
@@ -67,6 +73,11 @@ while read a ; do
     }
 
     namespace()
+    {
+        :
+    }
+
+    want_destringify()
     {
         :
     }
@@ -105,6 +116,15 @@ while read a ; do
         echo "operator<< (std::ostream &, const $a &) PALUDIS_VISIBLE;"
         echo
 
+        if [[ -n "${want_destringify}" ]] ; then
+            echo "/**"
+            echo " * Read a ${a} from a stream."
+            echo " */"
+            echo "std::istream &"
+            echo "operator>> (std::istream &, $a &) PALUDIS_VISIBLE;"
+            echo
+        fi
+
         echo "#ifdef DOXYGEN"
         echo "// end namespace for doxygen"
         echo "}"
@@ -137,6 +157,31 @@ while read a ; do
         echo "    return o;"
         echo "}"
         echo
+
+        if [[ -n "${want_destringify}" ]] ; then
+            echo "std::istream &"
+            echo "${want_namespace}::operator>> (std::istream & s, $a & a)"
+            echo "{"
+            echo "    std::string value;"
+            echo "    s >> value;"
+            echo
+            echo "    do"
+            echo "    {"
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo "        if (value == \"${want_keys[${k}]#${want_prefix_key}_}\")"
+                echo "        {"
+                echo "            a = ${want_keys[${k}]};"
+                echo "            break;"
+                echo "        }"
+                echo
+            done
+            echo "        s.setstate(std::ios::badbit);"
+            echo "    } while (false);"
+            echo
+            echo "    return s;"
+            echo "}"
+            echo
+        fi
 
     else
         echo "bad argument (expected --header or --source)" 1>&2
