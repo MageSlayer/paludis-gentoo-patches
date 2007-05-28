@@ -24,6 +24,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
+#include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <set>
 
@@ -160,8 +161,10 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
-        package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                    tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+
+        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+            package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
+                        tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
     else
     {
@@ -180,8 +183,10 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
         iv_keys->insert("root", "/");
-        package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                    iv_keys));
+
+        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+            package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
+                        iv_keys));
     }
 }
 

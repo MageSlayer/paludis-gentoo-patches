@@ -54,6 +54,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	CONTRARIUS_OPTIONS="" \
 	bash $(top_srcdir)/test/run_test.sh bash
 

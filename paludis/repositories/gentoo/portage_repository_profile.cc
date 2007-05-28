@@ -32,6 +32,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/distribution.hh>
 
 #include <list>
 #include <algorithm>
@@ -215,7 +216,8 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
     load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
-    virtuals_file.add_file(dir / "virtuals");
+    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
 }
 
@@ -396,27 +398,28 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
     }
 
-    try
-    {
-        for (ProfileFile::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
-                line != line_end ; ++line)
+    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        try
         {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
+            for (ProfileFile::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::vector<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+                if (tokens.size() < 2)
+                    continue;
 
-            QualifiedPackageName v(tokens[0]);
-            virtuals.erase(v);
-            virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
-                                pds_pm_eapi_0))));
+                QualifiedPackageName v(tokens[0]);
+                virtuals.erase(v);
+                virtuals.insert(std::make_pair(v, tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
+                                    pds_pm_eapi_0))));
+            }
         }
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
-                " failed due to exception: " + e.message() + " (" + e.what() + ")");
-    }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
+                    " failed due to exception: " + e.message() + " (" + e.what() + ")");
+        }
 
     for (ProfileFile::Iterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
             line != line_end ; ++line)

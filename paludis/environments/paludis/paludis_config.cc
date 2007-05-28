@@ -26,6 +26,7 @@
 #include <paludis/environments/paludis/package_mask_conf.hh>
 
 #include <paludis/config_file.hh>
+#include <paludis/distribution.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -253,19 +254,23 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         /* add virtuals repositories */
 
-        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
-        iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
+        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        {
+            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+            _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
 
-        _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                    tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+            _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
+                        tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+        }
 
         /* add normal repositories */
 
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
-            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(), KeyValueConfigFile::Defaults(conf_vars));
+            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf", KeyValueConfigFileOptions(),
+                    KeyValueConfigFile::Defaults(conf_vars));
             std::copy(defaults_file.begin(), defaults_file.end(), conf_vars->inserter());
         }
         else if ((local_config_dir / "repository_defaults.bash").exists())

@@ -23,6 +23,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/environment.hh>
+#include <paludis/distribution.hh>
 
 using namespace paludis;
 
@@ -99,7 +100,13 @@ paludis::make_ebuild_repository(
         if (master_repository)
             distdir = stringify(master_repository->params().distdir);
         else
-            distdir = location + "/distfiles";
+        {
+            distdir = DistributionData::get_instance()->default_distribution()->default_ebuild_distdir;
+            if (distdir.empty())
+                distdir = location + "/distfiles";
+            else if ('/' != distdir.at(0))
+                distdir = location + "/" + distdir;
+        }
     }
 
     std::string pkgdir;
@@ -133,15 +140,19 @@ paludis::make_ebuild_repository(
 
     std::string write_cache;
     if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
-        write_cache = "/var/empty";
+        write_cache = DistributionData::get_instance()->default_distribution()->default_ebuild_write_cache;
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
-                + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
-                "appropriate value.");
-        names_cache = "/var/empty";
+        names_cache = DistributionData::get_instance()->default_distribution()->default_ebuild_names_cache;
+        if (names_cache.empty())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
+                    + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
+                    "appropriate value.");
+            names_cache = "/var/empty";
+        }
     }
 
     std::string sync;
@@ -163,11 +174,11 @@ paludis::make_ebuild_repository(
 
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = "/var/tmp/paludis";
+        buildroot = DistributionData::get_instance()->default_distribution()->default_ebuild_build_root;
 
     std::string layout;
     if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
-        layout = "traditional";
+        layout = DistributionData::get_instance()->default_distribution()->default_ebuild_layout;
 
     return tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")

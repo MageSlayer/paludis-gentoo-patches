@@ -51,6 +51,7 @@ libexecprog_SCRIPTS = \
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_EBUILD_LOG_LEVEL="warning" \
 	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/`" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

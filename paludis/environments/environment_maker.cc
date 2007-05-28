@@ -23,6 +23,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/distribution.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <set>
@@ -145,7 +146,7 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
 
     if (key.empty())
-        key = "paludis";
+        key = DistributionData::get_instance()->default_distribution()->default_environment;
 
     try
     {
@@ -153,12 +154,13 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
     catch (const FallBackToAnotherMakerError &)
     {
-        if (s.empty())
+        std::string f(DistributionData::get_instance()->default_distribution()->fallback_environment);
+        if (s.empty() && ! f.empty())
         {
             std::set<std::string> keys;
             copy_keys(std::inserter(keys, keys.begin()));
-            if (keys.end() != keys.find("portage"))
-                return make_from_spec("portage");
+            if (keys.end() != keys.find(f))
+                return make_from_spec(f);
             else
                 throw;
         }

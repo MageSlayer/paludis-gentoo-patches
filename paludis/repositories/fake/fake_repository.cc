@@ -20,6 +20,7 @@
 #include "fake_repository.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/distribution.hh>
 
 using namespace paludis;
 
@@ -37,7 +38,7 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .provides_interface(0)
-            .virtuals_interface(this)
+            .virtuals_interface(DistributionData::get_instance()->default_distribution()->support_old_style_virtuals ? this : 0)
             .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)

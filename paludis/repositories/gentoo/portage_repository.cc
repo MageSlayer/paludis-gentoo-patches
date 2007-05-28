@@ -31,6 +31,7 @@
 #include <paludis/repositories/gentoo/layout.hh>
 
 #include <paludis/config_file.hh>
+#include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
@@ -258,7 +259,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .world_interface(0)
             .environment_variable_interface(this)
             .mirrors_interface(this)
-            .virtuals_interface(this)
+            .virtuals_interface(DistributionData::get_instance()->default_distribution()->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
             .contents_interface(0)
             .config_interface(0)
@@ -916,9 +917,10 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
 
     _imp->profile_ptr = iter->profile;
 
-    if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
-        _imp->params.environment->package_database()->fetch_repository(
-                RepositoryName("virtuals"))->invalidate();
+    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
+            _imp->params.environment->package_database()->fetch_repository(
+                    RepositoryName("virtuals"))->invalidate();
 }
 
 void

@@ -25,6 +25,7 @@
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_list/query_visitor.hh>
 #include <paludis/dep_list/show_suggest_visitor.hh>
+#include <paludis/distribution.hh>
 #include <paludis/match_package.hh>
 #include <paludis/query.hh>
 #include <paludis/hashed_containers.hh>
@@ -1019,6 +1020,11 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
     {
         DepSpecFlattener f(_imp->env, _imp->current_pde());
         metadata->ebuild_interface->provide()->accept(f);
+
+        if (f.begin() != f.end() && ! DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+            throw DistributionConfigurationError("Package '" + stringify(p) + "' has PROVIDEs, but this distribution "
+                    "does not support old style virtuals");
+
         for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);

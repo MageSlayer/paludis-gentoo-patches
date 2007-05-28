@@ -20,6 +20,7 @@
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
+#include <paludis/distribution.hh>
 #include "config.h"
 
 using namespace paludis;
@@ -33,8 +34,11 @@ extern "C"
 
 void register_repositories(RepositoryMaker * maker)
 {
-    maker->register_maker("virtuals", &VirtualsRepository::make_virtuals_repository);
-    maker->register_maker("installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
+    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+    {
+        maker->register_maker("virtuals", &VirtualsRepository::make_virtuals_repository);
+        maker->register_maker("installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
+    }
 }
 
 #endif

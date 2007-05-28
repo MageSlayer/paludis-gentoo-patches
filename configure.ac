@@ -886,6 +886,17 @@ AC_SUBST([ALL_ENVIRONMENTS])
 AC_SUBST([BUILD_ENVIRONMENTS])
 dnl }}}
 
+dnl {{{ distribution
+AC_MSG_CHECKING([for default distribution])
+AC_ARG_WITH([default-distribution],
+	AS_HELP_STRING([--with-default-distribution=distro], [Specify default distribution name]),
+	DEFAULT_DISTRIBUTION=`eval echo $withval`,
+	DEFAULT_DISTRIBUTION=gentoo)
+AC_MSG_RESULT([$DEFAULT_DISTRIBUTION])
+AC_SUBST([DEFAULT_DISTRIBUTION])
+AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default distribution name])
+dnl }}}
+
 dnl {{{ clients
 ALL_CLIENTS="adjutrix contrarius inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
@@ -1065,6 +1076,7 @@ AC_OUTPUT(
 	paludis/args/Makefile
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
+	paludis/distributions/Makefile
 	paludis/eapis/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile

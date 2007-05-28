@@ -1,0 +1,27 @@
+make_class_Distribution()
+{
+    visible
+
+    key default_environment std::string
+    key fallback_environment std::string
+
+    key support_old_style_virtuals bool
+
+    key default_ebuild_distdir std::string
+    key default_ebuild_write_cache std::string
+    key default_ebuild_names_cache std::string
+    key default_ebuild_build_root std::string
+    key default_ebuild_layout std::string
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Information about a distribution.
+         *
+         * \see DistributionData
+         * \nosubgrouping
+         */
+END
+}
+
