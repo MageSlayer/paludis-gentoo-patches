@@ -65,7 +65,7 @@ while read a ; do
 
     allow_named_args()
     {
-        want_named_args=yes
+        want_named_args=${1:-hh}
     }
 
     visible()
@@ -312,20 +312,164 @@ while read a ; do
                     echo ">"
                 fi
             done
-            echo "class NamedArguments"
-            echo "{"
-            echo "    friend class ${current_class};"
-            echo "    template <"
+            echo -n "class NamedArguments"
+
+            if [[ "${want_named_args}" == "cc" ]] ; then
+                echo ";"
+            else
+                echo
+                echo "{"
+                echo "    friend class ${current_class};"
+                echo "    template <"
+                for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                    echo -n "            bool"
+                    if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                        echo ","
+                    else
+                        echo ">"
+                    fi
+                done
+                echo "        friend class ${current_class}::NamedArguments;"
+                echo
+                echo "    private:"
+
+                for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                    echo "        const typename paludis::Select<has_${k}_, ${want_key_types[${k}]% ->*}, paludis::Empty>::Type _v${k};"
+                done
+
+                echo "        NamedArguments("
+                for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                    echo -n "            const typename paludis::Select<has_${k}_, ${want_key_types[${k}]% ->*}, paludis::Empty>::Type & v${k}"
+                    if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                        echo ","
+                    else
+                        echo ") :"
+                    fi
+                done
+                for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                    echo -n "            _v${k}(v${k})"
+                    if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                        echo ","
+                    else
+                        echo
+                    fi
+                done
+                echo "        {"
+                echo "        }"
+
+                echo
+                echo "    public:"
+                echo
+
+                echo "        ///\\name Value specification functions"
+                echo "        ///\\{"
+
+                for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                    echo "        /**"
+                    echo "         * Set the value of the ${current_class}.${want_keys[${k}]} member."
+                    echo "         */"
+                    echo "        NamedArguments<"
+                    for (( kk = 0 ; kk < ${#want_keys[@]} ; kk++ )) ; do
+                        if [[ ${k} == ${kk} ]] ; then
+                            echo -n "            true"
+                        else
+                            echo -n "            has_${kk}_"
+                        fi
+                        if [[ $(( ${kk} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                            echo ","
+                        else
+                            echo ">"
+                        fi
+                    done
+                    echo "        ${want_keys[${k}]}($(make_const_ref "${want_key_types[${k}]% ->*}" ) v)"
+                    echo "        {"
+                    echo "            const typename paludis::Select<has_${k}_, void, paludis::Empty>::Type"
+                    echo "                check_not_already_specified = paludis::Empty::instance;"
+                    echo
+                    echo "            return NamedArguments<"
+                    for (( kk = 0 ; kk < ${#want_keys[@]} ; kk++ )) ; do
+                        if [[ ${k} == ${kk} ]] ; then
+                            echo -n "            true"
+                        else
+                            echo -n "            has_${kk}_"
+                        fi
+                        if [[ $(( ${kk} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                            echo ","
+                        else
+                            echo ">("
+                        fi
+                    done
+                    for (( kk = 0 ; kk < ${#want_keys[@]} ; kk++ )) ; do
+                        if [[ ${k} == ${kk} ]] ; then
+                            echo -n "            v"
+                        else
+                            echo -n "            _v${kk}"
+                        fi
+                        if [[ $(( ${kk} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                            echo ","
+                        else
+                            echo ");"
+                        fi
+                    done
+
+                    echo "        }"
+                    echo
+                done
+                echo "        ///\\}"
+
+                echo
+                echo "};"
+            fi
+
+            echo "        /**"
+            echo "         * Create using named arguments."
+            echo "         */"
+            echo "        ${current_class}(const NamedArguments<"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            bool"
+                echo -n "            true"
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo "> & va);"
+                fi
+            done
+
+            echo
+            echo "        /**"
+            echo "         * Convenience function to create an empty named arguments class."
+            echo "         */"
+            echo "        static NamedArguments<"
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo -n "            false"
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
                     echo ">"
                 fi
             done
-            echo "        friend class ${current_class}::NamedArguments;"
+            echo "        create() PALUDIS_ATTRIBUTE((warn_unused_result));"
+
             echo
+            echo "        ///\\}"
+
+        fi
+        echo "};"
+
+    elif [[ "${what_to_make}" == "--source" ]] ; then
+
+        if [[ "${want_named_args}" == "cc" ]] ; then
+            echo "template <"
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo -n "        bool has_${k}_"
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo ">"
+                fi
+            done
+            echo "class ${a}::NamedArguments"
+            echo "{"
+            echo "    friend class ${a};"
             echo "    private:"
 
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
@@ -414,42 +558,7 @@ while read a ; do
 
             echo
             echo "};"
-
-            echo "        /**"
-            echo "         * Create using named arguments."
-            echo "         */"
-            echo "        ${current_class}(const NamedArguments<"
-            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            true"
-                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
-                    echo ","
-                else
-                    echo "> & va);"
-                fi
-            done
-
-            echo
-            echo "        /**"
-            echo "         * Convenience function to create an empty named arguments class."
-            echo "         */"
-            echo "        static NamedArguments<"
-            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            false"
-                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
-                    echo ","
-                else
-                    echo ">"
-                fi
-            done
-            echo "        create() PALUDIS_ATTRIBUTE((warn_unused_result));"
-
-            echo
-            echo "        ///\\}"
-
         fi
-        echo "};"
-
-    elif [[ "${what_to_make}" == "--source" ]] ; then
 
         echo "${a}::${a}("
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
