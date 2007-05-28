@@ -76,6 +76,8 @@ PortageDepLexer::PortageDepLexer(const std::string & s) :
             _imp->tokens.push_back(std::make_pair(dpl_double_bar, *t));
         else if ('|' == (*t)[0])
             throw DepStringLexError(s, "'|' should be followed by '|'");
+        else if (*t == "->")
+            _imp->tokens.push_back(std::make_pair(dpl_arrow, *t));
         else if (*t == "(")
             _imp->tokens.push_back(std::make_pair(dpl_open_paren, *t));
         else if ('(' == (*t)[0])

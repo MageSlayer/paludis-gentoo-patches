@@ -46,14 +46,17 @@ namespace
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec & t)
+        void visit_leaf(const URIDepSpec & t)
         {
-            std::string text(t.text());
+            std::string text(t.original_url());
 
             if (std::string::npos == text.find("http://") &&
                     std::string::npos == text.find("https://") &&
                     std::string::npos == text.find("ftp://"))
                 result << Message(qal_major, "HOMEPAGE part '" + text + "' doesn't look like a URL");
+
+            if (! t.renamed_url_suffix().empty())
+                result << Message(qal_major, "HOMEPAGE part '" + text + "' uses '->'");
 
             found_one = true;
         }

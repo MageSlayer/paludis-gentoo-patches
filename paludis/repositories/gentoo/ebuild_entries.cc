@@ -177,15 +177,15 @@ namespace
         public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, UseDepSpec>
     {
         private:
-            mutable std::list<const StringDepSpec *> _specs;
+            mutable std::list<const URIDepSpec *> _specs;
 
         public:
-            void visit_leaf(const PlainTextDepSpec & a)
+            void visit_leaf(const URIDepSpec & a)
             {
                 _specs.push_back(&a);
             }
 
-            typedef std::list<const StringDepSpec *>::const_iterator Iterator;
+            typedef std::list<const URIDepSpec *>::const_iterator Iterator;
 
             Iterator begin()
             {
@@ -338,23 +338,28 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         DepSpecFlattener f(_imp->params.environment, &e);
         metadata->ebuild_interface->src_uri()->accept(f);
 
-        for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+        for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::string::size_type pos((*ff)->text().rfind('/'));
+            const tr1::shared_ptr<const URIDepSpec> spec(tr1::static_pointer_cast<const URIDepSpec>(*i));
+            if (! spec->renamed_url_suffix().empty())
+                throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                        + stringify(v) + "' since it uses SRC_URI arrow components");
+
+            std::string::size_type pos(spec->original_url().rfind('/'));
             if (std::string::npos == pos)
             {
-                if (already_in_archives.end() == already_in_archives.find((*ff)->text()))
+                if (already_in_archives.end() == already_in_archives.find(spec->original_url()))
                 {
-                    archives.append((*ff)->text());
-                    already_in_archives.insert((*ff)->text());
+                    archives.append(spec->original_url());
+                    already_in_archives.insert(spec->original_url());
                 }
             }
             else
             {
-                if (already_in_archives.end() == already_in_archives.find((*ff)->text().substr(pos + 1)))
+                if (already_in_archives.end() == already_in_archives.find(spec->original_url().substr(pos + 1)))
                 {
-                    archives.append((*ff)->text().substr(pos + 1));
-                    already_in_archives.insert((*ff)->text().substr(pos + 1));
+                    archives.append(spec->original_url().substr(pos + 1));
+                    already_in_archives.insert(spec->original_url().substr(pos + 1));
                 }
             }
             archives.append(" ");
@@ -362,11 +367,11 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             /* add * mirror entries */
             tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
             for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
-                flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
+                flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
 
-            if (0 == (*ff)->text().compare(0, 9, "mirror://"))
+            if (0 == spec->original_url().compare(0, 9, "mirror://"))
             {
-                std::string mirror((*ff)->text().substr(9));
+                std::string mirror(spec->original_url().substr(9));
                 std::string::size_type spos(mirror.find('/'));
 
                 if (std::string::npos == spos)
@@ -390,7 +395,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     flat_src_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
             }
             else
-                flat_src_uri.append((*ff)->text());
+                flat_src_uri.append(spec->original_url());
             flat_src_uri.append(" ");
 
             /* add mirror://gentoo/ entries */
@@ -400,13 +405,13 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
 
                 for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(pos + 1) + " ");
+                    flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
                         m_end(_imp->portage_repository->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + spec->original_url().substr(pos + 1) + " ");
             }
         }
 

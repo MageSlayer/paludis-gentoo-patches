@@ -68,6 +68,8 @@ namespace paludis
 
             void visit_leaf(const BlockDepSpec &);
 
+            void visit_leaf(const URIDepSpec &);
+
             ///}
 
             ///\name Basic operations
@@ -83,7 +85,7 @@ namespace paludis
             ///\name Iterate over our dep specs
             ///{
 
-            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const StringDepSpec *> Iterator;
+            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const tr1::shared_ptr<const StringDepSpec> > Iterator;
 
             Iterator begin() const;
 

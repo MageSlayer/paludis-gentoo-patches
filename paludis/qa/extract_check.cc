@@ -57,6 +57,10 @@ namespace
                     need_zip = true;
         }
 
+        void visit_leaf(const URIDepSpec &)
+        {
+        }
+
         void visit_leaf(const BlockDepSpec &)
         {
         }

@@ -50,32 +50,32 @@ namespace
         {
         }
 
-        void visit_leaf(const PlainTextDepSpec & a)
+        void visit_leaf(const URIDepSpec & a)
         {
-            if (a.text().empty())
+            if (a.original_url().empty())
                 return;
 
             std::string::size_type p(std::string::npos);
             if ((std::string::npos != p) &&
-                    (("http" != a.text().substr(0, p)) &&
-                     ("https" != a.text().substr(0, p)) &&
-                     ("mirror" != a.text().substr(0, p)) &&
-                     ("ftp" != a.text().substr(0, p))))
-                result << Message(qal_major, "Unrecognised protocol for '" + a.text() + "'");
+                    (("http" != a.original_url().substr(0, p)) &&
+                     ("https" != a.original_url().substr(0, p)) &&
+                     ("mirror" != a.original_url().substr(0, p)) &&
+                     ("ftp" != a.original_url().substr(0, p))))
+                result << Message(qal_major, "Unrecognised protocol for '" + a.original_url() + "'");
 
-            else if ((std::string::npos != a.text().find("dev.gentoo.org")) ||
-                    (std::string::npos != a.text().find("cvs.gentoo.org")) ||
-                    (std::string::npos != a.text().find("toucan.gentoo.org")) ||
-                    (std::string::npos != a.text().find("emu.gentoo.org")) ||
-                    (std::string::npos != a.text().find("alpha.gnu.org")) ||
-                    (std::string::npos != a.text().find("geocities.com")))
+            else if ((std::string::npos != a.original_url().find("dev.gentoo.org")) ||
+                    (std::string::npos != a.original_url().find("cvs.gentoo.org")) ||
+                    (std::string::npos != a.original_url().find("toucan.gentoo.org")) ||
+                    (std::string::npos != a.original_url().find("emu.gentoo.org")) ||
+                    (std::string::npos != a.original_url().find("alpha.gnu.org")) ||
+                    (std::string::npos != a.original_url().find("geocities.com")))
                 result << Message(qal_major, "Unreliable host for '" + a.text() + "'");
 
             else
             {
-                if (0 == a.text().compare(0, 9, "mirror://"))
+                if (0 == a.original_url().compare(0, 9, "mirror://"))
                 {
-                    std::string mirror_host(a.text().substr(9));
+                    std::string mirror_host(a.original_url().substr(9));
                     std::string::size_type pos(mirror_host.find('/'));
                     if (std::string::npos == pos)
                         result << Message(qal_major, "Malformed SRC_URI component '" + a.text() + "'");

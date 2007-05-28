@@ -45,7 +45,7 @@ namespace paludis
 
         const PackageDatabaseEntry * const pkg;
 
-        mutable std::list<const StringDepSpec *> specs;
+        mutable std::list<tr1::shared_ptr<const StringDepSpec > > specs;
 
         Implementation(const Environment * const e,
                 const PackageDatabaseEntry * const p) :
@@ -90,16 +90,21 @@ void DepSpecFlattener::visit_sequence(const UseDepSpec & u,
 
 void DepSpecFlattener::visit_leaf(const PlainTextDepSpec & p)
 {
-    _imp->specs.push_back(&p);
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
 }
 
 void DepSpecFlattener::visit_leaf(const PackageDepSpec & p)
 {
-    _imp->specs.push_back(&p);
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
 }
 
 void DepSpecFlattener::visit_leaf(const BlockDepSpec & p)
 {
-    _imp->specs.push_back(&p);
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
+}
+
+void DepSpecFlattener::visit_leaf(const URIDepSpec & p)
+{
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
 }
 

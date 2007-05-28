@@ -140,6 +140,18 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 }
 
 void
+DepSpecPrettyPrinter::visit_leaf(const URIDepSpec & p)
+{
+    if (! p.renamed_url_suffix().empty())
+    {
+        _imp->s << indent() << p.original_url() << " -> " << p.renamed_url_suffix();
+    }
+    else
+        _imp->s << indent() << p.original_url();
+    _imp->s << newline();
+}
+
+void
 DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 {
     _imp->s << indent() << "!" << *b.blocked_spec();

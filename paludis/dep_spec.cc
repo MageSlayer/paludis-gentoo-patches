@@ -40,6 +40,7 @@ template class ConstAcceptInterface<GenericSpecTree>;
 template class TreeLeaf<GenericSpecTree, PackageDepSpec>;
 template class TreeLeaf<GenericSpecTree, BlockDepSpec>;
 template class TreeLeaf<GenericSpecTree, PlainTextDepSpec>;
+template class TreeLeaf<GenericSpecTree, URIDepSpec>;
 template class ConstTreeSequence<GenericSpecTree, AllDepSpec>;
 template class ConstTreeSequence<GenericSpecTree, AnyDepSpec>;
 template class ConstTreeSequence<GenericSpecTree, UseDepSpec>;
@@ -53,7 +54,7 @@ template class ConstTreeSequence<LicenseSpecTree, UseDepSpec>;
 
 template class ConstVisitor<URISpecTree>;
 template class ConstAcceptInterface<URISpecTree>;
-template class TreeLeaf<URISpecTree, PlainTextDepSpec>;
+template class TreeLeaf<URISpecTree, URIDepSpec>;
 template class ConstTreeSequence<URISpecTree, AllDepSpec>;
 template class ConstTreeSequence<URISpecTree, UseDepSpec>;
 
@@ -62,6 +63,7 @@ template class ConstAcceptInterface<FlattenableSpecTree>;
 template class TreeLeaf<FlattenableSpecTree, PackageDepSpec>;
 template class TreeLeaf<FlattenableSpecTree, BlockDepSpec>;
 template class TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>;
+template class TreeLeaf<FlattenableSpecTree, URIDepSpec>;
 template class ConstTreeSequence<FlattenableSpecTree, AllDepSpec>;
 template class ConstTreeSequence<FlattenableSpecTree, UseDepSpec>;
 
@@ -973,5 +975,36 @@ tr1::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
     return tr1::shared_ptr<DepSpec>(new BlockDepSpec(tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
+}
+
+URIDepSpec::URIDepSpec(const std::string & s) :
+    StringDepSpec(s)
+{
+}
+
+std::string
+URIDepSpec::original_url() const
+{
+    std::string::size_type p(text().find(" -> "));
+    if (std::string::npos == p)
+        return text();
+    else
+        return text().substr(0, p);
+}
+
+std::string
+URIDepSpec::renamed_url_suffix() const
+{
+    std::string::size_type p(text().find(" -> "));
+    if (std::string::npos == p)
+        return "";
+    else
+        return text().substr(p + 4);
+}
+
+tr1::shared_ptr<DepSpec>
+URIDepSpec::clone() const
+{
+    return tr1::shared_ptr<URIDepSpec>(new URIDepSpec(text()));
 }
 

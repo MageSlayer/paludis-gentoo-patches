@@ -41,6 +41,7 @@ namespace paludis
                                     .strict_iuse_flag_parse_mode(iuse_pm_eapi_0_strict)
                                     .breaks_portage(false)
                                     .has_pkg_pretend(false)
+                                    .uri_supports_arrow(false)
                                     .want_aa_var(true)
                                     .want_arch_var(true)
                                     .want_portage_emulation_vars(true)
@@ -58,6 +59,7 @@ namespace paludis
                                     .has_pkg_pretend(true)
                                     .want_aa_var(false)
                                     .want_arch_var(true)
+                                    .uri_supports_arrow(true)
                                     .want_portage_emulation_vars(false)
                                     .require_use_expand_in_iuse(false))))));
 
@@ -72,6 +74,7 @@ namespace paludis
                                     .want_aa_var(false)
                                     .want_arch_var(false)
                                     .want_portage_emulation_vars(false)
+                                    .uri_supports_arrow(true)
                                     .require_use_expand_in_iuse(false))))));
 
             values.insert(std::make_pair("exheres-0", EAPI("exheres-0", tr1::shared_ptr<SupportedEAPI>(new SupportedEAPI(SupportedEAPI::create()
@@ -85,6 +88,7 @@ namespace paludis
                                     .want_aa_var(false)
                                     .want_arch_var(false)
                                     .want_portage_emulation_vars(false)
+                                    .uri_supports_arrow(true)
                                     .require_use_expand_in_iuse(true))))));
         }
     };

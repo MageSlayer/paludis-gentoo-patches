@@ -30,6 +30,7 @@ namespace paludis
     class DepSpec;
     class PackageDepSpec;
     class PlainTextDepSpec;
+    class URIDepSpec;
     class AllDepSpec;
     class AnyDepSpec;
     class UseDepSpec;
@@ -58,6 +59,7 @@ namespace paludis
             GenericSpecTree,
             DepSpec,
             TreeLeaf<GenericSpecTree, PlainTextDepSpec>,
+            TreeLeaf<GenericSpecTree, URIDepSpec>,
             TreeLeaf<GenericSpecTree, PackageDepSpec>,
             TreeLeaf<GenericSpecTree, BlockDepSpec>,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
@@ -83,7 +85,7 @@ namespace paludis
         VisitorTypes<
             URISpecTree,
             DepSpec,
-            TreeLeaf<URISpecTree, PlainTextDepSpec>,
+            TreeLeaf<URISpecTree, URIDepSpec>,
             ConstTreeSequence<URISpecTree, AllDepSpec>,
             ConstTreeSequence<URISpecTree, UseDepSpec>
         >
@@ -95,6 +97,7 @@ namespace paludis
             FlattenableSpecTree,
             DepSpec,
             TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>,
+            TreeLeaf<FlattenableSpecTree, URIDepSpec>,
             TreeLeaf<FlattenableSpecTree, PackageDepSpec>,
             TreeLeaf<FlattenableSpecTree, BlockDepSpec>,
             ConstTreeSequence<FlattenableSpecTree, AllDepSpec>,

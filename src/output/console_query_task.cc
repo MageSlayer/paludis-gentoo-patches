@@ -313,6 +313,11 @@ namespace
             empty = false;
         }
 
+        void visit_leaf(const URIDepSpec &)
+        {
+            empty = false;
+        }
+
         void visit_leaf(const PlainTextDepSpec &)
         {
             empty = false;

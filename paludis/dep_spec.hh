@@ -365,8 +365,7 @@ namespace paludis
     };
 
     /**
-     * A PlainTextDepSpec represents a plain text entry (for example,
-     * a URI in SRC_URI).
+     * A PlainTextDepSpec represents a plain text entry.
      *
      * \ingroup grpdepspecs
      * \nosubgrouping
@@ -381,6 +380,29 @@ namespace paludis
             PlainTextDepSpec(const std::string &);
 
             ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * A URIDepSpec represents a URI part.
+     *
+     * \ingroup grpdepspecs
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE URIDepSpec :
+        public StringDepSpec
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            URIDepSpec(const std::string &);
+
+            ///\}
+
+            std::string original_url() const;
+            std::string renamed_url_suffix() const;
 
             virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

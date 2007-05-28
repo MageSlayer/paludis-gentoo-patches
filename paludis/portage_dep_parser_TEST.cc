@@ -211,6 +211,25 @@ namespace test_cases
         }
     } test_dep_spec_parser_inv_use;
 
+    struct PortageDepParserURITest : TestCase
+    {
+        PortageDepParserURITest() : TestCase("uri") { }
+
+        void run()
+        {
+            DepSpecPrettyPrinter d(0, true);
+            PortageDepParser::parse_uri("a\n->\tb", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            TEST_CHECK_EQUAL(stringify(d), "a -> b\n");
+
+            DepSpecPrettyPrinter e(0, true);
+            PortageDepParser::parse_uri("a-> b", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+            TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
+
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> b",
+                        EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+        }
+    } test_dep_spec_parser_uri;
+
     /**
      * \test Test PortageDepParser nesting errors.
      *
@@ -246,6 +265,12 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("||",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("|| ",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_depend("foo?",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ||",
                         EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse_depend("(((",
@@ -253,6 +278,25 @@ namespace test_cases
             TEST_CHECK_THROWS(PortageDepParser::parse_depend(")",
                         EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse_depend("(foo/bar)",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_license("a -> b",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("( -> )",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("( -> )",
+                        EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("foo? -> bar",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a ->",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> ( )",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> )",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> || ( )",
+                        EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> foo? ( )",
                         EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_values;

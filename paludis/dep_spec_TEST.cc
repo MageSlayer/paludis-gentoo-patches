@@ -188,6 +188,22 @@ namespace test_cases
         }
     } test_package_dep_spec;
 
+    struct URIDepSpecTest : TestCase
+    {
+        URIDepSpecTest() : TestCase("uri dep spec") { }
+
+        void run()
+        {
+            URIDepSpec a("foo");
+            TEST_CHECK_EQUAL(a.original_url(), "foo");
+            TEST_CHECK_EQUAL(a.renamed_url_suffix(), "");
+
+            URIDepSpec b("fnord -> bar");
+            TEST_CHECK_EQUAL(b.original_url(), "fnord");
+            TEST_CHECK_EQUAL(b.renamed_url_suffix(), "bar");
+        }
+    } test_uri_dep_spec;
+
     struct PackageDepSpecUnspecificTest : TestCase
     {
         PackageDepSpecUnspecificTest() : TestCase("package dep spec unspecific") { }

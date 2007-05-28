@@ -83,7 +83,8 @@ namespace paludis
         dpl_use_flag,          ///< a use flag
         dpl_double_bar,        ///< a double bar ('any' marker)
         dpl_open_paren,        ///< open paren
-        dpl_close_paren        ///< close paren
+        dpl_close_paren,       ///< close paren
+        dpl_arrow              ///< arrow
     };
 
     /**

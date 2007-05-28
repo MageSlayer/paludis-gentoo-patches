@@ -50,6 +50,10 @@ namespace test_cases
             DepSpecPrettyPrinter p4(0, false);
             PortageDepParser::parse_license("( ( ( ) a ) b )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
             TEST_CHECK_STRINGIFY_EQUAL(p4, "a b");
+
+            DepSpecPrettyPrinter p5(0, false);
+            PortageDepParser::parse_uri("( a -> b c x? ( d e ) )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p5);
+            TEST_CHECK_STRINGIFY_EQUAL(p5, "a -> b c x? ( d e )");
         }
     } test_pretty_printer_no_indent;
 

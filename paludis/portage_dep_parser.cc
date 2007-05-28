@@ -56,7 +56,10 @@ namespace
         dps_had_double_bar_space,
         dps_had_paren,
         dps_had_use_flag,
-        dps_had_use_flag_space
+        dps_had_use_flag_space,
+        dps_had_text_arrow,
+        dps_had_text_arrow_space,
+        dps_had_text_arrow_text
     };
 
     template <typename H_>
@@ -108,6 +111,13 @@ namespace
             p->add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
                             tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
         }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        {
+            throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
+        }
     };
 
     struct ParsePackageOrBlockDepSpec
@@ -131,6 +141,13 @@ namespace
                                 tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
                                         tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode)))))));
         }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        {
+            throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
+        }
     };
 
     struct ParseTextDepSpec
@@ -141,6 +158,42 @@ namespace
         {
             p->add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
                             tr1::shared_ptr<PlainTextDepSpec>(new PlainTextDepSpec(s)))));
+        }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        {
+            throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
+        }
+    };
+
+    struct ParseURIDepSpec
+    {
+        const bool _supports_arrow;
+
+        ParseURIDepSpec(bool a) :
+            _supports_arrow(a)
+        {
+        }
+
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        {
+            p->add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
+                            tr1::shared_ptr<URIDepSpec>(new URIDepSpec(s)))));
+        }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > & p) const
+        {
+            if (_supports_arrow)
+                p->add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
+                                tr1::shared_ptr<URIDepSpec>(new URIDepSpec(lhs + " -> " + rhs)))));
+            else
+                throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this EAPI");
         }
     };
 
@@ -232,6 +285,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                         tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> >(new ConstTreeSequence<H_, AllDepSpec>(
                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))), false));
 
+    std::string arrow_lhs;
     PortageDepParserState state(dps_initial);
     PortageDepLexer lexer(s);
     PortageDepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
@@ -252,11 +306,24 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                             case dpl_whitespace:
                                  continue;
 
+                            case dpl_arrow:
+                                 throw DepStringParseError(s, "Arrow not allowed here");
+
                             case dpl_text:
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
-                                     p.template add<H_>(i->second, stack.top().first);
+
+                                     PortageDepLexer::Iterator i_fwd(next(i));
+                                     if (i_fwd != i_end && i_fwd->first == dpl_whitespace && ++i_fwd != i_end
+                                             && i_fwd->first == dpl_arrow)
+                                     {
+                                         arrow_lhs = i->second;
+                                         i = i_fwd;
+                                         state = dps_had_text_arrow;
+                                     }
+                                     else
+                                         p.template add<H_>(i->second, stack.top().first);
                                  }
                                  continue;
 
@@ -308,6 +375,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                                 continue;
 
                             case dpl_text:
+                            case dpl_arrow:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_open_paren:
@@ -334,6 +402,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_close_paren:
+                            case dpl_arrow:
                                 throw DepStringParseError(s, "Expected '(' after '|| '");
                         }
                         throw InternalError(PALUDIS_HERE,
@@ -355,6 +424,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                             case dpl_double_bar:
                             case dpl_open_paren:
                             case dpl_close_paren:
+                            case dpl_arrow:
                                 throw DepStringParseError(s, "Expected space after '(' or ')'");
                         }
                         throw InternalError(PALUDIS_HERE,
@@ -376,6 +446,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                             case dpl_double_bar:
                             case dpl_open_paren:
                             case dpl_close_paren:
+                            case dpl_arrow:
                                 throw DepStringParseError(s, "Expected space after use flag");
                         }
                         throw InternalError(PALUDIS_HERE,
@@ -397,11 +468,82 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_close_paren:
+                            case dpl_arrow:
                                 throw DepStringParseError(s, "Expected '(' after use flag");
                         }
                         throw InternalError(PALUDIS_HERE,
                                 "dps_had_use_flag_space: i->first is " + stringify(i->first));
                     } while (0);
+                    continue;
+
+                case dps_had_text_arrow:
+                    do
+                    {
+                        switch (i->first)
+                        {
+                            case dpl_whitespace:
+                                state = dps_had_text_arrow_space;
+                                continue;
+
+                            case dpl_text:
+                            case dpl_open_paren:
+                            case dpl_use_flag:
+                            case dpl_double_bar:
+                            case dpl_close_paren:
+                            case dpl_arrow:
+                                throw DepStringParseError(s, "Expected whitespace after arrow");
+                        }
+                        throw InternalError(PALUDIS_HERE,
+                                "dps_had_text_arrow: i->first is " + stringify(i->first));
+                    } while (0);
+                    continue;
+
+                case dps_had_text_arrow_space:
+                    do
+                    {
+                        switch (i->first)
+                        {
+                            case dpl_whitespace:
+                                continue;
+
+                            case dpl_text:
+                                state = dps_had_text_arrow_text;
+                                p.template add_arrow<H_>(arrow_lhs, i->second, stack.top().first);
+                                continue;
+
+                            case dpl_open_paren:
+                            case dpl_use_flag:
+                            case dpl_double_bar:
+                            case dpl_close_paren:
+                            case dpl_arrow:
+                                throw DepStringParseError(s, "Expected text after whitespace after arrow");
+                        }
+                        throw InternalError(PALUDIS_HERE,
+                                "dps_had_text_arrow_space: i->first is " + stringify(i->first));
+                    } while (0);
+                    continue;
+
+                case dps_had_text_arrow_text:
+                    do
+                    {
+                        switch (i->first)
+                        {
+                            case dpl_whitespace:
+                                state = dps_initial;
+                                continue;
+
+                            case dpl_text:
+                            case dpl_open_paren:
+                            case dpl_use_flag:
+                            case dpl_close_paren:
+                            case dpl_double_bar:
+                            case dpl_arrow:
+                                throw DepStringParseError(s, "Expected whitespace after text after whitespace after arrow");
+                        }
+                        throw InternalError(PALUDIS_HERE,
+                                "dps_had_text_arrow_text: i->first is " + stringify(i->first));
+                    }
+                    while (0);
                     continue;
             }
             throw InternalError(PALUDIS_HERE,
@@ -412,6 +554,23 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
 
     if (stack.empty())
         throw DepStringNestingError(s);
+
+    switch (state)
+    {
+        case dps_initial:
+        case dps_had_paren:
+        case dps_had_text_arrow_text:
+        case dps_had_text_arrow_space:
+            break;
+
+        case dps_had_double_bar_space:
+        case dps_had_double_bar:
+        case dps_had_use_flag:
+        case dps_had_use_flag_space:
+        case dps_had_text_arrow:
+            throw DepStringParseError(s, "Unexpected end of string");
+    }
+
     tr1::shared_ptr<Composite<H_> > result(stack.top().first);
     stack.pop();
     if (! stack.empty())
@@ -456,8 +615,8 @@ PortageDepParser::parse_uri(const std::string & s, const EAPI & e)
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
-    return _parse<URISpecTree, ParseTextDepSpec, false, true>(s, false,
-            ParseTextDepSpec());
+    return _parse<URISpecTree, ParseURIDepSpec, false, true>(s, false,
+            ParseURIDepSpec(e.supported->uri_supports_arrow));
 }
 
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
