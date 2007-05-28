@@ -8,7 +8,7 @@ include Paludis
 Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
-def get_contents(repo, files)
+def get_contents(repo, files, root)
     in_contents= []
     repo.category_names do |cat|
         repo.package_names(cat) do |pkg|
@@ -17,8 +17,8 @@ def get_contents(repo, files)
                 contents.each do |entry|
                     next if entry.kind_of? ContentsMiscEntry
                     files.each do |file|
-                        if entry.name[0,file.length] == file
-                            in_contents << entry.name
+                        if (root + entry.name)[0,file.length] == file
+                            in_contents << root + entry.name
                             break;
                         end
                     end
@@ -74,6 +74,10 @@ opts.each do | opt, arg |
     end
 end
 
+env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
+db = env.package_database
+root = env.root[-1] == ?/ ? env.root.chop : env.root
+
 files = []
 
 if ARGV.empty?
@@ -85,6 +89,10 @@ else
             puts "#{file} is not a directory."
             exit 1
         end
+        unless file == root or file[0,root.length + 1] == root + "/"
+            puts "#{file} is not under ${ROOT} (#{root}/)"
+            exit 1
+        end
         files << (file[-1] == ?/ ? file.chop : file)
     end
 end
@@ -92,12 +100,9 @@ end
 in_fs = []
 Find.find(*files) {|file| in_fs << file}
 
-env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
-db = env.package_database
-
 db.repositories do |repo|
     next unless repo.format == 'vdb'
-    in_fs-= get_contents(repo, files)
+    in_fs-= get_contents(repo, files, root)
 end
 
 puts in_fs
