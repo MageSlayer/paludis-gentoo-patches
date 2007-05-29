@@ -26,6 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repositories/gentoo/portage_repository_params.hh>
 #include <paludis/repositories/gentoo/portage_repository_profile.hh>
+#include <paludis/repositories/gentoo/layout.hh>
 #include <string>
 
 /** \file
@@ -190,6 +191,11 @@ namespace paludis
              * Update GLEP 42 news files.
              */
             void update_news() const;
+
+            /**
+             * Gives our current Layout
+             */
+            const tr1::shared_ptr<const Layout> layout() const;
 
     };
 }

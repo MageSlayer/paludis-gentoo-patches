@@ -35,26 +35,6 @@
 
 namespace paludis
 {
-    /**
-     * Keys for EbuildCommandParams.
-     *
-     * \see EbuildCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    enum EbuildCommandParamsKeys
-    {
-        ecpk_environment,
-        ecpk_db_entry,
-        ecpk_ebuild_dir,
-        ecpk_files_dir,
-        ecpk_eclassdirs,
-        ecpk_portdir,
-        ecpk_distdir,
-        ecpk_buildroot,
-        last_ecpk
-    };
-
     class Environment;
     class Command;
 

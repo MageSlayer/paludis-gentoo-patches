@@ -649,6 +649,12 @@ PortageRepository::update_news() const
     _imp->news_ptr->update_news();
 }
 
+const tr1::shared_ptr<const Layout> 
+PortageRepository::layout() const
+{
+    return _imp->layout;
+}
+
 std::string
 PortageRepository::get_environment_variable(
         const PackageDatabaseEntry & for_package,

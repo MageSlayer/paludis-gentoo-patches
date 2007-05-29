@@ -73,8 +73,8 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
 
     tr1::shared_ptr<EbinVersionMetadata> result(new EbinVersionMetadata(SlotName("unset")));
 
-    KeyValueConfigFile f(_imp->params.location / stringify(q.category) /
-            stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebin"),
+    KeyValueConfigFile f(_imp->portage_repository->layout()->package_directory(q) /
+            (stringify(q.package) + "-" + stringify(v) + ".ebin"),
             KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments +
             kvcfo_disallow_space_around_equals + kvcfo_disallow_source);
 
