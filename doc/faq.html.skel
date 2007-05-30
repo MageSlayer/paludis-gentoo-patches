@@ -87,8 +87,8 @@ the code now does.</p>
 configuration <code>bashrc</code>:</p>
 
 <pre>
-export PATH="/usr/lib/ccache/bin/:${PATH}"
-export CCACHE_DIR="/var/tmp/ccache"
+PATH="/usr/lib/ccache/bin/:${PATH}"
+CCACHE_DIR="/var/tmp/ccache"
 </pre>
 
 <h3 id="distcc">Use <code>distcc</code></h3>
@@ -97,9 +97,9 @@ export CCACHE_DIR="/var/tmp/ccache"
 configuration <code>bashrc</code>:</p>
 
 <pre>
-export DISTCC_DIR="/var/tmp/paludis/.distcc"
-export DISTCC_HOSTS="localhost another_host"
-export PATH="/usr/lib/distcc/bin:${PATH}"
+DISTCC_DIR="/var/tmp/paludis/.distcc"
+DISTCC_HOSTS="localhost another_host"
+PATH="/usr/lib/distcc/bin:${PATH}"
 </pre>
 
 <h3 id="defaultoptions">Specify default options</h3>
@@ -297,7 +297,7 @@ option.</p>
 
 <p>Various packages will fail <code>src_test</code>.</p>
 
-<p>You can <code>export SKIP_FUNCTIONS="test"</code> to skip tests. This
+<p>You can set <code>SKIP_FUNCTIONS="test"</code> to skip tests. This
 is best done on a per-package basis via <code>bashrc</code>:</p>
 
 <pre>
@@ -305,7 +305,7 @@ case "${PN}" in
 
     # Don't use src_test for these broken packages
     foo|bar|baz)
-        export SKIP_FUNCTIONS=test
+        SKIP_FUNCTIONS=test
         ;;
 
 esac
@@ -326,7 +326,7 @@ other than <code>/</code>.</p>
 
 <p>Paludis enforces <code>ROOT</code> via Sandbox. However, some packages don't
 honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
-<code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
+set <code>SANDBOX_PREDICT=/</code> or <code>SANDBOX_WRITE=/</code> as
 appropriate.</p>
 
 <h3 id="blacklist">Repository Blacklists</h3>
@@ -466,14 +466,14 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
 
     <dt>keepwork, keeptemp, noclean</dt>
     <dd>The <code>builtin_tidyup</code> phase does cleaning up. You can turn
-    this phase off using <code>export SKIP_FUNCTIONS="tidyup"</code>.</dd>
+    this phase off using <code>SKIP_FUNCTIONS="tidyup"</code>.</dd>
 
     <dt>nodoc, noinfo, noman</dt>
     <dd>You could write a hook that removes the relevant directories from
     <code>$D</code>.</dd>
 
     <dt>nostrip</dt>
-    <dd>Again, it's a function, so <code>export SKIP_FUNCTIONS="strip"</code>.</dd>
+    <dd>Again, it's a function, so use <code>SKIP_FUNCTIONS="strip"</code>.</dd>
 
     <dt>sandbox</dt>
     <dd>Always on.</dd>
