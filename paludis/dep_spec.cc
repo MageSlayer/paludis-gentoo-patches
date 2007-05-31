@@ -18,6 +18,9 @@
  */
 
 #include <paludis/dep_spec.hh>
+#include <paludis/version_operator.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>

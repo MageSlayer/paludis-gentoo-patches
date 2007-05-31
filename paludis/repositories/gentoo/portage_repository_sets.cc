@@ -26,6 +26,9 @@
 #include <paludis/config_file.hh>
 #include <paludis/query.hh>
 #include <paludis/set_file.hh>
+#include <paludis/dep_tag.hh>
+#include <paludis/version_operator.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>

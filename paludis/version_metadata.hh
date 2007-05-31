@@ -24,9 +24,9 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_database_entry.hh>
-#include <paludis/eapi.hh>
+#include <paludis/eapi-fwd.hh>
 #include <string>
 
 /** \file

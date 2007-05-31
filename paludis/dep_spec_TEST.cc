@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/version_requirements.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

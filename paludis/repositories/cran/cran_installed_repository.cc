@@ -22,6 +22,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
+#include <paludis/eapi.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>

@@ -21,9 +21,12 @@
 #include <paludis/repositories/gentoo/vdb_version_metadata.hh>
 #include <paludis/repositories/gentoo/vdb_merger.hh>
 #include <paludis/repositories/gentoo/vdb_unmerger.hh>
+#include <paludis/repositories/gentoo/eapi_phase.hh>
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_tag.hh>
+#include <paludis/eapi.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -34,6 +37,8 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/set_file.hh>
 #include <paludis/hook.hh>
+#include <paludis/version_requirements.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -62,6 +67,7 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 #include <paludis/repositories/gentoo/vdb_repository-sr.cc>
 
@@ -918,12 +924,12 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 void
 VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & o) const
 {
-    _uninstall(q, v, o, false);
+    _uninstall(q, v, *version_metadata(q, v), o, false);
 }
 
 void
-VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & o,
-        bool reinstalling) const
+VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const VersionMetadata & m,
+        const UninstallOptions & o, bool reinstalling) const
 {
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
             "' from '" + stringify(name()) + (reinstalling ? "' for a reinstall:" : "':"));
@@ -948,57 +954,65 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
 
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
-    EbuildCommandParams params(EbuildCommandParams::create()
-            .environment(_imp->env)
-            .db_entry(&e)
-            .ebuild_dir(pkg_dir)
-            .files_dir(pkg_dir)
-            .eclassdirs(eclassdirs)
-            .portdir(_imp->location)
-            .distdir(pkg_dir)
-            .want_portage_emulation_vars(true)
-            .buildroot(_imp->buildroot));
-
-    EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
-            .phase(up_preremove)
-            .root(stringify(_imp->root) + "/")
-            .disable_cfgpro(o.no_config_protect)
-            .unmerge_only(false)
-            .loadsaveenv_dir(pkg_dir)
-            .load_environment(load_env.get()));
-
-    EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
-    uninstall_cmd_pre();
-
-    /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
-    std::string config_protect, config_protect_mask;
+    EAPIPhases phases(m.eapi->supported->ebuild_phases->ebuild_uninstall);
+    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            phase != phase_end ; ++phase)
     {
-        std::ifstream c(stringify(pkg_dir / "CONFIG_PROTECT").c_str());
-        config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
-            " " + getenv_with_default("CONFIG_PROTECT", "");
+        if (phase->option("unmerge"))
+        {
+            /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
+            std::string config_protect, config_protect_mask;
+            {
+                std::ifstream c(stringify(pkg_dir / "CONFIG_PROTECT").c_str());
+                config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
+                    " " + getenv_with_default("CONFIG_PROTECT", "");
 
-        std::ifstream c_m(stringify(pkg_dir / "CONFIG_PROTECT_MASK").c_str());
-        config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
-            " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
+                std::ifstream c_m(stringify(pkg_dir / "CONFIG_PROTECT_MASK").c_str());
+                config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
+                    " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
+            }
+
+            /* unmerge */
+            VDBUnmerger unmerger(
+                    VDBUnmergerOptions::create()
+                    .environment(_imp->params.environment)
+                    .root(root())
+                    .contents_file(pkg_dir / "CONTENTS")
+                    .config_protect(config_protect)
+                    .config_protect_mask(config_protect_mask)
+                    .package_name(q)
+                    .version(v)
+                    .repository(this));
+
+            unmerger.unmerge();
+        }
+        else
+        {
+            EbuildCommandParams params(EbuildCommandParams::create()
+                    .environment(_imp->env)
+                    .db_entry(&e)
+                    .ebuild_dir(pkg_dir)
+                    .files_dir(pkg_dir)
+                    .eclassdirs(eclassdirs)
+                    .portdir(_imp->location)
+                    .distdir(pkg_dir)
+                    .eapi(m.eapi)
+                    .sandbox(phase->option("sandbox"))
+                    .userpriv(phase->option("userpriv"))
+                    .commands(join(phase->begin_commands(), phase->end_commands(), " "))
+                    .buildroot(_imp->buildroot));
+
+            EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
+                    .root(stringify(_imp->root) + "/")
+                    .disable_cfgpro(o.no_config_protect)
+                    .unmerge_only(false)
+                    .loadsaveenv_dir(pkg_dir)
+                    .load_environment(load_env.get()));
+
+            EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
+            uninstall_cmd_pre();
+        }
     }
-
-    /* unmerge */
-    VDBUnmerger unmerger(
-            VDBUnmergerOptions::create()
-            .environment(_imp->params.environment)
-            .root(root())
-            .contents_file(pkg_dir / "CONTENTS")
-            .config_protect(config_protect)
-            .config_protect_mask(config_protect_mask)
-            .package_name(q)
-            .version(v)
-            .repository(this));
-
-    unmerger.unmerge();
-
-    uninstall_params.phase = up_postremove;
-    EbuildUninstallCommand uninstall_cmd_post(params, uninstall_params);
-    uninstall_cmd_post();
 
     /* remove vdb entry */
     for (DirIterator d(pkg_dir, false), d_end ; d != d_end ; ++d)
@@ -1033,23 +1047,31 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
             (stringify(q.package) + "-" + stringify(v)));
 
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
+    EAPIPhases phases(metadata->eapi->supported->ebuild_phases->ebuild_config);
 
-    EbuildConfigCommand config_cmd(EbuildCommandParams::create()
-            .environment(_imp->env)
-            .db_entry(&e)
-            .ebuild_dir(pkg_dir)
-            .files_dir(pkg_dir)
-            .eclassdirs(eclassdirs)
-            .portdir(_imp->location)
-            .distdir(pkg_dir)
-            .want_portage_emulation_vars(metadata->eapi.supported->want_portage_emulation_vars)
-            .buildroot(_imp->buildroot),
+    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            phase != phase_end ; ++phase)
+    {
+        EbuildConfigCommand config_cmd(EbuildCommandParams::create()
+                .environment(_imp->env)
+                .db_entry(&e)
+                .ebuild_dir(pkg_dir)
+                .files_dir(pkg_dir)
+                .eclassdirs(eclassdirs)
+                .portdir(_imp->location)
+                .distdir(pkg_dir)
+                .eapi(metadata->eapi)
+                .sandbox(phase->option("sandbox"))
+                .userpriv(phase->option("userpriv"))
+                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
+                .buildroot(_imp->buildroot),
 
-            EbuildConfigCommandParams::create()
-            .root(stringify(_imp->root) + "/")
-            .load_environment(load_env.get()));
+                EbuildConfigCommandParams::create()
+                .root(stringify(_imp->root) + "/")
+                .load_environment(load_env.get()));
 
-    config_cmd();
+        config_cmd();
+    }
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
@@ -1332,7 +1354,7 @@ VDBRepository::load_provided_using_cache() const
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
         DepSpecFlattener f(_imp->env, &dbe);
         tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(PortageDepParser::parse_provide(
-                    join(next(next(tokens.begin())), tokens.end(), " "), EAPIData::get_instance()->eapi_from_string("paludis-1")));
+                    join(next(next(tokens.begin())), tokens.end(), " "), *EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
         for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -1371,7 +1393,7 @@ VDBRepository::load_provided_the_slow_way() const
                 provide = e->metadata->ebuild_interface->provide();
             else
                 provide = PortageDepParser::parse_provide(file_contents(_imp->location, e->name, e->version, "PROVIDE"),
-                        EAPIData::get_instance()->eapi_from_string("paludis-1"));
+                        *EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
             PackageDatabaseEntry dbe(e->name, e->version, name());
             DepSpecFlattener f(_imp->env, &dbe);
@@ -1451,7 +1473,7 @@ VDBRepository::regenerate_provides_cache() const
             provide = c->metadata->ebuild_interface->provide();
         else
             provide = PortageDepParser::parse_provide(file_contents(_imp->location, c->name, c->version, "PROVIDE"),
-                    EAPIData::get_instance()->eapi_from_string("paludis-1"));
+                    *EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
         DepSpecPrettyPrinter p(0, false);
         provide->accept(p);
@@ -1517,6 +1539,9 @@ VDBRepository::merge(const MergeOptions & m)
         throw PackageInstallActionError("Not a suitable destination for '" + stringify(m.package) + "'");
 
     bool is_replace(has_version(m.package.name, m.package.version));
+    tr1::shared_ptr<const VersionMetadata> metadata_if_is_replace;
+    if (is_replace)
+        metadata_if_is_replace = version_metadata(m.package.name, m.package.version);
 
     FSEntry tmp_vdb_dir(_imp->params.location);
     if (! tmp_vdb_dir.exists())
@@ -1585,7 +1610,7 @@ VDBRepository::merge(const MergeOptions & m)
     if (is_replace)
     {
         UninstallOptions uninstall_options(false);
-        _uninstall(m.package.name, m.package.version, uninstall_options, true);
+        _uninstall(m.package.name, m.package.version, *metadata_if_is_replace, uninstall_options, true);
     }
 
     VDBPostMergeCommand post_merge_command(

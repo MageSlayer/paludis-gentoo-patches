@@ -23,6 +23,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/eapi.hh>
 #include <paludis/about.hh>
 #include <sys/resource.h>
 #include <sys/time.h>

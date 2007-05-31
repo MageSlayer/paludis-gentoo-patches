@@ -64,7 +64,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none, false, tr1::shared_ptr<const DestinationsCollection>()),
+            install_options(false, false, ido_none, false, tr1::shared_ptr<Repository>()),
             uninstall_options(false),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
@@ -244,12 +244,9 @@ InstallTask::execute()
         bool any_live_destination(false);
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
-            if (dlk_package == dep->kind && dep->destinations)
-                for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
-                        d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                    if (d->destination->destination_interface &&
-                            d->destination->destination_interface->want_pre_post_phases())
-                        any_live_destination = true;
+            if (dlk_package == dep->kind && dep->destination)
+                if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
+                    any_live_destination = true;
 
         if (0 != perform_hook(Hook("install_all_pre")
                      ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
@@ -272,11 +269,9 @@ InstallTask::execute()
             continue;
 
         bool live_destination(false);
-        if (dep->destinations)
-            for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
-                    d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                if (d->destination->destination_interface && d->destination->destination_interface->want_pre_post_phases())
-                    live_destination = true;
+        if (dep->destination)
+            if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
+                live_destination = true;
 
         ++x;
         _imp->current_dep_list_entry = dep;
@@ -313,7 +308,7 @@ InstallTask::execute()
 
         try
         {
-            _imp->install_options.destinations = extract_dep_list_entry_destinations(dep->destinations);
+            _imp->install_options.destination = dep->destination;
             installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
@@ -358,20 +353,18 @@ InstallTask::execute()
         // look for packages with the same name in the same slot in the destination repos
         tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
 
-        if (dep->destinations)
-            for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
-                    d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                if (d->destination->uninstallable_interface)
-                    collision_list = _imp->env->package_database()->query(
-                            query::Matches(PackageDepSpec(
-                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
-                                    tr1::shared_ptr<CategoryNamePart>(),
-                                    tr1::shared_ptr<PackageNamePart>(),
-                                    tr1::shared_ptr<VersionRequirements>(),
-                                    vr_and,
-                                    tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
-                                    tr1::shared_ptr<RepositoryName>(new RepositoryName(d->destination->name())))) &
-                            query::RepositoryHasInstalledInterface(), qo_order_by_version);
+        if (dep->destination)
+            if (dep->destination->uninstallable_interface)
+                collision_list = _imp->env->package_database()->query(
+                        query::Matches(PackageDepSpec(
+                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
+                                tr1::shared_ptr<CategoryNamePart>(),
+                                tr1::shared_ptr<PackageNamePart>(),
+                                tr1::shared_ptr<VersionRequirements>(),
+                                vr_and,
+                                tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
+                                tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
+                        query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;

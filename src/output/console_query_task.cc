@@ -241,7 +241,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
     }
 
     if (metadata->virtual_interface)
-        display_metadata_pde("Virtual for", "VIRTUAL_FOR", metadata->virtual_interface->virtual_for);
+        display_metadata_pde("Virtual for", "VIRTUAL_FOR", *metadata->virtual_interface->virtual_for);
 }
 
 namespace

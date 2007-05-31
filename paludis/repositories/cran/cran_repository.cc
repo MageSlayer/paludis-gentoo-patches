@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006,2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2006, 2007 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
+#include <paludis/eapi.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
@@ -470,21 +471,6 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 {
 }
 
-namespace
-{
-    FSEntry
-    get_root(tr1::shared_ptr<const DestinationsCollection> destinations)
-    {
-        if (destinations)
-            for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
-                    d != d_end ; ++d)
-                if ((*d)->installed_interface)
-                    return (*d)->installed_interface->root();
-
-        return FSEntry("/");
-    }
-}
-
 void
 CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         const InstallOptions &o) const
@@ -522,6 +508,11 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     FSEntry image(_imp->buildroot / stringify(q) / "image");
     FSEntry workdir(_imp->buildroot / stringify(q) / "work");
 
+    if (! o.destination)
+        throw PackageInstallActionError("Can't merge '" + stringify(q) + "-" + stringify(vn) +
+                "' because no destination was provided.");
+
+
     cmd = Command(LIBEXECDIR "/paludis/cran.bash clean install")
         .with_sandbox()
         .with_setenv("CATEGORY", "cran")
@@ -536,31 +527,24 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-        .with_setenv("ROOT", stringify(get_root(o.destinations)))
+        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
         .with_setenv("WORKDIR", stringify(workdir));
-
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
                 stringify(image) + "'");
 
-    if (! o.destinations)
-        throw PackageInstallActionError("Can't merge '" + stringify(q) + "-" + stringify(vn) +
-                "' because no destinations were provided.");
-
     MergeOptions m(PackageDatabaseEntry(q, vn, name()),
             image,
             FSEntry("/dev/null"));
 
-    for (DestinationsCollection::Iterator d(o.destinations->begin()),
-            d_end(o.destinations->end()) ; d != d_end ; ++d)
-    {
-        if (! (*d)->destination_interface)
-            throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                    stringify((*d)->name()) + "' because it does not provide destination_interface");
+    if (! o.destination->destination_interface)
+        throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
+                stringify(o.destination->name()) + "' because it does not provide destination_interface");
 
-        (*d)->destination_interface->merge(m);
-    }
+    if (! o.destination->installed_interface)
+        throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
+                stringify(o.destination->name()) + "' because it does not provide installed_interface");
 
     cmd = Command(LIBEXECDIR "/paludis/cran.bash clean")
         .with_setenv("IMAGE", stringify(image))
@@ -570,7 +554,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-        .with_setenv("ROOT", stringify(get_root(o.destinations)))
+        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
         .with_setenv("WORKDIR", stringify(workdir))
         .with_setenv("REPOSITORY", stringify(name()));
 

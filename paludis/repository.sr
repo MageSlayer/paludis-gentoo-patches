@@ -9,7 +9,7 @@ make_class_InstallOptions()
     key fetch_only bool
     key debug_build InstallDebugOption
     key safe_resume bool
-    key destinations "tr1::shared_ptr<const DestinationsCollection>"
+    key destination "tr1::shared_ptr<Repository>"
 
     doxygen_comment << "END"
         /**

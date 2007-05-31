@@ -69,12 +69,12 @@ namespace paludis
             /**
              * Make an EAPI.
              */
-            EAPI eapi_from_string(const std::string &) const;
+            tr1::shared_ptr<const EAPI> eapi_from_string(const std::string &) const;
 
             /**
              * Make the unknown EAPI.
              */
-            EAPI unknown_eapi() const;
+            tr1::shared_ptr<const EAPI> unknown_eapi() const;
     };
 }
 

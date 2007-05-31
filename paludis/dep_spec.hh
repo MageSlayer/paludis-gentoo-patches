@@ -21,15 +21,16 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_SPEC_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tag.hh>
+#include <paludis/dep_tag-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/visitor.hh>
-#include <paludis/version_requirements.hh>
-#include <paludis/version_operator.hh>
-#include <paludis/version_spec.hh>
+#include <paludis/util/visitor-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/version_requirements-fwd.hh>
+#include <paludis/version_operator-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 

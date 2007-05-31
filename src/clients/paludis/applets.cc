@@ -80,11 +80,11 @@ int do_best_version(tr1::shared_ptr<Environment> env)
 
         Log::get_instance()->message(ll_qa, lc_context, "best-version of '" + query +
                 "' resolves to '" + stringify(*entries->last()) + "', which is a virtual for '"
-                + stringify(metadata->virtual_interface->virtual_for) + "'. This will break with "
+                + stringify(*metadata->virtual_interface->virtual_for) + "'. This will break with "
                 "new style virtuals.");
         tr1::shared_ptr<PackageDatabaseEntryCollection> new_entries(
                 new PackageDatabaseEntryCollection::Concrete);
-        new_entries->push_back(metadata->virtual_interface->virtual_for);
+        new_entries->push_back(*metadata->virtual_interface->virtual_for);
         entries = new_entries;
     }
 

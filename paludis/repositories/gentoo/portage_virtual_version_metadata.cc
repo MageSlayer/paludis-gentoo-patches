@@ -19,6 +19,8 @@
 
 #include "portage_virtual_version_metadata.hh"
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/eapi.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 
@@ -40,7 +42,7 @@ PortageVirtualVersionMetadata::PortageVirtualVersionMetadata(const SlotName & s,
             .origins_interface(0)
             .ebin_interface(0)
             ),
-    VersionMetadataVirtualInterface(e),
+    VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(e))),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend)
 {
 }

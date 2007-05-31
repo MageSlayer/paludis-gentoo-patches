@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,25 +17,35 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_DEP_TAG_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_DEP_TAG_FWD_HH 1
 
-#include <iosfwd>
+#include <paludis/util/visitor-fwd.hh>
+#include <paludis/util/collection-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/repository-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
 
 namespace paludis
 {
-    class DepListOptions;
-    class DepListEntryDestination;
-    class DepListEntry;
-    class DepList;
-    class PackageDatabaseEntry;
+    class DepTagCategory;
+    class NoSuchDepTagCategory;
 
-    bool is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
-            const DependencySpecTree::ConstItem & i);
+    class DepTagCategoryMaker;
+
+    class DepTag;
+    class GLSADepTag;
+    class GeneralSetDepTag;
+    class DependencyDepTag;
+
+    class DepTagVisitorTypes;
+
+    class DepTagEntry;
+
+    /**
+     * Tags attached to a DepListEntry.
+     *
+     * \ingroup grpdeptag
+     */
+    typedef SortedCollection<DepTagEntry> DepListEntryTags;
 }
 
 #endif

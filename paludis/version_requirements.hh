@@ -22,42 +22,13 @@
 
 #include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
 namespace paludis
 {
 #include <paludis/version_requirements-sr.hh>
-
-    /**
-     * A collection of VersionRequirement instances, usually for a
-     * PackageDepSpec.
-     *
-     * \see PackageDepSpec
-     * \ingroup grpversions
-     */
-    typedef SequentialCollection<VersionRequirement> VersionRequirements;
-
-    /**
-     * Whether our version requirements are an 'and' or an 'or' set.
-     *
-     * \see PackageDepSpec
-     * \ingroup grpversions
-     */
-    enum VersionRequirementsMode
-    {
-        vr_or,     ///\< Must match one
-        vr_and,    ///\< Must match all
-        last_vr
-    };
-
-    /**
-     * Write a VersionRequirementsMode to a stream.
-     *
-     * \ingroup grpversions
-     */
-    std::ostream &
-    operator<< (std::ostream &, const VersionRequirementsMode &) PALUDIS_VISIBLE;
 }
 
 #endif

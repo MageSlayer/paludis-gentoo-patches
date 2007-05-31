@@ -65,7 +65,7 @@ namespace paludis
 
             void regenerate_provides_cache() const;
 
-            void _uninstall(const QualifiedPackageName &, const VersionSpec &,
+            void _uninstall(const QualifiedPackageName &, const VersionSpec &, const VersionMetadata &,
                     const UninstallOptions &, bool reinstalling) const;
 
         protected:

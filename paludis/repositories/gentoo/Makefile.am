@@ -4,7 +4,7 @@ DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
 	portage_repository_params-sr.hh portage_repository_params-sr.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
-	ebuild-sr.hh ebuild-sr.cc ebuild-se.hh ebuild-se.cc \
+	ebuild-sr.hh ebuild-sr.cc \
 	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
 	vdb_merger-sr.hh vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh vdb_unmerger-sr.cc
@@ -34,7 +34,6 @@ libpaludisgentoorepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VER
 paludis_repositories_gentoo_include_HEADERS = \
 	ebuild.hh \
 	ebuild-sr.hh \
-	ebuild-se.hh \
 	ebin.hh \
 	ebin-se.hh \
 	ebin-sr.hh \
@@ -65,7 +64,8 @@ paludis_repositories_gentoo_include_HEADERS = \
 	vdb_unmerger-sr.hh \
 	vdb_unmerger.hh \
 	layout.hh \
-	traditional_layout.hh
+	traditional_layout.hh \
+	eapi_phase.hh
 
 libpaludisgentoorepository_la_SOURCES = \
 	ebuild.cc \
@@ -94,6 +94,7 @@ libpaludisgentoorepository_la_SOURCES = \
 	vdb_unmerger.cc \
 	layout.cc \
 	traditional_layout.cc \
+	eapi_phase.cc \
 	$(paludis_repositories_gentoo_include_HEADERS)
 
 libpaludisgentoorepository_la_LIBADD = \
@@ -148,9 +149,6 @@ EXTRA_DIST = \
 	ebuild.sr \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
-	ebuild.se \
-	ebuild-se.hh \
-	ebuild-se.cc \
 	ebin.sr \
 	ebin-sr.hh \
 	ebin-sr.cc \
@@ -194,8 +192,6 @@ BUILT_SOURCES = \
 	vdb_repository-sr.cc \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
-	ebuild-se.hh \
-	ebuild-se.cc \
 	ebin-sr.hh \
 	ebin-sr.cc \
 	ebin-se.hh \
@@ -264,12 +260,6 @@ vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 
 vdb_repository-sr.cc : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_repository.sr > $@
-
-ebuild-se.hh : ebuild.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/ebuild.se > $@ ; then rm -f $@ ; exit 1 ; fi
-
-ebuild-se.cc : ebuild.se $(top_srcdir)/misc/make_se.bash
-	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebuild.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 ebin-se.hh : ebin.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi

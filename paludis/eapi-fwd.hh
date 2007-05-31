@@ -26,6 +26,8 @@ namespace paludis
     class SupportedEAPI;
     class EAPIData;
     class EAPIConfigurationError;
+    class EAPIEbuildPhases;
+    class EAPIEbuildMetadataVariables;
 }
 
 #endif

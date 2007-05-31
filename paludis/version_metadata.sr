@@ -118,7 +118,7 @@ make_class_VersionMetadataBase()
     key slot SlotName
     cache_key homepage std::string URISpecTree::ConstItem _make_text
     key description std::string
-    key eapi EAPI
+    key eapi "tr1::shared_ptr<const EAPI>"
     key interactive bool
 
     allow_named_args
@@ -245,7 +245,7 @@ make_class_VersionMetadataVirtualInterface()
 
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key virtual_for PackageDatabaseEntry
+    key virtual_for "tr1::shared_ptr<PackageDatabaseEntry>"
 
     doxygen_comment << "END"
         /**

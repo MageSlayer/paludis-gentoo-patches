@@ -4,7 +4,6 @@ SUBDIRS =
 
 eapis = \
 	0.conf \
-	CRAN-1.conf \
 	exheres-0.conf \
 	paludis-1.conf
 

@@ -17,28 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/exceptions.hh>
+#include <paludis/dep_list/query_visitor.hh>
+#include <paludis/dep_list/range_rewriter.hh>
+#include <paludis/dep_list/show_suggest_visitor.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
-#include <paludis/dep_list/dep_list.hh>
-#include <paludis/dep_list/exceptions.hh>
-#include <paludis/dep_list/range_rewriter.hh>
-#include <paludis/dep_list/query_visitor.hh>
-#include <paludis/dep_list/show_suggest_visitor.hh>
 #include <paludis/distribution.hh>
+#include <paludis/eapi.hh>
+#include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/query.hh>
-#include <paludis/hashed_containers.hh>
+#include <paludis/version_requirements.hh>
+
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/visitor-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <algorithm>
 #include <functional>
@@ -139,7 +143,7 @@ namespace
                         .origins_interface(0)
                         .ebin_interface(0)
                         .license_interface(0)),
-                VersionMetadataVirtualInterface(e)
+                VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(e)))
             {
             }
 
@@ -514,7 +518,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     std::string best_visible_candidate_as_string(stringify(*best_visible_candidate));
     if (best_visible_candidate_metadata->virtual_interface)
         best_visible_candidate_as_string.append(" (for " + stringify(
-                        best_visible_candidate_metadata->virtual_interface->virtual_for) + ")");
+                        *best_visible_candidate_metadata->virtual_interface->virtual_for) + ")");
 
     tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
             new PackageDatabaseEntryCollection::Concrete);
@@ -596,7 +600,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 std::string are_we_downgrading_last_as_string(stringify(*are_we_downgrading->last()));
                 if (are_we_downgrading_last_metadata->virtual_interface)
                     are_we_downgrading_last_as_string.append(" (for " + stringify(
-                                    are_we_downgrading_last_metadata->virtual_interface->virtual_for) + ")");
+                                    *are_we_downgrading_last_metadata->virtual_interface->virtual_for) + ")");
 
                 if (d->_imp->opts->downgrade == dl_downgrade_error)
                     throw DowngradeNotAllowedError(best_visible_candidate_as_string,
@@ -803,7 +807,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 /* if it's a virtual, it only replaces if it's the same package. */
                 if ((*r)->metadata->virtual_interface)
                 {
-                    if ((*r)->metadata->virtual_interface->virtual_for.name == aa->name)
+                    if ((*r)->metadata->virtual_interface->virtual_for->name == aa->name)
                         replaced = true;
                 }
                 else
@@ -823,7 +827,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 continue;
 
             if (metadata->virtual_interface &&
-                    metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
+                    metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
                 continue;
         }
 
@@ -865,7 +869,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 continue;
 
             if ((*r)->metadata->virtual_interface &&
-                    (*r)->metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
+                    (*r)->metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
                 continue;
         }
 
@@ -890,7 +894,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                     continue;
 
                 if (r->metadata->virtual_interface &&
-                        r->metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
+                        r->metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
                     continue;
             }
 
@@ -979,12 +983,6 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
     /* create our merge list entry. insert pre deps before ourself in the list. insert
      * post deps after ourself, and after any provides. */
 
-    tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
-            new SortedCollection<DepListEntryDestination>::Concrete);
-    if (! metadata->virtual_interface)
-        our_merge_entry_destinations->insert(
-                DepListEntryDestination(find_destination(p, destinations), _imp->merge_list_generation));
-
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
@@ -993,7 +991,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(our_merge_entry_destinations)
+                .destination(find_destination(p, destinations))
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
@@ -1067,8 +1065,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                        .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
-                                new SortedCollection<DepListEntryDestination>::Concrete))
+                        .destination(tr1::shared_ptr<Repository>())
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
@@ -1139,8 +1136,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
-                        new SortedCollection<DepListEntryDestination>::Concrete))
+                .destination(tr1::shared_ptr<Repository>())
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
@@ -1167,11 +1163,6 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
             return;
     }
 
-    tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
-            new SortedCollection<DepListEntryDestination>::Concrete);
-    our_merge_entry_destinations->insert(DepListEntryDestination(find_destination(p, destinations),
-                _imp->merge_list_generation));
-
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
@@ -1181,7 +1172,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(our_merge_entry_destinations)
+                .destination(find_destination(p, destinations))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
@@ -1264,8 +1255,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, tr1::shar
                 .generation(_imp->merge_list_generation)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
-                        new SortedCollection<DepListEntryDestination>::Concrete))
+                .destination(tr1::shared_ptr<Repository>())
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
@@ -1542,16 +1532,6 @@ DepList::match_on_list(const PackageDepSpec & a) const
 
     return p.second != std::find_if(p.first, p.second,
             MatchDepListEntryAgainstPackageDepSpec(_imp->env, a));
-}
-
-tr1::shared_ptr<DestinationsCollection>
-paludis::extract_dep_list_entry_destinations(tr1::shared_ptr<SortedCollection<DepListEntryDestination> > d)
-{
-    tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
-    for (SortedCollection<DepListEntryDestination>::Iterator i(d->begin()), i_end(d->end()) ;
-            i != i_end ; ++i)
-        result->insert(i->destination);
-    return result;
 }
 
 bool

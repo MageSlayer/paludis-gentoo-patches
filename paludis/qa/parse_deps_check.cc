@@ -19,6 +19,7 @@
 
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa/parse_deps_check.hh>
 #include <paludis/qa/qa_environment.hh>
@@ -46,7 +47,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         try
         {
             std::string depend(metadata->deps_interface->get_raw_build_depend());
-            PortageDepParser::parse_depend(depend, metadata->eapi);
+            PortageDepParser::parse_depend(depend, *metadata->eapi);
         }
         catch (const Exception & err)
         {
@@ -57,7 +58,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         try
         {
             std::string rdepend(metadata->deps_interface->get_raw_run_depend());
-            PortageDepParser::parse_depend(rdepend, metadata->eapi);
+            PortageDepParser::parse_depend(rdepend, *metadata->eapi);
         }
         catch (const Exception & err)
         {
@@ -68,7 +69,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         try
         {
             std::string pdepend(metadata->deps_interface->get_raw_post_depend());
-            PortageDepParser::parse_depend(pdepend, metadata->eapi);
+            PortageDepParser::parse_depend(pdepend, *metadata->eapi);
         }
         catch (const Exception & err)
         {

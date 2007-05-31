@@ -136,7 +136,7 @@ bool
 EnvironmentImplementation::breaks_portage(const PackageDatabaseEntry & e, const VersionMetadata & m) const
 {
     return (e.version.has_try_part() || e.version.has_scm_part()
-            || (! m.eapi.supported) || (m.eapi.supported->breaks_portage));
+            || (! m.eapi->supported) || (m.eapi->supported->breaks_portage));
 }
 
 EnvironmentImplementation::~EnvironmentImplementation()
@@ -245,7 +245,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
     tr1::shared_ptr<const VersionMetadata> metadata(package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
-    if (! accept_eapi(metadata->eapi, e))
+    if (! accept_eapi(*metadata->eapi, e))
     {
         result += mr_eapi;
         return result;
@@ -259,7 +259,7 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
 
     if (metadata->virtual_interface)
     {
-        result |= mask_reasons(metadata->virtual_interface->virtual_for);
+        result |= mask_reasons(*metadata->virtual_interface->virtual_for);
         if (result.any())
             result += mr_by_association;
     }

@@ -28,6 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/config_file.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>

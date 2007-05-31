@@ -76,7 +76,7 @@ namespace paludis
 #endif
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(tr1::shared_ptr<const Contents>);
-        VALUE eapi_to_value(const EAPI &);
+        VALUE eapi_to_value(const tr1::shared_ptr<const EAPI> &);
 
         VersionSpec value_to_version_spec(VALUE v);
         tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);

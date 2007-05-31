@@ -49,7 +49,8 @@ void PALUDIS_VISIBLE expose_eapi()
             "[ro] bool"
             );
 
-    bp::class_<EAPI>
+    register_shared_ptrs_to_python<EAPI>();
+    bp::class_<EAPI, boost::noncopyable>
         e("EAPI",
                 "Information about an EAPI.",
                 bp::no_init

@@ -42,18 +42,18 @@ namespace
     VALUE
     eapi_name(VALUE self)
     {
-        EAPI * p;
-        Data_Get_Struct(self, EAPI, p);
-        return rb_str_new2((p->name).c_str());
+        tr1::shared_ptr<const EAPI> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const EAPI>, p);
+        return rb_str_new2(((*p)->name).c_str());
     }
 
     VALUE
     eapi_supported(VALUE self)
     {
-        EAPI * p;
-        Data_Get_Struct(self, EAPI, p);
-        if (p->supported)
-            return supported_eapi_to_value((p->supported));
+        tr1::shared_ptr<const EAPI> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<const EAPI>, p);
+        if ((*p)->supported)
+            return supported_eapi_to_value(((*p)->supported));
         return Qnil;
     }
     /*
@@ -187,10 +187,10 @@ namespace
 }
 
 VALUE
-paludis::ruby::eapi_to_value(const EAPI & v)
+paludis::ruby::eapi_to_value(const tr1::shared_ptr<const EAPI> & v)
 {
-    EAPI  * m_ptr = new EAPI(v);
-    return Data_Wrap_Struct(c_eapi, 0, &Common<EAPI>::free, m_ptr);
+    tr1::shared_ptr<const EAPI> * m_ptr = new tr1::shared_ptr<const EAPI>(v);
+    return Data_Wrap_Struct(c_eapi, 0, &Common<tr1::shared_ptr<const EAPI> >::free, m_ptr);
 }
 
 RegisterRubyClass::Register paludis_ruby_register_eapi PALUDIS_ATTRIBUTE((used))

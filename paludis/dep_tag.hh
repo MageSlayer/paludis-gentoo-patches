@@ -26,6 +26,7 @@
  * \ingroup grpdeptag
  */
 
+#include <paludis/dep_tag-fwd.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
@@ -40,6 +41,23 @@
 
 namespace paludis
 {
+    /**
+     * Visitor class for visiting the different DepTag subclasses.
+     *
+     * \ingroup grpdeptag
+     * \see DepTag
+     */
+    struct DepTagVisitorTypes :
+        VisitorTypes<
+            DepTagVisitorTypes,
+            DepTag,
+            GLSADepTag,
+            GeneralSetDepTag,
+            DependencyDepTag
+        >
+    {
+    };
+
     /**
      * A DepTagCategory is identified by its name and has associated display
      * information for a DepTag's category.
@@ -141,23 +159,6 @@ namespace paludis
     class GLSADepTag;
     class GeneralSetDepTag;
     class DependencyDepTag;
-
-    /**
-     * Visitor class for visiting the different DepTag subclasses.
-     *
-     * \ingroup grpdeptag
-     * \see DepTag
-     */
-    struct DepTagVisitorTypes :
-        VisitorTypes<
-            DepTagVisitorTypes,
-            DepTag,
-            GLSADepTag,
-            GeneralSetDepTag,
-            DependencyDepTag
-        >
-    {
-    };
 
     /**
      * A DepTag can be associated with a PackageDepSpec, and is transferred
@@ -298,12 +299,6 @@ namespace paludis
 
 #include <paludis/dep_tag-sr.hh>
 
-    /**
-     * Tags attached to a DepListEntry.
-     *
-     * \ingroup grpdeptag
-     */
-    typedef SortedCollection<DepTagEntry> DepListEntryTags;
 }
 
 #endif

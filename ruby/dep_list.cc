@@ -1041,24 +1041,6 @@ namespace
         }
     }
 
-    /*
-     * call-seq:
-     *     destinations -> Array
-     *
-     * Returns an array of our destinations.
-     */
-    VALUE
-    dep_list_entry_destinations(VALUE self)
-    {
-        DepListEntry * p;
-        Data_Get_Struct(self, DepListEntry, p);
-        VALUE result = rb_ary_new();
-        for (SortedCollection<DepListEntryDestination>::Iterator i(p->destinations->begin()),
-                i_end(p->destinations->end()) ; i != i_end ; ++i)
-            rb_ary_push(result, repository_to_value(i->destination));
-        return result;
-    }
-
     VALUE
     dep_list_override_masks_init(VALUE self)
     {
@@ -1490,7 +1472,6 @@ namespace
 #if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
 #endif
-        rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations), 0);
 
         /*
          * Document-class: DepListOverrideMasks

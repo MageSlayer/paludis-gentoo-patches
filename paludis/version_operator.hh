@@ -21,10 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/validated.hh>
-
+#include <paludis/util/operators.hh>
+#include <paludis/version_operator-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 #include <string>
-#include <iosfwd>
 
 /** \file
  * Declarations for the VersionOperator class.
@@ -34,10 +34,6 @@
 
 namespace paludis
 {
-    class VersionSpec;
-
-#include <paludis/version_operator-se.hh>
-
     /**
      * An operator attached to a VersionSpec, validated.
      *
@@ -131,13 +127,6 @@ namespace paludis
              */
             BadVersionOperatorError(const std::string & msg) throw ();
     };
-
-    /**
-     * A VersionOperator can be written to an ostream.
-     *
-     * \ingroup grpversions
-     */
-    std::ostream & operator<< (std::ostream & s, const VersionOperator &) PALUDIS_VISIBLE;
 }
 
 #endif

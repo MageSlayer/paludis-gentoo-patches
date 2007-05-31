@@ -215,8 +215,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     } while (false);
 
     tr1::shared_ptr<RepositoryName> repo;
-    if (d.destinations && ! d.destinations->empty())
-        repo.reset(new RepositoryName((d.destinations->begin()->destination)->name()));
+    if (d.destination)
+        repo.reset(new RepositoryName(d.destination->name()));
 
     tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
             query(query::Matches(PackageDepSpec(
@@ -246,7 +246,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_repository(d, m);
 
     if (d.metadata->virtual_interface)
-        display_merge_list_entry_for(d.metadata->virtual_interface->virtual_for, m);
+        display_merge_list_entry_for(*d.metadata->virtual_interface->virtual_for, m);
 
     display_merge_list_entry_slot(d, m);
 
@@ -822,18 +822,16 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
             break;
 
         case normal_entry:
-            output_no_endl(render_as_update_mode(" ["));
-
-            for (SortedCollection<DepListEntryDestination>::Iterator dest(d.destinations->begin()),
-                    dest_end(d.destinations->end()) ; dest != dest_end ; ++dest)
             {
+                output_no_endl(render_as_update_mode(" ["));
+
                 if (need_comma)
                     output_no_endl(render_as_update_mode(", "));
 
                 std::string destination_str;
                 tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
-                if (default_destinations->end() == default_destinations->find(dest->destination))
-                    destination_str = " ::" + stringify(dest->destination->name());
+                if (default_destinations->end() == default_destinations->find(d.destination))
+                    destination_str = " ::" + stringify(d.destination->name());
 
                 if (existing_repo->empty())
                 {
@@ -868,9 +866,8 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                     set_count<max_count>(count<max_count>() + 1);
                 }
 
-                need_comma = true;
+                output_no_endl(render_as_update_mode("]"));
             }
-            output_no_endl(render_as_update_mode("]"));
             break;
 
         case error_entry:
@@ -1101,7 +1098,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             if (mr_eapi == mm)
             {
                 std::string eapi_str(environment()->package_database()->fetch_repository(
-                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi.name);
+                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi->name);
 
                 if (eapi_str == "UNKNOWN")
                     output_no_endl(" ( " + render_as_masked(eapi_str) + " ) (probably a broken ebuild)");

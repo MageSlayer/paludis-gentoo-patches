@@ -22,6 +22,7 @@
 
 #include <paludis/environment.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/package_database_entry.hh>
 #include <src/output/console_task.hh>
 
 namespace paludis

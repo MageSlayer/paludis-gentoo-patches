@@ -17,13 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <map>
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/eapi.hh>
+#include <map>
 
 /** \file
  * Implementation for FakeRepositoryBase.
@@ -330,7 +332,7 @@ FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const
             .ebin_interface(0)
             ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataVirtualInterface(p)
+    VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(p)))
 {
 }
 

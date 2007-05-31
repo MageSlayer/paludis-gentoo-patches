@@ -20,6 +20,8 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/version_requirements.hh>
+#include <paludis/version_operator.hh>
 #include <ruby.h>
 
 using namespace paludis;

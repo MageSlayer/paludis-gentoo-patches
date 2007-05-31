@@ -17,25 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_FWD_HH 1
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/repository-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
 
 namespace paludis
 {
-    class DepListOptions;
-    class DepListEntryDestination;
-    class DepListEntry;
-    class DepList;
-    class PackageDatabaseEntry;
+#include <paludis/version_operator-se.hh>
 
-    bool is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
-            const DependencySpecTree::ConstItem & i);
+    class VersionOperator;
+    class BadVersionOperatorError;
+
+    /**
+     * A VersionOperator can be written to an ostream.
+     *
+     * \ingroup grpversions
+     */
+    std::ostream & operator<< (std::ostream & s, const VersionOperator &) PALUDIS_VISIBLE;
 }
 
 #endif

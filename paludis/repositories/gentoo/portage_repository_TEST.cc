@@ -23,6 +23,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/eapi.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -545,13 +546,13 @@ namespace test_cases
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                     TEST_CHECK_EQUAL(m->description, "The Description");
-                    TEST_CHECK_EQUAL(m->eapi.name, "0");
-                    TEST_CHECK(m->eapi.supported);
+                    TEST_CHECK_EQUAL(m->eapi->name, "0");
+                    TEST_CHECK(m->eapi->supported);
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
                     TEST_CHECK_EQUAL(m->description, "dquote \" squote ' backslash \\ dollar $");
-                    TEST_CHECK_EQUAL(m->eapi.name, "0");
-                    TEST_CHECK(m->eapi.supported);
+                    TEST_CHECK_EQUAL(m->eapi->name, "0");
+                    TEST_CHECK(m->eapi->supported);
                 }
             }
         }
@@ -588,8 +589,8 @@ namespace test_cases
                 tr1::shared_ptr<const VersionMetadata> m;
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->eapi.name, "UNKNOWN");
-                TEST_CHECK(! m->eapi.supported);
+                TEST_CHECK_EQUAL(m->eapi->name, "UNKNOWN");
+                TEST_CHECK(! m->eapi->supported);
             }
         }
     } test_portage_repository_metadata_unparsable;

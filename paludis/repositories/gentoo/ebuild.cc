@@ -25,6 +25,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
+#include <paludis/eapi.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -39,7 +40,6 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/gentoo/ebuild-se.cc>
 #include <paludis/repositories/gentoo/ebuild-sr.cc>
 
 EbuildCommand::EbuildCommand(const EbuildCommandParams & p) :
@@ -58,12 +58,6 @@ EbuildCommand::success()
 }
 
 bool
-EbuildCommand::use_sandbox() const
-{
-    return true;
-}
-
-bool
 EbuildCommand::failure()
 {
     return false;
@@ -75,8 +69,12 @@ EbuildCommand::operator() ()
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/ebuild.bash '" + ebuild_file() + "' " + commands());
 
-    if (use_sandbox())
+    if (params.sandbox)
         cmd.with_sandbox();
+
+    if (params.userpriv)
+        cmd.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+
 
     tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
     tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
@@ -118,7 +116,7 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
-    if (params.want_portage_emulation_vars)
+    if (params.eapi->supported->want_portage_emulation_vars)
         cmd = add_portage_vars(cmd);
 
     if (do_run_command(cmd))
@@ -169,7 +167,7 @@ EbuildMetadataCommand::EbuildMetadataCommand(const EbuildCommandParams & p) :
 std::string
 EbuildMetadataCommand::commands() const
 {
-    return "metadata";
+    return params.commands;
 }
 
 bool
@@ -245,7 +243,7 @@ EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,
 std::string
 EbuildVariableCommand::commands() const
 {
-    return "variable";
+    return params.commands;
 }
 
 bool
@@ -276,10 +274,7 @@ EbuildVariableCommand::do_run_command(const Command & cmd)
 std::string
 EbuildFetchCommand::commands() const
 {
-    if (fetch_params.no_fetch)
-        return "nofetch";
-    else
-        return "fetch";
+    return params.commands;
 }
 
 bool
@@ -304,9 +299,6 @@ EbuildFetchCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles->begin(),
                     fetch_params.profiles->end(), " ")));
 
-    if (fetch_params.userpriv)
-        result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
-
     for (AssociativeCollection<std::string, std::string>::Iterator
             i(fetch_params.expand_vars->begin()),
             j(fetch_params.expand_vars->end()) ; i != j ; ++i)
@@ -325,37 +317,7 @@ EbuildFetchCommand::EbuildFetchCommand(const EbuildCommandParams & p,
 std::string
 EbuildInstallCommand::commands() const
 {
-    switch (install_params.phase)
-    {
-        case ebuild_ip_prepare:
-            return "prepare";
-
-        case ebuild_ip_init:
-            return "init saveenv";
-
-        case ebuild_ip_setup:
-            return "loadenv setup saveenv";
-
-        case ebuild_ip_build:
-            return "loadenv unpack compile test saveenv";
-
-        case ebuild_ip_install:
-            return "loadenv install saveenv";
-
-        case ebuild_ip_preinstall:
-            return "loadenv strip preinst saveenv";
-
-        case ebuild_ip_postinstall:
-            return "loadenv postinst saveenv";
-
-        case ebuild_ip_tidyup:
-            return "tidyup";
-
-        case last_ebuild_ip:
-            ;
-    };
-
-    throw InternalError(PALUDIS_HERE, "Bad phase");
+    return params.commands;
 }
 
 bool
@@ -412,10 +374,6 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             j(install_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    if ((ebuild_ip_build == install_params.phase || ebuild_ip_init == install_params.phase)
-            && install_params.userpriv)
-        result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
-
     return result;
 }
 
@@ -429,19 +387,7 @@ EbuildInstallCommand::EbuildInstallCommand(const EbuildCommandParams & p,
 std::string
 EbuildUninstallCommand::commands() const
 {
-    switch (uninstall_params.phase)
-    {
-        case up_preremove:
-            return "prerm saveenv";
-
-        case up_postremove:
-            return "loadenv postrm";
-
-        case last_up:
-            ;
-    }
-
-    throw InternalError(PALUDIS_HERE, "Bad phase value");
+    return params.commands;
 }
 
 std::string
@@ -511,7 +457,7 @@ EbuildVersionMetadata::~EbuildVersionMetadata()
 std::string
 EbuildConfigCommand::commands() const
 {
-    return "config";
+    return params.commands;
 }
 
 bool
@@ -593,7 +539,8 @@ VDBPostMergeCommand::operator() ()
 #ifdef HAVE_GNU_LDCONFIG
     std::string ebuild_cmd("ldconfig -r '" + stringify(params.root) + "'");
 #else
-    std::string ebuild_cmd("ldconfig -elf -i -f '" + stringify(params.root) + "var/run/ld-elf.so.hints' '" + stringify(params.root) + "etc/ld.so.conf'");
+    std::string ebuild_cmd("ldconfig -elf -i -f '" + stringify(params.root) +
+            "var/run/ld-elf.so.hints' '" + stringify(params.root) + "etc/ld.so.conf'");
 #endif
 
     if (0 != (run_command(ebuild_cmd)))
@@ -603,7 +550,7 @@ VDBPostMergeCommand::operator() ()
 std::string
 EbuildPretendCommand::commands() const
 {
-    return "pretend";
+    return params.commands;
 }
 
 bool

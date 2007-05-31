@@ -121,6 +121,12 @@ pkg_setup() {
     local VAR3=yes
 }
 
+src_compile() {
+    if [[ ${REPEAT} == yes ]] ; then
+        sed -i -e 's,testbin1,repeatbin1,' testbin1 || die
+    fi
+}
+
 src_install() {
     [[ "${VAR1}" == yes ]] || die
     [[ "${VAR2}" == yes ]] || die

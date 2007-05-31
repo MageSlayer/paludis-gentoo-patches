@@ -21,6 +21,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <algorithm>

@@ -47,29 +47,6 @@ END
 END
 }
 
-make_class_DepListEntryDestination()
-{
-    visible
-
-    key destination "tr1::shared_ptr<Repository>"
-    key generation long
-
-    allow_named_args
-    comparison_operators "all" "destination"
-
-    doxygen_comment << "END"
-        /**
-         * A destination for a DepListEntry. Only the .destination key is of use outside
-         * of DepList.
-         *
-         * \see DepList
-         * \see DepListEntry
-         * \ingroup grpdepresolver
-         * \nosubgrouping
-         */
-END
-}
-
 make_class_DepListEntry()
 {
     visible
@@ -80,7 +57,7 @@ make_class_DepListEntry()
     key associated_entry "const DepListEntry *"
     key metadata "tr1::shared_ptr<const VersionMetadata>"
     key tags "tr1::shared_ptr<DepListEntryTags>"
-    key destinations "tr1::shared_ptr<SortedCollection<DepListEntryDestination> >"
+    key destination "tr1::shared_ptr<Repository>"
 
     key generation long
     key state DepListEntryState

@@ -1,6 +1,47 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_class_EAPIEbuildPhases()
+{
+    visible
+    allow_named_args cc
+
+    key ebuild_install            std::string
+    key ebuild_uninstall          std::string
+    key ebuild_pretend            std::string
+    key ebuild_metadata           std::string
+    key ebuild_fetch              std::string
+    key ebuild_nofetch            std::string
+    key ebuild_variable           std::string
+    key ebuild_config             std::string
+}
+
+make_class_EAPIEbuildMetadataVariables()
+{
+    visible
+    allow_named_args cc
+
+    key metadata_build_depend     std::string
+    key metadata_run_depend       std::string
+    key metadata_slot             std::string
+    key metadata_src_uri          std::string
+    key metadata_restrict         std::string
+    key metadata_homepage         std::string
+    key metadata_license          std::string
+    key metadata_description      std::string
+    key metadata_keywords         std::string
+    key metadata_eclass_keywords  std::string
+    key metadata_inherited        std::string
+    key metadata_iuse             std::string
+    key metadata_pdepend          std::string
+    key metadata_provide          std::string
+    key metadata_eapi             std::string
+}
+
 make_class_SupportedEAPI()
 {
     visible
+    allow_named_args cc
 
     key package_dep_spec_parse_mode PackageDepSpecParseMode
     key strict_package_dep_spec_parse_mode PackageDepSpecParseMode
@@ -11,13 +52,13 @@ make_class_SupportedEAPI()
 
     key breaks_portage bool
 
-    key has_pkg_pretend bool
     key want_aa_var bool
     key want_arch_var bool
     key want_portage_emulation_vars bool
     key require_use_expand_in_iuse bool
 
-    allow_named_args
+    key ebuild_phases                 "tr1::shared_ptr<const EAPIEbuildPhases>"
+    key ebuild_metadata_variables     "tr1::shared_ptr<const EAPIEbuildMetadataVariables>"
 
     doxygen_comment << "END"
         /**

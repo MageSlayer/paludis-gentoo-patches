@@ -22,6 +22,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <paludis/eapi.hh>
 #include <fstream>
 #include <set>
 #include <list>
@@ -141,7 +142,7 @@ EbuildFlatMetadataCache::save(tr1::shared_ptr<const EbuildVersionMetadata> v)
         cache << std::endl;
         cache << flatten(v->post_depend()) << std::endl;
         cache << flatten(v->provide()) << std::endl;
-        cache << normalise(v->eapi.name) << std::endl;
+        cache << normalise(v->eapi->name) << std::endl;
     }
     else
     {

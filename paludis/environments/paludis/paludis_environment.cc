@@ -31,6 +31,7 @@
 #include <paludis/hooker.hh>
 #include <paludis/set_file.hh>
 #include <paludis/distribution.hh>
+#include <paludis/dep_tag.hh>
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>

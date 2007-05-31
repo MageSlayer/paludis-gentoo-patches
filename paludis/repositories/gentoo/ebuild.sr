@@ -5,13 +5,16 @@ make_class_EbuildCommandParams()
 {
     key environment "const Environment *"
     key db_entry "const PackageDatabaseEntry *"
+    key eapi "tr1::shared_ptr<const EAPI>"
     key ebuild_dir FSEntry
     key files_dir FSEntry
     key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
     key portdir FSEntry
     key distdir FSEntry
     key buildroot FSEntry
-    key want_portage_emulation_vars bool
+    key userpriv bool
+    key sandbox bool
+    key commands std::string
 
     doxygen_comment << "END"
         /**
@@ -36,9 +39,7 @@ make_class_EbuildFetchCommandParams()
     key root std::string
     key profiles "tr1::shared_ptr<const FSEntryCollection>"
     key expand_vars "tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
-    key no_fetch bool
     key safe_resume bool
-    key userpriv bool
 
     doxygen_comment << "END"
         /**
@@ -63,10 +64,8 @@ make_class_EbuildInstallCommandParams()
     key profiles "tr1::shared_ptr<const FSEntryCollection>"
     key expand_vars "tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
     key disable_cfgpro bool
-    key userpriv bool
     key debug_build InstallDebugOption
     key slot SlotName
-    key phase EbuildInstallCommandPhase
     key config_protect std::string
     key config_protect_mask std::string
     key loadsaveenv_dir FSEntry
@@ -111,7 +110,6 @@ make_class_EbuildUninstallCommandParams()
     key disable_cfgpro bool
     key unmerge_only bool
     key load_environment "const FSEntry *"
-    key phase EbuildUninstallCommandPhase
     key loadsaveenv_dir FSEntry
 
     doxygen_comment << "END"

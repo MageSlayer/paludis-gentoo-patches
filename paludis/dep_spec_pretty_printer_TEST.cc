@@ -36,23 +36,23 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter p1(0, false);
-            PortageDepParser::parse_depend("foo/bar bar/baz", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            PortageDepParser::parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "foo/bar bar/baz");
 
             DepSpecPrettyPrinter p2(0, false);
-            PortageDepParser::parse_depend("foo/bar moo? ( bar/baz )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
+            PortageDepParser::parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "foo/bar moo? ( bar/baz )");
 
             DepSpecPrettyPrinter p3(0, false);
-            PortageDepParser::parse_depend("|| ( a/b ( c/d e/f ) )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
+            PortageDepParser::parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "|| ( a/b ( c/d e/f ) )");
 
             DepSpecPrettyPrinter p4(0, false);
-            PortageDepParser::parse_license("( ( ( ) a ) b )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
+            PortageDepParser::parse_license("( ( ( ) a ) b )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
             TEST_CHECK_STRINGIFY_EQUAL(p4, "a b");
 
             DepSpecPrettyPrinter p5(0, false);
-            PortageDepParser::parse_uri("( a -> b c x? ( d e ) )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p5);
+            PortageDepParser::parse_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p5);
             TEST_CHECK_STRINGIFY_EQUAL(p5, "a -> b c x? ( d e )");
         }
     } test_pretty_printer_no_indent;
@@ -64,20 +64,20 @@ namespace test_cases
         void run()
         {
             DepSpecPrettyPrinter p1(4);
-            PortageDepParser::parse_depend("foo/bar bar/baz", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            PortageDepParser::parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "    foo/bar\n    bar/baz\n");
 
             DepSpecPrettyPrinter p2(4);
-            PortageDepParser::parse_depend("foo/bar moo? ( bar/baz )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
+            PortageDepParser::parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "    foo/bar\n    moo? (\n        bar/baz\n    )\n");
 
             DepSpecPrettyPrinter p3(4);
-            PortageDepParser::parse_depend("|| ( a/b ( c/d e/f ) )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
+            PortageDepParser::parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "    || (\n        a/b\n        (\n            c/d\n"
                     "            e/f\n        )\n    )\n");
 
             DepSpecPrettyPrinter p4(4);
-            PortageDepParser::parse_license("( ( ( ) a ) b )", EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
+            PortageDepParser::parse_license("( ( ( ) a ) b )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
             TEST_CHECK_STRINGIFY_EQUAL(p4, "    a\n    b\n");
         }
     } test_pretty_printer_indent;

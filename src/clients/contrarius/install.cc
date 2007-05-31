@@ -331,7 +331,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
                                 std::string eapi_str(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
-                                            pp->name, pp->version)->eapi.name);
+                                            pp->name, pp->version)->eapi->name);
 
                                 cerr << " ( " << colour(cl_masked, eapi_str) << " )";
                             }

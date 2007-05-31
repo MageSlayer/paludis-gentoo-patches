@@ -19,6 +19,7 @@
 
 #include "cran_version_metadata.hh"
 #include "cran_dep_parser.hh"
+#include <paludis/eapi.hh>
 
 using namespace paludis;
 

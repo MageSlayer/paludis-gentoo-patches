@@ -21,6 +21,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <paludis/eapi.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -42,7 +43,7 @@ CreateMetadataCheck::operator() (const EbuildCheckData & e) const
         tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        if (! metadata->eapi.supported)
+        if (! metadata->eapi->supported)
             result << Message(qal_fatal, "Couldn't generate metadata");
     }
     catch (const InternalError &)

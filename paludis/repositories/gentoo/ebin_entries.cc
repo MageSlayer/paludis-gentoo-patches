@@ -24,6 +24,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
+#include <paludis/eapi.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
@@ -245,11 +246,15 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
     }
 
+    if (! o.destination)
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' because no destination was provided");
+
     EbinFetchCommand fetch_cmd(command_params,
             EbinFetchCommandParams::create()
             .b(binaries)
             .flat_bin_uri(flat_bin_uri)
-            .root(stringify(get_root(o.destinations)))
+            .root(o.destination->installed_interface ? stringify(o.destination->installed_interface->root()) : "/")
             .safe_resume(o.safe_resume)
             .userpriv(false));
 
@@ -258,14 +263,10 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     if (o.fetch_only)
         return;
 
-    if (! o.destinations)
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' because no destination was provided");
-
     EbinInstallCommandParams install_params(
             EbinInstallCommandParams::create()
             .b(binaries)
-            .root(stringify(get_root(o.destinations)))
+            .root(o.destination->installed_interface ? stringify(o.destination->installed_interface->root()) : "/")
             .debug_build(o.debug_build)
             .phase(ebin_ip_prepare)
             .disable_cfgpro(o.no_config_protect)
@@ -290,40 +291,36 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     EbinInstallCommand unpackbin_cmd(command_params, install_params);
     unpackbin_cmd();
 
-    for (DestinationsCollection::Iterator d(o.destinations->begin()),
-            d_end(o.destinations->end()) ; d != d_end ; ++d)
+    if (! o.destination->destination_interface)
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' to destination '" + stringify(o.destination->name())
+                + "' because destination does not provide destination_interface");
+
+    if (o.destination->destination_interface->want_pre_post_phases())
     {
-        if (! (*d)->destination_interface)
-            throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                    + stringify(v) + "' to destination '" + stringify((*d)->name())
-                    + "' because destination does not provide destination_interface");
+        install_params.phase = ebin_ip_preinstall;
+        install_params.root = o.destination->installed_interface ?
+            stringify(o.destination->installed_interface->root()) : "/";
+        EbinInstallCommand preinst_cmd(command_params, install_params);
+        preinst_cmd();
+    }
 
-        if ((*d)->destination_interface->want_pre_post_phases())
-        {
-            install_params.phase = ebin_ip_preinstall;
-            install_params.root = (*d)->installed_interface ?
-                stringify((*d)->installed_interface->root()) : "/";
-            EbinInstallCommand preinst_cmd(command_params, install_params);
-            preinst_cmd();
-        }
+    o.destination->destination_interface->merge(
+            MergeOptions::create()
+            .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
+            .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                    + stringify(v)) / "image")
+            .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                    + stringify(v)) / "temp" / "loadsaveenv")
+            );
 
-        (*d)->destination_interface->merge(
-                MergeOptions::create()
-                .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
-                .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                        + stringify(v)) / "image")
-                .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                        + stringify(v)) / "temp" / "loadsaveenv")
-                );
-
-        if ((*d)->destination_interface->want_pre_post_phases())
-        {
-            install_params.phase = ebin_ip_postinstall;
-            install_params.root = (*d)->installed_interface ?
-                stringify((*d)->installed_interface->root()) : "/";
-            EbinInstallCommand postinst_cmd(command_params, install_params);
-            postinst_cmd();
-        }
+    if (o.destination->destination_interface->want_pre_post_phases())
+    {
+        install_params.phase = ebin_ip_postinstall;
+        install_params.root = o.destination->installed_interface ?
+            stringify(o.destination->installed_interface->root()) : "/";
+        EbinInstallCommand postinst_cmd(command_params, install_params);
+        postinst_cmd();
     }
 
     install_params.phase = ebin_ip_tidyup;
@@ -395,7 +392,7 @@ EbinEntries::merge(const MergeOptions & m)
     metadata->homepage()->accept(h);
     ebin_file << "HOMEPAGE=" << h << std::endl;
     ebin_file << "DESCRIPTION=" << metadata->description << std::endl;
-    ebin_file << "EAPI=" << metadata->eapi.name << std::endl;
+    ebin_file << "EAPI=" << metadata->eapi->name << std::endl;
 
     if (metadata->ebuild_interface)
     {

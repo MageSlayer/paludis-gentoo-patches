@@ -19,6 +19,8 @@
 
 #include "vdb_version_metadata.hh"
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/eapi.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 
@@ -67,7 +69,7 @@ VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
             .ebin_interface(0)
         ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataVirtualInterface(e)
+    VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(e)))
 {
 }
 

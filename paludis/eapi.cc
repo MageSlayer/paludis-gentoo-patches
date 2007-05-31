@@ -27,16 +27,20 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/config_file.hh>
 
 using namespace paludis;
+
+#include <paludis/eapi-sr.cc>
 
 namespace paludis
 {
     template<>
     struct Implementation<EAPIData>
     {
-        MakeHashedMap<std::string, EAPI>::Type values;
+        MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type values;
 
         Implementation()
         {
@@ -53,38 +57,86 @@ namespace paludis
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions());
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
-                            EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
-                                        SupportedEAPI::create()
-                                        .package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
-                                                k.get("package_dep_spec_parse_mode")))
-                                        .strict_package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
-                                                k.get("strict_package_dep_spec_parse_mode")))
-                                        .dependency_spec_tree_parse_mode(destringify<DependencySpecTreeParseMode>(
-                                                k.get("dependency_spec_tree_parse_mode")))
-                                        .iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
-                                                k.get("iuse_flag_parse_mode")))
-                                        .strict_iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
-                                                k.get("strict_iuse_flag_parse_mode")))
-                                        .breaks_portage(destringify<bool>(k.get("breaks_portage")))
-                                        .has_pkg_pretend(destringify<bool>(k.get("has_pkg_pretend")))
-                                        .uri_supports_arrow(destringify<bool>(k.get("uri_supports_arrow")))
-                                        .want_aa_var(destringify<bool>(k.get("want_aa_var")))
-                                        .want_arch_var(destringify<bool>(k.get("want_arch_var")))
-                                        .want_portage_emulation_vars(destringify<bool>(k.get("want_portage_emulation_vars")))
-                                        .require_use_expand_in_iuse(destringify<bool>(k.get("require_use_expand_in_iuse")))
-                                        )))));
+                            make_shared_ptr(new EAPI(strip_trailing_string(d->basename(), ".conf"), make_shared_ptr(new SupportedEAPI(
+                                            SupportedEAPI::create()
+                                            .package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
+                                                    k.get("package_dep_spec_parse_mode")))
+                                            .strict_package_dep_spec_parse_mode(destringify<PackageDepSpecParseMode>(
+                                                    k.get("strict_package_dep_spec_parse_mode").empty() ?
+                                                    k.get("package_dep_spec_parse_mode") :
+                                                    k.get("strict_package_dep_spec_parse_mode")))
+                                            .dependency_spec_tree_parse_mode(destringify<DependencySpecTreeParseMode>(
+                                                    k.get("dependency_spec_tree_parse_mode")))
+                                            .iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
+                                                    k.get("iuse_flag_parse_mode")))
+                                            .strict_iuse_flag_parse_mode(destringify<IUseFlagParseMode>(
+                                                    k.get("strict_iuse_flag_parse_mode").empty() ?
+                                                    k.get("iuse_flag_parse_mode") :
+                                                    k.get("strict_iuse_flag_parse_mode")))
+                                            .breaks_portage(destringify<bool>(k.get("breaks_portage")))
+                                            .uri_supports_arrow(destringify<bool>(k.get("uri_supports_arrow")))
+                                            .want_aa_var(destringify<bool>(k.get("want_aa_var")))
+                                            .want_arch_var(destringify<bool>(k.get("want_arch_var")))
+                                            .want_portage_emulation_vars(destringify<bool>(k.get("want_portage_emulation_vars")))
+                                            .require_use_expand_in_iuse(destringify<bool>(k.get("require_use_expand_in_iuse")))
+
+                                            .ebuild_phases(make_shared_ptr(new EAPIEbuildPhases(
+                                                            EAPIEbuildPhases::create()
+                                                            .ebuild_install(k.get("ebuild_install"))
+                                                            .ebuild_uninstall(k.get("ebuild_uninstall"))
+                                                            .ebuild_pretend(k.get("ebuild_pretend"))
+                                                            .ebuild_metadata(k.get("ebuild_metadata"))
+                                                            .ebuild_fetch(k.get("ebuild_fetch"))
+                                                            .ebuild_nofetch(k.get("ebuild_nofetch"))
+                                                            .ebuild_variable(k.get("ebuild_variable"))
+                                                            .ebuild_config(k.get("ebuild_config")))))
+
+                                            .ebuild_metadata_variables(make_shared_ptr(new EAPIEbuildMetadataVariables(
+                                                            EAPIEbuildMetadataVariables::create()
+                                                            .metadata_build_depend(k.get("metadata_build_depend"))
+                                                            .metadata_run_depend(k.get("metadata_run_depend"))
+                                                            .metadata_slot(k.get("metadata_slot"))
+                                                            .metadata_src_uri(k.get("metadata_src_uri"))
+                                                            .metadata_restrict(k.get("metadata_restrict"))
+                                                            .metadata_homepage(k.get("metadata_homepage"))
+                                                            .metadata_license(k.get("metadata_license"))
+                                                            .metadata_description(k.get("metadata_description"))
+                                                            .metadata_keywords(k.get("metadata_keywords"))
+                                                            .metadata_eclass_keywords(k.get("metadata_eclass_keywords"))
+                                                            .metadata_inherited(k.get("metadata_inherited"))
+                                                            .metadata_iuse(k.get("metadata_iuse"))
+                                                            .metadata_pdepend(k.get("metadata_pdepend"))
+                                                            .metadata_provide(k.get("metadata_provide"))
+                                                            .metadata_eapi(k.get("metadata_eapi")))))
+                                            ))))));
             }
 
-            MakeHashedMap<std::string, EAPI>::Type::const_iterator i(values.find("0"));
+            MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type::const_iterator i(values.find("0"));
             if (i == values.end())
                 throw EAPIConfigurationError("No EAPI configuration found for EAPI 0");
             else
                 values.insert(std::make_pair("", i->second));
+
+            values.insert(std::make_pair("CRAN-1",
+                        make_shared_ptr(new EAPI("CRAN-1", make_shared_ptr(new SupportedEAPI(
+                                        SupportedEAPI::create()
+                                        .package_dep_spec_parse_mode(pds_pm_permissive)
+                                        .strict_package_dep_spec_parse_mode(pds_pm_permissive)
+                                        .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
+                                        .iuse_flag_parse_mode(iuse_pm_permissive)
+                                        .strict_iuse_flag_parse_mode(iuse_pm_permissive)
+                                        .breaks_portage(true)
+                                        .uri_supports_arrow(false)
+                                        .want_aa_var(false)
+                                        .want_arch_var(false)
+                                        .want_portage_emulation_vars(false)
+                                        .require_use_expand_in_iuse(false)
+                                        .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
+                                        .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
+                                        ))))));
         }
     };
 }
-
-#include <paludis/eapi-sr.cc>
 
 EAPIConfigurationError::EAPIConfigurationError(const std::string & s) throw () :
     ConfigurationError("EAPI configuration error: " + s)
@@ -100,19 +152,19 @@ EAPIData::~EAPIData()
 {
 }
 
-EAPI
+tr1::shared_ptr<const EAPI>
 EAPIData::eapi_from_string(const std::string & s) const
 {
-    MakeHashedMap<std::string, EAPI>::Type::const_iterator i(_imp->values.find(s));
+    MakeHashedMap<std::string, tr1::shared_ptr<const EAPI> >::Type::const_iterator i(_imp->values.find(s));
     if (i != _imp->values.end())
         return i->second;
 
-    return EAPI(s, tr1::shared_ptr<SupportedEAPI>());
+    return make_shared_ptr(new EAPI(s, tr1::shared_ptr<SupportedEAPI>()));
 }
 
-EAPI
+tr1::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
-    return EAPI("UNKNOWN", tr1::shared_ptr<SupportedEAPI>());
+    return make_shared_ptr(new EAPI("UNKNOWN", tr1::shared_ptr<SupportedEAPI>()));
 }
 

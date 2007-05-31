@@ -408,7 +408,7 @@ namespace
         tr1::shared_ptr<const VersionMetadata> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->virtual_interface)
-            return package_database_entry_to_value((*self_ptr)->virtual_interface->virtual_for);
+            return package_database_entry_to_value(*(*self_ptr)->virtual_interface->virtual_for);
         else
             return Qnil;
 

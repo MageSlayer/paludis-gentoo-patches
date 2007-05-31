@@ -22,6 +22,7 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/config_file.hh>
+#include <paludis/eapi.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <string>

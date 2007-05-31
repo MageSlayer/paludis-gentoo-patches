@@ -38,7 +38,6 @@ namespace paludis
     class Environment;
     class Command;
 
-#include <paludis/repositories/gentoo/ebuild-se.hh>
 #include <paludis/repositories/gentoo/ebuild-sr.hh>
 
     /**
@@ -107,11 +106,6 @@ namespace paludis
              * of operator().
              */
             virtual bool success();
-
-            /**
-             * Should the sandbox, if available, be used?
-             */
-            virtual bool use_sandbox() const;
 
             /**
              * Actions to be taken after a failed command.
