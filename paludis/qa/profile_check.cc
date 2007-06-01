@@ -21,12 +21,15 @@
 #include <paludis/qa/profile_check.hh>
 #include <paludis/qa/profile_paths_exist_check.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<ProfileCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchProfileCheckTypeError> >;
+
+template class InstantiationPolicy<ProfileCheckMaker, instantiation_method::SingletonTag>;
 
 #include <paludis/qa/profile_check-sr.cc>
 

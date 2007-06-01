@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for DirectedGraph and related utilities.

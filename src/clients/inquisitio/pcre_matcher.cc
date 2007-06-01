@@ -19,6 +19,7 @@
 
 #include "pcre_matcher.hh"
 #include <pcre++.h>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 using namespace inquisitio;

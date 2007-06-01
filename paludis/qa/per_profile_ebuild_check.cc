@@ -20,12 +20,15 @@
 #include "per_profile_ebuild_check.hh"
 #include <paludis/qa/deps_visible_check.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<PerProfileEbuildCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> >;
+
+template class InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonTag>;
 
 #include <paludis/qa/per_profile_ebuild_check-sr.cc>
 

@@ -20,6 +20,7 @@
 #include "glsa.hh"
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <list>
 #include <dlfcn.h>
 #include <stdint.h>

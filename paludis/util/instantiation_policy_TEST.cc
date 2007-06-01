@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

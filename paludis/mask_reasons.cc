@@ -19,7 +19,11 @@
 
 
 #include <paludis/mask_reasons.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <ostream>
+
+using namespace paludis;
+
 #include <paludis/mask_reasons-se.cc>
 

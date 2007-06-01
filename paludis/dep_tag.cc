@@ -20,6 +20,7 @@
 #include "dep_tag.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.
@@ -42,6 +43,8 @@ template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepT
 template class Visits<const GeneralSetDepTag>;
 template class Visits<const GLSADepTag>;
 template class Visits<const DependencyDepTag>;
+
+template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
 
 #include <paludis/dep_tag-sr.cc>
 

@@ -24,6 +24,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>

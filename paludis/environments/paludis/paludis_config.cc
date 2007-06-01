@@ -39,6 +39,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <fstream>

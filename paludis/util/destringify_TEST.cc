@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/destringify.hh>
+#include <paludis/util/stringify.hh>
 #include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

@@ -19,6 +19,7 @@
 
 #include "description_extractor.hh"
 #include <paludis/package_database.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 using namespace inquisitio;

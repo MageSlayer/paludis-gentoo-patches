@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,8 +18,11 @@
  */
 
 #include "tokeniser.hh"
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
+
+template class InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonTag>;
 
 WhitespaceTokeniser::WhitespaceTokeniser() :
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(" \t\r\n")

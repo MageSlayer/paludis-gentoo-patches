@@ -27,6 +27,7 @@ using namespace paludis;
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_metadata.hh>

@@ -20,6 +20,7 @@
 #include <fstream>
 #include <paludis/qa/subshell_die_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
 #include <pcre++.h>
 
 using namespace paludis;

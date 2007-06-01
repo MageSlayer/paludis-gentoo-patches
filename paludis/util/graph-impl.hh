@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_IMPL_HH 1
 
 #include <paludis/util/graph.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <map>
 #include <set>

@@ -19,6 +19,7 @@
 
 #include "eclass_mtimes.hh"
 #include <paludis/hashed_containers.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 

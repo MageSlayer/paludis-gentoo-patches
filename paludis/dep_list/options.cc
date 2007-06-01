@@ -20,6 +20,7 @@
 #include "options.hh"
 #include <ostream>
 #include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 

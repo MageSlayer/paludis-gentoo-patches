@@ -21,12 +21,15 @@
 #include <paludis/qa/categories_check.hh>
 #include <paludis/qa/repo_name_check.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<ProfilesCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchProfilesCheckTypeError> >;
+
+template class InstantiationPolicy<ProfilesCheckMaker, instantiation_method::SingletonTag>;
 
 ProfilesCheck::ProfilesCheck()
 {

@@ -25,6 +25,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/eapi.hh>
 #include <paludis/dep_spec_pretty_printer.hh>

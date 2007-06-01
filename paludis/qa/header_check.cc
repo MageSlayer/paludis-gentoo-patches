@@ -21,6 +21,7 @@
 #include <sstream>
 #include <paludis/qa/header_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
 #include <pcre++.h>
 
 using namespace paludis;

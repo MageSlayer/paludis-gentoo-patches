@@ -26,6 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
 
 #include <set>

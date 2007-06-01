@@ -18,10 +18,12 @@
  */
 
 #include <algorithm>
+#include <sstream>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 /** \file
  * Implementation of dep_spec_pretty_printer.hh.

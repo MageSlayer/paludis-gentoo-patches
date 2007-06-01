@@ -35,6 +35,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/match_package.hh>

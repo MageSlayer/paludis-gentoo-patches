@@ -21,6 +21,7 @@
 #include "unmerger.hh"
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

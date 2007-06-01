@@ -21,6 +21,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
 #include <libxml/tree.h>

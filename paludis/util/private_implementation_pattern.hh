@@ -67,41 +67,25 @@ namespace paludis
                     ///\name Basic operations
                     ///\{
 
-                    ImpPtr(Implementation<C_> * p) :
-                        _ptr(p)
-                    {
-                    }
+                    ImpPtr(Implementation<C_> * p);
 
-                    ~ImpPtr()
-                    {
-                        delete _ptr;
-                    }
+                    ~ImpPtr();
 
                     ///\}
 
                     ///\name Dereference operators
                     //\{
 
-                    Implementation<C_> * operator-> ()
-                    {
-                        return _ptr;
-                    }
+                    Implementation<C_> * operator-> ();
 
-                    const Implementation<C_> * operator-> () const
-                    {
-                        return _ptr;
-                    }
+                    const Implementation<C_> * operator-> () const;
 
                     ///\}
 
                     /**
                      * Reset to a new Implementation.
                      */
-                    void reset(Implementation<C_> * p)
-                    {
-                        std::swap(_ptr, p);
-                        delete p;
-                    }
+                    void reset(Implementation<C_> * p);
             };
 
             /**
@@ -113,14 +97,9 @@ namespace paludis
             /**
              * Constructor.
              */
-            explicit PrivateImplementationPattern(Implementation<C_> * i) :
-                _imp(i)
-            {
-            }
+            explicit PrivateImplementationPattern(Implementation<C_> * i);
 
-            ~PrivateImplementationPattern()
-            {
-            }
+            ~PrivateImplementationPattern();
     };
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <libebt/libebt.hh>
 #include "config.h"
 

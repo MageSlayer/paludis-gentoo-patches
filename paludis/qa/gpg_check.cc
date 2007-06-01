@@ -20,6 +20,7 @@
 #include <paludis/qa/gpg_check.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fd_holder.hh>
+#include <paludis/util/stringify.hh>
 #include <fstream>
 
 #include <sys/types.h>

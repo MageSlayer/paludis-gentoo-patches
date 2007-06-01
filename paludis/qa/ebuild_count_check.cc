@@ -20,6 +20,7 @@
 #include <paludis/qa/ebuild_count_check.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
 

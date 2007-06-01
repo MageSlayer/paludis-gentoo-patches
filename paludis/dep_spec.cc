@@ -26,7 +26,8 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
-
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <list>
 #include <map>
 

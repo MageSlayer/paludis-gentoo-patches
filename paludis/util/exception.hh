@@ -21,8 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/stringify.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <string>
 #include <exception>
 
@@ -218,10 +216,6 @@ namespace paludis
              */
             ConfigurationError(const std::string & msg) throw ();
     };
-
-    template <typename T_>
-    std::string
-    stringify(const T_ & item);
 
     /** \def PALUDIS_HERE
      * Expands to the current function name, file and line, for use with

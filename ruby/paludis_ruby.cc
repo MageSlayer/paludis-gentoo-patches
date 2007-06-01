@@ -22,6 +22,8 @@
 #include <paludis_ruby.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_list/exceptions.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>
@@ -34,6 +36,8 @@ using namespace paludis;
 using namespace paludis::ruby;
 
 #define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
+
+template class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>;
 
 namespace paludis
 {

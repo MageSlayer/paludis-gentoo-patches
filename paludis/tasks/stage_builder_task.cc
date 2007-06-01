@@ -20,6 +20,7 @@
 #include "stage_builder_task.hh"
 
 #include <paludis/environment.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <list>
 
 using namespace paludis;

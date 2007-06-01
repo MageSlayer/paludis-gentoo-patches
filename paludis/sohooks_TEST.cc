@@ -21,6 +21,7 @@
 #include <paludis/hook.hh>
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <iostream>
 #include <fstream>
 

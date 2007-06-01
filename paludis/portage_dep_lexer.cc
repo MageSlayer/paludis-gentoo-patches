@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_lexer.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
 #include <vector>

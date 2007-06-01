@@ -29,6 +29,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec_pretty_printer.hh>

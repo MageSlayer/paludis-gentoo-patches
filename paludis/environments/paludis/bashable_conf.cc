@@ -22,6 +22,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 
 using namespace paludis;

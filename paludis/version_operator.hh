@@ -22,6 +22,7 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <string>

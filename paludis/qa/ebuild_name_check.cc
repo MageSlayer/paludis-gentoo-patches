@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/qa/ebuild_name_check.hh>
 
 using namespace paludis;

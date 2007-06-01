@@ -18,6 +18,7 @@
  */
 
 #include "args.hh"
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <list>
 
 /** \file

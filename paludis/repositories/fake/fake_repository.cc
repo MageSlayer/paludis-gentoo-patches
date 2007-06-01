@@ -19,6 +19,7 @@
 
 #include "fake_repository.hh"
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/distribution.hh>
 

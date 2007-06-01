@@ -19,7 +19,9 @@
 
 #include "portage_repository_profile_file.hh"
 #include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <list>
 #include <algorithm>
 

@@ -35,7 +35,7 @@
 #include <paludis/qa/src_uri_check.hh>
 #include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/qa/slot_check.hh>
-
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace paludis;
@@ -43,6 +43,8 @@ using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<EbuildCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >;
+
+template class InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonTag>;
 
 #include <paludis/qa/ebuild_check-sr.cc>
 

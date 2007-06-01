@@ -22,6 +22,7 @@
 #include <iostream>
 #include <list>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <unistd.h>
 
 /** \file

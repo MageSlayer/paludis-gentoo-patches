@@ -21,6 +21,9 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>
 #include <map>
 #include <list>

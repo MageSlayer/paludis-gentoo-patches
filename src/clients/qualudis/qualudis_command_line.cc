@@ -18,6 +18,9 @@
  */
 
 #include "qualudis_command_line.hh"
+#include <paludis/util/instantiation_policy-impl.hh>
+
+template class paludis::InstantiationPolicy<QualudisCommandLine, paludis::instantiation_method::SingletonTag>;
 
 QualudisCommandLine::QualudisCommandLine() :
     ArgsHandler(),

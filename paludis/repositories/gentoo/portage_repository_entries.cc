@@ -21,6 +21,7 @@
 #include "ebuild_entries.hh"
 #include "ebin_entries.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 
@@ -28,6 +29,8 @@ template class VirtualConstructor<std::string,
          tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
                  const PortageRepositoryParams &),
          virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >;
+
+template class InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonTag>;
 
 PortageRepositoryEntries::~PortageRepositoryEntries()
 {

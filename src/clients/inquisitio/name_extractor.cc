@@ -18,6 +18,8 @@
  */
 
 #include "name_extractor.hh"
+#include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;

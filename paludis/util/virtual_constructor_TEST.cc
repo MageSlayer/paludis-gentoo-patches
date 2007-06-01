@@ -19,6 +19,7 @@
 
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <set>

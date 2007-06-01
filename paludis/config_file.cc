@@ -26,6 +26,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 #include <fstream>
 #include <istream>

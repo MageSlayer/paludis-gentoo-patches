@@ -25,6 +25,7 @@
 #include <paludis/eapi.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/stringify.hh>
 #include <string>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>

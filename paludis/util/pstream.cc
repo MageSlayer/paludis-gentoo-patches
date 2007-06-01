@@ -19,6 +19,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/stringify.hh>
 
 #include <cstring>
 #include <errno.h>

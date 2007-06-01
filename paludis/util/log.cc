@@ -20,6 +20,9 @@
 #include <iostream>
 #include <exception>
 #include <paludis/util/log.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/exception.hh>
 
 /** \file
  * Implementation for Log.
@@ -30,6 +33,8 @@
 using namespace paludis;
 
 #include <paludis/util/log-se.cc>
+
+template class InstantiationPolicy<Log, instantiation_method::SingletonTag>;
 
 namespace paludis
 {

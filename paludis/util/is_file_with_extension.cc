@@ -18,6 +18,8 @@
  */
 
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
+#include <ostream>
 
 using namespace paludis;
 

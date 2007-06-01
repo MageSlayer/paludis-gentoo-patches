@@ -20,6 +20,8 @@
 #include "adapted_environment.hh"
 #include <paludis/hashed_containers.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/match_package.hh>
 
 using namespace paludis;

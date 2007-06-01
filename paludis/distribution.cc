@@ -26,9 +26,14 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include "config.h"
 
 using namespace paludis;
+
+template class InstantiationPolicy<DistributionData, instantiation_method::SingletonTag>;
 
 #include <paludis/distribution-sr.cc>
 

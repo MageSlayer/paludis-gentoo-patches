@@ -18,8 +18,11 @@
  */
 
 #include "command_line.hh"
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
+
+template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
 
 CommandLine::CommandLine() :
     ArgsHandler(),

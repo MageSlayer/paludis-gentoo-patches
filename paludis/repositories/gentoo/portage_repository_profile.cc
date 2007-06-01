@@ -23,6 +23,7 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>

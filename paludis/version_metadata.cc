@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/iterator.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>

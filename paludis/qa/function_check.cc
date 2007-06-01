@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <paludis/qa/function_check.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <pcre++.h>
 

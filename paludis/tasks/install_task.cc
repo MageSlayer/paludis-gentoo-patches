@@ -24,6 +24,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>

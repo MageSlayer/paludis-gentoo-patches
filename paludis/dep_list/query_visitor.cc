@@ -22,6 +22,7 @@
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <algorithm>
 
 using namespace paludis;

@@ -38,6 +38,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/random.hh>
 #include <paludis/util/save.hh>

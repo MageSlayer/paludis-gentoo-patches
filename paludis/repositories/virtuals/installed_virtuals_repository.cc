@@ -20,6 +20,7 @@
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/vr_entry.hh>
 #include <paludis/util/fast_unique_copy.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>

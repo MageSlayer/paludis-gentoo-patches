@@ -21,8 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/exception.hh>
-#include <paludis/util/save.hh>
 
 /** \file
  * InstantiationPolicy patterns.
@@ -44,27 +42,21 @@ namespace paludis
          *
          * \ingroup grpinstance
          */
-        struct NonCopyableTag
-        {
-        };
+        struct NonCopyableTag;
 
         /**
          * Cannot be instantiated
          *
          * \ingroup grpinstance
          */
-        struct NonInstantiableTag
-        {
-        };
+        struct NonInstantiableTag;
 
         /**
          * Single instance.
          *
          * \ingroup grpinstance
          */
-        struct SingletonTag
-        {
-        };
+        struct SingletonTag;
     }
 
     /**
@@ -88,22 +80,12 @@ namespace paludis
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
-
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
 
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            ~InstantiationPolicy()
-            {
-            }
-
+        public:
             InstantiationPolicy()
             {
             }
-
-            ///\}
     };
 
     /**
@@ -117,20 +99,8 @@ namespace paludis
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
-
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
-
-        protected:
-            ///\name Basic operations
-            ///\{
-
             InstantiationPolicy();
-
-            ~InstantiationPolicy()
-            {
-            }
-
-            ///\}
     };
 
     /**
@@ -153,28 +123,9 @@ namespace paludis
             class DeleteOnDestruction;
             friend class DeleteOnDestruction;
 
-            static void _delete(OurType_ * const p)
-            {
-                delete p;
-            }
+            static void _delete(OurType_ * const p);
 
-            class PALUDIS_VISIBLE DeleteOnDestruction
-            {
-                private:
-                    OurType_ * * const _ptr;
-
-                public:
-                    DeleteOnDestruction(OurType_ * * const p) :
-                        _ptr(p)
-                    {
-                    }
-
-                    ~DeleteOnDestruction()
-                    {
-                        InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::_delete(* _ptr);
-                        * _ptr = 0;
-                    }
-            };
+            class DeleteOnDestruction;
 
         protected:
             ///\name Basic operations
@@ -203,44 +154,6 @@ namespace paludis
 
             ///\}
     };
-
-    template<typename OurType_>
-    OurType_ * *
-    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::_get_instance_ptr()
-    {
-        static OurType_ * instance(0);
-        static DeleteOnDestruction delete_instance(&instance);
-
-        return &instance;
-    }
-
-    template<typename OurType_>
-    OurType_ *
-    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::get_instance()
-    {
-        static bool recursive(false);
-        OurType_ * * i(_get_instance_ptr());
-
-        if (0 == *i)
-        {
-            if (recursive)
-                throw InternalError(PALUDIS_HERE, "Recursive instantiation");
-
-            Save<bool> save_recursive(&recursive, true);
-            *i = new OurType_;
-        }
-
-        return *i;
-    }
-
-    template<typename OurType_>
-    void
-    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::destroy_instance()
-    {
-        OurType_ * * i(_get_instance_ptr());
-        delete *i;
-        *i = 0;
-    }
 }
 
 #endif

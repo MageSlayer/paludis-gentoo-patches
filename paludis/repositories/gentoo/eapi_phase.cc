@@ -19,6 +19,7 @@
 
 #include "eapi_phase.hh"
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/eapi.hh>

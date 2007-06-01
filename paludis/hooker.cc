@@ -29,6 +29,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>

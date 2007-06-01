@@ -23,6 +23,8 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
 #include <list>
@@ -35,6 +37,8 @@ using namespace paludis;
 template class VirtualConstructor<std::string,
          tr1::shared_ptr<Environment> (*) (const std::string &),
          virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >;
+
+template class InstantiationPolicy<EnvironmentMaker, instantiation_method::SingletonTag>;
 
 NoSuchEnvironmentTypeError::NoSuchEnvironmentTypeError(const std::string & format) throw ():
     ConfigurationError("No available maker for environment type '" + format + "'")

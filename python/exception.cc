@@ -18,12 +18,15 @@
  */
 
 #include "exception.hh"
-
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <map>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+template class InstantiationPolicy<ExceptionRegister, instantiation_method::SingletonTag>;
 
 RegisteredExceptionBase::~RegisteredExceptionBase()
 {

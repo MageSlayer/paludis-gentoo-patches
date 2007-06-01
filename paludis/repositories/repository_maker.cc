@@ -20,6 +20,8 @@
 #include "repository_maker.hh"
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
@@ -43,6 +45,8 @@ template class VirtualConstructor<std::string,
          tr1::shared_ptr<Repository> (*) (Environment * const,
                     tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >;
+
+template class InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonTag>;
 
 NoSuchRepositoryTypeError::NoSuchRepositoryTypeError(const std::string & format) throw ():
     ConfigurationError("No available maker for repository type '" + format + "'")

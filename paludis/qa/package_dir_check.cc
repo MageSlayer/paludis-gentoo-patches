@@ -25,7 +25,7 @@
 #include <paludis/qa/has_ebuilds_check.hh>
 #include <paludis/qa/has_misc_files_check.hh>
 #include <paludis/qa/package_name_check.hh>
-
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace paludis;
@@ -33,6 +33,8 @@ using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<PackageDirCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> >;
+
+template class InstantiationPolicy<PackageDirCheckMaker, instantiation_method::SingletonTag>;
 
 PackageDirCheck::PackageDirCheck()
 {

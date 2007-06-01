@@ -23,6 +23,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fast_unique_copy.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/query.hh>
 #include <vector>

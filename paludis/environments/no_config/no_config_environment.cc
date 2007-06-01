@@ -23,6 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/repositories/repository_maker.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>

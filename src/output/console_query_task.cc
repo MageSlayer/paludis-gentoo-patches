@@ -24,6 +24,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
 #include <list>
 

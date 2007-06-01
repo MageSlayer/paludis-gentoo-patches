@@ -20,6 +20,7 @@
 #include <fstream>
 #include <paludis/qa/whitespace_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

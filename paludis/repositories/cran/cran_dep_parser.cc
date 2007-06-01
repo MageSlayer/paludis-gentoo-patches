@@ -23,6 +23,7 @@
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <string>

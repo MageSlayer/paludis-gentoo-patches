@@ -19,6 +19,9 @@
  */
 
 #include "hook.hh"
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <map>
 
 using namespace paludis;

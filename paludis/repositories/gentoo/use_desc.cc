@@ -23,6 +23,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/config_file.hh>
 #include <paludis/package_database_entry.hh>

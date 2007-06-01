@@ -18,6 +18,7 @@
  */
 
 #include "options.hh"
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <vector>
 #include <algorithm>
 #include <functional>

@@ -23,6 +23,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 

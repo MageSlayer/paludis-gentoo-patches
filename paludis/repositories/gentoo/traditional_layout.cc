@@ -24,8 +24,10 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>

@@ -19,6 +19,8 @@
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/config_file.hh>
 #include <list>
 #include <string>
@@ -28,6 +30,8 @@
 #include "target_config.hh"
 
 using namespace paludis;
+
+template class InstantiationPolicy<TargetConfig, instantiation_method::SingletonTag>;
 
 void
 TargetConfig::_parse_defaults()

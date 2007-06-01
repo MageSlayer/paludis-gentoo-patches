@@ -33,7 +33,7 @@
 #include <paludis/qa/root_check.hh>
 #include <paludis/qa/variable_assigns_check.hh>
 #include <paludis/qa/whitespace_check.hh>
-
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 
 using namespace paludis;
@@ -41,6 +41,8 @@ using namespace paludis::qa;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<FileCheck> (*) (),
          virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >;
+
+template class InstantiationPolicy<FileCheckMaker, instantiation_method::SingletonTag>;
 
 FileCheck::FileCheck()
 {

@@ -23,6 +23,7 @@
 #include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>

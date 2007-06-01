@@ -21,6 +21,8 @@
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
@@ -28,6 +30,8 @@ using namespace paludis;
 template class paludis::VirtualConstructor<std::string,
          tr1::shared_ptr<Matcher> (*) (const std::string &),
          paludis::virtual_constructor_not_found::ThrowException<NoSuchMatcherError> >;
+
+template class paludis::InstantiationPolicy<MatcherMaker, paludis::instantiation_method::SingletonTag>;
 
 Matcher::Matcher()
 {

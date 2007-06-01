@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <sys/types.h>
 #include <set>
 

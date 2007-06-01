@@ -23,6 +23,7 @@
 #include <string>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/virtual_constructor.hh>
 
 namespace inquisitio

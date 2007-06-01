@@ -19,10 +19,11 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/selinux/security_context.hh>
 
 #include "config.h"
-
 
 #include <dlfcn.h>
 
@@ -126,6 +127,8 @@ namespace
 }
 
 using namespace paludis;
+
+template class InstantiationPolicy<MatchPathCon, instantiation_method::SingletonTag>;
 
 namespace paludis
 {

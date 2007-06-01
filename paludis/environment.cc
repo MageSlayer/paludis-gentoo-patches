@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environment.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 

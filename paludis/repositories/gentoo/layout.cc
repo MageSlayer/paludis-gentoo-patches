@@ -23,6 +23,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 
@@ -30,6 +31,8 @@ template class VirtualConstructor<std::string,
          tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
                  tr1::shared_ptr<const PortageRepositoryEntries>),
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
+
+template class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
 
 Layout::Layout() :
     _profiles_dirs(new FSEntryCollection::Concrete)

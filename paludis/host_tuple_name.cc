@@ -21,6 +21,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/stringify.hh>
+#include <utility>
 #include <vector>
 #include <ostream>
 
