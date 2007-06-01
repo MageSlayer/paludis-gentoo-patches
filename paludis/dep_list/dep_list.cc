@@ -737,6 +737,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
                 continue;
 
             d->add_not_top_level(*c, destinations);
+            return;
         }
     }
 }

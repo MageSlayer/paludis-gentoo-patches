@@ -1269,6 +1269,33 @@ namespace test_cases
     } test_dep_list_61;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase62 : DepListTestCase<62>
+    {
+        void set_options(DepListOptions & opts)
+        {
+            opts.override_masks += dl_override_tilde_keywords;
+        }
+
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_keywords("~test");
+            repo->add_version("cat", "three", "2")->ebuild_interface->set_keywords("~test");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1:0::repo(M)");
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_62;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      */
