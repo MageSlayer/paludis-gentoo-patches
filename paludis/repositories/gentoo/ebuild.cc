@@ -195,21 +195,24 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     bool ok(false);
     try
     {
-        _metadata->set_build_depend(f.get("DEPEND"));
-        _metadata->set_run_depend(f.get("RDEPEND"));
-        _metadata->slot = SlotName(f.get("SLOT"));
-        _metadata->set_src_uri(f.get("SRC_URI"));
-        _metadata->set_restrictions(f.get("RESTRICT"));
-        _metadata->set_homepage(f.get("HOMEPAGE"));
-        _metadata->license_interface->set_license(f.get("LICENSE"));
-        _metadata->description = f.get("DESCRIPTION");
-        _metadata->set_keywords(f.get("KEYWORDS"));
-        _metadata->set_eclass_keywords(f.get("E_KEYWORDS"));
-        _metadata->set_inherited(f.get("INHERITED"));
-        _metadata->set_iuse(f.get("IUSE"));
-        _metadata->set_post_depend(f.get("PDEPEND"));
-        _metadata->set_provide(f.get("PROVIDE"));
         _metadata->eapi = EAPIData::get_instance()->eapi_from_string(f.get("EAPI"));
+        if (_metadata->eapi->supported)
+        {
+            _metadata->set_build_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_build_depend));
+            _metadata->set_run_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_run_depend));
+            _metadata->slot = SlotName(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_slot));
+            _metadata->set_src_uri(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_src_uri));
+            _metadata->set_restrictions(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_restrict));
+            _metadata->set_homepage(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_homepage));
+            _metadata->license_interface->set_license(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_license));
+            _metadata->description = f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_description);
+            _metadata->set_keywords(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_keywords));
+            _metadata->set_eclass_keywords(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_eclass_keywords));
+            _metadata->set_inherited(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_inherited));
+            _metadata->set_iuse(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_iuse));
+            _metadata->set_post_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_pdepend));
+            _metadata->set_provide(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_provide));
+        }
 
         if (0 == prog.exit_status())
             ok = true;

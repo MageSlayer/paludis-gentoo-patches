@@ -24,9 +24,10 @@ ebuild_f_metadata()
 {
     local key
 
+    # The list below should include all variables from all EAPIs
     for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
-            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION E_IUSE \
-            E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS ; do
+            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION DEPENDENCIES \
+            E_IUSE E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS ; do
         set -o noglob
         local k=${!key}
         k=${k//\\/\\\\}
