@@ -99,6 +99,7 @@ namespace test_cases
         }
     } test_portage_repository_sets_maintainer_defined_sets_list;
 
+#if ENABLE_GLSA
     /**
      * \test Test PortageRepositorySets insecurity set.
      *
@@ -123,13 +124,9 @@ namespace test_cases
             tr1::shared_ptr<SetSpecTree::ConstItem> insecurity(repo->sets_interface->package_set(SetName("insecurity")));
             DepSpecPrettyPrinter pretty(0, false);
             insecurity->accept(pretty);
-#if ENABLE_GLSA
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
                                        "=cat-three/baz-1.1-r2::test-repo-1 =cat-three/baz-1.2::test-repo-1");
-#else
-            TEST_CHECK_STRINGIFY_EQUAL(pretty, "");
-#endif
         }
     } test_portage_repository_sets_insecurity_set;
 
@@ -163,12 +160,9 @@ namespace test_cases
             tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface->package_set(SetName("security")));
             DepSpecPrettyPrinter pretty(0, false);
             security->accept(pretty);
-#if ENABLE_GLSA
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
-#else
-            TEST_CHECK_STRINGIFY_EQUAL(pretty, "");
-#endif
         }
     } test_portage_repository_sets_security_set;
+#endif
 }
 
