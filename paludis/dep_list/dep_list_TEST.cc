@@ -1296,6 +1296,75 @@ namespace test_cases
     } test_dep_list_62;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase63 : DepListTestCase<63>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( =cat/two-1 =cat/two-2 )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "two", "2");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-2:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_63;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase64 : DepListTestCase<64>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( =cat/two-1 =cat/two-2 )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "two", "2");
+            installed_repo->add_version("cat", "two", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-2:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_64;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase65 : DepListTestCase<65>
+    {
+        void set_options(DepListOptions & opts)
+        {
+            opts.override_masks += dl_override_tilde_keywords;
+        }
+
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("|| ( =cat/two-2 =cat/two-1 )");
+            repo->add_version("cat", "two", "1")->ebuild_interface->set_keywords("~test");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1:0::repo(M)");
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_65;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      */

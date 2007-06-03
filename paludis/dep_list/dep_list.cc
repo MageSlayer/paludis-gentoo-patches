@@ -666,11 +666,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
     if (r.spec())
     {
         TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
-        if (d->already_installed(rr, destinations))
-        {
-            d->add_not_top_level(rr, destinations);
-            return;
-        }
+        d->add_not_top_level(rr, destinations);
+        return;
     }
 
     /* see if any of our children is already installed. if any is, add it so that
