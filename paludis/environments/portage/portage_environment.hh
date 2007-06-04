@@ -24,24 +24,27 @@
 
 namespace paludis
 {
-    /**
-     * Thrown if a configuration error occurs in a PortageEnvironment.
-     *
-     * \ingroup grpportageenvironment
-     * \ingroup grpexceptions
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE PortageEnvironmentConfigurationError :
-        public ConfigurationError
+    namespace portage_environment
     {
-        public:
-            ///\name Basic operations
-            ///\{
+        /**
+         * Thrown if a configuration error occurs in a PortageEnvironment.
+         *
+         * \ingroup grpportageenvironment
+         * \ingroup grpexceptions
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE PortageEnvironmentConfigurationError :
+            public ConfigurationError
+        {
+            public:
+                ///\name Basic operations
+                ///\{
 
-            PortageEnvironmentConfigurationError(const std::string &) throw ();
+                PortageEnvironmentConfigurationError(const std::string &) throw ();
 
-            ///\}
-    };
+                ///\}
+        };
+    }
 
     /**
      * Environment using Portage-like configuration files.

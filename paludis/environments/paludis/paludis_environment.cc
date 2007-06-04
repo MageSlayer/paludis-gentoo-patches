@@ -47,6 +47,7 @@
 #include <list>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 namespace paludis
 {

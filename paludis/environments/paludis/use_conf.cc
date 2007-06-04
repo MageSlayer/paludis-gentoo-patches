@@ -36,6 +36,7 @@
 #include <vector>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseFlagWithStateMap;
 typedef std::list<std::string> MinusStarPrefixList;

@@ -30,18 +30,21 @@ namespace paludis
     class PaludisEnvironment;
     class PackageDatabaseEntry;
 
-    class KeywordsConf :
-        private PrivateImplementationPattern<KeywordsConf>,
-        private InstantiationPolicy<KeywordsConf, instantiation_method::NonCopyableTag>
+    namespace paludis_environment
     {
-        public:
-            KeywordsConf(const PaludisEnvironment * const);
-            ~KeywordsConf();
+        class KeywordsConf :
+            private PrivateImplementationPattern<KeywordsConf>,
+            private InstantiationPolicy<KeywordsConf, instantiation_method::NonCopyableTag>
+        {
+            public:
+                KeywordsConf(const PaludisEnvironment * const);
+                ~KeywordsConf();
 
-            void add(const FSEntry &);
+                void add(const FSEntry &);
 
-            bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
-    };
+                bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
+        };
+    }
 }
 
 #endif

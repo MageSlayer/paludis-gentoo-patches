@@ -34,6 +34,7 @@
 #include <map>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 typedef std::list<std::string> LicensesList;
 typedef std::map<tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;

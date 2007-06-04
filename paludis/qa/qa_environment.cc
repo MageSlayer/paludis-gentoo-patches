@@ -39,11 +39,11 @@ namespace paludis
 }
 
 QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache) :
-    NoConfigEnvironment(NoConfigEnvironmentParams::create()
+    NoConfigEnvironment(no_config_environment::Params::create()
             .repository_dir(base)
             .write_cache(write_cache)
             .accept_unstable(false)
-            .repository_type(ncer_ebuild)
+            .repository_type(no_config_environment::ncer_ebuild)
             .master_repository_dir(FSEntry("/var/empty"))),
     _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
             "'paludis_command called from within QAEnvironment'")
@@ -52,11 +52,11 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache) 
 
 QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache,
         const FSEntry & master_repository_dir) :
-    NoConfigEnvironment(NoConfigEnvironmentParams::create()
+    NoConfigEnvironment(no_config_environment::Params::create()
             .repository_dir(base)
             .write_cache(write_cache)
             .accept_unstable(false)
-            .repository_type(ncer_ebuild)
+            .repository_type(no_config_environment::ncer_ebuild)
             .master_repository_dir(master_repository_dir)),
     _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
             "'paludis_command called from within QAEnvironment'")

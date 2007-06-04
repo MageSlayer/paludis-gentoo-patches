@@ -60,6 +60,7 @@
  */
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 #include <paludis/environments/paludis/use_config_entry-sr.cc>
 #include <paludis/environments/paludis/repository_config_entry-sr.cc>

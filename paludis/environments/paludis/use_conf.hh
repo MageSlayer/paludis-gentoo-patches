@@ -30,23 +30,26 @@ namespace paludis
     class PaludisEnvironment;
     class PackageDatabaseEntry;
 
-    class UseConf :
-        private PrivateImplementationPattern<UseConf>,
-        private InstantiationPolicy<UseConf, instantiation_method::NonCopyableTag>
+    namespace paludis_environment
     {
-        public:
-            UseConf(const PaludisEnvironment * const);
-            ~UseConf();
+        class UseConf :
+            private PrivateImplementationPattern<UseConf>,
+            private InstantiationPolicy<UseConf, instantiation_method::NonCopyableTag>
+        {
+            public:
+                UseConf(const PaludisEnvironment * const);
+                ~UseConf();
 
-            void add(const FSEntry &);
+                void add(const FSEntry &);
 
-            UseFlagState query(const UseFlagName &, const PackageDatabaseEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                UseFlagState query(const UseFlagName &, const PackageDatabaseEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
-                    const UseFlagName &, const PackageDatabaseEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
+                tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+                        const UseFlagName &, const PackageDatabaseEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
 #endif

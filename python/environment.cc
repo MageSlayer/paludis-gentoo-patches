@@ -35,8 +35,8 @@ struct NoConfigEnvironmentWrapper :
 {
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
             const FSEntry & master_repo_dir) :
-        NoConfigEnvironment(NoConfigEnvironmentParams(env_dir, cache_dir, false,
-                    ncer_auto, master_repo_dir)
+        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false,
+                    no_config_environment::ncer_auto, master_repo_dir)
                 )
     {
     }
@@ -50,9 +50,9 @@ void PALUDIS_VISIBLE expose_environment()
         ("PaludisEnvironmentSoDirNotADirectoryError", "BaseException");
     ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirCannotDlopenError>
         ("PaludisEnvironmentSoDirCannotDlopenError", "BaseException");
-    ExceptionRegister::get_instance()->add_exception<PaludisConfigError>
+    ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigError>
         ("PaludisConfigError", "ConfigurationError");
-    ExceptionRegister::get_instance()->add_exception<PaludisConfigNoDirectoryError>
+    ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigNoDirectoryError>
         ("PaludisConfigNoDirectoryError", "PaludisConfigError");
 
     bp::class_<EnvironmentMaker, boost::noncopyable> em("EnvironmentMaker",

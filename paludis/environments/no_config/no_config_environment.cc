@@ -30,6 +30,7 @@
 #include <set>
 
 using namespace paludis;
+using namespace paludis::no_config_environment;
 
 #include <paludis/environments/no_config/no_config_environment-sr.cc>
 
@@ -38,7 +39,7 @@ namespace paludis
     template<>
     struct Implementation<NoConfigEnvironment>
     {
-        const NoConfigEnvironmentParams params;
+        const no_config_environment::Params params;
 
         const FSEntry top_level_dir;
         const FSEntry write_cache;
@@ -52,7 +53,7 @@ namespace paludis
 
         tr1::shared_ptr<PackageDatabase> package_database;
 
-        Implementation(NoConfigEnvironment * const env, const NoConfigEnvironmentParams & params);
+        Implementation(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
     };
 
@@ -61,7 +62,7 @@ namespace paludis
 
 namespace
 {
-    bool is_vdb_repository(const FSEntry & location, NoConfigEnvironmentRepositoryType type)
+    bool is_vdb_repository(const FSEntry & location, no_config_environment::RepositoryType type)
     {
         switch (type)
         {
@@ -116,7 +117,7 @@ namespace
 }
 
 Implementation<NoConfigEnvironment>::Implementation(
-        NoConfigEnvironment * const env, const NoConfigEnvironmentParams & p) :
+        NoConfigEnvironment * const env, const no_config_environment::Params & p) :
     params(p),
     top_level_dir(p.repository_dir),
     write_cache(p.write_cache),
@@ -191,7 +192,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     }
 }
 
-NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :
+NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
     PrivateImplementationPattern<NoConfigEnvironment>(
             new Implementation<NoConfigEnvironment>(this, params))
 {

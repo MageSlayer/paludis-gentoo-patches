@@ -323,11 +323,12 @@ namespace
             else
                 path = StringValuePtr(argv[0]);
 
-            tr1::shared_ptr<NoConfigEnvironment> * e = new tr1::shared_ptr<NoConfigEnvironment>(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
+            tr1::shared_ptr<NoConfigEnvironment> * e = new tr1::shared_ptr<NoConfigEnvironment>(new
+                    NoConfigEnvironment(no_config_environment::Params::create()
                         .repository_dir(FSEntry(path))
                         .write_cache(write_cache)
                         .accept_unstable(false)
-                        .repository_type(ncer_auto)
+                        .repository_type(no_config_environment::ncer_auto)
                         .master_repository_dir(FSEntry(master_repository_dir))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<NoConfigEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);

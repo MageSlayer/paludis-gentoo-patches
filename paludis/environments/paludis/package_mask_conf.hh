@@ -30,18 +30,21 @@ namespace paludis
     class PaludisEnvironment;
     class PackageDatabaseEntry;
 
-    class PackageMaskConf :
-        private PrivateImplementationPattern<PackageMaskConf>,
-        private InstantiationPolicy<PackageMaskConf, instantiation_method::NonCopyableTag>
+    namespace paludis_environment
     {
-        public:
-            PackageMaskConf(const PaludisEnvironment * const);
-            ~PackageMaskConf();
+        class PackageMaskConf :
+            private PrivateImplementationPattern<PackageMaskConf>,
+            private InstantiationPolicy<PackageMaskConf, instantiation_method::NonCopyableTag>
+        {
+            public:
+                PackageMaskConf(const PaludisEnvironment * const);
+                ~PackageMaskConf();
 
-            void add(const FSEntry &);
+                void add(const FSEntry &);
 
-            bool query(const PackageDatabaseEntry &) const;
-    };
+                bool query(const PackageDatabaseEntry &) const;
+        };
+    }
 }
 
 #endif

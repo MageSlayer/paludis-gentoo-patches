@@ -27,7 +27,10 @@ namespace paludis
     class LineConfigFile;
     class FSEntry;
 
-    tr1::shared_ptr<LineConfigFile> make_bashable_conf(const FSEntry &);
+    namespace paludis_environment
+    {
+        tr1::shared_ptr<LineConfigFile> make_bashable_conf(const FSEntry &);
+    }
 }
 
 #endif

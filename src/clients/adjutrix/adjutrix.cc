@@ -147,13 +147,13 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
-        NoConfigEnvironment env(NoConfigEnvironmentParams::create()
+        NoConfigEnvironment env(no_config_environment::Params::create()
                 .repository_dir(get_location_and_add_filters())
                 .write_cache(CommandLine::get_instance()->a_write_cache_dir.argument())
                 .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
                 .repository_type(
-                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_ebuild
-                    )
+                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? no_config_environment::ncer_auto :
+                    no_config_environment::ncer_ebuild)
                 .master_repository_dir(FSEntry("/var/empty")));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())

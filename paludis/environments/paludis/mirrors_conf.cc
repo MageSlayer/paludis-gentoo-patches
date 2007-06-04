@@ -32,6 +32,7 @@
 #include <vector>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 typedef MakeHashedMultiMap<std::string, std::string>::Type Mirrors;
 

@@ -32,11 +32,11 @@ namespace test_cases
 
         void run()
         {
-            NoConfigEnvironment e(NoConfigEnvironmentParams::create()
+            NoConfigEnvironment e(no_config_environment::Params::create()
                     .repository_dir(FSEntry("no_config_environment_TEST_dir/repo"))
                     .write_cache(FSEntry("/var/empty"))
                     .accept_unstable(false)
-                    .repository_type(ncer_auto)
+                    .repository_type(no_config_environment::ncer_auto)
                     .master_repository_dir(FSEntry("/var/empty")));
 
             TEST_CHECK(e.package_database());

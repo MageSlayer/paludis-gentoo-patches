@@ -26,9 +26,10 @@
 #include <paludis/util/log.hh>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 tr1::shared_ptr<LineConfigFile>
-paludis::make_bashable_conf(const FSEntry & f)
+paludis::paludis_environment::make_bashable_conf(const FSEntry & f)
 {
     Context context("When making a config file out of '" + stringify(f) + "':");
 

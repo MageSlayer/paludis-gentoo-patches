@@ -1,14 +1,14 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-make_class_NoConfigEnvironmentParams()
+make_class_Params()
 {
     visible
 
     key repository_dir "FSEntry"
     key write_cache "FSEntry"
     key accept_unstable bool
-    key repository_type NoConfigEnvironmentRepositoryType
+    key repository_type no_config_environment::RepositoryType
     key master_repository_dir "FSEntry"
     allow_named_args
 

@@ -34,6 +34,7 @@
 #include <paludis/util/tr1_functional.hh>
 
 using namespace paludis;
+using namespace paludis::paludis_environment;
 
 namespace paludis
 {

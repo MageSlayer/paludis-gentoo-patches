@@ -31,7 +31,10 @@
 
 namespace paludis
 {
-    class PaludisConfig;
+    namespace paludis_environment
+    {
+        class PaludisConfig;
+    }
 
     /**
      * The PaludisEnvironment is an Environment that corresponds to the normal

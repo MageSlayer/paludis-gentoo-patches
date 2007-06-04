@@ -27,20 +27,23 @@
 
 namespace paludis
 {
-    /**
-     * The type of repository to use for a NoConfigEnvironment.
-     *
-     * \see NoConfigEnvironment
-     * \ingroup grpnoconfigenvironment
-     */
-    enum NoConfigEnvironmentRepositoryType
+    namespace no_config_environment
     {
-        ncer_ebuild,
-        ncer_vdb,
-        ncer_auto
-    };
+        /**
+         * The type of repository to use for a NoConfigEnvironment.
+         *
+         * \see NoConfigEnvironment
+         * \ingroup grpnoconfigenvironment
+         */
+        enum RepositoryType
+        {
+            ncer_ebuild,
+            ncer_vdb,
+            ncer_auto
+        };
 
 #include <paludis/environments/no_config/no_config_environment-sr.hh>
+    }
 
     /**
      * An environment that uses a single repository, with no user configuration.
@@ -61,7 +64,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoConfigEnvironment(const NoConfigEnvironmentParams & params);
+            NoConfigEnvironment(const no_config_environment::Params & params);
 
             virtual ~NoConfigEnvironment();
 

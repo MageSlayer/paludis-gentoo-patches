@@ -40,6 +40,7 @@
 #include <vector>
 
 using namespace paludis;
+using namespace paludis::portage_environment;
 
 typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageUse;
 typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageKeywords;

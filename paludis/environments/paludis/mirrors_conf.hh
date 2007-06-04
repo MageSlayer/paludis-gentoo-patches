@@ -31,19 +31,22 @@ namespace paludis
     class PaludisEnvironment;
     class PackageDatabaseEntry;
 
-    class MirrorsConf :
-        private PrivateImplementationPattern<MirrorsConf>,
-        private InstantiationPolicy<MirrorsConf, instantiation_method::NonCopyableTag>
+    namespace paludis_environment
     {
-        public:
-            MirrorsConf(const PaludisEnvironment * const);
-            ~MirrorsConf();
+        class MirrorsConf :
+            private PrivateImplementationPattern<MirrorsConf>,
+            private InstantiationPolicy<MirrorsConf, instantiation_method::NonCopyableTag>
+        {
+            public:
+                MirrorsConf(const PaludisEnvironment * const);
+                ~MirrorsConf();
 
-            void add(const FSEntry &);
+                void add(const FSEntry &);
 
-            tr1::shared_ptr<const MirrorsCollection> query(const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
+                tr1::shared_ptr<const MirrorsCollection> query(const std::string &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
 #endif

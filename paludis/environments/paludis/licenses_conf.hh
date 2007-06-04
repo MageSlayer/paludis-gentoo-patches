@@ -30,18 +30,21 @@ namespace paludis
     class PaludisEnvironment;
     class PackageDatabaseEntry;
 
-    class LicensesConf :
-        private PrivateImplementationPattern<LicensesConf>,
-        private InstantiationPolicy<LicensesConf, instantiation_method::NonCopyableTag>
+    namespace paludis_environment
     {
-        public:
-            LicensesConf(const PaludisEnvironment * const);
-            ~LicensesConf();
+        class LicensesConf :
+            private PrivateImplementationPattern<LicensesConf>,
+            private InstantiationPolicy<LicensesConf, instantiation_method::NonCopyableTag>
+        {
+            public:
+                LicensesConf(const PaludisEnvironment * const);
+                ~LicensesConf();
 
-            void add(const FSEntry &);
+                void add(const FSEntry &);
 
-            bool query(const std::string &, const PackageDatabaseEntry &) const;
-    };
+                bool query(const std::string &, const PackageDatabaseEntry &) const;
+        };
+    }
 }
 
 #endif
