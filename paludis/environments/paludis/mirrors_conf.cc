@@ -28,6 +28,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <vector>
 
 using namespace paludis;
@@ -87,7 +88,8 @@ MirrorsConf::query(const std::string & m) const
 {
     tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
-    std::copy(p.first, p.second, transform_inserter(result->inserter(), SelectSecond<std::string, std::string>()));
+    std::copy(p.first, p.second, transform_inserter(result->inserter(),
+                paludis::tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
     return result;
 }
 

@@ -294,25 +294,6 @@ namespace test_cases
             }
         }
     } test_transform_insert_iterator;
-
-    /**
-     * \test Test SelectFirst and SelectSecond.
-     *
-     */
-    struct SimpleSelectPairTest : TestCase
-    {
-        SimpleSelectPairTest() : TestCase("Simple SelectFirst and SelectSecond") {}
-
-        void run()
-        {
-            std::pair<int, int> p(1,2);
-            SelectFirst<int, int> f;
-            SelectSecond<int, int> s;
-
-            TEST_CHECK(f(p) == 1);
-            TEST_CHECK(s(p) == 2);
-        }
-    } test_select_pair;
 }
 
 #ifndef DOXYGEN

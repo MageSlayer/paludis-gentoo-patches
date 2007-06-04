@@ -655,7 +655,8 @@ PortageEnvironment::mirrors(const std::string & m) const
     std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
         p(_imp->mirrors.equal_range(m));
     tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
-    std::copy(p.first, p.second, transform_inserter(result->inserter(), SelectSecond<std::string, std::string>()));
+    std::copy(p.first, p.second, transform_inserter(result->inserter(),
+                tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
     return result;
 }
 

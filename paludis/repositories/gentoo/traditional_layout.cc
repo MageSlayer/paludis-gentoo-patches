@@ -235,7 +235,7 @@ TraditionalLayout::need_category_names_collection() const
     _imp->category_names_collection.reset(new CategoryNamePartCollection::Concrete);
     std::copy(_imp->category_names.begin(), _imp->category_names.end(),
             transform_inserter(_imp->category_names_collection->inserter(),
-                SelectFirst<const CategoryNamePart, bool>()));
+                tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first)));
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
@@ -291,11 +291,10 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
 
     tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
-    std::copy(_imp->package_names.begin(), _imp->package_names.end(),
-            transform_inserter(filter_inserter(result->inserter(),
-                    tr1::bind(std::equal_to<CategoryNamePart>(), c,
-                        tr1::bind(SelectMember<const QualifiedPackageName, CategoryNamePart, &QualifiedPackageName::category>(), _1))),
-                SelectFirst<const QualifiedPackageName, bool>()));
+    for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
+            p != p_end ; ++p)
+        if (p->first.category == c)
+            result->insert(p->first);
 
     return result;
 }

@@ -35,7 +35,7 @@ namespace paludis
         public TestEnvironment
     {
         private:
-            mutable std::tr1::shared_ptr<Hooker> hooker;
+            mutable tr1::shared_ptr<Hooker> hooker;
             mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
 
         public:

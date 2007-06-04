@@ -292,7 +292,7 @@ PaludisEnvironment::hook_dirs() const
 
     tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
-            transform_inserter(result->inserter(), SelectFirst<FSEntry, bool>()));
+            transform_inserter(result->inserter(), tr1::mem_fn(&std::pair<FSEntry, bool>::first)));
 
     return result;
 }

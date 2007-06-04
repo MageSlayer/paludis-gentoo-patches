@@ -1,0 +1,152 @@
+SUBDIRS = .
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = params-sr.hh params-sr.cc
+MAINTAINERCLEANFILES = Makefile.in
+
+AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+DEFS = \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DDATADIR=\"$(datadir)\" \
+	-DLIBDIR=\"$(libdir)\"
+
+paludis_repositories_libdir = $(libdir)/paludis/repositories
+paludis_gems_libexecdir = $(libexecdir)/paludis/gems
+
+paludis_repositories_lib_LTLIBRARIES = libpaludisgemsrepository.la
+
+paludis_repositories_gems_includedir = $(includedir)/paludis/repositories/gems/
+libpaludisgemsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+paludis_repositories_gems_include_HEADERS = \
+	gems_repository.hh \
+	installed_gems_repository.hh \
+	metadata.hh \
+	exceptions.hh \
+	yaml.hh yaml-fwd.hh \
+	gem_specification.hh gem_specification-fwd.hh \
+	gem_specifications.hh \
+	params-fwd.hh params.hh params-sr.hh
+
+libpaludisgemsrepository_la_SOURCES = \
+	gems_repository.cc \
+	installed_gems_repository.cc \
+	params.cc \
+	metadata.cc \
+	exceptions.cc \
+	yaml.cc \
+	gem_specification.cc \
+	gem_specifications.cc \
+	registration.cc \
+	$(paludis_repositories_gems_include_HEADERS)
+
+libpaludisgemsrepository_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	-lsyck
+
+gems_repository_TEST_SOURCES = gems_repository_TEST.cc
+installed_gems_repository_TEST_SOURCES = gems_repository_TEST.cc
+yaml_TEST_SOURCES = yaml_TEST.cc
+gem_specification_TEST_SOURCES = gem_specification_TEST.cc
+gem_specifications_TEST_SOURCES = gem_specifications_TEST.cc
+
+gems_repository_TEST_LDADD = \
+	libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	-lsyck
+
+installed_gems_repository_TEST_LDADD = \
+	libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	-lsyck
+
+yaml_TEST_LDADD = \
+	libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	-lsyck
+
+gem_specification_TEST_LDADD = \
+	libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	-lsyck
+
+gem_specifications_TEST_LDADD = \
+	libpaludisgemsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	-lsyck
+
+gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+installed_gems_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+yaml_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+gem_specification_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+gem_specifications_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
+EXTRA_DIST = \
+	installed_gems_repository_TEST.cc \
+	installed_gems_repository_TEST_setup.sh \
+	installed_gems_repository_TEST_cleanup.sh \
+	gems_repository_TEST.cc \
+	gems_repository_TEST_setup.sh \
+	gems_repository_TEST_cleanup.sh \
+	yaml_TEST.cc \
+	gem_specification_TEST.cc \
+	gem_specifications_TEST.cc \
+	params-sr.hh \
+	params-sr.cc \
+	params.sr
+
+BUILT_SOURCES = \
+	params-sr.hh params-sr.cc
+
+check_SCRIPTS = \
+	gems_repository_TEST_setup.sh gems_repository_TEST_cleanup.sh
+
+paludis_gems_libexec_SCRIPTS = gems.bash
+
+TESTS_ENVIRONMENT = env \
+	PALUDIS_GEMS_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gems/`" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
+	PALUDIS_SKIP_CONFIG="yes" \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/`:` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/.libs/`" \
+	bash $(top_srcdir)/test/run_test.sh
+
+TESTS = gems_repository_TEST installed_gems_repository_TEST yaml_TEST gem_specification_TEST gem_specifications_TEST
+check_PROGRAMS = $(TESTS)
+
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+params-sr.hh : params.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/params.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+params-sr.cc : params.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/params.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+

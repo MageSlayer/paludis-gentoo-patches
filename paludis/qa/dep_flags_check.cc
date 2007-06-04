@@ -26,6 +26,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <set>
 #include <algorithm>
 
@@ -150,7 +151,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
             std::set<UseFlagName> iuse;
             std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
                     transform_inserter(std::inserter(iuse, iuse.begin()),
-                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
+                        tr1::mem_fn(&IUseFlag::flag)));
             iuse.insert(UseFlagName("bootstrap"));
             iuse.insert(UseFlagName("build"));
 

@@ -407,44 +407,6 @@ namespace paludis
     }
 
     /**
-     * Convenience class: select a member of a class.
-     *
-     * \ingroup grpiterators
-     */
-    template <typename T_, typename M_, M_ T_::* m_>
-    struct SelectMember :
-        std::unary_function<T_, M_>
-    {
-        /// Carry out the selection.
-        M_ operator() (const T_ & p) const
-        {
-            return p.*m_;
-        }
-    };
-
-    /**
-     * Convenience class: select the first item of a pair.
-     *
-     * \ingroup grpiterators
-     */
-    template <typename A_, typename B_>
-    struct SelectFirst :
-        SelectMember<std::pair<A_, B_>, A_, &std::pair<A_, B_>::first>
-    {
-    };
-
-    /**
-     * Convenience class: select the second item of a pair.
-     *
-     * \ingroup grpiterators
-     */
-    template <typename A_, typename B_>
-    struct SelectSecond :
-        SelectMember<std::pair<A_, B_>, B_, &std::pair<A_, B_>::second>
-    {
-    };
-
-    /**
      * A CreateInsertIterator is an insert iterator that creates an object of
      * the specified type using the provided value.
      *

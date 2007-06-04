@@ -1,0 +1,27 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_RepositoryParams()
+{
+    visible
+
+    key environment "Environment *"
+    key location FSEntry
+    key sync std::string
+    key sync_options std::string
+    key buildroot FSEntry
+
+    allow_named_args
+}
+
+make_class_InstalledRepositoryParams()
+{
+    visible
+
+    key environment "Environment *"
+    key location FSEntry
+    key buildroot FSEntry
+
+    allow_named_args
+}
+

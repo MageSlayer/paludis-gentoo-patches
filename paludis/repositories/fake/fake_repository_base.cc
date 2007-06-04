@@ -23,6 +23,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
@@ -269,8 +270,8 @@ tr1::shared_ptr<const SetNameCollection>
 FakeRepositoryBase::sets_list() const
 {
     tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
-    std::copy(_imp->sets.begin(), _imp->sets.end(),
-            transform_inserter(result->inserter(), SelectFirst<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >()));
+    std::copy(_imp->sets.begin(), _imp->sets.end(), transform_inserter(result->inserter(),
+                tr1::mem_fn(&std::pair<const SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::first)));
     return result;
 }
 

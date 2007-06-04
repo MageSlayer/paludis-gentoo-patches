@@ -990,7 +990,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(find_destination(p, destinations))
+                .destination(metadata->virtual_interface ? tr1::shared_ptr<Repository>() : find_destination(p, destinations))
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
@@ -1407,7 +1407,7 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
                     evm_i->iuse()->begin(), evm_i->iuse()->end(),
                     evm_u->iuse()->begin(), evm_u->iuse()->end(),
                     transform_inserter(std::inserter(use_common, use_common.end()),
-                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
+                        paludis::tr1::mem_fn(&IUseFlag::flag)));
 
         for (std::set<UseFlagName>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
                 f != f_end ; ++f)

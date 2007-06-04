@@ -50,7 +50,7 @@ OptionsStore::OptionsStore() :
 }
 
 OptionsStore::OptionsStore(const OptionsStore & s) :
-    PrivateImplementationPattern<OptionsStore>(new Implementation<OptionsStore>(*s._imp.operator-> ()))
+    PrivateImplementationPattern<OptionsStore>(new Implementation<OptionsStore>(*s._imp.get()))
 {
 }
 
@@ -58,7 +58,7 @@ const OptionsStore &
 OptionsStore::operator= (const OptionsStore & s)
 {
     if (this != &s)
-        _imp.reset(new Implementation<OptionsStore>(*s._imp.operator-> ()));
+        _imp.reset(new Implementation<OptionsStore>(*s._imp.get()));
 
     return *this;
 }

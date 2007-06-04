@@ -23,6 +23,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/tr1_functional.hh>
 #include "colour.hh"
 #include <iostream>
 #include <set>
@@ -66,8 +67,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
         return;
 
     std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
-            transform_inserter(std::inserter(iuse, iuse.begin()),
-                SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
+            transform_inserter(std::inserter(iuse, iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
     if (old_pkg)
     {
@@ -75,8 +75,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
                 fetch_repository(old_pkg->repository)->version_metadata(old_pkg->name, old_pkg->version));
         if (old_metadata->ebuild_interface)
             std::copy(old_metadata->ebuild_interface->iuse()->begin(), old_metadata->ebuild_interface->iuse()->end(),
-                    transform_inserter(std::inserter(old_iuse, old_iuse.begin()),
-                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
+                    transform_inserter(std::inserter(old_iuse, old_iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
     }
 
     const RepositoryUseInterface * const use_interface(environment()->package_database()->

@@ -32,6 +32,7 @@ namespace paludis
         using std::tr1::mem_fn;
         using std::tr1::ref;
         using std::tr1::cref;
+        using std::tr1::function;
 
         namespace placeholders
         {
@@ -53,6 +54,7 @@ namespace paludis
 #include <boost/bind.hpp>
 #include <boost/mem_fn.hpp>
 #include <boost/ref.hpp>
+#include <boost/function.hpp>
 
 namespace paludis
 {
@@ -62,6 +64,7 @@ namespace paludis
         using boost::mem_fn;
         using boost::ref;
         using boost::cref;
+        using boost::function;
 
         namespace placeholders
         {

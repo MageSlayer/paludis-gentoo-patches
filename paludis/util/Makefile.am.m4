@@ -26,7 +26,7 @@ define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', header
 define(`addfwd', `define(`filelist', filelist `$1-fwd.hh')define(`headerlist', headerlist `$1-fwd.hh')')dnl
 define(`addhhx', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
-define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
+define(`addimpl', `define(`filelist', filelist `$1-impl.hh')define(`headerlist', headerlist `$1-impl.hh')')dnl
 define(`addsr', `define(`srlist', srlist `$1.sr')dnl
 define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
 define(`srheaderlist', srheaderlist `$1-sr.hh')dnl

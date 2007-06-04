@@ -28,6 +28,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <algorithm>
 
@@ -59,8 +60,7 @@ IuseCheck::operator() (const EbuildCheckData & e) const
         {
             std::set<UseFlagName> iuse;
             std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
-                    transform_inserter(std::inserter(iuse, iuse.begin()),
-                        SelectMember<IUseFlag, UseFlagName, &IUseFlag::flag>()));
+                    transform_inserter(std::inserter(iuse, iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
             static std::set<UseFlagName> iuse_blacklist;
             if (iuse_blacklist.empty())

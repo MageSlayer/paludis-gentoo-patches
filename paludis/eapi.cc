@@ -139,6 +139,24 @@ namespace paludis
                                         .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
                                         .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
                                         ))))));
+
+            values.insert(std::make_pair("gems-1",
+                        make_shared_ptr(new EAPI("gems-1", make_shared_ptr(new SupportedEAPI(
+                                        SupportedEAPI::create()
+                                        .package_dep_spec_parse_mode(pds_pm_permissive)
+                                        .strict_package_dep_spec_parse_mode(pds_pm_permissive)
+                                        .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
+                                        .iuse_flag_parse_mode(iuse_pm_permissive)
+                                        .strict_iuse_flag_parse_mode(iuse_pm_permissive)
+                                        .breaks_portage(true)
+                                        .uri_supports_arrow(false)
+                                        .want_aa_var(false)
+                                        .want_arch_var(false)
+                                        .want_portage_emulation_vars(false)
+                                        .require_use_expand_in_iuse(false)
+                                        .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
+                                        .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
+                                        ))))));
         }
     };
 }

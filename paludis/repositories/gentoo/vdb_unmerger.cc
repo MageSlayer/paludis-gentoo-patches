@@ -71,7 +71,7 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
             .environment(o.environment)
             .root(o.root)),
     PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
-    _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.operator-> ())
+    _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.get())
 {
 }
 

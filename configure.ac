@@ -325,6 +325,8 @@ dnl }}}
 
 need_xml_check=
 need_pcrepp_check=
+need_syck_check=
+need_gem_check=
 
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
@@ -842,7 +844,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran fake gentoo virtuals"
+ALL_REPOSITORIES="cran fake gems gentoo virtuals"
 DEFAULT_REPOSITORIES="fake gentoo virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -850,8 +852,9 @@ AC_ARG_WITH([repositories],
 			  Build the specified repositories:
 			  default         Equivalent to fake,gentoo,virtuals
 
-			  cran            The Comprehensive R Archive Network
+			  cran            The Comprehensive R Archive Network (experimental)
 			  fake            A fake repository for test cases and adjutrix
+			  gems            Ruby gems (experimental)
 			  gentoo          Gentoo packages (ebuilds, vdb)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -861,6 +864,11 @@ AC_MSG_RESULT([$repositories])
 BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
 AC_SUBST([BUILD_REPOSITORIES])
+
+if echo $repositories | tr ' ' '\n' | grep '^gems$' >/dev/null ; then
+	need_syck_check=yes
+	need_gem_check=yes
+fi
 dnl }}}
 
 dnl {{{ environments
@@ -950,6 +958,28 @@ if test "x$need_pcrepp_check" = "xyes" ; then
 		AC_SUBST(PCREPLUSPLUS_LIBS)
 	else
 		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa or --with-clients=inquisitio is used])
+	fi
+fi
+dnl }}}
+
+dnl {{{ syck check
+if test "x$need_syck_check" = "xyes" ; then
+	AC_MSG_CHECKING([for syck])
+	AC_COMPILE_IFELSE([
+#include <syck.h>
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_ERROR([syck is required for gems repositories])])
+fi
+dnl }}}
+
+dnl {{{ gem check
+if test "x$need_gem_check" = "xyes" ; then
+	AC_MSG_CHECKING([for gem])
+	if gem -v 1>/dev/null 2>/dev/null ; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_ERROR([gem (http://rubygems.org/) is required for gems repositories])
 	fi
 fi
 dnl }}}
@@ -1092,6 +1122,7 @@ AC_OUTPUT(
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/fake/Makefile
+	paludis/repositories/gems/Makefile
 	paludis/repositories/gentoo/Makefile
 	paludis/repositories/gentoo/ebuild/Makefile
 	paludis/repositories/gentoo/ebuild/digests/Makefile

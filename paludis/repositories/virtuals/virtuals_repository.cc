@@ -25,6 +25,7 @@
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 #include <vector>
 #include "vr_entry.hh"
@@ -317,7 +318,7 @@ VirtualsRepository::do_package_names(const CategoryNamePart & c) const
 
     tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     std::copy(p.first, p.second, transform_inserter(result->inserter(),
-                SelectFirst<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >()));
+                tr1::mem_fn(&std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::first)));
 
     return result;
 }

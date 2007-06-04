@@ -80,6 +80,9 @@ namespace paludis
 
                     const Implementation<C_> * operator-> () const;
 
+                    Implementation<C_> * get();
+                    const Implementation<C_> * get() const;
+
                     ///\}
 
                     /**
