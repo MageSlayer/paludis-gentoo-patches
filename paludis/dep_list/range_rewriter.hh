@@ -54,6 +54,9 @@ namespace paludis
              */
             tr1::shared_ptr<PackageDepSpec> spec() const
             {
+                if (_invalid)
+                    return tr1::shared_ptr<PackageDepSpec>();
+
                 return _spec;
             }
 

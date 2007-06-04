@@ -665,6 +665,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
     std::for_each(cur, end, accept_visitor(r));
     if (r.spec())
     {
+        Context context("When using rewritten range '" + stringify(*r.spec()) + "':");
         TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
         d->add_not_top_level(rr, destinations);
         return;
@@ -679,6 +680,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
 
         if (d->already_installed(*c, destinations))
         {
+            Context context("When using already installed group to resolve dependencies:");
             d->add_not_top_level(*c, destinations);
             return;
         }
@@ -695,6 +697,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
 
         try
         {
+            Context context("When using already installed package to resolve dependencies:");
+
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
@@ -714,6 +718,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
 
         try
         {
+            Context context("When using new group to resolve dependencies:");
+
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
