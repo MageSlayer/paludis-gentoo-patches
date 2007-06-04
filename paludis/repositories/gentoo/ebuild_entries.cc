@@ -128,7 +128,17 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         if (write_metadata_cache.load(result))
             ok = true;
         else if (write_cache_file.exists())
-            write_cache_file.unlink();
+        {
+            try
+            {
+                write_cache_file.unlink();
+            }
+            catch (const FSError &)
+            {
+                // the attempt to write a fresh file will produce a
+                // warning, no need to be too noisy
+            }
+        }
     }
 
     if (! ok)
