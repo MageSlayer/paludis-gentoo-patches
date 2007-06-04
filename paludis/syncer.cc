@@ -3,7 +3,7 @@
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Stephen Klimaszewski <steev@gentoo.org>
- * Copyright (c) 2007 David Leverton <u01drl3@abdn.ac.uk>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
