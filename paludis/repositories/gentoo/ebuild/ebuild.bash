@@ -32,6 +32,8 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty:/dev/pts"
     export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
     export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}:/tmp"
+    [[ -n "${CCACHE_DIR}" ]] && export SANDBOX_WRITE="${SANDBOX_WRITE}:${CCACHE_DIR}"
     export SANDBOX_ON="1"
     export SANDBOX_BASHRC="/dev/null"
     unset BASH_ENV
