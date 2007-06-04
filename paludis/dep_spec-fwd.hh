@@ -54,6 +54,11 @@ namespace paludis
      */
     std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
 
+    /**
+     * A generic DepSpec heirarchy.
+     *
+     * \ingroup grpdepspecs
+     */
     struct GenericSpecTree :
         VisitorTypes<
             GenericSpecTree,
@@ -69,6 +74,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for licenses.
+     *
+     * \ingroup grpdepspecs
+     */
     struct LicenseSpecTree :
         VisitorTypes<
             LicenseSpecTree,
@@ -81,6 +91,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for URIs.
+     *
+     * \ingroup grpdepspecs
+     */
     struct URISpecTree :
         VisitorTypes<
             URISpecTree,
@@ -92,6 +107,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things that can be flattened.
+     *
+     * \ingroup grpdepspecs
+     */
     struct FlattenableSpecTree :
         VisitorTypes<
             FlattenableSpecTree,
@@ -106,6 +126,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for provides.
+     *
+     * \ingroup grpdepspecs
+     */
     struct ProvideSpecTree :
         VisitorTypes<
             ProvideSpecTree,
@@ -117,6 +142,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for restricts.
+     *
+     * \ingroup grpdepspecs
+     */
     struct RestrictSpecTree :
         VisitorTypes<
             RestrictSpecTree,
@@ -128,6 +158,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for dependencies.
+     *
+     * \ingroup grpdepspecs
+     */
     struct DependencySpecTree :
         VisitorTypes<
             DependencySpecTree,
@@ -141,6 +176,11 @@ namespace paludis
     {
     };
 
+    /**
+     * A DepSpec heirarchy containing things meaningful for sets.
+     *
+     * \ingroup grpdepspecs
+     */
     struct SetSpecTree :
         VisitorTypes<
             SetSpecTree,

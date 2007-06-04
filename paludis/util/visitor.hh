@@ -36,13 +36,30 @@
 
 namespace paludis
 {
+    /**
+     * \namespace visitor_internals
+     * \ingroup grpvisitor
+     *
+     * For internal use by visitor classes.
+     */
     namespace visitor_internals
     {
+        /**
+         * Derived classes can accept a const visitor of heirarchy H_.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_>
         class PALUDIS_VISIBLE ConstAcceptInterface
         {
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_const_accept(ConstVisitor<H_> &) const = 0;
+
+                ///\}
 
             private:
                 template <bool b_, typename T_>
@@ -58,31 +75,66 @@ namespace paludis
                 };
 
             public:
-                typedef H_ Heirarchy;
+                ///\name Basic operations
+                ///\{
 
                 virtual ~ConstAcceptInterface();
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
+                typedef H_ Heirarchy;
+
+                /**
+                 * Accept a const visitor of either our visitable type, or a
+                 * visitor that can visit a superset of that heirarchy.
+                 */
                 template <typename V_>
                 void const_accept(V_ & v) const
                 {
                     ConstAccept<tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
                 }
 
+                /**
+                 * Accept a const visitor of either our visitable type, or a
+                 * visitor that can visit a superset of that heirarchy.
+                 */
                 template <typename V_>
                 void accept(V_ & v) const
                 {
                     const_accept(v);
                 }
+
+                ///\}
         };
 
+        /**
+         * Implementation of ConstAcceptInterface for class T_.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE ConstAcceptInterfaceVisitsThis :
             public virtual ConstAcceptInterface<H_>
         {
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
+
+                ///\}
         };
 
+        /**
+         * Derived classes can accept a const or non-const visitor of heirarchy H_.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_>
         class PALUDIS_VISIBLE MutableAcceptInterface :
             public ConstAcceptInterface<H_>
@@ -113,10 +165,23 @@ namespace paludis
                 };
 
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_mutable_accept(MutableVisitor<H_> &) = 0;
 
+                ///\}
+
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~MutableAcceptInterface();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 template <typename V_>
                 void mutable_accept(V_ & v)
@@ -135,18 +200,37 @@ namespace paludis
                 {
                     Accept<V_::visitor_is_const, V_>::forward(this, v);
                 }
+
+                ///\}
         };
 
+        /**
+         * Implementation of ConstAcceptInterface for class T_.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE MutableAcceptInterfaceVisitsThis :
             public virtual MutableAcceptInterface<H_>
         {
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
                 virtual void real_mutable_accept(MutableVisitor<H_> & v);
+
+                ///\}
         };
 
+        /**
+         * Used to contain a node with no children in a detached visitable
+         * heirarchy.
+         *
+         * \ingroup grpvisitor
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeLeaf :
             public MutableAcceptInterface<H_>
@@ -158,20 +242,41 @@ namespace paludis
                 const tr1::shared_ptr<T_> _item;
 
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_mutable_accept(MutableVisitor<H_> & v);
 
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
+                ///\}
+
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~TreeLeaf();
 
                 TreeLeaf(const tr1::shared_ptr<T_> & i);
 
+                ///\}
+
+                ///\name Fetch our contained item
+                ///\{
+
                 tr1::shared_ptr<T_> item();
 
                 tr1::shared_ptr<const T_> item() const;
+
+                ///\}
         };
 
+        /**
+         * Used to contain a node with a sequence of children in a detached visitable
+         * heirarchy.
+         *
+         * \ingroup grpvisitor
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeSequence :
             public MutableAcceptInterface<H_>
@@ -184,18 +289,36 @@ namespace paludis
                 const tr1::shared_ptr<SequentialCollection<tr1::shared_ptr<MutableAcceptInterface<H_> > > > _items;
 
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_mutable_accept(MutableVisitor<H_> & v);
 
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
+                ///\}
+
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~TreeSequence();
 
                 TreeSequence(tr1::shared_ptr<T_> i);
 
+                ///\}
+
+                ///\name Fetch our contained item
+                ///\{
+
                 tr1::shared_ptr<const T_> item() const;
 
                 tr1::shared_ptr<T_> item();
+
+                ///\}
+
+                ///\name Work on our children
+                ///\{
 
                 void add(tr1::shared_ptr<MutableAcceptInterface<H_> > i);
 
@@ -210,8 +333,16 @@ namespace paludis
 
                 typename H_::MutableSequenceIterator
                 mutable_end();
+
+                ///\}
         };
 
+        /**
+         * Used to contain a node with a sequence of children in a detached visitable
+         * heirarchy, where children can only be created in const form.
+         *
+         * \ingroup grpvisitor
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE ConstTreeSequence :
             public ConstAcceptInterface<H_>
@@ -224,16 +355,34 @@ namespace paludis
                 const tr1::shared_ptr<SequentialCollection<tr1::shared_ptr<const ConstAcceptInterface<H_> > > > _items;
 
             protected:
+                ///\name Visitor operations
+                ///\{
+
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
+                ///\}
+
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ConstTreeSequence();
 
                 ConstTreeSequence(tr1::shared_ptr<T_> i);
 
+                ///\}
+
+                ///\name Fetch our contained item
+                ///\{
+
                 tr1::shared_ptr<T_> item();
 
                 tr1::shared_ptr<const T_> item() const;
+
+                ///\}
+
+                ///\name Work on our children
+                ///\{
 
                 void add(tr1::shared_ptr<const ConstAcceptInterface<H_> > i);
 
@@ -242,180 +391,430 @@ namespace paludis
 
                 typename H_::ConstSequenceIterator
                 const_end() const;
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename T_>
         class PALUDIS_VISIBLE Visits
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
                 virtual void visit(T_ &) = 0;
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * NoType).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <unsigned u_>
         class PALUDIS_VISIBLE Visits<NoType<u_> >
         {
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * NoType).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <unsigned u_>
         class PALUDIS_VISIBLE Visits<const NoType<u_> >
         {
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * TreeLeaf).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<TreeLeaf<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_leaf(T_ &) = 0;
 
                 void visit(TreeLeaf<H_, T_> & l);
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * TreeLeaf).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<const TreeLeaf<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_leaf(const T_ &) = 0;
 
                 void visit(const TreeLeaf<H_, T_> & l);
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * TreeSequence).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<TreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(T_ &,
                         typename TreeSequenceIteratorTypes<H_>::MutableIterator,
                         typename TreeSequenceIteratorTypes<H_>::MutableIterator) = 0;
 
                 void visit(TreeSequence<H_, T_> & s);
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * TreeSequence).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<const TreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(const T_ &,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator) = 0;
 
                 void visit(const TreeSequence<H_, T_> & s);
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * ConstTreeSequence).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<ConstTreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(const T_ &,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator) = 0;
 
                 void visit(ConstTreeSequence<H_, T_> & s);
+
+                ///\}
         };
 
+        /**
+         * Derived classes can visit an item of type T_ (specialisation for
+         * ConstTreeSequence).
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE Visits<const ConstTreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(const T_ &,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator) = 0;
 
                 void visit(const ConstTreeSequence<H_, T_> & s);
+
+                ///\}
         };
 
+        /**
+         * Container class providing convenience typedefs for iterators over a
+         * TreeSequence.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_>
         struct TreeSequenceIteratorTypes
         {
+            ///\name Visitor operations
+            ///\{
+
             typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, const ConstAcceptInterface<H_> > ConstIterator;
             typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, MutableAcceptInterface<H_> > MutableIterator;
+
+            ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits :
             public virtual Visits<T_>
         {
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, unsigned u_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, NoType<u_> >
         {
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, unsigned u_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, const NoType<u_> >
         {
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, const TreeLeaf<H_, T_> > :
             public virtual Visits<const TreeLeaf<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ProxyVisits();
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
                 virtual void visit_leaf(const T_ & v);
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, TreeLeaf<H_, T_> > :
             public virtual Visits<TreeLeaf<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ProxyVisits();
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
                 virtual void visit_leaf(T_ & v);
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, const ConstTreeSequence<H_, T_> > :
             public virtual Visits<const ConstTreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ProxyVisits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(const T_ & t,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator c,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator e);
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, const TreeSequence<H_, T_> > :
             public virtual Visits<const TreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ProxyVisits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(const T_ & t,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator c,
                         typename TreeSequenceIteratorTypes<H_>::ConstIterator e);
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_, typename T_>
         class PALUDIS_VISIBLE ProxyVisits<H_, LargerH_, TreeSequence<H_, T_> > :
             public virtual Visits<TreeSequence<H_, T_> >
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~ProxyVisits();
+
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
 
                 virtual void visit_sequence(T_ & t,
                         typename TreeSequenceIteratorTypes<H_>::MutableIterator c,
                         typename TreeSequenceIteratorTypes<H_>::MutableIterator e);
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_>
         class PALUDIS_VISIBLE ConstProxyVisitor :
             public ConstVisitor<H_>,
@@ -433,11 +832,27 @@ namespace paludis
                 ConstVisitor<LargerH_> * const _larger_h;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 ConstProxyVisitor(ConstVisitor<LargerH_> * const l);
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
                 ConstVisitor<LargerH_> * larger_visitor() const;
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_>
         class PALUDIS_VISIBLE MutableProxyVisitor :
             public MutableVisitor<H_>,
@@ -455,11 +870,27 @@ namespace paludis
                 MutableVisitor<LargerH_> * const _larger_h;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 MutableProxyVisitor(MutableVisitor<LargerH_> * const l);
 
+                ///\}
+
+                ///\name Visitor operations
+                ///\{
+
                 MutableVisitor<LargerH_> * larger_visitor() const;
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter iterator.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_>
         class PALUDIS_VISIBLE ConstProxyIterator :
             public paludis::equality_operators::HasEqualityOperators
@@ -479,6 +910,9 @@ namespace paludis
                 mutable tr1::shared_ptr<Adapter> _c;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 ConstProxyIterator(typename TreeSequenceIteratorTypes<H_>::ConstIterator i);
 
                 bool operator== (const ConstProxyIterator & other) const;
@@ -488,8 +922,16 @@ namespace paludis
                 const ConstAcceptInterface<LargerH_> & operator* () const;
 
                 ConstProxyIterator & operator++ ();
+
+                ///\}
         };
 
+        /**
+         * Proxy visitor adapter iterator.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename H_, typename LargerH_>
         class PALUDIS_VISIBLE MutableProxyIterator :
             public paludis::equality_operators::HasEqualityOperators
@@ -511,6 +953,9 @@ namespace paludis
                 mutable tr1::shared_ptr<Adapter> _c;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 MutableProxyIterator(typename TreeSequenceIteratorTypes<H_>::MutableIterator i);
 
                 bool operator== (const MutableProxyIterator & other) const;
@@ -520,8 +965,16 @@ namespace paludis
                 MutableAcceptInterface<LargerH_> & operator* () const;
 
                 MutableProxyIterator & operator++ ();
+
+                ///\}
         };
 
+        /**
+         * Define policy for a set of visitor types.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <
             typename Heirarchy_,
             typename BasicNode_,
@@ -537,6 +990,9 @@ namespace paludis
         class VisitorTypes
         {
             public:
+                ///\name Visitor type definitions
+                ///\{
+
                 typedef Heirarchy_ Heirarchy;
                 typedef BasicNode_ BasicNode;
 
@@ -555,8 +1011,16 @@ namespace paludis
 
                 typedef typename TreeSequenceIteratorTypes<Heirarchy_>::MutableIterator MutableSequenceIterator;
                 typedef typename TreeSequenceIteratorTypes<Heirarchy_>::ConstIterator ConstSequenceIterator;
+
+                ///\}
         };
 
+        /**
+         * A ConstVisitor visits a visitable heirarchy.
+         *
+         * \nosubgrouping
+         * \ingroup grpvisitor
+         */
         template <typename H_>
         class ConstVisitor :
             public virtual Visits<const typename H_::ContainedItem1>,
@@ -570,29 +1034,64 @@ namespace paludis
             public virtual Visits<const typename H_::ContainedItem9>
         {
             public:
+                ///\name Visitor type definitions
+                ///\{
+
                 enum { visitor_is_const = 1 };
 
                 typedef typename H_::Heirarchy Heirarchy;
 
+                /**
+                 * Derived classes visit a ConstTreeSequence by visiting all of
+                 * its children.
+                 *
+                 * \ingroup grpvisitor
+                 * \nosubgrouping
+                 */
                 template <typename A_, typename B_>
                 struct PALUDIS_VISIBLE VisitConstSequence :
                     virtual Visits<const ConstTreeSequence<Heirarchy, B_> >
                 {
+                    ///\name Visitor operations
+                    ///\{
+
                     virtual void visit_sequence(const B_ &,
                             typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator c,
                             typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator e);
+
+                    ///\}
                 };
 
+                /**
+                 * Derived classes visit a TreeSequence by visiting all of
+                 * its children.
+                 *
+                 * \ingroup grpvisitor
+                 * \nosubgrouping
+                 */
                 template <typename A_, typename B_>
                 struct PALUDIS_VISIBLE VisitSequence :
                     virtual Visits<const TreeSequence<Heirarchy, B_> >
                 {
+                    ///\name Visitor operations
+                    ///\{
+
                     virtual void visit_sequence(const B_ &,
                             typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator c,
                             typename TreeSequenceIteratorTypes<Heirarchy>::ConstIterator e);
+
+                    ///\}
                 };
+
+                ///\}
         };
 
+        /**
+         * A ConstVisitor visits a visitable heirarchy.
+         *
+         * \nosubgrouping
+         * \ingroup grpvisitor
+         */
         template <typename H_>
         class MutableVisitor :
             public virtual Visits<typename H_::ContainedItem1>,
@@ -606,53 +1105,121 @@ namespace paludis
             public virtual Visits<typename H_::ContainedItem9>
         {
             public:
+                ///\name Visitor type definitions
+                ///\{
+
                 enum { visitor_is_const = 0 };
 
                 typedef typename H_::Heirarchy Heirarchy;
 
+                /**
+                 * Derived classes visit a TreeSequence by visiting all of
+                 * its children.
+                 *
+                 * \ingroup grpvisitor
+                 * \nosubgrouping
+                 */
                 template <typename A_, typename B_>
                 struct PALUDIS_VISIBLE VisitSequence :
                     virtual Visits<TreeSequence<Heirarchy, B_> >
                 {
+                    ///\name Visitor operations
+                    ///\{
+
                     virtual void visit_sequence(B_ &,
                             typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator c,
                             typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator e);
+
+                    ///\}
                 };
+
+                ///\}
         };
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_, typename H_, typename T_>
         struct GetConstItemVisits;
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_, typename H_, unsigned u_>
         struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const visitor_internals::NoType<u_> >
         {
         };
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_, typename T_, typename H_>
         struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const TreeLeaf<H_, T_> > :
             virtual visitor_internals::Visits<const TreeLeaf<H_, T_> >
         {
+            ///\name Visitor operations
+            ///\{
+
             void visit_leaf(const T_ & t);
+
+            ///\}
         };
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_, typename H_, typename T_>
         struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const ConstTreeSequence<H_, T_> > :
             virtual visitor_internals::Visits<const ConstTreeSequence<H_, T_> >
         {
+            ///\name Visitor operations
+            ///\{
+
             void visit_sequence(const T_ & t,
                     typename H_::ConstSequenceIterator,
                     typename H_::ConstSequenceIterator);
+
+            ///\}
         };
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_, typename H_, typename T_>
         struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const TreeSequence<H_, T_> > :
             virtual visitor_internals::Visits<const TreeSequence<H_, T_> >
         {
+            ///\name Visitor operations
+            ///\{
+
             void visit_sequence(const T_ & t,
                     typename H_::ConstSequenceIterator,
                     typename H_::ConstSequenceIterator);
+
+            ///\}
         };
 
+        /**
+         * For use by get_const_item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_>
         struct PALUDIS_VISIBLE GetConstItemVisitor :
             ConstVisitor<typename I_::Heirarchy>,
@@ -666,16 +1233,33 @@ namespace paludis
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem8>,
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem9>
         {
+            ///\name Visitor operations
+            ///\{
+
             const typename I_::Heirarchy::BasicNode * item;
 
             GetConstItemVisitor();
+
+            ///\}
         };
 
+        /**
+         * Given a heirarchy node, fetch the associated item.
+         *
+         * \ingroup grpvisitor
+         * \nosubgrouping
+         */
         template <typename I_>
         const typename I_::Heirarchy::BasicNode *
         get_const_item(const I_ & i);
     }
 
+    /**
+     * Used by accept_visitor.
+     *
+     * \nosubgrouping
+     * \ingroup grpvisitor
+     */
     template <typename Visitor_>
     class PALUDIS_VISIBLE AcceptVisitor
     {
@@ -683,6 +1267,9 @@ namespace paludis
             Visitor_ & _v;
 
         public:
+            ///\name Visitor operations
+            ///\{
+
             AcceptVisitor(Visitor_ & v) :
                 _v(v)
             {
@@ -693,8 +1280,15 @@ namespace paludis
             {
                 t.accept(_v);
             }
+
+            ///\}
     };
 
+    /**
+     * Convenience function for using a visitor with a standard algorithm.
+     *
+     * \ingroup grpvisitor
+     */
     template <typename Visitor_>
     AcceptVisitor<Visitor_> PALUDIS_VISIBLE accept_visitor(Visitor_ & v)
     {

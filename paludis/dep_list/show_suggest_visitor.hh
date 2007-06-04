@@ -26,6 +26,12 @@
 
 namespace paludis
 {
+    /**
+     * Used by DepList to add suggested deps.
+     *
+     * \ingroup grpdepresolver
+     * \nosubgrouping
+     */
     class ShowSuggestVisitor :
         public ConstVisitor<DependencySpecTree>,
         public ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>,
@@ -33,9 +39,17 @@ namespace paludis
         private PrivateImplementationPattern<ShowSuggestVisitor>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd,
                     const Environment * const, const PackageDatabaseEntry * const);
             ~ShowSuggestVisitor();
+
+            ///\}
+
+            ///\name Visitor operations
+            ///\{
 
             void visit_leaf(const BlockDepSpec &);
 
@@ -47,6 +61,8 @@ namespace paludis
 
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>::visit_sequence;
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>::visit_sequence;
+
+            ///\}
     };
 }
 

@@ -32,13 +32,29 @@ namespace paludis
         /**
          * Write docs to an ostream.
          *
+         * \ingroup grplibpaludisargs
          */
         void generate_doc(DocWriter & dw, const ArgsHandler * const h) PALUDIS_VISIBLE;
 
+        /**
+         * Write docs from args classes in a particular format.
+         *
+         * \ingroup grplibpaludisargs
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE DocWriter
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 virtual ~DocWriter() = 0;
+
+                ///\}
+
+                ///\name Output routines
+                ///\{
+
                 virtual void heading(const std::string & name, const std::string & section,
                         const std::string & synopsis) = 0;
                 virtual void usage_line(const std::string & name, const std::string & line) = 0;
@@ -62,8 +78,16 @@ namespace paludis
                 virtual void section(const std::string & title) = 0;
                 virtual void subsection(const std::string & title) = 0;
                 virtual void paragraph(const std::string & text) = 0;
+
+                ///\}
         };
 
+        /**
+         * Create HTML documentation from args classes.
+         *
+         * \ingroup grplibpaludisargs
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE HtmlWriter :
             public DocWriter
         {
@@ -71,8 +95,14 @@ namespace paludis
                 std::ostream & _os;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 HtmlWriter(std::ostream & os);
                 ~HtmlWriter();
+
+                ///\}
+
                 void heading(const std::string & name, const std::string & section,
                         const std::string & synopis);
                 void usage_line(const std::string & name, const std::string & line);
@@ -98,6 +128,12 @@ namespace paludis
                 void paragraph(const std::string & text);
         };
 
+        /**
+         * Create man documentation from args classes.
+         *
+         * \ingroup grplibpaludisargs
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE ManWriter :
             public DocWriter
         {
@@ -105,8 +141,14 @@ namespace paludis
                 std::ostream & _os;
 
             public:
+                ///\name Basic operations
+                ///\{
+
                 ManWriter(std::ostream & os);
                 ~ManWriter();
+
+                ///\}
+
                 void heading(const std::string & name, const std::string & section,
                         const std::string & synopis);
                 void usage_line(const std::string & name, const std::string & line);

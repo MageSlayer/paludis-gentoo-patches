@@ -37,7 +37,7 @@ namespace paludis
      * Thrown if an EAPI configuration is broken.
      *
      * \see EAPI
-     * \ingroup grpnames
+     * \ingroup grpeapi
      * \ingroup grpexceptions
      * \nosubgrouping
      */
@@ -52,7 +52,7 @@ namespace paludis
      * Holds information on recognised EAPIs.
      *
      * \see EAPI
-     * \ingroup grpnames
+     * \ingroup grpeapi
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE EAPIData :

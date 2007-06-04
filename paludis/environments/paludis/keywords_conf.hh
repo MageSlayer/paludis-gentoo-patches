@@ -32,16 +32,33 @@ namespace paludis
 
     namespace paludis_environment
     {
+        /**
+         * Represents the keywords.conf file, which may be composed of multiple 'real' files.
+         *
+         * \ingroup grppaludisenvironment
+         * \nosubgrouping
+         */
         class KeywordsConf :
             private PrivateImplementationPattern<KeywordsConf>,
             private InstantiationPolicy<KeywordsConf, instantiation_method::NonCopyableTag>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 KeywordsConf(const PaludisEnvironment * const);
                 ~KeywordsConf();
 
+                ///\}
+
+                /**
+                 * Add another file.
+                 */
                 void add(const FSEntry &);
 
+                /**
+                 * Query a collection of keywords.
+                 */
                 bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
         };
     }

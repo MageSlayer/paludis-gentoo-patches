@@ -1120,7 +1120,6 @@ AC_OUTPUT(
 	hooks/Makefile
 	hooks/demos/Makefile
 	misc/Makefile
-	misc/svn-version-filter-data.bash
 	paludis/Makefile
 	paludis/about.hh
 	paludis/args/Makefile

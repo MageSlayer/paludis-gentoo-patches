@@ -34,13 +34,24 @@ namespace paludis
 {
     class PortageRepositoryEntries;
 
+    /**
+     * Manages the layout of a PortageRepository.
+     *
+     * \ingroup grpportagerepository
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE Layout
     {
         private:
             tr1::shared_ptr<FSEntryCollection> _profiles_dirs;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             Layout();
+
+            ///\}
 
         public:
             ///\name Basic operations
@@ -112,7 +123,7 @@ namespace paludis
      * Thrown if a layout of the specified type does not exist.
      *
      * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup grpportagerepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchLayoutType :
@@ -128,7 +139,7 @@ namespace paludis
     /**
      * Virtual constructor for Layout.
      *
-     * \ingroup grprepository
+     * \ingroup grpportagerepository
      */
     class PALUDIS_VISIBLE LayoutMaker :
         public VirtualConstructor<std::string,

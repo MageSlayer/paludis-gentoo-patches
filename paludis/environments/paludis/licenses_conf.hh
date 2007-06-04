@@ -32,16 +32,33 @@ namespace paludis
 
     namespace paludis_environment
     {
+        /**
+         * Represents the licenses.conf file, which may be composed of multiple 'real' files.
+         *
+         * \ingroup grppaludisenvironment
+         * \nosubgrouping
+         */
         class LicensesConf :
             private PrivateImplementationPattern<LicensesConf>,
             private InstantiationPolicy<LicensesConf, instantiation_method::NonCopyableTag>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 LicensesConf(const PaludisEnvironment * const);
                 ~LicensesConf();
 
+                ///\}
+
+                /**
+                 * Add another file.
+                 */
                 void add(const FSEntry &);
 
+                /**
+                 * Query a particular license.
+                 */
                 bool query(const std::string &, const PackageDatabaseEntry &) const;
         };
     }

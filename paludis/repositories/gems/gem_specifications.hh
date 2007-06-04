@@ -35,18 +35,35 @@ namespace paludis
 {
     namespace gems
     {
+        /**
+         * Represents a collection of Gem specifications held in a master yaml
+         * file.
+         *
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE GemSpecifications :
             private PrivateImplementationPattern<GemSpecifications>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 GemSpecifications(const yaml::Node &);
                 ~GemSpecifications();
+
+                ///\}
+
+                ///\name Iterate over our specifications
+                ///\{
 
                 typedef libwrapiter::ForwardIterator<GemSpecifications,
                         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >
                             Iterator;
                 Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                ///\}
         };
     }
 }

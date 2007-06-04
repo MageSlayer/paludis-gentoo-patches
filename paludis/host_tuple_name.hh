@@ -31,7 +31,6 @@
 /** \file
  * Declarations for various Name classes.
  *
- * \ingroup grpnames
  * \ingroup grphosttuplename
  */
 
@@ -41,7 +40,6 @@ namespace paludis
      * A HostTupleNameError is thrown if an invalid value is assigned to
      * an HostTupleName.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
@@ -63,7 +61,6 @@ namespace paludis
      * An ArchitectureNamePartError is thrown if an invalid value is assigned to
      * an ArchitectureNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
@@ -80,7 +77,6 @@ namespace paludis
      * An ArchitectureNamePartValidator handles validation rules for the value
      * of an ArchitectureNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     struct PALUDIS_VISIBLE ArchitectureNamePartValidator :
@@ -97,7 +93,6 @@ namespace paludis
      * An ArchitectureNamePart holds a std::string that is a valid name for the
      * architecture part of a HostTupleName.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     typedef Validated<std::string, ArchitectureNamePartValidator> ArchitectureNamePart;
@@ -106,7 +101,6 @@ namespace paludis
      * An ManufacturerNamePartError is thrown if an invalid value is assigned to
      * an ManufacturerNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
@@ -123,7 +117,6 @@ namespace paludis
      * An ManufacturerNamePartValidator handles validation rules for the value
      * of an ManufacturerNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     struct PALUDIS_VISIBLE ManufacturerNamePartValidator :
@@ -140,7 +133,6 @@ namespace paludis
      * An ManufacturerNamePart holds a std::string that is a valid name for the
      * architecture part of a HostTupleName.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     typedef Validated<std::string, ManufacturerNamePartValidator> ManufacturerNamePart;
@@ -149,7 +141,6 @@ namespace paludis
      * An KernelNamePartError is thrown if an invalid value is assigned to
      * an KernelNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
@@ -166,7 +157,6 @@ namespace paludis
      * An KernelNamePartValidator handles validation rules for the value
      * of an KernelNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     struct PALUDIS_VISIBLE KernelNamePartValidator :
@@ -183,7 +173,6 @@ namespace paludis
      * An KernelNamePart holds a std::string that is a valid name for the
      * architecture part of a HostTupleName.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     typedef Validated<std::string, KernelNamePartValidator> KernelNamePart;
@@ -192,7 +181,6 @@ namespace paludis
      * An UserlandNamePartError is thrown if an invalid value is assigned to
      * an UserlandNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
@@ -209,7 +197,6 @@ namespace paludis
      * An UserlandNamePartValidator handles validation rules for the value
      * of an UserlandNamePart.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     struct PALUDIS_VISIBLE UserlandNamePartValidator :
@@ -226,7 +213,6 @@ namespace paludis
      * An UserlandNamePart holds a std::string that is a valid name for the
      * architecture part of a HostTupleName.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     typedef Validated<std::string, UserlandNamePartValidator> UserlandNamePart;
@@ -237,7 +223,6 @@ namespace paludis
     /**
      * Output a QualifiedPackageName to a stream.
      *
-     * \ingroup grpnames
      * \ingroup grphosttuplename
      */
     std::ostream & operator<< (std::ostream &, const HostTupleName &) PALUDIS_VISIBLE;

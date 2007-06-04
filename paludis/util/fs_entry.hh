@@ -356,20 +356,10 @@ namespace paludis
             ///\}
     };
 
-    /**
-     * An FSEntry can be written to an ostream.
-     *
-     * \ingroup grpfilesystem
-     */
     std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
 
     template <typename T_> class SequentialCollection;
 
-    /**
-     * An ordered group of FSEntry instances.
-     *
-     * \ingroup grpfilesystem
-     */
     typedef SequentialCollection<FSEntry> FSEntryCollection;
 }
 

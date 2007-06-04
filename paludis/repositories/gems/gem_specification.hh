@@ -32,19 +32,45 @@ namespace paludis
 {
     namespace gems
     {
+        /**
+         * Thrown if a bad Gem specification is encountered.
+         *
+         * \ingroup grpexceptions
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE BadSpecificationError :
             public Exception
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 BadSpecificationError(const std::string &) throw ();
+
+                ///\}
         };
 
+        /**
+         * Represents a Gem specification.
+         *
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE GemSpecification :
             private PrivateImplementationPattern<GemSpecification>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 GemSpecification(const yaml::Node &);
                 ~GemSpecification();
+
+                ///\}
+
+                ///\name Specification data
+                ///\{
 
                 const tr1::function<std::string ()> name;
                 const tr1::function<std::string ()> version;
@@ -55,6 +81,8 @@ namespace paludis
                 const tr1::function<std::string ()> platform;
                 const tr1::function<std::string ()> summary;
                 const tr1::function<std::string ()> description;
+
+                ///\}
         };
     }
 }

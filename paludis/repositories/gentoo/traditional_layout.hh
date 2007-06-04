@@ -28,6 +28,12 @@ namespace paludis
 {
     class PortageRepositoryEntries;
 
+    /**
+     * The traditional tree layout (as used by Gentoo) for a PortageRepository.
+     *
+     * \ingroup grpportagerepository
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE TraditionalLayout :
         public Layout,
         private PrivateImplementationPattern<TraditionalLayout>
@@ -38,10 +44,15 @@ namespace paludis
             void need_version_specs(const QualifiedPackageName &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             TraditionalLayout(const RepositoryName &, const FSEntry &,
                     tr1::shared_ptr<const PortageRepositoryEntries>);
 
             virtual ~TraditionalLayout();
+
+            ///\}
 
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

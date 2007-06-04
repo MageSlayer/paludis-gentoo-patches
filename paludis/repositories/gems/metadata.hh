@@ -28,13 +28,24 @@ namespace paludis
 {
     namespace gems
     {
+        /**
+         * Version metadata for a Gem.
+         *
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class GemMetadata :
             public VersionMetadata,
             public virtual VersionMetadataHasInterfaces
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 GemMetadata(const VersionSpec &);
                 virtual ~GemMetadata();
+
+                ///\}
 
                 virtual const VersionMetadata * version_metadata() const
                 {
@@ -44,14 +55,25 @@ namespace paludis
                 void populate_from_specification(const GemSpecification &);
         };
 
+        /**
+         * Version metadata for an installed Gem.
+         *
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class InstalledGemMetadata :
             public VersionMetadata,
             public VersionMetadataOriginsInterface,
             public virtual VersionMetadataHasInterfaces
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 InstalledGemMetadata(const VersionSpec &);
                 virtual ~InstalledGemMetadata();
+
+                ///\}
 
                 virtual const VersionMetadata * version_metadata() const
                 {

@@ -26,6 +26,12 @@
 
 namespace paludis
 {
+    /**
+     * Repository for Gem packages.
+     *
+     * \ingroup grpgemsrepository
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE GemsRepository :
         public Repository,
         public RepositoryInstallableInterface,

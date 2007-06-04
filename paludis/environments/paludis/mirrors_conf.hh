@@ -33,16 +33,33 @@ namespace paludis
 
     namespace paludis_environment
     {
+        /**
+         * Represents the mirrors.conf file, which may be composed of multiple 'real' files.
+         *
+         * \ingroup grppaludisenvironment
+         * \nosubgrouping
+         */
         class MirrorsConf :
             private PrivateImplementationPattern<MirrorsConf>,
             private InstantiationPolicy<MirrorsConf, instantiation_method::NonCopyableTag>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 MirrorsConf(const PaludisEnvironment * const);
                 ~MirrorsConf();
 
+                ///\}
+
+                /**
+                 * Add another file.
+                 */
                 void add(const FSEntry &);
 
+                /**
+                 * Query a mirror.
+                 */
                 tr1::shared_ptr<const MirrorsCollection> query(const std::string &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };

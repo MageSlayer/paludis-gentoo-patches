@@ -63,6 +63,16 @@
  * \ingroup grplibpaludis
  */
 
+/** \defgroup grpdistributions Distributions
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grpeapi EAPIs
+ *
+ * \ingroup grplibpaludis
+ */
+
 /** \defgroup grpenvironment Environment
  *
  * \ingroup grplibpaludis
@@ -136,6 +146,11 @@
  */
 
 // ----- grpenvironment Subgroups -----
+
+/** \defgroup grpadaptedenvironment Adapted environment
+ *
+ * \ingroup grpenvironment
+ */
 
 /** \defgroup grppaludisenvironment Paludis environment
  *
@@ -312,6 +327,16 @@
  */
 
 /** \defgroup grpcompare Comparisons
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpclone Clone
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpoperators Operators
  *
  * \ingroup grplibpaludisutil
  */

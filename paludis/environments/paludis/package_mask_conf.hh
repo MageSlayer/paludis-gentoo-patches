@@ -32,16 +32,34 @@ namespace paludis
 
     namespace paludis_environment
     {
+        /**
+         * Represents the package_mask.conf or package_unmask.conf file, which may be
+         * composed of multiple 'real' files.
+         *
+         * \ingroup grppaludisenvironment
+         * \nosubgrouping
+         */
         class PackageMaskConf :
             private PrivateImplementationPattern<PackageMaskConf>,
             private InstantiationPolicy<PackageMaskConf, instantiation_method::NonCopyableTag>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 PackageMaskConf(const PaludisEnvironment * const);
                 ~PackageMaskConf();
 
+                ///\}
+
+                /**
+                 * Add another file.
+                 */
                 void add(const FSEntry &);
 
+                /**
+                 * Query a mask.
+                 */
                 bool query(const PackageDatabaseEntry &) const;
         };
     }

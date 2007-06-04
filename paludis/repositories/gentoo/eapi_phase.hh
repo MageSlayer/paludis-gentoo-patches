@@ -28,30 +28,64 @@ namespace paludis
 {
     namespace erepository
     {
+        /**
+         * Holds a parsed EAPI phase.
+         *
+         * \nosubgrouping
+         * \ingroup grpportagerepository
+         * \ingroup grpeapi
+         */
         class EAPIPhase :
             private PrivateImplementationPattern<EAPIPhase>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 explicit EAPIPhase(const std::string &);
                 ~EAPIPhase();
+
+                ///\}
+
+                ///\name Information about the phase
+                ///\{
 
                 bool option(const std::string &) const;
 
                 typedef libwrapiter::ForwardIterator<EAPIPhase, const std::string> Iterator;
                 Iterator begin_commands() const;
                 Iterator end_commands() const;
+
+                ///\}
         };
 
+        /**
+         * Holds parsed EAPI phases.
+         *
+         * \nosubgrouping
+         * \ingroup grpportagerepository
+         * \ingroup grpeapi
+         */
         class EAPIPhases :
             private PrivateImplementationPattern<EAPIPhases>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 explicit EAPIPhases(const std::string &);
                 ~EAPIPhases();
+
+                ///\}
+
+                ///\name Information about the phases
+                ///\{
 
                 typedef libwrapiter::ForwardIterator<EAPIPhases, const EAPIPhase> Iterator;
                 Iterator begin_phases() const;
                 Iterator end_phases() const;
+
+                ///\}
         };
     }
 }

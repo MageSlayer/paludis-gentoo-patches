@@ -26,11 +26,23 @@ namespace paludis
 {
     namespace gems
     {
+        /**
+         * Thrown if a Gems repository is misconfigured.
+         *
+         * \ingroup grpexceptions
+         * \ingroup grpgemsrepository
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE RepositoryConfigurationError :
             public ConfigurationError
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 RepositoryConfigurationError(const std::string &) throw ();
+
+                ///\}
         };
     }
 }

@@ -14,6 +14,16 @@ make_class_EAPIEbuildPhases()
     key ebuild_nofetch            std::string
     key ebuild_variable           std::string
     key ebuild_config             std::string
+
+    doxygen_comment << "END"
+        /**
+         * Information about a supported EAPI's ebuild phases.
+         *
+         * \see EAPI
+         * \ingroup grpeapi
+         * \nosubgrouping
+         */
+END
 }
 
 make_class_EAPIEbuildMetadataVariables()
@@ -36,6 +46,17 @@ make_class_EAPIEbuildMetadataVariables()
     key metadata_pdepend          std::string
     key metadata_provide          std::string
     key metadata_eapi             std::string
+
+    doxygen_comment << "END"
+        /**
+         * Information about a supported EAPI's ebuild metadata variables.
+         *
+         * \see EAPIData
+         * \see EAPI
+         * \ingroup grpeapi
+         * \nosubgrouping
+         */
+END
 }
 
 make_class_SupportedEAPI()
@@ -66,7 +87,7 @@ make_class_SupportedEAPI()
          *
          * \see EAPIData
          * \see EAPI
-         * \ingroup grpnames
+         * \ingroup grpeapi
          * \nosubgrouping
          */
 END
@@ -86,7 +107,7 @@ make_class_EAPI()
          * Information about an EAPI.
          *
          * \see EAPIData
-         * \ingroup grpnames
+         * \ingroup grpeapi
          * \nosubgrouping
          */
 END

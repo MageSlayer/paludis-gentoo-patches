@@ -28,15 +28,29 @@ namespace paludis
 {
     class PackageDatabaseEntry;
 
+    /**
+     * Used by DepList to check for existing deps.
+     *
+     * \ingroup grpdepresolver
+     * \nosubgrouping
+     */
     class QueryVisitor :
         public ConstVisitor<DependencySpecTree>,
         private PrivateImplementationPattern<QueryVisitor>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             QueryVisitor(const DepList * const, tr1::shared_ptr<const DestinationsCollection>,
                     const Environment * const, const PackageDatabaseEntry * const);
 
             ~QueryVisitor();
+
+            ///\}
+
+            ///\name Visitor operations
+            ///\{
 
             void visit_sequence(const AllDepSpec &,
                     DependencySpecTree::ConstSequenceIterator,
@@ -54,6 +68,11 @@ namespace paludis
 
             void visit_leaf(const BlockDepSpec &);
 
+            ///\}
+
+            /**
+             * Are we matched?
+             */
             bool result() const;
     };
 }

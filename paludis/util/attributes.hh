@@ -40,12 +40,6 @@
  * \ingroup grplibpaludisutil
  */
 
-/** \def PALUDIS_ENABLE_VISIBILITY
- * Whether to enable visibility support.
- *
- * \ingroup grplibpaludisutil
- */
-
 /** \def PALUDIS_VISIBLE
  * Marker used to represent 'make visible', if visibility is enabled.
  *

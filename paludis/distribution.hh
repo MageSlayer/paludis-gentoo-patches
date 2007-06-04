@@ -32,13 +32,31 @@ namespace paludis
 {
 #include <paludis/distribution-sr.hh>
 
+    /**
+     * Thrown if an invalid distribution file is encountered.
+     *
+     * \ingroup grpdistributions
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DistributionConfigurationError :
         public ConfigurationError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             DistributionConfigurationError(const std::string &) throw ();
+
+            ///\}
     };
 
+    /**
+     * Fetch information about a distribution.
+     *
+     * \ingroup grpdistributions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DistributionData :
         private PrivateImplementationPattern<DistributionData>,
         public InstantiationPolicy<DistributionData, instantiation_method::SingletonTag>
@@ -50,8 +68,14 @@ namespace paludis
             ~DistributionData();
 
         public:
+            /**
+             * Fetch a distribution from a named string.
+             */
             tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
 
+            /**
+             * Fetch the default distribution.
+             */
             tr1::shared_ptr<const Distribution> default_distribution() const;
     };
 }

@@ -32,19 +32,39 @@ namespace paludis
 
     namespace paludis_environment
     {
+        /**
+         * Represents the use.conf file, which may be composed of multiple 'real' files.
+         *
+         * \ingroup grppaludisenvironment
+         * \nosubgrouping
+         */
         class UseConf :
             private PrivateImplementationPattern<UseConf>,
             private InstantiationPolicy<UseConf, instantiation_method::NonCopyableTag>
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 UseConf(const PaludisEnvironment * const);
                 ~UseConf();
 
+                ///\}
+
+                /**
+                 * Add another file.
+                 */
                 void add(const FSEntry &);
 
+                /**
+                 * Query a use flag.
+                 */
                 UseFlagState query(const UseFlagName &, const PackageDatabaseEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                /**
+                 * Fetch the known use expand names for a prefix.
+                 */
                 tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
                         const UseFlagName &, const PackageDatabaseEntry &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
