@@ -337,6 +337,7 @@ need_xml_check=
 need_pcrepp_check=
 need_syck_check=
 need_gem_check=
+need_gtkmm_check=
 
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
@@ -916,7 +917,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="adjutrix contrarius inquisitio paludis qualudis"
+ALL_CLIENTS="adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -930,6 +931,7 @@ AC_ARG_WITH([clients],
 
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
+			  gtkpaludis      GUI client (experimental)
 			  inquisitio      A search client
 			  paludis         The Paludis console client
 			  qualudis        The QA console client],
@@ -943,6 +945,9 @@ AC_SUBST([BUILD_CLIENTS])
 
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
 	need_pcrepp_check=yes
+fi
+if echo $clients | tr ' ' '\n' | grep '^gtkpaludis$' >/dev/null ; then
+	need_gtkmm_check=yes
 fi
 dnl }}}
 
@@ -991,6 +996,21 @@ if test "x$need_gem_check" = "xyes" ; then
 	else
 		AC_MSG_ERROR([gem (http://rubygems.org/) is required for gems repositories])
 	fi
+fi
+dnl }}}
+
+dnl {{{ gtkmm check
+if test "x$need_gtkmm_check" = "xyes" ; then
+	PKG_CHECK_MODULES([gtkmm], [gtkmm-2.4 >= 2.8.0])
+	PKG_CHECK_MODULES([gthread], [gthread-2.0 >= 2.12.0])
+	PKG_CHECK_MODULES([vte], [vte >= 0.12.1])
+	PKG_CHECK_MODULES([pygtk], [pygtk-2.0 >= 2.6.0])
+	AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
+	GLIBMM_LIBDIR=`pkg-config --variable=libdir glibmm-2.4`
+	GMMPROC_DIR=$GLIBMM_LIBDIR/glibmm-2.4/proc
+	AC_SUBST(GMMPROC_DIR)
+	GMMPROC=$GMMPROC_DIR/gmmproc
+	AC_SUBST(GMMPROC)
 fi
 dnl }}}
 
@@ -1162,6 +1182,11 @@ AC_OUTPUT(
 	src/common_args/Makefile
 	src/clients/Makefile
 	src/clients/contrarius/Makefile
+	src/clients/gtkpaludis/Makefile
+	src/clients/gtkpaludis/vtemm/Makefile
+	src/clients/gtkpaludis/vtemm/defs/Makefile
+	src/clients/gtkpaludis/vtemm/converts/Makefile
+	src/clients/gtkpaludis/libgtkpaludis/Makefile
 	src/clients/inquisitio/Makefile
 	src/clients/paludis/Makefile
 	src/clients/qualudis/Makefile
