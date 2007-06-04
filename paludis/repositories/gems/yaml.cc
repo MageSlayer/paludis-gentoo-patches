@@ -266,16 +266,35 @@ namespace paludis
     template <>
     struct Implementation<Document>
     {
+        struct Register
+        {
+            Implementation<Document> * _imp;
+
+            Register(Implementation<Document> * imp) :
+                _imp(imp)
+            {
+                NodeManager::get_instance()->register_document(_imp->parser.get());
+            }
+
+            ~Register()
+            {
+                NodeManager::get_instance()->deregister_document(_imp->parser.get());
+            }
+        };
+
         Node * top;
         tr1::shared_ptr<SyckParser> parser;
         tr1::shared_ptr<char> data;
         unsigned data_length;
 
+        Register reg;
+
         Implementation(const std::string & s) :
             top(0),
             parser(syck_new_parser(), call_unless_null(syck_free_parser)),
             data(strdup(s.c_str()), call_unless_null(std::free)),
-            data_length(s.length())
+            data_length(s.length()),
+            reg(this)
         {
         }
     };
@@ -285,7 +304,6 @@ Document::Document(const std::string & s) :
     PrivateImplementationPattern<Document>(new Implementation<Document>(s))
 {
     Context c("When parsing yaml document:");
-    NodeManager::get_instance()->register_document(_imp->parser.get());
 
     syck_parser_str(_imp->parser.get(), _imp->data.get(), _imp->data_length, 0);
     syck_parser_handler(_imp->parser.get(), node_handler);
@@ -307,7 +325,6 @@ Document::Document(const std::string & s) :
 
 Document::~Document()
 {
-    NodeManager::get_instance()->deregister_document(_imp->parser.get());
 }
 
 const Node *
