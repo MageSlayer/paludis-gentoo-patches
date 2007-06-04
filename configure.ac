@@ -24,6 +24,10 @@ AM_INIT_AUTOMAKE(paludis, [$VERSION_FULL])
 AC_LANG([C++])
 
 PALUDIS_CXXFLAGS=
+
+PALUDIS_PC_CFLAGS=
+PALUDIS_PC_LIBS=
+PALUDIS_PC_VERSION=
 dnl }}}
 
 dnl {{{ monolithic build
@@ -216,6 +220,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_STD_TR1=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_MEMORY_IS_STD_TR1=1"
 	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::shared_ptr<>])
@@ -229,6 +234,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_MEMORY_IS_BOOST=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_MEMORY_IS_BOOST=1"
 	 need_pointer_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -248,6 +254,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_STD_TR1=1"
 	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::remove_pointer<>])
@@ -261,6 +268,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_BOOST=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_TYPE_TRAITS_IS_BOOST=1"
 	 need_type_traits_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -292,6 +300,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_STD_TR1=1"
 	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_CHECKING([for boost::bind<>])
@@ -317,6 +326,7 @@ int main(int, char **)
 ],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_BOOST=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_TR1_FUNCTIONAL_IS_BOOST=1"
 	 need_bind_wrappers=yes],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
@@ -1070,6 +1080,17 @@ AC_SUBST([HAVE_GNU_LDCONFIG])
 AM_CONDITIONAL([HAVE_GNU_LDCONFIG], test "x$HAVE_GNU_LDCONFIG" = "xyes")
 dnl }}}
 
+dnl {{{ pkg-config
+AC_MSG_RESULT([PALUDIS_PC_CFLAGS])
+AC_SUBST([PALUDIS_PC_CFLAGS])
+PALUDIS_PC_LIBS="-lpaludis -lpaludisutil"
+AC_SUBST([PALUDIS_PC_LIBS])
+PALUDIS_PC_VERSION="${VERSION_FULL}"
+AC_SUBST([PALUDIS_PC_VERSION])
+PALUDIS_PC_SLOT="${VERSION_MAJOR}.${VERSION_MINOR}"
+AC_SUBST([PALUDIS_PC_SLOT])
+dnl }}}
+
 dnl {{{ built sources
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)
@@ -1134,6 +1155,7 @@ AC_OUTPUT(
 	paludis/syncers/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
+	pkg-config/Makefile
 	python/Makefile
 	ruby/Makefile
 	ruby/demos/Makefile

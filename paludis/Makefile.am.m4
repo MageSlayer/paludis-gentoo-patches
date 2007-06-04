@@ -135,7 +135,7 @@ noinst_LTLIBRARIES = libpaludismanpagethings.la
 
 endif
 
-paludis_includedir = $(includedir)/paludis/
+paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist srheaderlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4

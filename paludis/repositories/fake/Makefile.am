@@ -34,7 +34,7 @@ endif
 
 libpaludisfakerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-paludis_repositories_fake_includedir = $(includedir)/paludis/repositories/fake/
+paludis_repositories_fake_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/fake/
 paludis_repositories_fake_include_HEADERS = \
 	fake_repository.hh \
 	fake_repository_base.hh \

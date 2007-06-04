@@ -46,7 +46,7 @@ libenv_LTLIBRARIES = libpaludispaludisenvironment.la
 
 endif
 
-paludis_environment_paludis_includedir = $(includedir)/paludis/environments/paludis
+paludis_environment_paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/paludis
 paludis_environment_paludis_include_HEADERS = \
 	paludis_config.hh \
 	paludis_environment.hh \

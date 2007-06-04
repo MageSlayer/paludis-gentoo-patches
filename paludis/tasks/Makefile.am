@@ -20,7 +20,7 @@ check_PROGRAMS = $(TESTS)
 check_SCRIPTS =
 
 lib_LTLIBRARIES = libpaludistasks.la
-paludis_tasks_includedir = $(includedir)/paludis/tasks
+paludis_tasks_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/tasks
 paludis_tasks_include_HEADERS = \
 	find_unused_packages_task.hh \
 	install_task.hh \

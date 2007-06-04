@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
 SUBDIRS = .
 
-paludis_selinux_includedir = $(includedir)/paludis/selinux/
+paludis_selinux_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/selinux/
 
 paludis_selinux_include_HEADERS = \
 	security_context.hh

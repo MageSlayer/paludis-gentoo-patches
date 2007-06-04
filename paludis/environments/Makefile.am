@@ -9,7 +9,7 @@ built-sources : $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libpaludisenvironments.la
 
-paludis_environments_includedir = $(includedir)/paludis/environments/
+paludis_environments_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/
 
 paludis_environments_include_HEADERS = \
 	environment_maker.hh

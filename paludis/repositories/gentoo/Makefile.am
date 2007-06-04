@@ -28,7 +28,7 @@ lib_LTLIBRARIES = libpaludisgentoorepositoryxmlthings.la
 
 endif
 
-paludis_repositories_gentoo_includedir = $(includedir)/paludis/repositories/gentoo/
+paludis_repositories_gentoo_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/gentoo/
 libpaludisgentoorepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_gentoo_include_HEADERS = \

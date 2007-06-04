@@ -22,7 +22,7 @@ paludis_repositories_lib_LTLIBRARIES = libpaludiscranrepository.la
 
 endif
 
-paludis_repositories_cran_includedir = $(includedir)/paludis/repositories/cran/
+paludis_repositories_cran_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/cran/
 libpaludiscranrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_cran_include_HEADERS = \

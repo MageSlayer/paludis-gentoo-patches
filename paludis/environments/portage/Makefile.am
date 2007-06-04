@@ -28,7 +28,7 @@ libexecenv_SCRIPTS = bashrc
 
 libenv_LTLIBRARIES = libpaludisportageenvironment.la
 
-paludis_environment_portage_includedir = $(includedir)/paludis/environments/portage
+paludis_environment_portage_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/portage
 paludis_environment_portage_include_HEADERS = \
 	portage_environment.hh
 

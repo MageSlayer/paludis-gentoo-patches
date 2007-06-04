@@ -14,7 +14,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_merger_includedir = $(includedir)/paludis/merger
+paludis_merger_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/merger
 paludis_merger_include_HEADERS = \
 	entry_type.hh \
 	merger.hh \

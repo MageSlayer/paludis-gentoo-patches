@@ -15,7 +15,7 @@ paludis_gems_libexecdir = $(libexecdir)/paludis/gems
 
 paludis_repositories_lib_LTLIBRARIES = libpaludisgemsrepository.la
 
-paludis_repositories_gems_includedir = $(includedir)/paludis/repositories/gems/
+paludis_repositories_gems_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/gems/
 libpaludisgemsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_gems_include_HEADERS = \

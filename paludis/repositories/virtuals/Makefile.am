@@ -21,7 +21,7 @@ paludis_repositories_lib_LTLIBRARIES = libpaludisvirtualsrepository.la
 
 endif
 
-paludis_repositories_virtuals_includedir = $(includedir)/paludis/repositories/virtuals/
+paludis_repositories_virtuals_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/virtuals/
 libpaludisvirtualsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_virtuals_include_HEADERS = \

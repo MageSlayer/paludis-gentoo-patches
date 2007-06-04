@@ -13,7 +13,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_dep_list_includedir = $(includedir)/paludis/dep_list
+paludis_dep_list_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/dep_list
 paludis_dep_list_include_HEADERS = \
 	dep_list.hh \
 	query_visitor.hh \

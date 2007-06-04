@@ -100,7 +100,7 @@ lib_LTLIBRARIES = libpaludisutil.la
 
 endif
 
-paludis_util_includedir = $(includedir)/paludis/util/
+paludis_util_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/util/
 paludis_util_include_HEADERS = headerlist srheaderlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4

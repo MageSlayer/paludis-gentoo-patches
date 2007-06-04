@@ -100,7 +100,7 @@ lib_LTLIBRARIES = libpaludisqa.la
 
 endif
 
-paludis_qaincludedir = $(includedir)/paludis/qa/
+paludis_qaincludedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/qa/
 paludis_qainclude_HEADERS = headerlist srheaderlist
 
 endif

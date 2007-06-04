@@ -21,7 +21,7 @@ libpaludisadaptedenvironment_la_LIBADD = \
 
 lib_LTLIBRARIES = libpaludisadaptedenvironment.la
 
-paludis_environment_adapted_includedir = $(includedir)/paludis/environments/adapted
+paludis_environment_adapted_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/environments/adapted
 paludis_environment_adapted_include_HEADERS = \
 	adapted_environment.hh
 

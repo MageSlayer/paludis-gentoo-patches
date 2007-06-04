@@ -5,7 +5,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 TESTS = \
 	args_TEST
 
-paludis_args_includedir = $(includedir)/paludis/args/
+paludis_args_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/args/
 
 paludis_args_include_HEADERS = \
 	args.hh           \

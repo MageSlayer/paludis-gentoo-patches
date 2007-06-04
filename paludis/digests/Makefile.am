@@ -4,7 +4,7 @@ SUBDIRS = .
 
 libexecprogdir = $(libexecdir)/paludis/digests/
 
-paludis_digests_includedir = $(includedir)/paludis/digests/
+paludis_digests_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/digests/
 
 paludis_digests_include_HEADERS = \
 	sha256.hh \

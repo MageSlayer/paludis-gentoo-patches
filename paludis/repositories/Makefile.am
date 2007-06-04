@@ -18,7 +18,7 @@ built-sources : $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libpaludisrepositories.la
 
-paludis_repositories_includedir = $(includedir)/paludis/repositories/
+paludis_repositories_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/
 
 paludis_repositories_include_HEADERS = \
 	repository_maker.hh
