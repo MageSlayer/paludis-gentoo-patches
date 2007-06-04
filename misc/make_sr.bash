@@ -470,7 +470,7 @@ while read a ; do
             echo "class ${a}::NamedArguments"
             echo "{"
             echo "    friend class ${a};"
-            echo "    private:"
+            echo "    public:"
 
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 echo "        const typename paludis::Select<has_${k}_, ${want_key_types[${k}]% ->*}, paludis::Empty>::Type _v${k};"

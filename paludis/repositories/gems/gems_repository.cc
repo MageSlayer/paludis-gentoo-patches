@@ -153,7 +153,7 @@ GemsRepository::do_version_specs(const QualifiedPackageName & q) const
 
     MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type::const_iterator i(
             _imp->versions.find(q));
-    if (_imp->versions.end() == i)
+    if (i == _imp->versions.end())
         return make_shared_ptr(new VersionSpecCollection::Concrete);
 
     return i->second;

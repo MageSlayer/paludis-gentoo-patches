@@ -157,7 +157,7 @@ InstalledGemsRepository::do_version_specs(const QualifiedPackageName & q) const
     need_entries();
 
     VersionsMap::const_iterator i(_imp->versions.find(q));
-    if (_imp->versions.end() == i)
+    if (i == _imp->versions.end())
         return make_shared_ptr(new VersionSpecCollection::Concrete);
 
     return i->second;
@@ -241,7 +241,7 @@ void
 InstalledGemsRepository::need_version_metadata(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     MetadataMap::const_iterator i(_imp->metadata.find(std::make_pair(q, v)));
-    if (_imp->metadata.end() != i)
+    if (i != _imp->metadata.end())
         return;
 
     Context c("When loading version metadata for '" + stringify(PackageDatabaseEntry(q, v, name())) + "':");
