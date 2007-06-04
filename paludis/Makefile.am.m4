@@ -71,8 +71,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 include(`paludis/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
-MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
-	hashed_containers.hh
+MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh
 DISTCLEANFILES = srcleanlist secleanlist
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -80,7 +79,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
-	hashed_containers.hh.in testscriptlist srlist srcleanlist selist secleanlist \
+	testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt hooker.bash
 SUBDIRS = digests distributions eapis fetchers syncers util selinux . dep_list merger repositories environments args qa tasks
 BUILT_SOURCES = srcleanlist secleanlist

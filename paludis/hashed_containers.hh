@@ -1,7 +1,5 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-@GENERATED_FILE@
-
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
@@ -29,39 +27,17 @@
  * \ingroup grphashedcontainers
  */
 
-/**
- * Non-zero if we have std::tr1:: hashes (g++-4).
- *
- * \ingroup grphashedcontainers
- */
-#define PALUDIS_HAVE_TR1_HASHES @HAVE_TR1_HASHES@
-
-/**
- * Non-zero if we have __gnu_cxx:: hashes under ext/ (g++-3).
- *
- * \ingroup grphashedcontainers
- */
-#define PALUDIS_HAVE_EXT_HASHES @HAVE_EXT_HASHES@
-
-
-/**
- * Non-zero if we have std:: hashes (icc70).
- *
- * \ingroup grphashedcontainers
- */
-#define PALUDIS_HAVE_STD_HASHES @HAVE_STD_HASHES@
-
 #include <paludis/name.hh>
 #include <paludis/util/validated.hh>
 #include <paludis/version_spec.hh>
 
-#if PALUDIS_HAVE_TR1_HASHES
+#ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
 #  include <tr1/unordered_set>
 #  include <tr1/unordered_map>
-#elif PALUDIS_HAVE_EXT_HASHES
+#elif defined(PALUDIS_HASH_IS_GNU_CXX_HASH)
 #  include <ext/hash_set>
 #  include <ext/hash_map>
-#elif PALUDIS_HAVE_STD_HASHES
+#elif defined(PALUDIS_HASH_IS_STD_HASH)
 #  include <hash_set>
 #  include <hash_map>
 #else
@@ -91,15 +67,15 @@ namespace paludis
     template <typename Key_, typename Value_>
     struct MakeHashedMap
     {
-#if PALUDIS_HAVE_TR1_HASHES
+#ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
         /// Our map type.
         typedef std::tr1::unordered_map<Key_, Value_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_EXT_HASHES
+#elif defined(PALUDIS_HASH_IS_GNU_CXX_HASH)
         /// Our map type.
         typedef __gnu_cxx::hash_map<Key_, Value_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_STD_HASHES
+#elif defined(PALUDIS_HASH_IS_STD_HASH)
         /// Our map type.
         typedef std::hash_map<Key_, Value_, CRCHash<Key_> > Type;
 
@@ -117,15 +93,15 @@ namespace paludis
     template <typename Key_, typename Value_>
     struct MakeHashedMultiMap
     {
-#if PALUDIS_HAVE_TR1_HASHES
+#ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
         /// Our map type.
         typedef std::tr1::unordered_multimap<Key_, Value_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_EXT_HASHES
+#elif defined(PALUDIS_HASH_IS_GNU_CXX_HASH)
         /// Our map type.
         typedef __gnu_cxx::hash_multimap<Key_, Value_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_STD_HASHES
+#elif defined(PALUDIS_HASH_IS_STD_HASH)
         /// Our map type.
         typedef std::hash_multimap<Key_, Value_, CRCHash<Key_> > Type;
 
@@ -143,15 +119,15 @@ namespace paludis
     template <typename Key_>
     struct MakeHashedSet
     {
-#if PALUDIS_HAVE_TR1_HASHES
+#ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
         /// Our set type.
         typedef std::tr1::unordered_set<Key_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_EXT_HASHES
+#elif defined(PALUDIS_HASH_IS_GNU_CXX_HASH)
         /// Our set type.
         typedef __gnu_cxx::hash_set<Key_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_STD_HASHES
+#elif defined(PALUDIS_HASH_IS_STD_HASH)
         /// Our set type.
         typedef std::hash_set<Key_, CRCHash<Key_> > Type;
 
@@ -169,15 +145,15 @@ namespace paludis
     template <typename Key_>
     struct MakeHashedMultiSet
     {
-#if PALUDIS_HAVE_TR1_HASHES
+#ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
         /// Our set type.
         typedef std::tr1::unordered_multiset<Key_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_EXT_HASHES
+#elif defined(PALUDIS_HASH_IS_GNU_CXX_HASH)
         /// Our set type.
         typedef __gnu_cxx::hash_multiset<Key_, CRCHash<Key_> > Type;
 
-#elif PALUDIS_HAVE_STD_HASHES
+#elif defined(PALUDIS_HASH_IS_STD_HASH)
         /// Our set type.
         typedef std::hash_multiset<Key_, CRCHash<Key_> > Type;
 
@@ -187,7 +163,7 @@ namespace paludis
 #endif
     };
 
-#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES
+#if defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED) || defined(PALUDIS_HASH_IS_GNU_CXX_HASH) || defined(PALUDIS_HASH_IS_STD_HASH)
     namespace hashed_containers_internals
     {
         /**
@@ -219,7 +195,7 @@ namespace paludis
             /// Hash function.
             std::size_t operator() (const QualifiedPackageName & val) const;
 
-#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             enum
             {
                 min_buckets = 32,
@@ -247,7 +223,7 @@ namespace paludis
             /// Hash function.
             std::size_t operator() (const Validated<std::string, Validated_> & val) const;
 
-#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             enum
             {
                 min_buckets = 32,
@@ -277,7 +253,7 @@ namespace paludis
             /// Hash function.
             std::size_t operator() (const std::string & val) const;
 
-#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             enum
             {
                 min_buckets = 32,
@@ -305,7 +281,7 @@ namespace paludis
             /// Hash function.
             std::size_t operator() (const std::pair<QualifiedPackageName, VersionSpec> & val) const;
 
-#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             enum
             {
                 min_buckets = 32,

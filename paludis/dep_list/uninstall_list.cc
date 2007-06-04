@@ -48,7 +48,7 @@ namespace paludis
                 return CRCHash<std::string>::operator() (stringify(val));
             }
 
-#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             bool operator() (const PackageDatabaseEntry & lhs,
                     const PackageDatabaseEntry & rhs) const
             {

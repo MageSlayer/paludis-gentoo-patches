@@ -150,9 +150,6 @@ int main(int, char **)
 dnl }}}
 
 dnl {{{ check for hashes
-have_tr1_hashes=0
-have_ext_hashes=0
-have_std_hashes=0
 AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
 #include <tr1/unordered_map>
@@ -164,7 +161,7 @@ int main(int, char **)
 ],
 	[
 	 AC_MSG_RESULT([std::tr1::unordered_map])
-	 have_tr1_hashes=1
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_STD_TR1_UNORDERED=1"
 	],
 	[
 	 AC_COMPILE_IFELSE([
@@ -177,7 +174,7 @@ int main(int, char **)
 ],
 	 [
 	  AC_MSG_RESULT([__gnu_cxx::hash_map])
-	  have_ext_hashes=1
+	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_GNU_CXX_HASH=1"
 	 ],
 	 [
 	  AC_COMPILE_IFELSE([
@@ -190,21 +187,11 @@ int main(int, char **)
 ],
 	  [
 	   AC_MSG_RESULT([std::hash_map])
-	   have_std_hashes=1
+	   PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HASH_IS_STD_HASH=1"
 	  ],
 	  [
 	   AC_MSG_RESULT([no, falling back to std::map (slower)])
 	  ])])])
-
-HAVE_TR1_HASHES=$have_tr1_hashes
-AC_DEFINE_UNQUOTED([HAVE_TR1_HASHES], $have_tr1_hashes, [Do we have std::tr1:: hashes?])
-AC_SUBST([HAVE_TR1_HASHES])
-HAVE_EXT_HASHES=$have_ext_hashes
-AC_DEFINE_UNQUOTED([HAVE_EXT_HASHES], $have_ext_hashes, [Do we have __gnu_cxx:: hashes?])
-AC_SUBST([HAVE_EXT_HASHES])
-HAVE_STD_HASHES=$have_std_hashes
-AC_DEFINE_UNQUOTED([HAVE_STD_HASHES], $have_std_hashes, [Do we have std:: hashes?])
-AC_SUBST([HAVE_STD_HASHES])
 dnl }}}
 
 dnl {{{ tr1 shared pointers
@@ -1154,7 +1141,6 @@ AC_OUTPUT(
 	paludis/environments/no_config/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
-	paludis/hashed_containers.hh
 	paludis/merger/Makefile
 	paludis/qa/Makefile
 	paludis/repositories/Makefile

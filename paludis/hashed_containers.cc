@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,9 +27,7 @@
 
 using namespace paludis;
 
-#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES
-
-#ifndef DOXYGEN
+#if defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED) || defined(PALUDIS_HASH_IS_GNU_CXX_HASH) || defined(PALUDIS_HASH_IS_STD_HASH)
 
 std::size_t
 CRCHash<QualifiedPackageName>::operator() (const QualifiedPackageName & val) const
@@ -101,8 +99,6 @@ CRCHash<std::pair<QualifiedPackageName, VersionSpec> >::operator() (
 
     return h;
 }
-
-#endif
 
 #endif
 
