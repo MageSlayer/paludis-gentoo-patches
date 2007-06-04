@@ -461,7 +461,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT = ../paludis ../paludis/args ../paludis/dep_list ../paludis/digests ../paludis/environments ../paludis/environments/no_config ../paludis/environments/adapted ../paludis/environments/portage ../paludis/environments/paludis ../paludis/environments/test ../paludis/fetchers ../paludis/merger ../paludis/qa ../paludis/repositories ../paludis/repositories/cran ../paludis/repositories/fake ../paludis/repositories/gentoo ../paludis/repositories/virtuals ../paludis/selinux ../paludis/syncers ../paludis/tasks ../paludis/util ../doc
+INPUT = ../paludis ../paludis/args ../paludis/dep_list ../paludis/digests ../paludis/environments ../paludis/environments/no_config ../paludis/environments/adapted ../paludis/environments/portage ../paludis/environments/paludis ../paludis/environments/test ../paludis/fetchers ../paludis/merger ../paludis/qa ../paludis/repositories ../paludis/repositories/cran ../paludis/repositories/fake ../paludis/repositories/gems ../paludis/repositories/gentoo ../paludis/repositories/virtuals ../paludis/selinux ../paludis/syncers ../paludis/tasks ../paludis/util ../doc
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
