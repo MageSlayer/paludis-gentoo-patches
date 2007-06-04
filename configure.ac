@@ -1081,9 +1081,8 @@ AM_CONDITIONAL([HAVE_GNU_LDCONFIG], test "x$HAVE_GNU_LDCONFIG" = "xyes")
 dnl }}}
 
 dnl {{{ pkg-config
-AC_MSG_RESULT([PALUDIS_PC_CFLAGS])
 AC_SUBST([PALUDIS_PC_CFLAGS])
-PALUDIS_PC_LIBS="-lpaludis -lpaludisutil"
+PALUDIS_PC_LIBS="-lpaludis -lpaludisutil -lpaludisenvironments"
 AC_SUBST([PALUDIS_PC_LIBS])
 PALUDIS_PC_VERSION="${VERSION_FULL}"
 AC_SUBST([PALUDIS_PC_VERSION])
