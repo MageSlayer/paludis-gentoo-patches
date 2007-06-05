@@ -72,11 +72,6 @@ namespace paludis
              * Fetch a distribution from a named string.
              */
             tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
-
-            /**
-             * Fetch the default distribution.
-             */
-            tr1::shared_ptr<const Distribution> default_distribution() const;
     };
 }
 

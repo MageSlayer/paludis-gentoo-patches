@@ -27,6 +27,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/eapi.hh>
 #include <algorithm>
+#include "config.h"
 
 using namespace paludis;
 
@@ -419,5 +420,11 @@ tr1::shared_ptr<SetSpecTree::ConstItem>
 EnvironmentImplementation::local_set(const SetName &) const
 {
     return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+std::string
+EnvironmentImplementation::default_distribution() const
+{
+    return DEFAULT_DISTRIBUTION;
 }
 

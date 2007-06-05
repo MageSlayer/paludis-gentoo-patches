@@ -29,7 +29,6 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include "config.h"
 
 using namespace paludis;
 
@@ -99,17 +98,5 @@ DistributionData::distribution_from_string(const std::string & s) const
         return tr1::shared_ptr<const Distribution>();
     else
         return i->second;
-}
-
-tr1::shared_ptr<const Distribution>
-DistributionData::default_distribution() const
-{
-    if (_imp->default_distribution)
-        return _imp->default_distribution;
-
-    _imp->default_distribution = distribution_from_string(getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION));
-    if (! _imp->default_distribution)
-        throw DistributionConfigurationError("No default distribution configuration available");
-    return _imp->default_distribution;
 }
 

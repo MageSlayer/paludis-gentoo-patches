@@ -1024,7 +1024,8 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
         DepSpecFlattener f(_imp->env, _imp->current_pde());
         metadata->ebuild_interface->provide()->accept(f);
 
-        if (f.begin() != f.end() && ! DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        if (f.begin() != f.end() && ! DistributionData::get_instance()->distribution_from_string(
+                    _imp->env->default_distribution())->support_old_style_virtuals)
             throw DistributionConfigurationError("Package '" + stringify(p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 

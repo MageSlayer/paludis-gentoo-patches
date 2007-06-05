@@ -212,3 +212,9 @@ AdaptedEnvironment::perform_hook(const Hook & h) const
     return _imp->env->perform_hook(h);
 }
 
+std::string
+AdaptedEnvironment::default_distribution() const
+{
+    return _imp->env->default_distribution();
+}
+

@@ -260,7 +260,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .world_interface(0)
             .environment_variable_interface(this)
             .mirrors_interface(this)
-            .virtuals_interface(DistributionData::get_instance()->default_distribution()->support_old_style_virtuals ? this : 0)
+            .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
+                    p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
             .contents_interface(0)
             .config_interface(0)
@@ -924,7 +925,7 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
 
     _imp->profile_ptr = iter->profile;
 
-    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+    if (DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution())->support_old_style_virtuals)
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate();

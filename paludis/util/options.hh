@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_OPTIONS_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_OPTIONS_HH 1
 
+#include <paludis/util/options-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis

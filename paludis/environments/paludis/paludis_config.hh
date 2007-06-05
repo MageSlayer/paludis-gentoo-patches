@@ -159,6 +159,11 @@ namespace paludis
                  * The config directory.
                  */
                 std::string config_dir() const;
+
+                /**
+                 * The distribution.
+                 */
+                std::string distribution() const;
         };
     }
 }

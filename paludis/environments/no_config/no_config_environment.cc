@@ -164,7 +164,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
 
-        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                         tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
@@ -186,7 +186,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 new AssociativeCollection<std::string, std::string>::Concrete);
         iv_keys->insert("root", "/");
 
-        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                         iv_keys));
     }

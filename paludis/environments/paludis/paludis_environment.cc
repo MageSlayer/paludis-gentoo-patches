@@ -436,3 +436,9 @@ PaludisEnvironment::package_database() const
     return _imp->package_database;
 }
 
+std::string
+PaludisEnvironment::default_distribution() const
+{
+    return _imp->config->distribution();
+}
+

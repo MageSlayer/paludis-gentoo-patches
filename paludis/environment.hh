@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH 1
 
+#include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/collection.hh>
@@ -38,27 +39,6 @@
 
 namespace paludis
 {
-    class PackageDatabase;
-    class PackageDatabaseEntry;
-
-#include <paludis/environment-se.hh>
-
-    /**
-     * Options for Environment::mask_reasons().
-     *
-     * \see Environment
-     * \see MaskReasonsOption
-     * \ingroup grpenvironment
-     */
-    typedef Options<MaskReasonsOption> MaskReasonsOptions;
-
-    /**
-     * A collection of mirror prefixes.
-     *
-     * \see Environment
-     * \ingroup grpenvironment
-     */
-    typedef SequentialCollection<std::string> MirrorsCollection;
 
     /**
      * Represents a working environment, which contains an available packages
@@ -260,6 +240,14 @@ namespace paludis
              * Perform a hook.
              */
             virtual HookResult perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
+            ///\name Distribution information
+            ///\{
+
+            virtual std::string default_distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

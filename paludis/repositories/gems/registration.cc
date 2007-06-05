@@ -24,6 +24,7 @@
 #include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/distribution.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 
@@ -48,7 +49,7 @@ namespace
 
         std::string buildroot;
         if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-            buildroot = DistributionData::get_instance()->default_distribution()->default_ebuild_build_root;
+            buildroot = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_build_root;
 
         return make_shared_ptr(new GemsRepository(gems::RepositoryParams::create()
                     .location(location)
@@ -69,7 +70,7 @@ namespace
 
         std::string buildroot;
         if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-            buildroot = DistributionData::get_instance()->default_distribution()->default_ebuild_build_root;
+            buildroot = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_build_root;
 
         return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
                     .location(location)

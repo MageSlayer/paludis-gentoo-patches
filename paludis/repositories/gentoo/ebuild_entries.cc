@@ -149,7 +149,8 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                     "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
 
         tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                    DistributionData::get_instance()->default_distribution()->eapi_when_unknown));
+                    DistributionData::get_instance()->distribution_from_string(
+                        _imp->environment->default_distribution())->eapi_when_unknown));
         EAPIPhases phases(eapi->supported->ebuild_phases->ebuild_metadata);
 
         int c(std::distance(phases.begin_phases(), phases.end_phases()));

@@ -53,6 +53,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include "config.h"
+
 /** \file
  * Implementation of paludis_config.hh classes.
  *
@@ -80,6 +82,7 @@ namespace paludis
         std::string paludis_command;
         std::string root;
         std::string config_dir;
+        mutable std::string distribution;
         tr1::shared_ptr<FSEntryCollection> bashrc_files;
 
         std::list<RepositoryConfigEntry> repos;
@@ -165,6 +168,7 @@ namespace paludis
                         "Key 'reduced_username' is unset, using '" + reduced_username + "'");
 
             accept_breaks_portage = kv->get("portage_compatible").empty();
+            distribution = kv->get("distribution");
         }
 
         has_environment_conf = true;
@@ -230,7 +234,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     _imp->root = root_prefix;
     _imp->config_dir = stringify(local_config_dir);
-
     /* check that we can safely use userpriv */
     {
         Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
@@ -256,7 +259,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         /* add virtuals repositories */
 
-        if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+        if (DistributionData::get_instance()->distribution_from_string(e->default_distribution())->support_old_style_virtuals)
         {
             tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
@@ -667,5 +670,19 @@ tr1::shared_ptr<const MirrorsConf>
 PaludisConfig::mirrors_conf() const
 {
     return _imp->mirrors_conf;
+}
+
+std::string
+PaludisConfig::distribution() const
+{
+    if (! _imp->distribution.empty())
+        return _imp->distribution;
+
+    _imp->need_environment_conf();
+
+    if (_imp->distribution.empty())
+        _imp->distribution = DEFAULT_DISTRIBUTION;
+
+    return _imp->distribution;
 }
 

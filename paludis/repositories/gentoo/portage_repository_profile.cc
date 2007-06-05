@@ -218,7 +218,7 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
     load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
-    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+    if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
         virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
 }
@@ -400,7 +400,8 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
     }
 
-    if (DistributionData::get_instance()->default_distribution()->support_old_style_virtuals)
+    if (DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->support_old_style_virtuals)
         try
         {
             for (ProfileFile::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;

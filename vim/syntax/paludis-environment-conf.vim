@@ -38,7 +38,7 @@ syn region PaludisEnvironmentConfString contained start=/"/ end=/"/
 	    \ skipwhite
 
 syn keyword PaludisEnvironmentConfKnownKey contained
-	    \ reduced_username portage_compatible
+	    \ reduced_username portage_compatible distribution
 
 syn match PaludisEnvironmentConfVariable contained /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
 

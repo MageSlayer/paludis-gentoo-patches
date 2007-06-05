@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,26 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/repository_maker.hh>
-#include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
-#include <paludis/repositories/virtuals/virtuals_repository.hh>
-#include "config.h"
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_OPTIONS_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_OPTIONS_FWD_HH 1
 
-using namespace paludis;
-
-#ifndef MONOLITHIC
-
-extern "C"
+namespace paludis
 {
-    void PALUDIS_VISIBLE register_repositories(RepositoryMaker * maker);
-}
+    class OptionsStore;
 
-void register_repositories(RepositoryMaker * maker)
-{
-    maker->register_maker("virtuals", &VirtualsRepository::make_virtuals_repository);
-    maker->register_maker("installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
+    template <typename E_>
+    class Options;
 }
 
 #endif
-
-

@@ -31,6 +31,7 @@
 #include <set>
 #include <dlfcn.h>
 #include <stdint.h>
+#include "config.h"
 
 using namespace paludis;
 
@@ -150,7 +151,7 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
 
     if (key.empty())
-        key = DistributionData::get_instance()->default_distribution()->default_environment;
+        key = DistributionData::get_instance()->distribution_from_string(DEFAULT_DISTRIBUTION)->default_environment;
 
     try
     {
@@ -158,7 +159,7 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
     catch (const FallBackToAnotherMakerError &)
     {
-        std::string f(DistributionData::get_instance()->default_distribution()->fallback_environment);
+        std::string f(DistributionData::get_instance()->distribution_from_string(DEFAULT_DISTRIBUTION)->fallback_environment);
         if (s.empty() && ! f.empty())
         {
             std::set<std::string> keys;

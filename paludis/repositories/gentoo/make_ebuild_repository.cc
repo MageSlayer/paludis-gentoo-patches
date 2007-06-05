@@ -101,7 +101,8 @@ paludis::make_ebuild_repository(
             distdir = stringify(master_repository->params().distdir);
         else
         {
-            distdir = DistributionData::get_instance()->default_distribution()->default_ebuild_distdir;
+            distdir = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_distdir;
             if (distdir.empty())
                 distdir = location + "/distfiles";
             else if ('/' != distdir.at(0))
@@ -140,12 +141,14 @@ paludis::make_ebuild_repository(
 
     std::string write_cache;
     if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
-        write_cache = DistributionData::get_instance()->default_distribution()->default_ebuild_write_cache;
+        write_cache = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_write_cache;
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
-        names_cache = DistributionData::get_instance()->default_distribution()->default_ebuild_names_cache;
+        names_cache = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_names_cache;
         if (names_cache.empty())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
@@ -174,11 +177,13 @@ paludis::make_ebuild_repository(
 
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = DistributionData::get_instance()->default_distribution()->default_ebuild_build_root;
+        buildroot = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_build_root;
 
     std::string layout;
     if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
-        layout = DistributionData::get_instance()->default_distribution()->default_ebuild_layout;
+        layout = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_layout;
 
     return tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")
