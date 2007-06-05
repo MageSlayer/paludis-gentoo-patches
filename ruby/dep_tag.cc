@@ -32,6 +32,36 @@ namespace
     static VALUE c_dependency_dep_tag;
     static VALUE c_glsa_dep_tag;
     static VALUE c_general_set_dep_tag;
+    struct V :
+        ConstVisitor<DepTagVisitorTypes>
+    {
+        VALUE value;
+        tr1::shared_ptr<const DepTag> mm;
+
+        V(tr1::shared_ptr<const DepTag> _m) :
+            mm(_m)
+        {
+        }
+
+        void visit(const DependencyDepTag &)
+        {
+            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
+                    new tr1::shared_ptr<const DependencyDepTag>(tr1::static_pointer_cast<const DependencyDepTag>(mm)));
+        }
+
+        void visit(const GLSADepTag &)
+        {
+            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<tr1::shared_ptr<const GLSADepTag> >::free,
+                    new tr1::shared_ptr<const GLSADepTag>(tr1::static_pointer_cast<const GLSADepTag>(mm)));
+        }
+
+        void visit(const GeneralSetDepTag &)
+        {
+            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free,
+                    new tr1::shared_ptr<const GeneralSetDepTag>(tr1::static_pointer_cast<const GeneralSetDepTag>(mm)));
+        }
+    };
+
 
     VALUE
     dep_tag_init(VALUE self, VALUE)
@@ -196,54 +226,20 @@ namespace
     }
 }
 
-#if CIARANM_REMOVED_THIS
 VALUE
 paludis::ruby::dep_tag_to_value(tr1::shared_ptr<const DepTag> m)
 {
-    struct V :
-        DepTagVisitorTypes::ConstVisitor
-    {
-        VALUE value;
-        tr1::shared_ptr<const DepTag> mm;
-
-        V(tr1::shared_ptr<const DepTag> _m) :
-            mm(_m)
-        {
-        }
-
-        void visit(const DependencyDepTag *)
-        {
-            value = Data_Wrap_Struct(c_dependency_dep_tag, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free,
-                    new tr1::shared_ptr<const DependencyDepTag>(tr1::static_pointer_cast<const DependencyDepTag>(mm)));
-        }
-
-        void visit(const GLSADepTag *)
-        {
-            value = Data_Wrap_Struct(c_glsa_dep_tag, 0, &Common<tr1::shared_ptr<const GLSADepTag> >::free,
-                    new tr1::shared_ptr<const GLSADepTag>(tr1::static_pointer_cast<const GLSADepTag>(mm)));
-        }
-
-        void visit(const GeneralSetDepTag *)
-        {
-            value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free,
-                    new tr1::shared_ptr<const GeneralSetDepTag>(tr1::static_pointer_cast<const GeneralSetDepTag>(mm)));
-        }
-    };
-
-    tr1::shared_ptr<const DepTag> * m_ptr(0);
     try
     {
         V v(m);
-        m->accept(&v);
+        m->accept(v);
         return v.value;
     }
     catch (const std::exception & e)
     {
-        delete m_ptr;
         exception_to_ruby_exception(e);
     }
 }
-#endif
 
 RegisterRubyClass::Register paludis_ruby_register_dep_tag PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_tag);

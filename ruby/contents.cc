@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/contents.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -36,6 +37,70 @@ namespace
     static VALUE c_contents_misc_entry;
     static VALUE c_contents_dev_entry;
     static VALUE c_contents_fifo_entry;
+
+   struct V :
+            ConstVisitor<ContentsVisitorTypes>
+        {
+            VALUE value;
+            tr1::shared_ptr<const ContentsEntry> mm;
+
+            V(tr1::shared_ptr<const ContentsEntry> _m) :
+                mm(_m)
+            {
+            }
+
+            void visit(const ContentsFileEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_file_entry, 0, &Common<tr1::shared_ptr<const ContentsFileEntry> >::free,
+                        new tr1::shared_ptr<const ContentsFileEntry>(tr1::static_pointer_cast<const ContentsFileEntry>(mm)));
+            }
+
+            void visit(const ContentsDirEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_dir_entry, 0, &Common<tr1::shared_ptr<const ContentsDirEntry> >::free,
+                        new tr1::shared_ptr<const ContentsDirEntry>(tr1::static_pointer_cast<const ContentsDirEntry>(mm)));
+            }
+
+            void visit(const ContentsMiscEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_misc_entry, 0, &Common<tr1::shared_ptr<const ContentsMiscEntry> >::free,
+                        new tr1::shared_ptr<const ContentsMiscEntry>(tr1::static_pointer_cast<const ContentsMiscEntry>(mm)));
+            }
+
+            void visit(const ContentsSymEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_sym_entry, 0, &Common<tr1::shared_ptr<const ContentsSymEntry> >::free,
+                        new tr1::shared_ptr<const ContentsSymEntry>(tr1::static_pointer_cast<const ContentsSymEntry>(mm)));
+            }
+
+            void visit(const ContentsFifoEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_fifo_entry, 0, &Common<tr1::shared_ptr<const ContentsFifoEntry> >::free,
+                        new tr1::shared_ptr<const ContentsFifoEntry>(tr1::static_pointer_cast<const ContentsFifoEntry>(mm)));
+            }
+
+            void visit(const ContentsDevEntry &)
+            {
+                value = Data_Wrap_Struct(c_contents_dev_entry, 0, &Common<tr1::shared_ptr<const ContentsDevEntry> >::free,
+                        new tr1::shared_ptr<const ContentsDevEntry>(tr1::static_pointer_cast<const ContentsDevEntry>(mm)));
+            }
+        };
+
+
+    VALUE
+    contents_entry_to_value(tr1::shared_ptr<const ContentsEntry> m)
+    {
+        try
+        {
+            V v(m);
+            m->accept(v);
+            return v.value;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
 
     VALUE
     contents_init(VALUE self)
@@ -92,7 +157,6 @@ namespace
         }
     }
 
-#if CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     each {|contents_entry| block}
@@ -109,7 +173,6 @@ namespace
             rb_yield(contents_entry_to_value(*i));
         return self;
     }
-#endif
 
     VALUE
     contents_entry_init(int, VALUE *, VALUE self)
@@ -204,9 +267,7 @@ namespace
         rb_include_module(c_contents, rb_mEnumerable);
         rb_define_singleton_method(c_contents, "new", RUBY_FUNC_CAST(&contents_new), 0);
         rb_define_method(c_contents, "initialize", RUBY_FUNC_CAST(&contents_init), 0);
-#if CIARANM_REMOVED_THIS
         rb_define_method(c_contents, "each", RUBY_FUNC_CAST(&contents_each), 0);
-#endif
         rb_define_method(c_contents, "add", RUBY_FUNC_CAST(&contents_add), 1);
 
         /*
@@ -273,73 +334,6 @@ namespace
         rb_define_method(c_contents_sym_entry, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const ContentsSymEntry> >::to_s_via_ptr), 0);
     }
 }
-
-#if CIARANM_REMOVED_THIS
-VALUE
-paludis::ruby::contents_entry_to_value(tr1::shared_ptr<const ContentsEntry> m)
-{
-    struct V :
-        ContentsVisitorTypes::ConstVisitor
-    {
-        VALUE value;
-        tr1::shared_ptr<const ContentsEntry> mm;
-
-        V(tr1::shared_ptr<const ContentsEntry> _m) :
-            mm(_m)
-        {
-        }
-
-        void visit(const ContentsFileEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_file_entry, 0, &Common<tr1::shared_ptr<const ContentsFileEntry> >::free,
-                    new tr1::shared_ptr<const ContentsFileEntry>(tr1::static_pointer_cast<const ContentsFileEntry>(mm)));
-        }
-
-        void visit(const ContentsDirEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_dir_entry, 0, &Common<tr1::shared_ptr<const ContentsDirEntry> >::free,
-                    new tr1::shared_ptr<const ContentsDirEntry>(tr1::static_pointer_cast<const ContentsDirEntry>(mm)));
-        }
-
-        void visit(const ContentsMiscEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_misc_entry, 0, &Common<tr1::shared_ptr<const ContentsMiscEntry> >::free,
-                    new tr1::shared_ptr<const ContentsMiscEntry>(tr1::static_pointer_cast<const ContentsMiscEntry>(mm)));
-        }
-
-        void visit(const ContentsSymEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_sym_entry, 0, &Common<tr1::shared_ptr<const ContentsSymEntry> >::free,
-                    new tr1::shared_ptr<const ContentsSymEntry>(tr1::static_pointer_cast<const ContentsSymEntry>(mm)));
-        }
-
-        void visit(const ContentsFifoEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_fifo_entry, 0, &Common<tr1::shared_ptr<const ContentsFifoEntry> >::free,
-                    new tr1::shared_ptr<const ContentsFifoEntry>(tr1::static_pointer_cast<const ContentsFifoEntry>(mm)));
-        }
-
-        void visit(const ContentsDevEntry *)
-        {
-            value = Data_Wrap_Struct(c_contents_dev_entry, 0, &Common<tr1::shared_ptr<const ContentsDevEntry> >::free,
-                    new tr1::shared_ptr<const ContentsDevEntry>(tr1::static_pointer_cast<const ContentsDevEntry>(mm)));
-        }
-    };
-
-    tr1::shared_ptr<const ContentsEntry> * m_ptr(0);
-    try
-    {
-        V v(m);
-        m->accept(&v);
-        return v.value;
-    }
-    catch (const std::exception & e)
-    {
-        delete m_ptr;
-        exception_to_ruby_exception(e);
-    }
-}
-#endif
 
 VALUE
 paludis::ruby::contents_to_value(tr1::shared_ptr<const Contents> m)

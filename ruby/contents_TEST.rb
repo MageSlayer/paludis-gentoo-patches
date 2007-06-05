@@ -215,10 +215,10 @@ module Paludis
             get_c
         end
 
-###        def test_responds_to
-###            c = get_c
-###            [:add, :entries, :each].each {|sym| assert_respond_to c, sym}
-###        end
+        def test_responds_to
+            c = get_c
+            [:add, :entries, :each].each {|sym| assert_respond_to c, sym}
+        end
 
         def test_add
             assert_nothing_raised do
@@ -226,25 +226,25 @@ module Paludis
             end
         end
 
-###        def test_entries
-###            c = get_c
-###
-###            assert_equal true, c.entries.empty?
-###
-###            cfe = get_cfe
-###            cse = get_cse
-###            c.add(cfe)
-###
-###            assert_equal 1, c.entries.length
-###            assert_equal cfe.to_s, c.entries.first.to_s
-###
-###            c.add(cse)
-###
-###            assert_equal 2, c.entries.length
-###            assert_equal cfe.to_s, c.entries.first.to_s
-###            assert_equal cse.to_s, c.entries.last.to_s
-###
-###        end
+        def test_entries
+            c = get_c
+
+            assert_equal true, c.entries.empty?
+
+            cfe = get_cfe
+            cse = get_cse
+            c.add(cfe)
+
+            assert_equal 1, c.entries.length
+            assert_equal cfe.to_s, c.entries.first.to_s
+
+            c.add(cse)
+
+            assert_equal 2, c.entries.length
+            assert_equal cfe.to_s, c.entries.first.to_s
+            assert_equal cse.to_s, c.entries.last.to_s
+
+        end
     end
 end
 
