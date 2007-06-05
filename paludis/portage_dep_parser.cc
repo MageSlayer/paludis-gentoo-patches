@@ -23,6 +23,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <stack>
 
@@ -62,38 +63,7 @@ namespace
         dps_had_text_arrow_text
     };
 
-    template <typename H_>
-    struct Composite
-    {
-        virtual tr1::shared_ptr<typename H_::ConstItem> as_const_item() const = 0;
-        virtual void add(tr1::shared_ptr<ConstAcceptInterface<H_> >) = 0;
-
-        virtual ~Composite()
-        {
-        }
-    };
-
-    template <typename H_, typename E_>
-    struct RealComposite :
-        Composite<H_>
-    {
-        tr1::shared_ptr<ConstTreeSequence<H_, E_> > _i;
-
-        virtual tr1::shared_ptr<typename H_::ConstItem> as_const_item() const
-        {
-            return tr1::static_pointer_cast<typename H_::ConstItem>(_i);
-        }
-
-        virtual void add(tr1::shared_ptr<ConstAcceptInterface<H_> > i)
-        {
-            _i->add(i);
-        }
-
-        RealComposite(tr1::shared_ptr<ConstTreeSequence<H_, E_> > e) :
-            _i(e)
-        {
-        }
-    };
+    using namespace tr1::placeholders;
 
     struct ParsePackageDepSpec
     {
@@ -106,15 +76,15 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p->add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+            p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
                             tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -131,20 +101,20 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             if (s.empty() || '!' != s.at(0))
-                p->add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
+                p(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(new TreeLeaf<H_, PackageDepSpec>(
                                 tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s, _parse_mode)))));
             else
-                p->add(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
+                p(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(new TreeLeaf<H_, BlockDepSpec>(
                                 tr1::shared_ptr<BlockDepSpec>(new BlockDepSpec(
                                         tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode)))))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -154,15 +124,15 @@ namespace
     {
         template <typename H_>
         void
-        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p->add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
+            p(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(new TreeLeaf<H_, PlainTextDepSpec>(
                             tr1::shared_ptr<PlainTextDepSpec>(new PlainTextDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > &) const
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
         {
             throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
@@ -179,18 +149,18 @@ namespace
 
         template <typename H_>
         void
-        add(const std::string & s, tr1::shared_ptr<Composite<H_> > & p) const
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p->add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
+            p(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
                             tr1::shared_ptr<URIDepSpec>(new URIDepSpec(s)))));
         }
 
         template <typename H_>
         void
-        add_arrow(const std::string & lhs, const std::string & rhs, tr1::shared_ptr<Composite<H_> > & p) const
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             if (_supports_arrow)
-                p->add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
+                p(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
                                 tr1::shared_ptr<URIDepSpec>(new URIDepSpec(lhs + " -> " + rhs)))));
             else
                 throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this EAPI");
@@ -201,7 +171,7 @@ namespace
     struct HandleUse
     {
         static void handle(const std::string & s, const std::string & i,
-                std::stack<std::pair<tr1::shared_ptr<Composite<H_> >, bool> > & stack)
+                std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
         {
             std::string f(i);
             bool inv(f.length() && ('!' == f.at(0)));
@@ -219,8 +189,9 @@ namespace
             tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > a(
                     new ConstTreeSequence<H_, UseDepSpec>(tr1::shared_ptr<UseDepSpec>(
                             new UseDepSpec(UseFlagName(f), inv))));
-            stack.top().first->add(a);
-            stack.push(std::make_pair(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, UseDepSpec>(a)), false));
+            stack.top().first(a);
+            stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                    tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, a, _1)), false));
         }
     };
 
@@ -228,7 +199,7 @@ namespace
     struct HandleUse<H_, false>
     {
         static void handle(const std::string & s, const std::string &,
-                std::stack<std::pair<tr1::shared_ptr<Composite<H_> >, bool> > &)
+                std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
         {
             throw DepStringParseError(s, "use? group is not allowed here");
         }
@@ -237,19 +208,20 @@ namespace
     template <typename H_, bool>
     struct HandleAny
     {
-        static void handle(const std::string &, std::stack<std::pair<tr1::shared_ptr<Composite<H_> >, bool> > & stack)
+        static void handle(const std::string &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
         {
              tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > a(new ConstTreeSequence<H_, AnyDepSpec>(
                          tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
-             stack.top().first->add(a);
-             stack.push(std::make_pair(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, AnyDepSpec>(a)), true));
+             stack.top().first(a);
+             stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                     tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, a, _1)), true));
         }
     };
 
     template <typename H_>
     struct HandleAny<H_, false>
     {
-        static void handle(const std::string & s, std::stack<std::pair<tr1::shared_ptr<Composite<H_> >, bool> > &)
+        static void handle(const std::string & s, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &)
         {
              throw DepStringParseError(s, "|| is not allowed here");
         }
@@ -280,10 +252,11 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
 {
     Context context("When parsing dependency string '" + s + "':");
 
-    std::stack<std::pair<tr1::shared_ptr<Composite<H_> >, bool> > stack;
-    stack.push(std::make_pair(tr1::shared_ptr<RealComposite<H_, AllDepSpec> >(new RealComposite<H_, AllDepSpec>(
-                        tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> >(new ConstTreeSequence<H_, AllDepSpec>(
-                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))), false));
+    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
+        new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+    std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
+    stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+            tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result, _1)), false));
 
     std::string arrow_lhs;
     PortageDepParserState state(dps_initial);
@@ -331,8 +304,8 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                                  {
                                      tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
                                                  tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-                                     stack.top().first->add(a);
-                                     stack.push(std::make_pair(tr1::shared_ptr<Composite<H_> >(new RealComposite<H_, AllDepSpec>(a)), false));
+                                     stack.top().first(a);
+                                     stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
                                      state = dps_had_paren;
                                  }
                                  continue;
@@ -571,11 +544,10 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
             throw DepStringParseError(s, "Unexpected end of string");
     }
 
-    tr1::shared_ptr<Composite<H_> > result(stack.top().first);
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
-    return result->as_const_item();
+    return result;
 }
 
 tr1::shared_ptr<DependencySpecTree::ConstItem>

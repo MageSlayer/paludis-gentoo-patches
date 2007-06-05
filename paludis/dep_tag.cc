@@ -18,6 +18,8 @@
  */
 
 #include "dep_tag.hh"
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -39,10 +41,12 @@ template class ConstAcceptInterface<DepTagVisitorTypes>;
 template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>;
 template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GLSADepTag>;
 template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>;
+template class ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>;
 
 template class Visits<const GeneralSetDepTag>;
 template class Visits<const GLSADepTag>;
 template class Visits<const DependencyDepTag>;
+template class Visits<const TargetDepTag>;
 
 template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
 
@@ -52,8 +56,6 @@ namespace
 {
     /**
      * Create the DepTagCategory for GLSAs.
-     *
-     * \see register_glsa_dep_tag
      *
      * \ingroup grpdeptag
      */
@@ -71,8 +73,6 @@ namespace
     /**
      * Create the DepTagCategory for general sets.
      *
-     * \see register_general_set_dep_tag
-     *
      * \ingroup grpdeptag
      */
     tr1::shared_ptr<const DepTagCategory>
@@ -89,8 +89,6 @@ namespace
     /**
      * Create the DepTagCategory for dependency sets.
      *
-     * \see register_dependency_set_dep_tag
-     *
      * \ingroup grpdeptag
      */
     tr1::shared_ptr<const DepTagCategory>
@@ -100,6 +98,22 @@ namespace
                     false,
                     "dependency",
                     "Dependencies",
+                    "",
+                    ""));
+    }
+
+    /**
+     * Create the DepTagCategory for targets.
+     *
+     * \ingroup grpdeptag
+     */
+    tr1::shared_ptr<const DepTagCategory>
+    make_target_dep_tag()
+    {
+        return tr1::shared_ptr<const DepTagCategory>(new DepTagCategory(
+                    false,
+                    "target",
+                    "Targets",
                     "",
                     ""));
     }
@@ -161,16 +175,22 @@ DepTag::~DepTag()
 {
 }
 
+std::string
+DepTag::full_text() const
+{
+    return short_text();
+}
+
 bool
 DepTag::operator== (const DepTag & other) const
 {
-    return short_text() == other.short_text();
+    return full_text() == other.full_text();
 }
 
 bool
 DepTag::operator< (const DepTag & other) const
 {
-    return short_text() < other.short_text();
+    return full_text() < other.full_text();
 }
 
 GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title) :
@@ -221,9 +241,30 @@ GeneralSetDepTag::source() const
     return _source;
 }
 
-DependencyDepTag::DependencyDepTag(const PackageDatabaseEntry & pde) :
-    _dbe(pde)
+DependencyDepTag::DependencyDepTag(const PackageDatabaseEntry & pde, const PackageDepSpec & spec,
+            tr1::shared_ptr<DependencySpecTree::ConstItem> cond) :
+    _dbe(pde),
+    _cond(cond)
 {
+    tr1::shared_ptr<PackageDepSpec> cloned_spec(tr1::static_pointer_cast<PackageDepSpec>(spec.clone()));
+    cloned_spec->set_tag(tr1::shared_ptr<const DepTag>());
+    _spec = cloned_spec;
+}
+
+std::string
+DependencyDepTag::full_text() const
+{
+    if (_str.empty())
+    {
+        _str.append(stringify(_dbe));
+        _str.append(",");
+        _str.append(stringify(*_spec));
+        _str.append(",");
+        DepSpecPrettyPrinter pretty(0, false);
+        _cond->accept(pretty);
+        _str.append(stringify(pretty));
+    }
+    return _str;
 }
 
 std::string
@@ -238,10 +279,45 @@ DependencyDepTag::category() const
     return "dependency";
 }
 
+PackageDatabaseEntry
+DependencyDepTag::package() const
+{
+    return _dbe;
+}
+
+tr1::shared_ptr<const PackageDepSpec>
+DependencyDepTag::dependency() const
+{
+    return _spec;
+}
+
+tr1::shared_ptr<DependencySpecTree::ConstItem>
+DependencyDepTag::conditions() const
+{
+    return _cond;
+}
+
+TargetDepTag::TargetDepTag()
+{
+}
+
+std::string
+TargetDepTag::short_text() const
+{
+    return "target";
+}
+
+std::string
+TargetDepTag::category() const
+{
+    return "target";
+}
+
 DepTagCategoryMaker::DepTagCategoryMaker()
 {
     register_maker("glsa", &make_glsa_dep_tag);
     register_maker("general", &make_general_set_dep_tag);
     register_maker("dependency", &make_dependency_set_dep_tag);
+    register_maker("target", &make_target_dep_tag);
 }
 

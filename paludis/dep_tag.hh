@@ -28,6 +28,7 @@
 
 #include <paludis/dep_tag-fwd.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/virtual_constructor.hh>
@@ -53,7 +54,8 @@ namespace paludis
             DepTag,
             GLSADepTag,
             GeneralSetDepTag,
-            DependencyDepTag
+            DependencyDepTag,
+            TargetDepTag
         >
     {
     };
@@ -159,6 +161,7 @@ namespace paludis
     class GLSADepTag;
     class GeneralSetDepTag;
     class DependencyDepTag;
+    class TargetDepTag;
 
     /**
      * A DepTag can be associated with a PackageDepSpec, and is transferred
@@ -176,6 +179,12 @@ namespace paludis
         public virtual ConstAcceptInterface<DepTagVisitorTypes>
     {
         protected:
+            /**
+             * Return a string containing all our state, for
+             * comparison with other tags.
+             */
+            virtual std::string full_text() const;
+
             ///\name Basic operations
             ///\{
 
@@ -283,17 +292,63 @@ namespace paludis
     {
         private:
             const PackageDatabaseEntry _dbe;
+            tr1::shared_ptr<const PackageDepSpec> _spec;
+            tr1::shared_ptr<DependencySpecTree::ConstItem> _cond;
+            mutable std::string _str;
+
+            void _make_str() const;
+
+        protected:
+            virtual std::string full_text() const;
+
 
         public:
             ///\name Basic operations
             ///\{
 
-            DependencyDepTag(const PackageDatabaseEntry & dbe);
+            DependencyDepTag(const PackageDatabaseEntry & dbe, const PackageDepSpec & spec, tr1::shared_ptr<DependencySpecTree::ConstItem>);
 
             ///\}
 
             virtual std::string short_text() const;
 
+            virtual std::string category() const;
+
+            /**
+             * The PackageDatabaseEntry that contains our dependency.
+             */
+            PackageDatabaseEntry package() const;
+
+            /**
+             * The PackageDepSpec that pulled us in.
+             */
+            tr1::shared_ptr<const PackageDepSpec> dependency() const;
+
+            /**
+             * The AllDepSpecs and UseDepSpecs that our dependency is conditional upon.
+             */
+            tr1::shared_ptr<DependencySpecTree::ConstItem> conditions() const;
+    };
+
+    /**
+     * DepTag subclass for explicit targets.
+     *
+     * \ingroup grpdeptag
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE TargetDepTag :
+        public DepTag,
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, TargetDepTag>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            TargetDepTag();
+
+            ///\}
+
+            virtual std::string short_text() const;
             virtual std::string category() const;
     };
 

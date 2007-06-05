@@ -78,18 +78,21 @@ namespace paludis
              * Add a package to the list.
              */
             void add_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+                    const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an already installed package to the list.
              */
             void add_already_installed_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+                    const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an error package to the list.
              */
-            void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
+            void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind,
+                    const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>);
 
             /**
              * Add predependencies.
@@ -110,7 +113,8 @@ namespace paludis
             bool is_top_level_target(const PackageDatabaseEntry &) const;
 
             void add_not_top_level(DependencySpecTree::ConstItem &,
-                    tr1::shared_ptr<const DestinationsCollection> target_destinations);
+                    tr1::shared_ptr<const DestinationsCollection> target_destinations,
+                    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions);
 
         public:
             ///\name Basic operations
@@ -176,6 +180,7 @@ namespace paludis
              * Add a suggested package to the list.
              */
             void add_suggested_package(const PackageDatabaseEntry &,
+                    const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             ///\name Iterate over our dependency list entries.

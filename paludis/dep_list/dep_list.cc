@@ -22,6 +22,7 @@
 #include <paludis/dep_list/query_visitor.hh>
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_list/show_suggest_visitor.hh>
+#include <paludis/dep_list/condition_tracker.hh>
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -305,10 +306,16 @@ struct DepList::AddVisitor :
 {
     DepList * const d;
     tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
 
-    AddVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd) :
+    AddVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd,
+               tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c =
+               (tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+                   new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
+                       tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))) :
         d(dd),
-        destinations(ddd)
+        destinations(ddd),
+        conditions(c)
     {
     }
 
@@ -331,6 +338,9 @@ void
 DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 {
     Context context("When adding PackageDepSpec '" + stringify(a) + "':");
+
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* find already installed things */
     // TODO: check destinations
@@ -358,7 +368,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
         if (d->_imp->opts->dependency_tags && d->_imp->current_pde())
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde())))
+                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde(), a, conditions)))
                     .generation(d->_imp->merge_list_generation));
 
         /* add an appropriate destination */
@@ -445,7 +455,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             {
                 if (! (d->_imp->env->mask_reasons(*p, override_options).subtract(mask_mask).any()))
                 {
-                    d->add_error_package(*p, dlk_masked);
+                    d->add_error_package(*p, dlk_masked, a, conditions);
                     best_visible_candidate = &*p;
                     break;
                 }
@@ -507,7 +517,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
                     + stringify(a) + "', falling back to installed package '"
                     + stringify(*already_installed->last()) + "'");
-            d->add_already_installed_package(*already_installed->last(), a.tag(), destinations);
+            d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
     }
@@ -539,7 +549,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
                     + stringify(*already_installed_in_same_slot->last()) + "' over '" +
                     best_visible_candidate_as_string + "'");
-            d->add_already_installed_package(*already_installed_in_same_slot->last(), a.tag(), destinations);
+            d->add_already_installed_package(*already_installed_in_same_slot->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
@@ -556,7 +566,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
                     + stringify(*already_installed->last()) + "' over '" + best_visible_candidate_as_string
                     + "' (in different slot)");
-            d->add_already_installed_package(*already_installed->last(), a.tag(), destinations);
+            d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
@@ -617,7 +627,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             ;
     }
 
-    d->add_package(*best_visible_candidate, a.tag(), destinations);
+    d->add_package(*best_visible_candidate, a.tag(), a, conditions, destinations);
 }
 
 void
@@ -625,6 +635,9 @@ DepList::AddVisitor::visit_sequence(const UseDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
+
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
         if ((d->_imp->current_pde() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_pde()) : false) ^ a.inverse())
@@ -650,7 +663,7 @@ DepList::AddVisitor::visit_sequence(const UseDepSpec & a,
 }
 
 void
-DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
+DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
@@ -667,9 +680,12 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
     {
         Context context("When using rewritten range '" + stringify(*r.spec()) + "':");
         TreeLeaf<DependencySpecTree, PackageDepSpec> rr(r.spec());
-        d->add_not_top_level(rr, destinations);
+        d->add_not_top_level(rr, destinations, conditions);
         return;
     }
+
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */
@@ -681,7 +697,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
         if (d->already_installed(*c, destinations))
         {
             Context context("When using already installed group to resolve dependencies:");
-            d->add_not_top_level(*c, destinations);
+            d->add_not_top_level(*c, destinations, conditions);
             return;
         }
     }
@@ -702,7 +718,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
-            d->add_not_top_level(*c, destinations);
+            d->add_not_top_level(*c, destinations, conditions);
             return;
         }
         catch (const DepListError &)
@@ -723,7 +739,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
-            d->add_not_top_level(*c, destinations);
+            d->add_not_top_level(*c, destinations, conditions);
             return;
         }
         catch (const DepListError &)
@@ -740,7 +756,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec &,
             if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *c))
                 continue;
 
-            d->add_not_top_level(*c, destinations);
+            d->add_not_top_level(*c, destinations, conditions);
             return;
         }
     }
@@ -755,6 +771,9 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     // TODO: check destinations
 
     Context context("When checking BlockDepSpec '!" + stringify(*a.blocked_spec()) + "':");
+
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &conditions, d->_imp->opts->dependency_tags ? ConditionTracker(conditions).add_condition(a) : conditions);
 
     bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
@@ -850,7 +869,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
                 break;
 
             case dl_blocks_accumulate:
-                d->add_error_package(*aa, dlk_block);
+                d->add_error_package(*aa, dlk_block, *a.blocked_spec(), conditions);
                 break;
 
             case last_dl_blocks:
@@ -941,15 +960,18 @@ DepList::add_in_role(DependencySpecTree::ConstItem & spec, const std::string & r
         tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding " + role + ":");
-    add_not_top_level(spec, destinations);
+    add_not_top_level(spec, destinations,
+        tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))));
 }
 
 void
-DepList::add_not_top_level(DependencySpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add_not_top_level(DependencySpecTree::ConstItem & spec, tr1::shared_ptr<const DestinationsCollection> destinations,
+                           tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
-    AddVisitor visitor(this, destinations);
+    AddVisitor visitor(this, destinations, conditions);
     spec.accept(visitor);
     transaction.commit();
 }
@@ -976,6 +998,7 @@ DepList::add(const PackageDepSpec & spec, tr1::shared_ptr<const DestinationsColl
 
 void
 DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding package '" + stringify(p) + "':");
@@ -1010,7 +1033,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1086,7 +1109,7 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
             Context c("When showing suggestions:");
             Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                     next(our_merge_entry_position));
-            ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_pde());
+            ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_pde(), _imp->opts->dependency_tags);
             metadata->deps_interface->suggested_depend()->accept(visitor);
         }
 
@@ -1116,7 +1139,8 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
 }
 
 void
-DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKind kind)
+DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKind kind,
+        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
@@ -1127,7 +1151,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
         {
             if (_imp->current_pde())
                 pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
                         .generation(_imp->merge_list_generation));
             return;
         }
@@ -1148,7 +1172,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -1156,6 +1180,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
 
 void
 DepList::add_suggested_package(const PackageDatabaseEntry & p,
+        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
@@ -1184,7 +1209,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -1246,6 +1271,7 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
 
 void
 DepList::add_already_installed_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+        const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding installed package '" + stringify(p) + "':");
@@ -1273,7 +1299,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, tr1::shar
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,

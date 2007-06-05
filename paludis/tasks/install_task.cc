@@ -145,17 +145,22 @@ InstallTask::add_target(const std::string & target)
             _imp->dep_list.options()->target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
+        {
+            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(target, pds_pm_permissive));
+            spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                        new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                                new PackageDepSpec(target, pds_pm_permissive)))));
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+        }
         else
         {
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
+            tr1::shared_ptr<PackageDepSpec> spec(
+                new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q))));
+            spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                        new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                                new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))))));
+                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
         }
     }
 

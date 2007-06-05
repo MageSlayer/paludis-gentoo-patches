@@ -19,9 +19,11 @@
 
 #include <paludis/dep_list/show_suggest_visitor.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/condition_tracker.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
@@ -36,21 +38,27 @@ namespace paludis
         tr1::shared_ptr<const DestinationsCollection> destinations;
         const Environment * const environment;
         const PackageDatabaseEntry * const pde;
+        bool dependency_tags;
+        tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
 
         Implementation(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-                const Environment * const e, const PackageDatabaseEntry * const p) :
+                const Environment * const e, const PackageDatabaseEntry * const p, bool t) :
             dep_list(d),
             destinations(dd),
             environment(e),
-            pde(p)
+            pde(p),
+            dependency_tags(t),
+            conditions(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+                           new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
+                               tr1::shared_ptr<AllDepSpec>(new AllDepSpec))))
         {
         }
     };
 }
 
 ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-        const Environment * const e, const PackageDatabaseEntry * const p) :
-    PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p))
+        const Environment * const e, const PackageDatabaseEntry * const p, bool t) :
+    PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t))
 {
 }
 
@@ -63,8 +71,24 @@ ShowSuggestVisitor::visit_sequence(const UseDepSpec & a,
         DependencySpecTree::ConstSequenceIterator cur,
         DependencySpecTree::ConstSequenceIterator end)
 {
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &_imp->conditions, _imp->dependency_tags ?
+        ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
+
     if ((_imp->pde ? _imp->environment->query_use(a.flag(), *_imp->pde) : false) ^ a.inverse())
         std::for_each(cur, end, accept_visitor(*this));
+}
+
+void
+ShowSuggestVisitor::visit_sequence(const AnyDepSpec & a,
+        DependencySpecTree::ConstSequenceIterator cur,
+        DependencySpecTree::ConstSequenceIterator end)
+{
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &_imp->conditions, _imp->dependency_tags ?
+        ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
+
+    std::for_each(cur, end, accept_visitor(*this));
 }
 
 void
@@ -76,6 +100,10 @@ void
 ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
 {
     Context context("When adding suggested dep '" + stringify(a) + "':");
+
+    Save<tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > > save_c(
+        &_imp->conditions, _imp->dependency_tags ?
+        ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(_imp->environment->package_database()->query(
                 a, is_installable_only, qo_order_by_version));
@@ -91,7 +119,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         if (_imp->environment->mask_reasons(*m).any())
             continue;
 
-        _imp->dep_list->add_suggested_package(*m, _imp->destinations);
+        _imp->dep_list->add_suggested_package(*m, a, _imp->conditions, _imp->destinations);
         return;
     }
 

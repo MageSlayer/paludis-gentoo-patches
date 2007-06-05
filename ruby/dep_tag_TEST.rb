@@ -31,7 +31,8 @@ module Paludis
 
     class TestCase_DependencyDepTag < Test::Unit::TestCase
         def get_dt
-            DependencyDepTag.new(PackageDatabaseEntry.new('foo/var','0','moo'))
+            DependencyDepTag.new(PackageDatabaseEntry.new('foo/var','0','moo'),
+                                 PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive))
         end
 
         def test_create
@@ -44,10 +45,14 @@ module Paludis
             end
 
             assert_raise ArgumentError do
-                DependencyDepTag.new('a','b')
+                DependencyDepTag.new('a','b','c')
             end
 
             assert_raise TypeError do
+                DependencyDepTag.new('a','b')
+            end
+
+            assert_raise ArgumentError do
                 DependencyDepTag.new(1)
             end
         end
@@ -126,6 +131,33 @@ module Paludis
                 :short_text => 'world',
                 :category=>'general',
                 :source => 'title'
+            }.each do |method, val|
+                assert_respond_to dt, method
+                assert_equal val, dt.send(method)
+            end
+        end
+    end
+
+    class TestCase_TargetDepTag < Test::Unit::TestCase
+        def get_dt
+            TargetDepTag.new
+        end
+
+        def test_create
+            assert_kind_of TargetDepTag, get_dt
+        end
+
+        def test_create_error
+            assert_raise ArgumentError do
+                TargetDepTag.new(1)
+            end
+        end
+
+        def test_respond_to
+            dt = get_dt
+            {
+                :short_text => 'target',
+                :category=>'target',
             }.each do |method, val|
                 assert_respond_to dt, method
                 assert_equal val, dt.send(method)

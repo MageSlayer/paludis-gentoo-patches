@@ -108,7 +108,9 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target, pds_pm_permissive)));
+        tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(target, pds_pm_permissive));
+        pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+        _imp->targets.push_back(pds);
     }
     else
         try
@@ -135,10 +137,12 @@ UninstallTask::add_target(const std::string & target)
                     throw HadBothPackageAndSetTargets();
 
                 _imp->had_package_targets = false;
-                _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                         _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                            PackageNamePart(target)))))));
+                                            PackageNamePart(target))))));
+                pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets.push_back(pds);
             }
         }
         catch (const SetNameError &)
@@ -147,10 +151,12 @@ UninstallTask::add_target(const std::string & target)
                 throw HadBothPackageAndSetTargets();
 
             _imp->had_package_targets = false;
-            _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+            tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(
                             tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                                     _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                        PackageNamePart(target)))))));
+                                        PackageNamePart(target))))));
+            pds->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            _imp->targets.push_back(pds);
         }
 
     _imp->raw_targets.push_back(target);

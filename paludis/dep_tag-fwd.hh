@@ -35,6 +35,7 @@ namespace paludis
     class GLSADepTag;
     class GeneralSetDepTag;
     class DependencyDepTag;
+    class TargetDepTag;
 
     class DepTagVisitorTypes;
 

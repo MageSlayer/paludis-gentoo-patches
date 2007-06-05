@@ -685,6 +685,11 @@ DepTagSummaryDisplayer::visit(const DependencyDepTag &)
 }
 
 void
+DepTagSummaryDisplayer::visit(const TargetDepTag &)
+{
+}
+
+void
 DepTagSummaryDisplayer::visit(const GeneralSetDepTag & tag)
 {
     std::string desc;
@@ -991,6 +996,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             return;
 
     std::string deps;
+    std::set<std::string> dependents, unsatisfied_dependents;
     unsigned c(0), max_c(want_full_install_reasons() ? std::numeric_limits<long>::max() : 3);
 
     for (SortedCollection<DepTagEntry>::Iterator
@@ -1001,19 +1007,39 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
         if (tag->tag->category() != "dependency")
             continue;
 
+        tr1::shared_ptr<const PackageDepSpec> spec(
+            tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
+        if (d.kind != dlk_masked && d.kind != dlk_block && environment()->package_database()->query(
+                query::Matches(*spec) & query::RepositoryHasInstalledInterface(), qo_whatever)->empty())
+            unsatisfied_dependents.insert(tag->tag->short_text());
+        else
+            dependents.insert(tag->tag->short_text());
+    }
+
+    for (std::set<std::string>::iterator it(unsatisfied_dependents.begin()),
+             it_end(unsatisfied_dependents.end()); it_end != it; ++it)
         if (++c < max_c)
         {
-            deps.append(tag->tag->short_text());
+            deps.append("*");
+            deps.append(*it);
             deps.append(", ");
         }
-    }
+    for (std::set<std::string>::iterator it(dependents.begin()),
+             it_end(dependents.end()); it_end != it; ++it)
+        if (unsatisfied_dependents.end() == unsatisfied_dependents.find(*it) &&
+            ++c < max_c)
+        {
+            deps.append(*it);
+            deps.append(", ");
+        }
 
     if (! deps.empty())
     {
         if (c >= max_c)
             deps.append(stringify(c - max_c + 1) + " more, ");
 
-        deps.erase(deps.length() - 2);
+        if (! deps.empty())
+            deps.erase(deps.length() - 2);
 
         if (! deps.empty())
             switch (m)
@@ -1071,6 +1097,11 @@ EntryDepTagDisplayer::visit(const GLSADepTag & tag)
 
 void
 EntryDepTagDisplayer::visit(const DependencyDepTag &)
+{
+}
+
+void
+EntryDepTagDisplayer::visit(const TargetDepTag &)
 {
 }
 

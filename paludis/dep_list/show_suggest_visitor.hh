@@ -43,7 +43,7 @@ namespace paludis
             ///\{
 
             ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd,
-                    const Environment * const, const PackageDatabaseEntry * const);
+                    const Environment * const, const PackageDatabaseEntry * const, bool);
             ~ShowSuggestVisitor();
 
             ///\}
@@ -58,9 +58,11 @@ namespace paludis
             void visit_sequence(const UseDepSpec &,
                     DependencySpecTree::ConstSequenceIterator,
                     DependencySpecTree::ConstSequenceIterator);
+            void visit_sequence(const AnyDepSpec &,
+                    DependencySpecTree::ConstSequenceIterator,
+                    DependencySpecTree::ConstSequenceIterator);
 
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AllDepSpec>::visit_sequence;
-            using ConstVisitor<DependencySpecTree>::VisitConstSequence<ShowSuggestVisitor, AnyDepSpec>::visit_sequence;
 
             ///\}
     };

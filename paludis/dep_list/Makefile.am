@@ -19,6 +19,7 @@ paludis_dep_list_include_HEADERS = \
 	query_visitor.hh \
 	show_suggest_visitor.hh \
 	uninstall_list.hh \
+	condition_tracker.hh \
 	exceptions.hh \
 	options.hh \
 	dep_list-sr.hh \
@@ -34,7 +35,8 @@ libpaludisdeplist_la_SOURCES = \
 	uninstall_list.cc uninstall_list.hh \
 	range_rewriter.cc range_rewriter.hh \
 	query_visitor.cc  query_visitor.hh \
-	show_suggest_visitor.cc show_suggest_visitor.hh
+	show_suggest_visitor.cc show_suggest_visitor.hh \
+	condition_tracker.cc condition_tracker.hh
 
 libpaludisdeplist_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

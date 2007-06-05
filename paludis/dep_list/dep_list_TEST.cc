@@ -19,6 +19,7 @@
 
 #include "dep_list_TEST.hh"
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 
 using namespace paludis;
 using namespace test;
@@ -1656,5 +1657,115 @@ namespace test_cases
                     "cat/zero-1:0::repo");
         }
     } test_dep_list_upgrade_reinstall_scm;
+
+    /**
+     * \test Test DepList dependency tags.
+     */
+    struct DepListTestCaseDependencyTags : TestCase
+    {
+        DepListTestCaseDependencyTags() : TestCase("dep list dependency tags") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/three");
+            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("enabled? ( || ( ( <cat/three-1 cat/three:0 =cat/four-1 ) cat/five ) )");
+            repo->add_version("cat", "three", "0.9");
+            repo->add_version("cat", "four", "1");
+
+            tr1::shared_ptr<FakeInstalledRepository> installed_repo(
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
+            env.package_database()->add_repository(2, installed_repo);
+
+            DepList d1(&env, DepListOptions());
+            d1.options()->dependency_tags = true;
+            PackageDepSpec with_target_tag("cat/one", pds_pm_permissive);
+            with_target_tag.set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            d1.add(with_target_tag, env.default_destinations());
+            PackageDepSpec with_set_tag("cat/two", pds_pm_permissive);
+            with_set_tag.set_tag(tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
+            d1.add(with_set_tag, env.default_destinations());
+
+            TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/three-0.9:0::repo cat/one-1:0::repo "
+                    "cat/four-1:0::repo cat/two-1:0::repo");
+
+            // tags for cat/three
+            DepList::Iterator it(d1.begin());
+            tr1::shared_ptr<DepListEntryTags> tags(it->tags);
+            TEST_CHECK_EQUAL(tags->size(), 3U);
+            bool cat_three_has_tag_from_cat_one(false);
+            bool cat_three_has_first_tag_from_cat_two(false);
+            bool cat_three_has_second_tag_from_cat_two(false);
+
+            for (DepListEntryTags::Iterator tag_it(tags->begin()),
+                     tag_it_end(tags->end()); tag_it_end != tag_it; ++tag_it)
+            {
+                if ("dependency" != tag_it->tag->category())
+                    continue;
+                tr1::shared_ptr<const DependencyDepTag> tag(
+                    tr1::static_pointer_cast<const DependencyDepTag>(tag_it->tag));
+
+                if ("cat/one-1::repo" == tag->short_text())
+                {
+                    cat_three_has_tag_from_cat_one = true;
+                    TEST_CHECK_STRINGIFY_EQUAL(*tag->dependency(), "cat/three");
+                    DepSpecPrettyPrinter pretty(0, false);
+                    tag->conditions()->accept(pretty);
+                    TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat/three");
+                }
+
+                else if ("cat/two-1::repo" == tag->short_text())
+                {
+                    if ("<cat/three-1" == stringify(*tag->dependency()))
+                    {
+                        cat_three_has_first_tag_from_cat_two = true;
+                        DepSpecPrettyPrinter pretty(0, false);
+                        tag->conditions()->accept(pretty);
+                        TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( <cat/three-1 ) )");
+                    }
+                    else if ("cat/three:0" == stringify(*tag->dependency()))
+                    {
+                        cat_three_has_second_tag_from_cat_two = true;
+                        DepSpecPrettyPrinter pretty(0, false);
+                        tag->conditions()->accept(pretty);
+                        TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( cat/three:0 ) )");
+                    }
+                }
+            }
+
+            TEST_CHECK(cat_three_has_tag_from_cat_one);
+            TEST_CHECK(cat_three_has_first_tag_from_cat_two);
+            TEST_CHECK(cat_three_has_second_tag_from_cat_two);
+
+            // tags for cat/one
+            ++it;
+            tags = it->tags;
+            TEST_CHECK_EQUAL(tags->size(), 1U);
+            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "target");
+
+            // tags for cat/four
+            ++it;
+            tags = it->tags;
+            TEST_CHECK_EQUAL(tags->size(), 1U);
+            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "dependency");
+            tr1::shared_ptr<const DependencyDepTag> deptag(
+                tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag));
+            TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1::repo");
+            TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
+            DepSpecPrettyPrinter pretty(0, false);
+            deptag->conditions()->accept(pretty);
+            TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( =cat/four-1 ) )");
+
+            // tags for cat/two
+            ++it;
+            tags = it->tags;
+            TEST_CHECK_EQUAL(tags->size(), 1U);
+            TEST_CHECK_EQUAL(tags->begin()->tag->category(), "general");
+            TEST_CHECK_EQUAL(tags->begin()->tag->short_text(), "set");
+        }
+    } test_dep_list_dependency_tags;
 }
 

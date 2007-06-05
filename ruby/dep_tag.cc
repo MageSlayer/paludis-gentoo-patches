@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +33,7 @@ namespace
     static VALUE c_dependency_dep_tag;
     static VALUE c_glsa_dep_tag;
     static VALUE c_general_set_dep_tag;
+    static VALUE c_target_dep_tag;
     struct V :
         ConstVisitor<DepTagVisitorTypes>
     {
@@ -60,14 +62,14 @@ namespace
             value = Data_Wrap_Struct(c_general_set_dep_tag, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free,
                     new tr1::shared_ptr<const GeneralSetDepTag>(tr1::static_pointer_cast<const GeneralSetDepTag>(mm)));
         }
+
+        void visit(const TargetDepTag &)
+        {
+            value = Data_Wrap_Struct(c_target_dep_tag, 0, &Common<tr1::shared_ptr<const TargetDepTag> >::free,
+                    new tr1::shared_ptr<const TargetDepTag>(tr1::static_pointer_cast<const TargetDepTag>(mm)));
+        }
     };
 
-
-    VALUE
-    dep_tag_init(VALUE self, VALUE)
-    {
-        return self;
-    }
 
     VALUE
     dep_tag_init_1(int, VALUE*, VALUE self)
@@ -76,14 +78,24 @@ namespace
     }
 
     VALUE
-    dependency_dep_tag_new(VALUE self, VALUE pde)
+    dependency_dep_tag_new(int argc, VALUE * argv, VALUE self)
     {
+        if (2 != argc)
+            rb_raise(rb_eArgError, "DependencyDepTag expects two arguments, but got %d", argc);
+
         tr1::shared_ptr<const DependencyDepTag> * ptr(0);
         try
         {
-            ptr = new tr1::shared_ptr<const DependencyDepTag>(new DependencyDepTag(value_to_package_database_entry(pde)));
+            ptr = new tr1::shared_ptr<const DependencyDepTag>(
+                new DependencyDepTag(value_to_package_database_entry(argv[0]),
+                    *value_to_package_dep_spec(argv[1]),
+                    // XXX make this an argument, once the new
+                    // visitors are Rubified
+                    tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
+                        new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
+                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const DependencyDepTag> >::free, ptr));
-            rb_obj_call_init(tdata, 1, &pde);
+            rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
         catch (const std::exception & e)
@@ -126,6 +138,24 @@ namespace
             ptr = new tr1::shared_ptr<const GeneralSetDepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const GeneralSetDepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    target_dep_tag_new(VALUE self)
+    {
+        tr1::shared_ptr<const TargetDepTag> * ptr(0);
+        try
+        {
+            ptr = new tr1::shared_ptr<const TargetDepTag>(new TargetDepTag);
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const TargetDepTag> >::free, ptr));
+            rb_obj_call_init(tdata, 0, 0);
             return tdata;
         }
         catch (const std::exception & e)
@@ -201,8 +231,7 @@ namespace
          * DepTag subclass for dependencies.
          */
         c_dependency_dep_tag = rb_define_class_under(paludis_module(), "DependencyDepTag", c_dep_tag);
-        rb_define_singleton_method(c_dependency_dep_tag, "new", RUBY_FUNC_CAST(&dependency_dep_tag_new), 1);
-        rb_define_method(c_dependency_dep_tag, "initialize", RUBY_FUNC_CAST(&dep_tag_init), 1);
+        rb_define_singleton_method(c_dependency_dep_tag, "new", RUBY_FUNC_CAST(&dependency_dep_tag_new), -1);
 
         /*
          * Document-class: Paludis::GLSADepTag
@@ -223,6 +252,14 @@ namespace
         rb_define_singleton_method(c_general_set_dep_tag, "new", RUBY_FUNC_CAST(&general_set_dep_tag_new), -1);
         rb_define_method(c_general_set_dep_tag, "source", RUBY_FUNC_CAST((&DepTagThings<GeneralSetDepTag,
                         &GeneralSetDepTag::source>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::TargetDepTag
+         *
+         * DepTag subclass for general sets.
+         */
+        c_target_dep_tag = rb_define_class_under(paludis_module(), "TargetDepTag", c_dep_tag);
+        rb_define_singleton_method(c_target_dep_tag, "new", RUBY_FUNC_CAST(&target_dep_tag_new), 0);
     }
 }
 

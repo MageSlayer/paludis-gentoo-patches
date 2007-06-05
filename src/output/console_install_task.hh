@@ -57,6 +57,7 @@ namespace paludis
             void visit(const GLSADepTag &);
             void visit(const DependencyDepTag &);
             void visit(const GeneralSetDepTag &);
+            void visit(const TargetDepTag &);
 
             ConsoleInstallTask * task()
             {
@@ -77,6 +78,7 @@ namespace paludis
             void visit(const GLSADepTag & tag);
             void visit(const DependencyDepTag &);
             void visit(const GeneralSetDepTag & tag);
+            void visit(const TargetDepTag &);
 
             std::string & text()
             {
