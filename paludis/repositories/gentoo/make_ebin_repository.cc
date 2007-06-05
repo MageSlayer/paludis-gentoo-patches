@@ -23,6 +23,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/environment.hh>
+#include <paludis/distribution.hh>
 
 using namespace paludis;
 
@@ -80,17 +81,6 @@ paludis::make_ebin_repository(
 
     tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
 
-    std::string pkgdir;
-    if (m->end() == m->find("pkgdir") || ((pkgdir = m->find("pkgdir")->second)).empty())
-    {
-        if (master_repository)
-            pkgdir = stringify(master_repository->params().pkgdir);
-        else
-            pkgdir = location + "/packages";
-    }
-    if (pkgdir == "/var/empty" || pkgdir.empty())
-        throw PortageRepositoryConfigurationError("Key 'pkgdir' not specified or empty");
-
     std::string setsdir;
     if (m->end() == m->find("setsdir") || ((setsdir = m->find("setsdir")->second)).empty())
         setsdir = location + "/sets";
@@ -112,6 +102,22 @@ paludis::make_ebin_repository(
         names_cache = "/var/empty";
     }
 
+    std::string distdir;
+    if (m->end() == m->find("distdir") || ((distdir = m->find("distdir")->second)).empty())
+    {
+        if (master_repository)
+            distdir = stringify(master_repository->params().distdir);
+        else
+        {
+            distdir = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_distdir;
+            if (distdir.empty())
+                distdir = location + "/distfiles";
+            else if ('/' != distdir.at(0))
+                distdir = location + "/" + distdir;
+        }
+    }
+
     std::string sync;
     if (m->end() != m->find("sync"))
         sync = m->find("sync")->second;
@@ -126,7 +132,18 @@ paludis::make_ebin_repository(
 
     std::string layout;
     if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
-        layout = "traditional";
+        layout = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_layout;
+
+    std::string eapi_when_unknown;
+    if (m->end() == m->find("eapi_when_unknown") || ((eapi_when_unknown = m->find("eapi_when_unknown")->second)).empty())
+        eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_eapi_when_unknown;
+
+    std::string eapi_when_unspecified;
+    if (m->end() == m->find("eapi_when_unspecified") || ((eapi_when_unspecified = m->find("eapi_when_unspecified")->second)).empty())
+        eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_eapi_when_unspecified;
 
     if (m->end() != m->find("sync_exclude"))
     {
@@ -139,7 +156,8 @@ paludis::make_ebin_repository(
 
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = "/var/tmp/paludis";
+        buildroot = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_build_root;
 
     return tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebin")
@@ -152,7 +170,6 @@ paludis::make_ebin_repository(
                 .names_cache(names_cache)
                 .eclassdirs(tr1::shared_ptr<const FSEntryCollection>(new FSEntryCollection::Concrete))
                 .distdir(FSEntry("/var/empty"))
-                .pkgdir(pkgdir)
                 .securitydir(securitydir)
                 .setsdir(setsdir)
                 .newsdir(newsdir)
@@ -161,6 +178,8 @@ paludis::make_ebin_repository(
                 .master_repository(master_repository)
                 .enable_destinations(true)
                 .write_bin_uri_prefix(write_bin_uri_prefix)
+                .eapi_when_unspecified(eapi_when_unspecified)
+                .eapi_when_unknown(eapi_when_unknown)
                 .buildroot(buildroot)));
 }
 

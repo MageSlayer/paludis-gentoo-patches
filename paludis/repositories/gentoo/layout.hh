@@ -27,7 +27,6 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/util/tr1_memory.hh>
 
 namespace paludis
@@ -43,13 +42,13 @@ namespace paludis
     class PALUDIS_VISIBLE Layout
     {
         private:
-            tr1::shared_ptr<FSEntryCollection> _profiles_dirs;
+            tr1::shared_ptr<const FSEntry> _master_repository_location;
 
         protected:
             ///\name Basic operations
             ///\{
 
-            Layout();
+            Layout(tr1::shared_ptr<const FSEntry> master_repository_location);
 
             ///\}
 
@@ -61,14 +60,10 @@ namespace paludis
 
             ///\}
 
-            ///\name Configuration options
+            ///\name Configuration information
             ///\{
 
-            void add_profiles_dir(const FSEntry &);
-
-            typedef libwrapiter::ForwardIterator<Layout, const FSEntry> ProfilesDirsIterator;
-            ProfilesDirsIterator begin_profiles_dirs() const;
-            ProfilesDirsIterator end_profiles_dirs() const;
+            tr1::shared_ptr<const FSEntry> master_repository_location() const;
 
             ///\}
 
@@ -95,15 +90,6 @@ namespace paludis
             virtual bool has_version(const QualifiedPackageName &, const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry package_mask_file(const FSEntry & dir) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual FSEntry arch_list_file(const FSEntry & dir) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual FSEntry mirrors_file(const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
             virtual FSEntry info_packages_file(const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -114,6 +100,33 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual FSEntry category_directory(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual FSEntry package_file(const QualifiedPackageName &, const VersionSpec &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string eapi_string_if_known(const QualifiedPackageName &, const VersionSpec &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> arch_list_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> repository_mask_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> profiles_desc_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> mirror_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> use_desc_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual bool eapi_ebuild_suffix() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual FSEntry profiles_base_dir() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -144,7 +157,8 @@ namespace paludis
     class PALUDIS_VISIBLE LayoutMaker :
         public VirtualConstructor<std::string,
             tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
-                    tr1::shared_ptr<const PortageRepositoryEntries>),
+                    tr1::shared_ptr<const PortageRepositoryEntries>,
+                    tr1::shared_ptr<const FSEntry>),
             virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
         public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
     {

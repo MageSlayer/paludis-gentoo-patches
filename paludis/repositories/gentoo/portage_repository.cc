@@ -45,6 +45,7 @@
 #include <paludis/query.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
+#include <paludis/eapi.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -54,6 +55,7 @@
 #include <paludis/util/pstream.hh>
 #include <paludis/util/random.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
@@ -142,13 +144,10 @@ namespace paludis
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         layout(LayoutMaker::get_instance()->find_maker(
-                    params.layout)(r->name(), params.location, entries_ptr))
+                    params.layout)(r->name(), params.location, entries_ptr, params.master_repository ?
+                        make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
+                        tr1::shared_ptr<FSEntry>()))
     {
-        if (params.master_repository)
-            layout->add_profiles_dir(params.master_repository->params().location / "profiles");
-
-        if ((params.location / "profiles").exists())
-            layout->add_profiles_dir(params.location / "profiles");
     }
 
     Implementation<PortageRepository>::~Implementation()
@@ -162,7 +161,8 @@ namespace paludis
             return;
 
         profile_ptr.reset(new PortageRepositoryProfile(
-                    params.environment, repo, repo->name(), *params.profiles));
+                    params.environment, repo, repo->name(), *params.profiles,
+                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->want_arch_var));
     }
 
     void
@@ -174,15 +174,16 @@ namespace paludis
         Context context("When loading profiles.desc:");
 
         bool found_one(false);
-        for (Layout::ProfilesDirsIterator p(layout->begin_profiles_dirs()), p_end(layout->end_profiles_dirs()) ;
+        tr1::shared_ptr<const FSEntryCollection> profiles_desc_files(layout->profiles_desc_files());
+        for (FSEntryCollection::Iterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
                 p != p_end ; ++p)
         {
-            if (! (*p / "profiles.desc").exists())
+            if (! p->exists())
                 continue;
 
             found_one = true;
 
-            LineConfigFile f(*p / "profiles.desc", LineConfigFileOptions());
+            LineConfigFile f(*p, LineConfigFileOptions());
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -192,13 +193,14 @@ namespace paludis
                     continue;
 
                 FSEntryCollection::Concrete profiles;
-                profiles.push_back(*p / tokens.at(1));
+                profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
                 profiles_desc.push_back(RepositoryPortageInterface::ProfilesDescLine::create()
                         .arch(tokens.at(0))
                         .path(*profiles.begin())
                         .status(tokens.at(2))
                         .profile(tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
-                                    params.environment, repo, repo->name(), profiles))));
+                                    params.environment, repo, repo->name(), profiles,
+                                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->want_arch_var))));
             }
         }
 
@@ -277,6 +279,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     // fairly slow to calculate.
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
+    config_info->add_kv("entry_format", _imp->params.entry_format);
+    config_info->add_kv("layout", _imp->params.layout);
     config_info->add_kv("location", stringify(_imp->params.location));
     config_info->add_kv("profiles", join(_imp->params.profiles->begin(),
                 _imp->params.profiles->end(), " "));
@@ -286,7 +290,6 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("write_cache", stringify(_imp->params.write_cache));
     config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
     config_info->add_kv("distdir", stringify(_imp->params.distdir));
-    config_info->add_kv("pkgdir", stringify(_imp->params.pkgdir));
     config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
     config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
@@ -295,6 +298,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
+    config_info->add_kv("eapi_when_unknown", _imp->params.eapi_when_unknown);
+    config_info->add_kv("eapi_when_unspecified", _imp->params.eapi_when_unspecified);
     if (_imp->params.master_repository)
         config_info->add_kv("master_repository", stringify(_imp->params.master_repository->name()));
 
@@ -394,15 +399,15 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
         Context context("When querying repository mask for '" + stringify(q) + "-"
                 + stringify(v) + "':");
 
-        for (Layout::ProfilesDirsIterator p(_imp->layout->begin_profiles_dirs()), p_end(_imp->layout->end_profiles_dirs()) ;
+        tr1::shared_ptr<const FSEntryCollection> repository_mask_files(_imp->layout->repository_mask_files());
+        for (FSEntryCollection::Iterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
                 p != p_end ; ++p)
         {
-            FSEntry fff(_imp->layout->package_mask_file(*p));
-            Context context_local("When reading '" + stringify(fff) + "':");
+            Context context_local("When reading '" + stringify(*p) + "':");
 
-            if (fff.exists())
+            if (p->exists())
             {
-                LineConfigFile ff(fff, LineConfigFileOptions());
+                LineConfigFile ff(*p, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
@@ -480,14 +485,14 @@ PortageRepository::do_arch_flags() const
         _imp->arch_flags.reset(new UseFlagNameCollection::Concrete);
 
         bool found_one(false);
-        for (Layout::ProfilesDirsIterator p(_imp->layout->begin_profiles_dirs()), p_end(_imp->layout->end_profiles_dirs()) ;
+        tr1::shared_ptr<const FSEntryCollection> arch_list_files(_imp->layout->arch_list_files());
+        for (FSEntryCollection::Iterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
                 p != p_end ; ++p)
         {
-            FSEntry a(_imp->layout->arch_list_file(*p));
-            if (! a.exists())
+            if (! p->exists())
                 continue;
 
-            LineConfigFile archs(a, LineConfigFileOptions());
+            LineConfigFile archs(*p, LineConfigFileOptions());
             std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -527,12 +532,13 @@ PortageRepository::need_mirrors() const
     if (! _imp->has_mirrors)
     {
         bool found_one(false);
-        for (Layout::ProfilesDirsIterator p(_imp->layout->begin_profiles_dirs()), p_end(_imp->layout->end_profiles_dirs()) ;
+        tr1::shared_ptr<const FSEntryCollection> mirror_files(_imp->layout->mirror_files());
+        for (FSEntryCollection::Iterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
                 p != p_end ; ++p)
         {
-            if (_imp->layout->mirrors_file(*p).exists())
+            if (p->exists())
             {
-                LineConfigFile mirrors(_imp->layout->mirrors_file(*p), LineConfigFileOptions());
+                LineConfigFile mirrors(*p, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> entries;
@@ -958,9 +964,12 @@ PortageRepository::do_describe_use_flag(const UseFlagName & f,
         const PackageDatabaseEntry & e) const
 {
     if (_imp->use_desc.empty())
-        for (Layout::ProfilesDirsIterator p(_imp->layout->begin_profiles_dirs()), p_end(_imp->layout->end_profiles_dirs()) ;
+    {
+        tr1::shared_ptr<const FSEntryCollection> use_desc_dirs(_imp->layout->use_desc_dirs());
+        for (FSEntryCollection::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
             _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p)));
+    }
 
     std::string result;
     for (std::list<tr1::shared_ptr<UseDesc> >::const_iterator i(_imp->use_desc.begin()),

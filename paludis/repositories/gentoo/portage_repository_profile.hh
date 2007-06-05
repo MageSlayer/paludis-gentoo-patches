@@ -58,7 +58,8 @@ namespace paludis
             PortageRepositoryProfile(const Environment * const env,
                     const PortageRepository * const,
                     const RepositoryName & name,
-                    const FSEntryCollection & location);
+                    const FSEntryCollection & location,
+                    bool arch_is_special);
             ~PortageRepositoryProfile();
 
             ///\}

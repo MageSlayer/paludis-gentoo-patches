@@ -159,7 +159,8 @@ namespace paludis
             ///\{
 
             Implementation(const Environment * const e, const PortageRepository * const p,
-                    const RepositoryName & name, const FSEntryCollection & dirs) :
+                    const RepositoryName & name, const FSEntryCollection & dirs,
+                    bool arch_is_special) :
                 env(e),
                 repository(p),
                 system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
@@ -175,7 +176,8 @@ namespace paludis
                 make_vars_from_file_vars();
                 load_special_make_defaults_vars();
                 add_use_expand_to_use();
-                handle_profile_arch_var();
+                if (arch_is_special)
+                    handle_profile_arch_var();
             }
 
             ~Implementation()
@@ -581,9 +583,10 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
 
 PortageRepositoryProfile::PortageRepositoryProfile(
         const Environment * const env, const PortageRepository * const p, const RepositoryName & name,
-        const FSEntryCollection & location) :
+        const FSEntryCollection & location,
+        bool arch_is_special) :
     PrivateImplementationPattern<PortageRepositoryProfile>(
-            new Implementation<PortageRepositoryProfile>(env, p, name, location))
+            new Implementation<PortageRepositoryProfile>(env, p, name, location, arch_is_special))
 {
 }
 

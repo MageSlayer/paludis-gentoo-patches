@@ -217,13 +217,13 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .db_entry(&e)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
-            .pkgdir(_imp->params.pkgdir)
+            .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot));
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
     if (fetch_userpriv_ok)
     {
-        FSEntry f(_imp->params.pkgdir);
+        FSEntry f(_imp->params.distdir);
         Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
         if (f.exists())
@@ -412,7 +412,7 @@ EbinEntries::merge(const MergeOptions & m)
                 metadata->ebuild_interface->inherited()->end(), " ") << std::endl;
     }
 
-    FSEntry pkg_file_name(_imp->params.pkgdir / (
+    FSEntry pkg_file_name(_imp->params.distdir / (
                 stringify(_imp->portage_repository->name()) + "--" +
                 stringify(m.package.name.category) + "--" +
                 stringify(m.package.name.package) + "-" +
@@ -428,7 +428,7 @@ EbinEntries::merge(const MergeOptions & m)
             .db_entry(&m.package)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
-            .pkgdir(_imp->params.pkgdir)
+            .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot));
 
     EbinMergeCommand merge_cmd(

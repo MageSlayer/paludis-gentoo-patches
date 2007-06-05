@@ -1,8 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
- * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/gentoo/traditional_layout.hh>
+#include <paludis/repositories/gentoo/exheres_layout.hh>
 #include <paludis/repositories/gentoo/portage_repository_entries.hh>
+#include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/package_database.hh>
@@ -46,7 +46,7 @@ typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollectio
 namespace paludis
 {
     template<>
-    struct Implementation<TraditionalLayout>
+    struct Implementation<ExheresLayout>
     {
         const RepositoryName name;
         const FSEntry tree_root;
@@ -81,34 +81,34 @@ namespace paludis
     };
 }
 
-TraditionalLayout::TraditionalLayout(const RepositoryName & name, const FSEntry & tree_root,
+ExheresLayout::ExheresLayout(const RepositoryName & name, const FSEntry & tree_root,
         tr1::shared_ptr<const PortageRepositoryEntries> e,
         tr1::shared_ptr<const FSEntry> f) :
     Layout(f),
-    PrivateImplementationPattern<TraditionalLayout>(new Implementation<TraditionalLayout>(name, tree_root, e))
+    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(name, tree_root, e))
 {
     if (master_repository_location())
     {
-        _imp->arch_list_files->push_back(*master_repository_location() / "profiles" / "arch.list");
-        _imp->repository_mask_files->push_back(*master_repository_location() / "profiles" / "package.mask");
-        _imp->profiles_desc_files->push_back(*master_repository_location() / "profiles" / "profiles.desc");
-        _imp->mirror_files->push_back(*master_repository_location() / "profiles" / "thirdpartymirrors");
-        _imp->use_desc_dirs->push_back(*master_repository_location() / "profiles");
+        _imp->arch_list_files->push_back(*master_repository_location() / "metadata" / "arch.conf");
+        _imp->repository_mask_files->push_back(*master_repository_location() / "metadata" / "repository_mask.conf");
+        _imp->profiles_desc_files->push_back(*master_repository_location() / "metadata" / "profiles_desc.conf");
+        _imp->mirror_files->push_back(*master_repository_location() / "metadata" / "mirrors.conf");
+        _imp->use_desc_dirs->push_back(*master_repository_location() / "metadata" / "desc");
     }
 
-    _imp->arch_list_files->push_back(_imp->tree_root / "profiles" / "arch.list");
-    _imp->repository_mask_files->push_back(_imp->tree_root / "profiles" / "package.mask");
-    _imp->profiles_desc_files->push_back(_imp->tree_root / "profiles" / "profiles.desc");
-    _imp->mirror_files->push_back(_imp->tree_root / "profiles" / "thirdpartymirrors");
-    _imp->use_desc_dirs->push_back(_imp->tree_root / "profiles");
+    _imp->arch_list_files->push_back(_imp->tree_root / "metadata" / "arch.conf");
+    _imp->repository_mask_files->push_back(_imp->tree_root / "metadata" / "repository_mask.conf");
+    _imp->profiles_desc_files->push_back(_imp->tree_root / "metadata" / "profiles_desc.conf");
+    _imp->mirror_files->push_back(_imp->tree_root / "metadata" / "mirrors.conf");
+    _imp->use_desc_dirs->push_back(_imp->tree_root / "metadata" / "desc");
 }
 
-TraditionalLayout::~TraditionalLayout()
+ExheresLayout::~ExheresLayout()
 {
 }
 
 void
-TraditionalLayout::need_category_names() const
+ExheresLayout::need_category_names() const
 {
     if (_imp->has_category_names)
         return;
@@ -121,8 +121,8 @@ TraditionalLayout::need_category_names() const
 
     std::list<FSEntry> cats_list;
     if (master_repository_location())
-        cats_list.push_back(*master_repository_location() / "profiles" / "categories");
-    cats_list.push_back(_imp->tree_root / "profiles" / "categories");
+        cats_list.push_back(*master_repository_location() / "metadata" / "categories.conf");
+    cats_list.push_back(_imp->tree_root / "metadata" / "categories.conf");
 
     for (std::list<FSEntry>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
             i != i_end ; ++i)
@@ -151,34 +151,14 @@ TraditionalLayout::need_category_names() const
     }
 
     if (! found_one)
-    {
-        Log::get_instance()->message(ll_qa, lc_context, "No categories file for repository at '"
-                + stringify(_imp->tree_root) + "', faking it");
-        for (DirIterator d(_imp->tree_root), d_end ; d != d_end ; ++d)
-        {
-            if (! d->is_directory_or_symlink_to_directory())
-                continue;
-
-            std::string n(d->basename());
-            if (n == "CVS" || n == "distfiles" || n == "scripts" || n == "eclass" || n == "licences"
-                    || n == "packages")
-                continue;
-
-            try
-            {
-                _imp->category_names.insert(std::make_pair(CategoryNamePart(n), false));
-            }
-            catch (const NameError &)
-            {
-            }
-        }
-    }
+        throw PortageRepositoryConfigurationError("No categories file available for repository '"
+                + stringify(_imp->name) + "', and this layout does not allow auto-generation");
 
     _imp->has_category_names = true;
 }
 
 void
-TraditionalLayout::need_version_specs(const QualifiedPackageName & n) const
+ExheresLayout::need_version_specs(const QualifiedPackageName & n) const
 {
     if (_imp->package_names[n])
         return;
@@ -188,7 +168,7 @@ TraditionalLayout::need_version_specs(const QualifiedPackageName & n) const
 
     tr1::shared_ptr<VersionSpecCollection> v(new VersionSpecCollection::Concrete);
 
-    FSEntry path(_imp->tree_root / stringify(n.category) / stringify(n.package));
+    FSEntry path(_imp->tree_root / "packages" / stringify(n.category) / stringify(n.package));
 
     for (DirIterator e(path), e_end ; e != e_end ; ++e)
     {
@@ -216,7 +196,7 @@ TraditionalLayout::need_version_specs(const QualifiedPackageName & n) const
 }
 
 bool
-TraditionalLayout::has_category_named(const CategoryNamePart & c) const
+ExheresLayout::has_category_named(const CategoryNamePart & c) const
 {
     Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->name) + "':");
 
@@ -225,7 +205,7 @@ TraditionalLayout::has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-TraditionalLayout::has_package_named(const QualifiedPackageName & q) const
+ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 {
     Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->name) + ":");
 
@@ -248,6 +228,7 @@ TraditionalLayout::has_package_named(const QualifiedPackageName & q) const
             return true;
 
         FSEntry fs(_imp->tree_root);
+        fs /= "packages";
         fs /= stringify(q.category);
         fs /= stringify(q.package);
         if (! fs.is_directory_or_symlink_to_directory())
@@ -258,7 +239,7 @@ TraditionalLayout::has_package_named(const QualifiedPackageName & q) const
 }
 
 void
-TraditionalLayout::need_category_names_collection() const
+ExheresLayout::need_category_names_collection() const
 {
     if (_imp->category_names_collection)
         return;
@@ -272,7 +253,7 @@ TraditionalLayout::need_category_names_collection() const
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
-TraditionalLayout::category_names() const
+ExheresLayout::category_names() const
 {
     Context context("When fetching category names in " + stringify(stringify(_imp->name)) + ":");
 
@@ -281,7 +262,7 @@ TraditionalLayout::category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameCollection>
-TraditionalLayout::package_names(const CategoryNamePart & c) const
+ExheresLayout::package_names(const CategoryNamePart & c) const
 {
     using namespace tr1::placeholders;
 
@@ -290,15 +271,15 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
      * slowing down single item queries. */
 
     Context context("When fetching package names in category '" + stringify(c)
-            + "' in " + stringify(_imp->name) + ":");
+            + "' in '" + stringify(_imp->name) + "':");
 
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
-    if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
-        for (DirIterator d(_imp->tree_root / stringify(c)), d_end ; d != d_end ; ++d)
+    if ((_imp->tree_root / "packages" / stringify(c)).is_directory_or_symlink_to_directory())
+        for (DirIterator d(_imp->tree_root / "packages" / stringify(c)), d_end ; d != d_end ; ++d)
         {
             try
             {
@@ -333,7 +314,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const VersionSpecCollection>
-TraditionalLayout::version_specs(const QualifiedPackageName & n) const
+ExheresLayout::version_specs(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->name) + ":");
 
@@ -347,7 +328,7 @@ TraditionalLayout::version_specs(const QualifiedPackageName & n) const
 }
 
 bool
-TraditionalLayout::has_version(const QualifiedPackageName & q, const VersionSpec & v) const
+ExheresLayout::has_version(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     Context context("When checking for version '" + stringify(v) + "' in '"
             + stringify(q) + "' in " + stringify(_imp->name) + ":");
@@ -363,67 +344,67 @@ TraditionalLayout::has_version(const QualifiedPackageName & q, const VersionSpec
 }
 
 FSEntry
-TraditionalLayout::info_packages_file(const FSEntry & dir) const
+ExheresLayout::info_packages_file(const FSEntry & dir) const
 {
-    return dir / "info_pkgs";
+    return dir / "info_packages.conf";
 }
 
 FSEntry
-TraditionalLayout::info_variables_file(const FSEntry & dir) const
+ExheresLayout::info_variables_file(const FSEntry & dir) const
 {
-    return dir / "info_vars";
+    return dir / "info_variables.conf";
 }
 
 FSEntry
-TraditionalLayout::package_directory(const QualifiedPackageName & qpn) const
+ExheresLayout::package_directory(const QualifiedPackageName & qpn) const
 {
-    return _imp->tree_root / stringify(qpn.category) / stringify(qpn.package);
+    return _imp->tree_root / "packages" / stringify(qpn.category) / stringify(qpn.package);
 }
 
 FSEntry
-TraditionalLayout::category_directory(const CategoryNamePart & cat) const
+ExheresLayout::category_directory(const CategoryNamePart & cat) const
 {
-    return _imp->tree_root / stringify(cat);
+    return _imp->tree_root / "packages" / stringify(cat);
 }
 
 tr1::shared_ptr<const FSEntryCollection>
-TraditionalLayout::arch_list_files() const
+ExheresLayout::arch_list_files() const
 {
     return _imp->arch_list_files;
 }
 
 tr1::shared_ptr<const FSEntryCollection>
-TraditionalLayout::repository_mask_files() const
+ExheresLayout::repository_mask_files() const
 {
     return _imp->repository_mask_files;
 }
 
 tr1::shared_ptr<const FSEntryCollection>
-TraditionalLayout::profiles_desc_files() const
+ExheresLayout::profiles_desc_files() const
 {
     return _imp->profiles_desc_files;
 }
 
 tr1::shared_ptr<const FSEntryCollection>
-TraditionalLayout::mirror_files() const
+ExheresLayout::mirror_files() const
 {
     return _imp->mirror_files;
 }
 
 tr1::shared_ptr<const FSEntryCollection>
-TraditionalLayout::use_desc_dirs() const
+ExheresLayout::use_desc_dirs() const
 {
     return _imp->use_desc_dirs;
 }
 
 bool
-TraditionalLayout::eapi_ebuild_suffix() const
+ExheresLayout::eapi_ebuild_suffix() const
 {
-    return false;
+    return true;
 }
 
 FSEntry
-TraditionalLayout::package_file(const QualifiedPackageName & q, const VersionSpec & v) const
+ExheresLayout::package_file(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     for (DirIterator d(package_directory(q)), d_end ; d != d_end ; ++d)
     {
@@ -441,14 +422,27 @@ TraditionalLayout::package_file(const QualifiedPackageName & q, const VersionSpe
 }
 
 std::string
-TraditionalLayout::eapi_string_if_known(const QualifiedPackageName &, const VersionSpec &) const
+ExheresLayout::eapi_string_if_known(const QualifiedPackageName & q, const VersionSpec & v) const
 {
+    for (DirIterator d(package_directory(q)), d_end ; d != d_end ; ++d)
+    {
+        std::string::size_type p(d->basename().rfind('.'));
+        if (std::string::npos == p)
+            continue;
+
+        std::string prefix(stringify(q.package) + "-" + stringify(v));
+        if (0 == d->basename().compare(0, p, prefix))
+            if (_imp->entries->is_package_file(q, *d))
+                return d->basename().substr(p + 1);
+    }
+
     return "";
 }
 
 FSEntry
-TraditionalLayout::profiles_base_dir() const
+ExheresLayout::profiles_base_dir() const
 {
     return _imp->tree_root / "profiles";
 }
+
 

@@ -14,7 +14,6 @@ make_class_PortageRepositoryParams()
     key write_cache FSEntry
     key names_cache FSEntry
     key distdir FSEntry
-    key pkgdir FSEntry
     key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
     key setsdir FSEntry
     key securitydir FSEntry
@@ -25,6 +24,8 @@ make_class_PortageRepositoryParams()
     key master_repository "tr1::shared_ptr<const PortageRepository>"
     key enable_destinations bool
     key write_bin_uri_prefix std::string
+    key eapi_when_unknown std::string
+    key eapi_when_unspecified std::string
 
     doxygen_comment << "END"
         /**

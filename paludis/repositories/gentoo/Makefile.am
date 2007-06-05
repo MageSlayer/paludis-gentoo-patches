@@ -65,6 +65,7 @@ paludis_repositories_gentoo_include_HEADERS = \
 	vdb_unmerger.hh \
 	layout.hh \
 	traditional_layout.hh \
+	exheres_layout.hh \
 	eapi_phase.hh
 
 libpaludisgentoorepository_la_SOURCES = \
@@ -94,6 +95,7 @@ libpaludisgentoorepository_la_SOURCES = \
 	vdb_unmerger.cc \
 	layout.cc \
 	traditional_layout.cc \
+	exheres_layout.cc \
 	eapi_phase.cc \
 	$(paludis_repositories_gentoo_include_HEADERS)
 

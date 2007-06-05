@@ -1,8 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
- * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_TRADITIONAL_LAYOUT_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_TRADITIONAL_LAYOUT_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EXHERES_LAYOUT_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EXHERES_LAYOUT_HH 1
 
 #include <paludis/repositories/gentoo/layout.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -29,14 +28,14 @@ namespace paludis
     class PortageRepositoryEntries;
 
     /**
-     * The traditional tree layout (as used by Gentoo) for a PortageRepository.
+     * The Exheres tree layout for a PortageRepository.
      *
      * \ingroup grpportagerepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE TraditionalLayout :
+    class PALUDIS_VISIBLE ExheresLayout :
         public Layout,
-        private PrivateImplementationPattern<TraditionalLayout>
+        private PrivateImplementationPattern<ExheresLayout>
     {
         private:
             void need_category_names() const;
@@ -47,11 +46,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            TraditionalLayout(const RepositoryName &, const FSEntry &,
+            ExheresLayout(const RepositoryName &, const FSEntry &,
                     tr1::shared_ptr<const PortageRepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>);
 
-            virtual ~TraditionalLayout();
+            virtual ~ExheresLayout();
 
             ///\}
 

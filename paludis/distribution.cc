@@ -73,8 +73,8 @@ namespace paludis
                                     .default_ebuild_names_cache(k.get("default_ebuild_names_cache"))
                                     .default_ebuild_build_root(k.get("default_ebuild_build_root"))
                                     .default_ebuild_layout(k.get("default_ebuild_layout"))
-                                    .eapi_when_unknown(k.get("eapi_when_unknown"))
-                                    .eapi_when_unspecified(k.get("eapi_when_unspecified"))
+                                    .default_ebuild_eapi_when_unknown(k.get("default_ebuild_eapi_when_unknown"))
+                                    .default_ebuild_eapi_when_unspecified(k.get("default_ebuild_eapi_when_unspecified"))
                                     ))));
             }
         }

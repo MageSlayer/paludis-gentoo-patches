@@ -581,6 +581,8 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
 tr1::shared_ptr<DependencySpecTree::ConstItem>
 PortageDepParser::parse_depend(const std::string & s, const EAPI & e)
 {
+    Context c("When parsing dependency string '" + s + "' using EAPI '" + e.name + "':");
+
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' dependencies");
 
@@ -592,6 +594,8 @@ PortageDepParser::parse_depend(const std::string & s, const EAPI & e)
 tr1::shared_ptr<ProvideSpecTree::ConstItem>
 PortageDepParser::parse_provide(const std::string & s, const EAPI & e)
 {
+    Context c("When parsing provide string '" + s + "' using EAPI '" + e.name + "':");
+
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' provides");
 
@@ -602,6 +606,8 @@ PortageDepParser::parse_provide(const std::string & s, const EAPI & e)
 tr1::shared_ptr<RestrictSpecTree::ConstItem>
 PortageDepParser::parse_restrict(const std::string & s, const EAPI & e)
 {
+    Context c("When parsing restrict string '" + s + "' using EAPI '" + e.name + "':");
+
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' restrictions");
 
@@ -612,6 +618,8 @@ PortageDepParser::parse_restrict(const std::string & s, const EAPI & e)
 tr1::shared_ptr<URISpecTree::ConstItem>
 PortageDepParser::parse_uri(const std::string & s, const EAPI & e)
 {
+    Context c("When parsing URI string '" + s + "' using EAPI '" + e.name + "':");
+
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
@@ -622,6 +630,8 @@ PortageDepParser::parse_uri(const std::string & s, const EAPI & e)
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
 PortageDepParser::parse_license(const std::string & s, const EAPI & e)
 {
+    Context c("When parsing license string '" + s + "' using EAPI '" + e.name + "':");
+
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' licenses");
 

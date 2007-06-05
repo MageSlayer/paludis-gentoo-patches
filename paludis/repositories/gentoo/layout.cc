@@ -20,6 +20,7 @@
 
 #include <paludis/repositories/gentoo/layout.hh>
 #include <paludis/repositories/gentoo/traditional_layout.hh>
+#include <paludis/repositories/gentoo/exheres_layout.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
@@ -29,13 +30,14 @@ using namespace paludis;
 
 template class VirtualConstructor<std::string,
          tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
-                 tr1::shared_ptr<const PortageRepositoryEntries>),
+                 tr1::shared_ptr<const PortageRepositoryEntries>,
+                 tr1::shared_ptr<const FSEntry>),
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
 
 template class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
 
-Layout::Layout() :
-    _profiles_dirs(new FSEntryCollection::Concrete)
+Layout::Layout(tr1::shared_ptr<const FSEntry> l) :
+    _master_repository_location(l)
 {
 }
 
@@ -43,22 +45,10 @@ Layout::~Layout()
 {
 }
 
-Layout::ProfilesDirsIterator
-Layout::begin_profiles_dirs() const
+tr1::shared_ptr<const FSEntry>
+Layout::master_repository_location() const
 {
-    return ProfilesDirsIterator(_profiles_dirs->begin());
-}
-
-Layout::ProfilesDirsIterator
-Layout::end_profiles_dirs() const
-{
-    return ProfilesDirsIterator(_profiles_dirs->end());
-}
-
-void
-Layout::add_profiles_dir(const FSEntry & f)
-{
-    _profiles_dirs->push_back(f);
+    return _master_repository_location;
 }
 
 namespace
@@ -66,19 +56,22 @@ namespace
     template <typename T_>
     tr1::shared_ptr<Layout>
     make_layout(const RepositoryName & n, const FSEntry & b,
-            tr1::shared_ptr<const PortageRepositoryEntries> e)
+            tr1::shared_ptr<const PortageRepositoryEntries> e,
+            tr1::shared_ptr<const FSEntry> f)
     {
-        return tr1::shared_ptr<Layout>(new T_(n, b, e));
+        return tr1::shared_ptr<Layout>(new T_(n, b, e, f));
     }
 }
 
 LayoutMaker::LayoutMaker()
 {
     register_maker("traditional", &make_layout<TraditionalLayout>);
+    register_maker("exheres", &make_layout<ExheresLayout>);
 }
 
 NoSuchLayoutType::NoSuchLayoutType(const std::string & format) throw () :
     ConfigurationError("No available maker for Portage repository layout type '" + format + "'")
 {
 }
+
 

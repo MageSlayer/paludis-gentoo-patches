@@ -201,6 +201,12 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
     tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
             version_metadata(e.name, e.version));
 
+    if (! metadata->eapi->supported)
+    {
+        display_metadata_key("EAPI", "EAPI", metadata->eapi->name);
+        return;
+    }
+
     display_metadata_uri("Homepage", "HOMEPAGE", metadata->homepage(), true);
     display_metadata_key("Description", "DESCRIPTION", metadata->description);
 

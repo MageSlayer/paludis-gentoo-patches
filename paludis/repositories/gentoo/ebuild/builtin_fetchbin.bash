@@ -18,22 +18,22 @@
 
 builtin_fetchbin()
 {
-    [[ -d "${PKGDIR}" ]] || die "PKGDIR \"${PKGDIR}\" is not a directory"
+    [[ -d "${DISTDIR}" ]] || die "DISTDIR \"${DISTDIR}\" is not a directory"
 
     local a nofetch unique_aa old_aa
     for a in ${FLAT_BIN_URI} ; do
         local aa=${a##*/}
         hasq "${aa}" ${unique_aa} || unique_aa="${unique_aa} ${aa}"
 
-        if [[ -f "${PKGDIR}/${aa}" ]] && [[ "0" != $(getfsize "${PKGDIR}/${aa}") ]] ; then
+        if [[ -f "${DISTDIR}/${aa}" ]] && [[ "0" != $(getfsize "${DISTDIR}/${aa}") ]] ; then
             if [[ "${old_aa}" != "${aa}" ]] ; then
                 ebuild_section "Already have ${aa}"
                 old_aa="${aa}"
             fi
         else
-            if [[ -f "${PKGDIR}/${aa}" ]] ; then
+            if [[ -f "${DISTDIR}/${aa}" ]] ; then
                 ebuild_section "Trying to remove existing ${aa}..."
-                rm -f "${PKGDIR}/${aa}"
+                rm -f "${DISTDIR}/${aa}"
             fi
 
             if ! hasq fetchbin ${RESTRICT} ; then
@@ -48,7 +48,7 @@ builtin_fetchbin()
                     [[ -x "${prg}" ]] && break
                 done
                 if [[ -x "${prg}" ]] ; then
-                    ${prg} "${a}" "${PKGDIR}/${aa}"
+                    ${prg} "${a}" "${DISTDIR}/${aa}"
                 else
                     eerror "Don't know how to fetch '${a}'"
                 fi
@@ -62,7 +62,7 @@ builtin_fetchbin()
     done
 
     for a in ${unique_aa} ; do
-        [[ -f ${PKGDIR}/${a} ]] || nofetch="${nofetch} ${a}"
+        [[ -f ${DISTDIR}/${a} ]] || nofetch="${nofetch} ${a}"
     done
 
     if [[ -n "${nofetch}" ]] ; then
@@ -80,7 +80,7 @@ builtin_fetchbin()
 ebuild_f_fetchbin()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PKGDIR}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
     if hasq "fetchbin" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_fetchbin (RESTRICT)"
     elif hasq "fetchbin" ${SKIP_FUNCTIONS} ; then

@@ -110,15 +110,6 @@ paludis::make_ebuild_repository(
         }
     }
 
-    std::string pkgdir;
-    if (m->end() == m->find("pkgdir") || ((pkgdir = m->find("pkgdir")->second)).empty())
-    {
-        if (master_repository)
-            pkgdir = stringify(master_repository->params().pkgdir);
-        else
-            pkgdir = location + "/packages";
-    }
-
     std::string setsdir;
     if (m->end() == m->find("setsdir") || ((setsdir = m->find("setsdir")->second)).empty())
         setsdir = location + "/sets";
@@ -143,6 +134,16 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
         write_cache = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_write_cache;
+
+    std::string eapi_when_unknown;
+    if (m->end() == m->find("eapi_when_unknown") || ((eapi_when_unknown = m->find("eapi_when_unknown")->second)).empty())
+        eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_eapi_when_unknown;
+
+    std::string eapi_when_unspecified;
+    if (m->end() == m->find("eapi_when_unspecified") || ((eapi_when_unspecified = m->find("eapi_when_unspecified")->second)).empty())
+        eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_eapi_when_unspecified;
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
@@ -196,7 +197,6 @@ paludis::make_ebuild_repository(
                 .names_cache(names_cache)
                 .eclassdirs(eclassdirs)
                 .distdir(distdir)
-                .pkgdir(pkgdir)
                 .securitydir(securitydir)
                 .setsdir(setsdir)
                 .newsdir(newsdir)
@@ -205,6 +205,8 @@ paludis::make_ebuild_repository(
                 .master_repository(master_repository)
                 .enable_destinations(false)
                 .write_bin_uri_prefix("")
+                .eapi_when_unknown(eapi_when_unknown)
+                .eapi_when_unspecified(eapi_when_unspecified)
                 .buildroot(buildroot)));
 }
 

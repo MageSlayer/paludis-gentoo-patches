@@ -113,7 +113,7 @@ EbinCommand::operator() ()
             .with_setenv("CATEGORY", stringify(params.db_entry->name.category))
             .with_setenv("REPOSITORY", stringify(params.db_entry->repository))
             .with_setenv("PORTDIR", stringify(params.portdir))
-            .with_setenv("PKGDIR", stringify(params.pkgdir))
+            .with_setenv("DISTDIR", stringify(params.distdir))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) +

@@ -23,7 +23,6 @@
 #include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/repositories/gentoo/eapi_phase.hh>
 
-#include <paludis/distribution.hh>
 #include <paludis/eapi.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
@@ -100,7 +99,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
 
     tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
 
-    FSEntry ebuild_file(_imp->portage_repository->layout()->package_directory(q) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
+    FSEntry ebuild_file(_imp->portage_repository->layout()->package_file(q, v));
 
     FSEntry cache_file(_imp->params.cache);
     cache_file /= stringify(q.category);
@@ -148,45 +147,64 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                     "No usable cache entry for '" + stringify(q) +
                     "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
 
-        tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                    DistributionData::get_instance()->distribution_from_string(
-                        _imp->environment->default_distribution())->eapi_when_unknown));
-        EAPIPhases phases(eapi->supported->ebuild_phases->ebuild_metadata);
-
-        int c(std::distance(phases.begin_phases(), phases.end_phases()));
-        if (1 != c)
-            throw EAPIConfigurationError("EAPI '" + eapi->name + "' defines "
-                    + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
+        std::string eapi_str(_imp->portage_repository->layout()->eapi_string_if_known(q, v));
+        if (eapi_str.empty())
+            eapi_str = _imp->params.eapi_when_unknown;
+        tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(eapi_str));
 
         PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
-        EbuildMetadataCommand cmd(EbuildCommandParams::create()
-                .environment(_imp->environment)
-                .db_entry(&e)
-                .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-                .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
-                .eclassdirs(_imp->params.eclassdirs)
-                .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                    _imp->params.location)
-                .distdir(_imp->params.distdir)
-                .buildroot(_imp->params.buildroot)
-                .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
-                .sandbox(phases.begin_phases()->option("sandbox"))
-                .userpriv(phases.begin_phases()->option("userpriv"))
-                .eapi(eapi));
 
-        if (! cmd())
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "No usable metadata for '" + stringify(q)
-                    + "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
-
-        if (0 == ((result = cmd.metadata())))
-            throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
-
-        if (_imp->params.write_cache.basename() != "empty" && result->eapi->supported)
+        if (eapi->supported)
         {
-            EbuildFlatMetadataCache metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
-                    _imp->eclass_mtimes, false);
-            metadata_cache.save(result);
+            Log::get_instance()->message(ll_debug, lc_context) << "Generating metadata command for '"
+                << e << "' using EAPI '" << eapi->name << "'";
+
+            EAPIPhases phases(eapi->supported->ebuild_phases->ebuild_metadata);
+
+            int c(std::distance(phases.begin_phases(), phases.end_phases()));
+            if (1 != c)
+                throw EAPIConfigurationError("EAPI '" + eapi->name + "' defines "
+                        + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
+
+            EbuildMetadataCommand cmd(EbuildCommandParams::create()
+                    .environment(_imp->environment)
+                    .db_entry(&e)
+                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
+                    .ebuild_file(ebuild_file)
+                    .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
+                    .eclassdirs(_imp->params.eclassdirs)
+                    .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                        _imp->params.location)
+                    .distdir(_imp->params.distdir)
+                    .buildroot(_imp->params.buildroot)
+                    .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
+                    .sandbox(phases.begin_phases()->option("sandbox"))
+                    .userpriv(phases.begin_phases()->option("userpriv"))
+                    .eapi(eapi));
+
+            if (! cmd())
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "No usable metadata for '" + stringify(q)
+                        + "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
+
+            if (0 == ((result = cmd.metadata())))
+                throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
+
+            Log::get_instance()->message(ll_debug, lc_context) << "Generated metadata for '"
+                << e << "' has EAPI '" << result->eapi->name << "'";
+
+            if (_imp->params.write_cache.basename() != "empty" && result->eapi->supported)
+            {
+                EbuildFlatMetadataCache metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
+                        _imp->eclass_mtimes, false);
+                metadata_cache.save(result);
+            }
+        }
+        else
+        {
+            Log::get_instance()->message(ll_debug, lc_context) << "Can't run metadata command for '"
+                << e << "' because EAPI '" << eapi->name << "' is unknown";
+            result->eapi = eapi;
         }
     }
 
@@ -529,6 +547,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .environment(_imp->params.environment)
                     .db_entry(&e)
                     .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
+                    .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                     .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
@@ -612,6 +631,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .environment(_imp->params.environment)
                     .db_entry(&e)
                     .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
+                    .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                     .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
@@ -664,6 +684,7 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
             .environment(_imp->params.environment)
             .db_entry(&for_package)
             .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
+            .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
             .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
             .eclassdirs(_imp->params.eclassdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
@@ -700,14 +721,26 @@ EbuildEntries::merge(const MergeOptions &)
 bool
 EbuildEntries::is_package_file(const QualifiedPackageName & n, const FSEntry & e) const
 {
-    return is_file_with_prefix_extension(e, stringify(n.package) + "-", ".ebuild", IsFileWithOptions());
+    if (_imp->portage_repository->layout()->eapi_ebuild_suffix())
+        return (0 == e.basename().compare(0, stringify(n.package).length() + 1, stringify(n.package) + "-")) &&
+            std::string::npos != e.basename().rfind('.') &&
+            e.basename().at(e.basename().length() - 1) != '~' &&
+            e.is_regular_file_or_symlink_to_regular_file();
+    else
+        return is_file_with_prefix_extension(e, stringify(n.package) + "-", ".ebuild", IsFileWithOptions());
 }
 
 VersionSpec
 EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, const FSEntry & e) const
 {
     Context context("When extracting version from '" + stringify(e) + "':");
-    return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebuild"), stringify(n.package) + "-"));
+    if (_imp->portage_repository->layout()->eapi_ebuild_suffix())
+    {
+        std::string::size_type p(e.basename().rfind('.'));
+        return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package) + "-"));
+    }
+    else
+        return VersionSpec(strip_leading_string(strip_trailing_string(e.basename(), ".ebuild"), stringify(n.package) + "-"));
 }
 
 bool
@@ -745,6 +778,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
                 .environment(_imp->params.environment)
                 .db_entry(&e)
                 .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
+                .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                 .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                 .eclassdirs(_imp->params.eclassdirs)
                 .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :

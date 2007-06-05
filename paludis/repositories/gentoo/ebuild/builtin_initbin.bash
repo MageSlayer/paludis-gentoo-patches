@@ -22,12 +22,12 @@ builtin_initbin()
 
     local a
     for a in P PV PR PN PVR PF CATEGORY PORTDIR \
-        PKGDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
+        DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
         CHOST PALUDIS_COMMAND ROOT PALUDIS_LOADSAVEENV_DIR ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
     done
 
-    for a in PKGDIR ; do
+    for a in DISTDIR ; do
         [[ -d "${!a}" ]] || die "\$${a} (\"${!a}\") not a directory"
     done
 

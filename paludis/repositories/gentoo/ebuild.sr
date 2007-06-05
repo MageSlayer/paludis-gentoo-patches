@@ -7,6 +7,7 @@ make_class_EbuildCommandParams()
     key db_entry "const PackageDatabaseEntry *"
     key eapi "tr1::shared_ptr<const EAPI>"
     key ebuild_dir FSEntry
+    key ebuild_file FSEntry
     key files_dir FSEntry
     key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
     key portdir FSEntry
