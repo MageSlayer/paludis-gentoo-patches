@@ -217,11 +217,19 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig initial directory is '"
             + stringify(local_config_dir) + "'");
 
-    if ((local_config_dir / "specpath").exists())
+    // Prefer specpath.conf over specpath. Warn if specpath is used.
+    if ((local_config_dir / "specpath.conf").exists() || (local_config_dir / "specpath").exists())
     {
-        KeyValueConfigFile specpath(local_config_dir / "specpath", KeyValueConfigFileOptions());
-        root_prefix = specpath.get("root");
-        local_config_suffix = specpath.get("config-suffix");
+        KeyValueConfigFile* specpath;
+        if ((local_config_dir / "specpath.conf").exists())
+            specpath = new KeyValueConfigFile(local_config_dir / "specpath.conf", KeyValueConfigFileOptions());
+        else
+        {
+            specpath = new KeyValueConfigFile(local_config_dir / "specpath", KeyValueConfigFileOptions());
+            Log::get_instance()->message(ll_warning, lc_no_context, "Using specpath is deprecated, use specpath.conf instead");
+        }
+        root_prefix = specpath->get("root");
+        local_config_suffix = specpath->get("config-suffix");
 
         if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
         {

@@ -6,7 +6,7 @@ cd install_TEST_dir || exit 1
 mkdir -p build
 
 mkdir -p config/.paludis-install-test
-cat <<END > config/.paludis-install-test/specpath
+cat <<END > config/.paludis-install-test/specpath.conf
 root = `pwd`/root
 config-suffix =
 END

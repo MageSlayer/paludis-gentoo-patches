@@ -6,7 +6,7 @@ cd upgrade_TEST_dir || exit 1
 mkdir -p build
 
 mkdir -p config/.paludis-upgrade-test
-cat <<END > config/.paludis-upgrade-test/specpath
+cat <<END > config/.paludis-upgrade-test/specpath.conf
 root = `pwd`/root
 config-suffix =
 END

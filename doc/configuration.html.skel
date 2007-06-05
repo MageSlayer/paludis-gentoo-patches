@@ -44,8 +44,8 @@ include a literal dollar, use <code>\$</code>.</p>
 will use <code>.paludis-thesuffix</code> or <code>paludis-thesuffix</code>
 instead.</p>
 
-<p>If a file named <code>specpath</code> exists in this directory, Paludis uses
-this file to determine the real configuration directory. The <code>specpath</code>
+<p>If a file named <code>specpath.conf</code> exists in this directory, Paludis uses
+this file to determine the real configuration directory. The <code>specpath.conf</code>
 file is a standard key / value configuration file (see above). The keys that
 are used are:</p>
 
@@ -53,14 +53,14 @@ are used are:</p>
     <li><code>root</code>, which specifies the install root for packages and the
     real configuration directory, which is <code>${root}/SYSCONFDIR/paludis/</code>
     (note that the HOME values are <em>not</em> used here). This value is set in
-    <code>specpath</code> rather than the real configuration directory so
+    <code>specpath.conf</code> rather than the real configuration directory so
     that chrooting into an image can work with no configuration changes.</li>
 
     <li><code>config-suffix</code>, which specifies a new configuration suffix. By
     default, no configuration suffix is used under root.</li>
 </ul>
 
-<p>If no <code>specpath</code> file is present, the original directory is
+<p>If no <code>specpath.conf</code> file is present, the original directory is
 used.</p>
 
 <h3>The environment.conf File</h3>
@@ -248,7 +248,7 @@ such as <code>USE</code> or <code>LINGUAS</code>.</p>
 
 <p>Each file named <code>*.conf</code> in the <code>repositories/</code> subdirectory
 creates a repository for Paludis. This is a key = value format file, and the special
-variable <code>${ROOT}</code> is defined based upon <code>specpath</code>. All
+variable <code>${ROOT}</code> is defined based upon <code>specpath.conf</code>. All
 files must define a <code>format =</code> key; depending upon the value used, other
 optional and mandatory keys are available.</p>
 
