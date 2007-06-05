@@ -26,6 +26,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/eapi.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
@@ -996,6 +997,7 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
                     .ebuild_file(pkg_dir / (stringify(e.name.package) + "-" + stringify(e.version) + ".ebuild"))
                     .files_dir(pkg_dir)
                     .eclassdirs(eclassdirs)
+                    .exlibsdirs(make_shared_ptr(new FSEntryCollection::Concrete))
                     .portdir(_imp->location)
                     .distdir(pkg_dir)
                     .eapi(m.eapi)
@@ -1061,6 +1063,7 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
                 .ebuild_file(pkg_dir / (stringify(e.name.package) + "-" + stringify(e.version) + ".ebuild"))
                 .files_dir(pkg_dir)
                 .eclassdirs(eclassdirs)
+                .exlibsdirs(make_shared_ptr(new FSEntryCollection::Concrete))
                 .portdir(_imp->location)
                 .distdir(pkg_dir)
                 .eapi(metadata->eapi)

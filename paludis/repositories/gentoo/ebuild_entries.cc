@@ -166,6 +166,17 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                 throw EAPIConfigurationError("EAPI '" + eapi->name + "' defines "
                         + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
+            tr1::shared_ptr<FSEntryCollection> exlibsdirs(new FSEntryCollection::Concrete);
+            if (_imp->params.master_repository)
+                exlibsdirs->push_back(_imp->params.master_repository->params().location / "exlibs");
+            exlibsdirs->push_back(_imp->params.location / "exlibs");
+            if (_imp->params.master_repository)
+                exlibsdirs->push_back(_imp->params.master_repository->layout()->category_directory(q.category) / "exlibs");
+            exlibsdirs->push_back(_imp->portage_repository->layout()->category_directory(q.category) / "exlibs");
+            if (_imp->params.master_repository)
+                exlibsdirs->push_back(_imp->params.master_repository->layout()->package_directory(q) / "exlibs");
+            exlibsdirs->push_back(_imp->portage_repository->layout()->package_directory(q) / "exlibs");
+
             EbuildMetadataCommand cmd(EbuildCommandParams::create()
                     .environment(_imp->environment)
                     .db_entry(&e)
@@ -173,6 +184,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                     .ebuild_file(ebuild_file)
                     .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
+                    .exlibsdirs(exlibsdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                         _imp->params.location)
                     .distdir(_imp->params.distdir)
@@ -269,7 +281,7 @@ namespace
             if (env->query_use(i->flag, pde))
                 use += stringify(i->flag) + " ";
 
-        if (metadata->eapi->supported->want_arch_var)
+        if (metadata->eapi->supported->ebuild_options->want_arch_var)
             use += profile->environment_variable("ARCH") + " ";
 
         return use;
@@ -311,7 +323,7 @@ namespace
                 if (! env->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
                     continue;
 
-                if (! metadata->eapi->supported->require_use_expand_in_iuse)
+                if (! metadata->eapi->supported->ebuild_options->require_use_expand_in_iuse)
                     use.append(lower_x + "_" + stringify(*u) + " ");
 
                 std::string value;
@@ -459,7 +471,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        if (metadata->eapi->supported->want_aa_var)
+        if (metadata->eapi->supported->ebuild_options->want_aa_var)
         {
             AAFinder g;
             metadata->ebuild_interface->src_uri()->accept(g);
@@ -506,6 +518,16 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, e, metadata, p, use));
 
+    tr1::shared_ptr<FSEntryCollection> exlibsdirs(new FSEntryCollection::Concrete);
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->params().location / "exlibs");
+    exlibsdirs->push_back(_imp->params.location / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->category_directory(q.category) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->category_directory(q.category) / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->package_directory(q) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->package_directory(q) / "exlibs");
 
     /* fetch */
     {
@@ -550,6 +572,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                     .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
+                    .exlibsdirs(exlibsdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                         _imp->params.location)
                     .distdir(_imp->params.distdir)
@@ -634,6 +657,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                     .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
+                    .exlibsdirs(exlibsdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                         _imp->params.location)
                     .distdir(_imp->params.distdir)
@@ -680,6 +704,17 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
         throw EAPIConfigurationError("EAPI '" + metadata->eapi->name + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
+    tr1::shared_ptr<FSEntryCollection> exlibsdirs(new FSEntryCollection::Concrete);
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->params().location / "exlibs");
+    exlibsdirs->push_back(_imp->params.location / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->category_directory(q.category) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->category_directory(q.category) / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->package_directory(q) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->package_directory(q) / "exlibs");
+
     EbuildVariableCommand cmd(EbuildCommandParams::create()
             .environment(_imp->params.environment)
             .db_entry(&for_package)
@@ -687,6 +722,7 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
             .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
             .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
             .eclassdirs(_imp->params.eclassdirs)
+            .exlibsdirs(exlibsdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
@@ -770,6 +806,17 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, e, metadata, p, use));
 
+    tr1::shared_ptr<FSEntryCollection> exlibsdirs(new FSEntryCollection::Concrete);
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->params().location / "exlibs");
+    exlibsdirs->push_back(_imp->params.location / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->category_directory(q.category) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->category_directory(q.category) / "exlibs");
+    if (_imp->params.master_repository)
+        exlibsdirs->push_back(_imp->params.master_repository->layout()->package_directory(q) / "exlibs");
+    exlibsdirs->push_back(_imp->portage_repository->layout()->package_directory(q) / "exlibs");
+
     EAPIPhases phases(metadata->eapi->supported->ebuild_phases->ebuild_pretend);
     for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
@@ -781,6 +828,7 @@ EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
                 .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
                 .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
                 .eclassdirs(_imp->params.eclassdirs)
+                .exlibsdirs(exlibsdirs)
                 .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                     _imp->params.location)
                 .distdir(_imp->params.distdir)

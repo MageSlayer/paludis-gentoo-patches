@@ -24,6 +24,10 @@ ebuild_f_metadata()
 {
     local key
 
+    for a in ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES} ; do
+        [[ -z "${!a}" ]] || die "\$${a} must not be set"
+    done
+
     # The list below should include all variables from all EAPIs
     for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
             KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION DEPENDENCIES \

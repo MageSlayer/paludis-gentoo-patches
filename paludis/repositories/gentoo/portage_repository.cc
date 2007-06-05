@@ -162,7 +162,7 @@ namespace paludis
 
         profile_ptr.reset(new PortageRepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
-                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->want_arch_var));
+                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->ebuild_options->want_arch_var));
     }
 
     void
@@ -200,7 +200,8 @@ namespace paludis
                         .status(tokens.at(2))
                         .profile(tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
-                                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->want_arch_var))));
+                                    EAPIData::get_instance()->eapi_from_string(
+                                        params.eapi_when_unknown)->supported->ebuild_options->want_arch_var))));
             }
         }
 

@@ -1,4 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
+SUBDIRS = . exheres-0
 
 libexecprogdir = $(libexecdir)/paludis/utils
 

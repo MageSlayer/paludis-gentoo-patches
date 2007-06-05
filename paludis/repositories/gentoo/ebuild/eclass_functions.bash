@@ -47,7 +47,7 @@ inherit()
 {
     [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
 
-    local e ee location=
+    local e ee location= v
     for e in "$@" ; do
         for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
             [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
@@ -55,29 +55,26 @@ inherit()
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
 
-        local current_IUSE="${IUSE}" unset_IUSE="${IUSE-unset}"
-        local current_DEPEND="${DEPEND}" unset_DEPEND="${DEPEND-unset}"
-        local current_RDEPEND="${RDEPEND}" unset_RDEPEND="${RDEPEND-unset}"
-        local current_PDEPEND="${PDEPEND}" unset_PDEPEND="${PDEPEND-unset}"
-        local current_KEYWORDS="${KEYWORDS}" unset_KEYWORDS="${KEYWORDS-unset}"
-
-        unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            local c_v="current_${v}" u_v="unset_${v}"
+            local ${c_v}="${!v}"
+            local ${u_v}="${!v-unset}"
+            unset ${v}
+        done
 
         [[ -z "${location}" ]] && die "Error finding eclass ${e}"
         source "${location}" || die "Error sourcing eclass ${e}"
         hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
 
-        E_IUSE="${E_IUSE} ${IUSE}"
-        E_PDEPEND="${E_PDEPEND} ${PDEPEND}"
-        E_RDEPEND="${E_RDEPEND} ${RDEPEND}"
-        E_DEPEND="${E_DEPEND} ${DEPEND}"
-        E_KEYWORDS="${KEYWORDS:+${KEYWORDS} }${E_KEYWORDS}"
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            local e_v="E_${v}"
+            export ${e_v}="${!e_v} ${!v}"
+        done
 
-        [[ "unset" == "${unset_IUSE}" ]] && unset IUSE || IUSE="${current_IUSE}"
-        [[ "unset" == "${unset_DEPEND}" ]] && unset DEPEND || DEPEND="${current_DEPEND}"
-        [[ "unset" == "${unset_RDEPEND}" ]] && unset RDEPEND || RDEPEND="${current_RDEPEND}"
-        [[ "unset" == "${unset_PDEPEND}" ]] && unset PDEPEND || PDEPEND="${current_PDEPEND}"
-        [[ "unset" == "${unset_KEYWORDS}" ]] && unset KEYWORDS || KEYWORDS="${current_KEYWORDS}"
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            local c_v="current_${v}" u_v="unset_${v}"
+            [[ "unset" == ${!u_v} ]] && unset ${v} || export ${v}="${!c_v}"
+        done
 
         export ECLASS="${old_ECLASS}"
     done

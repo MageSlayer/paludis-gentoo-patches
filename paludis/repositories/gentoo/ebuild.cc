@@ -93,9 +93,6 @@ EbuildCommand::operator() ()
             .with_setenv("CATEGORY", stringify(params.db_entry->name.category))
             .with_setenv("REPOSITORY", stringify(params.db_entry->repository))
             .with_setenv("FILESDIR", stringify(params.files_dir))
-            .with_setenv("ECLASSDIR", stringify(*params.eclassdirs->begin()))
-            .with_setenv("ECLASSDIRS", join(params.eclassdirs->begin(),
-                    params.eclassdirs->end(), " "))
             .with_setenv("PORTDIR", stringify(params.portdir))
             .with_setenv("DISTDIR", stringify(params.distdir))
             .with_setenv("EAPI", stringify(params.eapi->name))
@@ -113,11 +110,33 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_COMMAND", params.environment->paludis_command())
             .with_setenv("PALUDIS_REDUCED_GID", stringify(params.environment->reduced_gid()))
             .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment->reduced_uid()))
-            .with_setenv("KV", kernel_version())
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .with_setenv("PALUDIS_UTILITY_PATH_SUFFIXES", params.eapi->supported->ebuild_options->utility_path_suffixes)
+            .with_setenv("PALUDIS_NON_EMPTY_VARIABLES", params.eapi->supported->ebuild_options->non_empty_variables)
+            .with_setenv("PALUDIS_DIRECTORY_VARIABLES", params.eapi->supported->ebuild_options->directory_variables)
+            .with_setenv("PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES", params.eapi->supported->ebuild_options->ebuild_must_not_set_variables)
+            .with_setenv("PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES", params.eapi->supported->ebuild_options->directory_if_exists_variables)
+            .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES", params.eapi->supported->ebuild_options->source_merged_variables)
+            .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES", params.eapi->supported->ebuild_options->must_not_change_variables)
+            .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND", params.eapi->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
+            );
 
-    if (params.eapi->supported->want_portage_emulation_vars)
+    if (params.eapi->supported->ebuild_options->want_kv_var)
+        cmd.with_setenv("KV", kernel_version());
+
+    if (params.eapi->supported->ebuild_options->support_eclasses)
+        cmd
+            .with_setenv("ECLASSDIR", stringify(*params.eclassdirs->begin()))
+            .with_setenv("ECLASSDIRS", join(params.eclassdirs->begin(),
+                        params.eclassdirs->end(), " "));
+
+    if (params.eapi->supported->ebuild_options->support_exlibs)
+        cmd
+            .with_setenv("EXLIBSDIRS", join(params.exlibsdirs->begin(),
+                        params.exlibsdirs->end(), " "));
+
+    if (params.eapi->supported->ebuild_options->want_portage_emulation_vars)
         cmd = add_portage_vars(cmd);
 
     if (do_run_command(cmd))

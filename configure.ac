@@ -1152,6 +1152,7 @@ AC_OUTPUT(
 	paludis/repositories/gentoo/ebuild/Makefile
 	paludis/repositories/gentoo/ebuild/digests/Makefile
 	paludis/repositories/gentoo/ebuild/utils/Makefile
+	paludis/repositories/gentoo/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/gentoo/ebuild/echo_functions.bash
 	paludis/repositories/gentoo/ebuild/work_around_broken_utilities.bash
 	paludis/repositories/virtuals/Makefile

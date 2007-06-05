@@ -48,6 +48,9 @@ if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
     export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
 fi
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
+    export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
+done
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
     echo "${EBUILD_MODULES_DIR} is not a directory" 1>&2
@@ -156,6 +159,7 @@ ebuild_scrub_environment()
         -e '/^\(EU\|PP\|U\)ID=/d'
         -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\)=/d'
         -e '/^BASH_COMPLETION\(_DIR\)\?=/d'
+        -e '/^PALUDIS_SOURCE_MERGED_VARIABLES=/d'
         -e '/^bash[0-9]\+[a-z]\?=/d'
         -e '/^\(FUNCNAME\|GROUPS\|SHELLOPTS\)=/d'
         -e '/^\(declare -x \|export \)\?SANDBOX_ACTIVE=/d'
@@ -182,7 +186,11 @@ ebuild_scrub_environment()
         unset -v PALUDIS_HOME PALUDIS_PID EBUILD_KILL_PID ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
 
-        unset -v ebuild EBUILD E_DEPEND E_RDEPEND E_IUSE E_PDEPEND E_KEYWORDS
+        unset -v ebuild EBUILD
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            e_v=E_${v}
+            unset -v ${e_v}
+        done
 
         for v in ${!SANDBOX*}; do
             [[ "${v}" == SANDBOX_ACTIVE ]] || unset "${v}"
@@ -251,26 +259,36 @@ ebuild_load_environment()
 ebuild_load_ebuild()
 {
     export EBUILD="${1}"
-    unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
-    local saved_SLOT="${SLOT}"
+    unset ${SOURCE_MERGED_VARIABLES}
+
+    local v e_v
+    for v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
+        e_v=saved_${v}
+        local ${e_v}="${!v}"
+    done
 
     [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
     source ${1} || die "Error sourcing ebuild '${1}'"
 
-    [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
+    if [[ -n "${PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND}" ]] ; then
+        [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
+    fi
 
-    IUSE="${IUSE} ${E_IUSE}"
-    DEPEND="${DEPEND} ${E_DEPEND}"
-    RDEPEND="${RDEPEND} ${E_RDEPEND}"
-    PDEPEND="${PDEPEND} ${E_PDEPEND}"
-    KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
+    for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+        e_v=E_${v}
+        export ${v}="${!v} ${!e_v}"
+    done
+
     [[ ${EAPI-unset} == "unset" ]] && EAPI="0"
 
-    if [[ -n "${saved_SLOT}" ]] && [[ "${SLOT}" != "${saved_SLOT}" ]] ; then
-        ebuild_notice "qa" \
-            "Ebuild ${1} illegally tried to change SLOT from '${saved_SLOT}' to '${SLOT}'"
-        export SLOT=${saved_SLOT}
-    fi
+    for v in ${PALUDIS_MUST_NOT_CHANGE_VARIABLES} ; do
+        s_v="saved_${v}"
+        if [[ -n "${!s_v}" ]] && [[ "${!v}" != "${!s_v}" ]] ; then
+            ebuild_notice "qa" \
+                "Ebuild ${1} illegally tried to change SLOT from '${!s_v}' to '${!v}'"
+            export ${v}="${!s_v}"
+        fi
+    done
 }
 
 perform_hook()

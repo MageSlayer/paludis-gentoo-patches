@@ -10,6 +10,7 @@ make_class_EbuildCommandParams()
     key ebuild_file FSEntry
     key files_dir FSEntry
     key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
+    key exlibsdirs "tr1::shared_ptr<const FSEntryCollection>"
     key portdir FSEntry
     key distdir FSEntry
     key buildroot FSEntry

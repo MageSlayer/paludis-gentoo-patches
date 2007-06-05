@@ -24,6 +24,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/eapi.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -545,14 +546,26 @@ namespace test_cases
                     tr1::shared_ptr<const VersionMetadata> m;
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
+                    TEST_CHECK(m->eapi->supported);
                     TEST_CHECK_EQUAL(m->description, "The Description");
                     TEST_CHECK_EQUAL(m->eapi->name, "0");
-                    TEST_CHECK(m->eapi->supported);
+                    DepSpecPrettyPrinter pd(0, false);
+                    m->deps_interface->build_depend()->accept(pd);
+                    TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
+                    DepSpecPrettyPrinter pr(0, false);
+                    m->deps_interface->run_depend()->accept(pr);
+                    TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
                     m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
+                    TEST_CHECK(m->eapi->supported);
                     TEST_CHECK_EQUAL(m->description, "dquote \" squote ' backslash \\ dollar $");
                     TEST_CHECK_EQUAL(m->eapi->name, "0");
-                    TEST_CHECK(m->eapi->supported);
+                    DepSpecPrettyPrinter pd2(0, false);
+                    m->deps_interface->build_depend()->accept(pd2);
+                    TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
+                    DepSpecPrettyPrinter pr2(0, false);
+                    m->deps_interface->run_depend()->accept(pr2);
+                    TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
                 }
             }
         }

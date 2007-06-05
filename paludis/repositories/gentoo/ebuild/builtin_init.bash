@@ -21,18 +21,16 @@ builtin_init()
     export ROOT="${ROOT//+(\/)//}"
 
     local a
-    for a in P PV PR PN PVR PF CATEGORY FILESDIR ECLASSDIR PORTDIR \
-        DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
-        USERLAND KERNEL ARCH CHOST PALUDIS_COMMAND ROOT ; do
+    for a in PALUDIS_NON_EMPTY_VARIABLES ${PALUDIS_NON_EMPTY_VARIABLES} ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
 
-    for a in ECLASSDIR PORTDIR DISTDIR ; do
+    for a in ${PALUDIS_DIRECTORY_VARIABLES} ; do
         [[ -d "${!a}" ]] || die "\$${a} (\"${!a}\") not a directory"
     done
 
-    for a in FILESDIR ; do
+    for a in ${PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES} ; do
         [[ -e "${!a}" ]] && [[ ! -d "${!a}" ]] && \
             die "\$${a} (\"${!a}\") exists but is not a directory"
     done

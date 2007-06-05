@@ -133,8 +133,10 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
+DEPEND="foo/bar"
 END
 cat <<"END" > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
+inherit mine
 DESCRIPTION="dquote \" squote ' backslash \\ dollar \$"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -142,6 +144,10 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
+DEPEND="foo/bar"
+END
+cat <<END > eclass/mine.eclass
+DEPEND="bar/baz"
 END
 cat <<END > cat-one/pkg-two/pkg-two-1.ebuild || exit 1
 i am a fish
