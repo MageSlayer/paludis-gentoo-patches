@@ -27,6 +27,7 @@ libexecprog_SCRIPTS = \
 	echo_functions.bash \
 	kernel_functions.bash \
 	eclass_functions.bash \
+	exlib_functions.bash \
 	install_functions.bash \
 	list_functions.bash \
 	multilib_functions.bash \

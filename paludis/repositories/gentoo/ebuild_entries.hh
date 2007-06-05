@@ -44,6 +44,9 @@ namespace paludis
         public PortageRepositoryEntries,
         private PrivateImplementationPattern<EbuildEntries>
     {
+        private:
+            tr1::shared_ptr<const FSEntryCollection> _exlibsdirs(const QualifiedPackageName &) const;
+
         public:
             /**
              * Create an EbuildEntries instance.
