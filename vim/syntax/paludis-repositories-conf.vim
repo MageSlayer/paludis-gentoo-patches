@@ -41,7 +41,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ location distdir format buildroot library sync root yaml_uri
 	    \ master_repository profiles pkgdir setsdir securitydir newsdir
 	    \ names_cache sync sync_options eclassdirs cache write_cache
-	    \ world provides_cache importance
+	    \ world provides_cache importance layout
 
 syn match PaludisRepositoriesConfVariable contained /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
 
