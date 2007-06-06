@@ -20,14 +20,13 @@
  */
 
 #include "glibmm_generate_extra_defs/generate_extra_defs.h"
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
+#include <glib-object.h>
 #include <vte/vte.h>
 #include <vte/reaper.h>
 
 int main (int argc, char *argv[])
 {
-  gtk_init(&argc, &argv);
+  g_type_init();
 
 std::cout << get_defs(VTE_TYPE_TERMINAL)
 	  << get_defs(VTE_TYPE_REAPER);
