@@ -47,7 +47,7 @@
 
         <li><strong>Support</strong> is available via <code>#paludis</code> on
         <code>irc.freenode.net</code> or the <a
-            href="https://developer.berlios.de/mail/?group_id=6360">mailing
+            href="http://lists.pioto.org/">mailing
             lists</a>.  There is a <a
             href="http://paludis.pioto.org/trac/">bug tracker</a> that can
         be used for bug reports and feature requests.</li>
@@ -86,7 +86,7 @@
 
         <li><strong>Development questions</strong> should be asked in <code>#paludis</code> on
         <code>irc.freenode.net</code> or on the <a
-            href="https://developer.berlios.de/mail/?group_id=6360">mailing lists</a>.
+            href="http://lists.pioto.org/">mailing lists</a>.
         Patches go to the <a href="http://paludis.pioto.org/trac/">bug tracker</a>.</li>
 
     </ul>
