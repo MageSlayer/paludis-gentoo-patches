@@ -23,7 +23,8 @@ automake-deps-hack.tmp :
 	$(MAKE) -C defs
 	touch $@
 
-terminal_widget.hh terminal_widget.cc : terminal_widget.hg terminal_widget.ccg automake-deps-hack.tmp
+terminal_widget.cc : terminal_widget.hh
+terminal_widget.hh : terminal_widget.hg terminal_widget.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs terminal_widget . .
 	sed -e 's@/\* vim: set @/* vim: set ro @' < ./terminal_widget.h > ./terminal_widget.hh
@@ -37,7 +38,8 @@ terminal_widget.hh terminal_widget.cc : terminal_widget.hg terminal_widget.ccg a
 	rm ./terminal_widget.cc.tmp
 	mv ./private/terminal_widget_p.h ./private/terminal_widget_p.hh
 
-reaper.hh reaper.cc : reaper.hg reaper.ccg automake-deps-hack.tmp
+reaper.cc : reaper.hh
+reaper.hh : reaper.hg reaper.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs reaper . .
 	sed -e 's@/\* vim: set @/* vim: set ro @' < ./reaper.h > ./reaper.hh
