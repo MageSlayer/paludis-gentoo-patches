@@ -23,7 +23,7 @@ automake-deps-hack.tmp :
 	$(MAKE) -C defs
 	touch $@
 
-terminal_widget.cc : terminal_widget.hh
+terminal_widget.cc private/terminal_widget_p.hh : terminal_widget.hh
 terminal_widget.hh : terminal_widget.hg terminal_widget.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs terminal_widget . .
@@ -38,7 +38,7 @@ terminal_widget.hh : terminal_widget.hg terminal_widget.ccg automake-deps-hack.t
 	rm ./terminal_widget.cc.tmp
 	mv ./private/terminal_widget_p.h ./private/terminal_widget_p.hh
 
-reaper.cc : reaper.hh
+reaper.cc private/reaper_p.hh : reaper.hh
 reaper.hh : reaper.hg reaper.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs reaper . .
