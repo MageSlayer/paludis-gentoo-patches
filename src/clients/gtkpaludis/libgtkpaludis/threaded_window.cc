@@ -5,6 +5,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <gtkmm/dialog.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/stock.h>
 #include <unistd.h>
 #include <algorithm>
 #include <list>
@@ -89,7 +92,20 @@ ThreadedWindow::paludis_thread_action_then_sensitise(const sigc::slot<void> & a,
     if (! status_message.empty())
         gui_thread_action(sigc::bind(sigc::mem_fun(this, &ThreadedWindow::push_status_message), status_message));
 
-    a();
+    try
+    {
+        a();
+    }
+    catch (const Exception & e)
+    {
+        gui_thread_action(sigc::bind(sigc::mem_fun(this, &ThreadedWindow::notify_exception),
+                    std::string(e.message()), std::string(e.what()), std::string(e.backtrace("\n"))));
+    }
+    catch (const std::exception & e)
+    {
+        gui_thread_action(sigc::bind(sigc::mem_fun(this, &ThreadedWindow::notify_exception),
+                    std::string(""), std::string(e.what()), std::string("")));
+    }
 
     if (! status_message.empty())
         gui_thread_action(sigc::mem_fun(this, &ThreadedWindow::pop_status_message));
@@ -177,5 +193,16 @@ void
 ThreadedWindow::do_set_sensitive(const bool v)
 {
     set_sensitive(v);
+}
+
+void
+ThreadedWindow::notify_exception(const std::string & message, const std::string & what,
+        const std::string & backtrace)
+{
+    Gtk::MessageDialog dialog(*this, "Caught exception", false, Gtk::MESSAGE_ERROR,
+            Gtk::BUTTONS_OK);
+    dialog.set_title("Caught exception '" + what + "'");
+    dialog.set_secondary_text(backtrace + "Caught exception '" + message + "' (" + what + ")");
+    dialog.run();
 }
 

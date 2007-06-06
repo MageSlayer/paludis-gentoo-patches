@@ -39,6 +39,9 @@ namespace gtkpaludis
             void paludis_thread_action(const sigc::slot<void> &, const std::string & status_message);
             void gui_thread_action(const sigc::slot<void> &);
 
+            virtual void notify_exception(const std::string & message, const std::string & what,
+                    const std::string & backtrace);
+
             paludis::Environment * environment();
     };
 }
