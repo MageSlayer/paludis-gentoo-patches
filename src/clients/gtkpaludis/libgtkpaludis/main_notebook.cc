@@ -22,6 +22,7 @@ namespace paludis
         RepositoriesPage repositories_page;
 
         MessagesPage messages_page;
+        int messages_page_index;
         bool messages_starred;
 
         std::map<int, MainNotebookPage *> pages_by_index;
@@ -52,7 +53,7 @@ MainNotebook::MainNotebook(MainWindow * const m) :
                 &_imp->repositories_page));
 
     _imp->pages_by_index.insert(std::make_pair(
-                append_page(_imp->messages_page, "Messages"),
+                _imp->messages_page_index = append_page(_imp->messages_page, "Messages"),
                 &_imp->messages_page));
 
     _imp->signal_switch_page_connection = signal_switch_page().connect(
@@ -79,7 +80,7 @@ MainNotebook::handle_switch_page(GtkNotebookPage *, guint page)
 void
 MainNotebook::mark_messages_page()
 {
-    if (! _imp->messages_starred)
+    if ((! _imp->messages_starred) && (get_current_page() != _imp->messages_page_index))
     {
         _imp->messages_starred = true;
         set_tab_label_text(_imp->messages_page, "Messages *");
@@ -94,5 +95,17 @@ MainNotebook::unmark_messages_page()
         _imp->messages_starred = false;
         set_tab_label_text(_imp->messages_page, "Messages");
     }
+}
+
+void
+MainNotebook::show_messages_page()
+{
+    set_current_page(_imp->messages_page_index);
+}
+
+void
+MainNotebook::set_capture_output_options()
+{
+    _imp->messages_page.set_capture_output_options();
 }
 

@@ -17,6 +17,7 @@ gtkpaludis_SOURCES = \
 gtkpaludis_LDADD = \
 	libgtkpaludis/libgtkpaludis.a \
 	vtemm/libvtemm.a \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \

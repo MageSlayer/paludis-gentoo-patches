@@ -19,6 +19,10 @@ namespace gtkpaludis
             void set_repository_in_paludis_thread(const paludis::RepositoryName &);
             void set_repository_in_gui_thread(const bool);
 
+        protected:
+            void handle_sync_button_clicked();
+            void handle_sync_all_button_clicked();
+
         public:
             RepositoryButtons(MainWindow * const m);
             ~RepositoryButtons();

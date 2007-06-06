@@ -26,11 +26,7 @@ namespace paludis
         PackagesTextFilter packages_text_filter;
 
         Gtk::Expander standard_expander;
-        Gtk::Expander extra_expander;
         Gtk::Table standard_table;
-        Gtk::Table extra_table;
-
-        Gtk::Label extra_label;
 
         Implementation(MainWindow * const m, PackagesPage * const p) :
             main_window(m),
@@ -39,10 +35,7 @@ namespace paludis
             packages_package_filter(m, p),
             packages_text_filter(m, p),
             standard_expander("Filters:"),
-            extra_expander("More filters:"),
-            standard_table(3, 1),
-            extra_table(1, 1),
-            extra_label("EXTRA STUFF")
+            standard_table(3, 1)
         {
         }
     };
@@ -58,10 +51,6 @@ PackagesFilter::PackagesFilter(MainWindow * const m, PackagesPage * const p) :
     _imp->standard_table.attach(_imp->packages_repository_filter, 0, 1, 0, 1, Gtk::FILL, Gtk::FILL, 4, 4);
     _imp->standard_table.attach(_imp->packages_package_filter, 1, 2, 0, 1, Gtk::FILL, Gtk::FILL, 4, 4);
     _imp->standard_table.attach(_imp->packages_text_filter, 2, 3, 0, 1, Gtk::EXPAND | Gtk::FILL, Gtk::FILL, 0, 0);
-
-    add(_imp->extra_expander);
-    _imp->extra_expander.add(_imp->extra_table);
-    _imp->extra_table.attach(_imp->extra_label, 0, 1, 0, 1);
 }
 
 PackagesFilter::~PackagesFilter()

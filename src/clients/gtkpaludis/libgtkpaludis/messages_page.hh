@@ -25,6 +25,7 @@ namespace gtkpaludis
             ~MessagesPage();
 
             void populate();
+            void set_capture_output_options();
     };
 }
 

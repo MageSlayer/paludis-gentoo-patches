@@ -68,3 +68,15 @@ MainWindow::do_set_sensitive(const bool v)
     _imp->main_notebook.set_sensitive(v);
 }
 
+MainNotebook *
+MainWindow::main_notebook()
+{
+    return &_imp->main_notebook;
+}
+
+void
+MainWindow::set_capture_output_options()
+{
+    _imp->main_notebook.set_capture_output_options();
+}
+

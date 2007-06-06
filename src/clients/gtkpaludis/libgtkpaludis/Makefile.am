@@ -5,6 +5,8 @@ noinst_LIBRARIES = libgtkpaludis.a
 libgtkpaludis_a_SOURCES = \
 	categories_list.cc                   categories_list.hh                   \
 	categories_list_model.cc             categories_list_model.hh             \
+	gui_task.cc                          gui_task.hh                          \
+	gui_sync_task.cc                     gui_sync_task.hh                     \
 	main_notebook.cc                     main_notebook.hh                     \
 	main_notebook_page.cc                main_notebook_page.hh                \
 	main_window.cc                       main_window.hh                       \
@@ -32,6 +34,9 @@ libgtkpaludis_a_SOURCES = \
 	repository_buttons.cc                repository_buttons.hh                \
 	repository_info.cc                   repository_info.hh                   \
 	repository_info_model.cc             repository_info_model.hh             \
+	task_sequence_list.cc                task_sequence_list.hh                \
+	task_sequence_list_model.cc          task_sequence_list_model.hh          \
+	task_window.cc                       task_window.hh                       \
 	threaded_window.cc                   threaded_window.hh                   \
 	version_info.cc                      version_info.hh                      \
 	version_info_model.cc                version_info_model.hh                \

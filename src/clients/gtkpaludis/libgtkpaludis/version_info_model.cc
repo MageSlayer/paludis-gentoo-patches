@@ -6,10 +6,13 @@
 #include "markup.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
+#include <paludis/eapi.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -103,27 +106,36 @@ VersionInfoModel::populate_in_paludis_thread(paludis::tr1::shared_ptr<const Pack
                 _imp->query_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
                     p->name, p->version));
 
-        data->items.push_back(PopulateDataItem("Description", markup_escape(metadata->description)));
-
-        if (metadata->ebuild_interface)
+        if (metadata->eapi->supported)
         {
-            std::string km;
-            paludis::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
-            for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
-                    k != k_end ; ++k)
+            if (! metadata->description.empty())
+                data->items.push_back(PopulateDataItem("Description", markup_escape(metadata->description)));
+
+            DepSpecPrettyPrinter homepage_printer(0, false);
+            metadata->homepage()->accept(homepage_printer);
+            if (! stringify(homepage_printer).empty())
+                data->items.push_back(PopulateDataItem("Homepage", markup_escape(stringify(homepage_printer))));
+
+            if (metadata->ebuild_interface)
             {
-                if (! km.empty())
-                    km.append(" ");
+                std::string km;
+                paludis::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
+                for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                        k != k_end ; ++k)
+                {
+                    if (! km.empty())
+                        km.append(" ");
 
-                paludis::tr1::shared_ptr<KeywordNameCollection> kc(new KeywordNameCollection::Concrete);
-                kc->insert(*k);
-                if (_imp->query_window->environment()->accept_keywords(kc, *p))
-                    km.append(markup_bold(markup_escape(stringify(*k))));
-                else
-                    km.append(markup_italic(markup_escape(stringify(*k))));
+                    paludis::tr1::shared_ptr<KeywordNameCollection> kc(new KeywordNameCollection::Concrete);
+                    kc->insert(*k);
+                    if (_imp->query_window->environment()->accept_keywords(kc, *p))
+                        km.append(markup_bold(markup_escape(stringify(*k))));
+                    else
+                        km.append(markup_italic(markup_escape(stringify(*k))));
+                }
+
+                data->items.push_back(PopulateDataItem("Keywords", km));
             }
-
-            data->items.push_back(PopulateDataItem("Keywords", km));
         }
     }
 

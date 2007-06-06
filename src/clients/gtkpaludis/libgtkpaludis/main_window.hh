@@ -8,6 +8,8 @@
 
 namespace gtkpaludis
 {
+    class MainNotebook;
+
     class MainWindow :
         public ThreadedWindow,
         private paludis::PrivateImplementationPattern<MainWindow>
@@ -25,8 +27,12 @@ namespace gtkpaludis
             MainWindow(paludis::Environment * const);
             ~MainWindow();
 
+            MainNotebook * main_notebook();
+
             using ThreadedWindow::sensitise;
             using ThreadedWindow::desensitise;
+
+            void set_capture_output_options();
     };
 }
 

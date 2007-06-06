@@ -118,3 +118,15 @@ SyncTask::execute()
         throw SyncFailedError("Sync aborted by hook");
 }
 
+SyncTask::TargetsIterator
+SyncTask::begin_targets() const
+{
+    return TargetsIterator(_imp->targets.begin());
+}
+
+SyncTask::TargetsIterator
+SyncTask::end_targets() const
+{
+    return TargetsIterator(_imp->targets.end());
+}
+

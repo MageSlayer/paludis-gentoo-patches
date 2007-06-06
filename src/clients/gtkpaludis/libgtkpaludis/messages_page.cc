@@ -9,7 +9,6 @@
 #include <paludis/util/pstream.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
-#include <gtkmm/scrolledwindow.h>
 #include <vtemm/terminal_widget.hh>
 #include <iostream>
 #include <cstdlib>
@@ -25,8 +24,6 @@ namespace paludis
     {
         MainWindow * const main_window;
         MainNotebook * const main_notebook;
-
-        Gtk::ScrolledWindow terminal_scroll;
         Vte::Terminal terminal;
 
         int master_fd, slave_fd;
@@ -61,16 +58,11 @@ MessagesPage::MessagesPage(MainWindow * const m, MainNotebook * const n) :
     PrivateImplementationPattern<MessagesPage>(new Implementation<MessagesPage>(m, this, n))
 {
     _imp->terminal.set_pty(dup(_imp->master_fd));
-    set_run_command_stdout_fds(_imp->slave_fd, _imp->master_fd);
-    set_run_command_stderr_fds(_imp->slave_fd, _imp->master_fd);
-    PStream::set_stderr_fd(_imp->slave_fd, _imp->master_fd);
-    Log::get_instance()->set_log_stream(_imp->messages_stream.get());
+    set_capture_output_options();
 
     _imp->terminal.set_scroll_on_output(true);
 
-    _imp->terminal_scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS);
-    _imp->terminal_scroll.add(_imp->terminal);
-    attach(_imp->terminal_scroll, 0, 1, 0, 1, Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
+    attach(_imp->terminal, 0, 1, 0, 1, Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
 
     _imp->terminal_cursor_moved_connection = _imp->terminal.signal_cursor_moved().connect(
             sigc::mem_fun(this, &MessagesPage::handle_terminal_cursor_moved));
@@ -91,5 +83,14 @@ void
 MessagesPage::handle_terminal_cursor_moved()
 {
     _imp->main_notebook->mark_messages_page();
+}
+
+void
+MessagesPage::set_capture_output_options()
+{
+    set_run_command_stdout_fds(_imp->slave_fd, _imp->master_fd);
+    set_run_command_stderr_fds(_imp->slave_fd, _imp->master_fd);
+    PStream::set_stderr_fd(_imp->slave_fd, _imp->master_fd);
+    Log::get_instance()->set_log_stream(_imp->messages_stream.get());
 }
 
