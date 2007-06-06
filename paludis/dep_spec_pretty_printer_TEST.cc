@@ -21,6 +21,7 @@
 #include "portage_dep_parser.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/eapi.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 

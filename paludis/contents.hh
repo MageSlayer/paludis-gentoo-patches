@@ -26,7 +26,7 @@
 #include <paludis/util/tr1_memory.hh>
 
 #include <string>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Contents classes.

@@ -32,7 +32,7 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 #include <paludis/util/tr1_memory.hh>
 

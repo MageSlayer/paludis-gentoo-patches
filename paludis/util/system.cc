@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/wait.h>

@@ -35,6 +35,8 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/distribution.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
 #include <algorithm>

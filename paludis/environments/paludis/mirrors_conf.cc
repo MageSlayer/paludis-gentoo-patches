@@ -29,6 +29,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <vector>
 
 using namespace paludis;

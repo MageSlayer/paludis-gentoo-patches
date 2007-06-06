@@ -22,6 +22,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
 #include <sstream>
 

@@ -28,6 +28,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>

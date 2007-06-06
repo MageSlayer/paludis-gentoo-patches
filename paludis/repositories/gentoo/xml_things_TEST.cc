@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/gentoo/glsa.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/util/join.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

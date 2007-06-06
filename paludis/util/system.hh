@@ -23,7 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 #include <sys/types.h>
 

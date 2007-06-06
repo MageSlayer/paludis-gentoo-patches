@@ -24,6 +24,8 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "colour.hh"
 #include <iostream>
 #include <set>

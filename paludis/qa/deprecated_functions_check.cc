@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/stringify.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <pcre++.h>
 
 #include <set>

@@ -23,6 +23,7 @@
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.

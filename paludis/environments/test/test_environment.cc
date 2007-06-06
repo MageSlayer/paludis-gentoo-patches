@@ -21,6 +21,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/package_database.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <string>
 
 using namespace paludis;

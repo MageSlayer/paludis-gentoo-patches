@@ -46,6 +46,9 @@
 #include <paludis/util/system.hh>
 #include <paludis/dep_list/exceptions.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
+
 /** \file
  * Handle the --install action for the main paludis program.
  */

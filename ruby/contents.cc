@@ -20,6 +20,8 @@
 #include <paludis_ruby.hh>
 #include <paludis/contents.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <ruby.h>
 
 using namespace paludis;

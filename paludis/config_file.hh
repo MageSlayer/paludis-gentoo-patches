@@ -26,7 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 #include <iosfwd>
 #include <string>

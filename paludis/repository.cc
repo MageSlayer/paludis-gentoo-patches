@@ -25,8 +25,11 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
 #include <list>
+#include <utility>
 #include <algorithm>
 #include <ctype.h>
 
@@ -393,5 +396,11 @@ std::string
 RepositoryUseInterface::describe_use_flag(const UseFlagName & n, const PackageDatabaseEntry & pkg) const
 {
     return do_describe_use_flag(n, pkg);
+}
+
+bool
+RepositoryMirrorsInterface::is_mirror(const std::string & s) const
+{
+    return begin_mirrors(s) != end_mirrors(s);
 }
 

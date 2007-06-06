@@ -24,6 +24,8 @@
 #include <paludis/query.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <set>
 

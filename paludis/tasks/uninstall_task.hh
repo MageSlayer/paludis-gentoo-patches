@@ -24,6 +24,7 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
 {

@@ -21,6 +21,8 @@
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/stringify.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <ruby.h>
 
 using namespace paludis;

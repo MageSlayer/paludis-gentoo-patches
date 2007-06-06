@@ -25,6 +25,7 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/collection.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

@@ -34,6 +34,8 @@ using namespace paludis;
 #include <paludis/match_package.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/package_database.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <algorithm>
 

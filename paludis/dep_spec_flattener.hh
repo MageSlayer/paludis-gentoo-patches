@@ -26,7 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for DepSpecFlattener.

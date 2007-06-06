@@ -27,6 +27,8 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
 
 /** \file

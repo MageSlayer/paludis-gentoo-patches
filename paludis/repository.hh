@@ -36,7 +36,7 @@
 #include <string>
 #include <map>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Repository class.
@@ -833,10 +833,7 @@ namespace paludis
             /**
              * Is the named item a mirror?
              */
-            bool is_mirror(const std::string & s) const
-            {
-                return begin_mirrors(s) != end_mirrors(s);
-            }
+            bool is_mirror(const std::string & s) const;
 
             ///\}
 

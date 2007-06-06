@@ -25,6 +25,8 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/system.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

@@ -23,6 +23,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 

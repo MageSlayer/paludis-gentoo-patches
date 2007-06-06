@@ -33,7 +33,7 @@
 
 #include <iosfwd>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {

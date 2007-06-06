@@ -29,14 +29,14 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/collection.hh>
+#include <paludis/util/collection-fwd.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/contents.hh>
 
 #include <iosfwd>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the PackageDatabase class and related utilities.
@@ -239,12 +239,6 @@ namespace paludis
         private PrivateImplementationPattern<PackageDatabase>,
         private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>
     {
-        private:
-           void _sort_package_database_entry_collection(
-                   PackageDatabaseEntryCollection::Concrete &) const;
-           void _group_package_database_entry_collection(
-                   PackageDatabaseEntryCollection::Concrete &) const;
-
         public:
             /**
              * Constructor.

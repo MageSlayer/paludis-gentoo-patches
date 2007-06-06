@@ -21,6 +21,7 @@
 #include "colour.hh"
 #include <ostream>
 #include <algorithm>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 

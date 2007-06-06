@@ -20,6 +20,7 @@
 #include <paludis/qa/repo_name_check.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/config_file.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <set>
 

@@ -10,6 +10,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 
 using namespace paludis;

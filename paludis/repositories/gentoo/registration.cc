@@ -22,6 +22,8 @@
 #include <paludis/repositories/gentoo/make_ebin_repository.hh>
 #include <paludis/repositories/gentoo/vdb_repository.hh>
 #include <paludis/util/log.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "config.h"
 
 using namespace paludis;

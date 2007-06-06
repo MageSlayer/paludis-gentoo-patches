@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EAPI_PHASE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 
 namespace paludis

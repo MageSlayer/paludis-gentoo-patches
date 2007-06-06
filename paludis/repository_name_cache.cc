@@ -26,6 +26,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <fstream>
 

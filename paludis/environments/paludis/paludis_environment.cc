@@ -42,6 +42,8 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <functional>
 #include <algorithm>
 #include <list>

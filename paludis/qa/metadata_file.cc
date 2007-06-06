@@ -28,6 +28,7 @@
 #include <libxml/parser.h>
 #include <set>
 #include <list>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

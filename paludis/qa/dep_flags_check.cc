@@ -27,6 +27,7 @@
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <set>
 #include <algorithm>
 

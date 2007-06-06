@@ -32,6 +32,8 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <functional>

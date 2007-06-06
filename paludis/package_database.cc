@@ -26,6 +26,9 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/query.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
+
 #include <list>
 #include <map>
 #include <set>
@@ -280,6 +283,83 @@ namespace
             return ma->slot == mb->slot;
         }
     };
+
+    struct PDEComparator
+    {
+        const PackageDatabase * const pde;
+        std::map<std::string, int> rank;
+
+        PDEComparator(const PackageDatabase * const p) :
+            pde(p)
+        {
+            int x(0);
+            for (PackageDatabase::RepositoryIterator r(pde->begin_repositories()), r_end(pde->end_repositories()) ;
+                    r != r_end ; ++r)
+                rank.insert(std::make_pair(stringify((*r)->name()), ++x));
+        }
+
+        bool operator() (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
+        {
+            if (lhs.name < rhs.name)
+                return true;
+            if (lhs.name > rhs.name)
+                return false;
+
+            if (lhs.version < rhs.version)
+                return true;
+            if (lhs.version > rhs.version)
+                return false;
+
+            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs.repository)));
+            if (l == rank.end())
+                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs.repository) + "' not in rank");
+
+            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs.repository)));
+            if (r == rank.end())
+                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs.repository) + "' not in rank");
+
+            if (l->second < r->second)
+                return true;
+
+            return false;
+        }
+    };
+
+    void sort_package_database_entry_collection(const PackageDatabase * const t,
+            PackageDatabaseEntryCollection::Concrete & p)
+    {
+        if (! p.empty())
+            p.sort(PDEComparator(t));
+    }
+
+    void
+    group_package_database_entry_collection(const PackageDatabase * const t,
+            PackageDatabaseEntryCollection::Concrete & p)
+    {
+        if (p.empty())
+            return;
+
+        for (std::list<PackageDatabaseEntry>::reverse_iterator r(p.list.rbegin()) ;
+                r != p.list.rend() ; ++r)
+        {
+            SlotName r_slot(t->fetch_repository(r->repository)->version_metadata(r->name, r->version)->slot);
+
+            for (std::list<PackageDatabaseEntry>::reverse_iterator rr(next(r)) ;
+                    rr != p.list.rend() ; ++rr)
+            {
+                if (r->name != rr->name)
+                    break;
+
+                SlotName rr_slot(t->fetch_repository(rr->repository)->version_metadata(rr->name, rr->version)->slot);
+                if (rr_slot != r_slot)
+                    continue;
+
+                p.list.splice(previous(r.base()), p.list, previous(rr.base()));
+                if (p.list.rend() == ((rr = ++r)))
+                    return;
+            }
+        }
+    }
 }
 
 tr1::shared_ptr<PackageDatabaseEntryCollection>
@@ -355,17 +435,17 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         switch (query_order)
         {
             case qo_order_by_version:
-                _sort_package_database_entry_collection(*result);
+                sort_package_database_entry_collection(this, *result);
                 continue;
 
             case qo_group_by_slot:
-                _sort_package_database_entry_collection(*result);
-                _group_package_database_entry_collection(*result);
+                sort_package_database_entry_collection(this, *result);
+                group_package_database_entry_collection(this, *result);
                 continue;
 
             case qo_best_version_only:
                 {
-                    _sort_package_database_entry_collection(*result);
+                    sort_package_database_entry_collection(this, *result);
                     std::list<PackageDatabaseEntry> l;
                     std::unique_copy(result->list.rbegin(), result->list.rend(),
                             std::front_inserter(l), &compare_name);
@@ -375,8 +455,8 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 
             case qo_best_version_in_slot_only:
                 {
-                    _sort_package_database_entry_collection(*result);
-                    _group_package_database_entry_collection(*result);
+                    sort_package_database_entry_collection(this, *result);
+                    group_package_database_entry_collection(this, *result);
                     std::list<PackageDatabaseEntry> l;
                     std::unique_copy(result->list.rbegin(), result->list.rend(),
                             std::front_inserter(l), CompareNameSlot(this));
@@ -463,85 +543,6 @@ PackageDatabase::more_important_than(const RepositoryName & lhs,
         throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs) + "' not in rank");
 
     return l->second > r->second;
-}
-
-namespace
-{
-    struct PDEComparator
-    {
-        const PackageDatabase * const pde;
-        std::map<std::string, int> rank;
-
-        PDEComparator(const PackageDatabase * const p) :
-            pde(p)
-        {
-            int x(0);
-            for (PackageDatabase::RepositoryIterator r(pde->begin_repositories()), r_end(pde->end_repositories()) ;
-                    r != r_end ; ++r)
-                rank.insert(std::make_pair(stringify((*r)->name()), ++x));
-        }
-
-        bool operator() (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
-        {
-            if (lhs.name < rhs.name)
-                return true;
-            if (lhs.name > rhs.name)
-                return false;
-
-            if (lhs.version < rhs.version)
-                return true;
-            if (lhs.version > rhs.version)
-                return false;
-
-            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs.repository)));
-            if (l == rank.end())
-                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs.repository) + "' not in rank");
-
-            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs.repository)));
-            if (r == rank.end())
-                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs.repository) + "' not in rank");
-
-            if (l->second < r->second)
-                return true;
-
-            return false;
-        }
-    };
-}
-
-void
-PackageDatabase::_sort_package_database_entry_collection(PackageDatabaseEntryCollection::Concrete & p) const
-{
-    if (! p.empty())
-        p.sort(PDEComparator(this));
-}
-
-void
-PackageDatabase::_group_package_database_entry_collection(PackageDatabaseEntryCollection::Concrete & p) const
-{
-    if (p.empty())
-        return;
-
-    for (std::list<PackageDatabaseEntry>::reverse_iterator r(p.list.rbegin()) ;
-            r != p.list.rend() ; ++r)
-    {
-        SlotName r_slot(fetch_repository(r->repository)->version_metadata(r->name, r->version)->slot);
-
-        for (std::list<PackageDatabaseEntry>::reverse_iterator rr(next(r)) ;
-                rr != p.list.rend() ; ++rr)
-        {
-            if (r->name != rr->name)
-                break;
-
-            SlotName rr_slot(fetch_repository(rr->repository)->version_metadata(rr->name, rr->version)->slot);
-            if (rr_slot != r_slot)
-                continue;
-
-            p.list.splice(previous(r.base()), p.list, previous(rr.base()));
-            if (p.list.rend() == ((rr = ++r)))
-                return;
-        }
-    }
 }
 
 PackageDatabase::RepositoryIterator

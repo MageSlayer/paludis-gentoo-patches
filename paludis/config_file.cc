@@ -28,6 +28,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <istream>
 #include <list>

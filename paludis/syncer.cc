@@ -26,6 +26,8 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 
 /** \file

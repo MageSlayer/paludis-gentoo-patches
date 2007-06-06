@@ -26,6 +26,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/hashed_containers.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::gems;

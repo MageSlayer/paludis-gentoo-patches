@@ -66,8 +66,6 @@ namespace paludis
     {
         private:
             void need_mirrors() const;
-            PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
-                    const PackageDatabaseEntry & e) const;
 
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;

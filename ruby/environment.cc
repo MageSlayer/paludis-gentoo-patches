@@ -23,6 +23,8 @@
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/environment_maker.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <ruby.h>
 
 using namespace paludis;

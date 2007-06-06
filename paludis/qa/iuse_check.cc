@@ -30,6 +30,8 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 
 using namespace paludis;

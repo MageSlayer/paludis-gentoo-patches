@@ -34,6 +34,8 @@
 #include <paludis/package_database.hh>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <functional>
 #include <set>
 #include <map>

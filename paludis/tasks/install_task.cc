@@ -33,6 +33,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 
 using namespace paludis;

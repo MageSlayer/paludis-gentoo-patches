@@ -5,7 +5,7 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
 #endif
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,13 +37,8 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/files.m4')
 
-extern "C"
-{
-    /**
-     * For simplifying extconf.rb detection.
-     */
-    void paludis_was_here();
-}
+#include <paludis/util/util.hh>
+#include <libwrapiter/libwrapiter.hh>
 
 #endif
 

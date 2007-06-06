@@ -22,6 +22,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <cstdlib>
 
 using namespace paludis;

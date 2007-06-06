@@ -27,6 +27,7 @@
 #include <set>
 #include <list>
 #include <paludis/util/tr1_functional.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <functional>
 #include <algorithm>
 

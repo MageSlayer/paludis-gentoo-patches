@@ -20,6 +20,7 @@
 #include <paludis/qa/metadata_file.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
 #include "config.h"
 

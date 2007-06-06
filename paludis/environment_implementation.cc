@@ -26,6 +26,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/eapi.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 #include "config.h"
 

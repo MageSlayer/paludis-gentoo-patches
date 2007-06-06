@@ -19,6 +19,7 @@
 
 #include <paludis/paludis.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

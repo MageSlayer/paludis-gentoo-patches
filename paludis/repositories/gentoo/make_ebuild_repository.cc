@@ -24,6 +24,8 @@
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 

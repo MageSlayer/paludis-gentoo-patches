@@ -43,6 +43,9 @@
 #include <paludis/util/tr1_functional.hh>
 #include <set>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
+
 #include "config.h"
 
 using namespace paludis;
@@ -150,31 +153,6 @@ PortageRepositorySets::sets_list() const
     }
 
     return result;
-}
-
-PackageDatabaseEntryCollection::Iterator
-PortageRepositorySets::find_best(PackageDatabaseEntryCollection & c, const PackageDatabaseEntry & e) const
-{
-    Context local("When finding best update for '" + stringify(e.name) + "-" +
-            stringify(e.version) + "':");
-    // Find an entry in c that matches e best. e is not in c.
-    QualifiedPackageName n(e.name);
-    SlotName s(_imp->environment->package_database()->fetch_repository(
-                e.repository)->version_metadata(e.name, e.version)->slot);
-    PackageDatabaseEntryCollection::Iterator i(c.begin()), i_end(c.end()), i_best(c.end());
-    for ( ; i != i_end; ++i)
-    {
-        if (n != i->name)
-            continue;
-        if (s != _imp->environment->package_database()->fetch_repository(
-                    i->repository)->version_metadata(
-                    i->name, i->version)->slot)
-            continue;
-
-        i_best = i;
-    }
-
-    return i_best;
 }
 
 namespace

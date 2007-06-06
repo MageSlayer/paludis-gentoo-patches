@@ -28,6 +28,8 @@
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_database.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <set>
 #include <map>

@@ -33,6 +33,8 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
 #include <fstream>
 

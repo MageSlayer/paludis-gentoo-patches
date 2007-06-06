@@ -7,6 +7,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace gtkpaludis;
 using namespace paludis;

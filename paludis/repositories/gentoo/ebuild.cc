@@ -30,6 +30,8 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "config.h"
 
 /** \file

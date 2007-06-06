@@ -22,6 +22,8 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
 
 using namespace paludis;

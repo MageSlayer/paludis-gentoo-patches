@@ -22,6 +22,7 @@
 
 #include <paludis/tasks/install_task.hh>
 #include <paludis/package_database_entry.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <src/output/use_flag_pretty_printer.hh>
 #include <src/output/console_task.hh>
 #include <iosfwd>

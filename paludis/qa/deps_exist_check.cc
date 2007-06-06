@@ -27,6 +27,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 
 using namespace paludis;

@@ -20,6 +20,7 @@
 #include <paludis_ruby.hh>
 #include <paludis/qa/metadata_file.hh>
 #include <paludis/util/stringify.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <ruby.h>
 
 using namespace paludis;

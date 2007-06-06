@@ -28,6 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <set>
 
 using namespace paludis;

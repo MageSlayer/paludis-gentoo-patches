@@ -23,6 +23,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/repositories/gentoo/portage_repository.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

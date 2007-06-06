@@ -24,6 +24,9 @@
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
+
 using namespace paludis;
 
 FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :

@@ -22,6 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <vector>
 #include <list>
 

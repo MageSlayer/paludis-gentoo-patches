@@ -31,6 +31,8 @@
 #include <paludis/util/system.hh>
 #include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <fstream>
 
 using namespace paludis;

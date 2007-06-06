@@ -22,6 +22,7 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/log.hh>
 #include <ostream>
+#include <utility>
 
 /** \file
  * Implementation of name.hh things.

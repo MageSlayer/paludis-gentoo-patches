@@ -40,6 +40,8 @@ using namespace paludis;
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 namespace paludis
 {

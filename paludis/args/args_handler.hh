@@ -27,7 +27,7 @@
 #include <iosfwd>
 #include <string>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declaration for ArgsHandler.

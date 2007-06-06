@@ -31,6 +31,8 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <algorithm>
 #include <set>

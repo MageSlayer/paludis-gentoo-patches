@@ -20,6 +20,8 @@
 #include "dep_list_TEST.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace test;

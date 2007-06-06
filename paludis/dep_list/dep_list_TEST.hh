@@ -31,6 +31,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <string>
 #include <list>
 #include <ostream>

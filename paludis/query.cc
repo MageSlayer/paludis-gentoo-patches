@@ -23,6 +23,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 #include <set>
 

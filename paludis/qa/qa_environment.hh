@@ -26,7 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the QAEnvironment class.

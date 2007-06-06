@@ -28,7 +28,7 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 
 namespace paludis

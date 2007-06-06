@@ -18,7 +18,7 @@
  */
 
 #include <paludis_python.hh>
-
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/version_requirements.hh>
 
 using namespace paludis;

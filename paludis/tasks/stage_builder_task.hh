@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_TASKS_STAGE_BUILDER_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_TASKS_STAGE_BUILDER_TASK_HH 1
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>

@@ -28,6 +28,8 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 #include <vector>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "vr_entry.hh"
 
 using namespace paludis;

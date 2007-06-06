@@ -26,7 +26,7 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/dep_tag.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {

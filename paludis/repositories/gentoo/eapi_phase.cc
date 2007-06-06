@@ -23,6 +23,8 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/eapi.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
 #include <algorithm>
 #include <list>

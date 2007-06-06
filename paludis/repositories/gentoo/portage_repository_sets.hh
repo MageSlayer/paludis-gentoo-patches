@@ -45,10 +45,6 @@ namespace paludis
         private PrivateImplementationPattern<PortageRepositorySets>,
         private InstantiationPolicy<PortageRepositorySets, instantiation_method::NonCopyableTag>
     {
-        private:
-            PackageDatabaseEntryCollection::Iterator
-            find_best(PackageDatabaseEntryCollection & c, const PackageDatabaseEntry & e) const;
-
         public:
             ///\name Basic operations
             ///\{

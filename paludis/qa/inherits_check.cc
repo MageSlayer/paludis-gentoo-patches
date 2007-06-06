@@ -28,6 +28,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/qa/qa_environment.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <set>
 
 using namespace paludis;

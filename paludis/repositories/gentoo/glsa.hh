@@ -24,7 +24,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 #include <string>
 

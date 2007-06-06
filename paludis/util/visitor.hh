@@ -32,7 +32,7 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/operators.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {

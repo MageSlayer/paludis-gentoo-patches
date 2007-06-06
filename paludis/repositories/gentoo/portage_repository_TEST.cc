@@ -25,6 +25,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/eapi.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

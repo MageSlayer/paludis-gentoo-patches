@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/repository-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {

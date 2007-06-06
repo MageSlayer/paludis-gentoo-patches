@@ -21,6 +21,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace tr1::placeholders;

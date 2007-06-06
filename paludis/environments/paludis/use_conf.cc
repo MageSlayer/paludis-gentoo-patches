@@ -34,6 +34,8 @@
 #include <paludis/util/collection_concrete.hh>
 #include <list>
 #include <vector>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;

@@ -24,6 +24,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Implementation of dep_spec_pretty_printer.hh.

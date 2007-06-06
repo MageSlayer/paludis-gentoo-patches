@@ -61,6 +61,9 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <libwrapiter/libwrapiter_output_iterator.hh>
+
 #include <map>
 #include <fstream>
 #include <functional>
