@@ -12,11 +12,12 @@ opts = GetoptLong.new(
     [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
     [ '--environment',   '-E',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--pretend',       '-p',  GetoptLong::NO_ARGUMENT ] )
+    [ '--pretend',       '-p',  GetoptLong::NO_ARGUMENT ],
+    [ '--verbose',       '-v',  GetoptLong::NO_ARGUMENT ] )
 
 env_spec = ""
 override_directory = []
-pretend = false
+pretend = verbose = false
 opts.each do | opt, arg |
     case opt
     when '--help'
@@ -27,6 +28,7 @@ opts.each do | opt, arg |
         puts "  --version               Display program version"
         puts
         puts "  --pretend               Stop before reinstalling"
+        puts "  --verbose               Print the name of each broken binary"
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
         puts "  --environment env       Environment specification (class:suffix, both parts optional)"
@@ -59,6 +61,9 @@ opts.each do | opt, arg |
 
     when '--pretend'
         pretend = true
+
+    when '--verbose'
+        verbose = true
 
     end
 end
@@ -93,11 +98,91 @@ def executable x
     end
 end
 
+def read_shell_vars filename
+    vars = {}
+    IO.foreach(filename) do | line |
+        line.chomp!
+        line    =~ /^\s*(?:export\s+)?(\w+)=(["']?)((?:[^\\]|\\.)*?)\2$/ or next
+        var     = $1
+        content = $3.gsub(/\\(.)/, '\1')
+        content.gsub!(/\$(?:\{([^}]+)\}|(\w+))/) { | var | vars[var] }
+        vars[var] = content
+    end
+    vars
+end
+
+def is_eligible filename
+    dirname = filename
+    while dirname != "/"
+        dirname = File.dirname(dirname)
+        return false if @search_dirs_mask[dirname]
+    end
+
+    dirname = filename
+    while dirname != "/"
+        dirname = File.dirname(dirname)
+        return true if @search_dirs[dirname]
+    end
+
+    false
+end
+
 def check_file file
     %x{ldd "#{file}" 2>/dev/null}.split(%r/\n/).map do | line |
         line.sub(/^\s*/, "").sub(/\s*$/, "")
     end.detect do | line |
-        line =~ /=> not found/
+        line =~ /(\S+) => not found/ and not @ld_library_mask[$1]
+    end
+end
+
+# configuration var logic from revdep-rebuild, gentoolkit-0.2.3
+prelim_ld_library_mask  = (ENV["LD_LIBRARY_MASK"]  || "").split
+prelim_search_dirs      = (ENV["SEARCH_DIRS"]      || "").split
+prelim_search_dirs_mask = (ENV["SEARCH_DIRS_MASK"] || "").split
+
+# XXX make.conf / paludis/bashrc ?
+
+if File.stat("/etc/revdep-rebuild").directory? then
+    Dir["/etc/revdep-rebuild/[^.#]*[^~]"].sort.each do | filename |
+        vars = read_shell_vars filename
+        prelim_ld_library_mask  += (vars["LD_LIBRARY_MASK"]  || "").split
+        prelim_search_dirs      += (vars["SEARCH_DIRS"]      || "").split
+        prelim_search_dirs_mask += (vars["SEARCH_DIRS_MASK"] || "").split
+    end
+else
+    prelim_ld_library_mask  += %w(libodbcinst.so libodbc.so libjava.so libjvm.so)
+    prelim_search_dirs      += %w(/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*)
+    prelim_search_dirs_mask += %w(/opt/OpenOffice /usr/lib/openoffice)
+end
+
+vars = read_shell_vars "/etc/profile.env"
+prelim_search_dirs += (vars["PATH"]     || "").split(/:/)
+prelim_search_dirs += (vars["ROOTPATH"] || "").split(/:/)
+
+IO.foreach("/etc/ld.so.conf") do | line |
+    line.chomp!
+    line =~ /^[^\s#]/ and prelim_search_dirs << line
+end
+
+@ld_library_mask = {}
+prelim_ld_library_mask.each do | mask |
+    mask == "-*" and break
+    @ld_library_mask[mask] = true
+end
+
+@search_dirs = {}
+prelim_search_dirs.each do | dir |
+    dir == "-*" and break
+    Dir[dir].each do | expanded |
+        @search_dirs[expanded.sub(/\/+$/, "").gsub(/\/\//, "/")] = true
+    end
+end
+
+@search_dirs_mask = {}
+prelim_search_dirs_mask.each do | dir |
+    dir == "-*" and break
+    Dir[dir].each do | expanded |
+        @search_dirs_mask[expanded.sub(/\/+$/, "").gsub(/\/\//, "/")] = true
     end
 end
 
@@ -114,8 +199,10 @@ env.package_database.repositories.each do | repo |
             repo.version_specs(pkg).each do | ver |
                 repo.contents(pkg, ver).entries.each do | entry |
                     entry.kind_of? Paludis::ContentsFileEntry or next
+                    is_eligible(entry.name) or next
                     (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
                     check_file entry.name or next
+                    puts "  * #{entry.name} is broken" if verbose
                     broken << Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
                     break
                 end
@@ -131,6 +218,7 @@ if broken.empty?
     exit 0
 end
 
+puts if verbose
 broken.each do | x |
     puts "  * " + x.to_s
 end
