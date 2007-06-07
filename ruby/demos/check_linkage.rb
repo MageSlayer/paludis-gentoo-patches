@@ -159,10 +159,12 @@ vars = read_shell_vars "/etc/profile.env"
 prelim_search_dirs += (vars["PATH"]     || "").split(/:/)
 prelim_search_dirs += (vars["ROOTPATH"] || "").split(/:/)
 
+ld_so_conf = []
 IO.foreach("/etc/ld.so.conf") do | line |
     line.chomp!
-    line =~ /^[^\s#]/ and prelim_search_dirs << line
+    line =~ /^[^\s#]/ and ld_so_conf << line
 end
+prelim_search_dirs += ld_so_conf
 
 @ld_library_mask = {}
 prelim_ld_library_mask.each do | mask |
@@ -190,24 +192,38 @@ env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 
 status "Checking linkage for package-manager installed files"
 
-broken = [ ]
+
+files = { }
+directories = { }
 env.package_database.repositories.each do | repo |
     (repo.installed_interface and repo.contents_interface) or next
 
     repo.category_names.each do | cat |
         repo.package_names(cat).each do | pkg |
             repo.version_specs(pkg).each do | ver |
+                package = Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
                 repo.contents(pkg, ver).entries.each do | entry |
                     entry.kind_of? Paludis::ContentsFileEntry or next
                     eligible?(entry.name) or next
                     (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
-                    check_file entry.name or next
-                    puts "  * #{entry.name} is broken" if verbose
-                    broken << Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
-                    break
+                    files[package] ||= []
+                    files[package] << entry.name
+                    directories[File.dirname(entry.name)] = true
                 end
             end
         end
+    end
+end
+
+ENV["LD_LIBRARY_PATH"] = (Dir["/lib*"] + Dir["/usr/lib*"] + ld_so_conf + directories.keys).join(":")
+
+broken = [ ]
+files.each_pair do | package, files |
+    files.each do | filename |
+        check_file filename or next
+        puts "  * #{filename} is broken" if verbose
+        broken << package
+        break
     end
 end
 
