@@ -40,7 +40,7 @@ namespace
     static VALUE c_contents_dev_entry;
     static VALUE c_contents_fifo_entry;
 
-   struct V :
+    struct V :
             ConstVisitor<ContentsVisitorTypes>
         {
             VALUE value;
