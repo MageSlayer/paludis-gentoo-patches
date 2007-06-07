@@ -34,6 +34,8 @@ libgtkpaludis_a_SOURCES = \
 	repository_buttons.cc                repository_buttons.hh                \
 	repository_info.cc                   repository_info.hh                   \
 	repository_info_model.cc             repository_info_model.hh             \
+	sets_list.cc                         sets_list.hh                         \
+	sets_list_model.cc                   sets_list_model.hh                   \
 	task_sequence_list.cc                task_sequence_list.hh                \
 	task_sequence_list_model.cc          task_sequence_list_model.hh          \
 	task_window.cc                       task_window.hh                       \

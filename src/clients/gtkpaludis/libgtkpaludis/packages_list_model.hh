@@ -7,6 +7,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <libgtkpaludis/packages_package_filter_option.hh>
 
 namespace gtkpaludis
@@ -20,6 +21,12 @@ namespace gtkpaludis
     {
         protected:
             class PopulateData;
+            class PopulateDataIterator;
+
+            void _populate_in_gui_thread_recursive(
+                    Gtk::TreeNodeChildren &,
+                    PopulateDataIterator,
+                    PopulateDataIterator);
 
             void populate_in_paludis_thread();
             void populate_in_gui_thread(paludis::tr1::shared_ptr<const PopulateData> names);
@@ -38,7 +45,7 @@ namespace gtkpaludis
                     Gtk::TreeModelColumn<Glib::ustring> col_package;
                     Gtk::TreeModelColumn<Glib::ustring> col_status_markup;
                     Gtk::TreeModelColumn<Glib::ustring> col_description;
-                    Gtk::TreeModelColumn<paludis::tr1::shared_ptr<const paludis::PackageDatabaseEntry> > col_pde;
+                    Gtk::TreeModelColumn<paludis::tr1::shared_ptr<const paludis::QualifiedPackageName> > col_qpn;
                     Gtk::TreeModelColumn<PackagesPackageFilterOption> col_best_package_filter_option;
             };
 

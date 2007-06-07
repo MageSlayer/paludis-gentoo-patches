@@ -1,17 +1,23 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-#include "packages_list_model.hh"
 #include "main_window.hh"
-#include "packages_page.hh"
 #include "markup.hh"
-#include <paludis/util/collection_concrete.hh>
-#include <paludis/util/iterator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include "packages_list_model.hh"
+#include "packages_page.hh"
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
+#include <algorithm>
+#include <set>
 
 using namespace paludis;
 using namespace gtkpaludis;
@@ -35,32 +41,30 @@ namespace paludis
 
 namespace
 {
-    struct PopulateDataSubItem
+    struct PopulateItem
     {
-        std::string slot;
-        std::string status;
+        std::string title;
+        std::string status_markup;
         std::string description;
-        PackageDatabaseEntry pde;
+        tr1::shared_ptr<const QualifiedPackageName> qpn;
+        PackagesPackageFilterOption local_best_option;
+        std::list<PopulateItem> children;
+        bool merge_if_one_child;
 
-        PopulateDataSubItem(const std::string & s, const std::string & t, const std::string & d,
-                const PackageDatabaseEntry p) :
-            slot(s),
-            status(t),
-            description(d),
-            pde(p)
+        const PackagesPackageFilterOption children_best_option() const
         {
+            PackagesPackageFilterOption result(local_best_option);
+            for (std::list<PopulateItem>::const_iterator i(children.begin()), i_end(children.end()) ;
+                    i != i_end ; ++i)
+                result = std::max(result, i->children_best_option());
+
+            return result;
         }
-    };
 
-    struct PopulateDataItem
-    {
-        std::string package;
-        PackagesPackageFilterOption best_option;
-        std::list<PopulateDataSubItem> subitems;
-
-        PopulateDataItem(const std::string & p) :
-            package(p),
-            best_option(ppfo_all_packages)
+        PopulateItem(const std::string & t) :
+            title(t),
+            local_best_option(ppfo_all_packages),
+            merge_if_one_child(true)
         {
         }
     };
@@ -70,7 +74,16 @@ namespace gtkpaludis
 {
     struct PackagesListModel::PopulateData
     {
-        std::list<PopulateDataItem> items;
+        std::list<PopulateItem> items;
+    };
+
+    struct PackagesListModel::PopulateDataIterator :
+        libwrapiter::ForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>
+    {
+        PopulateDataIterator(const std::list<PopulateItem>::const_iterator & i) :
+            libwrapiter::ForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>(i)
+        {
+        }
     };
 }
 
@@ -90,7 +103,7 @@ PackagesListModel::Columns::Columns()
     add(col_package);
     add(col_status_markup);
     add(col_description);
-    add(col_pde);
+    add(col_qpn);
     add(col_best_package_filter_option);
 }
 
@@ -113,53 +126,56 @@ PackagesListModel::populate()
 
 namespace
 {
-    PopulateDataSubItem make_item(const PackageDatabaseEntry & pde,
+    PopulateItem make_item(const PackageDepSpec & pds,
+            const QualifiedPackageName & qpn,
             paludis::tr1::shared_ptr<const VersionMetadata> metadata,
-            const Environment * const environment,
-            PackagesPackageFilterOption * const best_option)
+            const Environment * const environment)
     {
+        PackagesPackageFilterOption best_option(ppfo_all_packages);
         std::string status;
         paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> ci(
                 environment->package_database()->query(
+                    query::InstalledAtRoot(environment->root()) &
+                    query::Matches(pds) &
                     query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(pde.name)),
+                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
                             paludis::tr1::shared_ptr<CategoryNamePart>(),
                             paludis::tr1::shared_ptr<PackageNamePart>(),
                             paludis::tr1::shared_ptr<VersionRequirements>(),
                             vr_and,
-                            paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))) &
-                    query::InstalledAtRoot(environment->root()),
+                            paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))),
                     qo_order_by_version));
 
         paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> av(
                 environment->package_database()->query(
+                    query::RepositoryHasInstallableInterface() &
+                    query::Matches(pds) &
                     query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(pde.name)),
+                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
                             paludis::tr1::shared_ptr<CategoryNamePart>(),
                             paludis::tr1::shared_ptr<PackageNamePart>(),
                             paludis::tr1::shared_ptr<VersionRequirements>(),
                             vr_and,
                             paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))) &
-                    query::RepositoryHasInstallableInterface() &
                     query::NotMasked(),
                     qo_order_by_version));
 
         if (! ci->empty())
         {
             status = markup_escape(stringify(ci->last()->version));
-            *best_option = std::max(*best_option, ppfo_installed_packages);
+            best_option = ppfo_installed_packages;
 
             if (! av->empty())
             {
                 if (av->last()->version < ci->last()->version)
                 {
                     status.append(markup_bold(markup_escape(" > " + stringify(av->last()->version))));
-                    *best_option = std::max(*best_option, ppfo_upgradable_packages);
+                    best_option = ppfo_upgradable_packages;
                 }
                 else if (av->last()->version > ci->last()->version)
                 {
                     status.append(markup_bold(markup_escape(" < " + stringify(av->last()->version))));
-                    *best_option = std::max(*best_option, ppfo_upgradable_packages);
+                    best_option = ppfo_upgradable_packages;
                 }
             }
         }
@@ -167,8 +183,9 @@ namespace
         {
             paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> av(
                     environment->package_database()->query(
+                        query::Matches(pds) &
                         query::Matches(PackageDepSpec(
-                                paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(pde.name)),
+                                paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
                                 paludis::tr1::shared_ptr<CategoryNamePart>(),
                                 paludis::tr1::shared_ptr<PackageNamePart>(),
                                 paludis::tr1::shared_ptr<VersionRequirements>(),
@@ -180,20 +197,21 @@ namespace
             if (av->empty())
             {
                 status.append(markup_foreground("grey", markup_escape("masked")));
-                *best_option = std::max(*best_option, ppfo_all_packages);
+                best_option = ppfo_all_packages;
             }
             else
             {
                 status.append(markup_foreground("grey", markup_escape(stringify(av->last()->version))));
-                *best_option = std::max(*best_option, ppfo_visible_packages);
+                best_option = ppfo_visible_packages;
             }
         }
 
-        return PopulateDataSubItem(
-                stringify(metadata->slot),
-                status,
-                metadata->description,
-                pde);
+        PopulateItem result(stringify(metadata->slot));
+        result.status_markup = status;
+        result.description = metadata->description;
+        result.qpn = make_shared_ptr(new QualifiedPackageName(qpn));
+        result.local_best_option = best_option;
+        return result;
     }
 }
 
@@ -201,36 +219,105 @@ void
 PackagesListModel::populate_in_paludis_thread()
 {
     paludis::tr1::shared_ptr<PopulateData> data(new PopulateData);
-    paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c;
 
     if (_imp->packages_page->get_category())
-        c = _imp->main_window->environment()->package_database()->query(
-                *_imp->packages_page->get_repository_filter() &
-                query::Category(*_imp->packages_page->get_category()),
-                qo_best_version_in_slot_only);
-    else
-        c.reset(new PackageDatabaseEntryCollection::Concrete);
-
-    QualifiedPackageName old_qpn("OLD/OLD");
-    PackagesPackageFilterOption * best_option(0);
-
-    for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
-            p != p_end ; ++p)
     {
-        paludis::tr1::shared_ptr<const VersionMetadata> metadata(
-                _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
-                    p->name, p->version));
+        paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+                _imp->main_window->environment()->package_database()->query(
+                    *_imp->packages_page->get_repository_filter() &
+                    query::Category(*_imp->packages_page->get_category()),
+                    qo_best_version_in_slot_only));
 
-        if (old_qpn != p->name)
+        QualifiedPackageName old_qpn("OLD/OLD");
+
+        for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                p != p_end ; ++p)
         {
-            best_option = &data->items.insert(data->items.begin(), PopulateDataItem(stringify(p->name.package)))->best_option;
-            data->items.begin()->subitems.push_front(make_item(*p, metadata, _imp->main_window->environment(),
-                        best_option));
-            old_qpn = p->name;
+            paludis::tr1::shared_ptr<const VersionMetadata> metadata(
+                    _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
+                        p->name, p->version));
+
+            if (old_qpn != p->name)
+            {
+                data->items.push_front(PopulateItem(stringify(p->name.package)));
+                data->items.begin()->children.push_front(make_item(
+                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->name))),
+                            p->name, metadata, _imp->main_window->environment()));
+                data->items.begin()->qpn = data->items.begin()->children.begin()->qpn;
+                old_qpn = p->name;
+            }
+            else
+                data->items.begin()->children.push_front(make_item(
+                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->name))),
+                            p->name, metadata, _imp->main_window->environment()));
         }
-        else
-            data->items.begin()->subitems.push_front(make_item(*p, metadata, _imp->main_window->environment(),
-                        best_option));
+    }
+    else if (_imp->packages_page->get_set())
+    {
+        DepSpecFlattener f(_imp->main_window->environment(), 0);
+        _imp->main_window->environment()->set(*_imp->packages_page->get_set())->accept(f);
+        std::set<std::string> a;
+        std::transform(indirect_iterator(f.begin()), indirect_iterator(f.end()), std::inserter(a, a.begin()),
+                std::tr1::mem_fn(&StringDepSpec::text));
+
+        for (std::set<std::string>::const_iterator i(a.begin()), i_end(a.end()) ;
+                i != i_end ; ++i)
+        {
+            std::list<PopulateItem>::iterator atom_iter(data->items.insert(data->items.end(), PopulateItem(*i)));
+            atom_iter->merge_if_one_child = false;
+            PackageDepSpec ds(*i, pds_pm_unspecific);
+            if (ds.package_ptr())
+            {
+                paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+                        _imp->main_window->environment()->package_database()->query(
+                            *_imp->packages_page->get_repository_filter() &
+                            query::Matches(ds),
+                            qo_best_version_in_slot_only));
+
+                for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                        p != p_end ; ++p)
+                {
+                    paludis::tr1::shared_ptr<const VersionMetadata> metadata(
+                            _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
+                                p->name, p->version));
+
+                    atom_iter->children.push_back(make_item(ds,
+                                p->name, metadata, _imp->main_window->environment()));
+                    atom_iter->qpn = atom_iter->children.back().qpn;
+                }
+            }
+            else
+            {
+                paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+                        _imp->main_window->environment()->package_database()->query(
+                            *_imp->packages_page->get_repository_filter() &
+                            query::Matches(ds),
+                            qo_best_version_in_slot_only));
+
+                QualifiedPackageName old_qpn("OLD/OLD");
+                std::list<PopulateItem>::iterator pkg_iter;
+
+                for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                        p != p_end ; ++p)
+                {
+                    paludis::tr1::shared_ptr<const VersionMetadata> metadata(
+                            _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
+                                p->name, p->version));
+
+                    if (old_qpn != p->name)
+                    {
+                        pkg_iter = atom_iter->children.insert(atom_iter->children.end(), PopulateItem(stringify(p->name)));
+                        pkg_iter->children.push_back(make_item(ds,
+                                    p->name, metadata, _imp->main_window->environment()));
+                        pkg_iter->qpn = pkg_iter->children.back().qpn;
+                        old_qpn = p->name;
+                    }
+                    else
+                        pkg_iter->children.push_front(make_item(ds,
+                                    p->name, metadata, _imp->main_window->environment()));
+                }
+            }
+        }
     }
 
     _imp->main_window->gui_thread_action(
@@ -241,38 +328,42 @@ void
 PackagesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const PackagesListModel::PopulateData> names)
 {
     clear();
+    Gtk::TreeNodeChildren c(children());
+    _populate_in_gui_thread_recursive(c,
+            PopulateDataIterator(names->items.begin()),
+            PopulateDataIterator(names->items.end()));
+}
 
-    for (std::list<PopulateDataItem>::const_iterator i(names->items.begin()), i_end(names->items.end()) ;
-            i != i_end ; ++i)
+void
+PackagesListModel::_populate_in_gui_thread_recursive(
+        Gtk::TreeNodeChildren & t,
+        PopulateDataIterator i,
+        PopulateDataIterator i_end)
+{
+    for ( ; i != i_end ; ++i)
     {
-        if (i->subitems.empty())
-            continue;
+        iterator r(append(t));
+        (*r)[_imp->columns.col_package] = i->title;
+        (*r)[_imp->columns.col_best_package_filter_option] = i->children_best_option();
+        (*r)[_imp->columns.col_qpn] = i->qpn;
+        (*r)[_imp->columns.col_description] = i->description;
+        (*r)[_imp->columns.col_status_markup] = i->status_markup;
 
-        iterator r(append());
-        (*r)[_imp->columns.col_package] = i->package;
-        (*r)[_imp->columns.col_pde] = paludis::tr1::shared_ptr<PackageDatabaseEntry>(
-                new PackageDatabaseEntry(i->subitems.begin()->pde));
-        (*r)[_imp->columns.col_best_package_filter_option] = i->best_option;
-
-        if (next(i->subitems.begin()) == i->subitems.end())
+        if (! i->children.empty())
         {
-            (*r)[_imp->columns.col_status_markup] = i->subitems.begin()->status;
-            (*r)[_imp->columns.col_description] = i->subitems.begin()->description;
-        }
-        else
-        {
-            for (std::list<PopulateDataSubItem>::const_iterator j(i->subitems.begin()), j_end(i->subitems.end()) ;
-                    j != j_end ; ++j)
+            if (i->merge_if_one_child && (next(i->children.begin()) == i->children.end()))
             {
-                iterator s(append(r->children()));
-                (*s)[_imp->columns.col_package] = ":" + j->slot;
-                (*s)[_imp->columns.col_status_markup] = j->status;
-                (*s)[_imp->columns.col_description] = j->description;
-                (*s)[_imp->columns.col_pde] = paludis::tr1::shared_ptr<PackageDatabaseEntry>(new PackageDatabaseEntry(j->pde));
-                (*s)[_imp->columns.col_best_package_filter_option] = i->best_option;
+                (*r)[_imp->columns.col_description] = i->children.begin()->description;
+                (*r)[_imp->columns.col_status_markup] = i->children.begin()->status_markup;
+
+            }
+            else
+            {
+                Gtk::TreeNodeChildren c(r->children());
+                _populate_in_gui_thread_recursive(c, PopulateDataIterator(i->children.begin()),
+                        PopulateDataIterator(i->children.end()));
             }
         }
     }
 }
-
 

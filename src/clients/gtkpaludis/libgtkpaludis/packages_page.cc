@@ -3,6 +3,7 @@
 #include "packages_page.hh"
 #include "packages_filter.hh"
 #include "categories_list.hh"
+#include "sets_list.hh"
 #include "packages_list.hh"
 #include "package_buttons.hh"
 
@@ -25,12 +26,16 @@ namespace paludis
         Gtk::ScrolledWindow categories_list_scroll;
         CategoriesList categories_list;
 
+        Gtk::ScrolledWindow sets_list_scroll;
+        SetsList sets_list;
+
         Gtk::ScrolledWindow packages_list_scroll;
         PackagesList packages_list;
         PackageButtons package_buttons;
 
         paludis::tr1::shared_ptr<const Query> repository_filter;
         paludis::tr1::shared_ptr<const CategoryNamePart> category;
+        paludis::tr1::shared_ptr<const SetName> set;
         paludis::tr1::shared_ptr<const QualifiedPackageName> qpn;
         PackagesPackageFilterOption package_filter;
         PackagesTextFilterSourceOption text_filter;
@@ -40,6 +45,7 @@ namespace paludis
             main_window(m),
             packages_filter(m, p),
             categories_list(m, p),
+            sets_list(m, p),
             packages_list(m, p),
             package_buttons(m, p),
             repository_filter(new query::All()),
@@ -51,7 +57,7 @@ namespace paludis
 }
 
 PackagesPage::PackagesPage(MainWindow * const m) :
-    Gtk::Table(3, 2),
+    Gtk::Table(4, 2),
     MainNotebookPage(),
     PrivateImplementationPattern<PackagesPage>(new Implementation<PackagesPage>(m, this))
 {
@@ -61,11 +67,15 @@ PackagesPage::PackagesPage(MainWindow * const m) :
     _imp->categories_list_scroll.add(_imp->categories_list);
     attach(_imp->categories_list_scroll, 0, 1, 1, 2, Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
 
+    _imp->sets_list_scroll.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);
+    _imp->sets_list_scroll.add(_imp->sets_list);
+    attach(_imp->sets_list_scroll, 0, 1, 2, 3, Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
+
     _imp->packages_list_scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
     _imp->packages_list_scroll.add(_imp->packages_list);
 
-    attach(_imp->packages_list_scroll, 1, 2, 1, 2, Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
-    attach(_imp->package_buttons, 0, 2, 2, 3, Gtk::FILL, Gtk::FILL, 4, 4);
+    attach(_imp->packages_list_scroll, 1, 2, 1, 3, Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL, 4, 4);
+    attach(_imp->package_buttons, 0, 2, 3, 4, Gtk::FILL, Gtk::FILL, 4, 4);
 }
 
 PackagesPage::~PackagesPage()
@@ -76,6 +86,7 @@ void
 PackagesPage::populate()
 {
     _imp->categories_list.populate();
+    _imp->sets_list.populate();
     _imp->packages_filter.populate();
     _imp->packages_list.populate_real();
     _imp->package_buttons.populate();
@@ -85,6 +96,16 @@ void
 PackagesPage::set_category(paludis::tr1::shared_ptr<const CategoryNamePart> c)
 {
     _imp->category = c;
+    _imp->set.reset();
+    _imp->packages_list.populate_real();
+    _imp->package_buttons.populate();
+}
+
+void
+PackagesPage::set_set(paludis::tr1::shared_ptr<const SetName> c)
+{
+    _imp->set = c;
+    _imp->category.reset();
     _imp->packages_list.populate_real();
     _imp->package_buttons.populate();
 }
@@ -93,6 +114,12 @@ paludis::tr1::shared_ptr<const CategoryNamePart>
 PackagesPage::get_category() const
 {
     return _imp->category;
+}
+
+paludis::tr1::shared_ptr<const SetName>
+PackagesPage::get_set() const
+{
+    return _imp->set;
 }
 
 void
@@ -113,6 +140,7 @@ PackagesPage::set_repository_filter(paludis::tr1::shared_ptr<const Query> q)
 {
     _imp->repository_filter = q;
     _imp->categories_list.populate();
+    _imp->sets_list.populate();
     _imp->packages_list.populate_real();
     _imp->package_buttons.populate();
 }

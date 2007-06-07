@@ -30,6 +30,9 @@ namespace gtkpaludis
             void set_category(paludis::tr1::shared_ptr<const paludis::CategoryNamePart>);
             paludis::tr1::shared_ptr<const paludis::CategoryNamePart> get_category() const;
 
+            void set_set(paludis::tr1::shared_ptr<const paludis::SetName>);
+            paludis::tr1::shared_ptr<const paludis::SetName> get_set() const;
+
             void set_repository_filter(paludis::tr1::shared_ptr<const paludis::Query>);
             paludis::tr1::shared_ptr<const paludis::Query> get_repository_filter() const;
 
