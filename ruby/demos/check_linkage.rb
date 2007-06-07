@@ -111,7 +111,7 @@ def read_shell_vars filename
     vars
 end
 
-def is_eligible filename
+def eligible? filename
     dirname = filename
     while dirname != "/"
         dirname = File.dirname(dirname)
@@ -199,7 +199,7 @@ env.package_database.repositories.each do | repo |
             repo.version_specs(pkg).each do | ver |
                 repo.contents(pkg, ver).entries.each do | entry |
                     entry.kind_of? Paludis::ContentsFileEntry or next
-                    is_eligible(entry.name) or next
+                    eligible?(entry.name) or next
                     (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
                     check_file entry.name or next
                     puts "  * #{entry.name} is broken" if verbose
