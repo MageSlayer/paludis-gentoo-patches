@@ -1127,6 +1127,7 @@ namespace paludis
     };
 
     class PortageRepositoryParams;
+    class Layout;
 
     /**
      * Interface for handling PortageRepository specific functionality.
@@ -1166,6 +1167,11 @@ namespace paludis
             virtual void set_profile_by_arch(const UseFlagName &) = 0;
 
             ///\}
+
+            /**
+             * Gives our current Layout
+             */
+            virtual const tr1::shared_ptr<const Layout> layout() const = 0;
 
             virtual ~RepositoryPortageInterface();
     };

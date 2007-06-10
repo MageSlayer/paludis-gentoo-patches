@@ -190,9 +190,6 @@ namespace paludis
              */
             void update_news() const;
 
-            /**
-             * Gives our current Layout
-             */
             const tr1::shared_ptr<const Layout> layout() const;
 
     };
