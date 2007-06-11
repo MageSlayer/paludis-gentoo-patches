@@ -25,6 +25,12 @@ set +C
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
 eval unset LANG ${!LC_*}
 
+# The list below should include all variables from all EAPIs
+EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT \
+    LICENSE KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION DEPENDENCIES \
+    E_IUSE E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS"
+unset -v ${EBUILD_METADATA_VARIABLES}
+
 if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
     export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
@@ -277,7 +283,7 @@ ebuild_load_ebuild()
 
     for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
         e_v=E_${v}
-        export ${v}="${!v} ${!e_v}"
+        export -n ${v}="${!v} ${!e_v}"
     done
 
     [[ ${EAPI-unset} == "unset" ]] && EAPI="0"

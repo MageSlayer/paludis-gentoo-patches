@@ -28,10 +28,7 @@ ebuild_f_metadata()
         [[ -z "${!a}" ]] || die "\$${a} must not be set"
     done
 
-    # The list below should include all variables from all EAPIs
-    for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
-            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION DEPENDENCIES \
-            E_IUSE E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS ; do
+    for key in ${EBUILD_METADATA_VARIABLES} ; do
         set -o noglob
         local k=${!key}
         k=${k//\\/\\\\}
