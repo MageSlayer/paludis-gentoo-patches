@@ -240,7 +240,7 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
     if (! is_check)
         return;
 
-    std::cout << ".";
+    std::cout << "." << std::flush;
 }
 
 void
