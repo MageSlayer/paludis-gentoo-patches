@@ -138,7 +138,7 @@ void PALUDIS_VISIBLE expose_name()
     qpn.def(bp::init<const CategoryNamePart &, const PackageNamePart &>());
     qpn.def_readwrite("category", &QualifiedPackageName::category);
     qpn.def_readwrite("package", &QualifiedPackageName::package);
-    qpn.def("__cmp__", &__cmp__<QualifiedPackageName>);
+    qpn.def("__cmp__", &py_cmp<QualifiedPackageName>);
     qpn.def(bp::self_ns::str(bp::self));
     bp::implicitly_convertible<std::string, QualifiedPackageName>();
 
@@ -154,7 +154,7 @@ void PALUDIS_VISIBLE expose_name()
                 bp::init<const std::string &, IUseFlagParseMode>("__init__(string, IUseFlagParseMode")
            );
     iuf.def(bp::init<const UseFlagName &, const UseFlagState &>("__init__(UseFlagName, UseFlagState)"));
-    iuf.def("__cmp__", &__cmp__<IUseFlag>);
+    iuf.def("__cmp__", &py_cmp<IUseFlag>);
     iuf.def(bp::self_ns::str(bp::self));
     iuf.def_readwrite("flag", &IUseFlag::flag,
             "[rw] UseFlagName"

@@ -40,7 +40,7 @@ void PALUDIS_VISIBLE expose_version_requirements()
             "[rw] VersionSpec"
             );
     vr.def("__eq__", &VersionRequirement::operator==);
-    vr.def("__ne__", &__ne__<VersionRequirement>);
+    vr.def("__ne__", &py_ne<VersionRequirement>);
 
     enum_auto("VersionRequirementsMode", last_vr);
 

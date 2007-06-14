@@ -94,7 +94,7 @@ namespace paludis
 
         // Compare
         template <typename T_>
-        int __cmp__(T_ & a, T_ & b)
+        int py_cmp(T_ & a, T_ & b)
         {
             if (a == b)
                 return 0;
@@ -106,7 +106,7 @@ namespace paludis
 
         // Not equal
         template <typename T_>
-        bool __ne__(T_ & a, T_ & b)
+        bool py_ne(T_ & a, T_ & b)
         {
             return ! (a == b);
         }
