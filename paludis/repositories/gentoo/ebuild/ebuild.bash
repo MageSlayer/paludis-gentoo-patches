@@ -45,7 +45,6 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_BASHRC="/dev/null"
     unset BASH_ENV
 fi
-export REAL_CHOST="${CHOST}"
 
 shopt -s expand_aliases
 shopt -s extglob
@@ -174,6 +173,7 @@ for var in ${save_base_vars} ; do
 done
 
 [[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
+export REAL_CHOST="${CHOST}"
 
 ebuild_scrub_environment()
 {
