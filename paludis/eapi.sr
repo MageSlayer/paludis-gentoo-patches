@@ -75,6 +75,7 @@ make_class_EAPIEbuildOptions()
     key support_exlibs bool
 
     key utility_path_suffixes std::string
+    key ebuild_module_suffixes std::string
 
     key non_empty_variables std::string
     key directory_variables std::string

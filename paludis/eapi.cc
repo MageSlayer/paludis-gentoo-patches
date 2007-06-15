@@ -98,6 +98,7 @@ namespace paludis
                                                         .support_eclasses(destringify<bool>(k.get("support_eclasses")))
                                                         .support_exlibs(destringify<bool>(k.get("support_exlibs")))
                                                         .utility_path_suffixes(k.get("utility_path_suffixes"))
+                                                        .ebuild_module_suffixes(k.get("ebuild_module_suffixes"))
                                                         )))
 
                                             .ebuild_phases(make_shared_ptr(new EAPIEbuildPhases(
