@@ -98,6 +98,7 @@ EbuildCommand::operator() ()
             .with_setenv("PORTDIR", stringify(params.portdir))
             .with_setenv("DISTDIR", stringify(params.distdir))
             .with_setenv("EAPI", stringify(params.eapi->name))
+            .with_setenv("SLOT", "")
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) +
