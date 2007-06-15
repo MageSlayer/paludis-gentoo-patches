@@ -225,6 +225,7 @@ namespace paludis
      * - Unless kvcfo_disallow_unquoted_values, unquoted values are legal.
      * - Unless kvcfo_disallow_variables, variables using $foo and ${foo} are expanded.
      * - Unless kvcfo_disallow_source, source path is legal.
+     * - Unless kvcfo_preserve_whitespace, leading and trailing whitespace on values is stripped.
      *
      * \ingroup grpkvconfigfile
      * \nosubgrouping

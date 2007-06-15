@@ -587,6 +587,9 @@ namespace
             }
         }
 
+        if (! opts[kvcfo_preserve_whitespace])
+            result = strip_leading(strip_trailing(result, " \t"), " \t");
+
         return result;
     }
 }

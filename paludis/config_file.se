@@ -34,6 +34,7 @@ make_enum_KeyValueConfigFileOption()
     key kvcfo_disallow_unquoted_values               "Do not allow unquoted values"
     key kvcfo_disallow_variables                     "Do not allow variable expansions"
     key kvcfo_disallow_source                        "Do not allow the source command"
+    key kvcfo_preserve_whitespace                    "Do not strip trailing whitespace from values"
 
     doxygen_comment << "END"
         /**
