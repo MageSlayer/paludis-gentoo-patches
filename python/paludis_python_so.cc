@@ -39,6 +39,7 @@ void expose_version_spec();
 
 BOOST_PYTHON_MODULE(paludis)
 {
+    boost::python::docstring_options doc_options(true, false);
     expose_exception();
     expose_version_spec();
     expose_version_operator();
