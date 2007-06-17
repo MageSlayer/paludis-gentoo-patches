@@ -41,10 +41,10 @@ IF_PYTHON_QA_TESTS =
 
 IF_PYTHON_SOURCES = \
 	contents.cc \
-	dep_spec.cc \
+	dep_spec.hh dep_spec.cc \
 	eapi.cc \
 	environment.cc \
-	exception.cc \
+	exception.hh exception.cc \
 	fs_entry.cc \
 	mask_reasons.cc \
 	name.cc \
@@ -62,7 +62,6 @@ IF_PYTHON_QA_SOURCES =
 
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
-	exception.hh \
 	paludis_python.hh \
 	paludis_python_so.cc \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \

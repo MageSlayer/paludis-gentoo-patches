@@ -18,8 +18,10 @@
  */
 
 #include <paludis_python.hh>
+#include <dep_spec.hh>
 
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/eapi.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -29,51 +31,42 @@ void PALUDIS_VISIBLE expose_portage_dep_parser()
 {
     ExceptionRegister::get_instance()->add_exception<DepStringError>
         ("DepStringError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<DepStringLexError>
+        ("DepStringLexError", "DepStrinError");
     ExceptionRegister::get_instance()->add_exception<DepStringParseError>
         ("DepStringParseError", "DepStringError");
     ExceptionRegister::get_instance()->add_exception<DepStringNestingError>
         ("DepStringNestingError", "DepStringParseError");
 
-#if CIARANM_REMOVED_THIS
     bp::class_<PortageDepParser, boost::noncopyable>
         pdp("PortageDepParser",
                 "The PortageDepParser converts string representations "
                 "of a dependency specification into a DepSpec instance.",
                 bp::no_init
            );
-    pdp.def("parse", &PortageDepParser::parse,
-            "parse(string, Policy) -> CompositeDepSpec\n"
-            "Parse a given dependency string, and return an appropriate DepSpec tree."
-           );
-    pdp.staticmethod("parse");
     pdp.def("parse_depend", &PortageDepParser::parse_depend,
-            "parse_depend(string, PackageDepSpecParseMode) -> CompositeDepSpec\n"
-            "Convenience wrapper for parse for depend strings, for VersionMetadata."
+            "parse_depend(string, EAPI) -> CompositeDepSpec\n"
+            "Parse a dependency heirarchy."
            );
     pdp.staticmethod("parse_depend");
+    pdp.def("parse_provide", &PortageDepParser::parse_provide,
+            "parse_provide(string, EAPI) -> CompositeDepSpec\n"
+            "Parse a provide heirarchy."
+           );
+    pdp.staticmethod("parse_provide");
+    pdp.def("parse_restrict", &PortageDepParser::parse_restrict,
+            "parse_restrict(string, EAPI) -> CompositeDepSpec\n"
+            "Parse a restrict."
+           );
+    pdp.staticmethod("parse_restrict");
+    pdp.def("parse_uri", &PortageDepParser::parse_uri,
+            "parse_uri(string, EAPI) -> CompositeDepSpec\n"
+            "Parse a uri heirarchy."
+           );
+    pdp.staticmethod("parse_uri");
     pdp.def("parse_license", &PortageDepParser::parse_license,
-            "parse_license(string) -> CompositeDepSpec\n"
-            "Convenience wrapper for parse for license strings, for VersionMetadata."
+            "parse_license(string, EAPI) -> CompositeDepSpec\n"
+            "Parse a license heirarchy."
            );
     pdp.staticmethod("parse_license");
-
-    bp::scope s = pdp;
-    bp::class_<PortageDepParser::Policy>
-        pdpp("Policy",
-                "The Policy class describes how to convert a string representation"
-                "of a dependency specification into a DepSpec instance.",
-                bp::no_init
-            );
-    pdpp.def("text_is_text_dep_spec", &PortageDepParser::Policy::text_is_text_dep_spec,
-            "text_is_text_dep_spec(permit_any_deps_boolean) -> Policy\n"
-            "Returns a new policy for a PlainTextDepSpec."
-            );
-    pdpp.staticmethod("text_is_text_dep_spec");
-    pdpp.def("text_is_package_dep_spec", &PortageDepParser::Policy::text_is_package_dep_spec,
-            "text_is_package_dep_spec(permit_any_deps_boolean, PackageDepSpecParseMode) -> Policy\n"
-            "Returns a new policy for a PackageDepSpec."
-            );
-    pdpp.staticmethod("text_is_package_dep_spec");
-    pdpp.add_property("permit_any_deps", &PortageDepParser::Policy::permit_any_deps);
-#endif
 }
