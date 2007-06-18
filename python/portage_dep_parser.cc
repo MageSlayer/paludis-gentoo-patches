@@ -32,7 +32,7 @@ void PALUDIS_VISIBLE expose_portage_dep_parser()
     ExceptionRegister::get_instance()->add_exception<DepStringError>
         ("DepStringError", "BaseException");
     ExceptionRegister::get_instance()->add_exception<DepStringLexError>
-        ("DepStringLexError", "DepStrinError");
+        ("DepStringLexError", "DepStringError");
     ExceptionRegister::get_instance()->add_exception<DepStringParseError>
         ("DepStringParseError", "DepStringError");
     ExceptionRegister::get_instance()->add_exception<DepStringNestingError>
