@@ -177,7 +177,7 @@ namespace test_cases
             s << "three=" << std::endl;
             s << "four = \"fourth\" " << std::endl;
             s << "five = ''" << std::endl;
-            KeyValueConfigFile ff(s, KeyValueConfigFileOptions());
+            KeyValueConfigFile ff(s, KeyValueConfigFileOptions() + kvcfo_preserve_whitespace);
 
             TEST_CHECK_EQUAL(ff.get("one"), "first");
             TEST_CHECK_EQUAL(ff.get("two"), "second");
