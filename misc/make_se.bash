@@ -84,12 +84,6 @@ while read a ; do
 
     if [[ "${what_to_make}" == "--header" ]] ; then
 
-        echo "#ifdef DOXYGEN"
-        echo "// doxygen needs this to get namespaces right"
-        echo "namespace ${want_namespace}"
-        echo "{"
-        echo "#endif"
-
         doxygen_comment()
         {
             cat
@@ -124,11 +118,6 @@ while read a ; do
             echo "operator>> (std::istream &, $a &) PALUDIS_VISIBLE;"
             echo
         fi
-
-        echo "#ifdef DOXYGEN"
-        echo "// end namespace for doxygen"
-        echo "}"
-        echo "#endif"
 
     elif [[ "${what_to_make}" == "--source" ]] ; then
 
