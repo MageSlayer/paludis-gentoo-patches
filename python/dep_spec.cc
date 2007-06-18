@@ -600,7 +600,8 @@ struct PackageDepSpecSPFromPython
 void PALUDIS_VISIBLE expose_dep_spec()
 {
     ExceptionRegister::get_instance()->add_exception<PackageDepSpecError>
-        ("PackageDepSpecError", "BaseException");
+        ("PackageDepSpecError", "BaseException",
+         "Thrown if an invalid package dep spec specification is encountered.");
 
     enum_auto("PackageDepSpecParseMode", last_pds_pm);
 

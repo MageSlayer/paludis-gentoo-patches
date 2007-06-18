@@ -30,13 +30,17 @@ namespace bp = boost::python;
 void PALUDIS_VISIBLE expose_portage_dep_parser()
 {
     ExceptionRegister::get_instance()->add_exception<DepStringError>
-        ("DepStringError", "BaseException");
+        ("DepStringError", "BaseException",
+         "A DepStringError descendent is thrown if an invalid depend string is encountered.");
     ExceptionRegister::get_instance()->add_exception<DepStringLexError>
-        ("DepStringLexError", "DepStringError");
+        ("DepStringLexError", "DepStringError",
+         "A DepStringLexError is thrown if a lex-level error is encountered when parsing a dependency string.");
     ExceptionRegister::get_instance()->add_exception<DepStringParseError>
-        ("DepStringParseError", "DepStringError");
+        ("DepStringParseError", "DepStringError",
+         "Thrown if an error is encountered when parsing a dependency string.");
     ExceptionRegister::get_instance()->add_exception<DepStringNestingError>
-        ("DepStringNestingError", "DepStringParseError");
+        ("DepStringNestingError", "DepStringParseError",
+         "Thrown if a dependency string does not have properly balanced parentheses.");
 
     bp::class_<PortageDepParser, boost::noncopyable>
         pdp("PortageDepParser",

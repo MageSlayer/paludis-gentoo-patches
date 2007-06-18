@@ -69,9 +69,17 @@ ExceptionRegister::get_py_exception(const std::string & name)
 
 void PALUDIS_VISIBLE expose_exception()
 {
-    ExceptionRegister::get_instance()->add_exception<Exception>("BaseException");
-    ExceptionRegister::get_instance()->add_exception<InternalError>("InternalError", "BaseException");
-    ExceptionRegister::get_instance()->add_exception<NotAvailableError>("NotAvailableError", "BaseException");
-    ExceptionRegister::get_instance()->add_exception<NameError>("NameError", "BaseException");
-    ExceptionRegister::get_instance()->add_exception<ConfigurationError>("ConfigurationError", "BaseException");
+    ExceptionRegister::get_instance()->add_exception<Exception>("BaseException",
+            "Base exception class.");
+    ExceptionRegister::get_instance()->add_exception<InternalError>("InternalError", "BaseException",
+            "An InternalError is an Exception that is thrown if something "
+            "that is never supposed to happen happens.");
+    ExceptionRegister::get_instance()->add_exception<NotAvailableError>("NotAvailableError", "BaseException",
+            "A NotAvailableError is an Exception that is thrown if something "
+            "that is not available (for example due to compile time configure options "
+            "or platform limitations) is used.");
+    ExceptionRegister::get_instance()->add_exception<NameError>("NameError", "BaseException",
+            "A NameError is an Exception that is thrown when some kind of invalid name is encountered.");
+    ExceptionRegister::get_instance()->add_exception<ConfigurationError>("ConfigurationError", "BaseException",
+            "A ConfigurationError is thrown when an invalid configuration occurs.");
 }

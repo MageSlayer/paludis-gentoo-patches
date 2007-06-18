@@ -28,7 +28,8 @@ namespace bp = boost::python;
 void PALUDIS_VISIBLE expose_version_spec()
 {
     ExceptionRegister::get_instance()->add_exception<BadVersionSpecError>
-        ("BadVersionSpecError", "BaseException");
+        ("BadVersionSpecError", "BaseException",
+         "Thrown if a VersionSpec is created from an invalid version string.");
 
     bp::class_<VersionSpec>
         vs("VersionSpec",

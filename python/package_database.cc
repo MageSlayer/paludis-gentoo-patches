@@ -34,17 +34,24 @@ namespace bp = boost::python;
 void PALUDIS_VISIBLE expose_package_database()
 {
     ExceptionRegister::get_instance()->add_exception<PackageDatabaseError>
-        ("PackageDatabaseError", "BaseException");
+        ("PackageDatabaseError", "BaseException",
+         "A PackageDatabaseError is an error that occurs when performing some operation upon a PackageDatabase.");
     ExceptionRegister::get_instance()->add_exception<DuplicateRepositoryError>
-        ("DuplicateRepositoryError", "PackageDatabaseError");
+        ("DuplicateRepositoryError", "PackageDatabaseError",
+         "Thrown if a Repository with the same name as an existing member is added to a PackageDatabase.");
     ExceptionRegister::get_instance()->add_exception<PackageDatabaseLookupError>
-        ("PackageDatabaseLookupError", "PackageDatabaseError");
+        ("PackageDatabaseLookupError", "PackageDatabaseError",
+         "A PackageDatabaseLookupError descendent is thrown if an error occurs "
+         "when looking for something in a PackageDatabase.");
     ExceptionRegister::get_instance()->add_exception<AmbiguousPackageNameError>
-        ("AmbiguousPackageNameError", "PackageDatabaseLookupError");
+        ("AmbiguousPackageNameError", "PackageDatabaseLookupError",
+         "Thrown if a PackageDatabase query results in more than one matching Package.");
     ExceptionRegister::get_instance()->add_exception<NoSuchPackageError>
-        ("NoSuchPackageError", "PackageDatabaseLookupError");
+        ("NoSuchPackageError", "PackageDatabaseLookupError",
+         "Thrown if there is no Package in a PackageDatabase with the given name.");
     ExceptionRegister::get_instance()->add_exception<NoSuchRepositoryError>
-        ("NoSuchRepositoryError", "PackageDatabaseLookupError");
+        ("NoSuchRepositoryError", "PackageDatabaseLookupError",
+         "Thrown if there is no Repository in a RepositoryDatabase with the given name.");
 
     enum_auto("QueryOrder", last_qo);
 

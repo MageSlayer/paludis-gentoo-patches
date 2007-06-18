@@ -35,7 +35,8 @@ vo_compare(const VersionOperator & self, const VersionSpec & v1, const VersionSp
 void PALUDIS_VISIBLE expose_version_operator()
 {
     ExceptionRegister::get_instance()->add_exception<BadVersionOperatorError>
-        ("BadVersionOperatorError", "BaseException");
+        ("BadVersionOperatorError", "BaseException",
+         "Thrown if a bad version operator is encountered.");
 
     enum_auto("VersionOperatorValue", last_vo);
 

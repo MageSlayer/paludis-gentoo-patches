@@ -28,23 +28,33 @@ namespace bp = boost::python;
 void PALUDIS_VISIBLE expose_name()
 {
     ExceptionRegister::get_instance()->add_exception<PackageNamePartError>
-        ("PackageNamePartError", "NameError");
+        ("PackageNamePartError", "NameError",
+         "Thrown if an invalid value is assigned to a PackageNamePart.");
     ExceptionRegister::get_instance()->add_exception<CategoryNamePartError>
-        ("CategoryNamePartError", "NameError");
+        ("CategoryNamePartError", "NameError",
+         "Thrown if an invalid value is assigned to a CategoryNamePart.");
     ExceptionRegister::get_instance()->add_exception<QualifiedPackageNameError>
-        ("QualifiedPackageNameError", "NameError");
+        ("QualifiedPackageNameError", "NameError",
+         "May be thrown if an invalid name is assigned to a QualifiedPackageName "
+         "(alternatively, the exception raised may be a PackageNamePartError or a CategoryNamePartError).");
     ExceptionRegister::get_instance()->add_exception<UseFlagNameError>
-        ("UseFlagNameError", "NameError");
+        ("UseFlagNameError", "NameError",
+         "Thrown if an invalid value is assigned to a UseFlagName.");
     ExceptionRegister::get_instance()->add_exception<IUseFlagNameError>
-        ("IUseFlagNameError", "NameError");
+        ("IUseFlagNameError", "NameError",
+         "Thrown if an invalid value is assigned to a IUseFlagName.");
     ExceptionRegister::get_instance()->add_exception<SlotNameError>
-        ("SlotNameError", "NameError");
+        ("SlotNameError", "NameError",
+         "Thrown if an invalid value is assigned to a SlotName.");
     ExceptionRegister::get_instance()->add_exception<RepositoryNameError>
-        ("RepositoryNameError", "NameError");
+        ("RepositoryNameError", "NameError",
+         "Thrown if an invalid value is assigned to a RepositoryName.");
     ExceptionRegister::get_instance()->add_exception<KeywordNameError>
-        ("KeywordNameError", "NameError");
+        ("KeywordNameError", "NameError",
+         "Thrown if an invalid value is assigned to a KeywordName.");
     ExceptionRegister::get_instance()->add_exception<SetNameError>
-        ("SetNameError", "NameError");
+        ("SetNameError", "NameError",
+         "Thrown if an invalid value is assigned to a SetName.");
 
     class_validated<PackageNamePart>
         pnp("PackageNamePart",

@@ -45,15 +45,20 @@ struct NoConfigEnvironmentWrapper :
 void PALUDIS_VISIBLE expose_environment()
 {
     ExceptionRegister::get_instance()->add_exception<NoSuchEnvironmentTypeError>
-        ("NoSuchEnvironmentTypeError", "ConfigurationError");
+        ("NoSuchEnvironmentTypeError", "ConfigurationError",
+         "Thrown if an environment of the specified type does not exist.");
     ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirNotADirectoryError>
-        ("PaludisEnvironmentSoDirNotADirectoryError", "BaseException");
+        ("PaludisEnvironmentSoDirNotADirectoryError", "BaseException",
+         "Thrown if PALUDIS_ENVIRONMENT_SO_DIR is not a directory.");
     ExceptionRegister::get_instance()->add_exception<PaludisEnvironmentSoDirCannotDlopenError>
-        ("PaludisEnvironmentSoDirCannotDlopenError", "BaseException");
+        ("PaludisEnvironmentSoDirCannotDlopenError", "BaseException",
+         "Thrown if a repository .so cannot be used.");
     ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigError>
-        ("PaludisConfigError", "ConfigurationError");
+        ("PaludisConfigError", "ConfigurationError",
+         "Thrown if a configuration error is encountered by PaludisConfig.");
     ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigNoDirectoryError>
-        ("PaludisConfigNoDirectoryError", "PaludisConfigError");
+        ("PaludisConfigNoDirectoryError", "PaludisConfigError",
+         "Thrown if the config directory cannot be found by PaludisConfig.");
 
     bp::class_<EnvironmentMaker, boost::noncopyable> em("EnvironmentMaker",
             "Virtual constructor for environments.",

@@ -201,17 +201,23 @@ struct RepositoryPortageInterfaceWrapper :
 void PALUDIS_VISIBLE expose_repository()
 {
     ExceptionRegister::get_instance()->add_exception<PackageActionError>
-        ("PackageActionError", "BaseException");
+        ("PackageActionError", "BaseException",
+         "Parent class for install, uninstall errors.");
     ExceptionRegister::get_instance()->add_exception<PackageInstallActionError>
-        ("PackageInstallActionError", "PackageActionError");
+        ("PackageInstallActionError", "PackageActionError",
+         "Thrown if an install fails.");
     ExceptionRegister::get_instance()->add_exception<PackageFetchActionError>
-        ("PackageFetchActionError", "PackageActionError");
+        ("PackageFetchActionError", "PackageActionError",
+         "Thrown if a fetch fails.");
     ExceptionRegister::get_instance()->add_exception<PackageUninstallActionError>
-        ("PackageUninstallActionError", "PackageActionError");
+        ("PackageUninstallActionError", "PackageActionError",
+         "Thrown if an uninstall fails.");
     ExceptionRegister::get_instance()->add_exception<PackageConfigActionError>
-        ("PackageConfigActionError", "PackageActionError");
+        ("PackageConfigActionError", "PackageActionError",
+         "Thrown if a configure fails.");
     ExceptionRegister::get_instance()->add_exception<EnvironmentVariableActionError>
-        ("EnvironmentVariableActionError", "PackageActionError");
+        ("EnvironmentVariableActionError", "PackageActionError",
+         "Thrown if an environment variable query fails.");
 
     class_collection<DestinationsCollection>
         dc("DestinationsCollection",
