@@ -19,6 +19,8 @@
 
 #include <paludis_python.hh>
 
+#include <boost/version.hpp>
+
 void expose_contents();
 void expose_dep_spec();
 void expose_eapi();
@@ -39,7 +41,10 @@ void expose_version_spec();
 
 BOOST_PYTHON_MODULE(paludis)
 {
+#if BOOST_VERSION >= 103400
     boost::python::docstring_options doc_options(true, false);
+#endif
+
     expose_exception();
     expose_version_spec();
     expose_version_operator();
