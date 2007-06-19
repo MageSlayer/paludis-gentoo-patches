@@ -139,7 +139,7 @@ namespace paludis
              *
              * \param message A short message.
              */
-            InternalError(const std::string & where, const std::string & message) throw ();
+            InternalError(const std::string & location, const std::string & message) throw ();
 
             /**
              * Constructor, with no message (deprecated).
@@ -149,7 +149,7 @@ namespace paludis
              * \deprecated Use paludis::InternalError::InternalError(const char * const,
              * const std::string &) instead.
              */
-            InternalError(const std::string & where) throw () PALUDIS_ATTRIBUTE((deprecated));
+            InternalError(const std::string & location) throw () PALUDIS_ATTRIBUTE((deprecated));
     };
 
     /**

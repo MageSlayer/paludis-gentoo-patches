@@ -105,13 +105,13 @@ NotAvailableError::NotAvailableError(const std::string & msg) throw () :
 {
 }
 
-InternalError::InternalError(const std::string & where, const std::string & our_message) throw () :
-    Exception("Eek! Internal error at " + where + ": " + our_message)
+InternalError::InternalError(const std::string & location, const std::string & our_message) throw () :
+    Exception("Eek! Internal error at " + location + ": " + our_message)
 {
 }
 
-InternalError::InternalError(const std::string & where) throw () :
-    Exception("Eek! Internal error at " + where)
+InternalError::InternalError(const std::string & location) throw () :
+    Exception("Eek! Internal error at " + location)
 {
 }
 
