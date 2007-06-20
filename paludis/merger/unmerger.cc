@@ -39,7 +39,7 @@ namespace paludis
     {
         UnmergerOptions options;
 
-        std::map<std::string, EntryType> unmerge_set;
+        std::multimap<std::string, std::pair<EntryType, tr1::shared_ptr<Unmerger::ExtraInfo> > > unmerge_entries;
 
         Implementation(const UnmergerOptions & o) :
             options(o)
@@ -47,11 +47,15 @@ namespace paludis
         }
     };
 
-    typedef std::map<std::string, EntryType>::reverse_iterator UnmergeListIterator;
+    typedef std::multimap<std::string, std::pair<EntryType, tr1::shared_ptr<Unmerger::ExtraInfo> > >::reverse_iterator UnmergeEntriesIterator;
 }
 
 UnmergerError::UnmergerError(const std::string & s) throw () :
     Exception(s)
+{
+}
+
+Unmerger::ExtraInfo::~ExtraInfo()
 {
 }
 
@@ -65,10 +69,9 @@ Unmerger::~Unmerger()
 }
 
 void
-Unmerger::add_unmerge_entry(const std::string & f, EntryType et)
+Unmerger::add_unmerge_entry(const std::string & f, EntryType et, tr1::shared_ptr<ExtraInfo> ei)
 {
-    if (! _imp->unmerge_set.insert(std::make_pair(f, et)).second)
-        throw UnmergerError("Entry '" + stringify(f) + "' already in the unmerge set");
+    _imp->unmerge_entries.insert(std::make_pair(f, std::make_pair(et, ei)));
 }
 
 void
@@ -81,25 +84,25 @@ Unmerger::unmerge()
                               ("UNLINK_TARGET", stringify(_imp->options.root)))).max_exit_status)
         throw UnmergerError("Unmerge from '" + stringify(_imp->options.root) + "' aborted by hook");
 
-    for (UnmergeListIterator  i(_imp->unmerge_set.rbegin()), i_end(_imp->unmerge_set.rend()) ; i != i_end ; ++i)
+    for (UnmergeEntriesIterator  i(_imp->unmerge_entries.rbegin()), i_end(_imp->unmerge_entries.rend()) ; i != i_end ; ++i)
     {
         FSEntry f(i->first);
-        switch (i->second)
+        switch (i->second.first)
         {
             case et_dir:
-                unmerge_dir(f);
+                unmerge_dir(f, i->second.second);
                 continue;
 
             case et_file:
-                unmerge_file(f);
+                unmerge_file(f, i->second.second);
                 continue;
 
             case et_sym:
-                unmerge_sym(f);
+                unmerge_sym(f, i->second.second);
                 continue;
 
             case et_misc:
-                unmerge_misc(f);
+                unmerge_misc(f, i->second.second);
                 continue;
 
             case et_nothing:
@@ -107,7 +110,7 @@ Unmerger::unmerge()
                 ;
         }
 
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify((*i).second) + "'");
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify((*i).second.first) + "'");
     }
 
     if (0 != _imp->options.environment->perform_hook(extend_hook(
@@ -117,7 +120,7 @@ Unmerger::unmerge()
 }
 
 void
-Unmerger::unmerge_file(FSEntry & f) const
+Unmerger::unmerge_file(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options.root / f);
 
@@ -133,17 +136,17 @@ Unmerger::unmerge_file(FSEntry & f) const
     else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
-        unlink_file(f_real);
+        unlink_file(f_real, ei);
     }
-    else if (check_file(f))
+    else if (check_file(f, ei))
     {
         display("<<<         " + stringify(f));
-        unlink_sym(f_real);
+        unlink_sym(f_real, ei);
     }
 }
 
 void
-Unmerger::unmerge_sym(FSEntry & f) const
+Unmerger::unmerge_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options.root / f);
 
@@ -159,17 +162,17 @@ Unmerger::unmerge_sym(FSEntry & f) const
     else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
-        unlink_sym(f_real);
+        unlink_sym(f_real, ei);
     }
-    else if (check_sym(f))
+    else if (check_sym(f, ei))
     {
         display("<<<         " + stringify(f));
-        unlink_sym(f_real);
+        unlink_sym(f_real, ei);
     }
 }
 
 void
-Unmerger::unmerge_dir(FSEntry & f) const
+Unmerger::unmerge_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options.root / f);
 
@@ -182,15 +185,15 @@ Unmerger::unmerge_dir(FSEntry & f) const
         throw UnmergerError("Unmerge of '" + stringify(f) + "' aborted by hook");
     else if (hr.output == "skip")
         display("--- [skip ] " + stringify(f));
-    else if (check_dir(f))
+    else if (check_dir(f, ei))
     {
         display("<<<         " + stringify(f));
-        unlink_dir(f_real);
+        unlink_dir(f_real, ei);
     }
 }
 
 void
-Unmerger::unmerge_misc(FSEntry & f) const
+Unmerger::unmerge_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
     FSEntry f_real(_imp->options.root / f);
 
@@ -206,17 +209,17 @@ Unmerger::unmerge_misc(FSEntry & f) const
     else if (hr.output == "force")
     {
         display("<<< [force] " + stringify(f));
-        unlink_misc(f_real);
+        unlink_misc(f_real, ei);
     }
-    else if (check_misc(f))
+    else if (check_misc(f, ei))
     {
         display("<<<         " + stringify(f));
-        unlink_misc(f_real);
+        unlink_misc(f_real, ei);
     }
 }
 
 void
-Unmerger::unlink_file(FSEntry & f) const
+Unmerger::unlink_file(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
@@ -242,7 +245,7 @@ Unmerger::unlink_file(FSEntry & f) const
 }
 
 void
-Unmerger::unlink_sym(FSEntry & f) const
+Unmerger::unlink_sym(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
@@ -258,7 +261,7 @@ Unmerger::unlink_sym(FSEntry & f) const
 }
 
 void
-Unmerger::unlink_dir(FSEntry & f) const
+Unmerger::unlink_dir(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
@@ -274,7 +277,7 @@ Unmerger::unlink_dir(FSEntry & f) const
 }
 
 void
-Unmerger::unlink_misc(FSEntry & f) const
+Unmerger::unlink_misc(FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (0 != _imp->options.environment->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")

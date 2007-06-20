@@ -37,7 +37,7 @@ rm file_bad_type
 mkdir file_bad_type
 
 make_file "bad_md5sum" "bad_md5sum"
-make_file "bad_mtime" "" "bad_mtime"
+make_file "bad_mtime" "" "123"
 echo "obj /file_bad_entry foo" > ../CONTENTS/file_bad_entry
 
 mkdir dir_ok

@@ -27,6 +27,7 @@ using namespace paludis;
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/digests/md5.hh>
 #include <paludis/hook.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -53,8 +54,6 @@ namespace paludis
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        std::multimap<std::string, std::string> extra_info;
-
         Implementation(const VDBUnmergerOptions & o) :
             options(o)
         {
@@ -64,9 +63,59 @@ namespace paludis
                     std::back_inserter(config_protect_mask));
         }
     };
-
-    typedef std::multimap<std::string, std::string>::iterator ExtraInfoIterator;
 }
+
+class VDBUnmerger::FileExtraInfo :
+    public Unmerger::ExtraInfo
+{
+    public:
+        std::string _md5sum;
+        time_t _mtime;
+
+        FileExtraInfo(std::string md5sum, time_t mtime) :
+            _md5sum(md5sum),
+            _mtime(mtime)
+        {
+        }
+
+        virtual ~FileExtraInfo()
+        {
+        }
+};
+
+class VDBUnmerger::SymlinkExtraInfo :
+    public Unmerger::ExtraInfo
+{
+    public:
+        std::string _dest;
+        time_t _mtime;
+
+        SymlinkExtraInfo(std::string dest, time_t mtime) :
+            _dest(dest),
+            _mtime(mtime)
+        {
+        }
+
+        virtual ~SymlinkExtraInfo()
+        {
+        }
+};
+
+class VDBUnmerger::MiscExtraInfo :
+    public Unmerger::ExtraInfo
+{
+    public:
+        std::string _type;
+
+        MiscExtraInfo(std::string type) :
+            _type(type)
+        {
+        }
+
+        virtual ~MiscExtraInfo()
+        {
+        }
+};
 
 VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
     Unmerger(UnmergerOptions::create()
@@ -173,11 +222,10 @@ VDBUnmerger::populate_unmerge_set()
                 Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                add_unmerge_entry(tokens.at(1), et_file);
-
-                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
-                        i != i_end ; ++i)
-                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
+                std::string md5sum(tokens.at(2));
+                time_t mtime(destringify<time_t>(tokens.at(3)));
+                tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
+                add_unmerge_entry(tokens.at(1), et_file, extra);
             }
 
         }
@@ -205,11 +253,10 @@ VDBUnmerger::populate_unmerge_set()
                 Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                add_unmerge_entry(tokens.at(1), et_sym);
-
-                for (std::vector<std::string>::iterator i(next(tokens.begin(), 3)), i_end(tokens.end()) ;
-                        i != i_end ; ++i)
-                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
+                std::string dest(tokens.at(3));
+                time_t mtime(destringify<time_t>(tokens.at(4)));
+                tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
+                add_unmerge_entry(tokens.at(1), et_sym, extra);
             }
         }
         else if ("misc" == tokens.at(0))
@@ -230,12 +277,9 @@ VDBUnmerger::populate_unmerge_set()
                 Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                add_unmerge_entry(tokens.at(1), et_misc);
-
-                _imp->extra_info.insert(std::make_pair(tokens.at(1), tokens.at(0)));
-                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
-                        i != i_end ; ++i)
-                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
+                std::string type(tokens.at(0));
+                tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
+                add_unmerge_entry(tokens.at(1), et_misc, extra);
             }
         }
         else if ("dir" == tokens.at(0))
@@ -253,11 +297,7 @@ VDBUnmerger::populate_unmerge_set()
                 Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             else
             {
-                add_unmerge_entry(tokens.at(1), et_dir);
-
-                for (std::vector<std::string>::iterator i(next(tokens.begin(), 2)), i_end(tokens.end()) ;
-                        i != i_end ; ++i)
-                    _imp->extra_info.insert(std::make_pair(tokens.at(1), *i));
+                add_unmerge_entry(tokens.at(1), et_dir, tr1::shared_ptr<ExtraInfo>());
             }
         }
         else
@@ -266,13 +306,13 @@ VDBUnmerger::populate_unmerge_set()
 }
 
 bool
-VDBUnmerger::check_file(const FSEntry & f) const
+VDBUnmerger::check_file(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+    tr1::shared_ptr<FileExtraInfo> fie(tr1::static_pointer_cast<FileExtraInfo>(ei));
 
     if (! (_imp->options.root / f).is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if (stringify((_imp->options.root / f).mtime()) != next(i)->second)
+    else if ((_imp->options.root / f).mtime() != fie->_mtime)
         display("--- [!time] " + stringify(f));
     else
     {
@@ -283,7 +323,7 @@ VDBUnmerger::check_file(const FSEntry & f) const
                     stringify(_imp->options.root / f) + "'");
             display("--- [!md5?] " + stringify(f));
         }
-        else if (MD5(md5_file).hexsum() != i->second)
+        else if (MD5(md5_file).hexsum() != fie->_md5sum)
             display("--- [!md5 ] " + stringify(f));
         else if (config_protected(_imp->options.root / f))
             display("--- [cfgpr] " + stringify(f));
@@ -295,15 +335,15 @@ VDBUnmerger::check_file(const FSEntry & f) const
 }
 
 bool
-VDBUnmerger::check_sym(const FSEntry & f) const
+VDBUnmerger::check_sym(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+    tr1::shared_ptr<SymlinkExtraInfo> sie(tr1::static_pointer_cast<SymlinkExtraInfo>(ei));
 
     if (! (_imp->options.root / f).is_symbolic_link())
         display("--- [!type] " + stringify(f));
-    else if (stringify((_imp->options.root / f).mtime()) != next(i)->second)
+    else if ((_imp->options.root / f).mtime() != sie->_mtime)
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options.root / f).readlink() !=  i->second)
+    else if ((_imp->options.root / f).readlink() != sie->_dest)
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -312,13 +352,13 @@ VDBUnmerger::check_sym(const FSEntry & f) const
 }
 
 bool
-VDBUnmerger::check_misc(const FSEntry & f) const
+VDBUnmerger::check_misc(const FSEntry & f, tr1::shared_ptr<ExtraInfo> ei) const
 {
-    ExtraInfoIterator i(_imp->extra_info.lower_bound(stringify(f)));
+    tr1::shared_ptr<MiscExtraInfo> mie(tr1::static_pointer_cast<MiscExtraInfo>(ei));
 
-    if ("fif" == i->second && ! (_imp->options.root / f).is_fifo())
+    if ("fif" == mie->_type && ! (_imp->options.root / f).is_fifo())
         display("--- [!type] " + stringify(f));
-    else if ("dev" == i->second && ! (_imp->options.root / f).is_device())
+    else if ("dev" == mie->_type && ! (_imp->options.root / f).is_device())
         display("--- [!type] " + stringify(f));
     else
         return true;
@@ -327,7 +367,7 @@ VDBUnmerger::check_misc(const FSEntry & f) const
 }
 
 bool
-VDBUnmerger::check_dir(const FSEntry & f) const
+VDBUnmerger::check_dir(const FSEntry & f, tr1::shared_ptr<ExtraInfo>) const
 {
     if (! (_imp->options.root / f).is_directory())
         display("--- [!type] " + stringify(f));

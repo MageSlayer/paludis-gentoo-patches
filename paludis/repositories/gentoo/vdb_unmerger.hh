@@ -64,6 +64,9 @@ namespace paludis
     {
         private:
             Implementation<VDBUnmerger> * _imp;
+            class FileExtraInfo;
+            class SymlinkExtraInfo;
+            class MiscExtraInfo;
 
         protected:
             bool config_protected(const FSEntry &) const;
@@ -73,10 +76,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const FSEntry &) const;
-            bool check_dir(const FSEntry &) const;
-            bool check_sym(const FSEntry &) const;
-            bool check_misc(const FSEntry &) const;
+            bool check_file(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
+            bool check_dir(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
+            bool check_sym(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
+            bool check_misc(const FSEntry &, tr1::shared_ptr<ExtraInfo>) const;
 
         public:
             ///\name Basic operations
