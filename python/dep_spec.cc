@@ -36,6 +36,26 @@ using namespace paludis::python;
 namespace bp = boost::python;
 
 
+template class ConstVisitor<PythonDepSpecVisitorTypes>;
+template class ConstAcceptInterface<PythonDepSpecVisitorTypes>;
+
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAllDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAnyDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonUseDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>;
+
+template class Visits<const PythonAllDepSpec>;
+template class Visits<const PythonAnyDepSpec>;
+template class Visits<const PythonUseDepSpec>;
+template class Visits<const PythonPackageDepSpec>;
+template class Visits<const PythonBlockDepSpec>;
+template class Visits<const PythonPlainTextDepSpec>;
+template class Visits<const PythonURIDepSpec>;
+
+
 PythonDepSpec::PythonDepSpec()
 {
 }
@@ -422,17 +442,17 @@ PythonURIDepSpec::renamed_url_suffix() const
         return text().substr(p + 4);
 }
 
-DepSpecVisitor::DepSpecVisitor() :
+SpecTreeToPython::SpecTreeToPython() :
     _current_parent(new PythonAllDepSpec())
 {
 }
 
-DepSpecVisitor::~DepSpecVisitor()
+SpecTreeToPython::~SpecTreeToPython()
 {
 }
 
 void
-DepSpecVisitor::visit_sequence(const AllDepSpec & d,
+SpecTreeToPython::visit_sequence(const AllDepSpec & d,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -443,7 +463,7 @@ DepSpecVisitor::visit_sequence(const AllDepSpec & d,
 }
 
 void
-DepSpecVisitor::visit_sequence(const AnyDepSpec & d,
+SpecTreeToPython::visit_sequence(const AnyDepSpec & d,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -454,7 +474,7 @@ DepSpecVisitor::visit_sequence(const AnyDepSpec & d,
 }
 
 void
-DepSpecVisitor::visit_sequence(const UseDepSpec & d,
+SpecTreeToPython::visit_sequence(const UseDepSpec & d,
         GenericSpecTree::ConstSequenceIterator cur,
         GenericSpecTree::ConstSequenceIterator end)
 {
@@ -465,33 +485,421 @@ DepSpecVisitor::visit_sequence(const UseDepSpec & d,
 }
 
 void
-DepSpecVisitor::visit_leaf(const PackageDepSpec & d)
+SpecTreeToPython::visit_leaf(const PackageDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonPackageDepSpec>(new PythonPackageDepSpec(d)));
 }
 
 void
-DepSpecVisitor::visit_leaf(const PlainTextDepSpec & d)
+SpecTreeToPython::visit_leaf(const PlainTextDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonPlainTextDepSpec>(new PythonPlainTextDepSpec(d)));
 }
 
 void
-DepSpecVisitor::visit_leaf(const URIDepSpec & d)
+SpecTreeToPython::visit_leaf(const URIDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonURIDepSpec>(new PythonURIDepSpec(d)));
 }
 
 void
-DepSpecVisitor::visit_leaf(const BlockDepSpec & d)
+SpecTreeToPython::visit_leaf(const BlockDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonBlockDepSpec>(new PythonBlockDepSpec(d)));
 }
 
 const tr1::shared_ptr<const PythonDepSpec>
-DepSpecVisitor::result() const
+SpecTreeToPython::result() const
 {
     return *_current_parent->begin();
+}
+
+PackageDepSpec *
+package_dep_spec_from_python(const PythonPackageDepSpec & p)
+{
+    PackageDepSpec * result(new PackageDepSpec(
+                deep_copy(p.package_ptr()),
+                deep_copy(p.category_name_part_ptr()),
+                deep_copy(p.package_name_part_ptr()),
+                tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                p.version_requirements_mode(),
+                deep_copy(p.slot_ptr()),
+                deep_copy(p.repository_ptr()),
+                deep_copy(p.use_requirements_ptr()),
+                tr1::shared_ptr<const DepTag>(p.tag())
+                ));
+    if (p.version_requirements_ptr())
+    {
+        std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
+                result->version_requirements_ptr()->inserter());
+    }
+    return result;
+}
+
+template <typename H_>
+struct AllowedTypes;
+
+template<>
+struct AllowedTypes<LicenseSpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const AnyDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const PlainTextDepSpec &) {};
+};
+
+template<>
+struct AllowedTypes<URISpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const URIDepSpec &) {};
+};
+
+template<>
+struct AllowedTypes<ProvideSpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const PackageDepSpec &) {};
+};
+
+template<>
+struct AllowedTypes<RestrictSpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const PlainTextDepSpec &) {};
+};
+
+template<>
+struct AllowedTypes<DependencySpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const AnyDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const PackageDepSpec &) {};
+    AllowedTypes(const BlockDepSpec &) {};
+};
+
+template <typename>
+struct NiceClassNames;
+
+template<>
+struct NiceClassNames<DepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<DepSpec>::name = "DepSpec";
+
+template<>
+struct NiceClassNames<AllDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<AllDepSpec>::name = "AllDepSpec";
+
+template<>
+struct NiceClassNames<AnyDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<AnyDepSpec>::name = "AnyDepSpec";
+
+template<>
+struct NiceClassNames<UseDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<UseDepSpec>::name = "UseDepSpec";
+
+template<>
+struct NiceClassNames<StringDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<StringDepSpec>::name = "StringDepSpec";
+
+template<>
+struct NiceClassNames<PlainTextDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<PlainTextDepSpec>::name = "PlainTextDepSpec";
+
+template<>
+struct NiceClassNames<PackageDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<PackageDepSpec>::name = "PackageDepSpec";
+
+template<>
+struct NiceClassNames<URIDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<URIDepSpec>::name = "URIDepSpec";
+
+template<>
+struct NiceClassNames<BlockDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<BlockDepSpec>::name = "BlockDepSpec";
+
+template<>
+struct NiceClassNames<GenericSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<GenericSpecTree>::name = "GenericSpecTree";
+
+template<>
+struct NiceClassNames<LicenseSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<LicenseSpecTree>::name = "LicenseSpecTree";
+
+template<>
+struct NiceClassNames<URISpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<URISpecTree>::name = "URISpecTree";
+
+template<>
+struct NiceClassNames<FlattenableSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<FlattenableSpecTree>::name = "FlattenableSpecTree";
+
+template<>
+struct NiceClassNames<ProvideSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<ProvideSpecTree>::name = "ProvideSpecTree";
+
+template<>
+struct NiceClassNames<RestrictSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<RestrictSpecTree>::name = "RestrictSpecTree";
+
+template<>
+struct NiceClassNames<DependencySpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<DependencySpecTree>::name = "DependencySpecTree";
+
+template<>
+struct NiceClassNames<SetSpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<SetSpecTree>::name = "SetSpecTree";
+
+
+class PALUDIS_VISIBLE NotAllowedInThisHeirarchy :
+    public Exception
+{
+    public:
+        NotAllowedInThisHeirarchy(const std::string & msg) throw () :
+            Exception(msg)
+    {
+    }
+};
+
+template <typename H_, typename D_, typename PyD_, bool>
+struct Dispatcher;
+
+template <typename H_, typename D_, typename PyD_>
+struct Dispatcher<H_, D_, PyD_, true>
+{
+    static void do_dispatch(SpecTreeFromPython<H_> * v, const PyD_ & d)
+    {
+        v->real_visit(d);
+    }
+};
+
+template <typename H_, typename D_, typename PyD_>
+struct Dispatcher<H_, D_, PyD_, false>
+{
+    static void do_dispatch(SpecTreeFromPython<H_> *, const PyD_ &) PALUDIS_ATTRIBUTE((noreturn));
+};
+
+template <typename H_, typename D_, typename PyD_>
+void
+Dispatcher<H_, D_, PyD_, false>::do_dispatch(SpecTreeFromPython<H_> *, const PyD_ &)
+{
+    throw NotAllowedInThisHeirarchy(std::string("Spec parts of type '") + NiceClassNames<D_>::name +
+            " are not allowed in a heirarchy of type '" + NiceClassNames<H_>::name + "'");
+}
+
+
+template <typename H_, typename D_, typename PyD_>
+void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
+{
+    Dispatcher<H_, D_, PyD_, tr1::is_convertible<D_, AllowedTypes<H_> >::value>::do_dispatch(v, d);
+}
+
+template <typename H_>
+SpecTreeFromPython<H_>::SpecTreeFromPython() :
+    _result(new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec()))),
+    _add(tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, _result, tr1::placeholders::_1))
+{
+}
+
+template <typename H_>
+SpecTreeFromPython<H_>::~SpecTreeFromPython()
+{
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonAllDepSpec & d)
+{
+    dispatch<H_, AllDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonAnyDepSpec & d)
+{
+    dispatch<H_, AnyDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonUseDepSpec & d)
+{
+    dispatch<H_, UseDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonPackageDepSpec & d)
+{
+    dispatch<H_, PackageDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonPlainTextDepSpec & d)
+{
+    dispatch<H_, PlainTextDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonURIDepSpec & d)
+{
+    dispatch<H_, URIDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonBlockDepSpec & d)
+{
+    dispatch<H_, BlockDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonAllDepSpec & d)
+{
+    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> >(
+                new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec()))));
+
+    _add(cds);
+
+    Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
+            tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, cds, tr1::placeholders::_1));
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+            accept_visitor(*this));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
+{
+    tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> >(
+                new ConstTreeSequence<H_, AnyDepSpec>(tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec()))));
+
+    _add(cds);
+
+    Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
+            tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, cds, tr1::placeholders::_1));
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+            accept_visitor(*this));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonUseDepSpec & d)
+{
+    tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> >(
+                new ConstTreeSequence<H_, UseDepSpec>(tr1::shared_ptr<UseDepSpec>(
+                        new UseDepSpec(d.flag(), d.inverse())))));
+
+    _add(cds);
+
+    Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
+            tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, cds, tr1::placeholders::_1));
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+            accept_visitor(*this));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonPackageDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(
+                new TreeLeaf<H_, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
+                        package_dep_spec_from_python(d)))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(
+               new TreeLeaf<H_, PlainTextDepSpec>(tr1::shared_ptr<PlainTextDepSpec>(
+                       new PlainTextDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonURIDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(
+                new TreeLeaf<H_, URIDepSpec>(tr1::shared_ptr<URIDepSpec>(
+                        new URIDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(
+                new TreeLeaf<H_, BlockDepSpec>(tr1::shared_ptr<BlockDepSpec>(
+                        new BlockDepSpec(tr1::shared_ptr<PackageDepSpec>(
+                                package_dep_spec_from_python(*d.blocked_spec())))))));
+}
+
+template <typename H_>
+tr1::shared_ptr<typename H_::ConstItem>
+SpecTreeFromPython<H_>::result() const
+{
+    return _result;
 }
 
 template <typename N_>
@@ -500,7 +908,7 @@ struct tree_to_python
     static PyObject *
     convert(const N_ & n)
     {
-        DepSpecVisitor v;
+        SpecTreeToPython v;
         n->accept(v);
         return bp::incref(bp::object(v.result()).ptr());
     }
@@ -514,9 +922,42 @@ void register_tree_to_python()
 }
 
 
-struct PackageDepSpecFromPython
+template <typename H_>
+struct RegisterSpecTreeFromPython
 {
-    PackageDepSpecFromPython()
+    RegisterSpecTreeFromPython()
+    {
+        bp::converter::registry::push_back(&convertible, &construct,
+                boost::python::type_id<tr1::shared_ptr<typename H_::ConstItem> >());
+    }
+
+    static void *
+    convertible(PyObject * obj_ptr)
+    {
+        if (bp::extract<PythonDepSpec *>(obj_ptr).check())
+            return obj_ptr;
+        else
+            return 0;
+    }
+
+    static void
+    construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
+    {
+        typedef bp::converter::rvalue_from_python_storage<tr1::shared_ptr<const typename H_::ConstItem> > Storage;
+        void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
+
+        SpecTreeFromPython<H_> v;
+        PythonDepSpec * p = bp::extract<PythonDepSpec *>(obj_ptr);
+        p->accept(v);
+
+        new (storage) tr1::shared_ptr<const typename H_::ConstItem>(v.result());
+        data->convertible = storage;
+    }
+};
+
+struct RegisterPackageDepSpecFromPython
+{
+    RegisterPackageDepSpecFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
                 boost::python::type_id<PackageDepSpec>());
@@ -525,13 +966,16 @@ struct PackageDepSpecFromPython
     static void *
     convertible(PyObject * obj_ptr)
     {
-        return obj_ptr;
+        if (bp::extract<PythonPackageDepSpec *>(obj_ptr).check())
+            return obj_ptr;
+        else
+            return 0;
     }
 
     static void
     construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
     {
-        typedef bp::converter::rvalue_from_python_storage<PythonPackageDepSpec> Storage;
+        typedef bp::converter::rvalue_from_python_storage<PackageDepSpec> Storage;
         void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
         PythonPackageDepSpec p = bp::extract<PythonPackageDepSpec>(obj_ptr);
         new (storage) PackageDepSpec(
@@ -555,9 +999,9 @@ struct PackageDepSpecFromPython
     }
 };
 
-struct PackageDepSpecSPFromPython
+struct RegisterPackageDepSpecSPFromPython
 {
-    PackageDepSpecSPFromPython()
+    RegisterPackageDepSpecSPFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
                 boost::python::type_id<tr1::shared_ptr<const PackageDepSpec> >());
@@ -566,13 +1010,16 @@ struct PackageDepSpecSPFromPython
     static void *
     convertible(PyObject * obj_ptr)
     {
-        return obj_ptr;
+        if (bp::extract<PythonPackageDepSpec *>(obj_ptr).check())
+            return obj_ptr;
+        else
+            return 0;
     }
 
     static void
     construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
     {
-        typedef bp::converter::rvalue_from_python_storage<PythonPackageDepSpec> Storage;
+        typedef bp::converter::rvalue_from_python_storage<tr1::shared_ptr<PackageDepSpec> > Storage;
         void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
 
         PythonPackageDepSpec p = bp::extract<PythonPackageDepSpec>(obj_ptr);
@@ -603,6 +1050,10 @@ void PALUDIS_VISIBLE expose_dep_spec()
         ("PackageDepSpecError", "BaseException",
          "Thrown if an invalid package dep spec specification is encountered.");
 
+    ExceptionRegister::get_instance()->add_exception<NotAllowedInThisHeirarchy>
+        ("NotAllowedInThisHeirarchy", "BaseException",
+         "Thrown if a spec part not suitable for a particular heirarchy is present.");
+
     enum_auto("PackageDepSpecParseMode", last_pds_pm);
 
     register_tree_to_python<DependencySpecTree>();
@@ -610,6 +1061,12 @@ void PALUDIS_VISIBLE expose_dep_spec()
     register_tree_to_python<RestrictSpecTree>();
     register_tree_to_python<URISpecTree>();
     register_tree_to_python<LicenseSpecTree>();
+
+    RegisterSpecTreeFromPython<DependencySpecTree>();
+    RegisterSpecTreeFromPython<ProvideSpecTree>();
+    RegisterSpecTreeFromPython<RestrictSpecTree>();
+    RegisterSpecTreeFromPython<URISpecTree>();
+    RegisterSpecTreeFromPython<LicenseSpecTree>();
 
     register_shared_ptrs_to_python<PythonDepSpec>();
     bp::class_<PythonDepSpec, boost::noncopyable>
@@ -688,8 +1145,9 @@ void PALUDIS_VISIBLE expose_dep_spec()
     ur.def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end));
 
 
-    PackageDepSpecFromPython();
-    PackageDepSpecSPFromPython();
+    RegisterPackageDepSpecFromPython();
+    RegisterPackageDepSpecSPFromPython();
+
     bp::implicitly_convertible<PackageDepSpec, PythonPackageDepSpec>();
 
     bp::class_<PythonPackageDepSpec, tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >

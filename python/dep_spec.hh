@@ -27,16 +27,34 @@ namespace paludis
     namespace python
     {
         class PythonDepSpec;
-        class PythonPackageDepSpec;
-        class PythonPlainTextDepSpec;
-        class PythonURIDepSpec;
+        class PythonCompositeDepSpec;
         class PythonAllDepSpec;
         class PythonAnyDepSpec;
         class PythonUseDepSpec;
+        class PythonStringDepSpec;
+        class PythonPlainTextDepSpec;
+        class PythonPackageDepSpec;
+        class PythonURIDepSpec;
         class PythonBlockDepSpec;
 
+        struct PythonDepSpecVisitorTypes :
+            VisitorTypes<
+                PythonDepSpecVisitorTypes,
+                PythonDepSpec,
+                PythonAnyDepSpec,
+                PythonAllDepSpec,
+                PythonUseDepSpec,
+                PythonBlockDepSpec,
+                PythonPlainTextDepSpec,
+                PythonPackageDepSpec,
+                PythonURIDepSpec
+            >
+        {
+        };
+
         class PALUDIS_VISIBLE PythonDepSpec :
-            private InstantiationPolicy<PythonDepSpec, instantiation_method::NonCopyableTag>
+            private InstantiationPolicy<PythonDepSpec, instantiation_method::NonCopyableTag>,
+            public virtual ConstAcceptInterface<PythonDepSpecVisitorTypes>
         {
             protected:
                 PythonDepSpec();
@@ -73,7 +91,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonAnyDepSpec :
-            public PythonCompositeDepSpec
+            public PythonCompositeDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAnyDepSpec>
         {
             public:
                 PythonAnyDepSpec();
@@ -81,7 +100,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonAllDepSpec :
-            public PythonCompositeDepSpec
+            public PythonCompositeDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonAllDepSpec>
         {
             public:
                 PythonAllDepSpec();
@@ -89,7 +109,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonUseDepSpec :
-            public PythonCompositeDepSpec
+            public PythonCompositeDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonUseDepSpec>
         {
             private:
                 const UseFlagName _flag;
@@ -123,7 +144,8 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonPackageDepSpec :
             public PythonStringDepSpec,
-            private PrivateImplementationPattern<PythonPackageDepSpec>
+            private PrivateImplementationPattern<PythonPackageDepSpec>,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>
         {
             public:
                 PythonPackageDepSpec(const PackageDepSpec &);
@@ -152,7 +174,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonPlainTextDepSpec :
-            public PythonStringDepSpec
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>
         {
             public:
                 PythonPlainTextDepSpec(const std::string &);
@@ -160,7 +183,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonURIDepSpec :
-            public PythonStringDepSpec
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>
         {
             public:
                 PythonURIDepSpec(const std::string &);
@@ -171,7 +195,8 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonBlockDepSpec :
-            public PythonStringDepSpec
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>
         {
             private:
                 tr1::shared_ptr<const PythonPackageDepSpec> _spec;
@@ -183,17 +208,20 @@ namespace paludis
                 tr1::shared_ptr<const PythonPackageDepSpec> blocked_spec() const;
         };
 
-        class DepSpecVisitor :
+        /**
+         * Used to convert one of the SpecTrees to PythonDepSpec.
+         */
+        class SpecTreeToPython :
             public ConstVisitor<GenericSpecTree>,
-            private InstantiationPolicy<DepSpecVisitor, instantiation_method::NonCopyableTag>
+            private InstantiationPolicy<SpecTreeToPython, instantiation_method::NonCopyableTag>
         {
             private:
                 tr1::shared_ptr<PythonCompositeDepSpec> _current_parent;
 
             public:
-                DepSpecVisitor();
+                SpecTreeToPython();
 
-                virtual ~DepSpecVisitor();
+                virtual ~SpecTreeToPython();
 
                 const tr1::shared_ptr<const PythonDepSpec> result() const;
 
@@ -216,6 +244,42 @@ namespace paludis
                 void visit_leaf(const BlockDepSpec &);
 
                 void visit_leaf(const URIDepSpec &);
+        };
+
+        /**
+         * Used to convert Python*DepSpec to one of the SpecTrees.
+         */
+        template <typename H_>
+        class SpecTreeFromPython :
+            public ConstVisitor<PythonDepSpecVisitorTypes>,
+            private InstantiationPolicy<SpecTreeFromPython<H_>, instantiation_method::NonCopyableTag>
+        {
+            private:
+                tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > _result;
+                tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> _add;
+
+            public:
+                SpecTreeFromPython();
+
+                virtual ~SpecTreeFromPython();
+
+                tr1::shared_ptr<typename H_::ConstItem> result() const;
+
+                void visit(const PythonAllDepSpec &);
+                void visit(const PythonAnyDepSpec &);
+                void visit(const PythonUseDepSpec &);
+                void visit(const PythonPackageDepSpec &);
+                void visit(const PythonPlainTextDepSpec &);
+                void visit(const PythonBlockDepSpec &);
+                void visit(const PythonURIDepSpec &);
+
+                void real_visit(const PythonAllDepSpec &);
+                void real_visit(const PythonAnyDepSpec &);
+                void real_visit(const PythonUseDepSpec &);
+                void real_visit(const PythonPackageDepSpec &);
+                void real_visit(const PythonPlainTextDepSpec &);
+                void real_visit(const PythonBlockDepSpec &);
+                void real_visit(const PythonURIDepSpec &);
         };
     }
 }
