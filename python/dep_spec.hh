@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PYTHON_DEP_SPEC_HH 1
 
 #include <paludis/dep_spec.hh>
+#include <paludis/util/tr1_functional.hh>
 
 namespace paludis
 {

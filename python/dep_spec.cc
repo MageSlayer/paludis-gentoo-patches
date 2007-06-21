@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <dep_spec.hh>
 #include <paludis_python.hh>
 
-#include <dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -27,14 +27,15 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tr1_type_traits.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+
 #include <list>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
-
 
 template class ConstVisitor<PythonDepSpecVisitorTypes>;
 template class ConstAcceptInterface<PythonDepSpecVisitorTypes>;
