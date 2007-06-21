@@ -30,6 +30,7 @@ IF_PYTHON_TESTS = \
 	dep_spec_TEST.py \
 	eapi_TEST.py \
 	portage_dep_parser_TEST.py \
+	dep_tag_TEST.py \
 	log_TEST.py \
 	name_TEST.py \
 	query_TEST.py \
@@ -43,6 +44,7 @@ IF_PYTHON_QA_TESTS =
 IF_PYTHON_SOURCES = \
 	contents.cc \
 	dep_spec.hh dep_spec.cc \
+	dep_tag.cc \
 	eapi.cc \
 	environment.cc \
 	exception.hh exception.cc \

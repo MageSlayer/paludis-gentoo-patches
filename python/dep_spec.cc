@@ -922,6 +922,21 @@ void register_tree_to_python()
             tree_to_python<tr1::shared_ptr<typename T_::ConstItem> > >();
 }
 
+struct sp_package_dep_spec_to_python
+{
+    static PyObject *
+    convert(const tr1::shared_ptr<const PackageDepSpec> & d)
+    {
+        PythonPackageDepSpec pyd(*d);
+        return bp::incref(bp::object(pyd).ptr());
+    }
+};
+
+void register_sp_package_dep_spec_to_python()
+{
+    bp::to_python_converter<tr1::shared_ptr<const PackageDepSpec>, sp_package_dep_spec_to_python>();
+}
+
 
 template <typename H_>
 struct RegisterSpecTreeFromPython
@@ -1150,6 +1165,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
     RegisterPackageDepSpecSPFromPython();
 
     bp::implicitly_convertible<PackageDepSpec, PythonPackageDepSpec>();
+    register_sp_package_dep_spec_to_python();
 
     bp::class_<PythonPackageDepSpec, tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
         pkgds("PackageDepSpec",
