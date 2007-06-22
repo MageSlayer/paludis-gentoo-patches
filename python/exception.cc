@@ -69,6 +69,9 @@ ExceptionRegister::get_py_exception(const std::string & name)
 
 void PALUDIS_VISIBLE expose_exception()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<Exception>("BaseException",
             "Base exception class.");
     ExceptionRegister::get_instance()->add_exception<InternalError>("InternalError", "BaseException",

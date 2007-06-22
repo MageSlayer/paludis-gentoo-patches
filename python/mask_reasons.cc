@@ -27,10 +27,17 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_mask_reasons()
 {
+    /**
+     * Enums
+     */
     enum_auto("MaskReason", last_mr);
 
+    /**
+     * MaskReasons
+     */
     class_options<MaskReasons>
-        mrs("MaskReasons", "MaskReason",
-                "A collection of reasons for why a package is masked."
-           );
+        (
+         "MaskReasons", "MaskReason",
+         "A collection of reasons for why a package is masked."
+        );
 }

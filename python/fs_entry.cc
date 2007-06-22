@@ -27,10 +27,16 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_fs_entry()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<FSError>
         ("FSError", "BaseException",
          "Generic filesystem error class.");
 
+    /**
+     * FSEntry
+     */
     bp::implicitly_convertible<std::string, FSEntry>();
     bp::to_python_converter<FSEntry, to_string<FSEntry> >();
 }

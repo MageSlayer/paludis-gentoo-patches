@@ -27,6 +27,9 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_name()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<PackageNamePartError>
         ("PackageNamePartError", "NameError",
          "Thrown if an invalid value is assigned to a PackageNamePart.");
@@ -56,129 +59,216 @@ void PALUDIS_VISIBLE expose_name()
         ("SetNameError", "NameError",
          "Thrown if an invalid value is assigned to a SetName.");
 
-    class_validated<PackageNamePart>
-        pnp("PackageNamePart",
-                "Holds a string that is a valid name for the package part of a QualifiedPackageName."
-           );
-    register_shared_ptrs_to_python<PackageNamePart>();
-
-    class_collection<PackageNamePartCollection>
-        pnpc("PackageNamePartCollection",
-                "Iterable of PackageNamePart.\n"
-                "A collection of PackageNamePart instances."
-            );
-
-    class_validated<CategoryNamePart>
-        cnp("CategoryNamePart",
-                "Holds a string that is a valid name for the category part of a QualifiedPackageName."
-           );
-    // CategoryNamePart + PackageNamePart = QualifiedPackageName
-    cnp.def(bp::self + bp::other<PackageNamePart>());
-    register_shared_ptrs_to_python<CategoryNamePart>();
-
-    class_collection<CategoryNamePartCollection>
-        cnpc("CategoryNamePartCollection",
-                "Iterable of CategoryNamePart.\n"
-                "A collection of CategoryNamePart instances."
-            );
-
-    class_validated<UseFlagName>
-        ufn("UseFlagName",
-                "Holds a string that is a valid name for a USE flag."
-           );
-
-    class_collection<UseFlagNameCollection>
-        ufnc("UseFlagNameCollection",
-                "Iterable of UseFlagName.\n"
-                "A collection of UseFlagName instances."
-            );
-
-    class_validated<SlotName>
-        sln("SlotName",
-                "Holds a string that is a valid name for a SLOT."
-           );
-    register_shared_ptrs_to_python<SlotName>();
-
-    class_validated<RepositoryName>
-        rn("RepositoryName",
-                "Holds a string that is a valid name for a Repository."
-          );
-    register_shared_ptrs_to_python<RepositoryName>();
-
-    class_collection<RepositoryNameCollection>
-        rnc("RepositoryNameCollection",
-                "Iterable of RepositoryName\n"
-                "A collection of RepositoryName instances."
-            );
-
-    class_validated<KeywordName>
-        kn("KeywordName",
-                "Holds a string that is a valid name for a KEYWORD."
-          );
-
-    class_collection<KeywordNameCollection>
-        knc("KeywordNameCollection",
-                "Iterable of KeywordName\n"
-                "A collection of KeywordName instances."
-            );
-
-    class_validated<SetName>
-        stn("SetName",
-                "Holds a string that is a valid name for a set."
-           );
-
-    class_collection<SetNameCollection>
-        sc("SetNameCollection",
-                "Iterable of SetName\n"
-                "A collection of set names."
-          );
-
-    class_collection<InheritedCollection>
-        ic("InheritedCollection",
-                "Iterable of string\n"
-                "A collection of inherited packages."
-          );
-
-    register_shared_ptrs_to_python<QualifiedPackageName>();
-    bp::class_<QualifiedPackageName>
-        qpn("QualifiedPackageName",
-                "Represents a category plus package name.",
-                bp::init<const std::string &>("__init__(string)")
-           );
-    qpn.def(bp::init<const CategoryNamePart &, const PackageNamePart &>());
-    qpn.def_readwrite("category", &QualifiedPackageName::category);
-    qpn.def_readwrite("package", &QualifiedPackageName::package);
-    qpn.def("__cmp__", &py_cmp<QualifiedPackageName>);
-    qpn.def(bp::self_ns::str(bp::self));
-    bp::implicitly_convertible<std::string, QualifiedPackageName>();
-
-    class_collection<QualifiedPackageNameCollection>
-        qpnc("QualifiedPackageNameCollection",
-                "Iterable of QualifiedPackageName\n"
-                "A collection of QualifiedPackageName instances."
-            );
-
-    bp::class_<IUseFlag>
-        iuf("IUseFlag",
-                "Represents an IUse flag.",
-                bp::init<const std::string &, IUseFlagParseMode>("__init__(string, IUseFlagParseMode")
-           );
-    iuf.def(bp::init<const UseFlagName &, const UseFlagState &>("__init__(UseFlagName, UseFlagState)"));
-    iuf.def("__cmp__", &py_cmp<IUseFlag>);
-    iuf.def(bp::self_ns::str(bp::self));
-    iuf.def_readwrite("flag", &IUseFlag::flag,
-            "[rw] UseFlagName"
-            );
-    iuf.def_readwrite("state", &IUseFlag::state,
-            "[rw] UseFlagState"
-            );
-
-    class_collection<IUseFlagCollection>
-        iufc("IUseFlagCollection",
-                "Iterable of IUseFlag\n"
-                "A collection of use flags."
-            );
-
+    /**
+     * Enums
+     */
     enum_auto("UseFlagState", last_use);
     enum_auto("IUseFlagParseMode", last_iuse_pm);
+
+    /**
+     * PackageNamePart
+     */
+    register_shared_ptrs_to_python<PackageNamePart>();
+    class_validated<PackageNamePart>
+        (
+         "PackageNamePart",
+         "Holds a string that is a valid name for the package part of a QualifiedPackageName."
+        );
+
+    /**
+     * PackageNamePartCollection
+     */
+    class_collection<PackageNamePartCollection>
+        (
+         "PackageNamePartCollection",
+         "Iterable of PackageNamePart.\n"
+         "A collection of PackageNamePart instances."
+        );
+
+    /**
+     * CategoryNamePart
+     */
+    register_shared_ptrs_to_python<CategoryNamePart>();
+    class_validated<CategoryNamePart>
+        (
+         "CategoryNamePart",
+         "Holds a string that is a valid name for the category part of a QualifiedPackageName."
+        )
+        // CategoryNamePart + PackageNamePart = QualifiedPackageName
+        .def(bp::self + bp::other<PackageNamePart>())
+        ;
+
+    /**
+     * CategoryNamePartCollection
+     */
+    class_collection<CategoryNamePartCollection>
+        (
+         "CategoryNamePartCollection",
+         "Iterable of CategoryNamePart.\n"
+         "A collection of CategoryNamePart instances."
+        );
+
+    /**
+     * UseFlagName
+     */
+    class_validated<UseFlagName>
+        (
+         "UseFlagName",
+         "Holds a string that is a valid name for a USE flag."
+        );
+
+    /**
+     * UseFlagNameCollection
+     */
+    class_collection<UseFlagNameCollection>
+        (
+         "UseFlagNameCollection",
+         "Iterable of UseFlagName.\n"
+         "A collection of UseFlagName instances."
+        );
+
+    /**
+     * SlotName
+     */
+    register_shared_ptrs_to_python<SlotName>();
+    class_validated<SlotName>
+        (
+         "SlotName",
+         "Holds a string that is a valid name for a SLOT."
+        );
+
+    /**
+     * RepositoryName
+     */
+    register_shared_ptrs_to_python<RepositoryName>();
+    class_validated<RepositoryName>
+        (
+         "RepositoryName",
+         "Holds a string that is a valid name for a Repository."
+        );
+
+    /**
+     * RepositoryNameCollection
+     */
+    class_collection<RepositoryNameCollection>
+        (
+         "RepositoryNameCollection",
+         "Iterable of RepositoryName\n"
+         "A collection of RepositoryName instances."
+        );
+
+    /**
+     * KeywordName
+     */
+    class_validated<KeywordName>
+        (
+         "KeywordName",
+         "Holds a string that is a valid name for a KEYWORD."
+        );
+
+    /**
+     * KeywordNameCollect
+     */
+    class_collection<KeywordNameCollection>
+        (
+         "KeywordNameCollection",
+         "Iterable of KeywordName\n"
+         "A collection of KeywordName instances."
+        );
+
+    /**
+     * SetName
+     */
+    class_validated<SetName>
+        (
+         "SetName",
+         "Holds a string that is a valid name for a set."
+        );
+
+    /**
+     * SetNameCollection
+     */
+    class_collection<SetNameCollection>
+        (
+         "SetNameCollection",
+         "Iterable of SetName\n"
+         "A collection of set names."
+        );
+
+    /**
+     * InheritedCollection
+     */
+    class_collection<InheritedCollection>
+        (
+         "InheritedCollection",
+         "Iterable of string\n"
+         "A collection of inherited packages."
+        );
+
+    /**
+     * QualifiedPackageName
+     */
+    register_shared_ptrs_to_python<QualifiedPackageName>();
+    bp::implicitly_convertible<std::string, QualifiedPackageName>();
+    bp::class_<QualifiedPackageName>
+        (
+         "QualifiedPackageName",
+         "Represents a category plus package name.",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .def(bp::init<const CategoryNamePart &, const PackageNamePart &>())
+
+        .def_readwrite("category", &QualifiedPackageName::category)
+
+        .def_readwrite("package", &QualifiedPackageName::package)
+
+        .def("__cmp__", &py_cmp<QualifiedPackageName>)
+
+        .def(bp::self_ns::str(bp::self))
+        ;
+
+    /**
+     * QualifiedPackageNameCollection
+     */
+    class_collection<QualifiedPackageNameCollection>
+        (
+         "QualifiedPackageNameCollection",
+         "Iterable of QualifiedPackageName\n"
+         "A collection of QualifiedPackageName instances."
+        );
+
+    /**
+     * IUseFlag
+     */
+    bp::class_<IUseFlag>
+        (
+         "IUseFlag",
+         "Represents an IUse flag.",
+         bp::init<const std::string &, IUseFlagParseMode>("__init__(string, IUseFlagParseMode")
+        )
+        .def(bp::init<const UseFlagName &, const UseFlagState &>("__init__(UseFlagName, UseFlagState)"))
+
+        .def_readwrite("flag", &IUseFlag::flag,
+                "[rw] UseFlagName"
+                )
+
+        .def_readwrite("state", &IUseFlag::state,
+                "[rw] UseFlagState"
+                )
+
+        .def("__cmp__", &py_cmp<IUseFlag>)
+
+        .def(bp::self_ns::str(bp::self))
+
+        ;
+
+    /**
+     * IUseFlagNameCollection
+     */
+    class_collection<IUseFlagCollection>
+        (
+         "IUseFlagCollection",
+         "Iterable of IUseFlag\n"
+         "A collection of use flags."
+        );
 }

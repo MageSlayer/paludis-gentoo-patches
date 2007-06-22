@@ -18,7 +18,6 @@
  */
 
 #include <paludis_python.hh>
-#include <dep_spec.hh>
 
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
@@ -29,6 +28,9 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_portage_dep_parser()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<DepStringError>
         ("DepStringError", "BaseException",
          "A DepStringError descendent is thrown if an invalid depend string is encountered.");
@@ -42,35 +44,44 @@ void PALUDIS_VISIBLE expose_portage_dep_parser()
         ("DepStringNestingError", "DepStringParseError",
          "Thrown if a dependency string does not have properly balanced parentheses.");
 
+    /**
+     * PortageDepParser
+     */
     bp::class_<PortageDepParser, boost::noncopyable>
-        pdp("PortageDepParser",
-                "The PortageDepParser converts string representations "
-                "of a dependency specification into a DepSpec instance.",
-                bp::no_init
-           );
-    pdp.def("parse_depend", &PortageDepParser::parse_depend,
-            "parse_depend(string, EAPI) -> CompositeDepSpec\n"
-            "Parse a dependency heirarchy."
-           );
-    pdp.staticmethod("parse_depend");
-    pdp.def("parse_provide", &PortageDepParser::parse_provide,
-            "parse_provide(string, EAPI) -> CompositeDepSpec\n"
-            "Parse a provide heirarchy."
-           );
-    pdp.staticmethod("parse_provide");
-    pdp.def("parse_restrict", &PortageDepParser::parse_restrict,
-            "parse_restrict(string, EAPI) -> CompositeDepSpec\n"
-            "Parse a restrict."
-           );
-    pdp.staticmethod("parse_restrict");
-    pdp.def("parse_uri", &PortageDepParser::parse_uri,
-            "parse_uri(string, EAPI) -> CompositeDepSpec\n"
-            "Parse a uri heirarchy."
-           );
-    pdp.staticmethod("parse_uri");
-    pdp.def("parse_license", &PortageDepParser::parse_license,
-            "parse_license(string, EAPI) -> CompositeDepSpec\n"
-            "Parse a license heirarchy."
-           );
-    pdp.staticmethod("parse_license");
+        (
+         "PortageDepParser",
+         "The PortageDepParser converts string representations "
+         "of a dependency specification into a DepSpec instance.",
+         bp::no_init
+        )
+        .def("parse_depend", &PortageDepParser::parse_depend,
+                "parse_depend(string, EAPI) -> CompositeDepSpec\n"
+                "Parse a dependency heirarchy."
+            )
+        .staticmethod("parse_depend")
+
+        .def("parse_provide", &PortageDepParser::parse_provide,
+                "parse_provide(string, EAPI) -> CompositeDepSpec\n"
+                "Parse a provide heirarchy."
+            )
+        .staticmethod("parse_provide")
+
+        .def("parse_restrict", &PortageDepParser::parse_restrict,
+                "parse_restrict(string, EAPI) -> CompositeDepSpec\n"
+                "Parse a restrict."
+            )
+        .staticmethod("parse_restrict")
+
+        .def("parse_uri", &PortageDepParser::parse_uri,
+                "parse_uri(string, EAPI) -> CompositeDepSpec\n"
+                "Parse a uri heirarchy."
+            )
+        .staticmethod("parse_uri")
+
+        .def("parse_license", &PortageDepParser::parse_license,
+                "parse_license(string, EAPI) -> CompositeDepSpec\n"
+                "Parse a license heirarchy."
+            )
+        .staticmethod("parse_license")
+        ;
 }

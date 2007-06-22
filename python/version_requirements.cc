@@ -27,25 +27,40 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_version_requirements()
 {
-    bp::class_<VersionRequirement>
-        vr("VersionRequirement",
-                bp::init<const VersionOperator &, const VersionSpec &>(
-                    "__init__(VersionOperator, VersionSpec)"
-                    )
-          );
-    vr.def_readwrite("version_operator", &VersionRequirement::version_operator,
-            "[rw] VersionOperator"
-            );
-    vr.def_readwrite("version_spec", &VersionRequirement::version_spec,
-            "[rw] VersionSpec"
-            );
-    vr.def("__eq__", &VersionRequirement::operator==);
-    vr.def("__ne__", &py_ne<VersionRequirement>);
-
+    /**
+     * Enums
+     */
     enum_auto("VersionRequirementsMode", last_vr);
 
+    /**
+     * VersionRequirement
+     */
+    bp::class_<VersionRequirement>
+        (
+         "VersionRequirement",
+         bp::init<const VersionOperator &, const VersionSpec &>(
+             "__init__(VersionOperator, VersionSpec)"
+             )
+        )
+        .def_readwrite("version_operator", &VersionRequirement::version_operator,
+                "[rw] VersionOperator"
+                )
+
+        .def_readwrite("version_spec", &VersionRequirement::version_spec,
+                "[rw] VersionSpec"
+                )
+
+        .def("__eq__", &VersionRequirement::operator==)
+
+        .def("__ne__", &py_ne<VersionRequirement>)
+        ;
+
+    /**
+     * VersionRequirements
+     */
     class_collection<VersionRequirements>
-        vrc("VersionRequirements",
-                "Iterable collection of VersionRequirement instances, usually for a PackageDepSpec."
-           );
+        (
+         "VersionRequirements",
+         "Iterable collection of VersionRequirement instances, usually for a PackageDepSpec."
+        );
 }

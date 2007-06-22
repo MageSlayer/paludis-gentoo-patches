@@ -27,41 +27,57 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_version_spec()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<BadVersionSpecError>
         ("BadVersionSpecError", "BaseException",
          "Thrown if a VersionSpec is created from an invalid version string.");
 
-    bp::class_<VersionSpec>
-        vs("VersionSpec",
-                "A VersionSpec represents a version number (for example, 1.2.3b-r1).",
-                bp::init<const std::string &>("__init__(string)")
-          );
-    vs.def("bump", &VersionSpec::bump,
-            "bump() -> VersionSpec\n"
-            "This is used by the ~> operator. It returns a VersionSpec where the next to last number "
-            "is one greater (e.g. 5.3.1 => 5.4).\n"
-            "Any non number parts are stripped (e.g. 1.2.3_alpha4-r5 => 1.3)."
-          );
-    vs.add_property("is_scm", &VersionSpec::is_scm,
-            "[ro] bool\n"
-            "Are we an -scm package, or something pretending to be one?"
-          );
-    vs.def("remove_revision", &VersionSpec::remove_revision,
-            "remove_revision() -> VersionSpec\n"
-            "Remove the revision part."
-          );
-    vs.def("revision_only", &VersionSpec::revision_only,
-            "revision_only() -> string\n"
-            "Revision part only (or \"r0\")."
-          );
-    vs.def("__cmp__", &VersionSpec::compare);
-    vs.def(bp::self_ns::str(bp::self));
-
+    /**
+     * VersionSpec
+     */
     bp::implicitly_convertible<std::string, VersionSpec>();
+    bp::class_<VersionSpec>
+        (
+         "VersionSpec",
+         "A VersionSpec represents a version number (for example, 1.2.3b-r1).",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .def("bump", &VersionSpec::bump,
+                "bump() -> VersionSpec\n"
+                "This is used by the ~> operator. It returns a VersionSpec where the next to last number "
+                "is one greater (e.g. 5.3.1 => 5.4).\n"
+                "Any non number parts are stripped (e.g. 1.2.3_alpha4-r5 => 1.3)."
+            )
 
+        .add_property("is_scm", &VersionSpec::is_scm,
+                "[ro] bool\n"
+                "Are we an -scm package, or something pretending to be one?"
+                )
+
+        .def("remove_revision", &VersionSpec::remove_revision,
+                "remove_revision() -> VersionSpec\n"
+                "Remove the revision part."
+            )
+
+        .def("revision_only", &VersionSpec::revision_only,
+                "revision_only() -> string\n"
+                "Revision part only (or \"r0\")."
+            )
+
+        .def("__cmp__", &VersionSpec::compare)
+
+        .def(bp::self_ns::str(bp::self))
+        ;
+
+    /**
+     * VersionSpecCollection
+     */
     class_collection<VersionSpecCollection>
-        vsc("VersionSpecCollection",
-                "Iterable of VersionSpec.\n"
-                "Collection of VersionSpec instances."
-            );
+        (
+         "VersionSpecCollection",
+         "Iterable of VersionSpec.\n"
+         "Collection of VersionSpec instances."
+        );
 }

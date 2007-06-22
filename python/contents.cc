@@ -43,72 +43,109 @@ class class_contents:
 
 void PALUDIS_VISIBLE expose_contents()
 {
+    /**
+     * ContentsEntry
+     */
     bp::register_ptr_to_python<tr1::shared_ptr<const ContentsEntry> >();
     bp::implicitly_convertible<tr1::shared_ptr<ContentsEntry>,
             tr1::shared_ptr<const ContentsEntry> >();
     bp::class_<ContentsEntry, boost::noncopyable>
-        ce("ContentsEntry",
-                "Base class for a contents entry.",
-                bp::no_init
-          );
-    ce.add_property("name", &ContentsEntry::name,
-            "[ro] string\n"
-            "Our name."
-            );
-    ce.def(bp::self_ns::str(bp::self));
+        (
+         "ContentsEntry",
+         "Base class for a contents entry.",
+         bp::no_init
+        )
+        .add_property("name", &ContentsEntry::name,
+                "[ro] string\n"
+                "Our name."
+                )
 
+        .def(bp::self_ns::str(bp::self))
+        ;
+
+    /**
+     * ContentsFileEntry
+     */
     class_contents<ContentsFileEntry>
-        cfilee("ContentsFileEntry",
-                "A file contents entry.",
-                bp::init<const std::string &>("__init__(name_string)")
-           );
+        (
+         "ContentsFileEntry",
+         "A file contents entry.",
+         bp::init<const std::string &>("__init__(name_string)")
+        );
 
+    /**
+     * ContentsDirEntry
+     */
     class_contents<ContentsDirEntry>
-        cdire("ContentsDirEntry",
-                "A directory contents entry.",
-                bp::init<const std::string &>("__init__(name_string)")
-           );
+        (
+         "ContentsDirEntry",
+         "A directory contents entry.",
+         bp::init<const std::string &>("__init__(name_string)")
+        );
 
+    /**
+     * ContentsMiscEntry
+     */
     class_contents<ContentsMiscEntry>
-        cme("ContentsMiscEntry",
-                "A misc contents entry.",
-                bp::init<const std::string &>("__init__(name_string)")
-           );
+        (
+         "ContentsMiscEntry",
+         "A misc contents entry.",
+         bp::init<const std::string &>("__init__(name_string)")
+        );
 
+    /**
+     * ContentsFifoEntry
+     */
     class_contents<ContentsFifoEntry>
-        cfifoe("ContentsFifoEntry",
-                "A fifo contents entry.",
-                bp::init<const std::string &>("__init__(name_string)")
-           );
+        (
+         "ContentsFifoEntry",
+         "A fifo contents entry.",
+         bp::init<const std::string &>("__init__(name_string)")
+        );
 
+    /**
+     * ContentsDevEntry
+     */
     class_contents<ContentsDevEntry>
-        cdeve("ContentsDevEntry",
-                "A dev contents entry.",
-                bp::init<const std::string &>("__init__(name_string)")
-           );
+        (
+         "ContentsDevEntry",
+         "A dev contents entry.",
+         bp::init<const std::string &>("__init__(name_string)")
+        );
 
+    /**
+     * ContentsSymEntry
+     */
     class_contents<ContentsSymEntry>
-        cse("ContentsSymEntry",
-                "A sym contents entry.",
-                bp::init<const std::string &, const std::string &>("__init__(name_string, target_string)")
-           );
-    cse.add_property("target", &ContentsSymEntry::target,
-            "[ro] string\n"
-            "Our target (as per readlink)."
-            );
-    cse.def(bp::self_ns::str(bp::self));
+        (
+         "ContentsSymEntry",
+         "A sym contents entry.",
+         bp::init<const std::string &, const std::string &>("__init__(name_string, target_string)")
+        )
+        .add_property("target", &ContentsSymEntry::target,
+                "[ro] string\n"
+                "Our target (as per readlink)."
+                )
 
+        .def(bp::self_ns::str(bp::self))
+        ;
+
+    /**
+     * Contents
+     */
     register_shared_ptrs_to_python<Contents>();
     bp::class_<Contents, boost::noncopyable>
-        c("Contents",
-                "Iterable of ContentsEntry.\n"
-                "A package's contents.",
-                bp::init<>("__init__()")
-           );
-    c.def("add", &Contents::add,
-            "add(ContentsEntry)\n"
-            "Add a new entry."
-         );
-    c.def("__iter__", bp::range(&Contents::begin, &Contents::end));
-}
+        (
+         "Contents",
+         "Iterable of ContentsEntry.\n"
+         "A package's contents.",
+         bp::init<>("__init__()")
+        )
+        .def("add", &Contents::add,
+                "add(ContentsEntry)\n"
+                "Add a new entry."
+            )
 
+        .def("__iter__", bp::range(&Contents::begin, &Contents::end))
+        ;
+}

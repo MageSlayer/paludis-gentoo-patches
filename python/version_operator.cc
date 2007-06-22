@@ -26,35 +26,52 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-bool
-vo_compare(const VersionOperator & self, const VersionSpec & v1, const VersionSpec & v2)
+struct VersionOperatorWrapper
 {
-    return self.as_version_spec_comparator()(v1, v2);
-}
+    // Compare two VersionSpecs
+    static bool
+    compare_vs(const VersionOperator & self, const VersionSpec & v1, const VersionSpec & v2)
+    {
+        return self.as_version_spec_comparator()(v1, v2);
+    }
+};
 
 void PALUDIS_VISIBLE expose_version_operator()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<BadVersionOperatorError>
         ("BadVersionOperatorError", "BaseException",
          "Thrown if a bad version operator is encountered.");
 
+    /**
+     * Enums
+     */
     enum_auto("VersionOperatorValue", last_vo);
 
-    bp::class_<VersionOperator>
-        vo("VersionOperator",
-                "An operator attached to a VersionSpec, validated.",
-                bp::init<const VersionOperatorValue>("__init__(VersionOperatorValue)")
-          );
-    vo.def(bp::init<const std::string &>("__init__(string)"));
-    vo.add_property("value", &VersionOperator::value,
-            "[ro] VersionOperatorValue"
-            );
-    vo.def("compare", &vo_compare,
-            "compare(VersionSpec, VersionSpec) -> bool\n"
-            "Compare two VersionSpecs with this operator."
-          );
-    vo.def(bp::self_ns::str(bp::self));
-
+    /**
+     * VersionOperator
+     */
     bp::implicitly_convertible<std::string, VersionOperator>();
     bp::implicitly_convertible<VersionOperatorValue, VersionOperator>();
+    bp::class_<VersionOperator>
+        (
+         "VersionOperator",
+         "An operator attached to a VersionSpec, validated.",
+         bp::init<const VersionOperatorValue>("__init__(VersionOperatorValue)")
+        )
+        .def(bp::init<const std::string &>("__init__(string)"))
+
+        .add_property("value", &VersionOperator::value,
+                "[ro] VersionOperatorValue"
+                )
+
+        .def("compare", &VersionOperatorWrapper::compare_vs,
+                "compare(VersionSpec, VersionSpec) -> bool\n"
+                "Compare two VersionSpecs with this operator."
+            )
+
+        .def(bp::self_ns::str(bp::self))
+        ;
 }

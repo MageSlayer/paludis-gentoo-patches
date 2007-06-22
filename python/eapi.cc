@@ -27,56 +27,78 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_eapi()
 {
+    /**
+     * SupportedEAPI
+     */
     register_shared_ptrs_to_python<SupportedEAPI>();
     bp::class_<SupportedEAPI, boost::noncopyable>
-        se("SupportedEAPI",
-                "Information about a supported EAPI.",
-                bp::no_init
-          );
-    se.def_readonly("package_dep_spec_parse_mode", &SupportedEAPI::package_dep_spec_parse_mode,
-            "[ro] PackageDepSpecParseMode"
-            );
-    se.def_readonly("strict_package_dep_spec_parse_mode", &SupportedEAPI::strict_package_dep_spec_parse_mode,
-            "[ro] PackageDepSpecParseMode"
-            );
-    se.def_readonly("iuse_flag_parse_mode", &SupportedEAPI::iuse_flag_parse_mode,
-            "[ro] IUseFlagParseMode"
-            );
-    se.def_readonly("strict_iuse_flag_parse_mode", &SupportedEAPI::strict_iuse_flag_parse_mode,
-            "[ro] IUseFlagParseMode"
-            );
-    se.def_readonly("breaks_portage", &SupportedEAPI::breaks_portage,
-            "[ro] bool"
-            );
+        (
+         "SupportedEAPI",
+         "Information about a supported EAPI.",
+         bp::no_init
+        )
+        .def_readonly("package_dep_spec_parse_mode", &SupportedEAPI::package_dep_spec_parse_mode,
+                "[ro] PackageDepSpecParseMode"
+                )
 
+        .def_readonly("strict_package_dep_spec_parse_mode", &SupportedEAPI::strict_package_dep_spec_parse_mode,
+                "[ro] PackageDepSpecParseMode"
+                )
+
+        .def_readonly("iuse_flag_parse_mode", &SupportedEAPI::iuse_flag_parse_mode,
+                "[ro] IUseFlagParseMode"
+                )
+
+        .def_readonly("strict_iuse_flag_parse_mode", &SupportedEAPI::strict_iuse_flag_parse_mode,
+                "[ro] IUseFlagParseMode"
+                )
+
+        .def_readonly("breaks_portage", &SupportedEAPI::breaks_portage,
+                "[ro] bool"
+                )
+        ;
+
+    /**
+     * EAPI
+     */
     register_shared_ptrs_to_python<EAPI>();
     bp::class_<EAPI, boost::noncopyable>
-        e("EAPI",
-                "Information about an EAPI.",
-                bp::no_init
-         );
-    e.def_readonly("name", &EAPI::name,
-            "[ro] str"
-            );
-    e.add_property("supported", bp::make_getter(&EAPI::supported, bp::return_value_policy<bp::return_by_value>()),
-            "[ro] SupportedEAPI"
-            );
+        ("EAPI",
+         "Information about an EAPI.",
+         bp::no_init
+        )
+        .def_readonly("name", &EAPI::name,
+                "[ro] str"
+                )
 
+        .add_property("supported", bp::make_getter(&EAPI::supported,
+                    bp::return_value_policy<bp::return_by_value>()),
+                "[ro] SupportedEAPI"
+                )
+        ;
+
+    /**
+     * EAPIData
+     */
     bp::class_<EAPIData, boost::noncopyable>
-        ed("EAPIData",
-                "Holds information on recognised EAPIs.",
-                bp::no_init
-          );
-    ed.add_static_property("instance", bp::make_function(&EAPIData::get_instance,
-                bp::return_value_policy<bp::reference_existing_object>()),
-            "Singleton instance."
-            );
-    ed.def("eapi_from_string", &EAPIData::eapi_from_string,
-            "eapi_from_string(str) -> EAPI\n"
-            "Make an EAPI."
-          );
-    ed.def("unknown_eapi", &EAPIData::unknown_eapi,
-            "unknown_eapi() -> EAPI\n"
-            "Make the unknown EAPI."
-          );
+        (
+         "EAPIData",
+         "Holds information on recognised EAPIs.",
+         bp::no_init
+        )
+        .add_static_property("instance", bp::make_function(&EAPIData::get_instance,
+                    bp::return_value_policy<bp::reference_existing_object>()),
+                "Singleton instance."
+                )
+
+        .def("eapi_from_string", &EAPIData::eapi_from_string,
+                "eapi_from_string(str) -> EAPI\n"
+                "Make an EAPI."
+            )
+
+        .def("unknown_eapi", &EAPIData::unknown_eapi,
+                "unknown_eapi() -> EAPI\n"
+                "Make the unknown EAPI."
+            )
+        ;
 }

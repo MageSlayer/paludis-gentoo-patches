@@ -33,6 +33,9 @@ namespace bp = boost::python;
 
 void PALUDIS_VISIBLE expose_package_database()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<PackageDatabaseError>
         ("PackageDatabaseError", "BaseException",
          "A PackageDatabaseError is an error that occurs when performing some operation upon a PackageDatabase.");
@@ -53,60 +56,83 @@ void PALUDIS_VISIBLE expose_package_database()
         ("NoSuchRepositoryError", "PackageDatabaseLookupError",
          "Thrown if there is no Repository in a RepositoryDatabase with the given name.");
 
+    /**
+     * Enums
+     */
     enum_auto("QueryOrder", last_qo);
 
+    /**
+     * PackageDatabase
+     */
     register_shared_ptrs_to_python<PackageDatabase>();
-    bp::class_<PackageDatabase, boost::noncopyable>
-        pd("PackageDatabase",
-                "A PackageDatabase can be queried for Package instances.\n",
-                bp::no_init
-          );
     tr1::shared_ptr<PackageDatabaseEntryCollection>
-        (PackageDatabase::*query)(const Query &, const QueryOrder) const = &PackageDatabase::query;
-    pd.def("query", query,
-            "query(Query, QueryOrder) -> PackageDatabaseEntryCollection\n"
-            "Query the repository."
-          );
-    pd.add_property("favourite_repository", &PackageDatabase::favourite_repository,
-            "[ro] RepositoryName\n"
-            "Name of our 'favourite' repository"
-          );
+        (PackageDatabase::* query)(const Query &, const QueryOrder) const = &PackageDatabase::query;
     tr1::shared_ptr<const Repository>
-        (PackageDatabase::* fetch_repository)(const RepositoryName &) const =
-        &PackageDatabase::fetch_repository;
-    pd.def("fetch_repository", fetch_repository,
-            "fetch_repository(RepositoryName) -> Repository\n"
-            "Fetch a named repository."
-          );
-    pd.def("fetch_unique_qualified_package_name", &PackageDatabase::fetch_unique_qualified_package_name,
-            "fetch_unique_qualified_package_name(PackageNamePart) -> QualifiedPackageName\n"
-            "Disambiguate a package name."
-          );
-    pd.def("more_important_than", &PackageDatabase::more_important_than,
-            "more_important_than(RepositoryName, RepositoryName) -> bool\n"
-            "Return true if the first repository is more important than the second."
-          );
-    pd.add_property("repositories",
-            bp::range(&PackageDatabase::begin_repositories, &PackageDatabase::end_repositories),
-            "[ro] Iterable of Repository\n"
-            "Our repositories"
-            );
+        (PackageDatabase::* fetch_repository)(const RepositoryName &) const = &PackageDatabase::fetch_repository;
+    bp::class_<PackageDatabase, boost::noncopyable>
+        (
+         "PackageDatabase",
+         "A PackageDatabase can be queried for Package instances.\n",
+         bp::no_init
+        )
+        .def("query", query,
+                "query(Query, QueryOrder) -> PackageDatabaseEntryCollection\n"
+                "Query the repository."
+            )
 
+        .add_property("favourite_repository", &PackageDatabase::favourite_repository,
+                "[ro] RepositoryName\n"
+                "Name of our 'favourite' repository"
+                )
+
+        .def("fetch_repository", fetch_repository,
+                "fetch_repository(RepositoryName) -> Repository\n"
+                "Fetch a named repository."
+            )
+
+        .def("fetch_unique_qualified_package_name", &PackageDatabase::fetch_unique_qualified_package_name,
+                "fetch_unique_qualified_package_name(PackageNamePart) -> QualifiedPackageName\n"
+                "Disambiguate a package name."
+            )
+
+        .def("more_important_than", &PackageDatabase::more_important_than,
+                "more_important_than(RepositoryName, RepositoryName) -> bool\n"
+                "Return true if the first repository is more important than the second."
+            )
+
+        .add_property("repositories",
+                bp::range(&PackageDatabase::begin_repositories, &PackageDatabase::end_repositories),
+                "[ro] Iterable of Repository\n"
+                "Our repositories"
+                )
+        ;
+
+    /**
+     * PackageDatabaseEntry
+     */
     bp::register_ptr_to_python<tr1::shared_ptr<PackageDatabaseEntry> >();
     bp::class_<PackageDatabaseEntry>
-        pde("PackageDatabaseEntry",
-                "Holds an entry in a PackageDatabase, and used to identify"
-                " a specific version of a package in a particular repository.",
-                bp::init<const QualifiedPackageName &, const VersionSpec &, const RepositoryName &>(
-                    "__init__(QualifiedPackageName, VersionSpec, RepositoryName)"
-                    )
-           );
-    pde.def(bp::self_ns::str(bp::self));
-    pde.def("__eq__", &PackageDatabaseEntry::operator==);
-    pde.def("__ne__", &py_ne<PackageDatabaseEntry>);
+        (
+         "PackageDatabaseEntry",
+         "Holds an entry in a PackageDatabase, and used to identify"
+         " a specific version of a package in a particular repository.",
+         bp::init<const QualifiedPackageName &, const VersionSpec &, const RepositoryName &>(
+             "__init__(QualifiedPackageName, VersionSpec, RepositoryName)"
+             )
+        )
+        .def(bp::self_ns::str(bp::self))
 
+        .def("__eq__", &PackageDatabaseEntry::operator==)
+
+        .def("__ne__", &py_ne<PackageDatabaseEntry>)
+        ;
+
+    /**
+     * PackageDatabaseEntryCollection
+     */
     class_collection<PackageDatabaseEntryCollection>
-        pdec("PackageDatabaseEntryCollection",
-                "An iterable collection of PackageDatabaseEntry instances."
-            );
+        (
+         "PackageDatabaseEntryCollection",
+         "An iterable collection of PackageDatabaseEntry instances."
+        );
 }

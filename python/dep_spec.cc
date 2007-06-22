@@ -1062,6 +1062,9 @@ struct RegisterPackageDepSpecSPFromPython
 
 void PALUDIS_VISIBLE expose_dep_spec()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<PackageDepSpecError>
         ("PackageDepSpecError", "BaseException",
          "Thrown if an invalid package dep spec specification is encountered.");
@@ -1070,6 +1073,9 @@ void PALUDIS_VISIBLE expose_dep_spec()
         ("NotAllowedInThisHeirarchy", "BaseException",
          "Thrown if a spec part not suitable for a particular heirarchy is present.");
 
+    /**
+     * Enums
+     */
     enum_auto("PackageDepSpecParseMode", last_pds_pm);
 
     register_tree_to_python<DependencySpecTree>();
@@ -1084,83 +1090,120 @@ void PALUDIS_VISIBLE expose_dep_spec()
     RegisterSpecTreeFromPython<URISpecTree>();
     RegisterSpecTreeFromPython<LicenseSpecTree>();
 
+    /**
+     * DepSpec
+     */
     register_shared_ptrs_to_python<PythonDepSpec>();
     bp::class_<PythonDepSpec, boost::noncopyable>
-        ds("DepSpec",
-                "Base class for a dependency spec.",
-                bp::no_init
-          );
-    ds.def("as_use_dep_spec", &PythonDepSpec::as_use_dep_spec,
-            bp::return_value_policy<bp::reference_existing_object>(),
-            "as_use_dep_spec() -> UseDepSpec\n"
-            "Return us as a UseDepSpec, or None if we are not a UseDepSpec."
-          );
-    ds.def("as_package_dep_spec", &PythonDepSpec::as_package_dep_spec,
-            bp::return_value_policy<bp::reference_existing_object>(),
-            "as_package_dep_spec() -> PackageDepSpec\n"
-            "Return us as a PackageDepSpec, or None if we are not a PackageDepSpec."
-          );
+        (
+         "DepSpec",
+         "Base class for a dependency spec.",
+         bp::no_init
+        )
+        .def("as_use_dep_spec", &PythonDepSpec::as_use_dep_spec,
+                bp::return_value_policy<bp::reference_existing_object>(),
+                "as_use_dep_spec() -> UseDepSpec\n"
+                "Return us as a UseDepSpec, or None if we are not a UseDepSpec."
+            )
 
+        .def("as_package_dep_spec", &PythonDepSpec::as_package_dep_spec,
+                bp::return_value_policy<bp::reference_existing_object>(),
+                "as_package_dep_spec() -> PackageDepSpec\n"
+                "Return us as a PackageDepSpec, or None if we are not a PackageDepSpec."
+            )
+        ;
+
+    /**
+     * CompositeDepSpec
+     */
     register_shared_ptrs_to_python<PythonCompositeDepSpec>();
     bp::class_<PythonCompositeDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
-        cds("CompositeDepSpec",
-                "Iterable class for dependency specs that have a number of child dependency specs.",
-                bp::no_init
-           );
-    cds.def("__iter__", bp::range(&PythonCompositeDepSpec::begin, &PythonCompositeDepSpec::end));
+        (
+         "CompositeDepSpec",
+         "Iterable class for dependency specs that have a number of child dependency specs.",
+         bp::no_init
+        )
+        .def("__iter__", bp::range(&PythonCompositeDepSpec::begin, &PythonCompositeDepSpec::end))
+        ;
 
+    /**
+     * AnyDepSpec
+     */
     bp::class_<PythonAnyDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
-        anyds("AnyDepSpec",
-                "Represents a \"|| ( )\" dependency block.",
-                bp::no_init
-          );
+        (
+         "AnyDepSpec",
+         "Represents a \"|| ( )\" dependency block.",
+         bp::no_init
+        );
 
+    /**
+     * AllDepSpec
+     */
     bp::class_<PythonAllDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
-        allds("AllDepSpec",
-                "Represents a ( first second third ) or top level group of dependency specs.",
-                bp::no_init
-          );
+        (
+         "AllDepSpec",
+         "Represents a ( first second third ) or top level group of dependency specs.",
+         bp::no_init
+        );
 
+    /**
+     * UseDepSpec
+     */
     bp::class_<PythonUseDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
-        useds("UseDepSpec",
-                "Represents a use? ( ) dependency spec.",
-                bp::no_init
-          );
-    useds.add_property("flag", &UseDepSpec::flag,
-            "[ro] UseFlagName\n"
-            "Our use flag name."
-            );
-    useds.add_property("inverse", &UseDepSpec::inverse,
-            "[ro] bool\n"
-            "Are we a ! flag?"
-            );
+        (
+         "UseDepSpec",
+         "Represents a use? ( ) dependency spec.",
+         bp::no_init
+        )
+        .add_property("flag", &UseDepSpec::flag,
+                "[ro] UseFlagName\n"
+                "Our use flag name."
+                )
 
+        .add_property("inverse", &UseDepSpec::inverse,
+                "[ro] bool\n"
+                "Are we a ! flag?"
+                )
+        ;
+
+    /**
+     * StringDepSpec
+     */
     bp::class_<PythonStringDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
-        strds("StringDepSpec",
-                "A StringDepSpec represents a non-composite dep spec with an associated piece of text.",
-                bp::no_init
-             );
-    strds.add_property("text", &PythonStringDepSpec::text,
-            "[ro] string\n"
-            "Our text."
-            );
+        (
+         "StringDepSpec",
+         "A StringDepSpec represents a non-composite dep spec with an associated piece of text.",
+         bp::no_init
+        )
+        .add_property("text", &PythonStringDepSpec::text,
+                "[ro] string\n"
+                "Our text."
+                )
+        ;
 
+    /**
+     * UseRequirements
+     */
     bp::to_python_converter<std::pair<const UseFlagName, UseFlagState>,
-            pair_to_tuple<const UseFlagName, UseFlagState> >();
-
+        pair_to_tuple<const UseFlagName, UseFlagState> >();
     register_shared_ptrs_to_python<UseRequirements>();
     bp::class_<UseRequirements>
-        ur("UseRequirements",
-                "A selection of USE flag requirements.",
-                bp::no_init
-          );
-    ur.def("state", &UseRequirements::state,
-            "state(UseFlagName) -> UseFlagState\n"
-            "What state is desired for a particular use flag?"
-          );
-    ur.def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end));
+        (
+         "UseRequirements",
+         "A selection of USE flag requirements.",
+         bp::no_init
+        )
+        .def("state", &UseRequirements::state,
+                "state(UseFlagName) -> UseFlagState\n"
+                "What state is desired for a particular use flag?"
+            )
 
+        .def("__iter__", bp::range(&UseRequirements::begin, &UseRequirements::end))
+        ;
 
+    /**
+     * PackageDepSpec
+     */
     RegisterPackageDepSpecFromPython();
     RegisterPackageDepSpecSPFromPython();
 
@@ -1168,84 +1211,113 @@ void PALUDIS_VISIBLE expose_dep_spec()
     register_sp_package_dep_spec_to_python();
 
     bp::class_<PythonPackageDepSpec, tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
-        pkgds("PackageDepSpec",
-                "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
-                " possibly with associated version and SLOT restrictions.",
-                bp::no_init
-           );
-    pkgds.def("__init__", bp::make_constructor(&PythonPackageDepSpec::make_from_string),
-            "__init__(string, PackageDepSpecParseMode)"
-            );
-    pkgds.add_property("package", &PythonPackageDepSpec::package_ptr,
-            "[ro] QualifiedPackageName\n"
-            "Qualified package name."
-           );
-    pkgds.add_property("package_name_part", &PythonPackageDepSpec::package_name_part_ptr,
-            "[ro] PackageNamePart\n"
-            "Package name part (may be None)"
-           );
-    pkgds.add_property("category_name_part", &PythonPackageDepSpec::category_name_part_ptr,
-            "[ro] CategoryNamePart\n"
-            "Category name part (may be None)."
-           );
-    pkgds.add_property("version_requirements", &PythonPackageDepSpec::version_requirements_ptr,
-            "[ro] VersionRequirements\n"
-            "Version requirements (may be None)."
-           );
-    pkgds.add_property("version_requirements_mode", &PythonPackageDepSpec::version_requirements_mode,
-            "[ro] VersionRequirementsMode\n"
-            "Version requirements mode."
-           );
-    pkgds.add_property("slot", &PythonPackageDepSpec::slot_ptr,
-            "[ro] SlotName\n"
-            "Slot name (may be None)."
-           );
-    pkgds.add_property("repository", &PythonPackageDepSpec::repository_ptr,
-            "[ro] RepositoryName\n"
-            "Repository name (may be None)."
-           );
-    pkgds.add_property("use_requirements", &PythonPackageDepSpec::use_requirements_ptr,
-            "[ro] UseRequirements\n"
-            "Use requirements (may be None)."
-            );
-    pkgds.def("without_use_requirements", &PythonPackageDepSpec::without_use_requirements,
-            "without_use_requirements() -> PackageDepSpec\n"
-            "Fetch a copy of ourself without the USE requirements."
-            );
-    pkgds.def("__str__", &PythonPackageDepSpec::py_str);
+        (
+         "PackageDepSpec",
+         "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
+         " possibly with associated version and SLOT restrictions.",
+         bp::no_init
+        )
+        .def("__init__", bp::make_constructor(&PythonPackageDepSpec::make_from_string),
+                "__init__(string, PackageDepSpecParseMode)"
+            )
 
+        .add_property("package", &PythonPackageDepSpec::package_ptr,
+                "[ro] QualifiedPackageName\n"
+                "Qualified package name."
+                )
+
+        .add_property("package_name_part", &PythonPackageDepSpec::package_name_part_ptr,
+                "[ro] PackageNamePart\n"
+                "Package name part (may be None)"
+                )
+
+        .add_property("category_name_part", &PythonPackageDepSpec::category_name_part_ptr,
+                "[ro] CategoryNamePart\n"
+                "Category name part (may be None)."
+                )
+
+        .add_property("version_requirements", &PythonPackageDepSpec::version_requirements_ptr,
+                "[ro] VersionRequirements\n"
+                "Version requirements (may be None)."
+                )
+
+        .add_property("version_requirements_mode", &PythonPackageDepSpec::version_requirements_mode,
+                "[ro] VersionRequirementsMode\n"
+                "Version requirements mode."
+                )
+
+        .add_property("slot", &PythonPackageDepSpec::slot_ptr,
+                "[ro] SlotName\n"
+                "Slot name (may be None)."
+                )
+
+        .add_property("repository", &PythonPackageDepSpec::repository_ptr,
+                "[ro] RepositoryName\n"
+                "Repository name (may be None)."
+                )
+
+        .add_property("use_requirements", &PythonPackageDepSpec::use_requirements_ptr,
+                "[ro] UseRequirements\n"
+                "Use requirements (may be None)."
+                )
+
+        .def("without_use_requirements", &PythonPackageDepSpec::without_use_requirements,
+                "without_use_requirements() -> PackageDepSpec\n"
+                "Fetch a copy of ourself without the USE requirements."
+            )
+
+        .def("__str__", &PythonPackageDepSpec::py_str)
+        ;
+
+    /**
+     * PlainTextDepSpec
+     */
     bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
-        ptds("PlainTextDepSpec",
-                "A PlainTextDepSpec represents a plain text entry (for example, a URI in SRC_URI).",
-                bp::init<const std::string &>("__init__(string)")
-           );
-    ptds.def("__str__", &PythonPlainTextDepSpec::text);
+        (
+         "PlainTextDepSpec",
+         "A PlainTextDepSpec represents a plain text entry (for example, a URI in SRC_URI).",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .def("__str__", &PythonPlainTextDepSpec::text)
+        ;
 
+    /**
+     * URIDepSpec
+     */
     bp::class_<PythonURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
-        uds("URIDepSpec",
-                "A URIDepSpec represents a URI part.",
-                bp::init<const std::string &>("__init__(str)")
-           );
-    uds.add_property("original_url", &PythonURIDepSpec::original_url,
-            "[ro] str"
-           );
-    uds.add_property("renamed_url_suffix", &PythonURIDepSpec::renamed_url_suffix,
-            "[ro] str"
-           );
+        (
+         "URIDepSpec",
+         "A URIDepSpec represents a URI part.",
+         bp::init<const std::string &>("__init__(str)")
+        )
+        .add_property("original_url", &PythonURIDepSpec::original_url,
+                "[ro] str"
+                )
 
+        .add_property("renamed_url_suffix", &PythonURIDepSpec::renamed_url_suffix,
+                "[ro] str"
+                )
+        ;
+
+    /**
+     * BlockDepSpec
+     */
     bp::class_<PythonBlockDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable >
-        bds("BlockDepSpec",
-                "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
-                "possibly with associated version and SLOT restrictions.",
-                bp::init<tr1::shared_ptr<const PackageDepSpec> >("__init__(PackageDepSpec)")
-           );
-    bds.add_property("blocked_spec", &PythonBlockDepSpec::blocked_spec,
-            "[ro] PackageDepSpec\n"
-            "The spec we're blocking."
-           );
-    //Work around epydoc bug - http://sf.net/tracker/index.php?func=detail&aid=1738417&group_id=32455&atid=405618
-    bds.add_property("text", &PythonBlockDepSpec::text,
-            "[ro] string\n"
-            "Our text."
-            );
+        (
+         "BlockDepSpec",
+         "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
+         "possibly with associated version and SLOT restrictions.",
+         bp::init<tr1::shared_ptr<const PackageDepSpec> >("__init__(PackageDepSpec)")
+        )
+        .add_property("blocked_spec", &PythonBlockDepSpec::blocked_spec,
+                "[ro] PackageDepSpec\n"
+                "The spec we're blocking."
+                )
+
+        //Work around epydoc bug
+        .add_property("text", &PythonBlockDepSpec::text,
+                "[ro] string\n"
+                "Our text."
+                )
+        ;
 }

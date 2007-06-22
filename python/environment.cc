@@ -44,6 +44,9 @@ struct NoConfigEnvironmentWrapper :
 
 void PALUDIS_VISIBLE expose_environment()
 {
+    /**
+     * Exceptions
+     */
     ExceptionRegister::get_instance()->add_exception<NoSuchEnvironmentTypeError>
         ("NoSuchEnvironmentTypeError", "ConfigurationError",
          "Thrown if an environment of the specified type does not exist.");
@@ -60,114 +63,158 @@ void PALUDIS_VISIBLE expose_environment()
         ("PaludisConfigNoDirectoryError", "PaludisConfigError",
          "Thrown if the config directory cannot be found by PaludisConfig.");
 
-    bp::class_<EnvironmentMaker, boost::noncopyable> em("EnvironmentMaker",
-            "Virtual constructor for environments.",
-            bp::no_init);
-    em.def("make_from_spec", &EnvironmentMaker::make_from_spec,
-            "make_from_spec(spec_string) -> Environment\n"
-            "Make Environment from specification."
-            );
-    em.add_static_property("instance", bp::make_function(&EnvironmentMaker::get_instance,
-                bp::return_value_policy<bp::reference_existing_object>()),
-            "Singleton instance."
-          );
-
+    /**
+     * Enums
+     */
     enum_auto("MaskReasonsOption", last_mro);
 
-    class_options<MaskReasonsOptions>
-    mrs("MaskReasonsOptions", "MaskReasonsOption",
-            "Options for Environment.mask_reasons()."
-       );
+    /**
+     * EnvironmentMaker
+     */
+    bp::class_<EnvironmentMaker, boost::noncopyable> 
+        (
+         "EnvironmentMaker",
+         "Virtual constructor for environments.",
+         bp::no_init
+        )
+        .add_static_property("instance", bp::make_function(&EnvironmentMaker::get_instance,
+                    bp::return_value_policy<bp::reference_existing_object>()),
+                "Singleton instance."
+                )
 
-    bp::class_<Environment, tr1::shared_ptr<Environment>, boost::noncopyable>
-        e("Environment",
-                "Represents a working environment, which contains an available packages database\n"
-                "and provides various methods for querying package visibility and options.",
-                bp::no_init
-         );
-    e.def("default_destinations", &Environment::default_destinations,
-            "default_destinations() -> DestinationsCollection\n"
-            "Default destination candidates for installing packages."
-         );
+        .def("make_from_spec", &EnvironmentMaker::make_from_spec,
+                "make_from_spec(spec_string) -> Environment\n"
+                "Make Environment from specification."
+            )
+        ;
+
+    /**
+     * MaskReasonsOptions
+     */
+    class_options<MaskReasonsOptions>
+        (
+         "MaskReasonsOptions", "MaskReasonsOption",
+         "Options for Environment.mask_reasons()."
+        );
+
+    /**
+     * Environment
+     */
     tr1::shared_ptr<PackageDatabase> (Environment::* package_database)() =
         &Environment::package_database;
-    e.add_property("package_database", bp::make_function(package_database,
-                bp::with_custodian_and_ward_postcall<0, 1>()),
-            "[ro] PackageDatabase\n"
-            "Our package database."
-         );
-    e.def("set", &Environment::set,
-            "set(SetName) -> DepSpec\n"
-            "Fetch a named set."
-         );
-    e.def("query_use", &Environment::query_use,
-            "query_use(UseFlagName, PackageDatabaseEntry) -> bool\n"
-            "Is a particular use flag enabled for a particular package?"
-         );
-    e.def("mask_reasons", &Environment::mask_reasons,
-            (bp::arg("PackageDatabaseEntry"), bp::arg("MaskReasonOptions")=MaskReasonsOptions()),
-            "mask_reasons(PackageDatabaseEntry, MaskReasonsOptions=MaskReasonsOptions())"
-            " -> set of MaskReason\n"
-            "Return the reasons for a package being masked."
-         );
-    e.def("root", &Environment::root,
-            "root() -> string\n"
-            "Our root location for installs."
-         );
-    e.def("set_names", &Environment::set_names,
-            "set_names() -> SetNamesCollection\n"
-            "Return all known named sets."
-         );
+    bp::class_<Environment, tr1::shared_ptr<Environment>, boost::noncopyable>
+        (
+         "Environment",
+         "Represents a working environment, which contains an available packages database\n"
+         "and provides various methods for querying package visibility and options.",
+         bp::no_init
+        )
+        .def("default_destinations", &Environment::default_destinations,
+                "default_destinations() -> DestinationsCollection\n"
+                "Default destination candidates for installing packages."
+            )
 
+        .add_property("package_database", bp::make_function(package_database,
+                    bp::with_custodian_and_ward_postcall<0, 1>()),
+                "[ro] PackageDatabase\n"
+                "Our package databas."
+                )
+
+        .def("set", &Environment::set,
+                "set(SetName) -> DepSpec\n"
+                "Fetch a named set."
+            )
+
+        .def("query_use", &Environment::query_use,
+                "query_use(UseFlagName, PackageDatabaseEntry) -> bool\n"
+                "Is a particular use flag enabled for a particular package?"
+            )
+
+        .def("mask_reasons", &Environment::mask_reasons,
+                (bp::arg("PackageDatabaseEntry"), bp::arg("MaskReasonOptions")=MaskReasonsOptions()),
+                "mask_reasons(PackageDatabaseEntry, MaskReasonsOptions=MaskReasonsOptions())"
+                " -> set of MaskReason\n"
+                "Return the reasons for a package being masked."
+            )
+
+        .def("root", &Environment::root,
+                "root() -> string\n"
+                "Our root location for installs."
+            )
+
+        .def("set_names", &Environment::set_names,
+                "set_names() -> SetNamesCollection\n"
+                "Return all known named sets."
+            )
+        ;
+
+    /**
+     * AdaptedEnvironment
+     */
     bp::class_<AdaptedEnvironment, bp::bases<Environment>, boost::noncopyable>
-        ae("AdaptedEnvironment",
-                "An Environment that allows you to change aspects of an existing Environment,"
-                " e.g. the state of a USE flag for a package.",
-                bp::init<tr1::shared_ptr<Environment> >("__init__(Environment)")
-          );
-    ae.def("adapt_use", &AdaptedEnvironment::adapt_use,
-            "adapt_use(PackageDepSpeec, UseFlagName, UseFlagState)\n"
-            "Set the state of a USE flag for the given PackageDepSpec."
-          );
-    ae.def("clear_adaptions", &AdaptedEnvironment::clear_adaptions,
-            "clear_adaptions()\n"
-            "Clear all adaptions from this Environemnt."
-          );
+        (
+         "AdaptedEnvironment",
+         "An Environment that allows you to change aspects of an existing Environment,"
+         " e.g. the state of a USE flag for a package.",
+         bp::init<tr1::shared_ptr<Environment> >("__init__(Environment)")
+        )
+        .def("adapt_use", &AdaptedEnvironment::adapt_use,
+                "adapt_use(PackageDepSpeec, UseFlagName, UseFlagState)\n"
+                "Set the state of a USE flag for the given PackageDepSpec."
+            )
 
+        .def("clear_adaptions", &AdaptedEnvironment::clear_adaptions,
+                "clear_adaptions()\n"
+                "Clear all adaptions from this Environemnt."
+            )
+        ;
+
+    /**
+     * PaludisEnvironment
+     */
     bp::class_<PaludisEnvironment, bp::bases<Environment>, boost::noncopyable>
-        pe("PaludisEnvironment",
-                "The PaludisEnvironment is an Environment that corresponds to the normal operating evironment.",
-                bp::init<const std::string &>("__init__(string)")
-          );
-    pe.add_property("config_dir", &PaludisEnvironment::config_dir,
-            "[ro] string\n"
-            "The config directory."
-            );
+        (
+         "PaludisEnvironment",
+         "The PaludisEnvironment is an Environment that corresponds to the normal operating evironment.",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .add_property("config_dir", &PaludisEnvironment::config_dir,
+                "[ro] string\n"
+                "The config directory."
+                )
+        ;
 
-    bp::class_<NoConfigEnvironmentWrapper, bp::bases<Environment>, boost::noncopyable>
-        nce("NoConfigEnvironment",
-                "An environment that uses a single repository, with no user configuration.",
-                bp::init<const FSEntry &, const FSEntry &, const FSEntry &>(
-                    (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
-                     bp::arg("master_repository_dir")="/var/empty"),
-                    "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
-                        "master_repository_dir=\"/var/empty\")"
-                    )
-          );
+    /**
+     * NoConfigEnvironment
+     */
     tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)()
         = &NoConfigEnvironment::main_repository;
-    nce.add_property("main_repository", main_repository,
-            "[ro] Repository\n"
-            "Main repository."
-            );
     tr1::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
         = &NoConfigEnvironment::master_repository;
-    nce.add_property("master_repository", master_repository,
-            "[ro] Repository\n"
-            "Master repository."
-            );
-    nce.add_property("accept_unstable", bp::object(), &NoConfigEnvironment::set_accept_unstable,
-            "[wo] bool\n"
-            "Should we accept unstable keywords?"
-           );
+    bp::class_<NoConfigEnvironmentWrapper, bp::bases<Environment>, boost::noncopyable>
+        (
+         "NoConfigEnvironment",
+         "An environment that uses a single repository, with no user configuration.",
+         bp::init<const FSEntry &, const FSEntry &, const FSEntry &>(
+             (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
+              bp::arg("master_repository_dir")="/var/empty"),
+             "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
+             "master_repository_dir=\"/var/empty\")"
+             )
+        )
+        .add_property("main_repository", main_repository,
+                "[ro] Repository\n"
+                "Main repository."
+                )
+
+        .add_property("master_repository", master_repository,
+                "[ro] Repository\n"
+                "Master repository."
+                )
+
+        .add_property("accept_unstable", bp::object(), &NoConfigEnvironment::set_accept_unstable,
+                "[wo] bool\n"
+                "Should we accept unstable keywords?"
+                )
+        ;
 }
