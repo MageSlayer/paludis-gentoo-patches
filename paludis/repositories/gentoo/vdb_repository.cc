@@ -988,6 +988,9 @@ VDBRepository::regenerate_provides_cache() const
         for (PackageIDSequence::Iterator e(i->second->begin()), e_end(i->second->end()) ;
                 e != e_end ; ++e)
         {
+            if (! (*e)->provide_key())
+                continue;
+
             tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());;
             DepSpecPrettyPrinter p(0, false);
             provide->accept(p);
