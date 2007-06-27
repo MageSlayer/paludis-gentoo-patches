@@ -20,6 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
+
 namespace paludis
 {
     class MetadataKeyVisitorTypes;
@@ -29,6 +32,9 @@ namespace paludis
     class MetadataStringKey;
     template <typename C_> class MetadataCollectionKey;
     template <typename C_> class MetadataSpecTreeKey;
+
+#include <paludis/metadata_key-se.hh>
+
 }
 
 #endif

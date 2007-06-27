@@ -57,13 +57,14 @@ namespace paludis
         public virtual ConstAcceptInterface<MetadataKeyVisitorTypes>
     {
         protected:
-            MetadataKey(const std::string &, const std::string &);
+            MetadataKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual ~MetadataKey() = 0;
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE MetadataPackageIDKey :
@@ -71,7 +72,7 @@ namespace paludis
         public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataPackageIDKey>
     {
         protected:
-            MetadataPackageIDKey(const std::string &, const std::string &);
+            MetadataPackageIDKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual const tr1::shared_ptr<const PackageID> value() const
@@ -83,7 +84,7 @@ namespace paludis
         public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataStringKey>
     {
         protected:
-            MetadataStringKey(const std::string &, const std::string &);
+            MetadataStringKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual const std::string value() const
@@ -96,7 +97,7 @@ namespace paludis
         public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<C_> >
     {
         protected:
-            MetadataCollectionKey(const std::string &, const std::string &);
+            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual const tr1::shared_ptr<const C_> value() const
@@ -109,7 +110,7 @@ namespace paludis
         public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<C_> >
     {
         protected:
-            MetadataSpecTreeKey(const std::string &, const std::string &);
+            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const

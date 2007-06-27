@@ -48,8 +48,8 @@ namespace paludis
 
 template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
-        const std::string & r, const std::string & h) :
-    MetadataCollectionKey<C_>(r, h),
+        const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataCollectionKey<C_>(r, h, t),
     PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >),
     _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp.get())
 {
@@ -68,8 +68,8 @@ FakeMetadataCollectionKey<C_>::value() const
 }
 
 FakeMetadataKeywordCollectionKey::FakeMetadataKeywordCollectionKey(const std::string & r,
-        const std::string & h, const std::string & v) :
-    FakeMetadataCollectionKey<KeywordNameCollection>(r, h)
+        const std::string & h, const std::string & v, const MetadataKeyType t) :
+    FakeMetadataCollectionKey<KeywordNameCollection>(r, h, t)
 {
     set_from_string(v);
 }
@@ -82,8 +82,8 @@ FakeMetadataKeywordCollectionKey::set_from_string(const std::string & s)
 }
 
 FakeMetadataIUseCollectionKey::FakeMetadataIUseCollectionKey(const std::string & r,
-        const std::string & h, const std::string & v, const IUseFlagParseMode m) :
-    FakeMetadataCollectionKey<IUseFlagCollection>(r, h)
+        const std::string & h, const std::string & v, const IUseFlagParseMode m, const MetadataKeyType t) :
+    FakeMetadataCollectionKey<IUseFlagCollection>(r, h, t)
 {
     set_from_string(v, m);
 }
@@ -117,8 +117,8 @@ namespace paludis
 
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f) :
-    MetadataSpecTreeKey<C_>(r, h),
+        const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
+    MetadataSpecTreeKey<C_>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp.get())
 {
@@ -154,8 +154,8 @@ namespace paludis
 }
 
 FakeMetadataPackageIDKey::FakeMetadataPackageIDKey(const std::string & r, const std::string & h,
-        const tr1::shared_ptr<const PackageID> & v) :
-    MetadataPackageIDKey(r, h),
+        const tr1::shared_ptr<const PackageID> & v, const MetadataKeyType t) :
+    MetadataPackageIDKey(r, h, t),
     PrivateImplementationPattern<FakeMetadataPackageIDKey>(new Implementation<FakeMetadataPackageIDKey>),
     _imp(PrivateImplementationPattern<FakeMetadataPackageIDKey>::_imp.get())
 {
@@ -207,20 +207,20 @@ namespace paludis
             version(v),
             slot("0"),
             eapi(EAPIData::get_instance()->eapi_from_string("0")),
-            keywords(new FakeMetadataKeywordCollectionKey("KEYWORDS", "Keywords", "test")),
-            iuse(new FakeMetadataIUseCollectionKey("IUSE", "Used USE flags", "", iuse_pm_permissive)),
+            keywords(new FakeMetadataKeywordCollectionKey("KEYWORDS", "Keywords", "test", mkt_normal)),
+            iuse(new FakeMetadataIUseCollectionKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal)),
             license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
-                        "", tr1::bind(&PortageDepParser::parse_license, _1, tr1::cref(*eapi)))),
+                        "", tr1::bind(&PortageDepParser::parse_license, _1, tr1::cref(*eapi)), mkt_normal)),
             provide(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provided packages",
-                        "", tr1::bind(&PortageDepParser::parse_provide, _1, tr1::cref(*eapi)))),
+                        "", tr1::bind(&PortageDepParser::parse_provide, _1, tr1::cref(*eapi)), mkt_normal)),
             build_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)))),
+                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
             run_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)))),
+                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
             post_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)))),
+                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi))))
+                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies))
         {
         }
     };

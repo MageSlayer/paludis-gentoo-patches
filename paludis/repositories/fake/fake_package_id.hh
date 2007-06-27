@@ -36,7 +36,7 @@ namespace paludis
         protected:
             Implementation<FakeMetadataCollectionKey> * const _imp;
 
-            FakeMetadataCollectionKey(const std::string &, const std::string &);
+            FakeMetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             ~FakeMetadataCollectionKey();
@@ -48,7 +48,7 @@ namespace paludis
         public FakeMetadataCollectionKey<KeywordNameCollection>
     {
         public:
-            FakeMetadataKeywordCollectionKey(const std::string &, const std::string &, const std::string &);
+            FakeMetadataKeywordCollectionKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
 
             void set_from_string(const std::string &);
     };
@@ -57,7 +57,8 @@ namespace paludis
         public FakeMetadataCollectionKey<IUseFlagCollection>
     {
         public:
-            FakeMetadataIUseCollectionKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode);
+            FakeMetadataIUseCollectionKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
+                    const MetadataKeyType);
 
             void set_from_string(const std::string &, const IUseFlagParseMode);
     };
@@ -72,7 +73,7 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> &);
+                    const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> &, const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
             virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const
@@ -90,7 +91,7 @@ namespace paludis
 
         public:
             FakeMetadataPackageIDKey(const std::string &, const std::string &,
-                    const tr1::shared_ptr<const PackageID> &);
+                    const tr1::shared_ptr<const PackageID> &, const MetadataKeyType);
             ~FakeMetadataPackageIDKey();
 
             virtual const tr1::shared_ptr<const PackageID> value() const

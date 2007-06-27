@@ -44,15 +44,17 @@ namespace
             const std::string _value;
 
         public:
-            GemMetadataStringKey(const std::string &, const std::string &, const std::string &);
+            GemMetadataStringKey(const std::string &, const std::string &, const std::string &,
+                    const MetadataKeyType);
 
             virtual const std::string value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
 
-    GemMetadataStringKey::GemMetadataStringKey(const std::string & r, const std::string & h, const std::string & v) :
-        MetadataStringKey(r, h),
+    GemMetadataStringKey::GemMetadataStringKey(const std::string & r, const std::string & h, const std::string & v,
+            const MetadataKeyType t) :
+        MetadataStringKey(r, h, t),
         _value(v)
     {
     }
@@ -228,19 +230,20 @@ namespace
         {
             std::string summary(required_text_only_key(n, "summary"));
             if (! summary.empty())
-                _imp->summary_key.reset(new GemMetadataStringKey("summary", "Summary", summary));
+                _imp->summary_key.reset(new GemMetadataStringKey("summary", "Summary", summary, mkt_significant));
 
             std::string description(optional_text_only_key(n, "description"));
             if (! description.empty())
-                _imp->description_key.reset(new GemMetadataStringKey("description", "Description", description));
+                _imp->description_key.reset(new GemMetadataStringKey("description", "Description", description, mkt_normal));
 
             std::string authors(optional_text_sequence_key(n, "authors"));
             if (! authors.empty())
-                _imp->authors_key.reset(new GemMetadataStringKey("authors", "Authors", authors));
+                _imp->authors_key.reset(new GemMetadataStringKey("authors", "Authors", authors, mkt_normal));
 
             std::string rubyforge_project(optional_text_sequence_key(n, "rubyforge_project"));
             if (! rubyforge_project.empty())
-                _imp->rubyforge_project_key.reset(new GemMetadataStringKey("rubyforge_project", "Rubyforge Project", rubyforge_project));
+                _imp->rubyforge_project_key.reset(new GemMetadataStringKey("rubyforge_project", "Rubyforge Project", rubyforge_project,
+                            mkt_normal));
 
             _imp->date = required_text_only_key(n, "date");
             _imp->platform = required_text_only_key(n, "platform");

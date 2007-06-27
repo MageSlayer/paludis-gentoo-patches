@@ -73,7 +73,7 @@ namespace paludis
 }
 
 VirtualsPackageIDKey::VirtualsPackageIDKey(const tr1::shared_ptr<const PackageID> & v) :
-    MetadataPackageIDKey("VIRTUAL_FOR", "Virtual for"),
+    MetadataPackageIDKey("VIRTUAL_FOR", "Virtual for", mkt_normal),
     PrivateImplementationPattern<VirtualsPackageIDKey>(new Implementation<VirtualsPackageIDKey>(v)),
     _imp(PrivateImplementationPattern<VirtualsPackageIDKey>::_imp.get())
 {
@@ -91,7 +91,7 @@ VirtualsPackageIDKey::value() const
 
 VirtualsDepKey::VirtualsDepKey(const std::string & r, const std::string & h,
         const tr1::shared_ptr<const PackageID> & v, const bool exact) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h),
+    MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
     PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(v, exact)),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp.get())
 {

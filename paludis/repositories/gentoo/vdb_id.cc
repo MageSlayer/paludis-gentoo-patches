@@ -120,81 +120,85 @@ VDBID::need_keys_added() const
 
     if ((_imp->dir / "USE").exists())
     {
-        _imp->use.reset(new EUseKey(shared_from_this(), "USE", "Use flags", file_contents(_imp->dir / "USE")));
+        _imp->use.reset(new EUseKey(shared_from_this(), "USE", "Use flags", file_contents(_imp->dir / "USE"), mkt_internal));
         add_key(_imp->use);
     }
 
     if ((_imp->dir / "INHERITED").exists())
     {
-        _imp->inherited.reset(new EInheritedKey(shared_from_this(), "INHERITED", "Inherited", file_contents(_imp->dir / "INHERITED")));
+        _imp->inherited.reset(new EInheritedKey(shared_from_this(), "INHERITED", "Inherited", file_contents(_imp->dir / "INHERITED"),
+                    mkt_internal));
         add_key(_imp->inherited);
     }
 
     if ((_imp->dir / "IUSE").exists())
     {
-        _imp->iuse.reset(new EIUseKey(shared_from_this(), "IUSE", "Used use flags", file_contents(_imp->dir / "IUSE")));
+        _imp->iuse.reset(new EIUseKey(shared_from_this(), "IUSE", "Used use flags", file_contents(_imp->dir / "IUSE"),
+                    mkt_normal));
         add_key(_imp->iuse);
     }
 
     if ((_imp->dir / "LICENSE").exists())
     {
-        _imp->license.reset(new ELicenseKey(shared_from_this(), "LICENSE", "License", file_contents(_imp->dir / "LICENSE")));
+        _imp->license.reset(new ELicenseKey(shared_from_this(), "LICENSE", "License", file_contents(_imp->dir / "LICENSE"),
+                    mkt_normal));
         add_key(_imp->license);
     }
 
     if ((_imp->dir / "PROVIDE").exists())
     {
-        _imp->provide.reset(new EProvideKey(shared_from_this(), "PROVIDE", "Provides", file_contents(_imp->dir / "PROVIDE")));
+        _imp->provide.reset(new EProvideKey(shared_from_this(), "PROVIDE", "Provides", file_contents(_imp->dir / "PROVIDE"),
+                    mkt_internal));
         add_key(_imp->provide);
     }
 
     if ((_imp->dir / "DEPEND").exists())
     {
         _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), "DEPEND", "Build dependencies",
-                    file_contents(_imp->dir / "DEPEND")));
+                    file_contents(_imp->dir / "DEPEND"), mkt_dependencies));
         add_key(_imp->build_dependencies);
     }
 
     if ((_imp->dir / "RDEPEND").exists())
     {
         _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), "RDEPEND", "Run dependencies",
-                    file_contents(_imp->dir / "RDEPEND")));
+                    file_contents(_imp->dir / "RDEPEND"), mkt_dependencies));
         add_key(_imp->run_dependencies);
     }
 
     if ((_imp->dir / "PDEPEND").exists())
     {
         _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), "PDEPEND", "Post dependencies",
-                    file_contents(_imp->dir / "PDEPEND")));
+                    file_contents(_imp->dir / "PDEPEND"), mkt_dependencies));
         add_key(_imp->post_dependencies);
     }
 
     if ((_imp->dir / "RESTRICT").exists())
     {
         _imp->restrictions.reset(new ERestrictKey(shared_from_this(), "RESTRICT", "Restrictions",
-                    file_contents(_imp->dir / "RESTRICT")));
+                    file_contents(_imp->dir / "RESTRICT"), mkt_internal));
         add_key(_imp->restrictions);
     }
 
     if ((_imp->dir / "SRC_URI").exists())
     {
         _imp->src_uri.reset(new EURIKey(shared_from_this(), "SRC_URI", "Source URI",
-                    file_contents(_imp->dir / "SRC_URI")));
+                    file_contents(_imp->dir / "SRC_URI"), mkt_dependencies));
         add_key(_imp->src_uri);
-    }
-
-    if ((_imp->dir / "HOMEPAGE").exists())
-    {
-        _imp->homepage.reset(new EURIKey(shared_from_this(), "HOMEPAGE", "Homepage",
-                    file_contents(_imp->dir / "HOMEPAGE")));
-        add_key(_imp->homepage);
     }
 
     if ((_imp->dir / "DESCRIPTION").exists())
     {
         _imp->short_description.reset(new EStringKey(shared_from_this(), "DESCRIPTION", "Description",
-                    file_contents(_imp->dir / "DESCRIPTION")));
+                    file_contents(_imp->dir / "DESCRIPTION"), mkt_significant));
         add_key(_imp->short_description);
+    }
+
+    if ((_imp->dir / "HOMEPAGE").exists())
+    {
+        _imp->homepage.reset(new EURIKey(shared_from_this(), "HOMEPAGE", "Homepage",
+                    file_contents(_imp->dir / "HOMEPAGE"), mkt_significant));
+        add_key(_imp->homepage);
     }
 }
 

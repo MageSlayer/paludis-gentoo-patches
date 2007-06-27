@@ -20,8 +20,12 @@
 #include "metadata_key.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
+
+#include <paludis/metadata_key-se.cc>
 
 namespace paludis
 {
@@ -30,17 +34,19 @@ namespace paludis
     {
         const std::string raw_name;
         const std::string human_name;
+        const MetadataKeyType type;
 
-        Implementation(const std::string & r, const std::string & h) :
+        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t) :
             raw_name(r),
-            human_name(h)
+            human_name(h),
+            type(t)
         {
         }
     };
 }
 
-MetadataKey::MetadataKey(const std::string & r, const std::string & h) :
-    PrivateImplementationPattern<MetadataKey>(new Implementation<MetadataKey>(r, h))
+MetadataKey::MetadataKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    PrivateImplementationPattern<MetadataKey>(new Implementation<MetadataKey>(r, h, t))
 {
 }
 
@@ -60,25 +66,31 @@ MetadataKey::human_name() const
     return _imp->human_name;
 }
 
-MetadataStringKey::MetadataStringKey(const std::string & r, const std::string & h) :
-    MetadataKey(r, h)
+const MetadataKeyType
+MetadataKey::type() const
+{
+    return _imp->type;
+}
+
+MetadataStringKey::MetadataStringKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
 {
 }
 
-MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::string & h) :
-    MetadataKey(r, h)
+MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
 {
 }
 
 template <typename C_>
-MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h) :
-    MetadataKey(r, h)
+MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
 {
 }
 
 template <typename C_>
-MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::string & h) :
-    MetadataKey(r, h)
+MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
 {
 }
 

@@ -444,84 +444,84 @@ EbuildID::portage_repository() const
 void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->short_description.reset(new EStringKey(shared_from_this(), r, h, v));
+    _imp->short_description.reset(new EStringKey(shared_from_this(), r, h, v, mkt_significant));
     add_key(_imp->short_description);
 }
 
 void
 EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v));
+    _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_key(_imp->build_dependencies);
 }
 
 void
 EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v));
+    _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_key(_imp->run_dependencies);
 }
 
 void
 EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v));
+    _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_key(_imp->post_dependencies);
 }
 
 void
 EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->src_uri.reset(new EURIKey(shared_from_this(), r, h, v));
+    _imp->src_uri.reset(new EURIKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_key(_imp->src_uri);
 }
 
 void
 EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->homepage.reset(new EURIKey(shared_from_this(), r, h, v));
+    _imp->homepage.reset(new EURIKey(shared_from_this(), r, h, v, mkt_significant));
     add_key(_imp->homepage);
 }
 
 void
 EbuildID::load_license(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->license.reset(new ELicenseKey(shared_from_this(), r, h, v));
+    _imp->license.reset(new ELicenseKey(shared_from_this(), r, h, v, mkt_normal));
     add_key(_imp->license);
 }
 
 void
 EbuildID::load_restrict(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->restrictions.reset(new ERestrictKey(shared_from_this(), r, h, v));
+    _imp->restrictions.reset(new ERestrictKey(shared_from_this(), r, h, v, mkt_internal));
     add_key(_imp->restrictions);
 }
 
 void
 EbuildID::load_provide(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->provide.reset(new EProvideKey(shared_from_this(), r, h, v));
+    _imp->provide.reset(new EProvideKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_key(_imp->provide);
 }
 
 void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->iuse.reset(new EIUseKey(shared_from_this(), r, h, v));
+    _imp->iuse.reset(new EIUseKey(shared_from_this(), r, h, v, mkt_normal));
     add_key(_imp->iuse);
 }
 
 void
 EbuildID::load_keywords(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->keywords.reset(new EKeywordsKey(shared_from_this(), r, h, v));
+    _imp->keywords.reset(new EKeywordsKey(shared_from_this(), r, h, v, mkt_normal));
     add_key(_imp->keywords);
 }
 
 void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
-    _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v));
+    _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
     add_key(_imp->inherited);
 }
 

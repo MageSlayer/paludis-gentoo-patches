@@ -38,8 +38,8 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 EStringKey::EStringKey(const tr1::shared_ptr<const PackageID> &,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataStringKey(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataStringKey(r, h, t),
     _value(v)
 {
 }
@@ -72,8 +72,8 @@ namespace paludis
 }
 
 EDependenciesKey::EDependenciesKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataSpecTreeKey<DependencySpecTree>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(id, v)),
     _imp(PrivateImplementationPattern<EDependenciesKey>::_imp.get())
 {
@@ -112,8 +112,8 @@ namespace paludis
 }
 
 ELicenseKey::ELicenseKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataSpecTreeKey<LicenseSpecTree>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<LicenseSpecTree>(r, h, t),
     PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(id, v)),
     _imp(PrivateImplementationPattern<ELicenseKey>::_imp.get())
 {
@@ -152,8 +152,8 @@ namespace paludis
 }
 
 EURIKey::EURIKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataSpecTreeKey<URISpecTree>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<URISpecTree>(r, h, t),
     PrivateImplementationPattern<EURIKey>(new Implementation<EURIKey>(id, v)),
     _imp(PrivateImplementationPattern<EURIKey>::_imp.get())
 {
@@ -192,8 +192,8 @@ namespace paludis
 }
 
 ERestrictKey::ERestrictKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataSpecTreeKey<RestrictSpecTree>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<RestrictSpecTree>(r, h, t),
     PrivateImplementationPattern<ERestrictKey>(new Implementation<ERestrictKey>(id, v)),
     _imp(PrivateImplementationPattern<ERestrictKey>::_imp.get())
 {
@@ -232,8 +232,8 @@ namespace paludis
 }
 
 EProvideKey::EProvideKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataSpecTreeKey<ProvideSpecTree>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<ProvideSpecTree>(r, h, t),
     PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(id, v)),
     _imp(PrivateImplementationPattern<EProvideKey>::_imp.get())
 {
@@ -272,8 +272,8 @@ namespace paludis
 }
 
 EIUseKey::EIUseKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataCollectionKey<IUseFlagCollection>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataCollectionKey<IUseFlagCollection>(r, h, t),
     PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, v)),
     _imp(PrivateImplementationPattern<EIUseKey>::_imp.get())
 {
@@ -318,8 +318,8 @@ namespace paludis
 }
 
 EKeywordsKey::EKeywordsKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataCollectionKey<KeywordNameCollection>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataCollectionKey<KeywordNameCollection>(r, h, t),
     PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, v)),
     _imp(PrivateImplementationPattern<EKeywordsKey>::_imp.get())
 {
@@ -359,8 +359,8 @@ namespace paludis
 }
 
 EUseKey::EUseKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataCollectionKey<UseFlagNameCollection>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataCollectionKey<UseFlagNameCollection>(r, h, t),
     PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, v)),
     _imp(PrivateImplementationPattern<EUseKey>::_imp.get())
 {
@@ -405,8 +405,8 @@ namespace paludis
 }
 
 EInheritedKey::EInheritedKey(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & r, const std::string & h, const std::string & v) :
-    MetadataCollectionKey<InheritedCollection>(r, h),
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataCollectionKey<InheritedCollection>(r, h, t),
     PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
     _imp(PrivateImplementationPattern<EInheritedKey>::_imp.get())
 {

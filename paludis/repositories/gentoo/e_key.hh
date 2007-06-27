@@ -36,7 +36,7 @@ namespace paludis
 
             public:
                 EStringKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EStringKey();
 
                 virtual const std::string value() const
@@ -52,7 +52,7 @@ namespace paludis
 
             public:
                 EDependenciesKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EDependenciesKey();
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
@@ -68,7 +68,7 @@ namespace paludis
 
             public:
                 EURIKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EURIKey();
 
                 virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
@@ -84,7 +84,7 @@ namespace paludis
 
             public:
                 ERestrictKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ERestrictKey();
 
                 virtual const tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
@@ -100,7 +100,7 @@ namespace paludis
 
             public:
                 EProvideKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EProvideKey();
 
                 virtual const tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
@@ -116,7 +116,7 @@ namespace paludis
 
             public:
                 ELicenseKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
                 virtual const tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
@@ -132,7 +132,7 @@ namespace paludis
 
             public:
                 EIUseKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EIUseKey();
 
                 const tr1::shared_ptr<const IUseFlagCollection> value() const
@@ -148,7 +148,7 @@ namespace paludis
 
             public:
                 EKeywordsKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EKeywordsKey();
 
                 const tr1::shared_ptr<const KeywordNameCollection> value() const
@@ -164,7 +164,7 @@ namespace paludis
 
             public:
                 EUseKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EUseKey();
 
                 const tr1::shared_ptr<const UseFlagNameCollection> value() const
@@ -180,7 +180,7 @@ namespace paludis
 
             public:
                 EInheritedKey(const tr1::shared_ptr<const PackageID> &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EInheritedKey();
 
                 const tr1::shared_ptr<const InheritedCollection> value() const
