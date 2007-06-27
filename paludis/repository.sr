@@ -55,6 +55,7 @@ make_class_RepositoryCapabilities()
     key environment_variable_interface "RepositoryEnvironmentVariableInterface *"
     key provides_interface "RepositoryProvidesInterface *"
     key virtuals_interface "RepositoryVirtualsInterface *"
+    key make_virtuals_interface "RepositoryMakeVirtualsInterface *"
     key destination_interface "RepositoryDestinationInterface *"
     key contents_interface "RepositoryContentsInterface *"
     key config_interface "RepositoryConfigInterface *"
@@ -102,11 +103,9 @@ make_class_RepositoryProvidesEntry()
     visible
 
     key virtual_name QualifiedPackageName
-    key version VersionSpec
-    key provided_by_name QualifiedPackageName
+    key provided_by "tr1::shared_ptr<const PackageID>"
 
     allow_named_args
-    comparison_operators all all
 
     doxygen_comment << "END"
         /**
@@ -127,7 +126,6 @@ make_class_RepositoryVirtualsEntry()
     key provided_by_spec "tr1::shared_ptr<const PackageDepSpec>"
 
     allow_named_args
-    comparison_operators all virtual_name
 
     doxygen_comment << "END"
         /**
@@ -144,7 +142,7 @@ make_class_MergeOptions()
 {
     visible
 
-    key package PackageDatabaseEntry
+    key package_id "tr1::shared_ptr<const PackageID>"
     key image_dir FSEntry
     key environment_file FSEntry
 

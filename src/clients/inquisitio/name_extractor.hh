@@ -30,7 +30,7 @@ namespace inquisitio
         public:
             NameExtractor(const paludis::Environment &);
 
-            std::string operator() (const paludis::PackageDatabaseEntry &) const;
+            std::string operator() (const paludis::PackageID &) const;
     };
 }
 

@@ -35,36 +35,6 @@ namespace paludis
 #include <paludis/repositories/gentoo/ebin-sr.hh>
 
     /**
-     * Version metadata for a .ebin file.
-     *
-     * \ingroup grpebininterface
-     * \nosubgrouping
-     */
-    class EbinVersionMetadata :
-        public VersionMetadata,
-        public VersionMetadataEbuildInterface,
-        public VersionMetadataEbinInterface,
-        public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface,
-        public VersionMetadataOriginsInterface,
-        public virtual VersionMetadataHasInterfaces
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            EbinVersionMetadata(const SlotName &);
-            virtual ~EbinVersionMetadata();
-
-            ///\}
-
-            virtual const VersionMetadata * version_metadata() const
-            {
-                return this;
-            }
-    };
-
-    /**
      * A command related to a .ebin file.
      *
      * \ingroup grpebininterface

@@ -17,7 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "hashed_containers.hh"
+#include <paludis/hashed_containers.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/package_id.hh>
+#include <paludis/repository.hh>
 
 /** \file
  * Implementation for hashed_containers.hh.
@@ -100,5 +104,24 @@ CRCHash<std::pair<QualifiedPackageName, VersionSpec> >::operator() (
     return h;
 }
 
+std::size_t
+CRCHash<PackageID>::operator() (const PackageID & val) const
+{
+    return
+        CRCHash<QualifiedPackageName>()(val.name()) ^
+        (val.version().hash_value() << 5) ^
+        (CRCHash<RepositoryName>()(val.repository()->name()) << 9) ^
+        (val.extra_hash_value() << 13);
+}
+
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
+
+bool
+CRCHash<PackageID, PackageID>::operator() (const PackageID & i1, const PackageID & i2) const
+{
+    return PackageIDSetComparator()(i1, i2);
+}
+
+#endif
 #endif
 

@@ -21,6 +21,7 @@
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/package_database.hh>
+#include <paludis/query.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -38,23 +39,23 @@ namespace paludis
         const DepList * const dep_list;
         tr1::shared_ptr<const DestinationsCollection> destinations;
         const Environment * const environment;
-        const PackageDatabaseEntry * const pde;
+        const tr1::shared_ptr<const PackageID> id;
 
         Implementation(const DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-                const Environment * const e, const PackageDatabaseEntry * const p) :
+                const Environment * const e, const tr1::shared_ptr<const PackageID> & p) :
             result(true),
             dep_list(d),
             destinations(dd),
             environment(e),
-            pde(p)
+            id(p)
         {
         }
     };
 }
 
 QueryVisitor::QueryVisitor(const DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-        const Environment * const e, const PackageDatabaseEntry * const pde) :
-    PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, pde))
+        const Environment * const e, const tr1::shared_ptr<const PackageID> & id) :
+    PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
 {
 }
 
@@ -80,10 +81,10 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
     _imp->result = false;
 
     // TODO: check destinations
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(_imp->environment->package_database()->query(
-                a, is_installed_only, qo_whatever));
+    tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
+                query::InstalledAtRoot(_imp->environment->root()) & query::Matches(a), qo_whatever));
 
-    if (matches->end() != std::find_if(matches->begin(), matches->end(),
+    if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
                 tr1::bind(tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1)))
     {
         _imp->result = true;
@@ -105,7 +106,7 @@ QueryVisitor::visit_sequence(const UseDepSpec & a,
 {
     /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
-    if ((_imp->pde ? _imp->environment->query_use(a.flag(), *_imp->pde) : false) ^ a.inverse())
+    if ((_imp->id ? _imp->environment->query_use(a.flag(), *_imp->id) : false) ^ a.inverse())
     {
         _imp->result = true;
         for ( ; cur != end ; ++cur)
@@ -135,7 +136,7 @@ QueryVisitor::visit_sequence(const AnyDepSpec &,
     else
         for ( ; cur != end ; ++cur)
         {
-            if (! is_viable_any_child(*_imp->environment, _imp->pde, *cur))
+            if (! is_viable_any_child(*_imp->environment, _imp->id, *cur))
                 continue;
 
             cur->accept(*this);
@@ -163,5 +164,4 @@ QueryVisitor::visit_sequence(const AllDepSpec &,
             return;
     }
 }
-
 

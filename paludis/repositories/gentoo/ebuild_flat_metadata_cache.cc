@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/eapi.hh>
 #include <fstream>
@@ -32,6 +33,7 @@
 #include <algorithm>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
         const FSEntry & e, time_t t, tr1::shared_ptr<const EclassMtimes> m, bool s) :
@@ -44,45 +46,46 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
 }
 
 bool
-EbuildFlatMetadataCache::load(tr1::shared_ptr<EbuildVersionMetadata> result)
+EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
 {
     using namespace tr1::placeholders;
 
-    Context context("When loading version metadata to '" + stringify(_filename) + "':");
+    Context context("When loading version metadata from '" + stringify(_filename) + "':");
 
     std::ifstream cache(stringify(_filename).c_str());
     std::string line;
 
     if (cache)
     {
-        std::getline(cache, line); result->set_build_depend(line);
-        std::getline(cache, line); result->set_run_depend(line);
-        std::getline(cache, line); result->slot = SlotName(line);
-        std::getline(cache, line); result->set_src_uri(line);
-        std::getline(cache, line); result->set_restrictions(line);
-        std::getline(cache, line); result->set_homepage(line);
-        std::getline(cache, line); result->set_license(line);
-        std::getline(cache, line); result->description = line;
-        std::getline(cache, line); result->set_keywords(line);
-        std::getline(cache, line); result->set_inherited(line);
-        std::getline(cache, line); result->set_iuse(line);
+        std::getline(cache, line); id->load_build_depend("DEPEND", "Build depend", line);
+        std::getline(cache, line); id->load_run_depend("RDEPEND", "Run depend", line);
+        std::getline(cache, line); id->set_slot(SlotName(line));
+        std::getline(cache, line); id->load_src_uri("SRC_URI", "Source URI", line);
+        std::getline(cache, line); id->load_restrict("RESTRICT", "Restrictions", line);
+        std::getline(cache, line); id->load_homepage("HOMEPAGE", "Homepage", line);
+        std::getline(cache, line); id->load_license("LICENSE", "License", line);
+        std::getline(cache, line); id->load_short_description("DESCRIPTION", "Description", line);
+        std::getline(cache, line); id->load_keywords("KEYWORDS", "Keywords", line);
+        std::getline(cache, line); id->load_inherited("INHERITED", "Inherited", line);
+        std::getline(cache, line); id->load_iuse("IUSE", "Used USE flags", line);
         std::getline(cache, line);
-        std::getline(cache, line); result->set_post_depend(line);
-        std::getline(cache, line); result->set_provide(line);
-        std::getline(cache, line); result->eapi = EAPIData::get_instance()->eapi_from_string(line);
+        std::getline(cache, line); id->load_post_depend("PDEPEND", "Post depend", line);
+        std::getline(cache, line); id->load_provide("PROVIDE", "Provides", line);
+        std::getline(cache, line); id->set_eapi(line);
 
         // check mtimes
         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
         bool ok = _ebuild.mtime() <= cache_time &&
-            result->inherited()->end() == std::find_if(result->inherited()->begin(), result->inherited()->end(),
+            id->inherited_key()->value()->end() == std::find_if(id->inherited_key()->value()->begin(), id->inherited_key()->value()->end(),
                     tr1::bind(std::greater<time_t>(), tr1::bind(
                             tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
 
         if (! ok)
-            Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
-                    + stringify(_filename) + "'");
-
+            Log::get_instance()->message(ll_warning, lc_no_context) << "Stale cache file at '"
+                << _filename << "'";
         return ok;
+
+        return true;
     }
     else
     {
@@ -112,7 +115,7 @@ namespace
 }
 
 void
-EbuildFlatMetadataCache::save(tr1::shared_ptr<const EbuildVersionMetadata> v)
+EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 
@@ -129,27 +132,76 @@ EbuildFlatMetadataCache::save(tr1::shared_ptr<const EbuildVersionMetadata> v)
 
     if (cache)
     {
-        cache << flatten(v->build_depend()) << std::endl;
-        cache << flatten(v->run_depend()) << std::endl;
-        cache << normalise(v->slot) << std::endl;
-        cache << flatten(v->src_uri()) << std::endl;
-        cache << flatten(v->restrictions()) << std::endl;
-        cache << flatten(v->homepage()) << std::endl;
-        cache << flatten(v->license()) << std::endl;
-        cache << normalise(v->description) << std::endl;
-        cache << join(v->keywords()->begin(), v->keywords()->end(), " ") << std::endl;
-        cache << join(v->inherited()->begin(), v->inherited()->end(), " ") << std::endl;
-        cache << join(v->iuse()->begin(), v->iuse()->end(), " ") << std::endl;
+        if (id->build_dependencies_key())
+            cache << flatten(id->build_dependencies_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->run_dependencies_key())
+            cache << flatten(id->run_dependencies_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        cache << normalise(id->slot()) << std::endl;
+
+        if (id->src_uri_key())
+            cache << flatten(id->src_uri_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->restrict_key())
+            cache << flatten(id->restrict_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->homepage_key())
+            cache << flatten(id->homepage_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->license_key())
+            cache << flatten(id->license_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->short_description_key())
+            cache << normalise(id->short_description_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->keywords_key())
+            cache << join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " ") << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->inherited_key())
+            cache << join(id->inherited_key()->value()->begin(), id->inherited_key()->value()->end(), " ") << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->iuse_key())
+            cache << join(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(), " ") << std::endl;
+        else
+            cache << std::endl;
+
         cache << std::endl;
-        cache << flatten(v->post_depend()) << std::endl;
-        cache << flatten(v->provide()) << std::endl;
-        cache << normalise(v->eapi->name) << std::endl;
+
+        if (id->post_dependencies_key())
+            cache << flatten(id->post_dependencies_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        if (id->provide_key())
+            cache << flatten(id->provide_key()->value()) << std::endl;
+        else
+            cache << std::endl;
+
+        cache << normalise(id->eapi()->name) << std::endl;
     }
     else
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Couldn't write cache file to '" + stringify(_filename) + "'");
+        Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't write cache file to '"
+            << _filename << "'";
     }
-
 }
 

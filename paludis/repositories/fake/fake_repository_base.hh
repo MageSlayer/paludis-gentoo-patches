@@ -31,58 +31,7 @@
 
 namespace paludis
 {
-    /**
-     * FakeVersionMetadata is used by FakeRepository and
-     * FakeInstalledRepository for version metadata.
-     *
-     * \see FakeInstalledRepository
-     * \see FakeRepository
-     * \ingroup grpfakerepository
-     */
-    class FakeVersionMetadata :
-        public VersionMetadata,
-        public VersionMetadataEbuildInterface,
-        public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface,
-        public virtual VersionMetadataHasInterfaces
-    {
-        public:
-            FakeVersionMetadata();
-            virtual ~FakeVersionMetadata();
-
-            virtual const VersionMetadata * version_metadata() const
-            {
-                return this;
-            }
-    };
-
-    /**
-     * FakeVirtualVersionMetadata is used by FakeRepository for virtual
-     * version metadata.
-     *
-     * \see FakeRepository
-     * \ingroup grpfakerepository
-     */
-    class FakeVirtualVersionMetadata :
-        public VersionMetadata,
-        public VersionMetadataDepsInterface,
-        public VersionMetadataVirtualInterface,
-        public virtual VersionMetadataHasInterfaces
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            FakeVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
-            virtual ~FakeVirtualVersionMetadata();
-
-            ///\}
-
-            virtual const VersionMetadata * version_metadata() const
-            {
-                return this;
-            }
-    };
+    class FakePackageID;
 
     /**
      * A FakeRepositoryBase is a Repository subclass whose subclasses are used for
@@ -97,50 +46,9 @@ namespace paludis
         public RepositoryMaskInterface,
         public RepositoryUseInterface,
         public RepositorySetsInterface,
-        private PrivateImplementationPattern<FakeRepositoryBase>
+        private PrivateImplementationPattern<FakeRepositoryBase>,
+        public tr1::enable_shared_from_this<FakeRepositoryBase>
     {
-        protected:
-            /* RepositoryUseInterface */
-
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
-            virtual std::string do_describe_use_flag(const UseFlagName &, const PackageDatabaseEntry &) const;
-
-            /* end of RepositoryUseInterface */
-
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
-
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
-
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
-
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
-
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
-
-            virtual bool do_has_version(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual bool do_query_repository_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual bool do_query_profile_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
-
         protected:
             /**
              * Constructor.
@@ -148,11 +56,72 @@ namespace paludis
             FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
                     const RepositoryCapabilities & caps, const std::string &);
 
+            /* RepositoryMaskInterface */
+
+            virtual bool do_query_repository_masks(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_query_profile_masks(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryUseInterface */
+
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositorySetsInterface */
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             /**
              * Destructor.
              */
-
             ~FakeRepositoryBase();
 
             /**
@@ -169,16 +138,14 @@ namespace paludis
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata.
              */
-            tr1::shared_ptr<VersionMetadata> add_version(
-                    const QualifiedPackageName &, const VersionSpec &);
+            tr1::shared_ptr<FakePackageID> add_version(const QualifiedPackageName &, const VersionSpec &);
 
             /**
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata (convenience
              * overload taking strings).
              */
-            tr1::shared_ptr<VersionMetadata> add_version(
-                    const std::string & c, const std::string & p, const std::string & v)
+            tr1::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p, const std::string & v)
             {
                 return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v));
             }

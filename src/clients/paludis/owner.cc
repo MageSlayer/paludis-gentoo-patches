@@ -110,17 +110,15 @@ do_one_owner(
             for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
-                tr1::shared_ptr<const VersionSpecCollection> vers((*r)->version_specs(*p));
-                for (VersionSpecCollection::Iterator v(vers->begin()),
-                        v_end(vers->end()) ; v != v_end ; ++v)
+                tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
+                for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
                 {
-                    PackageDatabaseEntry e(*p, *v, (*r)->name());
-                    tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(*p, *v));
+                    tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(**v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
                     if (d.found)
                     {
-                        cout << "    " << e << endl;
+                        cout << "    " << **v << endl;
                         found_owner=true;
                     }
                 }
@@ -131,7 +129,6 @@ do_one_owner(
     cout << endl;
     return found_owner ? 0 : 1;
 }
-
 
 int
 do_owner(tr1::shared_ptr<Environment> env)

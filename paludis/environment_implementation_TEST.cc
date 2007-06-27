@@ -20,6 +20,8 @@
 #include <paludis/environment_implementation.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -43,10 +45,10 @@ namespace
                 tr1::shared_ptr<FakeRepository> repo(new FakeRepository(this, RepositoryName("repo")));
                 _package_database->add_repository(1, tr1::shared_ptr<Repository>(repo));
 
-                repo->add_version("foo", "one", "0")->ebuild_interface->set_keywords("test foo");
-                repo->add_version("foo", "two", "0")->ebuild_interface->set_keywords("~test foo");
-                repo->add_version("foo", "three", "0")->ebuild_interface->set_keywords("-test foo");
-                repo->add_version("foo", "four", "0")->ebuild_interface->set_keywords("-* foo");
+                repo->add_version("foo", "one", "0")->keywords_key()->set_from_string("test foo");
+                repo->add_version("foo", "two", "0")->keywords_key()->set_from_string("~test foo");
+                repo->add_version("foo", "three", "0")->keywords_key()->set_from_string("-test foo");
+                repo->add_version("foo", "four", "0")->keywords_key()->set_from_string("-* foo");
             }
 
             ~EITestEnvironment()
@@ -72,9 +74,22 @@ namespace
             {
             }
 
-            bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
+            bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID &) const
             {
                 return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
+            }
+
+            const tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName & q,
+                    const VersionSpec & v, const RepositoryName & r) const
+            {
+                using namespace tr1::placeholders;
+
+                tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
+                PackageIDSequence::Iterator i(std::find_if(ids->begin(), ids->end(),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), v)));
+                if (i == ids->end())
+                    throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
+                return *i;
             }
     };
 }
@@ -89,43 +104,43 @@ namespace test_cases
         {
             EITestEnvironment env;
 
-            MaskReasons m1(env.mask_reasons(PackageDatabaseEntry(
+            MaskReasons m1(env.mask_reasons(*env.fetch_package_id(
                             QualifiedPackageName("foo/one"), VersionSpec("0"), RepositoryName("repo"))));
             TEST_CHECK(! m1[mr_keyword]);
 
-            MaskReasons m2(env.mask_reasons(PackageDatabaseEntry(
+            MaskReasons m2(env.mask_reasons(*env.fetch_package_id(
                             QualifiedPackageName("foo/two"), VersionSpec("0"), RepositoryName("repo"))));
             TEST_CHECK(m2[mr_keyword]);
-            m2 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/two"), VersionSpec("0"), RepositoryName("repo")),
+            m2 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/two"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_tilde_keywords);
             TEST_CHECK(! m2[mr_keyword]);
-            m2 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/two"), VersionSpec("0"), RepositoryName("repo")),
+            m2 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/two"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_unkeyworded);
             TEST_CHECK(! m2[mr_keyword]);
 
-            MaskReasons m3(env.mask_reasons(PackageDatabaseEntry(
+            MaskReasons m3(env.mask_reasons(*env.fetch_package_id(
                             QualifiedPackageName("foo/three"), VersionSpec("0"), RepositoryName("repo"))));
             TEST_CHECK(m3[mr_keyword]);
-            m3 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/three"), VersionSpec("0"), RepositoryName("repo")),
+            m3 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/three"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_tilde_keywords);
             TEST_CHECK(m3[mr_keyword]);
-            m3 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/three"), VersionSpec("0"), RepositoryName("repo")),
+            m3 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/three"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_unkeyworded);
             TEST_CHECK(m3[mr_keyword]);
 
-            MaskReasons m4(env.mask_reasons(PackageDatabaseEntry(
+            MaskReasons m4(env.mask_reasons(*env.fetch_package_id(
                             QualifiedPackageName("foo/four"), VersionSpec("0"), RepositoryName("repo"))));
             TEST_CHECK(m4[mr_keyword]);
-            m4 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/four"), VersionSpec("0"), RepositoryName("repo")),
+            m4 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/four"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_tilde_keywords);
             TEST_CHECK(m4[mr_keyword]);
-            m4 = env.mask_reasons(PackageDatabaseEntry(
-                            QualifiedPackageName("foo/four"), VersionSpec("0"), RepositoryName("repo")),
+            m4 = env.mask_reasons(*env.fetch_package_id(
+                        QualifiedPackageName("foo/four"), VersionSpec("0"), RepositoryName("repo")),
                     MaskReasonsOptions() + mro_override_unkeyworded);
             TEST_CHECK(m4[mr_keyword]);
         }

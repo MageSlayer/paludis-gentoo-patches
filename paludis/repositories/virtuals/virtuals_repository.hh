@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_VIRTUALS_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -32,41 +33,43 @@ namespace paludis
     class PALUDIS_VISIBLE VirtualsRepository :
         public Repository,
         public RepositoryInstallableInterface,
-        public RepositoryMaskInterface,
-        private PrivateImplementationPattern<VirtualsRepository>
+        public RepositoryMakeVirtualsInterface,
+        private PrivateImplementationPattern<VirtualsRepository>,
+        public tr1::enable_shared_from_this<VirtualsRepository>
     {
         private:
             void need_names() const;
-            void need_entries() const;
+            void need_ids() const;
 
         protected:
-            virtual bool do_query_repository_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            /* RepositoryInstallableInterface */
 
-            virtual bool do_query_profile_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
 
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            /* Repository */
 
-            virtual bool do_has_version(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
+            /* RepositoryMakeVirtualsInterface */
+
+            virtual const tr1::shared_ptr<const PackageID> make_virtual_package_id(
+                    const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations
@@ -87,11 +90,7 @@ namespace paludis
 
             virtual void invalidate();
 
-            virtual bool can_be_favourite_repository() const
-            {
-                return false;
-            }
-
+            virtual bool can_be_favourite_repository() const;
     };
 }
 

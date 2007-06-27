@@ -60,15 +60,15 @@ namespace paludis
 
             virtual void on_report_all_pre() = 0;
             virtual void on_report_check_package_pre(const QualifiedPackageName & p) = 0;
-            virtual void on_report_package_success(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_failure_pre(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_is_masked(const PackageDatabaseEntry & pde, const MaskReasons & mr) = 0;
-            virtual void on_report_package_is_vulnerable_pre(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_is_vulnerable(const PackageDatabaseEntry & pde, const std::string & tag) = 0;
-            virtual void on_report_package_is_vulnerable_post(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_is_missing(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_is_unused(const PackageDatabaseEntry & pde) = 0;
-            virtual void on_report_package_failure_post(const PackageDatabaseEntry & pde) = 0;
+            virtual void on_report_package_success(const PackageID & id) = 0;
+            virtual void on_report_package_failure_pre(const PackageID & id) = 0;
+            virtual void on_report_package_is_masked(const PackageID & id, const MaskReasons & mr) = 0;
+            virtual void on_report_package_is_vulnerable_pre(const PackageID & id) = 0;
+            virtual void on_report_package_is_vulnerable(const PackageID & id, const std::string & tag) = 0;
+            virtual void on_report_package_is_vulnerable_post(const PackageID & id) = 0;
+            virtual void on_report_package_is_missing(const PackageID & id) = 0;
+            virtual void on_report_package_is_unused(const PackageID & id) = 0;
+            virtual void on_report_package_failure_post(const PackageID & id) = 0;
             virtual void on_report_check_package_post(const QualifiedPackageName & p) = 0;
             virtual void on_report_all_post() = 0;
 

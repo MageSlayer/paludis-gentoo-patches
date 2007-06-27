@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH 1
 
 #include <paludis/tasks/install_task.hh>
-#include <paludis/package_database_entry.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <src/output/use_flag_pretty_printer.hh>
 #include <src/output/console_task.hh>
@@ -121,7 +120,7 @@ namespace paludis
             tr1::shared_ptr<UseFlagNameCollection> _all_expand_prefixes;
 
             void _add_descriptions(tr1::shared_ptr<const UseFlagNameCollection>,
-                    const PackageDatabaseEntry &, UseDescriptionState);
+                    const tr1::shared_ptr<const PackageID> &, UseDescriptionState);
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
@@ -152,15 +151,15 @@ namespace paludis
 
             virtual void on_no_clean_needed(const DepListEntry &);
             virtual void on_clean_all_pre(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &);
+                    const PackageIDSequence &);
             virtual void on_clean_pre(const DepListEntry &,
-                    const PackageDatabaseEntry &);
+                    const PackageID &);
             virtual void on_clean_post(const DepListEntry &,
-                    const PackageDatabaseEntry &);
+                    const PackageID &);
             virtual void on_clean_fail(const DepListEntry &,
-                    const PackageDatabaseEntry &);
+                    const PackageID &);
             virtual void on_clean_all_post(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &);
+                    const PackageIDSequence &);
 
             virtual void on_update_world_pre();
             virtual void on_update_world(const PackageDepSpec &);
@@ -174,11 +173,11 @@ namespace paludis
             ///\{
 
             virtual void display_clean_all_pre_list_start(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &);
+                    const PackageIDSequence &);
             virtual void display_one_clean_all_pre_list_entry(
-                    const PackageDatabaseEntry &);
+                    const PackageID &);
             virtual void display_clean_all_pre_list_end(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &);
+                    const PackageIDSequence &);
 
             virtual void display_merge_list_post_counts();
             virtual void display_merge_list_post_tags();
@@ -188,13 +187,13 @@ namespace paludis
             virtual void display_merge_list_entry_version(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_repository(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
-            virtual void display_merge_list_entry_for(const PackageDatabaseEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_for(const PackageID &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
-                    tr1::shared_ptr<const PackageDatabaseEntryCollection>,
-                    tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
+                    tr1::shared_ptr<const PackageIDSequence>,
+                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
-                    tr1::shared_ptr<const PackageDatabaseEntryCollection>,
-                    tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
+                    tr1::shared_ptr<const PackageIDSequence>,
+                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
 

@@ -42,6 +42,7 @@ namespace test_cases
                             .location(FSEntry("gems_repository_TEST_dir/installed-repo"))
                             .environment(&env)
                             .buildroot(FSEntry("gems_repository_TEST_dir/build"))
+                            .install_dir(FSEntry("gems_repository_TEST_dir/install_dir"))
                             )));
         }
     } test_creation;

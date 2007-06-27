@@ -20,9 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH 1
 
-#include <paludis/dep_spec.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 
@@ -68,13 +70,13 @@ namespace paludis
             ///\{
 
             /// Is a use flag masked?
-            bool use_masked(const UseFlagName &, const PackageDatabaseEntry &) const;
+            bool use_masked(const UseFlagName &, const PackageID &) const;
 
             /// Is a use flag forced?
-            bool use_forced(const UseFlagName &, const PackageDatabaseEntry &) const;
+            bool use_forced(const UseFlagName &, const PackageID &) const;
 
             /// Use flag state, ignoring mask and force?
-            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageDatabaseEntry &) const;
+            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageID &) const;
 
             ///\}
 
@@ -101,8 +103,7 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            bool profile_masked(const QualifiedPackageName &, const VersionSpec &,
-                    const RepositoryName &) const;
+            bool profile_masked(const PackageID &) const;
 
             ///\}
 

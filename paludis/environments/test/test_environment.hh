@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_TEST_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_TEST_ENVIRONMENT_HH 1
 
-#include <paludis/package_database_entry.hh>
 #include <paludis/environment_implementation.hh>
+#include <paludis/version_spec-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
@@ -44,7 +44,7 @@ namespace paludis
         public EnvironmentImplementation
     {
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -57,7 +57,7 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+            virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<PackageDatabase> package_database()
@@ -70,6 +70,12 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void set_paludis_command(const std::string &);
+
+            /**
+             * Convenience way of getting a package id.
+             */
+            const tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
+                    const VersionSpec &, const RepositoryName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

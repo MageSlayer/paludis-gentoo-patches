@@ -13,7 +13,6 @@ make_enum_MaskReason()
     key mr_by_association        "masked by association with another package (for virtuals)"
     key mr_chost                 "masked by chost"
     key mr_breaks_portage        "masked because it will break portage"
-    key mr_interactive           "interactive"
     key mr_license               "unaccepted license"
 
     doxygen_comment << "END"

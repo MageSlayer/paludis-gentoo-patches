@@ -277,7 +277,7 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 
 bool
 NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> keywords,
-        const PackageDatabaseEntry &) const
+        const PackageID &) const
 {
     if (_imp->is_vdb)
         return true;

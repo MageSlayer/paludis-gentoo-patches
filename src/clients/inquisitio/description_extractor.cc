@@ -19,6 +19,8 @@
 
 #include "description_extractor.hh"
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
@@ -48,9 +50,10 @@ DescriptionExtractor::~DescriptionExtractor()
 }
 
 std::string
-DescriptionExtractor::operator() (const PackageDatabaseEntry & p) const
+DescriptionExtractor::operator() (const PackageID & p) const
 {
-    return _imp->env->package_database()->fetch_repository(p.repository)->
-        version_metadata(p.name, p.version)->description;
+    if (p.short_description_key())
+        return p.short_description_key()->value();
+    return "";
 }
 

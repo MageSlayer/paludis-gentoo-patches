@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,29 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "package_database_entry.hh"
+#include <test/test_runner.hh>
+#include <test/test_framework.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/environments/test/test_environment.hh>
 
+using namespace test;
 using namespace paludis;
 
-#include "package_database_entry-sr.cc"
-
-bool
-ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator::operator () (
-        const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
+namespace test_cases
 {
-    if (lhs.name < rhs.name)
-        return false;
-    if (lhs.name > rhs.name)
-        return true;
+    struct FakeRepositoryTest : TestCase
+    {
+        FakeRepositoryTest() : TestCase("fake repository") { }
 
-    if (lhs.version < rhs.version)
-        return false;
-    if (lhs.version > rhs.version)
-        return true;
-
-    if (lhs.repository.data() < rhs.repository.data())
-        return true;
-
-    return false;
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<const FakeRepository> r(new FakeRepository(&env, RepositoryName("fake")));
+        }
+    } test_fake_repository;
 }
+
 

@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_METADATA_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_METADATA_HH 1
 
-#include <paludis/name.hh>
-#include <paludis/repository.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/version_metadata.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/repository-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/repositories/gentoo/portage_repository_profile.hh>
@@ -64,28 +64,28 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Generate version metadata.
+             * Create a PackageID.
              */
-            virtual tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
-                    const VersionSpec &) const = 0;
+            virtual const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
+                    const FSEntry &, const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch an environment variable.
              */
-            virtual std::string get_environment_variable(const QualifiedPackageName &,
-                    const VersionSpec &, const std::string & var,
+            virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
                     tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
              * Handle an install.
              */
-            virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**
              * Handle a pretend.
              */
-            virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
+            virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
                     tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
 
             /**

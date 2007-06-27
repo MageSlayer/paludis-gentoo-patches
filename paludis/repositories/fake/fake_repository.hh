@@ -30,27 +30,25 @@ namespace paludis
      * \ingroup grpfakerepository
      */
     class PALUDIS_VISIBLE FakeRepository :
+        private PrivateImplementationPattern<FakeRepository>,
         public FakeRepositoryBase,
         public RepositoryInstallableInterface,
         public RepositoryVirtualsInterface
     {
         private:
-            tr1::shared_ptr<VirtualsCollection> _virtual_packages;
+            Implementation<FakeRepository> * const _imp;
 
         protected:
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
+            /* RepositoryInstallableInterface */
 
-            virtual tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
-
-            virtual tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
-                    const RepositoryVirtualsEntry &, const VersionSpec & v) const;
+            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
 
         public:
             ///\name Basic operations
             ///\{
 
             FakeRepository(const Environment * const, const RepositoryName &);
+            ~FakeRepository();
 
             ///\}
 
@@ -58,6 +56,11 @@ namespace paludis
              * Add a virtual package.
              */
             void add_virtual_package(const QualifiedPackageName &, tr1::shared_ptr<const PackageDepSpec>);
+
+            /* RepositoryVirtualsInterface */
+
+            virtual tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

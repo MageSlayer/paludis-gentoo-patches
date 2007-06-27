@@ -26,8 +26,6 @@
 
 namespace paludis
 {
-    class PackageDatabaseEntry;
-
     /**
      * Used by DepList to check for existing deps.
      *
@@ -43,7 +41,7 @@ namespace paludis
             ///\{
 
             QueryVisitor(const DepList * const, tr1::shared_ptr<const DestinationsCollection>,
-                    const Environment * const, const PackageDatabaseEntry * const);
+                    const Environment * const, const tr1::shared_ptr<const PackageID> &);
 
             ~QueryVisitor();
 

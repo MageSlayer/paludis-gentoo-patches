@@ -22,14 +22,15 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/options.hh>
-#include <paludis/util/collection.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/options-fwd.hh>
+#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/mask_reasons.hh>
-#include <paludis/name.hh>
-#include <paludis/hook.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -76,7 +77,7 @@ namespace paludis
             /**
              * Is a particular use flag enabled for a particular package?
              */
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+            virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -88,7 +89,7 @@ namespace paludis
              * that all flags in the returned value will be enabled for the specified package.
              */
             virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
-                    const UseFlagName &, const PackageDatabaseEntry &) const
+                    const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -101,7 +102,7 @@ namespace paludis
              *
              * \see paludis::query::NotMasked
              */
-            virtual MaskReasons mask_reasons(const PackageDatabaseEntry &,
+            virtual MaskReasons mask_reasons(const PackageID &,
                     const MaskReasonsOptions & = MaskReasonsOptions()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -110,7 +111,7 @@ namespace paludis
              *
              * Default behaviour: true.
              */
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry &) const
+            virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -120,7 +121,7 @@ namespace paludis
              *
              * Default behaviour: true if the collection includes "*".
              */
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

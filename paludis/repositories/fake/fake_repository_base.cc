@@ -18,15 +18,16 @@
  */
 
 #include <paludis/repositories/fake/fake_repository_base.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
+#include <paludis/repository_info.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
@@ -56,17 +57,11 @@ namespace paludis
         /// Our package names.
         std::map<CategoryNamePart, tr1::shared_ptr<PackageNamePartCollection> > package_names;
 
-        /// Our versions.
-        std::map<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> > versions;
-
-        /// Our metadata.
-        std::map<std::string, tr1::shared_ptr<VersionMetadata> > metadata;
+        /// Our IDs.
+        std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> > ids;
 
         /// Our sets.
         std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
-
-        /// (Empty) provides map.
-        const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
         const Environment * const env;
 
@@ -133,25 +128,14 @@ FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-FakeRepositoryBase::do_version_specs(const QualifiedPackageName & n) const
+tr1::shared_ptr<const PackageIDSequence>
+FakeRepositoryBase::do_package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category))
-        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
     if (! has_package_named(n))
-        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
-    return _imp->versions.find(n)->second;
-}
-
-bool
-FakeRepositoryBase::do_has_version(const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (! has_category_named(q.category))
-        return false;
-    if (! has_package_named(q))
-        return false;
-    return _imp->versions.find(q)->second->find(v) !=
-        _imp->versions.find(q)->second->end();
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
+    return _imp->ids.find(n)->second;
 }
 
 void
@@ -166,59 +150,44 @@ FakeRepositoryBase::add_package(const QualifiedPackageName & q)
 {
     add_category(q.category);
     _imp->package_names.find(q.category)->second->insert(q.package);
-    _imp->versions.insert(std::make_pair(q, new VersionSpecCollection::Concrete));
+    _imp->ids.insert(std::make_pair(q, new PackageIDSequence::Concrete));
 }
 
-tr1::shared_ptr<VersionMetadata>
+tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
-    _imp->versions.find(q)->second->insert(v);
-    _imp->metadata.insert(
-            std::make_pair(stringify(q) + "-" + stringify(v),
-                tr1::shared_ptr<VersionMetadata>(new FakeVersionMetadata)));
-    tr1::shared_ptr<VersionMetadata> r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
-    r->slot = SlotName("0");
-    r->eapi = EAPIData::get_instance()->eapi_from_string("0");
-    return r;
-}
-
-tr1::shared_ptr<const VersionMetadata>
-FakeRepositoryBase::do_version_metadata(
-        const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (! has_version(q, v))
-        throw InternalError(PALUDIS_HERE, "no version");
-    return _imp->metadata.find(stringify(q) + "-" + stringify(v))->second;
+    tr1::shared_ptr<FakePackageID> id(new FakePackageID(shared_from_this(), q, v));
+    _imp->ids.find(q)->second->push_back(id);
+    return id;
 }
 
 bool
-FakeRepositoryBase::do_query_repository_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
+FakeRepositoryBase::do_query_repository_masks(const PackageID &) const
 {
     return false;
 }
 
 bool
-FakeRepositoryBase::do_query_profile_masks(const QualifiedPackageName &, const VersionSpec &) const
+FakeRepositoryBase::do_query_profile_masks(const PackageID &) const
 {
     return false;
 }
 
 UseFlagState
-FakeRepositoryBase::do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+FakeRepositoryBase::do_query_use(const UseFlagName &, const PackageID &) const
 {
     return use_unspecified;
 }
 
 bool
-FakeRepositoryBase::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const
+FakeRepositoryBase::do_query_use_mask(const UseFlagName &, const PackageID &) const
 {
     return false;
 }
 
 bool
-FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const
+FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageID &) const
 {
     return false;
 }
@@ -279,7 +248,7 @@ FakeRepositoryBase::sets_list() const
 
 std::string
 FakeRepositoryBase::do_describe_use_flag(const UseFlagName &,
-        const PackageDatabaseEntry &) const
+        const PackageID &) const
 {
     return "";
 }
@@ -288,59 +257,5 @@ const Environment *
 FakeRepositoryBase::environment() const
 {
     return _imp->env;
-}
-
-FakeVersionMetadata::FakeVersionMetadata() :
-    VersionMetadata(
-            VersionMetadataBase::create()
-            .slot(SlotName("0"))
-            .homepage("")
-            .description("")
-            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
-            .interactive(false),
-            VersionMetadataCapabilities::create()
-            .ebuild_interface(this)
-            .deps_interface(this)
-            .license_interface(this)
-            .cran_interface(0)
-            .virtual_interface(0)
-            .origins_interface(0)
-            .ebin_interface(0)
-            ),
-    VersionMetadataEbuildInterface(),
-    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
-{
-    set_keywords("test");
-}
-
-FakeVersionMetadata::~FakeVersionMetadata()
-{
-}
-
-FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & p) :
-    VersionMetadata(
-            VersionMetadataBase::create()
-            .slot(s)
-            .homepage("")
-            .description("")
-            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
-            .interactive(false),
-            VersionMetadataCapabilities::create()
-            .ebuild_interface(0)
-            .deps_interface(this)
-            .license_interface(0)
-            .cran_interface(0)
-            .virtual_interface(this)
-            .origins_interface(0)
-            .ebin_interface(0)
-            ),
-    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(p)))
-{
-}
-
-FakeVirtualVersionMetadata::~FakeVirtualVersionMetadata()
-{
 }
 

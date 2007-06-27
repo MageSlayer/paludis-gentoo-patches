@@ -19,23 +19,26 @@
 
 #include "vdb_unmerger.hh"
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 using namespace paludis;
 using namespace test;
 
-namespace paludis
+namespace
 {
     class VDBUnmergerNoDisplay :
         public VDBUnmerger
     {
         protected:
+
             void display(const std::string &) const
             {
             }
 
         public:
+
             VDBUnmergerNoDisplay(const VDBUnmergerOptions & o) :
                 VDBUnmerger(o)
             {
@@ -46,6 +49,7 @@ namespace paludis
         public TestCase
     {
         public:
+
             FSEntry root_dir;
             std::string target;
             TestEnvironment env;
@@ -57,6 +61,7 @@ namespace paludis
             }
 
         protected:
+
             VDBUnmergerTest(const std::string & what) :
                 TestCase("unmerge '" + what + "' test"),
                 root_dir("vdb_unmerger_TEST_dir/root"),
@@ -67,9 +72,7 @@ namespace paludis
                         .contents_file("vdb_unmerger_TEST_dir/CONTENTS/" + what)
                         .config_protect("")
                         .config_protect_mask("")
-                        .package_name(QualifiedPackageName("cat/test"))
-                        .version(VersionSpec("0"))
-                        .repository(0))
+                        .package_id(tr1::shared_ptr<PackageID>()))
             {
             }
     };

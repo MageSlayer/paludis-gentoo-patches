@@ -28,6 +28,7 @@
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_database.hh>
+#include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -50,7 +51,7 @@ namespace
     {
         private:
             tr1::shared_ptr<const PackageDatabase> _db;
-            const PackageDatabaseEntryCollection & _entries;
+            const PackageIDSequence & _entries;
             std::string _depname;
             std::string _p;
 
@@ -64,7 +65,7 @@ namespace
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>::visit_sequence;
 
             ReverseDepChecker(tr1::shared_ptr<const PackageDatabase> db,
-                    const PackageDatabaseEntryCollection & entries,
+                    const PackageIDSequence & entries,
                     const std::string & p) :
                 _db(db),
                 _entries(entries),
@@ -129,16 +130,17 @@ namespace
     void
     ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
+        tr1::shared_ptr<const PackageIDSequence> dep_entries(_db->query(
                     query::Matches(a), qo_order_by_version));
-        tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
+        tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence::Concrete);
 
         bool header_written = false;
 
-        for (PackageDatabaseEntryCollection::Iterator e(dep_entries->begin()), e_end(dep_entries->end()) ;
+        for (IndirectIterator<PackageIDSequence::Iterator> e(dep_entries->begin()), e_end(dep_entries->end()) ;
                 e != e_end ; ++e)
         {
-            if (_entries.find(*e) != _entries.end())
+            if (indirect_iterator(_entries.end()) != std::find(indirect_iterator(_entries.begin()),
+                        indirect_iterator(_entries.end()), *e))
             {
                 _found_matches |= true;
 
@@ -174,36 +176,38 @@ namespace
         cout << "Reverse dependencies for '" << spec << "':" << std::endl;
     }
 
-    int check_one_package(const Environment & env, const Repository & r,
-            const PackageDatabaseEntryCollection & entries, const QualifiedPackageName & p)
+    int check_one_package(const Environment & env,
+            const PackageIDSequence & entries, const QualifiedPackageName & p)
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        tr1::shared_ptr<PackageDatabaseEntryCollection> p_entries(env.package_database()->query(
+        tr1::shared_ptr<const PackageIDSequence> p_entries(env.package_database()->query(
                 query::Package(p), qo_order_by_version));
 
         bool found_matches(false);
 
-        for (PackageDatabaseEntryCollection::Iterator e(p_entries->begin()), e_end(p_entries->end()) ;
+        for (IndirectIterator<PackageIDSequence::Iterator> e(p_entries->begin()), e_end(p_entries->end()) ;
                 e != e_end ; ++e)
         {
             try
             {
-                tr1::shared_ptr<const VersionMetadata> metadata(r.version_metadata(e->name, e->version));
-                ReverseDepChecker checker(env.package_database(), entries,
-                        stringify(p) + "-" + stringify(e->version));
+                ReverseDepChecker checker(env.package_database(), entries, stringify(p) + "-" + stringify(e->canonical_form(idcf_version)));
 
-                if (metadata->deps_interface)
-                {
-                    checker.check(metadata->deps_interface->build_depend(), std::string("DEPEND"));
-                    checker.check(metadata->deps_interface->run_depend(), std::string("RDEPEND"));
-                    checker.check(metadata->deps_interface->post_depend(), std::string("PDEPEND"));
-                    checker.check(metadata->deps_interface->suggested_depend(), std::string("SDEPEND"));
-                }
+                if (e->build_dependencies_key())
+                    checker.check(e->build_dependencies_key()->value(), e->build_dependencies_key()->raw_name());
+
+                if (e->run_dependencies_key())
+                    checker.check(e->run_dependencies_key()->value(), e->run_dependencies_key()->raw_name());
+
+                if (e->post_dependencies_key())
+                    checker.check(e->post_dependencies_key()->value(), e->post_dependencies_key()->raw_name());
+
+                if (e->suggested_dependencies_key())
+                    checker.check(e->suggested_dependencies_key()->value(), e->suggested_dependencies_key()->raw_name());
 
                 found_matches |= checker.found_matches();
             }
-            catch (Exception & exception)
+            catch (const Exception & exception)
             {
                 cerr << "Caught exception:" << endl;
                 cerr << "  * " << exception.backtrace("\n  * ") << endl;
@@ -246,7 +250,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> entries(env.package_database()->query(
                 query::Matches(*spec), qo_order_by_version));
     int ret(0);
 
@@ -290,7 +294,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                                 stringify(p->package)))
                         continue;
 
-                ret |= check_one_package(env, *r, *entries, *p);
+                ret |= check_one_package(env, *entries, *p);
             }
         }
     }

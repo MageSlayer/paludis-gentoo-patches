@@ -29,9 +29,11 @@
 
 #include <paludis/config_file.hh>
 #include <paludis/hooker.hh>
+#include <paludis/hook.hh>
 #include <paludis/set_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/package_id.hh>
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
@@ -150,7 +152,7 @@ PaludisEnvironment::~PaludisEnvironment()
 }
 
 bool
-PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
+PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 {
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Paludis environment:");
@@ -165,13 +167,11 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     Save<bool> save_recursive(&recursive, true);
 
     /* first check package database use masks... */
-    tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
-
-    if (repo->use_interface)
+    if (e.repository()->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, e))
+        if (e.repository()->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, e))
+        if (e.repository()->use_interface->query_use_force(f, e))
             return true;
     }
 
@@ -196,9 +196,9 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     } while (false);
 
     /* check use: package database config */
-    if (repo->use_interface)
+    if (e.repository()->use_interface)
     {
-        switch (repo->use_interface->query_use(f, e))
+        switch (e.repository()->use_interface->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:
@@ -218,20 +218,20 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 }
 
 bool
-PaludisEnvironment::accept_breaks_portage(const PackageDatabaseEntry &) const
+PaludisEnvironment::accept_breaks_portage(const PackageID &) const
 {
     return _imp->config->accept_breaks_portage();
 }
 
 bool
 PaludisEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k,
-        const PackageDatabaseEntry & e) const
+        const PackageID & e) const
 {
     return _imp->config->keywords_conf()->query(k, e);
 }
 
 bool
-PaludisEnvironment::accept_license(const std::string & license, const PackageDatabaseEntry & d) const
+PaludisEnvironment::accept_license(const std::string & license, const PackageID & d) const
 {
     if (license == "*")
         return true;
@@ -244,13 +244,13 @@ PaludisEnvironment::accept_license(const std::string & license, const PackageDat
 }
 
 bool
-PaludisEnvironment::masked_by_user(const PackageDatabaseEntry & d) const
+PaludisEnvironment::masked_by_user(const PackageID & d) const
 {
     return _imp->config->package_mask_conf()->query(d);
 }
 
 bool
-PaludisEnvironment::unmasked_by_user(const PackageDatabaseEntry & d) const
+PaludisEnvironment::unmasked_by_user(const PackageID & d) const
 {
     return _imp->config->package_unmask_conf()->query(d);
 }
@@ -389,7 +389,7 @@ PaludisEnvironment::mirrors(const std::string & m) const
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-PaludisEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageDatabaseEntry & e) const
+PaludisEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
 {
     return _imp->config->use_conf()->known_use_expand_names(prefix, e);
 }

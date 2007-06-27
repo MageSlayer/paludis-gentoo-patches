@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
-#include <paludis/dep_spec.hh>
-#include <paludis/package_database.hh>
-#include <paludis/environment.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 
@@ -76,7 +76,7 @@ namespace paludis
             ///\{
 
             DepSpecFlattener(const Environment * const,
-                    const PackageDatabaseEntry * const);
+                    const tr1::shared_ptr<const PackageID> &);
 
             ~DepSpecFlattener();
 

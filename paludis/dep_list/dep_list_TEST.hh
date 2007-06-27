@@ -47,8 +47,7 @@ namespace paludis
     std::ostream &
     operator<< (std::ostream & s, const DepListEntry & e)
     {
-        s << e.package.name << "-" << e.package.version << ":" <<
-            e.metadata->slot << "::" << e.package.repository;
+        s << *e.package_id;
 
         switch (e.kind)
         {

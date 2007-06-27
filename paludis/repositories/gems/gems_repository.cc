@@ -19,11 +19,10 @@
 
 #include <paludis/repositories/gems/gems_repository.hh>
 #include <paludis/repositories/gems/params.hh>
-#include <paludis/repositories/gems/metadata.hh>
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/gem_specifications.hh>
-#include <paludis/package_database.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -46,16 +45,15 @@ namespace paludis
 
         mutable tr1::shared_ptr<const CategoryNamePartCollection> category_names;
         mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameCollection> >::Type package_names;
-        mutable MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type versions;
-        mutable MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const gems::GemMetadata> >::Type metadata;
+        mutable MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type ids;
 
         mutable bool has_category_names;
-        mutable bool has_entries;
+        mutable bool has_ids;
 
         Implementation(const gems::RepositoryParams p) :
             params(p),
             has_category_names(false),
-            has_entries(false)
+            has_ids(false)
         {
         }
     };
@@ -82,6 +80,7 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
             .licenses_interface(0)
             .portage_interface(0)
             .pretend_interface(0)
+            .make_virtuals_interface(0)
             .hook_interface(0),
             "gems"),
     PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(params))
@@ -89,6 +88,7 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("install_dir", stringify(_imp->params.install_dir));
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
@@ -119,7 +119,7 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
     if (! do_has_category_named(q.category))
         return false;
 
-    need_entries();
+    need_ids();
     return _imp->package_names.find(q.category)->second->end() != _imp->package_names.find(q.category)->second->find(q);
 }
 
@@ -136,7 +136,7 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
     if (! has_category_named(c))
         return make_shared_ptr(new QualifiedPackageNameCollection::Concrete);
 
-    need_entries();
+    need_ids();
 
     MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameCollection> >::Type::const_iterator i(
             _imp->package_names.find(c));
@@ -145,42 +145,20 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
     return i->second;
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-GemsRepository::do_version_specs(const QualifiedPackageName & q) const
+tr1::shared_ptr<const PackageIDSequence>
+GemsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
     if (! has_package_named(q))
-        return make_shared_ptr(new VersionSpecCollection::Concrete);
+        return make_shared_ptr(new PackageIDSequence::Concrete);
 
-    need_entries();
+    need_ids();
 
-    MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type::const_iterator i(
-            _imp->versions.find(q));
-    if (i == _imp->versions.end())
-        return make_shared_ptr(new VersionSpecCollection::Concrete);
+    MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::const_iterator i(
+            _imp->ids.find(q));
+    if (i == _imp->ids.end())
+        return make_shared_ptr(new PackageIDSequence::Concrete);
 
     return i->second;
-}
-
-bool
-GemsRepository::do_has_version(const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (! has_package_named(q))
-        return false;
-
-    need_entries();
-
-    MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type::const_iterator i(
-            _imp->versions.find(q));
-    return i->second->end() != i->second->find(v);
-}
-
-tr1::shared_ptr<const VersionMetadata>
-GemsRepository::do_version_metadata(const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (! has_version(q, v))
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-
-    return _imp->metadata.find(std::make_pair(q, v))->second;
 }
 
 void
@@ -197,9 +175,9 @@ GemsRepository::need_category_names() const
 }
 
 void
-GemsRepository::need_entries() const
+GemsRepository::need_ids() const
 {
-    if (_imp->has_entries)
+    if (_imp->has_ids)
         return;
 
     need_category_names();
@@ -215,44 +193,35 @@ GemsRepository::need_entries() const
 
     std::string output((std::istreambuf_iterator<char>(yaml_file)), std::istreambuf_iterator<char>());
     yaml::Document master_doc(output);
-    gems::GemSpecifications specs(*master_doc.top());
+    gems::GemSpecifications specs(shared_from_this(), *master_doc.top());
 
     for (gems::GemSpecifications::Iterator i(specs.begin()), i_end(specs.end()) ;
             i != i_end ; ++i)
     {
         pkgs->insert(i->first.first);
 
-        MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type::iterator v(_imp->versions.find(i->first.first));
-        if (_imp->versions.end() == v)
-            v = _imp->versions.insert(std::make_pair(i->first.first, make_shared_ptr(new VersionSpecCollection::Concrete))).first;
+        MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator v(_imp->ids.find(i->first.first));
+        if (_imp->ids.end() == v)
+            v = _imp->ids.insert(std::make_pair(i->first.first, make_shared_ptr(new PackageIDSequence::Concrete))).first;
 
-        v->second->insert(i->first.second);
-
-        tr1::shared_ptr<gems::GemMetadata> m(new gems::GemMetadata(i->first.second));
-        m->populate_from_specification(*i->second);
-        m->eapi = EAPIData::get_instance()->eapi_from_string("gems-1");
-        _imp->metadata.insert(std::make_pair(i->first, m));
+        v->second->push_back(i->second);
     }
 
-    _imp->has_entries = true;
+    _imp->has_ids = true;
 }
 
 void
-GemsRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
-        const InstallOptions & o) const
+GemsRepository::do_install(const tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
 {
     if (o.fetch_only)
         return;
 
-    if (! has_version(q, v))
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
-            "/gems/gems.bash install '" + stringify(q.package) + "' '" + stringify(v) + "'");
-    cmd.with_stderr_prefix(stringify(q) + "-" + stringify(v) + "::" + stringify(name()) + "> ");
+            "/gems/gems.bash install '" + stringify(id->name().package) + "' '" + stringify(id->version()) + "'");
+    cmd.with_stderr_prefix(stringify(*id) + "> ");
     cmd.with_setenv("GEMCACHE", stringify(_imp->params.location / "yaml"));
 
     if (0 != run_command(cmd))
-        throw PackageInstallActionError("Install of '" + stringify(PackageDatabaseEntry(q, v, name())) + "' failed");
+        throw PackageInstallActionError("Install of '" + stringify(*id) + "' failed");
 }
 

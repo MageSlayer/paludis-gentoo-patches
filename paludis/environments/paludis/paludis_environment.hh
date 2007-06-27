@@ -22,6 +22,8 @@
 
 #include <paludis/package_database.hh>
 #include <paludis/environment_implementation.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/name-fwd.hh>
 
 /** \file
  * Declarations for the PaludisEnvironment class.
@@ -48,19 +50,19 @@ namespace paludis
         private PrivateImplementationPattern<PaludisEnvironment>
    {
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry &) const
+            virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_breaks_portage(const PackageDatabaseEntry &) const
+            virtual bool accept_breaks_portage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool masked_by_user(const PackageDatabaseEntry &) const
+            virtual bool masked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool unmasked_by_user(const PackageDatabaseEntry &) const
+            virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & id) const;
@@ -85,11 +87,11 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+            virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
-                    const UseFlagName &, const PackageDatabaseEntry &) const
+                    const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const FSEntryCollection> bashrc_files() const

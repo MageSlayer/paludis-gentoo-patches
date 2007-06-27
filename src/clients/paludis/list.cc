@@ -22,6 +22,7 @@
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 #include <src/output/colour.hh>

@@ -38,367 +38,329 @@ namespace paludis
     class Environment;
     class Command;
 
+    namespace erepository
+    {
+        class EbuildID;
+
 #include <paludis/repositories/gentoo/ebuild-sr.hh>
 
-    /**
-     * VersionMetadata for an ebuild.
-     *
-     * \ingroup grpebuildinterface
-     * \nosubgrouping
-     */
-    class EbuildVersionMetadata :
-        public VersionMetadata,
-        public VersionMetadataEbuildInterface,
-        public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface,
-        public virtual VersionMetadataHasInterfaces
-    {
-        public:
-            ///\name Basic operations
-            ///\{
+        /**
+         * An EbuildCommand is the base class from which specific ebuild
+         * command interfaces are descended.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildCommand :
+            private InstantiationPolicy<EbuildCommand, instantiation_method::NonCopyableTag>
+        {
+            protected:
+                /**
+                 * Our parameters.
+                 */
+                const EbuildCommandParams params;
 
-            EbuildVersionMetadata();
-            virtual ~EbuildVersionMetadata();
+                /**
+                 * Constructor.
+                 */
+                EbuildCommand(const EbuildCommandParams &);
 
-            ///\}
+                /**
+                 * Override in descendents: which commands (for example, 'prerm
+                 * unmerge postrm') do we give to ebuild.bash?
+                 */
+                virtual std::string commands() const = 0;
 
-            virtual const VersionMetadata * version_metadata() const
-            {
-                return this;
-            }
-    };
+                /**
+                 * Return our ebuild file.
+                 */
+                virtual std::string ebuild_file() const;
 
-    /**
-     * An EbuildCommand is the base class from which specific ebuild
-     * command interfaces are descended.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildCommand :
-        private InstantiationPolicy<EbuildCommand, instantiation_method::NonCopyableTag>
-    {
-        protected:
-            /**
-             * Our parameters.
-             */
-            const EbuildCommandParams params;
+                /**
+                 * Actions to be taken after a successful command.
+                 *
+                 * The return value of this function is used for the return value
+                 * of operator().
+                 */
+                virtual bool success();
 
-            /**
-             * Constructor.
-             */
-            EbuildCommand(const EbuildCommandParams &);
+                /**
+                 * Actions to be taken after a failed command.
+                 *
+                 * The return value of this function is used for the return value
+                 * of operator(). In some descendents, this function throws and
+                 * does not return.
+                 */
+                virtual bool failure() = 0;
 
-            /**
-             * Override in descendents: which commands (for example, 'prerm
-             * unmerge postrm') do we give to ebuild.bash?
-             */
-            virtual std::string commands() const = 0;
+                /**
+                 * Run the specified command. Can be overridden if, for example,
+                 * the command output needs to be captured.
+                 *
+                 * \return Whether the command succeeded.
+                 */
+                virtual bool do_run_command(const Command &);
 
-            /**
-             * Return our ebuild file.
-             */
-            virtual std::string ebuild_file() const;
+                /**
+                 * Add Portage emulation vars.
+                 */
+                virtual Command add_portage_vars(const Command &) const;
 
-            /**
-             * Actions to be taken after a successful command.
-             *
-             * The return value of this function is used for the return value
-             * of operator().
-             */
-            virtual bool success();
+                /**
+                 * Extend the command to be run.
+                 */
+                virtual Command extend_command(const Command &) = 0;
 
-            /**
-             * Actions to be taken after a failed command.
-             *
-             * The return value of this function is used for the return value
-             * of operator(). In some descendents, this function throws and
-             * does not return.
-             */
-            virtual bool failure() = 0;
+            public:
+                /**
+                 * Destructor.
+                 */
+                virtual ~EbuildCommand();
 
-            /**
-             * Run the specified command. Can be overridden if, for example,
-             * the command output needs to be captured.
-             *
-             * \return Whether the command succeeded.
-             */
-            virtual bool do_run_command(const Command &);
+                /**
+                 * Run the command.
+                 */
+                virtual bool operator() ();
+        };
 
-            /**
-             * Add Portage emulation vars.
-             */
-            virtual Command add_portage_vars(const Command &) const;
+        /**
+         * An EbuildVariableCommand is used to fetch the value of an environment
+         * variable for a particular ebuild in a PortageRepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildVariableCommand :
+            public EbuildCommand
+        {
+            private:
+                std::string _result;
+                const std::string _var;
 
-            /**
-             * Extend the command to be run.
-             */
-            virtual Command extend_command(const Command &) = 0;
+            protected:
+                virtual std::string commands() const;
 
-        public:
-            /**
-             * Destructor.
-             */
-            virtual ~EbuildCommand();
+                virtual Command extend_command(const Command &);
 
-            /**
-             * Run the command.
-             */
-            virtual bool operator() ();
-    };
+                virtual bool do_run_command(const Command &);
 
-    /**
-     * An EbuildMetadataCommand is used to generate metadata for a particular
-     * ebuild in a PortageRepository.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildMetadataCommand :
-        public EbuildCommand
-    {
-        private:
-            tr1::shared_ptr<EbuildVersionMetadata> _metadata;
+                virtual bool failure();
 
-        protected:
-            virtual std::string commands() const;
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildVariableCommand(const EbuildCommandParams &, const std::string &);
 
-            virtual bool failure();
+                /**
+                 * Fetch our result.
+                 */
+                std::string result() const
+                {
+                    return _result;
+                }
+        };
 
-            virtual Command extend_command(const Command &);
+        /**
+         * An EbuildFetchCommand is used to download and verify the digests for a
+         * particular ebuild in a PortageRepository. On failure it throws.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildFetchCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for fetch.
+                const EbuildFetchCommandParams fetch_params;
 
-            virtual bool do_run_command(const Command &);
+                virtual std::string commands() const;
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildMetadataCommand(const EbuildCommandParams &);
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            /**
-             * Return a pointer to our generated metadata. If operator() has not
-             * yet been called, will be a zero pointer.
-             */
-            tr1::shared_ptr<EbuildVersionMetadata> metadata() const
-            {
-                return _metadata;
-            }
-    };
+                virtual Command extend_command(const Command &);
 
-    /**
-     * An EbuildVariableCommand is used to fetch the value of an environment
-     * variable for a particular ebuild in a PortageRepository.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildVariableCommand :
-        public EbuildCommand
-    {
-        private:
-            std::string _result;
-            const std::string _var;
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildFetchCommand(const EbuildCommandParams &, const EbuildFetchCommandParams &);
+        };
 
-        protected:
-            virtual std::string commands() const;
+        /**
+         * An EbuildInstallCommand is used to install an ebuild from a
+         * PortageRepository. On failure it throws.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildInstallCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for install.
+                const EbuildInstallCommandParams install_params;
 
-            virtual Command extend_command(const Command &);
+                virtual std::string commands() const;
 
-            virtual bool do_run_command(const Command &);
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual bool failure();
+                virtual Command extend_command(const Command &);
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildVariableCommand(const EbuildCommandParams &, const std::string &);
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildInstallCommand(const EbuildCommandParams &, const EbuildInstallCommandParams &);
+        };
 
-            /**
-             * Fetch our result.
-             */
-            std::string result() const
-            {
-                return _result;
-            }
-    };
+        /**
+         * An EbuildUninstallCommand is used to uninstall a package in a VDBRepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildUninstallCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for uninstall.
+                const EbuildUninstallCommandParams uninstall_params;
 
-    /**
-     * An EbuildFetchCommand is used to download and verify the digests for a
-     * particular ebuild in a PortageRepository. On failure it throws.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildFetchCommand :
-        public EbuildCommand
-    {
-        protected:
-            /// Parameters for fetch.
-            const EbuildFetchCommandParams fetch_params;
+                virtual std::string commands() const;
 
-            virtual std::string commands() const;
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                virtual Command extend_command(const Command &);
 
-            virtual Command extend_command(const Command &);
+                virtual std::string ebuild_file() const;
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildFetchCommand(const EbuildCommandParams &, const EbuildFetchCommandParams &);
-    };
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildUninstallCommand(const EbuildCommandParams &, const EbuildUninstallCommandParams &);
+        };
 
-    /**
-     * An EbuildInstallCommand is used to install an ebuild from a
-     * PortageRepository. On failure it throws.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildInstallCommand :
-        public EbuildCommand
-    {
-        protected:
-            /// Parameters for install.
-            const EbuildInstallCommandParams install_params;
+        /**
+         * An EbuildConfigCommand is used to configure a package in a VDBRepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildConfigCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for config.
+                const EbuildConfigCommandParams config_params;
 
-            virtual std::string commands() const;
+                virtual std::string commands() const;
 
-            virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual Command extend_command(const Command &);
+                virtual Command extend_command(const Command &);
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildInstallCommand(const EbuildCommandParams &, const EbuildInstallCommandParams &);
-    };
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildConfigCommand(const EbuildCommandParams &, const EbuildConfigCommandParams &);
+        };
 
-    /**
-     * An EbuildUninstallCommand is used to uninstall a package in a VDBRepository.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildUninstallCommand :
-        public EbuildCommand
-    {
-        protected:
-            /// Parameters for uninstall.
-            const EbuildUninstallCommandParams uninstall_params;
+        /**
+         * An EbuildPretendCommand is used to configure a package in a VDBRepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildPretendCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for config.
+                const EbuildPretendCommandParams pretend_params;
 
-            virtual std::string commands() const;
+                virtual std::string commands() const;
 
-            virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                virtual bool failure();
 
-            virtual Command extend_command(const Command &);
+                virtual Command extend_command(const Command &);
 
-            virtual std::string ebuild_file() const;
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildPretendCommand(const EbuildCommandParams &, const EbuildPretendCommandParams &);
+        };
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildUninstallCommand(const EbuildCommandParams &, const EbuildUninstallCommandParams &);
-    };
+        /**
+         * Command for generating VDB entries (not a regular EbuildCommand).
+         *
+         * \ingroup grpebuildinterface
+         */
+        class WriteVDBEntryCommand :
+            private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
+        {
+            protected:
+                /**
+                 * Our parameters.
+                 */
+                const WriteVDBEntryParams params;
 
-    /**
-     * An EbuildConfigCommand is used to configure a package in a VDBRepository.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildConfigCommand :
-        public EbuildCommand
-    {
-        protected:
-            /// Parameters for config.
-            const EbuildConfigCommandParams config_params;
+            public:
+                /**
+                 * Constructor.
+                 */
+                WriteVDBEntryCommand(const WriteVDBEntryParams &);
 
-            virtual std::string commands() const;
+                /**
+                 * Run the command.
+                 */
+                void operator() ();
+        };
 
-            virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+        /**
+         * Command to be run after a VDB merge.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class VDBPostMergeCommand :
+            private InstantiationPolicy<VDBPostMergeCommand, instantiation_method::NonCopyableTag>
+        {
+            private:
+                const VDBPostMergeCommandParams params;
 
-            virtual Command extend_command(const Command &);
+            public:
+                ///\name Basic operations
+                ///\{
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildConfigCommand(const EbuildCommandParams &, const EbuildConfigCommandParams &);
-    };
+                VDBPostMergeCommand(const VDBPostMergeCommandParams &);
 
-    /**
-     * An EbuildPretendCommand is used to configure a package in a VDBRepository.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class EbuildPretendCommand :
-        public EbuildCommand
-    {
-        protected:
-            /// Parameters for config.
-            const EbuildPretendCommandParams pretend_params;
+                ///\}
 
-            virtual std::string commands() const;
+                /**
+                 * Run the command.
+                 */
+                void operator() ();
+        };
 
-            virtual bool failure();
+        class EbuildMetadataCommand :
+            public EbuildCommand
+        {
+            private:
+                tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys;
 
-            virtual Command extend_command(const Command &);
+            public:
+                EbuildMetadataCommand(const EbuildCommandParams &);
 
-        public:
-            /**
-             * Constructor.
-             */
-            EbuildPretendCommand(const EbuildCommandParams &, const EbuildPretendCommandParams &);
-    };
+                ~EbuildMetadataCommand();
 
-    /**
-     * Command for generating VDB entries (not a regular EbuildCommand).
-     *
-     * \ingroup grpebuildinterface
-     */
-    class WriteVDBEntryCommand :
-        private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
-    {
-        protected:
-            /**
-             * Our parameters.
-             */
-            const WriteVDBEntryParams params;
+                std::string commands() const;
 
-        public:
-            /**
-             * Constructor.
-             */
-            WriteVDBEntryCommand(const WriteVDBEntryParams &);
+                bool failure();
 
-            /**
-             * Run the command.
-             */
-            void operator() ();
-    };
+                bool do_run_command(const Command &);
 
-    /**
-     * Command to be run after a VDB merge.
-     *
-     * \ingroup grpebuildinterface
-     */
-    class VDBPostMergeCommand :
-        private InstantiationPolicy<VDBPostMergeCommand, instantiation_method::NonCopyableTag>
-    {
-        private:
-            const VDBPostMergeCommandParams params;
+                Command extend_command(const Command &);
 
-        public:
-            ///\name Basic operations
-            ///\{
-
-            VDBPostMergeCommand(const VDBPostMergeCommandParams &);
-
-            ///\}
-
-            /**
-             * Run the command.
-             */
-            void operator() ();
-    };
+                void load(const tr1::shared_ptr<const EbuildID> &);
+        };
+    }
 }
 
 #endif

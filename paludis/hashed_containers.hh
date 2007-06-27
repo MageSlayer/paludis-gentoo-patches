@@ -27,9 +27,11 @@
  * \ingroup grphashedcontainers
  */
 
-#include <paludis/name.hh>
 #include <paludis/util/validated.hh>
-#include <paludis/version_spec.hh>
+#include <paludis/util/tr1_type_traits.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 #ifdef PALUDIS_HASH_IS_STD_TR1_UNORDERED
 #  include <tr1/unordered_set>
@@ -188,7 +190,7 @@ namespace paludis
      */
     template <>
     class PALUDIS_VISIBLE CRCHash<QualifiedPackageName> :
-        public std::unary_function<QualifiedPackageName, std::size_t>,
+        public std::unary_function<const QualifiedPackageName, std::size_t>,
         protected hashed_containers_internals::CRCHashBase
     {
         public:
@@ -210,18 +212,18 @@ namespace paludis
     };
 
     /**
-     * Hash, for a validated string type.
+     * Hash, for PackageID.
      *
      * \ingroup grphashedcontainers
      */
-    template <typename Validated_>
-    class CRCHash<Validated<std::string, Validated_> > :
-        public std::unary_function<Validated<std::string, Validated_>, std::size_t>,
+    template <>
+    class PALUDIS_VISIBLE CRCHash<PackageID> :
+        public std::unary_function<const PackageID, std::size_t>,
         protected hashed_containers_internals::CRCHashBase
     {
         public:
             /// Hash function.
-            std::size_t operator() (const Validated<std::string, Validated_> & val) const;
+            std::size_t operator() (const PackageID & val) const;
 
 #if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
             enum
@@ -230,10 +232,35 @@ namespace paludis
                 bucket_size = 4
             };
 
-            bool operator() (const Validated<std::string, Validated_> i1,
-                    const Validated<std::string, Validated_> & i2) const
+            bool operator() (const PackageID & i1, const PackageID & i2) const;
+#endif
+    };
+
+    /**
+     * Hash, for a validated string type.
+     *
+     * \ingroup grphashedcontainers
+     */
+    template <typename Validated_, bool b_>
+    class CRCHash<Validated<std::string, Validated_, b_> > :
+        public std::unary_function<const Validated<std::string, Validated_, b_>, std::size_t>,
+        protected hashed_containers_internals::CRCHashBase
+    {
+        public:
+            /// Hash function.
+            std::size_t operator() (const Validated<std::string, Validated_, b_> & val) const;
+
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
+            enum
             {
-                return i1 < i2;
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const Validated<std::string, Validated_, b_> i1,
+                    const Validated<std::string, Validated_> & i2, b_) const
+            {
+                return i1.data() < i2.data();
             }
 #endif
     };
@@ -246,7 +273,7 @@ namespace paludis
      */
     template<>
     class PALUDIS_VISIBLE CRCHash<std::string> :
-        public std::unary_function<std::string, std::size_t>,
+        public std::unary_function<const std::string, std::size_t>,
         protected hashed_containers_internals::CRCHashBase
     {
         public:
@@ -274,7 +301,7 @@ namespace paludis
      */
     template <>
     class PALUDIS_VISIBLE CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
-        public std::unary_function<std::pair<QualifiedPackageName, VersionSpec>, std::size_t>,
+        public std::unary_function<const std::pair<const QualifiedPackageName, VersionSpec>, std::size_t>,
         protected hashed_containers_internals::CRCHashBase
     {
         public:
@@ -296,9 +323,40 @@ namespace paludis
 #endif
     };
 
-    template <typename Validated_>
+    /**
+     * Hash, for a shared pointer.
+     *
+     * \ingroup grphashedcontainers
+     */
+    template <typename T_>
+    class PALUDIS_VISIBLE CRCHash<tr1::shared_ptr<T_> > :
+        public std::unary_function<tr1::shared_ptr<T_>, std::size_t>,
+        protected hashed_containers_internals::CRCHashBase
+    {
+        public:
+            /// Hash function.
+            std::size_t operator() (const tr1::shared_ptr<T_> & val) const
+            {
+                return CRCHash<typename tr1::remove_const<T_>::type>()(*val);
+            }
+
+#if (! defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED)) && (! defined(PALUDIS_HASH_IS_GNU_CXX_HASH))
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const tr1::shared_ptr<T_> & i1, const tr1::shared_ptr<T_> & i2) const
+            {
+                return CRCHash<typename tr1::remove_const<T_>::type>()(*i1, *i2);
+            }
+#endif
+    };
+
+    template <typename Validated_, bool b_>
     std::size_t
-    CRCHash<Validated<std::string, Validated_> >::operator() (const Validated<std::string, Validated_> & val) const
+    CRCHash<Validated<std::string, Validated_, b_> >::operator() (const Validated<std::string, Validated_, b_> & val) const
     {
         const std::string & s1(val.data());
         std::size_t h(0);

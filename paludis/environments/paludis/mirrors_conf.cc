@@ -19,7 +19,6 @@
 
 #include "mirrors_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>

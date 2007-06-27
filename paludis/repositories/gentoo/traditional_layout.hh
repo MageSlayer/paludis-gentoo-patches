@@ -41,13 +41,13 @@ namespace paludis
         private:
             void need_category_names() const;
             void need_category_names_collection() const;
-            void need_version_specs(const QualifiedPackageName &) const;
+            void need_package_ids(const QualifiedPackageName &) const;
 
         public:
             ///\name Basic operations
             ///\{
 
-            TraditionalLayout(const RepositoryName &, const FSEntry &,
+            TraditionalLayout(const PortageRepository * const, const FSEntry &,
                     tr1::shared_ptr<const PortageRepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>);
 
@@ -68,11 +68,8 @@ namespace paludis
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionSpecCollection> version_specs(
-                    const QualifiedPackageName & n) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool has_version(const QualifiedPackageName &, const VersionSpec &) const
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                    const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual FSEntry info_packages_file(const FSEntry &) const
@@ -87,10 +84,7 @@ namespace paludis
             virtual FSEntry category_directory(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry package_file(const QualifiedPackageName &, const VersionSpec &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string eapi_string_if_known(const QualifiedPackageName &, const VersionSpec &) const
+            virtual FSEntry package_file(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const FSEntryCollection> arch_list_files() const
@@ -112,6 +106,9 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual FSEntry profiles_base_dir() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const FSEntryCollection> exlibsdirs(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

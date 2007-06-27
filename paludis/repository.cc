@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repository.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
@@ -123,118 +124,10 @@ PackageConfigActionError::PackageConfigActionError(const std::string & msg) thro
 {
 }
 
-namespace paludis
-{
-    /**
-     * Implementation data for RepositoryInfoSection.
-     *
-     * \ingroup grprepository
-     */
-    template<>
-    struct Implementation<RepositoryInfoSection>
-    {
-        std::string heading;
-        std::map<std::string, std::string> kvs;
-    };
-
-    /**
-     * Implementation data for RepositoryInfo.
-     *
-     * \ingroup grprepository
-     */
-    template<>
-    struct Implementation<RepositoryInfo>
-    {
-        std::list<tr1::shared_ptr<const RepositoryInfoSection> > sections;
-    };
-}
-
-RepositoryInfo &
-RepositoryInfo::add_section(tr1::shared_ptr<const RepositoryInfoSection> s)
-{
-    _imp->sections.push_back(s);
-    return *this;
-}
-
-RepositoryInfoSection::RepositoryInfoSection(const std::string & our_heading) :
-    PrivateImplementationPattern<RepositoryInfoSection>(new Implementation<RepositoryInfoSection>)
-{
-    _imp->heading = our_heading;
-}
-
-RepositoryInfoSection::~RepositoryInfoSection()
-{
-}
-
-std::string
-RepositoryInfoSection::heading() const
-{
-    return _imp->heading;
-}
-
-RepositoryInfoSection::KeyValueIterator
-RepositoryInfoSection::begin_kvs() const
-{
-    return KeyValueIterator(_imp->kvs.begin());
-}
-
-RepositoryInfoSection::KeyValueIterator
-RepositoryInfoSection::end_kvs() const
-{
-    return KeyValueIterator(_imp->kvs.end());
-}
-
-RepositoryInfoSection &
-RepositoryInfoSection::add_kv(const std::string & k, const std::string & v)
-{
-    _imp->kvs.insert(std::make_pair(k, v));
-    return *this;
-}
-
-std::string
-RepositoryInfoSection::get_key_with_default(const std::string & k, const std::string & d) const
-{
-    std::map<std::string, std::string>::const_iterator p(_imp->kvs.find(k));
-    if (p != _imp->kvs.end())
-        return p->second;
-    else
-        return d;
-}
-
 tr1::shared_ptr<const RepositoryInfo>
 Repository::info(bool) const
 {
     return _info;
-}
-
-RepositoryInfo::RepositoryInfo() :
-    PrivateImplementationPattern<RepositoryInfo>(new Implementation<RepositoryInfo>)
-{
-}
-
-RepositoryInfo::~RepositoryInfo()
-{
-}
-
-RepositoryInfo::SectionIterator
-RepositoryInfo::begin_sections() const
-{
-    return SectionIterator(_imp->sections.begin());
-}
-
-RepositoryInfo::SectionIterator
-RepositoryInfo::end_sections() const
-{
-    return SectionIterator(_imp->sections.end());
-}
-
-std::string
-RepositoryInfo::get_key_with_default(const std::string & k, const std::string & d) const
-{
-    std::string result(d);
-    for (SectionIterator i(begin_sections()), i_end(end_sections()) ; i != i_end ; ++i)
-        result = (*i)->get_key_with_default(k, result);
-    return result;
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
@@ -339,14 +232,18 @@ RepositoryPretendInterface::~RepositoryPretendInterface()
 {
 }
 
-bool
-RepositoryPretendInterface::pretend(const QualifiedPackageName & q, const VersionSpec & v) const
+RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
-    return do_pretend(q, v);
+}
+
+bool
+RepositoryPretendInterface::pretend(const tr1::shared_ptr<const PackageID> & id) const
+{
+    return do_pretend(id);
 }
 
 UseFlagState
-RepositoryUseInterface::query_use(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+RepositoryUseInterface::query_use(const UseFlagName & u, const PackageID & pde) const
 {
     if (do_query_use_mask(u, pde))
         return use_disabled;
@@ -357,13 +254,13 @@ RepositoryUseInterface::query_use(const UseFlagName & u, const PackageDatabaseEn
 }
 
 bool
-RepositoryUseInterface::query_use_mask(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+RepositoryUseInterface::query_use_mask(const UseFlagName & u, const PackageID & pde) const
 {
     return do_query_use_mask(u, pde);
 }
 
 bool
-RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageDatabaseEntry & pde) const
+RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageID & pde) const
 {
     return do_query_use_force(u, pde);
 }
@@ -393,7 +290,7 @@ RepositoryUseInterface::use_expand_prefixes() const
 }
 
 std::string
-RepositoryUseInterface::describe_use_flag(const UseFlagName & n, const PackageDatabaseEntry & pkg) const
+RepositoryUseInterface::describe_use_flag(const UseFlagName & n, const PackageID & pkg) const
 {
     return do_describe_use_flag(n, pkg);
 }
@@ -403,4 +300,95 @@ RepositoryMirrorsInterface::is_mirror(const std::string & s) const
 {
     return begin_mirrors(s) != end_mirrors(s);
 }
+
+bool
+RepositoryMaskInterface::query_repository_masks(const PackageID & e) const
+{
+    return do_query_repository_masks(e);
+}
+
+bool
+RepositoryMaskInterface::query_profile_masks(const PackageID & e) const
+{
+    return do_query_profile_masks(e);
+}
+
+tr1::shared_ptr<const PackageIDSequence>
+Repository::package_ids(const QualifiedPackageName & p) const
+{
+    return do_package_ids(p);
+}
+
+bool
+Repository::can_be_favourite_repository() const
+{
+    return true;
+}
+
+bool
+Repository::has_package_named(const QualifiedPackageName & q) const
+{
+    return do_has_package_named(q);
+}
+
+bool
+Repository::has_category_named(const CategoryNamePart & q) const
+{
+    return do_has_category_named(q);
+}
+
+tr1::shared_ptr<const CategoryNamePartCollection>
+Repository::category_names_containing_package(const PackageNamePart & p) const
+{
+    return do_category_names_containing_package(p);
+}
+
+tr1::shared_ptr<const QualifiedPackageNameCollection>
+Repository::package_names(const CategoryNamePart & c) const
+{
+    return do_package_names(c);
+}
+
+tr1::shared_ptr<const CategoryNamePartCollection>
+Repository::category_names() const
+{
+    return do_category_names();
+}
+
+time_t
+RepositoryInstalledInterface::installed_time(const PackageID & p) const
+{
+    return do_installed_time(p);
+}
+
+tr1::shared_ptr<const Contents>
+RepositoryContentsInterface::contents(const PackageID & id) const
+{
+    return do_contents(id);
+}
+
+void
+RepositoryConfigInterface::config(const tr1::shared_ptr<const PackageID> & id) const
+{
+    return do_config(id);
+}
+
+bool
+RepositorySyncableInterface::sync() const
+{
+    return do_sync();
+}
+
+void
+RepositoryInstallableInterface::install(const tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
+{
+    do_install(id, o);
+}
+
+void
+RepositoryUninstallableInterface::uninstall(const tr1::shared_ptr<const PackageID> & v, const UninstallOptions & i) const
+{
+    do_uninstall(v, i);
+}
+
 

@@ -21,10 +21,69 @@
 #include <test/test_framework.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
+#include <paludis/util/visitor-impl.hh>
+#include <paludis/name.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/version_spec.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace test;
 using namespace paludis;
 using namespace paludis::gems;
+
+namespace
+{
+    struct ExtractValueVisitor :
+        ConstVisitor<MetadataKeyVisitorTypes>
+    {
+        std::string s;
+
+        void visit(const MetadataStringKey & k)
+        {
+            s = k.value();
+        }
+
+        void visit(const MetadataPackageIDKey &)
+        {
+        }
+
+        void visit(const MetadataCollectionKey<KeywordNameCollection> &)
+        {
+        }
+
+        void visit(const MetadataCollectionKey<UseFlagNameCollection> &)
+        {
+        }
+
+        void visit(const MetadataCollectionKey<IUseFlagCollection> &)
+        {
+        }
+
+        void visit(const MetadataCollectionKey<InheritedCollection> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        {
+        }
+    };
+}
 
 namespace test_cases
 {
@@ -51,15 +110,26 @@ namespace test_cases
             yaml::Document spec_doc(spec_text);
             TEST_CHECK(spec_doc.top());
 
-            GemSpecification spec(*spec_doc.top());
-            TEST_CHECK_EQUAL(spec.summary(), "This is the summary");
-            TEST_CHECK_EQUAL(spec.name(), "demo");
-            TEST_CHECK_EQUAL(spec.version(), "1.2.3");
+            GemSpecification spec(tr1::shared_ptr<Repository>(), *spec_doc.top());
+
+            TEST_CHECK(spec.short_description_key());
+            TEST_CHECK_EQUAL(spec.short_description_key()->value(), "This is the summary");
+            TEST_CHECK_EQUAL(spec.name(), QualifiedPackageName("gems/demo"));
+            TEST_CHECK_EQUAL(spec.version(), VersionSpec("1.2.3"));
+            TEST_CHECK(spec.find("rubyforge_project") == spec.end());
+            TEST_CHECK(spec.long_description_key());
+            TEST_CHECK_EQUAL(spec.long_description_key()->value(), "A longer description");
+            TEST_CHECK(spec.find("authors") != spec.end());
+
+            ExtractValueVisitor v;
+            spec.find("authors")->accept(v);
+            TEST_CHECK_EQUAL(v.s, "Fred, Barney");
+
+#if 0
             TEST_CHECK_EQUAL(spec.homepage(), "");
             TEST_CHECK_EQUAL(spec.rubyforge_project(), "");
-            TEST_CHECK_EQUAL(spec.description(), "A longer description");
-            TEST_CHECK_EQUAL(spec.authors(), "Fred, Barney");
             TEST_CHECK_EQUAL(spec.date(), "1234");
+#endif
         }
     } test_specification;
 }

@@ -27,8 +27,9 @@
  */
 
 #include <paludis/dep_tag-fwd.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/virtual_constructor.hh>
@@ -234,6 +235,7 @@ namespace paludis
             ///\{
 
             GLSADepTag(const std::string & id, const std::string & glsa_title);
+            ~GLSADepTag();
 
             ///\}
 
@@ -256,17 +258,15 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, GeneralSetDepTag>,
+        private PrivateImplementationPattern<GeneralSetDepTag>
     {
-        private:
-            const SetName _id;
-            const std::string _source;
-
         public:
             ///\name Basic operations
             ///\{
 
             GeneralSetDepTag(const SetName & id, const std::string & source);
+            ~GeneralSetDepTag();
 
             ///\}
 
@@ -288,14 +288,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
-        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>
+        public ConstAcceptInterfaceVisitsThis<DepTagVisitorTypes, DependencyDepTag>,
+        private PrivateImplementationPattern<DependencyDepTag>
     {
         private:
-            const PackageDatabaseEntry _dbe;
-            tr1::shared_ptr<const PackageDepSpec> _spec;
-            tr1::shared_ptr<DependencySpecTree::ConstItem> _cond;
-            mutable std::string _str;
-
             void _make_str() const;
 
         protected:
@@ -306,7 +302,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DependencyDepTag(const PackageDatabaseEntry & dbe, const PackageDepSpec & spec, tr1::shared_ptr<DependencySpecTree::ConstItem>);
+            DependencyDepTag(const tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
+                    const tr1::shared_ptr<const DependencySpecTree::ConstItem> &);
+
+            ~DependencyDepTag();
 
             ///\}
 
@@ -315,19 +314,19 @@ namespace paludis
             virtual std::string category() const;
 
             /**
-             * The PackageDatabaseEntry that contains our dependency.
+             * The PackageID that contains our dependency.
              */
-            PackageDatabaseEntry package() const;
+            const tr1::shared_ptr<const PackageID> package_id() const;
 
             /**
              * The PackageDepSpec that pulled us in.
              */
-            tr1::shared_ptr<const PackageDepSpec> dependency() const;
+            const tr1::shared_ptr<const PackageDepSpec> dependency() const;
 
             /**
              * The AllDepSpecs and UseDepSpecs that our dependency is conditional upon.
              */
-            tr1::shared_ptr<DependencySpecTree::ConstItem> conditions() const;
+            const tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
     };
 
     /**
@@ -345,6 +344,7 @@ namespace paludis
             ///\{
 
             TargetDepTag();
+            ~TargetDepTag();
 
             ///\}
 

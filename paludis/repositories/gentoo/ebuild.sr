@@ -4,8 +4,7 @@
 make_class_EbuildCommandParams()
 {
     key environment "const Environment *"
-    key db_entry "const PackageDatabaseEntry *"
-    key eapi "tr1::shared_ptr<const EAPI>"
+    key package_id "tr1::shared_ptr<const PackageID>"
     key ebuild_dir FSEntry
     key ebuild_file FSEntry
     key files_dir FSEntry
@@ -148,7 +147,7 @@ END
 make_class_WriteVDBEntryParams()
 {
     key environment "const Environment *"
-    key db_entry "PackageDatabaseEntry"
+    key package_id "tr1::shared_ptr<const PackageID>"
     key output_directory "FSEntry"
     key environment_file "FSEntry"
 

@@ -20,7 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/eapi.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
@@ -69,8 +69,8 @@ CRANDepParser::parse(const std::string & s, const EAPI & e)
         else
             name = strip_leading(strip_trailing(aa, " \t"), " \t");
 
-        CRANDescription::normalise_name(name);
-        CRANDescription::normalise_version(version);
+        CRANPackageID::normalise_name(name);
+        CRANPackageID::normalise_version(version);
 
         if ("R" == name)
             name = "dev-lang/R";

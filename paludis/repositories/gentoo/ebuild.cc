@@ -17,21 +17,31 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/about.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
+#include <paludis/repositories/gentoo/ebuild_id.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/collection_concrete.hh>
+
+#include <paludis/about.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/eapi.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/portage_dep_parser.hh>
+
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+
 #include "config.h"
 
 /** \file
@@ -41,6 +51,7 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 #include <paludis/repositories/gentoo/ebuild-sr.cc>
 
@@ -84,20 +95,20 @@ EbuildCommand::operator() ()
     tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
 
     cmd = extend_command(cmd
-            .with_setenv("P", stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version.remove_revision()))
-            .with_setenv("PV", stringify(params.db_entry->version.remove_revision()))
-            .with_setenv("PR", stringify(params.db_entry->version.revision_only()))
-            .with_setenv("PN", stringify(params.db_entry->name.package))
-            .with_setenv("PVR", stringify(params.db_entry->version))
-            .with_setenv("PF", stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version))
-            .with_setenv("CATEGORY", stringify(params.db_entry->name.category))
-            .with_setenv("REPOSITORY", stringify(params.db_entry->repository))
+            .with_setenv("P", stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version().remove_revision()))
+            .with_setenv("PV", stringify(params.package_id->version().remove_revision()))
+            .with_setenv("PR", stringify(params.package_id->version().revision_only()))
+            .with_setenv("PN", stringify(params.package_id->name().package))
+            .with_setenv("PVR", stringify(params.package_id->version()))
+            .with_setenv("PF", stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version()))
+            .with_setenv("CATEGORY", stringify(params.package_id->name().category))
+            .with_setenv("REPOSITORY", stringify(params.package_id->repository()->name()))
             .with_setenv("FILESDIR", stringify(params.files_dir))
             .with_setenv("PORTDIR", stringify(params.portdir))
             .with_setenv("DISTDIR", stringify(params.distdir))
-            .with_setenv("EAPI", stringify(params.eapi->name))
+            .with_setenv("EAPI", stringify(params.package_id->eapi()->name))
             .with_setenv("SLOT", "")
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
@@ -115,32 +126,41 @@ EbuildCommand::operator() ()
             .with_setenv("PALUDIS_REDUCED_UID", stringify(params.environment->reduced_uid()))
             .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-            .with_setenv("PALUDIS_UTILITY_PATH_SUFFIXES", params.eapi->supported->ebuild_options->utility_path_suffixes)
-            .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES", params.eapi->supported->ebuild_options->ebuild_module_suffixes)
-            .with_setenv("PALUDIS_NON_EMPTY_VARIABLES", params.eapi->supported->ebuild_options->non_empty_variables)
-            .with_setenv("PALUDIS_DIRECTORY_VARIABLES", params.eapi->supported->ebuild_options->directory_variables)
-            .with_setenv("PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES", params.eapi->supported->ebuild_options->ebuild_must_not_set_variables)
-            .with_setenv("PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES", params.eapi->supported->ebuild_options->directory_if_exists_variables)
-            .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES", params.eapi->supported->ebuild_options->source_merged_variables)
-            .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES", params.eapi->supported->ebuild_options->must_not_change_variables)
-            .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND", params.eapi->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
+            .with_setenv("PALUDIS_UTILITY_PATH_SUFFIXES",
+                    params.package_id->eapi()->supported->ebuild_options->utility_path_suffixes)
+            .with_setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
+                    params.package_id->eapi()->supported->ebuild_options->ebuild_module_suffixes)
+            .with_setenv("PALUDIS_NON_EMPTY_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->non_empty_variables)
+            .with_setenv("PALUDIS_DIRECTORY_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->directory_variables)
+            .with_setenv("PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->ebuild_must_not_set_variables)
+            .with_setenv("PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->directory_if_exists_variables)
+            .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->source_merged_variables)
+            .with_setenv("PALUDIS_MUST_NOT_CHANGE_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->must_not_change_variables)
+            .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
+                    params.package_id->eapi()->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
             );
 
-    if (params.eapi->supported->ebuild_options->want_kv_var)
+    if (params.package_id->eapi()->supported->ebuild_options->want_kv_var)
         cmd.with_setenv("KV", kernel_version());
 
-    if (params.eapi->supported->ebuild_options->support_eclasses)
+    if (params.package_id->eapi()->supported->ebuild_options->support_eclasses)
         cmd
             .with_setenv("ECLASSDIR", stringify(*params.eclassdirs->begin()))
             .with_setenv("ECLASSDIRS", join(params.eclassdirs->begin(),
                         params.eclassdirs->end(), " "));
 
-    if (params.eapi->supported->ebuild_options->support_exlibs)
+    if (params.package_id->eapi()->supported->ebuild_options->support_exlibs)
         cmd
             .with_setenv("EXLIBSDIRS", join(params.exlibsdirs->begin(),
                         params.exlibsdirs->end(), " "));
 
-    if (params.eapi->supported->ebuild_options->want_portage_emulation_vars)
+    if (params.package_id->eapi()->supported->ebuild_options->want_portage_emulation_vars)
         cmd = add_portage_vars(cmd);
 
     if (do_run_command(cmd))
@@ -162,9 +182,9 @@ EbuildCommand::add_portage_vars(const Command & cmd) const
         .with_setenv("PORTAGE_ACTUAL_DISTDIR", stringify(params.distdir))
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
         .with_setenv("PORTAGE_BUILDDIR", stringify(params.buildroot) + "/" +
-             stringify(params.db_entry->name.category) + "/" +
-             stringify(params.db_entry->name.package) + "-" +
-             stringify(params.db_entry->version))
+             stringify(params.package_id->name().category) + "/" +
+             stringify(params.package_id->name().package) + "-" +
+             stringify(params.package_id->version()))
         .with_setenv("PORTAGE_CALLER", params.environment->paludis_command())
         .with_setenv("PORTAGE_GID", "0")
         .with_setenv("PORTAGE_INST_GID", "0")
@@ -187,6 +207,10 @@ EbuildMetadataCommand::EbuildMetadataCommand(const EbuildCommandParams & p) :
 {
 }
 
+EbuildMetadataCommand::~EbuildMetadataCommand()
+{
+}
+
 std::string
 EbuildMetadataCommand::commands() const
 {
@@ -203,40 +227,27 @@ Command
 EbuildMetadataCommand::extend_command(const Command & cmd)
 {
     return Command(cmd)
-        .with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+        .with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid())
+        .with_stderr_prefix(stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version()) + "> ");
 }
 
 bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
-    PStream prog(cmd);
-    KeyValueConfigFile f(prog, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
-            + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
-            + kvcfo_disallow_variables);
-    _metadata.reset(new EbuildVersionMetadata);
-
     bool ok(false);
+    keys.reset(new AssociativeCollection<std::string, std::string>::Concrete);
+
     try
     {
-        _metadata->eapi = EAPIData::get_instance()->eapi_from_string(f.get("EAPI"));
-        if (_metadata->eapi->supported)
-        {
-            _metadata->set_build_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_build_depend));
-            _metadata->set_run_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_run_depend));
-            _metadata->slot = SlotName(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_slot));
-            _metadata->set_src_uri(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_src_uri));
-            _metadata->set_restrictions(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_restrict));
-            _metadata->set_homepage(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_homepage));
-            _metadata->license_interface->set_license(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_license));
-            _metadata->description = f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_description);
-            _metadata->set_keywords(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_keywords));
-            _metadata->set_eclass_keywords(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_eclass_keywords));
-            _metadata->set_inherited(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_inherited));
-            _metadata->set_iuse(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_iuse));
-            _metadata->set_post_depend(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_pdepend));
-            _metadata->set_provide(f.get(_metadata->eapi->supported->ebuild_metadata_variables->metadata_provide));
-        }
+        Context context("When generating metadata for '" + stringify(*params.package_id) + "':");
 
+        PStream prog(cmd);
+        KeyValueConfigFile f(prog, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
+                + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
+                + kvcfo_disallow_variables + kvcfo_preserve_whitespace);
+
+        std::copy(f.begin(), f.end(), keys->inserter());
         if (0 == prog.exit_status())
             ok = true;
     }
@@ -244,19 +255,122 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
                 stringify(e.message()) + "' (" + stringify(e.what()) +
-                ") when generating cache for '" + stringify(*params.db_entry) + "'");
+                ") when generating cache for '" + stringify(*params.package_id) + "'");
     }
 
     if (ok)
         return true;
     else
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Could not generate cache for '"
-                + stringify(*params.db_entry) + "'");
-        _metadata->eapi = EAPIData::get_instance()->unknown_eapi();
+        Log::get_instance()->message(ll_warning, lc_context) << "Could not generate cache for '"
+            << *params.package_id << "'";
+        keys.reset(new AssociativeCollection<std::string, std::string>::Concrete);
+        keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name);
+        keys->insert("SLOT", "UNKNOWN");
 
         return false;
     }
+}
+
+namespace
+{
+    std::string get(const tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > & k, const std::string & s)
+    {
+        AssociativeCollection<std::string, std::string>::Iterator i(k->find(s));
+        if (k->end() == i)
+            return "";
+        return i->second;
+    }
+}
+
+void
+EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
+{
+    Context context("When loading generated metadata for '" + stringify(*params.package_id) + "':");
+
+    if (! keys)
+        throw InternalError(PALUDIS_HERE, "keys is 0");
+
+    if (! id->eapi()->supported)
+    {
+        Log::get_instance()->message(ll_debug, lc_context) << "ID pre-load EAPI '" << id->eapi()->name << "' not supported";
+        return;
+    }
+    else
+        Log::get_instance()->message(ll_debug, lc_context) << "ID pre-load EAPI '" << id->eapi()->name << "' is supported";
+
+    std::string s;
+    if (! ((s = get(keys, id->eapi()->supported->ebuild_metadata_variables->metadata_eapi))).empty())
+        id->set_eapi(s);
+    else
+        id->set_eapi(id->portage_repository()->params().eapi_when_unspecified);
+
+    if (! id->eapi()->supported)
+    {
+        Log::get_instance()->message(ll_debug, lc_context) << "ID post-load EAPI '" << id->eapi()->name << "' not supported";
+        return;
+    }
+    else
+        Log::get_instance()->message(ll_debug, lc_context) << "ID post-load EAPI '" << id->eapi()->name << "' is supported";
+
+    const EAPIEbuildMetadataVariables & m(*id->eapi()->supported->ebuild_metadata_variables);
+
+    if (! m.metadata_description.empty())
+        id->load_short_description(m.metadata_description, "Description", get(keys, m.metadata_description));
+
+    if (! m.metadata_build_depend.empty())
+        id->load_build_depend(m.metadata_build_depend, "Build depend", get(keys, m.metadata_build_depend));
+
+    if (! m.metadata_run_depend.empty())
+        id->load_run_depend(m.metadata_run_depend, "Run depend", get(keys, m.metadata_run_depend));
+
+    if (! m.metadata_pdepend.empty())
+        id->load_post_depend(m.metadata_pdepend, "Post depend", get(keys, m.metadata_pdepend));
+
+    if (! m.metadata_slot.empty())
+    {
+        try
+        {
+            Context c("When setting SLOT:");
+            std::string slot(get(keys, m.metadata_slot));
+            if (slot.empty())
+            {
+                Log::get_instance()->message(ll_qa, lc_context) << "Package '" << *id << "' set SLOT=\"\", using SLOT=\"0\" instead";
+                slot = "0";
+            }
+            id->set_slot(SlotName(slot));
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context) << "Setting SLOT for '" << *id << "' failed due to exception '"
+                << e.message() << "' (" << e.what() << ")";
+            id->set_slot(SlotName("0"));
+        }
+    }
+
+    if (! m.metadata_src_uri.empty())
+        id->load_src_uri(m.metadata_src_uri, "Source URI", get(keys, m.metadata_src_uri));
+
+    if (! m.metadata_homepage.empty())
+        id->load_homepage(m.metadata_homepage, "Homepage", get(keys, m.metadata_homepage));
+
+    if (! m.metadata_license.empty())
+        id->load_license(m.metadata_license, "License", get(keys, m.metadata_license));
+
+    if (! m.metadata_provide.empty())
+        id->load_provide(m.metadata_provide, "Provides", get(keys, m.metadata_provide));
+
+    if (! m.metadata_iuse.empty())
+        id->load_iuse(m.metadata_iuse, "Used USE flags", get(keys, m.metadata_iuse));
+
+    if (! m.metadata_inherited.empty())
+        id->load_inherited(m.metadata_inherited, "Inherited", get(keys, m.metadata_inherited));
+
+    if (! m.metadata_keywords.empty())
+        id->load_keywords(m.metadata_keywords, "Keywords", get(keys, m.metadata_keywords));
+
+    if (! m.metadata_restrict.empty())
+        id->load_restrict(m.metadata_restrict, "Restrictions", get(keys, m.metadata_restrict));
 }
 
 EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,
@@ -306,8 +420,7 @@ EbuildFetchCommand::commands() const
 bool
 EbuildFetchCommand::failure()
 {
-    throw PackageFetchActionError("Fetch failed for '" + stringify(
-                *params.db_entry) + "'");
+    throw PackageFetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -349,8 +462,7 @@ EbuildInstallCommand::commands() const
 bool
 EbuildInstallCommand::failure()
 {
-    throw PackageInstallActionError("Install failed for '" + stringify(
-                *params.db_entry) + "'");
+    throw PackageInstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -425,8 +537,7 @@ EbuildUninstallCommand::ebuild_file() const
 bool
 EbuildUninstallCommand::failure()
 {
-    throw PackageUninstallActionError("Uninstall failed for '" + stringify(
-                *params.db_entry) + "'");
+    throw PackageUninstallActionError("Uninstall failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -453,33 +564,6 @@ EbuildUninstallCommand::EbuildUninstallCommand(const EbuildCommandParams & p,
 {
 }
 
-EbuildVersionMetadata::EbuildVersionMetadata() :
-    VersionMetadata(
-            VersionMetadataBase::create()
-            .slot(SlotName("UNSET"))
-            .homepage("")
-            .description("")
-            .eapi(EAPIData::get_instance()->unknown_eapi())
-            .interactive(false),
-            VersionMetadataCapabilities::create()
-            .ebuild_interface(this)
-            .cran_interface(0)
-            .deps_interface(this)
-            .license_interface(this)
-            .virtual_interface(0)
-            .origins_interface(0)
-            .ebin_interface(0)
-            ),
-    VersionMetadataEbuildInterface(),
-    VersionMetadataDepsInterface(PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(PortageDepParser::parse_license)
-{
-}
-
-EbuildVersionMetadata::~EbuildVersionMetadata()
-{
-}
-
 std::string
 EbuildConfigCommand::commands() const
 {
@@ -490,7 +574,7 @@ bool
 EbuildConfigCommand::failure()
 {
     throw PackageConfigActionError("Configure failed for '" + stringify(
-                *params.db_entry) + "'");
+                *params.package_id) + "'");
 }
 
 Command
@@ -589,10 +673,10 @@ Command
 EbuildPretendCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
-            .with_stdout_prefix(stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version) + "> ")
-            .with_stderr_prefix(stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version) + "> ")
+            .with_stdout_prefix(stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version()) + "> ")
+            .with_stderr_prefix(stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version()) + "> ")
             .with_prefix_discard_blank_output()
             .with_prefix_blank_lines()
             .with_setenv("USE", pretend_params.use)

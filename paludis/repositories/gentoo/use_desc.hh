@@ -22,12 +22,12 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/name.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
     class FSEntry;
-    class PackageDatabaseEntry;
 
     /**
      * Implements use.desc options for PortageRepository.
@@ -52,7 +52,7 @@ namespace paludis
              *
              * May return an empty string.
              */
-            std::string describe(const UseFlagName &, const PackageDatabaseEntry &) const;
+            std::string describe(const UseFlagName &, const PackageID &) const;
     };
 }
 

@@ -23,6 +23,7 @@
 #include <paludis/repository.hh>
 #include <paludis/repositories/gems/params-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -35,37 +36,36 @@ namespace paludis
     class PALUDIS_VISIBLE GemsRepository :
         public Repository,
         public RepositoryInstallableInterface,
-        private PrivateImplementationPattern<GemsRepository>
+        private PrivateImplementationPattern<GemsRepository>,
+        public tr1::enable_shared_from_this<GemsRepository>
     {
         private:
             void need_category_names() const;
-            void need_entries() const;
+            void need_ids() const;
 
         protected:
-            /* core */
+            /* RepositoryInstallableInterface */
 
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
+            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
 
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
+            /* Repository */
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            /* installable */
-
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             /**

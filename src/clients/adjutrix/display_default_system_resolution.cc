@@ -78,7 +78,7 @@ namespace
             d.add(*env.set(SetName("system")), env.default_destinations());
 
             for (DepList::Iterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
-                cout << "    " << e->package << ":" << e->metadata->slot << endl;
+                cout << "    " << *e->package_id << endl;
         }
         catch (const NoSuchPackageError & e)
         {

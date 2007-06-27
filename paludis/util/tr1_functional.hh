@@ -51,10 +51,10 @@ namespace paludis
 
 #elif defined(PALUDIS_TR1_FUNCTIONAL_IS_BOOST)
 
-#include <boost/bind.hpp>
-#include <boost/mem_fn.hpp>
-#include <boost/ref.hpp>
-#include <boost/function.hpp>
+#include  <boost/bind.hpp>
+#include  <boost/mem_fn.hpp>
+#include  <boost/ref.hpp>
+#include  <boost/function.hpp>
 
 namespace paludis
 {

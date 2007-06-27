@@ -18,6 +18,7 @@
  */
 
 #include "dep_list_TEST.hh"
+#include <paludis/repositories/fake/fake_package_id.hh>
 
 using namespace paludis;
 using namespace test;
@@ -30,7 +31,7 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("!cat/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("!cat/two");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -52,9 +53,9 @@ namespace test_cases
             d.add(PackageDepSpec(merge_target, pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 2);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
-            TEST_CHECK_STRINGIFY_EQUAL(d.begin()->package, "cat/two-1::installed");
+            TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "cat/two-1:0::installed");
             TEST_CHECK_EQUAL(next(d.begin())->kind, dlk_package);
-            TEST_CHECK_STRINGIFY_EQUAL(next(d.begin())->package, "cat/one-1::repo");
+            TEST_CHECK_STRINGIFY_EQUAL(*next(d.begin())->package_id, "cat/one-1:0::repo");
         }
     } test_dep_list_basic_block;
 
@@ -64,8 +65,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("!cat/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            repo->add_version("cat", "two", "1")->build_dependencies_key()->set_from_string("!cat/two");
         }
 
         void populate_expected()
@@ -82,17 +83,17 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
-            two_m->deps_interface->set_build_depend("!virtual/two");
-            two_m->ebuild_interface->set_provide("virtual/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
+            two_m->build_dependencies_key()->set_from_string("!virtual/two");
+            two_m->provide_key()->set_from_string("virtual/two");
         }
 
         void populate_expected()
         {
             merge_target = "cat/one";
             expected.push_back("cat/two-1:0::repo");
-            expected.push_back("virtual/two-1:0::virtuals");
+            expected.push_back("virtual/two-1::virtuals (virtual for cat/two-1:0::repo)");
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_self_block_list;
@@ -103,11 +104,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
-            two_m->deps_interface->set_build_depend("!virtual/two");
-            two_m->ebuild_interface->set_provide("virtual/two");
-            installed_repo->add_version("other", "two", "1")->ebuild_interface->set_provide("virtual/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
+            two_m->build_dependencies_key()->set_from_string("!virtual/two");
+            two_m->provide_key()->set_from_string("virtual/two");
+            installed_repo->add_version("other", "two", "1")->provide_key()->set_from_string("virtual/two");
         }
 
         void populate_expected()
@@ -128,13 +129,13 @@ namespace test_cases
             d.add(PackageDepSpec(merge_target, pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 4);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
-            TEST_CHECK_STRINGIFY_EQUAL(d.begin()->package, "virtual/two-1::installed_virtuals");
+            TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "virtual/two-1::installed_virtuals (virtual for other/two-1:0::installed)");
             TEST_CHECK_EQUAL(next(d.begin())->kind, dlk_package);
-            TEST_CHECK_STRINGIFY_EQUAL(next(d.begin())->package, "cat/two-1::repo");
+            TEST_CHECK_STRINGIFY_EQUAL(*next(d.begin())->package_id, "cat/two-1:0::repo");
             TEST_CHECK_EQUAL(next(next(d.begin()))->kind, dlk_provided);
-            TEST_CHECK_STRINGIFY_EQUAL(next(next(d.begin()))->package, "virtual/two-1::virtuals");
+            TEST_CHECK_STRINGIFY_EQUAL(*next(next(d.begin()))->package_id, "virtual/two-1::virtuals (virtual for cat/two-1:0::repo)");
             TEST_CHECK_EQUAL(next(next(next(d.begin())))->kind, dlk_package);
-            TEST_CHECK_STRINGIFY_EQUAL(next(next(next(d.begin())))->package, "cat/one-1::repo");
+            TEST_CHECK_STRINGIFY_EQUAL(*next(next(next(d.begin())))->package_id, "cat/one-1:0::repo");
         }
     } test_dep_list_provided_block;
 
@@ -144,9 +145,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two cat/three");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two cat/three");
             repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("!cat/two");
+            repo->add_version("cat", "three", "1")->build_dependencies_key()->set_from_string("!cat/two");
         }
 
         void populate_expected()
@@ -171,9 +172,9 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend(">=cat/two-2 cat/three");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string(">=cat/two-2 cat/three");
             repo->add_version("cat", "two", "2");
-            repo->add_version("cat", "three", "1")->deps_interface->set_build_depend("!<cat/two-2");
+            repo->add_version("cat", "three", "1")->build_dependencies_key()->set_from_string("!<cat/two-2");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -192,8 +193,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            repo->add_version("cat", "two", "1")->deps_interface->set_build_depend("!cat/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            repo->add_version("cat", "two", "1")->build_dependencies_key()->set_from_string("!cat/two");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -211,20 +212,20 @@ namespace test_cases
 
         void populate_repo()
         {
-            tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
-            one_m->ebuild_interface->set_provide("virtual/one");
-            one_m->deps_interface->set_build_depend("!virtual/one");
-            one_m->deps_interface->set_run_depend("!virtual/one");
-            tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
-            i_one_m->ebuild_interface->set_provide("virtual/one");
-            i_one_m->deps_interface->set_run_depend("!virtual/one");
+            tr1::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
+            one_m->provide_key()->set_from_string("virtual/one");
+            one_m->build_dependencies_key()->set_from_string("!virtual/one");
+            one_m->run_dependencies_key()->set_from_string("!virtual/one");
+            tr1::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
+            i_one_m->provide_key()->set_from_string("virtual/one");
+            i_one_m->run_dependencies_key()->set_from_string("!virtual/one");
         }
 
         void populate_expected()
         {
             merge_target = "virtual/one";
-            expected.push_back("cat/one-1:0::installed");
-            expected.push_back("virtual/one-1:0::virtuals");
+            expected.push_back("cat/one-1:0::repo");
+            expected.push_back("virtual/one-1::virtuals (virtual for cat/one-1:0::repo)");
         }
     } test_dep_list_no_block_on_no_upgrade_via_provided;
 
@@ -234,20 +235,20 @@ namespace test_cases
 
         void populate_repo()
         {
-            tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
-            one_m->ebuild_interface->set_provide("virtual/one");
-            one_m->deps_interface->set_build_depend("!virtual/one");
-            one_m->deps_interface->set_run_depend("!virtual/one");
-            tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
-            i_one_m->ebuild_interface->set_provide("virtual/one");
-            i_one_m->deps_interface->set_run_depend("!virtual/one");
+            tr1::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
+            one_m->provide_key()->set_from_string("virtual/one");
+            one_m->build_dependencies_key()->set_from_string("!virtual/one");
+            one_m->run_dependencies_key()->set_from_string("!virtual/one");
+            tr1::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
+            i_one_m->provide_key()->set_from_string("virtual/one");
+            i_one_m->run_dependencies_key()->set_from_string("!virtual/one");
         }
 
         void populate_expected()
         {
             merge_target = "virtual/one";
             expected.push_back("cat/one-1:0::repo");
-            expected.push_back("virtual/one-1:0::virtuals");
+            expected.push_back("virtual/one-1::virtuals (virtual for cat/one-1:0::repo)");
         }
 
         virtual void set_options(DepListOptions & p)
@@ -262,18 +263,18 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->ebuild_interface->set_provide("virtual/two");
-            two_m->deps_interface->set_build_depend("!virtual/two");
-            installed_repo->add_version("cat", "two", "1")->ebuild_interface->set_provide("virtual/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            two_m->provide_key()->set_from_string("virtual/two");
+            two_m->build_dependencies_key()->set_from_string("!virtual/two");
+            installed_repo->add_version("cat", "two", "1")->provide_key()->set_from_string("virtual/two");
         }
 
         void populate_expected()
         {
             merge_target = "cat/one";
             expected.push_back("cat/two-2:0::repo");
-            expected.push_back("virtual/two-2:0::virtuals");
+            expected.push_back("virtual/two-2::virtuals (virtual for cat/two-2:0::repo)");
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_no_block_on_replaced_provide;
@@ -284,8 +285,8 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            repo->add_version("cat", "two", "2")->deps_interface->set_build_depend("!<cat/two-2");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            repo->add_version("cat", "two", "2")->build_dependencies_key()->set_from_string("!<cat/two-2");
             installed_repo->add_version("cat", "two", "1");
         }
 
@@ -311,11 +312,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->deps_interface->set_build_depend("!<virtual/two-2");
-            two_m->ebuild_interface->set_provide("virtual/two");
-            installed_repo->add_version("cat", "two", "1")->ebuild_interface->set_provide("virtual/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            two_m->build_dependencies_key()->set_from_string("!<virtual/two-2");
+            two_m->provide_key()->set_from_string("virtual/two");
+            installed_repo->add_version("cat", "two", "1")->provide_key()->set_from_string("virtual/two");
         }
 
         void populate_expected()
@@ -340,11 +341,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            repo->add_version("cat", "one", "1")->deps_interface->set_build_depend("cat/two");
-            tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
-            two_m->deps_interface->set_build_depend("!<virtual/two-2");
-            two_m->ebuild_interface->set_provide("virtual/two");
-            installed_repo->add_version("other", "two", "1")->ebuild_interface->set_provide("virtual/two");
+            repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
+            tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            two_m->build_dependencies_key()->set_from_string("!<virtual/two-2");
+            two_m->provide_key()->set_from_string("virtual/two");
+            installed_repo->add_version("other", "two", "1")->provide_key()->set_from_string("virtual/two");
         }
 
         void populate_expected()

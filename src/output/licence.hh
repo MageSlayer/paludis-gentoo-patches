@@ -20,7 +20,9 @@
 #ifndef PALUDIS_GUARD_SRC_LICENCE_HH
 #define PALUDIS_GUARD_SRC_LICENCE_HH 1
 
-#include <paludis/paludis.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <iosfwd>
 
 /**
@@ -36,13 +38,13 @@ struct PALUDIS_VISIBLE LicenceDisplayer :
     const paludis::Environment * const env;
 
     /// Our db entry.
-    const paludis::PackageDatabaseEntry db_entry;
+    const paludis::tr1::shared_ptr<const paludis::PackageID> package_id;
 
     /// Constructor.
     LicenceDisplayer(
             std::ostream & stream,
             const paludis::Environment * const e,
-            const paludis::PackageDatabaseEntry & d);
+            const paludis::tr1::shared_ptr<const paludis::PackageID> & d);
 
     ///\name Visit methods
     ///{

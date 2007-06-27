@@ -53,9 +53,8 @@ make_class_DepListEntry()
 
     key kind DepListEntryKind
 
-    key package PackageDatabaseEntry
+    key package_id "tr1::shared_ptr<const PackageID>"
     key associated_entry "const DepListEntry *"
-    key metadata "tr1::shared_ptr<const VersionMetadata>"
     key tags "tr1::shared_ptr<DepListEntryTags>"
     key destination "tr1::shared_ptr<Repository>"
 

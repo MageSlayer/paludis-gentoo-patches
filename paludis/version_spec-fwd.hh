@@ -22,7 +22,6 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/collection-fwd.hh>
 
 namespace paludis
 {
@@ -35,13 +34,6 @@ namespace paludis
      * \ingroup grpversions
      */
     std::ostream & operator<< (std::ostream &, const VersionSpec &) PALUDIS_VISIBLE;
-
-    /**
-     * Holds a collection of VersionSpec instances.
-     *
-     * \ingroup grpversions
-     */
-    typedef SortedCollection<VersionSpec> VersionSpecCollection;
 }
 
 #endif

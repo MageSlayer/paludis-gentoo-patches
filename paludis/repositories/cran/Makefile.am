@@ -26,8 +26,7 @@ paludis_repositories_cran_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/
 libpaludiscranrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_cran_include_HEADERS = \
-	cran_version_metadata.hh \
-	cran_description.hh \
+	cran_package_id.hh \
 	cran_dep_parser.hh \
 	cran_repository.hh \
 	cran_repository-sr.hh \
@@ -35,8 +34,7 @@ paludis_repositories_cran_include_HEADERS = \
 	cran_installed_repository-sr.hh
 
 libpaludiscranrepository_la_SOURCES = \
-	cran_version_metadata.cc \
-	cran_description.cc \
+	cran_package_id.cc \
 	cran_dep_parser.cc \
 	cran_repository.cc \
 	cran_installed_repository.cc \

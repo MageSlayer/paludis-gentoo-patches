@@ -55,9 +55,7 @@ paludis_repositories_gentoo_include_HEADERS = \
 	make_ebuild_repository.hh \
 	make_ebin_repository.hh \
 	use_desc.hh \
-	portage_virtual_version_metadata.hh \
 	vdb_repository.hh \
-	vdb_version_metadata.hh \
 	vdb_repository-sr.hh \
 	vdb_merger-sr.hh \
 	vdb_merger.hh \
@@ -66,7 +64,10 @@ paludis_repositories_gentoo_include_HEADERS = \
 	layout.hh \
 	traditional_layout.hh \
 	exheres_layout.hh \
-	eapi_phase.hh
+	eapi_phase.hh \
+	ebuild_id.hh \
+	vdb_id.hh \
+	e_key.hh
 
 libpaludisgentoorepository_la_SOURCES = \
 	ebuild.cc \
@@ -87,16 +88,17 @@ libpaludisgentoorepository_la_SOURCES = \
 	make_ebuild_repository.cc \
 	make_ebin_repository.cc \
 	use_desc.cc \
-	portage_virtual_version_metadata.cc \
 	registration.cc \
 	vdb_repository.cc \
-	vdb_version_metadata.cc \
 	vdb_merger.cc \
 	vdb_unmerger.cc \
 	layout.cc \
 	traditional_layout.cc \
 	exheres_layout.cc \
 	eapi_phase.cc \
+	ebuild_id.cc \
+	vdb_id.cc \
+	e_key.cc \
 	$(paludis_repositories_gentoo_include_HEADERS)
 
 libpaludisgentoorepository_la_LIBADD = \

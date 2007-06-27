@@ -20,6 +20,7 @@
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -42,7 +43,7 @@ namespace paludis
     std::ostream &
     operator<< (std::ostream & s, const UninstallListEntry & e)
     {
-        s << e.package;
+        s << *e.package_id;
         return s;
     }
 }
@@ -60,7 +61,7 @@ namespace test_cases
             TestEnvironment env;
             tr1::shared_ptr<FakeInstalledRepository> installed_repo;
             tr1::shared_ptr<VirtualsRepository> virtuals_repo;
-            tr1::shared_ptr<PackageDatabaseEntryCollection> targets;
+            tr1::shared_ptr<PackageIDSequence> targets;
             std::list<std::string> expected;
             bool done_populate;
 
@@ -72,7 +73,7 @@ namespace test_cases
                 env(),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
                 virtuals_repo(new VirtualsRepository(&env)),
-                targets(new PackageDatabaseEntryCollection::Concrete),
+                targets(new PackageIDSequence::Concrete),
                 done_populate(false)
             {
                 env.package_database()->add_repository(2, installed_repo);
@@ -91,7 +92,8 @@ namespace test_cases
 
             void add_target(const std::string & p, const std::string & v)
             {
-                targets->push_back(PackageDatabaseEntry(
+                targets->push_back(
+                        env.fetch_package_id(
                             QualifiedPackageName(p),
                             VersionSpec(v),
                             RepositoryName("installed")));
@@ -109,7 +111,7 @@ namespace test_cases
             {
                 TEST_CHECK(true);
                 UninstallList d(&env, options());
-                for (PackageDatabaseEntryCollection::Iterator i(targets->begin()),
+                for (PackageIDSequence::Iterator i(targets->begin()),
                         i_end(targets->end()) ; i != i_end ; ++i)
                     d.add(*i);
                 TEST_CHECK(true);
@@ -166,7 +168,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
+            expected.push_back("foo/bar-1:0::installed");
         }
     } uninstall_list_simple_test;
 
@@ -188,7 +190,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
+            expected.push_back("foo/bar-1:0::installed");
         }
     } uninstall_list_repeat_test;
 
@@ -204,14 +206,14 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz");
             installed_repo->add_version("foo", "baz", "2");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
         }
 
         UninstallListOptions options()
@@ -234,16 +236,16 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz");
-            installed_repo->add_version("foo", "baz", "2")->deps_interface->set_build_depend("foo/moo");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz");
+            installed_repo->add_version("foo", "baz", "2")->build_dependencies_key()->set_from_string("foo/moo");
             installed_repo->add_version("foo", "moo", "3");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
-            expected.push_back("foo/moo-3::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
+            expected.push_back("foo/moo-3:0::installed");
         }
 
         UninstallListOptions options()
@@ -266,16 +268,16 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/oink");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz foo/oink");
             installed_repo->add_version("foo", "baz", "2");
-            installed_repo->add_version("foo", "moo", "3")->deps_interface->set_build_depend("foo/oink");
+            installed_repo->add_version("foo", "moo", "3")->build_dependencies_key()->set_from_string("foo/oink");
             installed_repo->add_version("foo", "oink", "1");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
         }
 
         UninstallListOptions options()
@@ -300,18 +302,18 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/oink");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz foo/oink");
             installed_repo->add_version("foo", "baz", "2");
-            installed_repo->add_version("foo", "moo", "3")->deps_interface->set_build_depend("foo/oink");
+            installed_repo->add_version("foo", "moo", "3")->build_dependencies_key()->set_from_string("foo/oink");
             installed_repo->add_version("foo", "oink", "1");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/moo-3::installed");
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/oink-1::installed");
-            expected.push_back("foo/baz-2::installed");
+            expected.push_back("foo/moo-3:0::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
+            expected.push_back("foo/oink-1:0::installed");
         }
 
         UninstallListOptions options()
@@ -342,15 +344,15 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/moo");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz foo/moo");
             installed_repo->add_version("foo", "baz", "2");
             installed_repo->add_version("foo", "moo", "2");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
         }
 
         UninstallListOptions options()
@@ -383,15 +385,15 @@ namespace test_cases
 
         void populate_repo()
         {
-            installed_repo->add_version("foo", "bar", "1")->deps_interface->set_build_depend("foo/baz foo/moo");
+            installed_repo->add_version("foo", "bar", "1")->build_dependencies_key()->set_from_string("foo/baz foo/moo");
             installed_repo->add_version("foo", "baz", "2");
             installed_repo->add_version("foo", "moo", "2");
         }
 
         void populate_expected()
         {
-            expected.push_back("foo/bar-1::installed");
-            expected.push_back("foo/baz-2::installed");
+            expected.push_back("foo/bar-1:0::installed");
+            expected.push_back("foo/baz-2:0::installed");
         }
 
         UninstallListOptions options()

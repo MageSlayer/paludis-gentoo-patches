@@ -22,6 +22,8 @@
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/query.hh>
+#include <paludis/package_database.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -35,11 +37,11 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
 
-tr1::shared_ptr<const PackageDatabaseEntryCollection>
+tr1::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
                 query::Matches(PackageDepSpec(
                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
                         tr1::shared_ptr<CategoryNamePart>(),
@@ -52,20 +54,19 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 
     SlotName old_slot("I_am_a_slot");
     std::set<KeywordName> keywords;
-    for (PackageDatabaseEntryCollection::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
+    for (PackageIDSequence::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
             p != p_end ; ++p)
     {
-        tr1::shared_ptr<const VersionMetadata> metadata(_repo->version_metadata(package, p->version));
-        if (! metadata->ebuild_interface)
+        if (! (*p)->keywords_key())
             continue;
 
-        if (metadata->slot != old_slot)
+        if ((*p)->slot() != old_slot)
         {
             keywords.clear();
-            old_slot = metadata->slot;
+            old_slot = (*p)->slot();
         }
 
-        tr1::shared_ptr<const KeywordNameCollection> current_keywords(metadata->ebuild_interface->keywords());
+        tr1::shared_ptr<const KeywordNameCollection> current_keywords((*p)->keywords_key()->value());
         bool used(false);
         for (KeywordNameCollection::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)
@@ -85,7 +86,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
         }
 
         if (! used)
-            result->append(PackageDatabaseEntry(package, p->version, _repo->name()));
+            result->push_back(*p);
 
         keywords.insert(current_keywords->begin(), current_keywords->end());
     }

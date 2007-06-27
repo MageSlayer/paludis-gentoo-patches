@@ -23,6 +23,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/query.hh>
 
@@ -40,13 +41,6 @@
 using namespace paludis;
 
 #include "package_database-se.cc"
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
-{
-    s << v.name << "-" << v.version << "::" << v.repository;
-    return s;
-}
 
 PackageDatabaseError::PackageDatabaseError(const std::string & our_message) throw () :
     Exception(our_message)
@@ -66,6 +60,14 @@ DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) thr
 NoSuchPackageError::NoSuchPackageError(const std::string & our_name) throw () :
     PackageDatabaseLookupError("Could not find '" + our_name + "'"),
     _name(our_name)
+{
+}
+
+NonUniqueQueryResultError::NonUniqueQueryResultError(const Query & q,
+        const tr1::shared_ptr<const PackageIDSequence> & r) throw () :
+    PackageDatabaseLookupError("Query '" + stringify(q) + "' returned " +
+            (r->empty() ? "empty result set" : "'" + join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " ")
+             + "'") + " but qo_require_exactly_one was specified")
 {
 }
 
@@ -233,56 +235,22 @@ PackageDatabase::fetch_unique_qualified_package_name(
     return *(result->begin());
 }
 
-tr1::shared_ptr<PackageDatabaseEntryCollection>
-PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state,
-        const QueryOrder query_order) const
-{
-    switch (installed_state)
-    {
-        case is_installed_only:
-            return query(query::Matches(a) & query::RepositoryHasInstalledInterface(), query_order);
-
-        case is_installable_only:
-            return query(query::Matches(a) & query::RepositoryHasInstallableInterface(), query_order);
-
-        case is_any:
-            return query(query::Matches(a), query_order);
-
-        case last_is:
-            ;
-    }
-
-    throw InternalError(PALUDIS_HERE, "Bad InstallState");
-}
-
 namespace
 {
-    bool compare_name(const PackageDatabaseEntry & a, const PackageDatabaseEntry & b)
+    bool compare_name(const tr1::shared_ptr<const PackageID> & a,
+            const tr1::shared_ptr<const PackageID> & b)
     {
-        return a.name == b.name;
+        return a->name() == b->name();
     }
 
-    struct CompareNameSlot
+    bool compare_name_slot(const tr1::shared_ptr<const PackageID> & a,
+            const tr1::shared_ptr<const PackageID> & b)
     {
-        const PackageDatabase * const db;
+        if (a->name() != b->name())
+            return false;
 
-        CompareNameSlot(const PackageDatabase * const d) :
-            db(d)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & a, const PackageDatabaseEntry & b) const
-        {
-            if (a.name != b.name)
-                return false;
-
-            tr1::shared_ptr<const VersionMetadata>
-                ma(db->fetch_repository(a.repository)->version_metadata(a.name, a.version)),
-                mb(db->fetch_repository(b.repository)->version_metadata(b.name, b.version));
-
-            return ma->slot == mb->slot;
-        }
-    };
+        return a->slot() == b->slot();
+    }
 
     struct PDEComparator
     {
@@ -298,25 +266,26 @@ namespace
                 rank.insert(std::make_pair(stringify((*r)->name()), ++x));
         }
 
-        bool operator() (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
+        bool operator() (const tr1::shared_ptr<const PackageID> & lhs,
+                const tr1::shared_ptr<const PackageID> & rhs) const
         {
-            if (lhs.name < rhs.name)
+            if (lhs->name() < rhs->name())
                 return true;
-            if (lhs.name > rhs.name)
+            if (lhs->name() > rhs->name())
                 return false;
 
-            if (lhs.version < rhs.version)
+            if (lhs->version() < rhs->version())
                 return true;
-            if (lhs.version > rhs.version)
+            if (lhs->version() > rhs->version())
                 return false;
 
-            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs.repository)));
+            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs->repository()->name())));
             if (l == rank.end())
-                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs.repository) + "' not in rank");
+                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs->repository()->name()) + "' not in rank");
 
-            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs.repository)));
+            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs->repository()->name())));
             if (r == rank.end())
-                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs.repository) + "' not in rank");
+                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs->repository()->name()) + "' not in rank");
 
             if (l->second < r->second)
                 return true;
@@ -326,32 +295,28 @@ namespace
     };
 
     void sort_package_database_entry_collection(const PackageDatabase * const t,
-            PackageDatabaseEntryCollection::Concrete & p)
+            PackageIDSequence::Concrete & p)
     {
         if (! p.empty())
             p.sort(PDEComparator(t));
     }
 
     void
-    group_package_database_entry_collection(const PackageDatabase * const t,
-            PackageDatabaseEntryCollection::Concrete & p)
+    group_package_database_entry_collection(PackageIDSequence::Concrete & p)
     {
         if (p.empty())
             return;
 
-        for (std::list<PackageDatabaseEntry>::reverse_iterator r(p.list.rbegin()) ;
+        for (std::list<tr1::shared_ptr<const PackageID> >::reverse_iterator r(p.list.rbegin()) ;
                 r != p.list.rend() ; ++r)
         {
-            SlotName r_slot(t->fetch_repository(r->repository)->version_metadata(r->name, r->version)->slot);
-
-            for (std::list<PackageDatabaseEntry>::reverse_iterator rr(next(r)) ;
+            for (std::list<tr1::shared_ptr<const PackageID> >::reverse_iterator rr(next(r)) ;
                     rr != p.list.rend() ; ++rr)
             {
-                if (r->name != rr->name)
+                if ((*r)->name() != (*rr)->name())
                     break;
 
-                SlotName rr_slot(t->fetch_repository(rr->repository)->version_metadata(rr->name, rr->version)->slot);
-                if (rr_slot != r_slot)
+                if ((*r)->slot() != (*rr)->slot())
                     continue;
 
                 p.list.splice(previous(r.base()), p.list, previous(rr.base()));
@@ -362,10 +327,10 @@ namespace
     }
 }
 
-tr1::shared_ptr<PackageDatabaseEntryCollection>
+const tr1::shared_ptr<const PackageIDSequence>
 PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 {
-    tr1::shared_ptr<PackageDatabaseEntryCollection::Concrete> result(new PackageDatabaseEntryCollection::Concrete);
+    tr1::shared_ptr<PackageIDSequence::Concrete> result(new PackageIDSequence::Concrete);
 
     tr1::shared_ptr<RepositoryNameCollection> repos(q.repositories(*_imp->environment));
     if (! repos)
@@ -376,7 +341,10 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             repos->push_back((*r)->name());
     }
     if (repos->empty())
-        return result;
+        if (qo_require_exactly_one == query_order)
+            throw NonUniqueQueryResultError(q, result);
+        else
+            return result;
 
     tr1::shared_ptr<CategoryNamePartCollection> cats(q.categories(*_imp->environment, repos));
     if (! cats)
@@ -390,7 +358,10 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         }
     }
     if (cats->empty())
-        return result;
+        if (qo_require_exactly_one == query_order)
+            throw NonUniqueQueryResultError(q, result);
+        else
+            return result;
 
     tr1::shared_ptr<QualifiedPackageNameCollection> pkgs(q.packages(*_imp->environment, repos, cats));
     if (! pkgs)
@@ -406,28 +377,32 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             }
     }
     if (pkgs->empty())
-        return result;
+        if (qo_require_exactly_one == query_order)
+            throw NonUniqueQueryResultError(q, result);
+        else
+            return result;
 
-    tr1::shared_ptr<PackageDatabaseEntryCollection> pdes(q.versions(*_imp->environment, repos, pkgs));
-    if (! pdes)
+    tr1::shared_ptr<PackageIDSequence> ids(q.ids(*_imp->environment, repos, pkgs));
+    if (! ids)
     {
         for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
             for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
-                tr1::shared_ptr<const VersionSpecCollection> local_vers(fetch_repository(*r)->version_specs(*p));
-                for (VersionSpecCollection::Iterator v(local_vers->begin()), v_end(local_vers->end()) ;
-                        v != v_end ; ++v)
-                    result->push_back(PackageDatabaseEntry(*p, *v, *r));
+                tr1::shared_ptr<const PackageIDSequence> local_ids(fetch_repository(*r)->package_ids(*p));
+                std::copy(local_ids->begin(), local_ids->end(), result->inserter());
             }
     }
     else
     {
-        if (pdes->empty())
-            return result;
+        if (ids->empty())
+            if (qo_require_exactly_one == query_order)
+                throw NonUniqueQueryResultError(q, result);
+            else
+                return result;
 
-        std::copy(pdes->begin(), pdes->end(), result->inserter());
+        std::copy(ids->begin(), ids->end(), result->inserter());
     }
 
     do
@@ -440,13 +415,13 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 
             case qo_group_by_slot:
                 sort_package_database_entry_collection(this, *result);
-                group_package_database_entry_collection(this, *result);
+                group_package_database_entry_collection(*result);
                 continue;
 
             case qo_best_version_only:
                 {
                     sort_package_database_entry_collection(this, *result);
-                    std::list<PackageDatabaseEntry> l;
+                    std::list<tr1::shared_ptr<const PackageID> > l;
                     std::unique_copy(result->list.rbegin(), result->list.rend(),
                             std::front_inserter(l), &compare_name);
                     result->list.swap(l);
@@ -456,12 +431,17 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             case qo_best_version_in_slot_only:
                 {
                     sort_package_database_entry_collection(this, *result);
-                    group_package_database_entry_collection(this, *result);
-                    std::list<PackageDatabaseEntry> l;
+                    group_package_database_entry_collection(*result);
+                    std::list<tr1::shared_ptr<const PackageID> > l;
                     std::unique_copy(result->list.rbegin(), result->list.rend(),
-                            std::front_inserter(l), CompareNameSlot(this));
+                            std::front_inserter(l), &compare_name_slot);
                     result->list.swap(l);
                 }
+                continue;
+
+            case qo_require_exactly_one:
+                if (result->empty() || (next(result->begin()) != result->end()))
+                    throw NonUniqueQueryResultError(q, result);
                 continue;
 
             case qo_whatever:

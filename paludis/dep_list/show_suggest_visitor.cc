@@ -21,6 +21,7 @@
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/condition_tracker.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -39,16 +40,16 @@ namespace paludis
         DepList * const dep_list;
         tr1::shared_ptr<const DestinationsCollection> destinations;
         const Environment * const environment;
-        const PackageDatabaseEntry * const pde;
+        const tr1::shared_ptr<const PackageID> id;
         bool dependency_tags;
         tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
 
         Implementation(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-                const Environment * const e, const PackageDatabaseEntry * const p, bool t) :
+                const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
             dep_list(d),
             destinations(dd),
             environment(e),
-            pde(p),
+            id(p),
             dependency_tags(t),
             conditions(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >(
                            new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
@@ -59,7 +60,7 @@ namespace paludis
 }
 
 ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
-        const Environment * const e, const PackageDatabaseEntry * const p, bool t) :
+        const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
     PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t))
 {
 }
@@ -77,7 +78,7 @@ ShowSuggestVisitor::visit_sequence(const UseDepSpec & a,
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
-    if ((_imp->pde ? _imp->environment->query_use(a.flag(), *_imp->pde) : false) ^ a.inverse())
+    if ((_imp->id ? _imp->environment->query_use(a.flag(), *_imp->id) : false) ^ a.inverse())
         std::for_each(cur, end, accept_visitor(*this));
 }
 
@@ -107,18 +108,18 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         &_imp->conditions, _imp->dependency_tags ?
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(_imp->environment->package_database()->query(
-                a, is_installable_only, qo_order_by_version));
+    tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
+                query::RepositoryHasInstallableInterface() & query::Matches(a), qo_order_by_version));
     if (matches->empty())
     {
         Log::get_instance()->message(ll_warning, lc_context, "Nothing found for '" + stringify(a) + "'");
         return;
     }
 
-    for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
+    for (PackageIDSequence::Iterator m(matches->begin()), m_end(matches->end()) ;
             m != m_end ; ++m)
     {
-        if (_imp->environment->mask_reasons(*m).any())
+        if (_imp->environment->mask_reasons(**m).any())
             continue;
 
         _imp->dep_list->add_suggested_package(*m, a, _imp->conditions, _imp->destinations);

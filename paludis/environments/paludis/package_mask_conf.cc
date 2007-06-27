@@ -19,11 +19,12 @@
 
 #include "package_mask_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/config_file.hh>
+#include <paludis/package_id.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
@@ -76,12 +77,12 @@ PackageMaskConf::add(const FSEntry & filename)
 }
 
 bool
-PackageMaskConf::query(const PackageDatabaseEntry & e) const
+PackageMaskConf::query(const PackageID & e) const
 {
     using namespace tr1::placeholders;
     return indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            tr1::bind(&match_package, tr1::ref(*_imp->env), _1, e));
+            tr1::bind(&match_package, tr1::ref(*_imp->env), _1, tr1::cref(e)));
 }
 

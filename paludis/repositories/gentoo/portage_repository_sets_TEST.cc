@@ -110,6 +110,11 @@ namespace test_cases
     {
         PortageRepositorySetsInsecuritySetTest() : TestCase("insecurity set") { }
 
+        virtual unsigned max_run_time() const
+        {
+            return 300;
+        }
+
         void run()
         {
             TestEnvironment env;
@@ -139,6 +144,11 @@ namespace test_cases
     struct PortageRepositorySetsSecuritySetTest : TestCase
     {
         PortageRepositorySetsSecuritySetTest() : TestCase("security set") { }
+
+        virtual unsigned max_run_time() const
+        {
+            return 300;
+        }
 
         void run()
         {

@@ -63,13 +63,17 @@ TESTS = \
 	range_rewriter_TEST
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
-	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gentoo/ebuild/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
-	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/`:` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
+
 
 check_PROGRAMS = $(TESTS)
 

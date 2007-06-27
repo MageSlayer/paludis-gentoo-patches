@@ -23,8 +23,8 @@
 #include <string>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/environment.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace inquisitio
 {
@@ -37,7 +37,7 @@ namespace inquisitio
         public:
             virtual ~Extractor();
 
-            virtual std::string operator() (const paludis::PackageDatabaseEntry &) const = 0;
+            virtual std::string operator() (const paludis::PackageID &) const = 0;
     };
 
     class NoSuchExtractorError :

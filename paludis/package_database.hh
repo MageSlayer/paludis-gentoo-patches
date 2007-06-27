@@ -30,9 +30,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection-fwd.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/contents.hh>
 
 #include <iosfwd>
@@ -181,6 +179,23 @@ namespace paludis
     };
 
     /**
+     * Thrown if a PackageDatabase::query() with qo_require_exactly_one does not
+     * get exactly one result.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
+     */
+    class PALUDIS_VISIBLE NonUniqueQueryResultError :
+        public PackageDatabaseLookupError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NonUniqueQueryResultError(const Query &, const tr1::shared_ptr<const PackageIDSequence> &) throw ();
+    };
+
+    /**
      * Thrown if there is no Repository in a RepositoryDatabase with the given
      * name.
      *
@@ -297,19 +312,8 @@ namespace paludis
 
             /**
              * Query the repository.
-             *
-             * \deprecated use the Query form
              */
-            tr1::shared_ptr<PackageDatabaseEntryCollection> query(
-                    const PackageDepSpec & a,
-                    const InstallState,
-                    const QueryOrder) const
-                PALUDIS_ATTRIBUTE((deprecated)) PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Query the repository.
-             */
-            tr1::shared_ptr<PackageDatabaseEntryCollection> query(
+            const tr1::shared_ptr<const PackageIDSequence> query(
                     const Query &, const QueryOrder) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

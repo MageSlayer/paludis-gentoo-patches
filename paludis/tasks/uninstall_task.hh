@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_TASKS_UNINSTALL_TASK_HH 1
 
 #include <paludis/dep_spec.hh>
-#include <paludis/package_database_entry.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -41,14 +41,14 @@ namespace paludis
     {
         private:
             const std::string _t;
-            const tr1::shared_ptr<const PackageDatabaseEntryCollection> _p;
+            const tr1::shared_ptr<const PackageIDSequence> _p;
 
         public:
             ///\name Basic operations
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const tr1::shared_ptr<const PackageDatabaseEntryCollection> matches) throw () :
+                    const tr1::shared_ptr<const PackageIDSequence> matches) throw () :
                 Exception("Ambiguous unmerge target '" + our_target + "'"),
                 _t(our_target),
                 _p(matches)
@@ -62,7 +62,7 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef PackageDatabaseEntryCollection::Iterator Iterator;
+            typedef PackageIDSequence::Iterator Iterator;
 
             Iterator begin() const
             {

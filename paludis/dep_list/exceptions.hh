@@ -180,7 +180,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoDestinationError(const PackageDatabaseEntry &,
+            NoDestinationError(const PackageID &,
                     tr1::shared_ptr<const DestinationsCollection>) throw ();
 
             ///\}

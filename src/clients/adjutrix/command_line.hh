@@ -69,7 +69,6 @@ class CommandLine :
         paludis::args::SwitchArg a_what_needs_keywording;
 
         paludis::args::ArgsGroup profile_action_args;
-        paludis::args::SwitchArg a_display_profiles_use;
         paludis::args::SwitchArg a_display_default_system_resolution;
 
         paludis::args::ArgsGroup downgrade_check_args;

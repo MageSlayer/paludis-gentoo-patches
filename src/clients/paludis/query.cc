@@ -204,8 +204,6 @@ int do_query(tr1::shared_ptr<Environment> env)
                 case mr_breaks_portage:
                     cout << "* " << colour(cl_masked, "B") << ": breaks Portage";
                     break;
-                case mr_interactive:
-                    cout << "* " << colour(cl_masked, "I") << ": interactive";
 
                 case last_mr:
                     break;

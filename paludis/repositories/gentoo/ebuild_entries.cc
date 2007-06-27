@@ -22,12 +22,14 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/repositories/gentoo/eapi_phase.hh>
+#include <paludis/repositories/gentoo/ebuild_id.hh>
 
 #include <paludis/eapi.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -94,144 +96,15 @@ EbuildEntries::~EbuildEntries()
 {
 }
 
-tr1::shared_ptr<const FSEntryCollection>
-EbuildEntries::_exlibsdirs(const QualifiedPackageName & q) const
+const tr1::shared_ptr<const PackageID>
+EbuildEntries::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f,
+        const std::string & guessed_eapi) const
 {
-    tr1::shared_ptr<FSEntryCollection> exlibsdirs(new FSEntryCollection::Concrete);
+    Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
-    if (_imp->params.master_repository)
-        exlibsdirs->push_back(_imp->params.master_repository->params().location / "exlibs");
-    exlibsdirs->push_back(_imp->params.location / "exlibs");
-    if (_imp->params.master_repository)
-        exlibsdirs->push_back(_imp->params.master_repository->layout()->category_directory(q.category) / "exlibs");
-    exlibsdirs->push_back(_imp->portage_repository->layout()->category_directory(q.category) / "exlibs");
-    if (_imp->params.master_repository)
-        exlibsdirs->push_back(_imp->params.master_repository->layout()->package_directory(q));
-    exlibsdirs->push_back(_imp->portage_repository->layout()->package_directory(q));
-
-    return exlibsdirs;
-}
-
-tr1::shared_ptr<VersionMetadata>
-EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
-        const VersionSpec & v) const
-{
-    Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
-
-    tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
-
-    FSEntry ebuild_file(_imp->portage_repository->layout()->package_file(q, v));
-
-    FSEntry cache_file(_imp->params.cache);
-    cache_file /= stringify(q.category);
-    cache_file /= stringify(q.package) + "-" + stringify(v);
-
-    FSEntry write_cache_file(_imp->params.write_cache);
-    write_cache_file /= stringify(_imp->portage_repository->name());
-    write_cache_file /= stringify(q.category);
-    write_cache_file /= stringify(q.package) + "-" + stringify(v);
-
-    bool ok(false);
-    if (_imp->params.cache.basename() != "empty")
-    {
-
-        EbuildFlatMetadataCache metadata_cache(cache_file, ebuild_file, _imp->master_mtime,
-                _imp->eclass_mtimes, false);
-        if (metadata_cache.load(result))
-            ok = true;
-    }
-
-    if ((! ok) && _imp->params.write_cache.basename() != "empty")
-    {
-        EbuildFlatMetadataCache write_metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
-                _imp->eclass_mtimes, true);
-        if (write_metadata_cache.load(result))
-            ok = true;
-        else if (write_cache_file.exists())
-        {
-            try
-            {
-                write_cache_file.unlink();
-            }
-            catch (const FSError &)
-            {
-                // the attempt to write a fresh file will produce a
-                // warning, no need to be too noisy
-            }
-        }
-    }
-
-    if (! ok)
-    {
-        if (_imp->params.cache.basename() != "empty")
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "No usable cache entry for '" + stringify(q) +
-                    "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
-
-        std::string eapi_str(_imp->portage_repository->layout()->eapi_string_if_known(q, v));
-        if (eapi_str.empty())
-            eapi_str = _imp->params.eapi_when_unknown;
-        tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(eapi_str));
-
-        PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
-
-        if (eapi->supported)
-        {
-            Log::get_instance()->message(ll_debug, lc_context) << "Generating metadata command for '"
-                << e << "' using EAPI '" << eapi->name << "'";
-
-            EAPIPhases phases(eapi->supported->ebuild_phases->ebuild_metadata);
-
-            int c(std::distance(phases.begin_phases(), phases.end_phases()));
-            if (1 != c)
-                throw EAPIConfigurationError("EAPI '" + eapi->name + "' defines "
-                        + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
-
-            tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_exlibsdirs(q));
-
-            EbuildMetadataCommand cmd(EbuildCommandParams::create()
-                    .environment(_imp->environment)
-                    .db_entry(&e)
-                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-                    .ebuild_file(ebuild_file)
-                    .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
-                    .eclassdirs(_imp->params.eclassdirs)
-                    .exlibsdirs(exlibsdirs)
-                    .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                        _imp->params.location)
-                    .distdir(_imp->params.distdir)
-                    .buildroot(_imp->params.buildroot)
-                    .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
-                    .sandbox(phases.begin_phases()->option("sandbox"))
-                    .userpriv(phases.begin_phases()->option("userpriv"))
-                    .eapi(eapi));
-
-            if (! cmd())
-                Log::get_instance()->message(ll_warning, lc_no_context,
-                        "No usable metadata for '" + stringify(q)
-                        + "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
-
-            if (0 == ((result = cmd.metadata())))
-                throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
-
-            Log::get_instance()->message(ll_debug, lc_context) << "Generated metadata for '"
-                << e << "' has EAPI '" << result->eapi->name << "'";
-
-            if (_imp->params.write_cache.basename() != "empty" && result->eapi->supported)
-            {
-                EbuildFlatMetadataCache metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
-                        _imp->eclass_mtimes, false);
-                metadata_cache.save(result);
-            }
-        }
-        else
-        {
-            Log::get_instance()->message(ll_debug, lc_context) << "Can't run metadata command for '"
-                << e << "' because EAPI '" << eapi->name << "' is unknown";
-            result->eapi = eapi;
-        }
-    }
-
+    tr1::shared_ptr<EbuildID> result(new EbuildID(q, v, _imp->params.environment,
+                _imp->portage_repository->shared_from_this(), f, guessed_eapi,
+                _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }
 
@@ -282,27 +155,27 @@ namespace
     }
 
     std::string make_use(const Environment * const env,
-            const PackageDatabaseEntry & pde,
-            tr1::shared_ptr<const VersionMetadata> metadata,
+            const PackageID & id,
             tr1::shared_ptr<const PortageRepositoryProfile> profile)
     {
         std::string use;
 
-        for (IUseFlagCollection::Iterator i(metadata->ebuild_interface->iuse()->begin()),
-                i_end(metadata->ebuild_interface->iuse()->end()) ; i != i_end ; ++i)
-            if (env->query_use(i->flag, pde))
-                use += stringify(i->flag) + " ";
+        if (id.iuse_key())
+            for (IUseFlagCollection::Iterator i(id.iuse_key()->value()->begin()),
+                    i_end(id.iuse_key()->value()->end()) ; i != i_end ; ++i)
+                if (env->query_use(i->flag, id))
+                    use += stringify(i->flag) + " ";
 
-        if (metadata->eapi->supported->ebuild_options->want_arch_var)
-            use += profile->environment_variable("ARCH") + " ";
+        if (id.eapi()->supported)
+            if (id.eapi()->supported->ebuild_options->want_arch_var)
+                use += profile->environment_variable("ARCH") + " ";
 
         return use;
     }
 
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
     make_expand(const Environment * const env,
-            const PackageDatabaseEntry & e,
-            tr1::shared_ptr<const VersionMetadata> metadata,
+            const PackageID & e,
             tr1::shared_ptr<const PortageRepositoryProfile> profile,
             std::string & use)
     {
@@ -335,7 +208,7 @@ namespace
                 if (! env->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
                     continue;
 
-                if (! metadata->eapi->supported->ebuild_options->require_use_expand_in_iuse)
+                if (! e.eapi()->supported->ebuild_options->require_use_expand_in_iuse)
                     use.append(lower_x + "_" + stringify(*u) + " ");
 
                 std::string value;
@@ -357,27 +230,19 @@ namespace
 }
 
 void
-EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
+EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
         const InstallOptions & o, tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
     using namespace tr1::placeholders;
 
-    Context context("When installing '" + stringify(q) + "-" + stringify(v) + "':");
-
-    if (! _imp->portage_repository->has_version(q, v))
-    {
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since has_version failed");
-    }
-
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
-
-    PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
+    Context context("When installing '" + stringify(*id) + "':");
 
     bool fetch_restrict(false), no_mirror(false), userpriv_restrict;
     {
-        DepSpecFlattener restricts(_imp->params.environment, &e);
-        metadata->ebuild_interface->restrictions()->accept(restricts);
+        DepSpecFlattener restricts(_imp->params.environment, id);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
         fetch_restrict =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
@@ -402,15 +267,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        DepSpecFlattener f(_imp->params.environment, &e);
-        metadata->ebuild_interface->src_uri()->accept(f);
+        DepSpecFlattener f(_imp->params.environment, id);
+        if (id->src_uri_key())
+            id->src_uri_key()->value()->accept(f);
 
         for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             const tr1::shared_ptr<const URIDepSpec> spec(tr1::static_pointer_cast<const URIDepSpec>(*i));
             if (! spec->renamed_url_suffix().empty())
-                throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                        + stringify(v) + "' since it uses SRC_URI arrow components");
+                throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since it uses SRC_URI arrow components");
 
             std::string::size_type pos(spec->original_url().rfind('/'));
             if (std::string::npos == pos)
@@ -442,14 +307,13 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 std::string::size_type spos(mirror.find('/'));
 
                 if (std::string::npos == spos)
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                            + stringify(v) + "' since SRC_URI is broken");
+                    throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since SRC_URI is broken");
 
                 tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
                         mirrors->empty())
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                            + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
+                    throw PackageInstallActionError("Can't install '" + stringify(*id) +
+                            "' since SRC_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
                 for (MirrorsCollection::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
@@ -483,10 +347,11 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        if (metadata->eapi->supported->ebuild_options->want_aa_var)
+        if (id->eapi()->supported->ebuild_options->want_aa_var)
         {
             AAFinder g;
-            metadata->ebuild_interface->src_uri()->accept(g);
+            if (id->src_uri_key())
+                id->src_uri_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -523,14 +388,14 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     all_archives = strip_trailing(all_archives, " ");
 
     /* make use */
-    std::string use(make_use(_imp->params.environment, e, metadata, p));
+    std::string use(make_use(_imp->params.environment, *id, p));
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, e, metadata, p, use));
+                _imp->params.environment, *id, p, use));
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_exlibsdirs(e.name));
+    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->portage_repository->layout()->exlibsdirs(id->name()));
 
     /* fetch */
     {
@@ -562,24 +427,23 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         EAPIPhases phases(fetch_restrict ?
-                metadata->eapi->supported->ebuild_phases->ebuild_nofetch :
-                metadata->eapi->supported->ebuild_phases->ebuild_fetch);
+                id->eapi()->supported->ebuild_phases->ebuild_nofetch :
+                id->eapi()->supported->ebuild_phases->ebuild_fetch);
 
         for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                 phase != phase_end ; ++phase)
         {
             EbuildCommandParams command_params(EbuildCommandParams::create()
                     .environment(_imp->params.environment)
-                    .db_entry(&e)
-                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-                    .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
-                    .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
+                    .package_id(id)
+                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(id->name()))
+                    .ebuild_file(_imp->portage_repository->layout()->package_file(*id))
+                    .files_dir(_imp->portage_repository->layout()->package_directory(id->name()) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
                     .exlibsdirs(exlibsdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                         _imp->params.location)
                     .distdir(_imp->params.distdir)
-                    .eapi(metadata->eapi)
                     .commands(join(phase->begin_commands(), phase->end_commands(), " "))
                     .sandbox(phase->option("sandbox"))
                     .userpriv(phase->option("userpriv") && fetch_userpriv_ok)
@@ -630,24 +494,24 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
     }
 
-    EAPIPhases phases(metadata->eapi->supported->ebuild_phases->ebuild_install);
+    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_install);
     for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("merge"))
         {
             if (! o.destination->destination_interface)
-                throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                        + stringify(v) + "' to destination '" + stringify(o.destination->name())
+                throw PackageInstallActionError("Can't install '" + stringify(*id)
+                        + "' to destination '" + stringify(o.destination->name())
                         + "' because destination does not provide destination_interface");
 
                 o.destination->destination_interface->merge(
                         MergeOptions::create()
-                        .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
-                        .image_dir(_imp->params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                                + stringify(v)) / "image")
-                        .environment_file(_imp->params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                                + stringify(v)) / "temp" / "loadsaveenv")
+                        .package_id(id)
+                        .image_dir(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                                + stringify(id->version())) / "image")
+                        .environment_file(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                                + stringify(id->version())) / "temp" / "loadsaveenv")
                         );
         }
         else if ((! phase->option("prepost")) ||
@@ -655,16 +519,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         {
             EbuildCommandParams command_params(EbuildCommandParams::create()
                     .environment(_imp->params.environment)
-                    .db_entry(&e)
-                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-                    .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
-                    .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
+                    .package_id(id)
+                    .ebuild_dir(_imp->portage_repository->layout()->package_directory(id->name()))
+                    .ebuild_file(_imp->portage_repository->layout()->package_file(*id))
+                    .files_dir(_imp->portage_repository->layout()->package_directory(id->name()) / "files")
                     .eclassdirs(_imp->params.eclassdirs)
                     .exlibsdirs(exlibsdirs)
                     .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                         _imp->params.location)
                     .distdir(_imp->params.distdir)
-                    .eapi(metadata->eapi)
                     .commands(join(phase->begin_commands(), phase->end_commands(), " "))
                     .sandbox(phase->option("sandbox"))
                     .userpriv(phase->option("userpriv") && userpriv_ok)
@@ -683,9 +546,9 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                             .debug_build(o.debug_build)
                             .config_protect(_imp->portage_repository->profile_variable("CONFIG_PROTECT"))
                             .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
-                            .loadsaveenv_dir(_imp->params.buildroot / stringify(q.category) / (
-                                    stringify(q.package) + "-" + stringify(v)) / "temp")
-                            .slot(SlotName(metadata->slot)));
+                            .loadsaveenv_dir(_imp->params.buildroot / stringify(id->name().category) / (
+                                    stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
+                            .slot(SlotName(id->slot())));
 
             EbuildInstallCommand cmd(command_params, install_params);
             cmd();
@@ -694,33 +557,29 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 }
 
 std::string
-EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
-        const VersionSpec & v, const std::string & var,
-        tr1::shared_ptr<const PortageRepositoryProfile>) const
+EbuildEntries::get_environment_variable(const tr1::shared_ptr<const PackageID> & id,
+        const std::string & var, tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
-    PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
-    EAPIPhases phases(metadata->eapi->supported->ebuild_phases->ebuild_variable);
+    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_variable);
 
     int c(std::distance(phases.begin_phases(), phases.end_phases()));
     if (1 != c)
-        throw EAPIConfigurationError("EAPI '" + metadata->eapi->name + "' defines "
+        throw EAPIConfigurationError("EAPI '" + id->eapi()->name + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_exlibsdirs(q));
+    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->portage_repository->layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(EbuildCommandParams::create()
             .environment(_imp->params.environment)
-            .db_entry(&for_package)
-            .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-            .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
-            .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
+            .package_id(id)
+            .ebuild_dir(_imp->portage_repository->layout()->package_directory(id->name()))
+            .ebuild_file(_imp->portage_repository->layout()->package_file(*id))
+            .files_dir(_imp->portage_repository->layout()->package_directory(id->name()) / "files")
             .eclassdirs(_imp->params.eclassdirs)
             .exlibsdirs(exlibsdirs)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
-            .eapi(metadata->eapi)
             .sandbox(phases.begin_phases()->option("sandbox"))
             .userpriv(phases.begin_phases()->option("userpriv"))
             .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
@@ -730,7 +589,7 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
 
     if (! cmd())
         throw EnvironmentVariableActionError("Couldn't get environment variable '" +
-                stringify(var) + "' for package '" + stringify(for_package) + "'");
+                stringify(var) + "' for package '" + stringify(*id) + "'");
 
     return cmd.result();
 }
@@ -774,50 +633,39 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 }
 
 bool
-EbuildEntries::pretend(const QualifiedPackageName & q, const VersionSpec & v,
+EbuildEntries::pretend(const tr1::shared_ptr<const PackageID> & id,
         tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
     using namespace tr1::placeholders;
 
-    Context context("When running pretend for '" + stringify(q) + "-" + stringify(v) + "':");
+    Context context("When running pretend for '" + stringify(*id) + "':");
 
-    if (! _imp->portage_repository->has_version(q, v))
-    {
-        throw PackageInstallActionError("Can't run pretend for '" + stringify(q) + "-"
-                + stringify(v) + "' since has_version failed");
-    }
-
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
-
-    if (! metadata->eapi->supported)
+    if (! id->eapi()->supported)
         return true;
-    if (metadata->eapi->supported->ebuild_phases->ebuild_pretend.empty())
+    if (id->eapi()->supported->ebuild_phases->ebuild_pretend.empty())
         return true;
 
-    PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
-
-    std::string use(make_use(_imp->params.environment, e, metadata, p));
+    std::string use(make_use(_imp->params.environment, *id, p));
     tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, e, metadata, p, use));
+                _imp->params.environment, *id, p, use));
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_exlibsdirs(q));
+    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->portage_repository->layout()->exlibsdirs(id->name()));
 
-    EAPIPhases phases(metadata->eapi->supported->ebuild_phases->ebuild_pretend);
+    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_pretend);
     for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         EbuildCommandParams command_params(EbuildCommandParams::create()
                 .environment(_imp->params.environment)
-                .db_entry(&e)
-                .ebuild_dir(_imp->portage_repository->layout()->package_directory(q))
-                .ebuild_file(_imp->portage_repository->layout()->package_file(q, v))
-                .files_dir(_imp->portage_repository->layout()->package_directory(q) / "files")
+                .package_id(id)
+                .ebuild_dir(_imp->portage_repository->layout()->package_directory(id->name()))
+                .ebuild_file(_imp->portage_repository->layout()->package_file(*id))
+                .files_dir(_imp->portage_repository->layout()->package_directory(id->name()) / "files")
                 .eclassdirs(_imp->params.eclassdirs)
                 .exlibsdirs(exlibsdirs)
                 .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                     _imp->params.location)
                 .distdir(_imp->params.distdir)
-                .eapi(metadata->eapi)
                 .userpriv(phase->option("userpriv"))
                 .sandbox(phase->option("sandbox"))
                 .commands(join(phase->begin_commands(), phase->end_commands(), " "))

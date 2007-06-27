@@ -32,7 +32,7 @@ namespace inquisitio
             DescriptionExtractor(const paludis::Environment &);
             virtual ~DescriptionExtractor();
 
-            std::string operator() (const paludis::PackageDatabaseEntry &) const;
+            std::string operator() (const paludis::PackageID &) const;
     };
 }
 

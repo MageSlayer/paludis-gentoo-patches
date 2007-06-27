@@ -63,13 +63,13 @@ namespace paludis
 
             private:
                 template <bool b_, typename T_>
-                struct ConstAccept
+                struct PALUDIS_VISIBLE ConstAccept
                 {
                     static void forward(const ConstAcceptInterface * const h, T_ & t);
                 };
 
                 template <typename T_>
-                struct ConstAccept<false, T_>
+                struct PALUDIS_VISIBLE ConstAccept<false, T_>
                 {
                     static void forward(const ConstAcceptInterface * const h, T_ & t);
                 };
@@ -141,25 +141,25 @@ namespace paludis
         {
             private:
                 template <bool b_, typename T_>
-                struct Accept
+                struct PALUDIS_VISIBLE Accept
                 {
                     static void forward(MutableAcceptInterface * const h, T_ & t);
                 };
 
                 template <typename T_>
-                struct Accept<true, T_>
+                struct PALUDIS_VISIBLE Accept<true, T_>
                 {
                     static void forward(MutableAcceptInterface * const h, T_ & t);
                 };
 
                 template <bool b_, typename T_>
-                struct MutableAccept
+                struct PALUDIS_VISIBLE MutableAccept
                 {
                     static void forward(MutableAcceptInterface * const h, T_ & t);
                 };
 
                 template <typename T_>
-                struct MutableAccept<false, T_>
+                struct PALUDIS_VISIBLE MutableAccept<false, T_>
                 {
                     static void forward(MutableAcceptInterface * const h, T_ & t);
                 };
@@ -826,7 +826,13 @@ namespace paludis
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem6>,
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem7>,
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem8>,
-            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem9>
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem9>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem10>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem11>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem12>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem13>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem14>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem15>
         {
             private:
                 ConstVisitor<LargerH_> * const _larger_h;
@@ -864,7 +870,13 @@ namespace paludis
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem6>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem7>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem8>,
-            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem9>
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem9>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem10>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem11>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem12>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem13>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem14>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem15>
         {
             private:
                 MutableVisitor<LargerH_> * const _larger_h;
@@ -986,7 +998,13 @@ namespace paludis
             typename ContainedItem6_,
             typename ContainedItem7_,
             typename ContainedItem8_,
-            typename ContainedItem9_>
+            typename ContainedItem9_,
+            typename ContainedItem10_,
+            typename ContainedItem11_,
+            typename ContainedItem12_,
+            typename ContainedItem13_,
+            typename ContainedItem14_,
+            typename ContainedItem15_>
         class VisitorTypes
         {
             public:
@@ -1005,6 +1023,12 @@ namespace paludis
                 typedef ContainedItem7_ ContainedItem7;
                 typedef ContainedItem8_ ContainedItem8;
                 typedef ContainedItem9_ ContainedItem9;
+                typedef ContainedItem10_ ContainedItem10;
+                typedef ContainedItem11_ ContainedItem11;
+                typedef ContainedItem12_ ContainedItem12;
+                typedef ContainedItem13_ ContainedItem13;
+                typedef ContainedItem14_ ContainedItem14;
+                typedef ContainedItem15_ ContainedItem15;
 
                 typedef MutableAcceptInterface<Heirarchy_> Item;
                 typedef const ConstAcceptInterface<Heirarchy_> ConstItem;
@@ -1031,7 +1055,13 @@ namespace paludis
             public virtual Visits<const typename H_::ContainedItem6>,
             public virtual Visits<const typename H_::ContainedItem7>,
             public virtual Visits<const typename H_::ContainedItem8>,
-            public virtual Visits<const typename H_::ContainedItem9>
+            public virtual Visits<const typename H_::ContainedItem9>,
+            public virtual Visits<const typename H_::ContainedItem10>,
+            public virtual Visits<const typename H_::ContainedItem11>,
+            public virtual Visits<const typename H_::ContainedItem12>,
+            public virtual Visits<const typename H_::ContainedItem13>,
+            public virtual Visits<const typename H_::ContainedItem14>,
+            public virtual Visits<const typename H_::ContainedItem15>
         {
             public:
                 ///\name Visitor type definitions
@@ -1102,7 +1132,13 @@ namespace paludis
             public virtual Visits<typename H_::ContainedItem6>,
             public virtual Visits<typename H_::ContainedItem7>,
             public virtual Visits<typename H_::ContainedItem8>,
-            public virtual Visits<typename H_::ContainedItem9>
+            public virtual Visits<typename H_::ContainedItem9>,
+            public virtual Visits<typename H_::ContainedItem10>,
+            public virtual Visits<typename H_::ContainedItem11>,
+            public virtual Visits<typename H_::ContainedItem12>,
+            public virtual Visits<typename H_::ContainedItem13>,
+            public virtual Visits<typename H_::ContainedItem14>,
+            public virtual Visits<typename H_::ContainedItem15>
         {
             public:
                 ///\name Visitor type definitions
@@ -1231,7 +1267,13 @@ namespace paludis
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem6>,
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem7>,
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem8>,
-            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem9>
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem9>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem10>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem11>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem12>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem13>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem14>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem15>
         {
             ///\name Visitor operations
             ///\{

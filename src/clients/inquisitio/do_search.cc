@@ -93,7 +93,7 @@ do_search(const Environment & env)
     for (std::set<QualifiedPackageName>::const_iterator p(pkgs.begin()), p_end(pkgs.end()) ;
             p != p_end ; ++p)
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection>
+        tr1::shared_ptr<const PackageIDSequence>
             entries(env.package_database()->query(
                         query::Package(*p), qo_order_by_version)),
             preferred_entries(env.package_database()->query(query::Package(*p) &
@@ -104,17 +104,17 @@ do_search(const Environment & env)
         if (preferred_entries->empty())
             preferred_entries = entries;
 
-        PackageDatabaseEntry display_entry(*preferred_entries->last());
-        for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
+        tr1::shared_ptr<const PackageID> display_entry(*preferred_entries->last());
+        for (PackageIDSequence::Iterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
-            if (! env.mask_reasons(*i).any())
+            if (! env.mask_reasons(**i).any())
                 display_entry = *i;
 
         bool match(false);
         for (std::list<tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
                 x_end(extractors.end()) ; x != x_end && ! match ; ++x)
         {
-            std::string xx((**x)(display_entry));
+            std::string xx((**x)(*display_entry));
             for (std::list<tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
                     m_end(matchers.end()) ; m != m_end && ! match ; ++m)
                 if ((**m)(xx))
@@ -126,8 +126,8 @@ do_search(const Environment & env)
 
         InquisitioQueryTask query(&env);
         query.show(PackageDepSpec(
-                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry.name))),
-                &display_entry);
+                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry->name()))),
+                display_entry.get());
     }
 
     return 0;

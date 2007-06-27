@@ -69,18 +69,15 @@ namespace
 
 void
 do_one_contents_entry(
-        const tr1::shared_ptr<Environment> env,
-        const PackageDatabaseEntry & e)
+        const tr1::shared_ptr<Environment>,
+        const PackageID & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
-    const RepositoryContentsInterface * const contents_interface(
-            env->package_database()->fetch_repository(e.repository)->
-            contents_interface);
+    const RepositoryContentsInterface * const contents_interface(e.repository()->contents_interface);
     if (contents_interface)
     {
-        tr1::shared_ptr<const Contents> contents(contents_interface->contents(
-                    e.name, e.version));
+        tr1::shared_ptr<const Contents> contents(contents_interface->contents(e));
         ContentsDisplayer d;
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
     }
@@ -104,16 +101,16 @@ do_one_contents(
                         env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))) :
             new PackageDepSpec(q, pds_pm_permissive));
 
-    tr1::shared_ptr<const PackageDatabaseEntryCollection>
+    tr1::shared_ptr<const PackageIDSequence>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(
                         env->root()), qo_order_by_version));
 
     if (entries->empty())
         throw NoSuchPackageError(q);
 
-    for (PackageDatabaseEntryCollection::Iterator i(entries->begin()),
+    for (PackageIDSequence::Iterator i(entries->begin()),
             i_end(entries->end()) ; i != i_end ; ++i)
-        do_one_contents_entry(env, *i);
+        do_one_contents_entry(env, **i);
 }
 
 int

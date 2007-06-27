@@ -19,11 +19,12 @@
 
 #include "licenses_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/config_file.hh>
+#include <paludis/package_id.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
@@ -127,12 +128,12 @@ LicensesConf::add(const FSEntry & filename)
 }
 
 bool
-LicensesConf::query(const std::string & t, const PackageDatabaseEntry & e) const
+LicensesConf::query(const std::string & t, const PackageID & e) const
 {
     /* highest priority: specific */
     bool break_when_done(false);
     {
-        SpecificMap::const_iterator i(_imp->qualified.find(e.name));
+        SpecificMap::const_iterator i(_imp->qualified.find(e.name()));
         if (i != _imp->qualified.end())
         {
             for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;

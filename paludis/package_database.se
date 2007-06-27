@@ -9,6 +9,7 @@ make_enum_QueryOrder()
     key qo_group_by_slot              "Order by version, with like slots grouped"
     key qo_best_version_only          "Only the best version"
     key qo_best_version_in_slot_only  "Only the best version in each slot"
+    key qo_require_exactly_one        "Throw if there is not exactly one result"
     key qo_whatever                   "Arbitrary ordering"
 
     doxygen_comment << "END"

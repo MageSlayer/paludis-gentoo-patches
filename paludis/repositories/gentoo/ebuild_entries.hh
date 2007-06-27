@@ -44,9 +44,6 @@ namespace paludis
         public PortageRepositoryEntries,
         private PrivateImplementationPattern<EbuildEntries>
     {
-        private:
-            tr1::shared_ptr<const FSEntryCollection> _exlibsdirs(const QualifiedPackageName &) const;
-
         public:
             /**
              * Create an EbuildEntries instance.
@@ -65,19 +62,6 @@ namespace paludis
 
             ///\}
 
-            virtual tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual std::string get_environment_variable(const QualifiedPackageName &,
-                    const VersionSpec &, const std::string & var,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
-
-            virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, tr1::shared_ptr<const PortageRepositoryProfile>) const;
-
-            virtual bool pretend(const QualifiedPackageName &, const VersionSpec &,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
-
             virtual void merge(const MergeOptions &) PALUDIS_ATTRIBUTE((noreturn));
 
             virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
@@ -85,6 +69,19 @@ namespace paludis
 
             virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
+                    const FSEntry &, const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
+
+            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
+
+            virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
+                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
     };
 }
 

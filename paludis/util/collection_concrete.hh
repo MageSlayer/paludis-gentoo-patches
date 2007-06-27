@@ -85,11 +85,6 @@ namespace paludis
                 return Iterator(_items.begin() == _items.end() ? _items.end() : --(_items.end()));
             }
 
-            virtual Iterator find(const T_ & v) const
-            {
-                return Iterator(std::find(_items.begin(), _items.end(), v));
-            }
-
             virtual ReverseIterator rbegin() const
             {
                 return ReverseIterator(_items.rbegin());
@@ -100,19 +95,9 @@ namespace paludis
                 return ReverseIterator(_items.rend());
             }
 
-            virtual bool append(T_ v)
-            {
-                if (end() != find(v))
-                    return false;
-
-                _items.push_back(v);
-                return true;
-            }
-
             void push_back(const T_ & v)
             {
-                if (end() == find(v))
-                    _items.push_back(v);
+                _items.push_back(v);
             }
 
             virtual bool empty() const

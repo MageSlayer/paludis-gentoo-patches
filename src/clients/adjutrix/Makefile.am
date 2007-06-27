@@ -41,7 +41,6 @@ adjutrix_SOURCES = \
 	find_reverse_deps.hh                  find_reverse_deps.cc \
 	find_unused_packages.hh               find_unused_packages.cc \
 	keywords_graph.hh                     keywords_graph.cc \
-	display_profiles_use.hh               display_profiles_use.cc \
 	display_default_system_resolution.hh  display_default_system_resolution.cc \
 	what_needs_keywording.hh              what_needs_keywording.cc \
 	downgrade_check.hh                    downgrade_check.cc \

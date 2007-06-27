@@ -9,7 +9,7 @@ make_class_VDBMergerOptions()
     key contents_file "FSEntry"
     key config_protect std::string
     key config_protect_mask std::string
-    key package "const PackageDatabaseEntry *"
+    key package_id "tr1::shared_ptr<const PackageID>"
 
     allow_named_args
 

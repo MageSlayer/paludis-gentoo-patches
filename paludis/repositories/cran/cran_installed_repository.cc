@@ -1,7 +1,8 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006,2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2006, 2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,74 +19,49 @@
  */
 
 #include <paludis/hashed_containers.hh>
-#include <paludis/config_file.hh>
-#include <paludis/match_package.hh>
-#include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/eapi.hh>
-#include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/repository_info.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_tag.hh>
+#include <paludis/set_file.hh>
+#include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
-#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/tr1_functional.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
-#include <fstream>
 #include <functional>
 #include <algorithm>
-#include <vector>
 
 using namespace paludis;
 
 #include <paludis/repositories/cran/cran_installed_repository-sr.cc>
 
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::Type IDMap;
+
 namespace paludis
 {
-    /// Map for metadata.
-    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
-
     template <>
     struct Implementation<CRANInstalledRepository>
     {
         CRANInstalledRepositoryParams params;
 
-        /// Our owning env.
-        const Environment * const env;
-
-        /// Our base location.
-        FSEntry location;
-
-        /// Root location 
-        FSEntry root;
-
-        /// World file.
-        FSEntry world_file;
-
-        // Do we have entries loaded?
-        mutable bool entries_valid;
-
-        mutable std::vector<CRANDescription> entries;
-
-        /// Load entries.
-        void load_entries() const;
-
-        /// Metadata cache
-        mutable MetadataMap metadata;
-
-        /// Provide map.
-        mutable std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
+        mutable bool has_ids;
+        mutable IDMap ids;
 
         /// Constructor.
         Implementation(const CRANInstalledRepositoryParams &);
@@ -97,11 +73,7 @@ namespace paludis
 
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
     params(p),
-    env(p.environment),
-    location(p.location),
-    root(p.root),
-    world_file(p.world),
-    entries_valid(false)
+    has_ids(false)
 {
 }
 
@@ -109,19 +81,18 @@ Implementation<CRANInstalledRepository>::~Implementation()
 {
 }
 
+#if 0
 void
-Implementation<CRANInstalledRepository>::load_entries() const
+Implementation<CRANInstalledRepository>::need_ids() const
 {
-    Context context("When loading CRANInstalledRepository entries from '" +
-            stringify(location) + "':");
+    Context context("When loading CRANInstalledRepository IDs from '" + stringify(location) + "':");
 
-    entries.clear();
     entries_valid = true;
     try
     {
         for (DirIterator d(location), d_end ; d != d_end ; ++d)
         {
-            Context local_context("When parsing directoryy '" + stringify(*d) + "'.");
+            Context local_context("When parsing directoryy '" + stringify(*d) + "':");
             if (! d->is_directory())
                 continue;
 
@@ -172,6 +143,7 @@ Implementation<CRANInstalledRepository>::load_entries() const
         throw;
     }
 }
+#endif
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("cran_installed"),
@@ -193,6 +165,7 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .destination_interface(this)
             .licenses_interface(0)
             .portage_interface(0)
+            .make_virtuals_interface(0)
             .pretend_interface(0)
             .hook_interface(0),
             "cran_installed"),
@@ -200,9 +173,9 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
 {
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
-    config_info->add_kv("location", stringify(_imp->location));
-    config_info->add_kv("root", stringify(_imp->root));
-    config_info->add_kv("format", std::string("cran-installed"));
+    config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("root", stringify(_imp->params.root));
+    config_info->add_kv("format", "cran_installed");
 
     _info->add_section(config_info);
 }
@@ -220,28 +193,19 @@ CRANInstalledRepository::do_has_category_named(const CategoryNamePart & c) const
 bool
 CRANInstalledRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    Context context("When checking for package '" + stringify(q) +
-            "' in " + stringify(name()) + ":");
+    Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
 
     if (! do_has_category_named(q.category))
         return false;
 
-    if (! _imp->entries_valid)
-        _imp->load_entries();
+    need_ids();
 
-    std::pair<std::vector<CRANDescription>::const_iterator, std::vector<CRANDescription>::const_iterator>
-        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), q,
-                    CRANDescription::ComparePackage()));
-
-    return r.first != r.second;
+    return _imp->ids.end() != _imp->ids.find(q);
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
 CRANInstalledRepository::do_category_names() const
 {
-    if (! _imp->entries_valid)
-        _imp->load_entries();
-
     tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("cran"));
     return result;
@@ -253,126 +217,41 @@ CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    if (! _imp->entries_valid)
-        _imp->load_entries();
-
     tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     if (! do_has_category_named(c))
         return result;
 
-    std::vector<CRANDescription>::const_iterator e(_imp->entries.begin()), e_end(_imp->entries.end());
-    for ( ; e != e_end ; ++e)
-        result->insert(e->name);
+    need_ids();
+
+    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
+                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::first)));
 
     return result;
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-CRANInstalledRepository::do_version_specs(const QualifiedPackageName & n) const
+tr1::shared_ptr<const PackageIDSequence>
+CRANInstalledRepository::do_package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
-
-    if (! _imp->entries_valid)
-        _imp->load_entries();
-
-    for (std::vector<CRANDescription>::const_iterator e(_imp->entries.begin()), e_end(_imp->entries.end()) ;
-            e != e_end ; ++e)
-        if (n == e->name)
-            result->insert(e->version);
-
-    return result;
-}
-
-bool
-CRANInstalledRepository::do_has_version(const QualifiedPackageName & q,
-        const VersionSpec & v) const
-{
-    Context context("When checking for version '" + stringify(v) + "' in '"
-            + stringify(q) + "' in " + stringify(name()) + ":");
-
-    tr1::shared_ptr<const VersionSpecCollection> versions(do_version_specs(q));
-    return versions->end() != versions->find(v);
-}
-
-namespace
-{
-    /**
-     * Fetch the contents of a VDB file.
-     *
-     * \ingroup grpcranrepository
-     */
-    std::string
-    file_contents(const FSEntry & location, const QualifiedPackageName & name,
-            const std::string & key)
-    {
-        Context context("When loading metadata for '" + stringify(name)
-                + "' key '" + key + "' from '" + stringify(location) + "':");
-
-        FSEntry f(location / stringify(name.package));
-        if (! (f / key).is_regular_file())
-            return "";
-
-        std::ifstream ff(stringify(f / key).c_str());
-        if (! ff)
-            throw InternalError("CRANInstalledRepository", "Could not read '" + stringify(f / key) + "'");
-        return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
-                        std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
-    }
-}
-
-tr1::shared_ptr<const VersionMetadata>
-CRANInstalledRepository::do_version_metadata(
-        const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (_imp->metadata.end() != _imp->metadata.find(
-                std::make_pair(q, v)))
-            return _imp->metadata.find(std::make_pair(q, v))->second;
-
-    Context context("When fetching metadata for " + stringify(q) +
-            "-" + stringify(v));
-
-    if (! has_version(q, v))
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-
-    tr1::shared_ptr<VersionMetadata> result;
-
-    FSEntry d(_imp->location);
-    d /= stringify(q.package);
-    d /= "DESCRIPTION";
-
-    if (d.is_regular_file())
-    {
-        CRANDescription description(stringify(q.package), d, true);
-        // Don't put this into CRANDescription, as it's only relevant to CRANInstalledRepository
-        std::string repo(file_contents(_imp->location, q, "REPOSITORY"));
-        if (! repo.empty())
-            description.metadata->origins_interface->source.reset(new PackageDatabaseEntry(stringify(q.package), v,
-                    RepositoryName(repo)));
-        result = description.metadata;
-    }
-    else
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
-                stringify(q) + "-" + stringify(v) + "' in repository '" +
-                stringify(name()) + "': No DESCRIPTION file present.");
-        result.reset(new CRANVersionMetadata(true));
-        result->eapi = EAPIData::get_instance()->unknown_eapi();
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    if (! do_has_package_named(n))
         return result;
-    }
 
-    _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
+    need_ids();
+
+    IDMap::const_iterator i(_imp->ids.find(n));
+    if (i != _imp->ids.end())
+        result->push_back(i->second);
     return result;
 }
 
+#if 0
 tr1::shared_ptr<const Contents>
-CRANInstalledRepository::do_contents(
-        const QualifiedPackageName & q, const VersionSpec & v) const
+CRANInstalledRepository::do_contents(const Package ID & id) const
 {
-    Context context("When fetching contents for " + stringify(q) +
-            "-" + stringify(v));
+    Context context("When fetching contents for " + stringify(id) + ":");
 
     tr1::shared_ptr<Contents> result(new Contents);
 
@@ -395,8 +274,7 @@ CRANInstalledRepository::do_contents(
 
     std::ifstream ff(stringify(f).c_str());
     if (! ff)
-        throw InternalError(PALUDIS_HERE, "TODO reading " + stringify(_imp->location) + " name " +
-                stringify(q) + " version " + stringify(v) + " CONTENTS"); /// \todo
+        throw ConfigurationError("Could not read '" + stringify(f) + "'");
 
     std::string line;
     unsigned line_number(0);
@@ -484,6 +362,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
         return r->installed_time;
     }
 }
+#endif
 
 tr1::shared_ptr<Repository>
 CRANInstalledRepository::make_cran_installed_repository(
@@ -518,6 +397,7 @@ CRANInstalledRepositoryConfigurationError::CRANInstalledRepositoryConfigurationE
 {
 }
 
+#if 0
 void
 CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
         const UninstallOptions &) const
@@ -542,6 +422,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
     if (0 != run_command(cmd))
         throw PackageUninstallActionError("Couldn't unmerge '" + stringify(q) + "-" + stringify(v) + "'");
 }
+#endif
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
 CRANInstalledRepository::do_package_set(const SetName & s) const
@@ -553,16 +434,15 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
     {
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-        if (! _imp->entries_valid)
-            _imp->load_entries();
 
-        for (std::vector<CRANDescription>::const_iterator p(_imp->entries.begin()),
-                p_end(_imp->entries.end()) ; p != p_end ; ++p)
+        need_ids();
+
+        for (IDMap::const_iterator p(_imp->ids.begin()), p_end(_imp->ids.end()) ;
+                p != p_end ; ++p)
         {
             tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
-                    new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                            new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(
-                                    new QualifiedPackageName(p->name))))));
+                    new TreeLeaf<SetSpecTree, PackageDepSpec>(make_shared_ptr(
+                            new PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->first))))));
             result->add(spec);
         }
 
@@ -572,47 +452,24 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
     {
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
-        if (_imp->world_file.exists())
+        if (_imp->params.world.exists())
         {
-            LineConfigFile world(_imp->world_file, LineConfigFileOptions());
+            SetFile world(SetFileParams::create()
+                    .file_name(_imp->params.world)
+                    .type(sft_simple)
+                    .parse_mode(pds_pm_unspecific)
+                    .tag(tag)
+                    .environment(_imp->params.environment));
 
-            for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
-                    line != line_end ; ++line)
-            {
-                try
-                {
-                    if (std::string::npos == line->find('/'))
-                    {
-                        tr1::shared_ptr<SetSpecTree::ConstItem> spec(_imp->env->set(SetName(*line)));
-                        if (spec)
-                            result->add(spec);
-                        else
-                            Log::get_instance()->message(ll_warning, lc_no_context,
-                                    "Entry '" + stringify(*line) + "' in world file '" + stringify(_imp->world_file)
-                                    + "' is not a known set");
-                    }
-                    else
-                    {
-                        tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> > spec(
-                                new TreeLeaf<SetSpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                                        new PackageDepSpec(*line, pds_pm_unspecific))));
-                        result->add(spec);
-                    }
-                }
-                catch (const NameError & e)
-                {
-                    Log::get_instance()->message(ll_warning, lc_no_context,
-                            "Entry '" + stringify(*line) + "' in world file '" + stringify(_imp->world_file)
-                            + "' gave error '" + e.message() + "' (" + e.what() + ")");
-                }
-            }
+            return world.contents();
         }
         else
-            Log::get_instance()->message(ll_warning, lc_no_context, "World file '" + stringify(_imp->world_file)
-                    + "' doesn't exist");
-
-        return result;
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context) << "World file '" << _imp->params.world << "' doesn't exist";
+            return result;
+        }
     }
     else
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
@@ -635,6 +492,7 @@ CRANInstalledRepository::invalidate()
     _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
 }
 
+#if 0
 void
 CRANInstalledRepository::add_string_to_world(const std::string & n) const
 {
@@ -733,17 +591,18 @@ CRANInstalledRepository::remove_from_world(const SetName & n) const
 {
     remove_string_from_world(stringify(n));
 }
+#endif
 
 FSEntry
 CRANInstalledRepository::root() const
 {
-    return _imp->root;
+    return _imp->params.root;
 }
 
 bool
 CRANInstalledRepository::is_default_destination() const
 {
-    return _imp->env->root() == root();
+    return _imp->params.environment->root() == root();
 }
 
 bool
@@ -752,6 +611,7 @@ CRANInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
+#if 0
 void
 CRANInstalledRepository::merge(const MergeOptions & m)
 {
@@ -773,4 +633,5 @@ CRANInstalledRepository::merge(const MergeOptions & m)
                 stringify(name()) + "'");
 
 }
+#endif
 

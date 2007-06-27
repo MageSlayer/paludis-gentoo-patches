@@ -22,26 +22,74 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/name.hh>
+#include <paludis/eapi.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/repository.hh>
+#include <paludis/metadata_key.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::gems;
 
+namespace
+{
+    class GemMetadataStringKey :
+        public MetadataStringKey
+    {
+        private:
+            const std::string _value;
+
+        public:
+            GemMetadataStringKey(const std::string &, const std::string &, const std::string &);
+
+            virtual const std::string value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+
+    GemMetadataStringKey::GemMetadataStringKey(const std::string & r, const std::string & h, const std::string & v) :
+        MetadataStringKey(r, h),
+        _value(v)
+    {
+    }
+
+    const std::string
+    GemMetadataStringKey::value() const
+    {
+        return _value;
+    }
+}
+
 namespace paludis
 {
     template <>
     struct Implementation<GemSpecification>
     {
-        std::string name;
+        std::string name_part;
         std::string version;
-        std::string summary;
-        std::string authors;
         std::string date;
-        std::string description;
         std::string platform;
-        std::string rubyforge_project;
         std::string homepage;
+
+        tr1::shared_ptr<GemMetadataStringKey> description_key;
+        tr1::shared_ptr<GemMetadataStringKey> summary_key;
+        tr1::shared_ptr<GemMetadataStringKey> authors_key;
+        tr1::shared_ptr<GemMetadataStringKey> rubyforge_project_key;
+
+        tr1::shared_ptr<const FSEntry> load_from_file;
+
+        const tr1::shared_ptr<const Repository> repository;
+        const tr1::shared_ptr<const EAPI> eapi;
+
+        Implementation(const tr1::shared_ptr<const Repository> & r) :
+            repository(r),
+            eapi(EAPIData::get_instance()->eapi_from_string("gems-1"))
+        {
+        }
     };
 }
 
@@ -178,14 +226,26 @@ namespace
 
         void visit(const yaml::MapNode & n)
         {
-            _imp->summary = required_text_only_key(n, "summary");
-            _imp->authors = optional_text_sequence_key(n, "authors");
+            std::string summary(required_text_only_key(n, "summary"));
+            if (! summary.empty())
+                _imp->summary_key.reset(new GemMetadataStringKey("summary", "Summary", summary));
+
+            std::string description(optional_text_only_key(n, "description"));
+            if (! description.empty())
+                _imp->description_key.reset(new GemMetadataStringKey("description", "Description", description));
+
+            std::string authors(optional_text_sequence_key(n, "authors"));
+            if (! authors.empty())
+                _imp->authors_key.reset(new GemMetadataStringKey("authors", "Authors", authors));
+
+            std::string rubyforge_project(optional_text_sequence_key(n, "rubyforge_project"));
+            if (! rubyforge_project.empty())
+                _imp->rubyforge_project_key.reset(new GemMetadataStringKey("rubyforge_project", "Rubyforge Project", rubyforge_project));
+
             _imp->date = required_text_only_key(n, "date");
-            _imp->description = optional_text_only_key(n, "description");
             _imp->platform = required_text_only_key(n, "platform");
-            _imp->name = required_text_only_key(n, "name");
+            _imp->name_part = required_text_only_key(n, "name");
             _imp->version = required_version(n, "version");
-            _imp->rubyforge_project = optional_text_sequence_key(n, "rubyforge_project");
         }
 
         void visit(const yaml::SequenceNode & n) PALUDIS_ATTRIBUTE((noreturn));
@@ -204,20 +264,35 @@ namespace
     }
 }
 
-GemSpecification::GemSpecification(const yaml::Node & node) :
-    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>),
-    name(tr1::bind(&Implementation<GemSpecification>::name, _imp.get())),
-    version(tr1::bind(&Implementation<GemSpecification>::version, _imp.get())),
-    homepage(tr1::bind(&Implementation<GemSpecification>::homepage, _imp.get())),
-    rubyforge_project(tr1::bind(&Implementation<GemSpecification>::rubyforge_project, _imp.get())),
-    authors(tr1::bind(&Implementation<GemSpecification>::authors, _imp.get())),
-    date(tr1::bind(&Implementation<GemSpecification>::date, _imp.get())),
-    platform(tr1::bind(&Implementation<GemSpecification>::platform, _imp.get())),
-    summary(tr1::bind(&Implementation<GemSpecification>::summary, _imp.get())),
-    description(tr1::bind(&Implementation<GemSpecification>::description, _imp.get()))
+GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
+    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(r)),
+    _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
 {
-    TopVisitor v(_imp.get());
+    TopVisitor v(_imp);
     node.accept(v);
+
+    if (_imp->summary_key)
+        add_key(_imp->summary_key);
+
+    if (_imp->description_key)
+        add_key(_imp->description_key);
+
+    if (_imp->authors_key)
+        add_key(_imp->authors_key);
+
+    if (_imp->rubyforge_project_key)
+        add_key(_imp->rubyforge_project_key);
+}
+
+
+GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r,
+        const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
+    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(r)),
+    _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
+{
+    _imp->name_part = stringify(q);
+    _imp->version = stringify(v);
+    _imp->load_from_file.reset(new FSEntry(f));
 }
 
 GemSpecification::~GemSpecification()
@@ -228,4 +303,210 @@ BadSpecificationError::BadSpecificationError(const std::string & s) throw () :
     Exception("Bad gem specification: " + s)
 {
 }
+
+const std::string
+GemSpecification::canonical_form(const PackageIDCanonicalForm f) const
+{
+    switch (f)
+    {
+        case idcf_full:
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
+
+        case idcf_version:
+            return stringify(version());
+
+        case idcf_no_version:
+            return stringify(name()) + "::" + stringify(_imp->repository->name());
+
+        case last_idcf:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
+}
+
+const QualifiedPackageName
+GemSpecification::name() const
+{
+    return QualifiedPackageName(CategoryNamePart("gems") + PackageNamePart(_imp->name_part));
+}
+
+const VersionSpec
+GemSpecification::version() const
+{
+    return VersionSpec(_imp->version);
+}
+
+const SlotName
+GemSpecification::slot() const
+{
+    return SlotName(_imp->version);
+}
+
+const tr1::shared_ptr<const Repository>
+GemSpecification::repository() const
+{
+    return _imp->repository;
+}
+
+const tr1::shared_ptr<const EAPI>
+GemSpecification::eapi() const
+{
+    return _imp->eapi;
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+GemSpecification::virtual_for_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >
+GemSpecification::keywords_key() const
+{
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >();
+}
+
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >
+GemSpecification::iuse_key() const
+{
+    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >();
+}
+
+const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >
+GemSpecification::inherited_key() const
+{
+    return tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >();
+}
+
+const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >
+GemSpecification::use_key() const
+{
+    return tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
+GemSpecification::license_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+GemSpecification::provide_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+GemSpecification::build_dependencies_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+GemSpecification::run_dependencies_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+GemSpecification::post_dependencies_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
+GemSpecification::restrict_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+GemSpecification::src_uri_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+GemSpecification::homepage_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+GemSpecification::bin_uri_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+GemSpecification::suggested_dependencies_key() const
+{
+    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+GemSpecification::short_description_key() const
+{
+    return _imp->summary_key;
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+GemSpecification::long_description_key() const
+{
+    return _imp->description_key;
+}
+
+bool
+GemSpecification::arbitrary_less_than_comparison(const PackageID &) const
+{
+    return false;
+}
+
+std::size_t
+GemSpecification::extra_hash_value() const
+{
+    return 0;
+}
+
+void
+GemSpecification::need_keys_added() const
+{
+    if (_imp->load_from_file)
+        throw InternalError(PALUDIS_HERE, "Got to do the load from file thing");
+}
+
+#if 0
+InstalledGemsRepository::need_version_metadata(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    MetadataMap::const_iterator i(_imp->metadata.find(std::make_pair(q, v)));
+    if (i != _imp->metadata.end())
+        return;
+
+    Context c("When loading version metadata for '" + stringify(PackageDatabaseEntry(q, v, name())) + "':");
+
+    tr1::shared_ptr<gems::InstalledGemMetadata> m(new gems::InstalledGemMetadata(v));
+    _imp->metadata.insert(std::make_pair(std::make_pair(q, v), m));
+
+    Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
+            "/gems/gems.bash specification '" + stringify(q.package) + "' '" + stringify(v) + "'");
+    cmd.with_stderr_prefix(stringify(q) + "-" + stringify(v) + "::" + stringify(name()) + "> ");
+    cmd.with_sandbox();
+    cmd.with_uid_gid(_imp->params.environment->reduced_uid(), _imp->params.environment->reduced_gid());
+
+    PStream p(cmd);
+    std::string output((std::istreambuf_iterator<char>(p)), std::istreambuf_iterator<char>());
+
+    if (0 != p.exit_status())
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Version metadata extraction returned non-zero";
+        return;
+    }
+
+    yaml::Document spec_doc(output);
+    gems::GemSpecification spec(*spec_doc.top());
+    m->populate_from_specification(spec);
+    m->eapi = EAPIData::get_instance()->eapi_from_string("gems-1");
+}
+#endif
 

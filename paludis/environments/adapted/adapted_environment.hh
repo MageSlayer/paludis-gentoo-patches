@@ -57,21 +57,21 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+            virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
-                    const UseFlagName &, const PackageDatabaseEntry &) const
+                    const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual MaskReasons mask_reasons(const PackageDatabaseEntry &,
+            virtual MaskReasons mask_reasons(const PackageID &,
                     const MaskReasonsOptions & = MaskReasonsOptions()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry &) const
+            virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<PackageDatabase> package_database()

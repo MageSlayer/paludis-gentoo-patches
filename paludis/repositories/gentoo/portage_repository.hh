@@ -24,6 +24,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/repositories/gentoo/portage_repository_params.hh>
 #include <paludis/repositories/gentoo/portage_repository_profile.hh>
 #include <paludis/repositories/gentoo/layout.hh>
@@ -62,79 +63,100 @@ namespace paludis
         public RepositoryPortageInterface,
         public RepositoryHookInterface,
         public RepositoryPretendInterface,
+        public tr1::enable_shared_from_this<PortageRepository>,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
             void need_mirrors() const;
 
         protected:
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
-
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
-
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
-
-            tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
-                    const PackageNamePart & p) const;
-
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
-
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
-
-            virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual bool do_query_repository_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual bool do_query_profile_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            /* RepositoryLicensesInterface */
 
             virtual tr1::shared_ptr<FSEntry> do_license_exists(
                     const std::string & license) const;
 
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
+            /* RepositorySetsInterface */
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
 
             virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
+            /* RepositorySyncableInterface */
+
             virtual bool do_sync() const;
 
-            virtual bool do_pretend(const QualifiedPackageName &, const VersionSpec &) const;
+            /* RepositoryMaskInterface */
 
-            virtual tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
+            virtual bool do_query_repository_masks(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
-                    const RepositoryVirtualsEntry &, const VersionSpec & v) const;
+            virtual bool do_query_profile_masks(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUseInterface */
 
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
-            virtual std::string do_describe_use_flag(const UseFlagName &, const PackageDatabaseEntry &) const;
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* end of RepositoryUseInterface */
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* RepositoryDestinationInterface */
+            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
-            virtual bool is_default_destination() const;
-            virtual bool want_pre_post_phases() const;
-            virtual void merge(const MergeOptions &);
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* end of RepositoryDestinationInterface */
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryInstallableInterface */
+
+            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
+
+            /* RepositoryEnvironmentVariableInterface */
+
+            virtual std::string get_environment_variable(
+                    const tr1::shared_ptr<const PackageID> & for_package,
+                    const std::string & var) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryPretendInterface */
+
+            virtual bool do_pretend(const tr1::shared_ptr<const PackageID> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+                    const PackageNamePart &) const;
+
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
@@ -150,16 +172,34 @@ namespace paludis
             ~PortageRepository();
 
             virtual void invalidate();
-            virtual void regenerate_cache() const;
 
-            virtual std::string get_environment_variable(
-                    const PackageDatabaseEntry & for_package,
-                    const std::string & var) const;
+            /* RepositoryMirrorsInterface */
 
             virtual MirrorsIterator begin_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual MirrorsIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryVirtualsInterface */
+
+            virtual tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryDestinationInterface */
+
+            virtual bool is_suitable_destination_for(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool is_default_destination() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool want_pre_post_phases() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void merge(const MergeOptions &);
+
+            ///\}
 
             ///\name Information about PortageRepository
             ///\{
@@ -192,6 +232,7 @@ namespace paludis
 
             const tr1::shared_ptr<const Layout> layout() const;
 
+            void regenerate_cache() const;
     };
 }
 

@@ -18,12 +18,13 @@
  */
 
 #include "use_flag_pretty_printer.hh"
-#include <paludis/version_metadata.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "colour.hh"
@@ -57,31 +58,22 @@ UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
 }
 
 void
-UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
-        const PackageDatabaseEntry * const old_pkg)
+UseFlagPrettyPrinter::print_package_flags(const PackageID & pkg,
+        const PackageID * const old_pkg)
 {
     std::set<UseFlagName> iuse, old_iuse;
 
-    tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->
-            fetch_repository(pkg.repository)->version_metadata(pkg.name, pkg.version));
-
-    if (! metadata->ebuild_interface)
+    if (! pkg.iuse_key())
         return;
 
-    std::copy(metadata->ebuild_interface->iuse()->begin(), metadata->ebuild_interface->iuse()->end(),
+    std::copy(pkg.iuse_key()->value()->begin(), pkg.iuse_key()->value()->end(),
             transform_inserter(std::inserter(iuse, iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
-    if (old_pkg)
-    {
-        tr1::shared_ptr<const VersionMetadata> old_metadata(environment()->package_database()->
-                fetch_repository(old_pkg->repository)->version_metadata(old_pkg->name, old_pkg->version));
-        if (old_metadata->ebuild_interface)
-            std::copy(old_metadata->ebuild_interface->iuse()->begin(), old_metadata->ebuild_interface->iuse()->end(),
-                    transform_inserter(std::inserter(old_iuse, old_iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
-    }
+    if (old_pkg && old_pkg->iuse_key())
+        std::copy(old_pkg->iuse_key()->value()->begin(), old_pkg->iuse_key()->value()->end(),
+                transform_inserter(std::inserter(old_iuse, old_iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
-    const RepositoryUseInterface * const use_interface(environment()->package_database()->
-            fetch_repository(pkg.repository)->use_interface);
+    const RepositoryUseInterface * const use_interface(pkg.repository()->use_interface);
 
     /* first pass: only non-expand flags */
     for (std::set<UseFlagName>::const_iterator flag(iuse.begin()), flag_end(iuse.end()) ;

@@ -20,6 +20,7 @@
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/util/fs_entry.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <fstream>

@@ -1,6 +1,12 @@
 #!/bin/bash
 
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --list-packages || exit 12
+
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --query test-category/target || exit 13
+
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target && exit 1
 PALUDIS_INSTALL_TEST_DIE_PLEASE=yes \
     PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
@@ -18,5 +24,9 @@ PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target && exit 9
 grep target install_TEST_dir/root/var/db/pkg/world >/dev/null && exit 10
+
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --query test-category/target || exit 11
+
 true
 

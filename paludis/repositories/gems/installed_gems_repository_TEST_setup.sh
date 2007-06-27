@@ -4,3 +4,7 @@
 mkdir installed_gems_repository_TEST_dir || exit 1
 cd installed_gems_repository_TEST_dir || exit 1
 
+mkdir -p installed-repo/installed_dir/specifications
+cat <<END > installed-repo/yaml
+END
+

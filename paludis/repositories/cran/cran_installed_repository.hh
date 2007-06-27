@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +32,6 @@
  * \ingroup grpcraninstrepository
  */
 
-
 namespace paludis
 {
 
@@ -53,50 +53,47 @@ namespace paludis
         public RepositoryDestinationInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
+        private:
+            void need_ids() const;
+
         protected:
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
+            /* Repository */
 
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
-
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_has_version(const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const Contents> do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            /* RepositoryInstalledInterface */
 
-            virtual time_t do_installed_time(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
+            virtual time_t do_installed_time(const PackageID &)
+                const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
-                    const UninstallOptions &) const;
+            /* RepositoryContentsInterface */
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName &) const;
+            virtual tr1::shared_ptr<const Contents> do_contents(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
+            /* RepositoryUninstallableInterface */
 
-            /**
-             * Add a string to world.
-             */
-            virtual void add_string_to_world(const std::string &) const;
+            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const;
 
-            /**
-             * Remove a string from world.
-             */
-            virtual void remove_string_from_world(const std::string &) const;
+            /* RepositorySetsInterface */
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             /**
@@ -118,21 +115,32 @@ namespace paludis
 
             virtual void invalidate();
 
+            /* RepositoryInstalledInterface */
+
+            virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositorySetsInterface */
+
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryWorldInterface */
+
             virtual void add_to_world(const QualifiedPackageName &) const;
-
-            virtual void remove_from_world(const QualifiedPackageName &) const;
-
             virtual void add_to_world(const SetName &) const;
-
+            virtual void remove_from_world(const QualifiedPackageName &) const;
             virtual void remove_from_world(const SetName &) const;
 
-            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
+            /* RepositoryDestinationInterface */
 
-            virtual bool is_default_destination() const;
+            virtual bool is_suitable_destination_for(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool want_pre_post_phases() const;
+            virtual bool is_default_destination() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry root() const;
+            virtual bool want_pre_post_phases() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeOptions &);
     };
@@ -144,7 +152,8 @@ namespace paludis
      * \ingroup grpcraninstrepository
      * \ingroup grpexceptions
      */
-    class PALUDIS_VISIBLE CRANInstalledRepositoryConfigurationError : public ConfigurationError
+    class PALUDIS_VISIBLE CRANInstalledRepositoryConfigurationError :
+        public ConfigurationError
     {
         public:
             /**

@@ -33,9 +33,9 @@ namespace
     struct AmbiguousConfigTarget :
         public Exception
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> matches;
+        tr1::shared_ptr<const PackageIDSequence> matches;
 
-        AmbiguousConfigTarget(tr1::shared_ptr<const PackageDatabaseEntryCollection> & m) throw () :
+        AmbiguousConfigTarget(tr1::shared_ptr<const PackageIDSequence> & m) throw () :
             Exception("Ambiguous config target"),
             matches(m)
         {
@@ -47,21 +47,19 @@ namespace
     };
 
     int
-    do_one_config_entry(tr1::shared_ptr<Environment> env, const PackageDatabaseEntry & p)
+    do_one_config_entry(const tr1::shared_ptr<const PackageID> & p)
     {
         int return_code(0);
 
-        tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(p.repository));
-        const RepositoryConfigInterface * conf_if(repo->config_interface);
-
+        const RepositoryConfigInterface * conf_if(p->repository()->config_interface);
         if (! conf_if)
         {
-            std::cerr << "Repository '" << repo->name() <<
+            std::cerr << "Repository '" << p->repository()->name() <<
                 "' does not support post-install configuration" << std::endl;
             return_code |= 1;
         }
         else
-            conf_if->config(p.name, p.version);
+            conf_if->config(p);
 
         return return_code;
     }
@@ -79,7 +77,7 @@ namespace
                                 PackageNamePart(target))))) :
                 new PackageDepSpec(target, pds_pm_permissive));
 
-        tr1::shared_ptr<const PackageDatabaseEntryCollection>
+        tr1::shared_ptr<const PackageIDSequence>
             entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
         if (entries->empty())
@@ -88,7 +86,7 @@ namespace
         if (next(entries->begin()) != entries->end())
             throw AmbiguousConfigTarget(entries);
 
-        return do_one_config_entry(env, *entries->begin());
+        return do_one_config_entry(*entries->begin());
     }
 }
 
@@ -124,9 +122,9 @@ do_config(tr1::shared_ptr<Environment> env)
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous config target '" << *q << "'. Did you mean:" << endl;
-            for (PackageDatabaseEntryCollection::Iterator o(e.matches->begin()),
+            for (PackageIDSequence::Iterator o(e.matches->begin()),
                     o_end(e.matches->end()) ; o != o_end ; ++o)
-                cerr << "    * =" << colour(cl_package_name, *o) << endl;
+                cerr << "    * =" << colour(cl_package_name, **o) << endl;
             cerr << endl;
         }
     }

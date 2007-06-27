@@ -258,7 +258,7 @@ PackagesListModel::populate_in_paludis_thread()
         _imp->main_window->environment()->set(*_imp->packages_page->get_set())->accept(f);
         std::set<std::string> a;
         std::transform(indirect_iterator(f.begin()), indirect_iterator(f.end()), std::inserter(a, a.begin()),
-                std::tr1::mem_fn(&StringDepSpec::text));
+                tr1::mem_fn(&StringDepSpec::text));
 
         for (std::set<std::string>::const_iterator i(a.begin()), i_end(a.end()) ;
                 i != i_end ; ++i)

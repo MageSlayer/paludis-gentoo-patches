@@ -36,25 +36,38 @@ namespace paludis
         public RepositoryProvidesInterface
     {
         protected:
-            virtual tr1::shared_ptr<const ProvidesCollection> provided_packages() const;
+            /* RepositoryInstalledInterface */
 
-            virtual tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
-                    const RepositoryProvidesEntry &) const;
+            virtual time_t do_installed_time(const PackageID &) const;
+
+            virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryDestinationInterface */
+
+            virtual bool is_suitable_destination_for(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool is_default_destination() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool want_pre_post_phases() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void merge(const MergeOptions &);
+
+            /* RepositoryProvidesInterface */
+
+            virtual tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations
             ///\{
 
             FakeInstalledRepository(const Environment * const, const RepositoryName &);
+            ~FakeInstalledRepository();
 
             ///\}
-
-            bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
-            bool is_default_destination() const;
-            bool want_pre_post_phases() const;
-            void merge(const MergeOptions &);
-
-            virtual FSEntry root() const;
     };
 }
 

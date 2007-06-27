@@ -17,19 +17,37 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "fake_repository.hh"
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_id.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<FakeRepository>
+    {
+        tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
+
+        Implementation() :
+            virtual_packages(new FakeRepository::VirtualsSequence::Concrete)
+        {
+        }
+    };
+}
+
 FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :
+    PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
             .installable_interface(this)
             .installed_interface(0)
@@ -50,54 +68,33 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .licenses_interface(0)
             .portage_interface(0)
             .pretend_interface(0)
+            .make_virtuals_interface(0)
             .hook_interface(0),
             "fake"),
-    _virtual_packages(new VirtualsCollection::Concrete)
+            _imp(PrivateImplementationPattern<FakeRepository>::_imp.get())
+{
+}
+
+FakeRepository::~FakeRepository()
 {
 }
 
 void
-FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &,
-        const InstallOptions &) const
+FakeRepository::do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const
 {
 }
 
-tr1::shared_ptr<const FakeRepository::VirtualsCollection>
+tr1::shared_ptr<const FakeRepository::VirtualsSequence>
 FakeRepository::virtual_packages() const
 {
-    return _virtual_packages;
-}
-
-tr1::shared_ptr<const VersionMetadata>
-FakeRepository::virtual_package_version_metadata(
-        const RepositoryVirtualsEntry & p, const VersionSpec & v) const
-{
-    Context context("When fetching virtual package version metadata for '" + stringify(*p.provided_by_spec)
-            + "' version '" + stringify(v) + "':");
-
-    if (! p.provided_by_spec->package_ptr())
-        throw ConfigurationError("Virtual provider atom does not specify an unambiguous package");
-
-    tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
-    tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
-
-    result->eapi = m->eapi;
-    result->deps_interface->set_build_depend("=" + stringify(*p.provided_by_spec->package_ptr())
-            + "-" + stringify(v));
-    result->deps_interface->set_run_depend("=" + stringify(*p.provided_by_spec->package_ptr())
-            + "-" + stringify(v));
-
-    return result;
+    return _imp->virtual_packages;
 }
 
 void
 FakeRepository::add_virtual_package(const QualifiedPackageName & q, tr1::shared_ptr<const PackageDepSpec> p)
 {
-    _virtual_packages->insert(RepositoryVirtualsEntry(q, p));
+    _imp->virtual_packages->push_back(RepositoryVirtualsEntry(q, p));
 }
-
-#ifndef MONOLITHIC
 
 namespace paludis
 {
@@ -112,6 +109,4 @@ extern "C"
 void register_repositories(RepositoryMaker *)
 {
 }
-
-#endif
 

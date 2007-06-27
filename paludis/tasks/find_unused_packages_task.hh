@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_PALUDIS_TASKS_FIND_UNUSED_PACKAGES_TASK_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/package_database.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/repository-fwd.hh>
 
 namespace paludis
 {
-    class Environment;
-    class Repository;
-
     /**
      * Task to find unused package versions for a given package name.
      *
@@ -62,7 +62,7 @@ namespace paludis
             /**
              * Run the task.
              */
-            tr1::shared_ptr<const PackageDatabaseEntryCollection> execute(const QualifiedPackageName &);
+            tr1::shared_ptr<const PackageIDSequence> execute(const QualifiedPackageName &);
     };
 }
 

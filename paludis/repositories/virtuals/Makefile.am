@@ -1,5 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = vr_entry-sr.hh vr_entry-sr.cc
+DISTCLEANFILES =
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -27,12 +27,12 @@ libpaludisvirtualsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@V
 paludis_repositories_virtuals_include_HEADERS = \
 	virtuals_repository.hh \
 	installed_virtuals_repository.hh \
-	vr_entry.hh
+	package_id.hh
 
 libpaludisvirtualsrepository_la_SOURCES = \
 	virtuals_repository.cc \
 	installed_virtuals_repository.cc \
-	vr_entry.cc \
+	package_id.cc \
 	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
@@ -46,35 +46,49 @@ libpaludisvirtualsrepository_la_LIBADD = \
 
 endif
 
-EXTRA_DIST = \
-	vr_entry-sr.hh \
-	vr_entry-sr.cc \
-	vr_entry.sr
-
-BUILT_SOURCES = \
-	vr_entry-sr.hh \
-	vr_entry-sr.cc
-
-TESTS =
+TESTS = virtuals_repository_TEST installed_virtuals_repository_TEST
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS =
 
+EXTRA_DIST = virtuals_repository_TEST_SOURCES installed_virtuals_repository_TEST_SOURCES
+
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gentoo/ebuild/`" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/`:` \
+		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
-vr_entry-sr.hh : vr_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vr_entry.sr > $@
+virtuals_repository_TEST_LDADD = \
+	libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/test/libtest.a
 
-vr_entry-sr.cc : vr_entry.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vr_entry.sr > $@
+installed_virtuals_repository_TEST_LDADD = \
+	libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/test/libtest.a
+
+virtuals_repository_TEST_SOURCES = \
+	virtuals_repository_TEST.cc
+
+installed_virtuals_repository_TEST_SOURCES = \
+	installed_virtuals_repository_TEST.cc
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-
 

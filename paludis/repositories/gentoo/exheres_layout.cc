@@ -20,12 +20,15 @@
 #include <paludis/repositories/gentoo/exheres_layout.hh>
 #include <paludis/repositories/gentoo/portage_repository_entries.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/stringify.hh>
@@ -43,20 +46,20 @@ using namespace paludis;
 
 typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<VersionSpecCollection> >::Type VersionsMap;
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
 
 namespace paludis
 {
     template<>
     struct Implementation<ExheresLayout>
     {
-        const RepositoryName name;
+        const PortageRepository * const repository;
         const FSEntry tree_root;
 
         mutable bool has_category_names;
         mutable CategoryMap category_names;
         mutable PackagesMap package_names;
-        mutable VersionsMap version_specs;
+        mutable IDMap ids;
 
         mutable tr1::shared_ptr<CategoryNamePartCollection> category_names_collection;
         tr1::shared_ptr<const PortageRepositoryEntries> entries;
@@ -67,9 +70,9 @@ namespace paludis
         tr1::shared_ptr<FSEntryCollection> mirror_files;
         tr1::shared_ptr<FSEntryCollection> use_desc_dirs;
 
-        Implementation(const RepositoryName & n, const FSEntry & t,
+        Implementation(const PortageRepository * const n, const FSEntry & t,
                 tr1::shared_ptr<const PortageRepositoryEntries> e) :
-            name(n),
+            repository(n),
             tree_root(t),
             has_category_names(false),
             entries(e),
@@ -83,11 +86,11 @@ namespace paludis
     };
 }
 
-ExheresLayout::ExheresLayout(const RepositoryName & name, const FSEntry & tree_root,
+ExheresLayout::ExheresLayout(const PortageRepository * const r, const FSEntry & tree_root,
         tr1::shared_ptr<const PortageRepositoryEntries> e,
         tr1::shared_ptr<const FSEntry> f) :
     Layout(f),
-    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(name, tree_root, e))
+    PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(r, tree_root, e))
 {
     if (master_repository_location())
     {
@@ -115,7 +118,7 @@ ExheresLayout::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    Context context("When loading category names for " + stringify(_imp->name) + ":");
+    Context context("When loading category names for " + stringify(_imp->repository->name()) + ":");
 
     Log::get_instance()->message(ll_debug, lc_context, "need_category_names");
 
@@ -154,21 +157,23 @@ ExheresLayout::need_category_names() const
 
     if (! found_one)
         throw PortageRepositoryConfigurationError("No categories file available for repository '"
-                + stringify(_imp->name) + "', and this layout does not allow auto-generation");
+                + stringify(_imp->repository->name()) + "', and this layout does not allow auto-generation");
 
     _imp->has_category_names = true;
 }
 
 void
-ExheresLayout::need_version_specs(const QualifiedPackageName & n) const
+ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 {
+    using namespace tr1::placeholders;
+
     if (_imp->package_names[n])
         return;
 
     Context context("When loading versions for '" + stringify(n) + "' in "
-            + stringify(_imp->name) + ":");
+            + stringify(_imp->repository->name()) + ":");
 
-    tr1::shared_ptr<VersionSpecCollection> v(new VersionSpecCollection::Concrete);
+    tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence::Concrete);
 
     FSEntry path(_imp->tree_root / "packages" / stringify(n.category) / stringify(n.package));
 
@@ -179,28 +184,31 @@ ExheresLayout::need_version_specs(const QualifiedPackageName & n) const
 
         try
         {
-            if (! v->insert(VersionSpec(_imp->entries->extract_package_file_version(n, *e))))
+            tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, _imp->entries->extract_package_file_version(n, *e), *e, ""));
+            if (v->end() != std::find_if(v->begin(), v->end(),
+                        tr1::bind(std::equal_to<VersionSpec>(), id->version(), tr1::bind(tr1::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
-                        + "' for '" + stringify(n) + "' in repository '" + stringify(_imp->name)
+                        + "' for '" + stringify(n) + "' in repository '" + stringify(_imp->repository->name())
                         + "' because another equivalent version already exists");
+            v->push_back(id);
         }
         catch (const Exception & ee)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
                     + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
-                    + stringify(_imp->name) + "' due to exception '" + ee.message() + "' ("
+                    + stringify(_imp->repository->name()) + "' due to exception '" + ee.message() + "' ("
                     + ee.what() + ")'");
         }
     }
 
-    _imp->version_specs.insert(std::make_pair(n, v));
+    _imp->ids.insert(std::make_pair(n, v));
     _imp->package_names[n] = true;
 }
 
 bool
 ExheresLayout::has_category_named(const CategoryNamePart & c) const
 {
-    Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->name) + "':");
+    Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->repository->name()) + "':");
 
     need_category_names();
     return _imp->category_names.end() != _imp->category_names.find(c);
@@ -209,7 +217,7 @@ ExheresLayout::has_category_named(const CategoryNamePart & c) const
 bool
 ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 {
-    Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->name) + ":");
+    Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->repository->name()) + ":");
 
     need_category_names();
 
@@ -257,7 +265,7 @@ ExheresLayout::need_category_names_collection() const
 tr1::shared_ptr<const CategoryNamePartCollection>
 ExheresLayout::category_names() const
 {
-    Context context("When fetching category names in " + stringify(stringify(_imp->name)) + ":");
+    Context context("When fetching category names in " + stringify(stringify(_imp->repository->name())) + ":");
 
     need_category_names_collection();
     return _imp->category_names_collection;
@@ -273,7 +281,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
      * slowing down single item queries. */
 
     Context context("When fetching package names in category '" + stringify(c)
-            + "' in '" + stringify(_imp->name) + "':");
+            + "' in '" + stringify(_imp->repository->name()) + "':");
 
     need_category_names();
 
@@ -299,7 +307,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '" +
                         d->basename() + "' in category '" + stringify(c) + "' in repository '"
-                        + stringify(_imp->name) + "' (" + e.message() + ")");
+                        + stringify(_imp->repository->name()) + "' (" + e.message() + ")");
             }
         }
 
@@ -315,34 +323,18 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
     return result;
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-ExheresLayout::version_specs(const QualifiedPackageName & n) const
+tr1::shared_ptr<const PackageIDSequence>
+ExheresLayout::package_ids(const QualifiedPackageName & n) const
 {
-    Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->name) + ":");
+    Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->repository->name()) + ":");
 
     if (has_package_named(n))
     {
-        need_version_specs(n);
-        return _imp->version_specs.find(n)->second;
+        need_package_ids(n);
+        return _imp->ids.find(n)->second;
     }
     else
-        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
-}
-
-bool
-ExheresLayout::has_version(const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    Context context("When checking for version '" + stringify(v) + "' in '"
-            + stringify(q) + "' in " + stringify(_imp->name) + ":");
-
-    if (has_package_named(q))
-    {
-        need_version_specs(q);
-        tr1::shared_ptr<VersionSpecCollection> vv(_imp->version_specs.find(q)->second);
-        return vv->end() != vv->find(v);
-    }
-    else
-        return false;
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
 }
 
 FSEntry
@@ -406,39 +398,21 @@ ExheresLayout::eapi_ebuild_suffix() const
 }
 
 FSEntry
-ExheresLayout::package_file(const QualifiedPackageName & q, const VersionSpec & v) const
+ExheresLayout::package_file(const PackageID & id) const
 {
-    for (DirIterator d(package_directory(q)), d_end ; d != d_end ; ++d)
+    for (DirIterator d(package_directory(id.name())), d_end ; d != d_end ; ++d)
     {
         std::string::size_type p(d->basename().rfind('.'));
         if (std::string::npos == p)
             continue;
 
-        std::string prefix(stringify(q.package) + "-" + stringify(v));
+        std::string prefix(stringify(id.name().package) + "-" + stringify(id.version()));
         if (0 == d->basename().compare(0, p, prefix))
-            if (_imp->entries->is_package_file(q, *d))
+            if (_imp->entries->is_package_file(id.name(), *d))
                 return *d;
     }
 
-    throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, _imp->name)));
-}
-
-std::string
-ExheresLayout::eapi_string_if_known(const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    for (DirIterator d(package_directory(q)), d_end ; d != d_end ; ++d)
-    {
-        std::string::size_type p(d->basename().rfind('.'));
-        if (std::string::npos == p)
-            continue;
-
-        std::string prefix(stringify(q.package) + "-" + stringify(v));
-        if (0 == d->basename().compare(0, p, prefix))
-            if (_imp->entries->is_package_file(q, *d))
-                return d->basename().substr(p + 1);
-    }
-
-    return "";
+    throw NoSuchPackageError(stringify(id));
 }
 
 FSEntry
@@ -447,4 +421,21 @@ ExheresLayout::profiles_base_dir() const
     return _imp->tree_root / "profiles";
 }
 
+tr1::shared_ptr<const FSEntryCollection>
+ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
+{
+    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+
+    if (_imp->repository->params().master_repository)
+        result->push_back(_imp->repository->params().master_repository->params().location / "exlibs");
+    result->push_back(_imp->tree_root / "exlibs");
+    if (_imp->repository->params().master_repository)
+        result->push_back(_imp->repository->params().master_repository->layout()->category_directory(q.category) / "exlibs");
+    result->push_back(_imp->repository->layout()->category_directory(q.category) / "exlibs");
+    if (_imp->repository->params().master_repository)
+        result->push_back(_imp->repository->params().master_repository->layout()->package_directory(q));
+    result->push_back(_imp->repository->layout()->package_directory(q));
+
+    return result;
+}
 

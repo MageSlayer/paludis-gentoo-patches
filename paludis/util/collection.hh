@@ -101,23 +101,8 @@ namespace paludis
 
             ///\}
 
-            ///\name Finding items
-            ///\{
-
-            /**
-             * Return an Iterator to an item, or end() if there's no match.
-             */
-            virtual Iterator find(const T_ & v) const = 0;
-
-            ///\}
-
             ///\name Adding and modifying items
             ///\{
-
-            /**
-             * Append an item, return whether we succeeded.
-             */
-            virtual bool append(T_ v) = 0;
 
             /**
              * Append an item.

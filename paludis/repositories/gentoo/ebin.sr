@@ -4,7 +4,7 @@
 make_class_EbinCommandParams()
 {
     key environment "const Environment *"
-    key db_entry "const PackageDatabaseEntry *"
+    key package_id "tr1::shared_ptr<const PackageID>"
     key portdir FSEntry
     key distdir FSEntry
     key buildroot FSEntry

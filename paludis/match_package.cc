@@ -20,9 +20,9 @@
 #include <paludis/match_package.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
@@ -33,15 +33,15 @@ bool
 paludis::match_package(
         const Environment & env,
         const PackageDepSpec & spec,
-        const PackageDatabaseEntry & entry)
+        const PackageID & entry)
 {
-    if (spec.package_ptr() && *spec.package_ptr() != entry.name)
+    if (spec.package_ptr() && *spec.package_ptr() != entry.name())
         return false;
 
-    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != entry.name.package)
+    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != entry.name().package)
         return false;
 
-    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != entry.name.category)
+    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != entry.name().category)
         return false;
 
     if (spec.version_requirements_ptr())
@@ -50,7 +50,7 @@ paludis::match_package(
             case vr_and:
                 for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
                         r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                    if (! r->version_operator.as_version_spec_comparator()(entry.version, r->version_spec))
+                    if (! r->version_operator.as_version_spec_comparator()(entry.version(), r->version_spec))
                         return false;
                 break;
 
@@ -59,7 +59,7 @@ paludis::match_package(
                     bool matched(false);
                     for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
                             r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                        if (r->version_operator.as_version_spec_comparator()(entry.version, r->version_spec))
+                        if (r->version_operator.as_version_spec_comparator()(entry.version(), r->version_spec))
                         {
                             matched = true;
                             break;
@@ -75,44 +75,37 @@ paludis::match_package(
         }
 
     if (spec.repository_ptr())
-        if (*spec.repository_ptr() != entry.repository)
+        if (*spec.repository_ptr() != entry.repository()->name())
             return false;
 
-    if (spec.slot_ptr() || spec.use_requirements_ptr())
+    if (spec.slot_ptr())
+        if (*spec.slot_ptr() != entry.slot())
+            return false;
+
+    if (spec.use_requirements_ptr())
     {
-        tr1::shared_ptr<const VersionMetadata> metadata(env.package_database()->fetch_repository(
-                    entry.repository)->version_metadata(
-                    entry.name, entry.version));
-
-        if (spec.slot_ptr())
-            if (*spec.slot_ptr() != SlotName(metadata->slot))
-                return false;
-
-        if (spec.use_requirements_ptr())
+        for (UseRequirements::Iterator u(spec.use_requirements_ptr()->begin()),
+                u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
         {
-            for (UseRequirements::Iterator u(spec.use_requirements_ptr()->begin()),
-                    u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
+            switch (u->second)
             {
-                switch (u->second)
-                {
-                    case use_unspecified:
-                        continue;
+                case use_unspecified:
+                    continue;
 
-                    case use_enabled:
-                        if (! env.query_use(u->first, entry))
-                            return false;
-                        continue;
+                case use_enabled:
+                    if (! env.query_use(u->first, entry))
+                        return false;
+                    continue;
 
-                    case use_disabled:
-                        if (env.query_use(u->first, entry))
-                            return false;
-                        continue;
+                case use_disabled:
+                    if (env.query_use(u->first, entry))
+                        return false;
+                    continue;
 
-                    case last_use:
-                        ;
-                }
-                throw InternalError(PALUDIS_HERE, "bad UseFlagState");
+                case last_use:
+                    ;
             }
+            throw InternalError(PALUDIS_HERE, "bad UseFlagState");
         }
     }
 
@@ -122,12 +115,11 @@ paludis::match_package(
 namespace
 {
     struct IsInHeirarchy :
-        ConstVisitor<SetSpecTree>,
-        std::unary_function<PackageDatabaseEntry, bool>
+        ConstVisitor<SetSpecTree>
     {
         const Environment & env;
         const SetSpecTree::ConstItem & target;
-        const PackageDatabaseEntry * dbe;
+        const PackageID * id;
         bool matched;
 
         IsInHeirarchy(const Environment & e, const SetSpecTree::ConstItem & t) :
@@ -137,9 +129,9 @@ namespace
         {
         }
 
-        bool operator() (const PackageDatabaseEntry & e)
+        bool operator() (const PackageID & e)
         {
-            dbe = &e;
+            id = &e;
             matched = false;
             target.accept(*this);
             return matched;
@@ -160,7 +152,7 @@ namespace
             if (matched)
                 return;
 
-            if (match_package(env, a, *dbe))
+            if (match_package(env, a, *id))
                 matched = true;
         }
     };
@@ -170,7 +162,7 @@ bool
 paludis::match_package_in_set(
         const Environment & env,
         const SetSpecTree::ConstItem & target,
-        const PackageDatabaseEntry & entry)
+        const PackageID & entry)
 {
     IsInHeirarchy h(env, target);
     return h(entry);

@@ -19,11 +19,12 @@
 
 #include "use_conf.hh"
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/config_file.hh>
+#include <paludis/package_id.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
@@ -189,17 +190,16 @@ UseConf::add(const FSEntry & filename)
 }
 
 UseFlagState
-UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
+UseConf::query(const UseFlagName & f, const PackageID & e) const
 {
     Context context("When checking state of flag '" + stringify(f) + "' for '" + stringify(e) + "':");
 
     UseFlagState result(use_unspecified);
 
     bool ignore_empty_minus_star(false);
-    tr1::shared_ptr<const Repository> repo(_imp->env->package_database()->fetch_repository(e.repository));
-    if (repo->use_interface)
+    if (e.repository()->use_interface)
     {
-        tr1::shared_ptr<const UseFlagNameCollection> prefixes(repo->use_interface->use_expand_prefixes());
+        tr1::shared_ptr<const UseFlagNameCollection> prefixes(e.repository()->use_interface->use_expand_prefixes());
         for (UseFlagNameCollection::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
@@ -210,7 +210,7 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
     }
 
     /* highest priority: specific */
-    Qualified::const_iterator q(_imp->qualified.find(e.name));
+    Qualified::const_iterator q(_imp->qualified.find(e.name()));
     if (_imp->qualified.end() != q)
     {
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
@@ -311,7 +311,7 @@ UseConf::query(const UseFlagName & f, const PackageDatabaseEntry & e) const
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabaseEntry & e) const
+UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
@@ -320,7 +320,7 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageDatabas
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");
 
-    Qualified::const_iterator q(_imp->qualified.find(e.name));
+    Qualified::const_iterator q(_imp->qualified.find(e.name()));
     if (_imp->qualified.end() != q)
         for (PDSWithUseInfoList::const_iterator p(q->second.begin()), p_end(q->second.end()) ; p != p_end ; ++p)
         {

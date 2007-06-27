@@ -22,13 +22,13 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/config_file.hh>
-#include <paludis/name.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
     class PaludisEnvironment;
-    class PackageDatabaseEntry;
 
     namespace paludis_environment
     {
@@ -59,7 +59,7 @@ namespace paludis
                 /**
                  * Query a collection of keywords.
                  */
-                bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const;
+                bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const;
         };
     }
 }

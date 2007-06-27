@@ -22,6 +22,8 @@
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
@@ -38,12 +40,12 @@ namespace
         public ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>
     {
         private:
-            std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag>,
-                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
+            std::multimap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepTag>, PackageIDSetComparator> _found;
             const Environment & _env;
 
         public:
-            typedef std::multimap<PackageDatabaseEntry, tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
+            typedef std::multimap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepTag>,
+                    PackageIDSetComparator>::const_iterator ConstIterator;
 
             using ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>::visit;
 
@@ -65,18 +67,18 @@ namespace
             /**
              * Return whether a PDE is insecure or not
              */
-            std::pair<ConstIterator, ConstIterator> insecure_tags(const PackageDatabaseEntry & pde) const
+            std::pair<ConstIterator, ConstIterator> insecure_tags(const tr1::shared_ptr<const PackageID> & id) const
             {
-                return _found.equal_range(pde);
+                return _found.equal_range(id);
             }
     };
 
     void
     VulnerableChecker::visit_leaf(const PackageDepSpec & a)
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
+        tr1::shared_ptr<const PackageIDSequence> insecure(
                 _env.package_database()->query(query::Matches(a), qo_order_by_version));
-        for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
+        for (PackageIDSequence::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (a.tag())
                 _found.insert(std::make_pair(*i, a.tag()));
@@ -146,11 +148,11 @@ ReportTask::execute()
 
     UninstallList unused_list(e, UninstallListOptions());
     unused_list.add_unused();
-    std::set<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> unused;
+    std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
     for (UninstallList::Iterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
         if (! i->skip_uninstall)
-            unused.insert(i->package);
+            unused.insert(i->package_id);
 
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
@@ -169,11 +171,10 @@ ReportTask::execute()
             {
                 on_report_check_package_pre(*p);
 
-                tr1::shared_ptr<const VersionSpecCollection> vers(rr->version_specs(*p));
-                for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
+                tr1::shared_ptr<const PackageIDSequence> ids(rr->package_ids(*p));
+                for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ;
                         v != v_end ; ++v)
                 {
-                    PackageDatabaseEntry pde(*p, *v, rr->name());
                     bool is_masked(false);
                     bool is_vulnerable(false);
                     bool is_missing(false);
@@ -182,14 +183,14 @@ ReportTask::execute()
                     MaskReasons mr;
                     try
                     {
-                        tr1::shared_ptr<const VersionMetadata> m(rr->version_metadata(pde.name, pde.version));
-
-                        if (m->origins_interface && m->origins_interface->source)
+#if 0
+                        if ((*v)->source_origin_key())
                         {
-                            mr = e->mask_reasons(*(m->origins_interface->source));
+                            mr = e->mask_reasons(*((*v)->source_origin_key()->value()));
                             if (mr.any())
                                 is_masked = true;
                         }
+#endif
                     }
                     catch (const NoSuchPackageError &)
                     {
@@ -200,35 +201,33 @@ ReportTask::execute()
                         is_missing = true;
                     }
 
-                    std::pair<VulnerableChecker::ConstIterator, VulnerableChecker::ConstIterator> pi(
-                            vuln.insecure_tags(pde));
+                    std::pair<VulnerableChecker::ConstIterator, VulnerableChecker::ConstIterator> pi(vuln.insecure_tags(*v));
                     if (pi.first != pi.second)
                         is_vulnerable = true;
 
-                    if (unused.end() != unused.find(pde))
+                    if (unused.end() != unused.find(*v))
                         is_unused = true;
 
                     if (is_masked || is_vulnerable || is_missing || is_unused)
                     {
-                        on_report_package_failure_pre(pde);
+                        on_report_package_failure_pre(**v);
                         if (is_masked)
-                            on_report_package_is_masked(pde, mr);
+                            on_report_package_is_masked(**v, mr);
                         if (is_vulnerable)
                         {
-                            on_report_package_is_vulnerable_pre(pde);
+                            on_report_package_is_vulnerable_pre(**v);
                             for (VulnerableChecker::ConstIterator itag(pi.first) ; itag != pi.second ; ++itag)
-                                on_report_package_is_vulnerable(pde, itag->second->short_text());
-                            on_report_package_is_vulnerable_post(pde);
+                                on_report_package_is_vulnerable(**v, itag->second->short_text());
+                            on_report_package_is_vulnerable_post(**v);
                         }
                         if (is_missing)
-                            on_report_package_is_missing(pde);
+                            on_report_package_is_missing(**v);
                         if (is_unused)
-                            on_report_package_is_unused(pde);
-                        on_report_package_failure_post(pde);
+                            on_report_package_is_unused(**v);
+                        on_report_package_failure_post(**v);
                     }
                     else
-                        on_report_package_success(pde);
-
+                        on_report_package_success(**v);
                 }
 
                 on_report_check_package_post(*p);

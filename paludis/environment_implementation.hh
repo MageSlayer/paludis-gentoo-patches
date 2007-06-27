@@ -22,12 +22,10 @@
 
 #include <paludis/environment.hh>
 #include <paludis/eapi-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
-    class VersionMetadata;
-    class CompositeDepSpec;
-
     /**
      * Simplifies implementing the Environment interface.
      *
@@ -41,11 +39,11 @@ namespace paludis
             ///\name Mask reasons
 
             /**
-             * Do we accept a particular EAPI for a particular package?
+             * Do we accept a particular EAPI?
              *
              * Default behaviour: recognised EAPIs accepted.
              */
-            virtual bool accept_eapi(const EAPI &, const PackageDatabaseEntry &) const
+            virtual bool accept_eapi(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -53,15 +51,7 @@ namespace paludis
              *
              * Default behaviour: true.
              */
-            virtual bool accept_breaks_portage(const PackageDatabaseEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Accept interactive packages?
-             *
-             * Default behaviour: true.
-             */
-            virtual bool accept_interactive(const PackageDatabaseEntry &) const
+            virtual bool accept_breaks_portage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -69,7 +59,7 @@ namespace paludis
              *
              * Default behaviour: false.
              */
-            virtual bool masked_by_user(const PackageDatabaseEntry &) const
+            virtual bool masked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -77,13 +67,13 @@ namespace paludis
              *
              * Default behaviour: false.
              */
-            virtual bool unmasked_by_user(const PackageDatabaseEntry &) const
+            virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Does a package break Portage?
              */
-            virtual bool breaks_portage(const PackageDatabaseEntry &, const VersionMetadata &) const
+            virtual bool breaks_portage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
@@ -105,21 +95,21 @@ namespace paludis
 
             ///\}
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+            virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
-                    const UseFlagName &, const PackageDatabaseEntry &) const
+                    const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual MaskReasons mask_reasons(const PackageDatabaseEntry &,
+            virtual MaskReasons mask_reasons(const PackageID &,
                     const MaskReasonsOptions & = MaskReasonsOptions()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry &) const
+            virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const FSEntryCollection> bashrc_files() const

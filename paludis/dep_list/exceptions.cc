@@ -79,7 +79,7 @@ namespace
     }
 }
 
-NoDestinationError::NoDestinationError(const PackageDatabaseEntry & p,
+NoDestinationError::NoDestinationError(const PackageID & p,
         tr1::shared_ptr<const DestinationsCollection> d) throw () :
     DepListError("No suitable destination for '" + stringify(p) + "' in (" +
             destinations_to_string(d) + ")")

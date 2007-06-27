@@ -51,7 +51,7 @@ int do_has_version(tr1::shared_ptr<Environment> env)
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_whatever));
 
     if (entries->empty())
@@ -68,25 +68,22 @@ int do_best_version(tr1::shared_ptr<Environment> env)
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
     {
-        tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
-                    entries->last()->repository)->version_metadata(entries->last()->name,
-                    entries->last()->version));
-        if (! metadata->virtual_interface)
+        if (! (*entries->last())->virtual_for_key())
             break;
 
-        Log::get_instance()->message(ll_qa, lc_context, "best-version of '" + query +
-                "' resolves to '" + stringify(*entries->last()) + "', which is a virtual for '"
-                + stringify(*metadata->virtual_interface->virtual_for) + "'. This will break with "
-                "new style virtuals.");
-        tr1::shared_ptr<PackageDatabaseEntryCollection> new_entries(
-                new PackageDatabaseEntryCollection::Concrete);
-        new_entries->push_back(*metadata->virtual_interface->virtual_for);
+        Log::get_instance()->message(ll_qa, lc_context) << "best-version of '" << query <<
+                "' resolves to '" << **entries->last() << "', which is a virtual for '"
+                << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
+                "new style virtuals.";
+        tr1::shared_ptr<PackageIDSequence> new_entries(
+                new PackageIDSequence::Concrete);
+        new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
 
@@ -96,8 +93,8 @@ int do_best_version(tr1::shared_ptr<Environment> env)
     {
         // don't include repo, it breaks built_with_use and the like.
         std::string entry(
-                stringify(entries->last()->name) + "-" +
-                stringify(entries->last()->version));
+                stringify((*entries->last())->name()) + "-" +
+                stringify((*entries->last())->version()));
         std::cout << entry << std::endl;
     }
 
@@ -114,7 +111,7 @@ int do_environment_variable(tr1::shared_ptr<Environment> env)
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
     tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str, pds_pm_permissive));
 
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     if (entries->empty())
@@ -123,19 +120,16 @@ int do_environment_variable(tr1::shared_ptr<Environment> env)
     if (entries->empty())
         throw NoSuchPackageError(spec_str);
 
-    tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
-                entries->begin()->repository));
-    RepositoryEnvironmentVariableInterface * env_if(
-            repo->environment_variable_interface);
+    RepositoryEnvironmentVariableInterface * env_if((*entries->last())->repository()->environment_variable_interface);
 
     if (! env_if)
     {
-        std::cerr << "Repository '" << repo->name() <<
+        std::cerr << "Repository '" << (*entries->last())->repository()->name() <<
             "' cannot be queried for environment variables" << std::endl;
         return_code |= 1;
     }
     else
-        std::cout << env_if->get_environment_variable(*entries->begin(), var_str) << std::endl;
+        std::cout << env_if->get_environment_variable(*entries->last(), var_str) << std::endl;
 
     return return_code;
 }

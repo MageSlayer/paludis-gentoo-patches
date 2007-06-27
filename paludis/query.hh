@@ -22,7 +22,8 @@
 
 #include <paludis/util/collection.hh>
 #include <paludis/name.hh>
-#include <paludis/package_database_entry.hh>
+#include <paludis/package_id.hh>
+#include <iosfwd>
 
 /** \file
  * Query and related classes.
@@ -87,16 +88,21 @@ namespace paludis
                     tr1::shared_ptr<const CategoryNamePartCollection>) const;
 
             /**
-             * Fetch the versions of matching packages.
+             * Fetch the IDs of matching packages.
              *
-             * Default behaviour: return all versions in the provided packages.
+             * Default behaviour: return all IDs in the provided packages.
              *
              * Note that some entries in the qualified package name collection
              * (but not in the repositories collection) may not exist.
              */
-            virtual tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment &,
+            virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
                     tr1::shared_ptr<const RepositoryNameCollection>,
                     tr1::shared_ptr<const QualifiedPackageNameCollection>) const;
+
+            /**
+             * Fetch a string representation of our query.
+             */
+            virtual std::string as_human_readable_string() const = 0;
     };
 
     /**
@@ -113,6 +119,7 @@ namespace paludis
     class PALUDIS_VISIBLE Query
     {
         friend Query operator& (const Query &, const Query &);
+        friend std::ostream & operator<< (std::ostream &, const Query &);
 
         private:
             tr1::shared_ptr<const QueryDelegate> _d;
@@ -149,11 +156,11 @@ namespace paludis
                 return _d->packages(e, r, c);
             }
 
-            tr1::shared_ptr<PackageDatabaseEntryCollection> versions(const Environment & e,
+            tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
                     tr1::shared_ptr<const RepositoryNameCollection> r,
                     tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
             {
-                return _d->versions(e, r, q);
+                return _d->ids(e, r, q);
             }
 
             ///\}
@@ -380,6 +387,14 @@ namespace paludis
      * \ingroup grpquery
      */
     Query operator& (const Query &, const Query &) PALUDIS_VISIBLE;
+
+    /**
+     * Output a human-readable description of a Query.
+     *
+     * \see Query
+     * \ingroup grpquery
+     */
+    std::ostream & operator<< (std::ostream &, const Query &) PALUDIS_VISIBLE;
 }
 
 #endif

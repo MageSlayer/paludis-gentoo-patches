@@ -44,6 +44,7 @@ namespace paludis
     class RepositoryMirrorsInterface;
     class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
+    class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
     class RepositoryContentsInterface;
     class RepositoryConfigInterface;
@@ -51,6 +52,10 @@ namespace paludis
     class RepositoryLicensesInterface;
     class RepositoryPortageInterface;
     class RepositoryHookInterface;
+
+    class InstallOptions;
+    class MergeOptions;
+    class UninstallOptions;
 
     /**
      * A set of destinations.

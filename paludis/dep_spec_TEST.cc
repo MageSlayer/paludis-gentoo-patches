@@ -270,7 +270,7 @@ namespace test_cases
 
             tr1::shared_ptr<PackageDepSpec> c(tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
-            c->version_requirements_ptr()->append(VersionRequirement(vo_tilde, VersionSpec("1.5")));
+            c->version_requirements_ptr()->push_back(VersionRequirement(vo_tilde, VersionSpec("1.5")));
             TEST_CHECK(stringify(a) != stringify(*c));
 
             BlockDepSpec d(c);

@@ -7,6 +7,7 @@ make_class_RepositoryParams()
 
     key environment "Environment *"
     key location FSEntry
+    key install_dir FSEntry
     key sync std::string
     key sync_options std::string
     key buildroot FSEntry
@@ -19,8 +20,8 @@ make_class_InstalledRepositoryParams()
     visible
 
     key environment "Environment *"
-    key location FSEntry
     key buildroot FSEntry
+    key install_dir FSEntry
 
     allow_named_args
 }

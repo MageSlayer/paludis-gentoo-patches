@@ -21,47 +21,50 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH 1
 
 #include <paludis/repositories/gentoo/ebuild.hh>
+#include <paludis/repositories/gentoo/ebuild_id.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/repositories/gentoo/eclass_mtimes.hh>
 
 namespace paludis
 {
-    /**
-     * Implements flat file metadata cache handling for a PortageRepository
-     * using EbuildEntries.
-     *
-     * \see EbuildEntries
-     * \see PortageRepository
-     * \ingroup grpportagerepository
-     * \nosubgrouping
-     */
-    class EbuildFlatMetadataCache
+    namespace erepository
     {
-        private:
-            const FSEntry & _filename;
-            const FSEntry & _ebuild;
-            time_t _master_mtime;
-            tr1::shared_ptr<const EclassMtimes> _eclass_mtimes;
-            bool _silent;
+        /**
+         * Implements flat file metadata cache handling for a PortageRepository
+         * using EbuildEntries.
+         *
+         * \see EbuildEntries
+         * \see PortageRepository
+         * \ingroup grpportagerepository
+         * \nosubgrouping
+         */
+        class EbuildFlatMetadataCache
+        {
+            private:
+                const FSEntry & _filename;
+                const FSEntry & _ebuild;
+                time_t _master_mtime;
+                tr1::shared_ptr<const EclassMtimes> _eclass_mtimes;
+                bool _silent;
 
-        public:
-            ///\name Basic operations
-            ///\{
+            public:
+                ///\name Basic operations
+                ///\{
 
-            EbuildFlatMetadataCache(const FSEntry & filename, const FSEntry & ebuild,
-                    time_t master_mtime, tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
+                EbuildFlatMetadataCache(const FSEntry & filename, const FSEntry & ebuild,
+                        time_t master_mtime, tr1::shared_ptr<const EclassMtimes> eclass_mtimes, bool silent);
 
-            ///\}
+                ///\}
 
-            ///\name Cache operations
-            ///\{
+                ///\name Cache operations
+                ///\{
 
-            bool load(tr1::shared_ptr<EbuildVersionMetadata>);
-            void save(tr1::shared_ptr<const EbuildVersionMetadata>);
+                bool load(const tr1::shared_ptr<const EbuildID> &);
+                void save(const tr1::shared_ptr<const EbuildID> &);
 
-            ///\}
-    };
+                ///\}
+        };
+    }
 }
 
 #endif

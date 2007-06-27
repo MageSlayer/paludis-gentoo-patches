@@ -41,6 +41,10 @@ namespace
         if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
             throw gems::RepositoryConfigurationError("Key 'location' not specified or empty");
 
+        std::string install_dir;
+        if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())
+            throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
+
         std::string sync;
         if (m->end() != m->find("sync"))
             sync = m->find("sync")->second;
@@ -58,6 +62,7 @@ namespace
                     .sync(sync)
                     .sync_options(sync_options)
                     .environment(env)
+                    .install_dir(install_dir)
                     .buildroot(buildroot)));
     }
 
@@ -66,17 +71,17 @@ namespace
             Environment * const env,
             tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
     {
-        std::string location;
-        if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
-            throw gems::RepositoryConfigurationError("Key 'location' not specified or empty");
+        std::string install_dir;
+        if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())
+            throw gems::RepositoryConfigurationError("Key 'install_dir' not specified or empty");
 
         std::string buildroot;
         if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
             buildroot = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_build_root;
 
         return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
-                    .location(location)
                     .environment(env)
+                    .install_dir(install_dir)
                     .buildroot(buildroot)));
     }
 }

@@ -49,15 +49,15 @@ namespace
 
             virtual void on_report_all_pre();
             virtual void on_report_check_package_pre(const QualifiedPackageName & p);
-            virtual void on_report_package_success(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_failure_pre(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_is_masked(const PackageDatabaseEntry & pde, const MaskReasons & mr);
-            virtual void on_report_package_is_vulnerable_pre(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_is_vulnerable(const PackageDatabaseEntry & pde, const std::string & tag);
-            virtual void on_report_package_is_vulnerable_post(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_is_missing(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_is_unused(const PackageDatabaseEntry & pde);
-            virtual void on_report_package_failure_post(const PackageDatabaseEntry & pde);
+            virtual void on_report_package_success(const PackageID & id);
+            virtual void on_report_package_failure_pre(const PackageID & id);
+            virtual void on_report_package_is_masked(const PackageID & id, const MaskReasons & mr);
+            virtual void on_report_package_is_vulnerable_pre(const PackageID & id);
+            virtual void on_report_package_is_vulnerable(const PackageID & id, const std::string & tag);
+            virtual void on_report_package_is_vulnerable_post(const PackageID & id);
+            virtual void on_report_package_is_missing(const PackageID & id);
+            virtual void on_report_package_is_unused(const PackageID & id);
+            virtual void on_report_package_failure_post(const PackageID & id);
             virtual void on_report_check_package_post(const QualifiedPackageName & p);
             virtual void on_report_all_post();
 
@@ -79,18 +79,18 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_success(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_success(const PackageID &)
     {
     }
 
     void
-    OurReportTask::on_report_package_failure_pre(const PackageDatabaseEntry & pde)
+    OurReportTask::on_report_package_failure_pre(const PackageID & pde)
     {
         cout << "* " << colour(cl_package_name, pde) << " NOT OK";
     }
 
     void
-    OurReportTask::on_report_package_is_masked(const PackageDatabaseEntry &, const MaskReasons & mr)
+    OurReportTask::on_report_package_is_masked(const PackageID &, const MaskReasons & mr)
     {
         cout << endl << "    Masked by: ";
 
@@ -107,39 +107,39 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable_pre(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_is_vulnerable_pre(const PackageID &)
     {
         cout << endl << "    Affected by:";
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable(const PackageDatabaseEntry &, const std::string & tag)
+    OurReportTask::on_report_package_is_vulnerable(const PackageID &, const std::string & tag)
     {
         cout << " " << colour(cl_tag, tag);
         ++_n_errors;
     }
 
     void
-    OurReportTask::on_report_package_is_vulnerable_post(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_is_vulnerable_post(const PackageID &)
     {
     }
 
     void
-    OurReportTask::on_report_package_is_missing(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_is_missing(const PackageID &)
     {
         cout << endl << "    No longer exists in its original repository";
         ++_n_errors;
     }
 
     void
-    OurReportTask::on_report_package_is_unused(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_is_unused(const PackageID &)
     {
         cout << endl << "    Not used by any package in world";
         ++_n_errors;
     }
 
     void
-    OurReportTask::on_report_package_failure_post(const PackageDatabaseEntry &)
+    OurReportTask::on_report_package_failure_post(const PackageID &)
     {
         cout << endl << endl;
     }
@@ -168,3 +168,4 @@ int do_report(tr1::shared_ptr<Environment> env)
 
     return task.return_code();
 }
+

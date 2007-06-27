@@ -26,51 +26,40 @@
 #include <paludis/repositories/gentoo/portage_repository_sets.hh>
 #include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/repositories/gentoo/portage_repository_entries.hh>
-#include <paludis/repositories/gentoo/portage_virtual_version_metadata.hh>
 #include <paludis/repositories/gentoo/use_desc.hh>
 #include <paludis/repositories/gentoo/layout.hh>
+#include <paludis/repository_info.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_database.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/query.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/eapi.hh>
+
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/pstream.hh>
 #include <paludis/util/random.hh>
-#include <paludis/util/save.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/strip.hh>
-#include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <map>
-#include <fstream>
 #include <functional>
 #include <algorithm>
 #include <vector>
-#include <limits>
-#include <paludis/util/tr1_functional.hh>
 
 #include <strings.h>
 #include <ctype.h>
@@ -84,10 +73,7 @@
 using namespace paludis;
 
 typedef MakeHashedMap<QualifiedPackageName, std::list<tr1::shared_ptr<const PackageDepSpec> > >::Type RepositoryMaskMap;
-typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
-typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>,
-        tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
 typedef std::list<RepositoryPortageInterface::ProfilesDescLine> ProfilesDesc;
 
@@ -104,7 +90,6 @@ namespace paludis
         PortageRepository * const repo;
         const PortageRepositoryParams params;
 
-        mutable MetadataMap metadata;
         tr1::shared_ptr<RepositoryNameCache> names_cache;
 
         mutable RepositoryMaskMap repo_mask;
@@ -147,7 +132,7 @@ namespace paludis
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         layout(LayoutMaker::get_instance()->find_maker(
-                    params.layout)(r->name(), params.location, entries_ptr, params.master_repository ?
+                    params.layout)(r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
                         tr1::shared_ptr<FSEntry>()))
     {
@@ -273,6 +258,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .config_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)
+            .make_virtuals_interface(0)
             .portage_interface(this)
             .pretend_interface(this)
             .hook_interface(this),
@@ -326,33 +312,6 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->layout->has_package_named(q);
 }
 
-namespace
-{
-    /**
-     * Filter QualifiedPackageName instances by category.
-     *
-     * \ingroup grpportagerepository
-     */
-    struct CategoryFilter :
-        std::unary_function<bool, QualifiedPackageName>
-    {
-        /// Our category.
-        CategoryNamePart category;
-
-        /// Constructor.
-        CategoryFilter(const CategoryNamePart & c) :
-            category(c)
-        {
-        }
-
-        /// Predicate.
-        bool operator() (const QualifiedPackageName & a) const
-        {
-            return a.category == category;
-        }
-    };
-}
-
 tr1::shared_ptr<const CategoryNamePartCollection>
 PortageRepository::do_category_names() const
 {
@@ -365,43 +324,18 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     return _imp->layout->package_names(c);
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-PortageRepository::do_version_specs(const QualifiedPackageName & n) const
+tr1::shared_ptr<const PackageIDSequence>
+PortageRepository::do_package_ids(const QualifiedPackageName & n) const
 {
-    return _imp->layout->version_specs(n);
+    return _imp->layout->package_ids(n);
 }
 
 bool
-PortageRepository::do_has_version(const QualifiedPackageName & q,
-        const VersionSpec & v) const
-{
-    return _imp->layout->has_version(q, v);
-}
-
-tr1::shared_ptr<const VersionMetadata>
-PortageRepository::do_version_metadata(
-        const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (_imp->metadata.end() != _imp->metadata.find(std::make_pair(q, v)))
-            return _imp->metadata.find(std::make_pair(q, v))->second;
-
-    Context context("When fetching metadata for '" + stringify(q) + "-" + stringify(v) + "':");
-
-    if (! has_version(q, v))
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-
-    tr1::shared_ptr<VersionMetadata> result(_imp->entries_ptr->generate_version_metadata(q, v));
-    _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
-    return result;
-}
-
-bool
-PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, const VersionSpec & v) const
+PortageRepository::do_query_repository_masks(const PackageID & id) const
 {
     if (! _imp->has_repo_mask)
     {
-        Context context("When querying repository mask for '" + stringify(q) + "-"
-                + stringify(v) + "':");
+        Context context("When querying repository mask for '" + stringify(id) + "':");
 
         tr1::shared_ptr<const FSEntryCollection> repository_mask_files(_imp->layout->repository_mask_files());
         for (FSEntryCollection::Iterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
@@ -438,35 +372,34 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
         _imp->has_repo_mask = true;
     }
 
-    RepositoryMaskMap::iterator r(_imp->repo_mask.find(q));
+    RepositoryMaskMap::iterator r(_imp->repo_mask.find(id.name()));
     if (_imp->repo_mask.end() == r)
         return false;
     else
         for (IndirectIterator<std::list<tr1::shared_ptr<const PackageDepSpec> >::const_iterator, const PackageDepSpec>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment, *k, PackageDatabaseEntry(q, v, name())))
+            if (match_package(*_imp->params.environment, *k, id))
                 return true;
 
     return false;
 }
 
 bool
-PortageRepository::do_query_profile_masks(const QualifiedPackageName & n,
-        const VersionSpec & v) const
+PortageRepository::do_query_profile_masks(const PackageID & id) const
 {
     _imp->need_profiles();
-    return _imp->profile_ptr->profile_masked(n, v, name());
+    return _imp->profile_ptr->profile_masked(id);
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_state_ignoring_masks(f, e);
 }
 
 bool
-PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry & e) const
+PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_masked(u, e) ||
@@ -474,7 +407,7 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
 }
 
 bool
-PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry & e) const
+PortageRepository::do_query_use_force(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_forced(u, e);
@@ -575,18 +508,18 @@ PortageRepository::need_mirrors() const
 }
 
 void
-PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
+PortageRepository::do_install(const tr1::shared_ptr<const PackageID> & id,
         const InstallOptions & o) const
 {
     _imp->need_profiles();
-    _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
+    _imp->entries_ptr->install(id, o, _imp->profile_ptr);
 }
 
 bool
-PortageRepository::do_pretend(const QualifiedPackageName & q, const VersionSpec & v) const
+PortageRepository::do_pretend(const tr1::shared_ptr<const PackageID> & id) const
 {
     _imp->need_profiles();
-    return _imp->entries_ptr->pretend(q, v, _imp->profile_ptr);
+    return _imp->entries_ptr->pretend(id, _imp->profile_ptr);
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
@@ -661,7 +594,7 @@ PortageRepository::update_news() const
     _imp->news_ptr->update_news();
 }
 
-const tr1::shared_ptr<const Layout> 
+const tr1::shared_ptr<const Layout>
 PortageRepository::layout() const
 {
     return _imp->layout;
@@ -669,7 +602,7 @@ PortageRepository::layout() const
 
 std::string
 PortageRepository::get_environment_variable(
-        const PackageDatabaseEntry & for_package,
+        const tr1::shared_ptr<const PackageID> & for_package,
         const std::string & var) const
 {
     Context context("When fetching environment variable '" + var + "' from repository '"
@@ -677,8 +610,7 @@ PortageRepository::get_environment_variable(
 
     _imp->need_profiles();
 
-    return _imp->entries_ptr->get_environment_variable(for_package.name,
-            for_package.version, var, _imp->profile_ptr);
+    return _imp->entries_ptr->get_environment_variable(for_package, var, _imp->profile_ptr);
 }
 
 tr1::shared_ptr<const RepositoryInfo>
@@ -708,7 +640,7 @@ PortageRepository::info(bool verbose) const
         for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
                 i_end(info_pkgs.end()) ; i != i_end ; ++i)
         {
-            tr1::shared_ptr<const PackageDatabaseEntryCollection> q(
+            tr1::shared_ptr<const PackageIDSequence> q(
                     _imp->params.environment->package_database()->query(
                         query::Matches(PackageDepSpec(*i, pds_pm_eapi_0)) &
                         query::InstalledAtRoot(_imp->params.environment->root()),
@@ -717,11 +649,11 @@ PortageRepository::info(bool verbose) const
                 package_info->add_kv(*i, "(none)");
             else
             {
+                using namespace tr1::placeholders;
                 std::set<VersionSpec> versions;
-
-                for (PackageDatabaseEntryCollection::Iterator qq(q->begin()), qq_end(q->end()) ;
-                        qq != qq_end ; ++qq)
-                    versions.insert(qq->version);
+                std::copy(q->begin(), q->end(),
+                        transform_inserter(std::inserter(versions, versions.begin()),
+                            tr1::bind<const VersionSpec>(tr1::mem_fn(&PackageID::version), _1)));
                 package_info->add_kv(*i, join(versions.begin(), versions.end(), ", "));
             }
         }
@@ -729,6 +661,7 @@ PortageRepository::info(bool verbose) const
         result->add_section(package_info);
     }
 
+#if 0
     // don't inherit from master_repository, just causes clutter
     std::set<std::string> info_vars;
     if (_imp->layout->info_variables_file(_imp->params.location / "profiles").exists())
@@ -738,10 +671,10 @@ PortageRepository::info(bool verbose) const
     }
 
     if (! info_vars.empty() && ! info_pkgs.empty() &&
-            ! version_specs(QualifiedPackageName(*info_pkgs.begin()))->empty())
+            ! package_ids(QualifiedPackageName(*info_pkgs.begin()))->empty())
     {
         PackageDatabaseEntry e(QualifiedPackageName(*info_pkgs.begin()),
-                *version_specs(QualifiedPackageName(*info_pkgs.begin()))->last(),
+                *package_ids(QualifiedPackageName(*info_pkgs.begin()))->last(),
                 name());
         tr1::shared_ptr<RepositoryInfoSection> variable_info(new RepositoryInfoSection("Variable information"));
         for (std::set<std::string>::const_iterator i(info_vars.begin()),
@@ -754,6 +687,7 @@ PortageRepository::info(bool verbose) const
         Log::get_instance()->message(ll_warning, lc_no_context,
                 "Skipping info_vars for '" + stringify(name()) +
                 "' because info_pkgs is not usable");
+#endif
 
     return result;
 }
@@ -780,51 +714,23 @@ PortageRepository::end_mirrors(const std::string & s) const
     return MirrorsIterator(_imp->mirrors.equal_range(s).second);
 }
 
-tr1::shared_ptr<const PortageRepository::VirtualsCollection>
+tr1::shared_ptr<const PortageRepository::VirtualsSequence>
 PortageRepository::virtual_packages() const
 {
     Context context("When loading virtual packages for repository '" +
             stringify(name()) + "'");
 
-    Log::get_instance()->message(ll_debug, lc_context, "Loading virtual packages for repository '"
-            + stringify(name()) + "'");
-
     _imp->need_profiles();
 
-    tr1::shared_ptr<VirtualsCollection> result(new VirtualsCollection::Concrete);
+    tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence::Concrete);
 
     for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
-        result->insert(RepositoryVirtualsEntry::create()
+        result->push_back(RepositoryVirtualsEntry::create()
                 .provided_by_spec(i->second)
                 .virtual_name(i->first));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Loaded " + stringify(result->size()) +
-            " virtual packages for repository '" + stringify(name()) + "'");
-
     return result;
-}
-
-tr1::shared_ptr<const VersionMetadata>
-PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntry & p,
-        const VersionSpec & v) const
-{
-    Context context("When fetching virtual package version metadata for '" + stringify(*p.provided_by_spec)
-            + "' version '" + stringify(v) + "':");
-
-    if (! p.provided_by_spec->package_ptr())
-        throw ConfigurationError("Virtual provider atom does not specify an unambiguous package");
-
-    tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
-    tr1::shared_ptr<PortageVirtualVersionMetadata> result(new PortageVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
-
-    result->eapi = m->eapi;
-    result->set_build_depend("=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v));
-    result->set_run_depend("=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v));
-
-    return result;
-
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
@@ -965,7 +871,7 @@ PortageRepository::set_profile_by_arch(const UseFlagName & arch)
 
 std::string
 PortageRepository::do_describe_use_flag(const UseFlagName & f,
-        const PackageDatabaseEntry & e) const
+        const PackageID & e) const
 {
     if (_imp->use_desc.empty())
     {
@@ -993,9 +899,9 @@ PortageRepository::params() const
 }
 
 bool
-PortageRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
+PortageRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    std::string f(_imp->params.environment->package_database()->fetch_repository(e.repository)->format());
+    std::string f(e.repository()->format());
     return f == "ebuild" || f == "ebin";
 }
 

@@ -29,7 +29,7 @@ make_class_UninstallListEntry()
 {
     visible
 
-    key package PackageDatabaseEntry
+    key package_id "tr1::shared_ptr<const PackageID>"
     key skip_uninstall bool
     key tags "tr1::shared_ptr<SortedCollection<tr1::shared_ptr<DepTag> > >"
 

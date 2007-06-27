@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,50 +18,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
-
-#include <paludis/dep_spec.hh>
-#include <paludis/dep_spec_flattener.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
-#include <paludis/match_package.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/package_database.hh>
-#include <paludis/eapi.hh>
-#include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/repositories/repository_maker.hh>
-#include <paludis/syncer.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/pstream.hh>
-#include <paludis/util/random.hh>
-#include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/tr1_functional.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
-#include <map>
-#include <list>
-#include <fstream>
 #include <functional>
 #include <algorithm>
-#include <vector>
-#include <deque>
-#include <limits>
-
-#include <strings.h>
-#include <ctype.h>
 
 /** \file
  * Implementation CRANRepository.
@@ -72,20 +55,10 @@ using namespace paludis;
 
 #include <paludis/repositories/cran/cran_repository-sr.cc>
 
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::Type IDMap;
+
 namespace paludis
 {
-    /// Map for versions.
-    typedef MakeHashedMap<QualifiedPackageName, VersionSpec>::Type VersionsMap;
-
-    /// Map for packages.
-    typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
-
-    /// Map for mirrors.
-    typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
-
-    /// Map for metadata.
-    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
-
     /**
      * Implementation data for a CRANRepository.
      *
@@ -96,68 +69,17 @@ namespace paludis
     {
         CRANRepositoryParams params;
 
-        /// Our owning env.
-        const Environment * const env;
+        mutable bool has_ids;
+        mutable IDMap ids;
 
-        /// Our base location.
-        FSEntry location;
-
-        /// Distfiles dir
-        FSEntry distdir;
-
-        /// Mirror URL
-        std::string mirror;
-
-        /// Sync URL
-        std::string sync;
-
-        /// Build root location
-        FSEntry buildroot;
-
-        /// Library location
-        FSEntry library;
-
-        /// Have we loaded our category names?
-        mutable bool has_packages;
-
-        /// Our package names, and whether we have a fully loaded list of
-        /// version specs for that category.
-        mutable PackagesMap package_names;
-
-        /// Our version specs for each package.
-        mutable VersionsMap version_specs;
-
-        /// Metadata cache.
-        mutable MetadataMap metadata;
-
-        /// Do we have mirrors?
-        mutable bool has_mirrors;
-
-        /// Mirrors.
-        mutable MirrorMap mirrors;
-
-        /// Constructor.
         Implementation(const CRANRepositoryParams &);
-
-        /// Destructor.
         ~Implementation();
-
-        /// (Empty) provides map.
-        const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
     };
 }
 
 Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
     params(p),
-    env(p.environment),
-    location(p.location),
-    distdir(p.distdir),
-    mirror(p.mirror),
-    sync(p.sync),
-    buildroot(p.buildroot),
-    library(p.library),
-    has_packages(false),
-    has_mirrors(false)
+    has_ids(false)
 {
 }
 
@@ -178,6 +100,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
+            .make_virtuals_interface(0)
             .mirrors_interface(0)
             .provides_interface(0)
             .destination_interface(0)
@@ -193,12 +116,12 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
 {
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
-    config_info->add_kv("location", stringify(_imp->location));
-    config_info->add_kv("distdir", stringify(_imp->distdir));
+    config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("distdir", stringify(_imp->params.distdir));
     config_info->add_kv("format", "cran");
-    config_info->add_kv("buildroot", stringify(_imp->buildroot));
-    config_info->add_kv("library", stringify(_imp->library));
-    config_info->add_kv("sync", _imp->sync);
+    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("library", stringify(_imp->params.library));
+    config_info->add_kv("sync", _imp->params.sync);
 
     _info->add_section(config_info);
 }
@@ -210,24 +133,19 @@ CRANRepository::~CRANRepository()
 bool
 CRANRepository::do_has_category_named(const CategoryNamePart & c) const
 {
-    Context context("When checking for category '" + stringify(c) +
-            "' in " + stringify(name()) + ":");
-
     return "cran" == stringify(c);
 }
 
 bool
 CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    Context context("When checking for package '" + stringify(q) + "' in " +
-                stringify(name()) + ":");
-
-    need_packages();
+    Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
 
     if (! do_has_category_named(q.category))
         return false;
 
-    return _imp->package_names.end() != _imp->package_names.find(q);
+    need_ids();
+    return _imp->ids.end() != _imp->ids.find(q);
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
@@ -247,136 +165,47 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    need_packages();
-
     tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     if (! do_has_category_named(c))
         return result;
 
-    PackagesMap::const_iterator n(_imp->package_names.begin()), n_end(_imp->package_names.end());
-    for ( ; n != n_end ; ++n)
-        result->insert(n->first);
+    need_ids();
+
+    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
+                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::first)));
 
     return result;
 }
 
-tr1::shared_ptr<const VersionSpecCollection>
-CRANRepository::do_version_specs(const QualifiedPackageName & n) const
+tr1::shared_ptr<const PackageIDSequence>
+CRANRepository::do_package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    need_packages();
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    if (! do_has_package_named(n))
+        return result;
 
-    tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
-    if (_imp->version_specs.end() != _imp->version_specs.find(n))
-        result->insert(_imp->version_specs.find(n)->second);
+    need_ids();
 
+    IDMap::const_iterator i(_imp->ids.find(n));
+    if (i != _imp->ids.end())
+        result->push_back(i->second);
     return result;
 }
 
-bool
-CRANRepository::do_has_version(const QualifiedPackageName & q,
-        const VersionSpec & v) const
-{
-    Context context("When checking for version '" + stringify(v) + "' in '"
-            + stringify(q) + "' in " + stringify(name()) + ":");
-
-    need_packages();
-
-    if (has_package_named(q))
-        return v == _imp->version_specs.find(q)->second;
-    else
-        return false;
-}
-
 void
-CRANRepository::need_packages() const
+CRANRepository::need_ids() const
 {
-    if (_imp->has_packages)
+    if (_imp->has_ids)
         return;
 
-    Context context("When loading category names for " + stringify(name()) + ":");
+    Context context("When loading IDs for " + stringify(name()) + ":");
 
-    LineConfigFile packages(FSEntry(_imp->location / "PACKAGES"), LineConfigFileOptions());
-    LineConfigFile::Iterator l(packages.begin()), l_end(packages.end());
-    std::string last_package_name;
-    bool skip_invalid_package = false;
-    for ( ; l != l_end ; ++l)
-    {
-        Context local_context("When parsing line '" + *l + "':");
+    LineConfigFile packages(FSEntry(_imp->params.location / "PACKAGES"), LineConfigFileOptions());
 
-        std::string line(strip_leading(strip_trailing(*l, " \t"), " \t"));
-        if (line.empty())
-            continue;
-
-        std::string::size_type pos(line.find(':'));
-        if (std::string::npos == pos)
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Broken line in PACKAGES file: '" + stringify(_imp->location / "PACKAGES") + "'");
-            continue;
-        }
-
-        std::string key(line.substr(0, pos)), value(line.substr(pos + 1));
-        key = strip_leading(strip_trailing(key, " \t"), " \t");
-        value = strip_leading(strip_trailing(value, " \t"), " \t");
-        if (("Package" != key) && (skip_invalid_package))
-        {
-            skip_invalid_package = false;
-            continue;
-        }
-
-        if ("Package" == key)
-        {
-            CRANDescription::normalise_name(value);
-            last_package_name = value;
-            QualifiedPackageName package_name(CategoryNamePart("cran"), PackageNamePart(last_package_name));
-            _imp->package_names[package_name] = true;
-        }
-        else if ("Version" == key)
-        {
-            QualifiedPackageName package_name(CategoryNamePart("cran"), PackageNamePart(last_package_name));
-            CRANDescription::normalise_version(value);
-            VersionSpec version(value);
-            if (false == _imp->version_specs.insert(VersionsMap::value_type(package_name, version)).second)
-            {
-                skip_invalid_package = true;
-                Log::get_instance()->message(ll_warning, lc_context, "Multiple versions for package '"
-                    + last_package_name + "'.");
-                continue;
-            }
-        }
-        else if ("Contains" == key)
-        {
-            std::list<std::string> contains;
-            WhitespaceTokeniser::get_instance()->tokenise(value, std::back_inserter(contains));
-            std::list<std::string>::const_iterator i(contains.begin()), i_end(contains.end());
-            // load metadata immediately
-            for ( ; i != i_end ; ++i)
-            {
-                Context c("When processing 'Contains:' line: '" + stringify(*i) + "':");
-                if (*i == last_package_name)
-                    continue;
-
-                CRANDescription d(*i, FSEntry(_imp->location / std::string(last_package_name + ".DESCRIPTION")), false);
-
-                std::string dep(d.metadata->deps_interface->get_raw_build_depend());
-                std::string pkg(d.metadata->cran_interface->package);
-                if ("" == dep)
-                    dep = pkg;
-                else
-                    dep += "," + pkg;
-                d.metadata->deps_interface->set_build_depend(dep);
-                d.metadata->cran_interface->is_bundle_member = true;
-
-                _imp->package_names[d.name] = true;
-                _imp->metadata.insert(std::make_pair(std::make_pair(d.name, d.version), d.metadata));
-                _imp->version_specs.insert(VersionsMap::value_type(d.name, d.version));
-            }
-        }
-    }
-
-    _imp->has_packages = true;
+    _imp->has_ids = true;
 }
 
 RepositoryName
@@ -387,44 +216,138 @@ CRANRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("cran-" + modified_location);
 }
 
-tr1::shared_ptr<const VersionMetadata>
-CRANRepository::do_version_metadata(
-        const QualifiedPackageName & q, const VersionSpec & v) const
+void
+CRANRepository::do_install(const tr1::shared_ptr<const PackageID> & id_uncasted, const InstallOptions & o) const
 {
-    if (_imp->metadata.end() != _imp->metadata.find(
-        std::make_pair(q, v)))
-            return _imp->metadata.find(std::make_pair(q, v))->second;
+    if (id_uncasted->repository().get() != this)
+        throw PackageInstallActionError("Couldn't install '" + stringify(*id_uncasted) + "' using repository '" +
+                stringify(name()) + "'");
 
-    Context context("When fetching metadata for " + stringify(q) +
-            "-" + stringify(v));
+    const tr1::shared_ptr<const CRANPackageID> id(tr1::static_pointer_cast<const CRANPackageID>(id_uncasted));
+    if (id->bundle_member_key())
+        return;
 
-    if (! has_version(q, v))
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
+    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->params.environment->bashrc_files());
 
-    tr1::shared_ptr<VersionMetadata> result(new CRANVersionMetadata(false));
+    Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
+            .with_setenv("CATEGORY", "cran")
+            .with_setenv("DISTDIR", stringify(_imp->params.distdir))
+            .with_setenv("DISTFILE", id->native_package() + "_" + id->native_version() + ".tar.gz")
+            .with_setenv("PN", id->native_package())
+            .with_setenv("PV", id->native_version())
+            .with_setenv("PALUDIS_CRAN_MIRRORS", _imp->params.mirror)
+            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
-    FSEntry d(_imp->location);
-    PackageNamePart p(q.package);
-    std::string n(stringify(p));
-    CRANDescription::denormalise_name(n);
-    d /= n + ".DESCRIPTION";
+    if (0 != run_command(cmd))
+        throw PackageInstallActionError("Couldn't fetch sources for '" + stringify(*id) + "'");
 
-    if (d.is_regular_file())
+    if (o.fetch_only)
+        return;
+
+    FSEntry image(_imp->params.buildroot / stringify(id->native_package()) / "image");
+    FSEntry workdir(_imp->params.buildroot / stringify(id->native_package()) / "work");
+
+    if (! o.destination)
+        throw PackageInstallActionError("Can't merge '" + stringify(*id) + "' because no destination was provided.");
+
+    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean install")
+        .with_sandbox()
+        .with_setenv("CATEGORY", "cran")
+        .with_setenv("DISTDIR", stringify(_imp->params.distdir))
+        .with_setenv("DISTFILE", id->native_package() + "_" + id->native_version() + ".tar.gz")
+        .with_setenv("IMAGE", stringify(image))
+        .with_setenv("IS_BUNDLE", (id->bundle_key() ? "yes" : ""))
+        .with_setenv("LOCATION", stringify(_imp->params.location))
+        .with_setenv("PN", id->native_package())
+        .with_setenv("PV", id->native_version())
+        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->params.library))
+        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
+        .with_setenv("WORKDIR", stringify(workdir));
+
+    if (0 != run_command(cmd))
+        throw PackageInstallActionError("Couldn't install '" + stringify(*id) + "' to '" +
+                stringify(image) + "'");
+
+    MergeOptions m(id, image, FSEntry("/dev/null"));
+
+    if (! o.destination->destination_interface)
+        throw PackageInstallActionError("Couldn't install '" + stringify(*id) + "' to '" +
+                stringify(o.destination->name()) + "' because it does not provide destination_interface");
+
+    if (! o.destination->installed_interface)
+        throw PackageInstallActionError("Couldn't install '" + stringify(*id) + "' to '" +
+                stringify(o.destination->name()) + "' because it does not provide installed_interface");
+
+    o.destination->destination_interface->merge(m);
+
+    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean")
+        .with_setenv("IMAGE", stringify(image))
+        .with_setenv("PN", id->native_package())
+        .with_setenv("PV", id->native_version())
+        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->params.library))
+        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
+        .with_setenv("WORKDIR", stringify(workdir))
+        .with_setenv("REPOSITORY", stringify(name()));
+
+    if (0 != run_command(cmd))
+        throw PackageInstallActionError("Couldn't clean '" + stringify(*id) + "'");
+
+    return;
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+CRANRepository::do_package_set(const SetName & s) const
+{
+    if ("base" == s.data())
     {
-        CRANDescription desc(stringify(p), d, false);
-        result = desc.metadata;
+        /**
+         * \todo Implement system as all package which are installed
+         * by dev-lang/R by default.
+         */
+        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
     else
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
-                stringify(q) + "-" + stringify(v) + "' in repository '" +
-                stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
-        result.reset(new CRANVersionMetadata(false));
-        result->eapi = EAPIData::get_instance()->unknown_eapi();
-    }
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
 
-    _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
+tr1::shared_ptr<const SetNameCollection>
+CRANRepository::sets_list() const
+{
+    Context context("While generating the list of sets:");
+
+    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    result->insert(SetName("base"));
     return result;
+}
+
+bool
+CRANRepository::do_sync() const
+{
+    Context context("When syncing repository '" + stringify(name()) + "':");
+
+    std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
+                    _imp->params.sync + "/src/contrib/Descriptions/' ./");
+
+    if (0 != run_command(Command(cmd).with_chdir(_imp->params.location)))
+        return false;
+
+    cmd = "rsync --progress '" + _imp->params.sync + "/src/contrib/PACKAGES' ./";
+
+    if (0 != run_command(Command(cmd).with_chdir(_imp->params.location)))
+        return false;
+
+    cmd = "rsync --progress '" + _imp->params.sync + "/CRAN_mirrors.csv' ./";
+
+    return 0 == run_command(Command(cmd).with_chdir(_imp->params.location));
 }
 
 tr1::shared_ptr<Repository>
@@ -475,145 +398,6 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 {
 }
 
-void
-CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
-        const InstallOptions &o) const
-{
-    PackageNamePart pn(q.package);
-    CategoryNamePart c("cran");
-    tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, vn));
-
-    if (vm->cran_interface->is_bundle_member)
-        return;
-
-    std::string p(vm->cran_interface->package);
-    std::string v(vm->cran_interface->version);
-
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
-
-    Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
-            .with_setenv("CATEGORY", "cran")
-            .with_setenv("DISTDIR", stringify(_imp->distdir))
-            .with_setenv("DISTFILE", std::string(p + "_" + v + ".tar.gz"))
-            .with_setenv("PN", stringify(pn))
-            .with_setenv("PV", stringify(vn))
-            .with_setenv("PALUDIS_CRAN_MIRRORS", _imp->mirror)
-            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
-
-
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't fetch sources for '" + stringify(q) + "-" + stringify(vn) + "'");
-
-    if (o.fetch_only)
-        return;
-
-    FSEntry image(_imp->buildroot / stringify(q) / "image");
-    FSEntry workdir(_imp->buildroot / stringify(q) / "work");
-
-    if (! o.destination)
-        throw PackageInstallActionError("Can't merge '" + stringify(q) + "-" + stringify(vn) +
-                "' because no destination was provided.");
-
-
-    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean install")
-        .with_sandbox()
-        .with_setenv("CATEGORY", "cran")
-        .with_setenv("DISTDIR", stringify(_imp->distdir))
-        .with_setenv("DISTFILE", std::string(p + "_" + v + ".tar.gz"))
-        .with_setenv("IMAGE", stringify(image))
-        .with_setenv("IS_BUNDLE", (vm->cran_interface->is_bundle ? "yes" : ""))
-        .with_setenv("LOCATION", stringify(_imp->location))
-        .with_setenv("PN", stringify(pn))
-        .with_setenv("PV", stringify(vn))
-        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
-        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
-        .with_setenv("WORKDIR", stringify(workdir));
-
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                stringify(image) + "'");
-
-    MergeOptions m(PackageDatabaseEntry(q, vn, name()),
-            image,
-            FSEntry("/dev/null"));
-
-    if (! o.destination->destination_interface)
-        throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                stringify(o.destination->name()) + "' because it does not provide destination_interface");
-
-    if (! o.destination->installed_interface)
-        throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                stringify(o.destination->name()) + "' because it does not provide installed_interface");
-
-    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean")
-        .with_setenv("IMAGE", stringify(image))
-        .with_setenv("PN", p)
-        .with_setenv("PV", stringify(vn))
-        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
-        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-        .with_setenv("ROOT", stringify(o.destination->installed_interface->root()))
-        .with_setenv("WORKDIR", stringify(workdir))
-        .with_setenv("REPOSITORY", stringify(name()));
-
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't clean '" + stringify(q) + "-" + stringify(vn) + "'");
-
-    return;
-}
-
-tr1::shared_ptr<SetSpecTree::ConstItem>
-CRANRepository::do_package_set(const SetName & s) const
-{
-    if ("base" == s.data())
-    {
-        /**
-         * \todo Implement system as all package which are installed
-         * by dev-lang/R by default.
-         */
-        return tr1::shared_ptr<SetSpecTree::ConstItem>(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                    tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-    }
-    else
-        return tr1::shared_ptr<SetSpecTree::ConstItem>();
-}
-
-tr1::shared_ptr<const SetNameCollection>
-CRANRepository::sets_list() const
-{
-    Context context("While generating the list of sets:");
-
-    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
-    result->insert(SetName("base"));
-    return result;
-}
-
-bool
-CRANRepository::do_sync() const
-{
-    Context context("When syncing repository '" + stringify(name()) + "':");
-
-    std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
-                    _imp->sync + "/src/contrib/Descriptions/' ./");
-
-    if (0 != run_command(Command(cmd).with_chdir(_imp->location)))
-        return false;
-
-    cmd = "rsync --progress '" + _imp->sync + "/src/contrib/PACKAGES' ./";
-
-    if (0 != run_command(Command(cmd).with_chdir(_imp->location)))
-        return false;
-
-    cmd = "rsync --progress '" + _imp->sync + "/CRAN_mirrors.csv' ./";
-
-    return 0 == run_command(Command(cmd).with_chdir(_imp->location));
-}
 
 void
 CRANRepository::invalidate()

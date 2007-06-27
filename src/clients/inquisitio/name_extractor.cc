@@ -20,6 +20,8 @@
 #include "name_extractor.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/package_id.hh>
+#include <paludis/name.hh>
 
 using namespace inquisitio;
 using namespace paludis;
@@ -29,8 +31,8 @@ NameExtractor::NameExtractor(const paludis::Environment &)
 }
 
 std::string
-NameExtractor::operator() (const PackageDatabaseEntry & p) const
+NameExtractor::operator() (const PackageID & p) const
 {
-    return stringify(p.name);
+    return stringify(p.name());
 }
 

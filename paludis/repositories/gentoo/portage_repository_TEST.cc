@@ -23,7 +23,11 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/eapi.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/query.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -346,16 +350,14 @@ namespace test_cases
         }
     } test_portage_repository_bad_package_names;
 
-    /**
-     * \test Test PortageRepository has_version.
-     *
-     */
-    struct PortageRepositoryHasVersionTest : TestCase
+    struct PortageRepositoryPackageIDTest : TestCase
     {
-        PortageRepositoryHasVersionTest() : TestCase("has version") { }
+        PortageRepositoryPackageIDTest() : TestCase("package_ids") { }
 
         void run()
         {
+            using namespace tr1::placeholders;
+
             TestEnvironment env;
             tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
@@ -370,65 +372,24 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1")));
-                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1.1-r1")));
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2")));
+                tr1::shared_ptr<const PackageIDSequence> versions;
 
-                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("3.45")));
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("1")));
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("1.23")));
-
-                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("2")));
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1")));
-
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("3.45")));
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("1")));
-                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("1.23")));
-
-                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-neither"), VersionSpec("1")));
-            }
-        }
-    } test_portage_repository_has_version;
-
-    /**
-     * \test Test PortageRepository versions.
-     *
-     */
-    struct PortageRepositoryVersionsTest : TestCase
-    {
-        PortageRepositoryVersionsTest() : TestCase("versions") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
-            keys->insert("format", "ebuild");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo4");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
-
-            for (int pass = 1 ; pass <= 2 ; ++pass)
-            {
-                TestMessageSuffix pass_suffix(stringify(pass), true);
-
-                tr1::shared_ptr<const VersionSpecCollection> versions;
-
-                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-one"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
-                TEST_CHECK(versions->end() != versions->find(VersionSpec("1")));
-                TEST_CHECK(versions->end() != versions->find(VersionSpec("1.1-r1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
+                TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
+                        indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                        tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
+                        indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                        tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
 
-                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-neither"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("1.1-r1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
             }
         }
     } test_portage_repository_versions;
@@ -443,6 +404,8 @@ namespace test_cases
 
         void run()
         {
+            using namespace tr1::placeholders;
+
             TestEnvironment env;
             tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
@@ -457,21 +420,24 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const VersionSpecCollection> versions;
+                tr1::shared_ptr<const PackageIDSequence> versions;
 
-                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-one"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
-                TEST_CHECK(versions->end() != versions->find(VersionSpec("1")));
-                TEST_CHECK(versions->end() != versions->find(VersionSpec("1.1-r1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
+                TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1"))));
+                TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1"))));
+                TEST_CHECK(indirect_iterator(versions->end()) == std::find_if(
+                            indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
+                            tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), VersionSpec("2"))));
 
-                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-neither"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
                 TEST_CHECK(versions->empty());
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("1.1-r1")));
-                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
             }
         }
     } test_portage_repository_duff_versions;
@@ -493,21 +459,17 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo6");
             keys->insert("profiles", "portage_repository_TEST_dir/repo6/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
+            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                tr1::shared_ptr<const VersionMetadata> m;
+                tr1::shared_ptr<const PackageID> id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
-                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->description, "the-description");
-
-                TEST_CHECK_THROWS(repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2")),
-                        NoSuchPackageError);
-                TEST_CHECK_THROWS(repo->version_metadata(QualifiedPackageName("cat-two/pkg-one"), VersionSpec("1")),
-                        NoSuchPackageError);
+                TEST_CHECK(id->short_description_key());
+                TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description");
             }
         }
     } test_portage_repository_metadata_cached;
@@ -539,34 +501,43 @@ namespace test_cases
                 keys->insert("write_cache", "portage_repository_TEST_dir/repo7/metadata/cache");
                 keys->insert("location", "portage_repository_TEST_dir/repo7");
                 keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
-                tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                            &env, keys));
+                tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+                env.package_database()->add_repository(1, repo);
 
                 for (int pass = 1 ; pass <= 3 ; ++pass)
                 {
                     TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
-                    tr1::shared_ptr<const VersionMetadata> m;
 
-                    m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                    TEST_CHECK(m->eapi->supported);
-                    TEST_CHECK_EQUAL(m->description, "The Description");
-                    TEST_CHECK_EQUAL(m->eapi->name, "0");
+                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                                    PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+
+                    TEST_CHECK(id1->eapi()->supported);
+                    TEST_CHECK(id1->short_description_key());
+                    TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
+                    TEST_CHECK_EQUAL(id1->eapi()->name, "0");
                     DepSpecPrettyPrinter pd(0, false);
-                    m->deps_interface->build_depend()->accept(pd);
+                    TEST_CHECK(id1->build_dependencies_key());
+                    id1->build_dependencies_key()->value()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
                     DepSpecPrettyPrinter pr(0, false);
-                    m->deps_interface->run_depend()->accept(pr);
+                    TEST_CHECK(id1->run_dependencies_key());
+                    id1->run_dependencies_key()->value()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
-                    m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
-                    TEST_CHECK(m->eapi->supported);
-                    TEST_CHECK_EQUAL(m->description, "dquote \" squote ' backslash \\ dollar $");
-                    TEST_CHECK_EQUAL(m->eapi->name, "0");
+                    tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
+                                    PackageDepSpec("=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+
+                    TEST_CHECK(id2->eapi()->supported);
+                    TEST_CHECK(id2->short_description_key());
+                    TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
+                    TEST_CHECK_EQUAL(id2->eapi()->name, "0");
                     DepSpecPrettyPrinter pd2(0, false);
-                    m->deps_interface->build_depend()->accept(pd2);
+                    TEST_CHECK(id2->build_dependencies_key());
+                    id2->build_dependencies_key()->value()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
                     DepSpecPrettyPrinter pr2(0, false);
-                    m->deps_interface->run_depend()->accept(pr2);
+                    TEST_CHECK(id2->run_dependencies_key());
+                    id2->run_dependencies_key()->value()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
                 }
             }
@@ -595,17 +566,19 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
+            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository( &env, keys));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                tr1::shared_ptr<const VersionMetadata> m;
 
-                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->eapi->name, "UNKNOWN");
-                TEST_CHECK(! m->eapi->supported);
+                tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("=cat-one/pkg-two-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+
+                TEST_CHECK_EQUAL(id1->eapi()->name, "UNKNOWN");
+                TEST_CHECK(! id1->eapi()->supported);
+                TEST_CHECK(! id1->short_description_key());
             }
         }
     } test_portage_repository_metadata_unparsable;
@@ -627,33 +600,29 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo9");
             keys->insert("profiles", "portage_repository_TEST_dir/repo9/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
+            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                PackageDatabaseEntry p1(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"),
-                        RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p2(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1"),
-                        RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p3(QualifiedPackageName("cat-one/pkg-none"), VersionSpec("1"),
-                        RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p4(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"),
-                        RepositoryName("test-repo-9"));
+                tr1::shared_ptr<const PackageID> p1(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    "=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p2(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    "=cat-two/pkg-two-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+                tr1::shared_ptr<const PackageID> p4(*env.package_database()->query(query::Matches(PackageDepSpec(
+                                    "=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
-                TEST_CHECK(repo->query_use(UseFlagName("flag1"), p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag2"), p1) == use_disabled);
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), p3));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), p2));
-                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), p1));
-                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), p4));
-                TEST_CHECK(repo->query_use(UseFlagName("flag3"), p1) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag4"), p3) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), p2) == use_enabled);
-                TEST_CHECK(repo->query_use(UseFlagName("flag5"), p1) == use_unspecified);
+                TEST_CHECK(repo->query_use(UseFlagName("flag1"), *p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag2"), *p1) == use_disabled);
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), *p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), *p2));
+                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), *p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), *p4));
+                TEST_CHECK(repo->query_use(UseFlagName("flag3"), *p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p2) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p1) == use_unspecified);
             }
         }
     } test_portage_repository_query_use;
@@ -675,19 +644,19 @@ namespace test_cases
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo10");
             keys->insert("profiles", "portage_repository_TEST_dir/repo10/profiles/profile/subprofile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
+            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->query_profile_masks(QualifiedPackageName("cat/masked"),
-                            VersionSpec("0")));
-                TEST_CHECK(! repo->query_profile_masks(QualifiedPackageName("cat/not_masked"),
-                            VersionSpec("0")));
-                TEST_CHECK(! repo->query_profile_masks(QualifiedPackageName("cat/was_masked"),
-                            VersionSpec("0")));
+                TEST_CHECK(repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
+                                        "=cat/masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
+                TEST_CHECK(! repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
+                                        "=cat/not_masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
+                TEST_CHECK(! repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
+                                        "=cat/was_masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
             }
         }
     } test_portage_repository_query_profile_masks;

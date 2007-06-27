@@ -82,7 +82,7 @@ namespace
                     if (CommandLine::get_instance()->a_show_reasons.argument() != "full")
                         return;
 
-                cout << "* " << colour(d.skip_uninstall ? cl_unimportant : cl_package_name, stringify(d.package));
+                cout << "* " << colour(d.skip_uninstall ? cl_unimportant : cl_package_name, stringify(*d.package_id));
                 ++_count;
 
                 if ((CommandLine::get_instance()->a_show_reasons.argument() == "summary") ||
@@ -130,9 +130,7 @@ namespace
             virtual void on_uninstall_pre(const UninstallListEntry & d)
             {
                 std::string msg("(" + stringify(++_current_count) + " of " +
-                        stringify(_count) + ") Uninstalling " +
-                        stringify(d.package.name) + "-" + stringify(d.package.version) +
-                        "::" + stringify(d.package.repository));
+                        stringify(_count) + ") Uninstalling " + stringify(*d.package_id));
 
                 cout << endl << colour(cl_heading, msg) << endl << endl;
 
@@ -214,7 +212,7 @@ namespace
             cerr << "Ambiguous unmerge target '" << e.target() << "'. Did you mean:" << endl;
             for (AmbiguousUnmergeTargetError::Iterator o(e.begin()),
                     o_end(e.end()) ; o != o_end ; ++o)
-                cerr << "    * =" << colour(cl_package_name, *o) << endl;
+                cerr << "    * =" << colour(cl_package_name, **o) << endl;
             cerr << endl;
             cerr << "Consider using --all-versions if appropriate." << endl;
             cerr << endl;

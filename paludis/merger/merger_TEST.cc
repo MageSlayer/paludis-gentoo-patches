@@ -20,6 +20,7 @@
 #include "merger.hh"
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/hooker.hh>
+#include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>

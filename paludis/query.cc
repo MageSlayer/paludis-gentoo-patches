@@ -20,6 +20,7 @@
 #include "query.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -57,11 +58,11 @@ QueryDelegate::packages(const Environment &, tr1::shared_ptr<const RepositoryNam
     return tr1::shared_ptr<QualifiedPackageNameCollection>();
 }
 
-tr1::shared_ptr<PackageDatabaseEntryCollection>
-QueryDelegate::versions(const Environment &, tr1::shared_ptr<const RepositoryNameCollection>,
+tr1::shared_ptr<PackageIDSequence>
+QueryDelegate::ids(const Environment &, tr1::shared_ptr<const RepositoryNameCollection>,
         tr1::shared_ptr<const QualifiedPackageNameCollection>) const
 {
-    return tr1::shared_ptr<PackageDatabaseEntryCollection>();
+    return tr1::shared_ptr<PackageIDSequence>();
 }
 
 Query::Query(tr1::shared_ptr<const QueryDelegate> d) :
@@ -83,6 +84,12 @@ namespace
         MatchesDelegate(const PackageDepSpec & a) :
             spec(a)
         {
+        }
+
+        std::string
+        as_human_readable_string() const
+        {
+            return "matches '" + stringify(spec) + "'";
         }
 
         tr1::shared_ptr<RepositoryNameCollection>
@@ -155,12 +162,12 @@ namespace
                 return QueryDelegate::packages(e, repos, cats);
         }
 
-        tr1::shared_ptr<PackageDatabaseEntryCollection>
-        versions(const Environment & e,
+        tr1::shared_ptr<PackageIDSequence>
+        ids(const Environment & e,
                 tr1::shared_ptr<const RepositoryNameCollection> repos,
                 tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs) const
         {
-            tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
+            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
             for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
@@ -169,14 +176,12 @@ namespace
                 for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
-                    tr1::shared_ptr<const VersionSpecCollection> vers(repo->version_specs(*p));
-                    for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
+                    using namespace tr1::placeholders;
+                    tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
+                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
-                    {
-                        PackageDatabaseEntry dbe(*p, *v, *r);
-                        if (match_package(e, spec, dbe))
-                            result->push_back(dbe);
-                    }
+                        if (match_package(e, spec, **v))
+                            result->push_back(*v);
                 }
             }
 
@@ -220,12 +225,18 @@ namespace
     struct NotMaskedDelegate :
         QueryDelegate
     {
-        tr1::shared_ptr<PackageDatabaseEntryCollection>
-        versions(const Environment & e,
+        std::string
+        as_human_readable_string() const
+        {
+            return "not masked";
+        }
+
+        tr1::shared_ptr<PackageIDSequence>
+        ids(const Environment & e,
                 tr1::shared_ptr<const RepositoryNameCollection> repos,
                 tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs) const
         {
-            tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
+            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
             for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
@@ -234,14 +245,11 @@ namespace
                 for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
-                    tr1::shared_ptr<const VersionSpecCollection> vers(repo->version_specs(*p));
-                    for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
+                    tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
+                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
-                    {
-                        PackageDatabaseEntry dbe(*p, *v, *r);
-                        if (! e.mask_reasons(dbe).any())
-                            result->push_back(dbe);
-                    }
+                        if (! e.mask_reasons(**v).any())
+                            result->push_back(*v);
                 }
             }
 
@@ -257,6 +265,33 @@ query::NotMasked::NotMasked() :
 
 namespace
 {
+    template <typename I_>
+    struct DelegateName;
+
+    template <>
+    struct DelegateName<RepositoryInstalledInterface>
+    {
+        static const char * value;
+    };
+
+    const char * DelegateName<RepositoryInstalledInterface>::value = "RepositoryInstalledInterface";
+
+    template <>
+    struct DelegateName<RepositoryUninstallableInterface>
+    {
+        static const char * value;
+    };
+
+    const char * DelegateName<RepositoryUninstallableInterface>::value = "RepositoryUninstallableInterface";
+
+    template <>
+    struct DelegateName<RepositoryInstallableInterface>
+    {
+        static const char * value;
+    };
+
+    const char * DelegateName<RepositoryInstallableInterface>::value = "RepositoryInstallableInterface";
+
     template <typename I_, I_ * (RepositoryCapabilities::* i_)>
     struct RepositoryHasDelegate :
         QueryDelegate
@@ -273,6 +308,13 @@ namespace
 
             return result;
         }
+
+        std::string
+        as_human_readable_string() const
+        {
+            return "repository has '" + std::string(DelegateName<I_>::value) + "'";
+        }
+
     };
 }
 
@@ -300,6 +342,12 @@ namespace
         QueryDelegate
     {
         const FSEntry root;
+
+        std::string
+        as_human_readable_string() const
+        {
+            return "installed at root '" + stringify(root) + "'";
+        }
 
         InstalledAtRootDelegate(const FSEntry & r) :
             root(r)
@@ -342,6 +390,12 @@ namespace
         QueryDelegate
     {
         tr1::shared_ptr<const QueryDelegate> q1, q2;
+
+        std::string
+        as_human_readable_string() const
+        {
+            return q1->as_human_readable_string()+ " & " + q2->as_human_readable_string();
+        }
 
         AndQueryDelegate(tr1::shared_ptr<const QueryDelegate> qq1,
                 tr1::shared_ptr<const QueryDelegate> qq2) :
@@ -404,19 +458,18 @@ namespace
                 return r2;
         }
 
-        tr1::shared_ptr<PackageDatabaseEntryCollection>
-        versions(const Environment & e, tr1::shared_ptr<const RepositoryNameCollection> r,
+        tr1::shared_ptr<PackageIDSequence>
+        ids(const Environment & e, tr1::shared_ptr<const RepositoryNameCollection> r,
                 tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
         {
-            tr1::shared_ptr<PackageDatabaseEntryCollection> r1(q1->versions(e, r, q)), r2(q2->versions(e, r, q));
+            tr1::shared_ptr<PackageIDSequence> r1(q1->ids(e, r, q)), r2(q2->ids(e, r, q));
 
             if (r1 && r2)
             {
-                std::set<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator>
+                std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>
                     s1(r1->begin(), r1->end()), s2(r2->begin(), r2->end());
-                tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
-                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->inserter(),
-                        ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
+                tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->inserter(), PackageIDSetComparator());
                 return result;
             }
             else if (r1)
@@ -433,6 +486,13 @@ paludis::operator& (const Query & q1, const Query & q2)
     return Query(tr1::shared_ptr<QueryDelegate>(new AndQueryDelegate(q1._d, q2._d)));
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const Query & q)
+{
+    s << q._d->as_human_readable_string();
+    return s;
+}
+
 namespace
 {
     struct AllDelegate :
@@ -441,6 +501,13 @@ namespace
         AllDelegate()
         {
         }
+
+        std::string
+        as_human_readable_string() const
+        {
+            return "all";
+        }
+
     };
 }
 

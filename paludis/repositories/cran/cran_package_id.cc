@@ -18,9 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/config_file.hh>
 #include <paludis/eapi.hh>
 #include <paludis/util/log.hh>
@@ -34,28 +33,32 @@
 
 using namespace paludis;
 
-void
-CRANDescription::normalise_name(std::string & s)
+namespace
 {
-    using namespace tr1::placeholders;
-    std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '.'), '-');
+    void
+    normalise_name(std::string & s)
+    {
+        using namespace tr1::placeholders;
+        std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '.'), '-');
+    }
+
+    void
+    denormalise_name(std::string & s)
+    {
+        using namespace tr1::placeholders;
+        std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '-'), '.');
+    }
+
+    void
+    normalise_version(std::string & s)
+    {
+        using namespace tr1::placeholders;
+        std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '-'), '.');
+    }
 }
 
-void
-CRANDescription::denormalise_name(std::string & s)
-{
-    using namespace tr1::placeholders;
-    std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '-'), '.');
-}
-
-void
-CRANDescription::normalise_version(std::string & s)
-{
-    using namespace tr1::placeholders;
-    std::replace_if(s.begin(), s.end(), tr1::bind(std::equal_to<char>(), _1, '-'), '.');
-}
-
-CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool installed) :
+#if 0
+CRANDescription::CRANDescription() :
     name("cran/" + n),
     version("0"),
     metadata(new CRANVersionMetadata(installed))
@@ -133,4 +136,6 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool 
             metadata->deps_interface->set_suggested_depend(value);
     }
 }
+
+#endif
 

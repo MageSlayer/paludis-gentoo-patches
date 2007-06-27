@@ -22,13 +22,13 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/config_file.hh>
-#include <paludis/name.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
     class PaludisEnvironment;
-    class PackageDatabaseEntry;
 
     namespace paludis_environment
     {
@@ -59,7 +59,7 @@ namespace paludis
                 /**
                  * Query a particular license.
                  */
-                bool query(const std::string &, const PackageDatabaseEntry &) const;
+                bool query(const std::string &, const PackageID &) const;
         };
     }
 }

@@ -23,8 +23,8 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/dep_tag.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/dep_tag-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
@@ -45,17 +45,17 @@ namespace paludis
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {
         private:
-            void add_package(const PackageDatabaseEntry &, tr1::shared_ptr<DepTag>);
-            void move_package_to_end(const PackageDatabaseEntry &);
+            void add_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<DepTag>);
+            void move_package_to_end(const tr1::shared_ptr<const PackageID> &);
             void add_unused_dependencies();
-            void add_dependencies(const PackageDatabaseEntry &);
+            void add_dependencies(const PackageID &);
 
-            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_depped_upon(
-                    const tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> targets) const;
+            tr1::shared_ptr<const PackageIDSet> collect_depped_upon(
+                    const tr1::shared_ptr<const PackageIDSet> targets) const;
 
-            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_all_installed() const;
+            tr1::shared_ptr<const PackageIDSet> collect_all_installed() const;
 
-            tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_world() const;
+            tr1::shared_ptr<const PackageIDSet> collect_world() const;
 
         public:
             ///\name Basic operations
@@ -74,7 +74,8 @@ namespace paludis
             /**
              * Add a package, optionally with a reason.
              */
-            void add(const PackageDatabaseEntry &, tr1::shared_ptr<DepTag> = tr1::shared_ptr<DepTag>());
+            void add(const tr1::shared_ptr<const PackageID> &,
+                    tr1::shared_ptr<DepTag> = tr1::shared_ptr<DepTag>());
 
             /**
              * Add any unused packages that are dependencies of packages to uninstall.

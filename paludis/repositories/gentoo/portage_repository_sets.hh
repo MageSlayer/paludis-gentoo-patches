@@ -21,8 +21,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH 1
 
-#include <paludis/dep_spec.hh>
-#include <paludis/repository.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/repository-fwd.hh>
 
 /** \file
  * Declaration for the PortageRepositorySets class.

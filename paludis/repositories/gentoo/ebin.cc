@@ -25,6 +25,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/eapi.hh>
 #include <paludis/about.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -35,32 +37,6 @@ using namespace paludis;
 
 #include <paludis/repositories/gentoo/ebin-se.cc>
 #include <paludis/repositories/gentoo/ebin-sr.cc>
-
-EbinVersionMetadata::EbinVersionMetadata(const SlotName & s) :
-    VersionMetadata(
-            VersionMetadataBase::create()
-            .slot(s)
-            .homepage("")
-            .description("")
-            .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
-            .interactive(false),
-            VersionMetadataCapabilities::create()
-            .ebin_interface(this)
-            .ebuild_interface(this)
-            .deps_interface(this)
-            .license_interface(this)
-            .origins_interface(this)
-            .cran_interface(0)
-            .virtual_interface(0)
-            ),
-    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
-{
-}
-
-EbinVersionMetadata::~EbinVersionMetadata()
-{
-}
 
 EbinCommand::EbinCommand(const EbinCommandParams & p) :
     params(p)
@@ -104,16 +80,16 @@ EbinCommand::operator() ()
     tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
 
     cmd = extend_command(cmd
-            .with_setenv("P", stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version.remove_revision()))
-            .with_setenv("PV", stringify(params.db_entry->version.remove_revision()))
-            .with_setenv("PR", stringify(params.db_entry->version.revision_only()))
-            .with_setenv("PN", stringify(params.db_entry->name.package))
-            .with_setenv("PVR", stringify(params.db_entry->version))
-            .with_setenv("PF", stringify(params.db_entry->name.package) + "-" +
-                stringify(params.db_entry->version))
-            .with_setenv("CATEGORY", stringify(params.db_entry->name.category))
-            .with_setenv("REPOSITORY", stringify(params.db_entry->repository))
+            .with_setenv("P", stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version().remove_revision()))
+            .with_setenv("PV", stringify(params.package_id->version().remove_revision()))
+            .with_setenv("PR", stringify(params.package_id->version().revision_only()))
+            .with_setenv("PN", stringify(params.package_id->name().package))
+            .with_setenv("PVR", stringify(params.package_id->version()))
+            .with_setenv("PF", stringify(params.package_id->name().package) + "-" +
+                stringify(params.package_id->version()))
+            .with_setenv("CATEGORY", stringify(params.package_id->name().category))
+            .with_setenv("REPOSITORY", stringify(params.package_id->repository()->name()))
             .with_setenv("PORTDIR", stringify(params.portdir))
             .with_setenv("DISTDIR", stringify(params.distdir))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -146,9 +122,9 @@ EbinCommand::add_portage_vars(const Command & cmd) const
     return Command(cmd)
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
         .with_setenv("PORTAGE_BUILDDIR", stringify(params.buildroot) + "/" +
-             stringify(params.db_entry->name.category) + "/" +
-             stringify(params.db_entry->name.package) + "-" +
-             stringify(params.db_entry->version))
+             stringify(params.package_id->name().category) + "/" +
+             stringify(params.package_id->name().package) + "-" +
+             stringify(params.package_id->version()))
         .with_setenv("PORTAGE_CALLER", params.environment->paludis_command())
         .with_setenv("PORTAGE_GID", "0")
         .with_setenv("PORTAGE_INST_GID", "0")
@@ -169,8 +145,7 @@ EbinFetchCommand::commands() const
 bool
 EbinFetchCommand::failure()
 {
-    throw PackageFetchActionError("Fetch failed for '" + stringify(
-                *params.db_entry) + "'");
+    throw PackageFetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -232,8 +207,7 @@ EbinInstallCommand::commands() const
 bool
 EbinInstallCommand::failure()
 {
-    throw PackageInstallActionError("Install failed for '" + stringify(
-                *params.db_entry) + "'");
+    throw PackageInstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command

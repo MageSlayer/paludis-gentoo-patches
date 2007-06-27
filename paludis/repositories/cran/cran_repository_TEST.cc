@@ -20,7 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/cran_description.hh>
+#include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/collection_concrete.hh>

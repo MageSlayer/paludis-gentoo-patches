@@ -28,7 +28,6 @@
 namespace paludis
 {
     class PackageDatabase;
-    class PackageDatabaseEntry;
 
 #include <paludis/environment-se.hh>
 

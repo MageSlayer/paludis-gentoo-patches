@@ -17,15 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "environment_implementation.hh"
-#include <paludis/package_database_entry.hh>
-#include <paludis/version_metadata.hh>
+#include <paludis/environment_implementation.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/eapi.hh>
+#include <paludis/hook.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
@@ -43,16 +44,16 @@ namespace
 
         bool ok;
         const EnvironmentImplementation * const env;
-        bool (EnvironmentImplementation::* const func) (const std::string &, const PackageDatabaseEntry &) const;
-        const PackageDatabaseEntry * const db_entry;
+        bool (EnvironmentImplementation::* const func) (const std::string &, const PackageID &) const;
+        const PackageID * const id;
 
         LicenceChecker(const EnvironmentImplementation * const e,
-                bool (EnvironmentImplementation::* const f) (const std::string &, const PackageDatabaseEntry &) const,
-                const PackageDatabaseEntry * const d) :
+                bool (EnvironmentImplementation::* const f) (const std::string &, const PackageID &) const,
+                const PackageID * const d) :
             ok(true),
             env(e),
             func(f),
-            db_entry(d)
+            id(d)
         {
         }
 
@@ -81,66 +82,60 @@ namespace
                 LicenseSpecTree::ConstSequenceIterator begin,
                 LicenseSpecTree::ConstSequenceIterator end)
         {
-            if (env->query_use(spec.flag(), *db_entry))
+            if (env->query_use(spec.flag(), *id))
                 std::for_each(begin, end, accept_visitor(*this));
         }
 
         void visit_leaf(const PlainTextDepSpec & spec)
         {
-            if (! (env->*func)(spec.text(), *db_entry))
+            if (! (env->*func)(spec.text(), *id))
                 ok = false;
         }
     };
 }
 
 bool
-EnvironmentImplementation::accept_eapi(const EAPI & e, const PackageDatabaseEntry &) const
+EnvironmentImplementation::accept_eapi(const PackageID & e) const
 {
-    return e.supported;
+    return e.eapi()->supported;
 }
 
 bool
 EnvironmentImplementation::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k,
-        const PackageDatabaseEntry &) const
+        const PackageID &) const
 {
     return k->end() != k->find(KeywordName("*"));
 }
 
 bool
-EnvironmentImplementation::accept_license(const std::string &, const PackageDatabaseEntry &) const
+EnvironmentImplementation::accept_license(const std::string &, const PackageID &) const
 {
     return true;
 }
 
 bool
-EnvironmentImplementation::accept_breaks_portage(const PackageDatabaseEntry &) const
+EnvironmentImplementation::accept_breaks_portage(const PackageID &) const
 {
     return true;
 }
 
 bool
-EnvironmentImplementation::accept_interactive(const PackageDatabaseEntry &) const
+EnvironmentImplementation::masked_by_user(const PackageID &) const
 {
     return false;
 }
 
 bool
-EnvironmentImplementation::masked_by_user(const PackageDatabaseEntry &) const
+EnvironmentImplementation::unmasked_by_user(const PackageID &) const
 {
     return false;
 }
 
 bool
-EnvironmentImplementation::unmasked_by_user(const PackageDatabaseEntry &) const
+EnvironmentImplementation::breaks_portage(const PackageID & e) const
 {
-    return false;
-}
-
-bool
-EnvironmentImplementation::breaks_portage(const PackageDatabaseEntry & e, const VersionMetadata & m) const
-{
-    return (e.version.has_try_part() || e.version.has_scm_part()
-            || (! m.eapi->supported) || (m.eapi->supported->breaks_portage));
+    return (e.version().has_try_part() || e.version().has_scm_part()
+            || (! e.eapi()->supported) || (e.eapi()->supported->breaks_portage));
 }
 
 EnvironmentImplementation::~EnvironmentImplementation()
@@ -149,7 +144,7 @@ EnvironmentImplementation::~EnvironmentImplementation()
 
 
 tr1::shared_ptr<const UseFlagNameCollection>
-EnvironmentImplementation::known_use_expand_names(const UseFlagName &, const PackageDatabaseEntry &) const
+EnvironmentImplementation::known_use_expand_names(const UseFlagName &, const PackageID &) const
 {
     static tr1::shared_ptr<const UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
     return result;
@@ -241,36 +236,31 @@ EnvironmentImplementation::default_destinations() const
 }
 
 MaskReasons
-EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const MaskReasonsOptions & options) const
+EnvironmentImplementation::mask_reasons(const PackageID & e, const MaskReasonsOptions & options) const
 {
     Context context("When checking for mask reasons for '" + stringify(e) + "':");
 
     MaskReasons result;
-    tr1::shared_ptr<const VersionMetadata> metadata(package_database()->fetch_repository(
-                e.repository)->version_metadata(e.name, e.version));
 
-    if (! accept_eapi(*metadata->eapi, e))
+    if (! accept_eapi(e))
     {
         result += mr_eapi;
         return result;
     }
 
-    if (breaks_portage(e, *metadata) && ! accept_breaks_portage(e))
+    if (breaks_portage(e) && ! accept_breaks_portage(e))
         result += mr_breaks_portage;
 
-    if (metadata->interactive && ! accept_interactive(e))
-        result += mr_interactive;
-
-    if (metadata->virtual_interface)
+    if (e.virtual_for_key())
     {
-        result |= mask_reasons(*metadata->virtual_interface->virtual_for);
+        result |= mask_reasons(*e.virtual_for_key()->value());
         if (result.any())
             result += mr_by_association;
     }
 
-    if (metadata->ebuild_interface)
+    if (e.keywords_key())
     {
-        tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
+        tr1::shared_ptr<const KeywordNameCollection> keywords(e.keywords_key()->value());
         if (! accept_keywords(keywords, e))
         {
             do
@@ -307,10 +297,10 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
         }
     }
 
-    if (metadata->license_interface)
+    if (e.license_key())
     {
         LicenceChecker lc(this, &EnvironmentImplementation::accept_license, &e);
-        metadata->license_interface->license()->accept(lc);
+        e.license_key()->value()->accept(lc);
         if (! lc.ok)
             result += mr_license;
     }
@@ -320,13 +310,12 @@ EnvironmentImplementation::mask_reasons(const PackageDatabaseEntry & e, const Ma
         if (masked_by_user(e))
             result += mr_user_mask;
 
-        tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
-        if (repo->mask_interface)
+        if (e.repository()->mask_interface)
         {
-            if (repo->mask_interface->query_profile_masks(e.name, e.version))
+            if (e.repository()->mask_interface->query_profile_masks(e))
                 result += mr_profile_mask;
 
-            if (repo->mask_interface->query_repository_masks(e.name, e.version))
+            if (e.repository()->mask_interface->query_repository_masks(e))
                 result += mr_repository_mask;
         }
     }
@@ -385,21 +374,16 @@ EnvironmentImplementation::set(const SetName & s) const
 }
 
 bool
-EnvironmentImplementation::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
+EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e) const
 {
-    tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
-
-    if (repo && repo->use_interface)
+    if (e.repository()->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, e))
+        if (e.repository()->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, e))
+        if (e.repository()->use_interface->query_use_force(f, e))
             return true;
-    }
 
-    if (repo && repo->use_interface)
-    {
-        switch (repo->use_interface->query_use(f, e))
+        switch (e.repository()->use_interface->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:

@@ -29,6 +29,7 @@ namespace paludis
     namespace tr1
     {
         using std::tr1::remove_pointer;
+        using std::tr1::remove_const;
         using std::tr1::is_same;
         using std::tr1::is_convertible;
     }
@@ -36,13 +37,14 @@ namespace paludis
 
 #elif defined(PALUDIS_TR1_TYPE_TRAITS_IS_BOOST)
 
-#include <boost/type_traits.hpp>
+#include  <boost/type_traits.hpp>
 
 namespace paludis
 {
     namespace tr1
     {
         using boost::remove_pointer;
+        using boost::remove_const;
         using boost::is_same;
         using boost::is_convertible;
     }

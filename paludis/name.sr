@@ -11,7 +11,7 @@ make_class_QualifiedPackageName()
     comparison_operators all all
 
     extra_constructors <<END
-        QualifiedPackageName(const std::string &);
+        explicit QualifiedPackageName(const std::string &);
 END
 
     doxygen_comment << "END"

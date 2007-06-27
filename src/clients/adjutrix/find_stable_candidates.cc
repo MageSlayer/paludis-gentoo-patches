@@ -25,6 +25,8 @@
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 
 #include <set>
 #include <map>
@@ -114,40 +116,38 @@ namespace
         typedef std::map<SlotName, SlotsEntry> SlotsToVersions;
         SlotsToVersions slots_to_versions;
 
-        tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
-        for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
+        tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
+        for (PackageIDSequence::Iterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
-            tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, *v));
-            if (! metadata->ebuild_interface)
+            if (! (*v)->keywords_key())
                 continue;
 
-            tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
-
-            if (keywords->end() != keywords->find(keyword))
+            if ((*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(keyword))
             {
                 is_interesting = true;
 
                 /* replace the entry */
-                slots_to_versions.erase(metadata->slot);
-                slots_to_versions.insert(std::make_pair(metadata->slot,
+                slots_to_versions.erase((*v)->slot());
+                slots_to_versions.insert(std::make_pair((*v)->slot(),
                             SlotsEntry(SlotsEntry::create()
-                                .our_version(*v)
+                                .our_version((*v)->version())
                                 .best_version(VersionSpec("0")))));
             }
 
-            if (keywords->end() != std::find_if(keywords->begin(), keywords->end(), IsStableKeyword()))
+            if ((*v)->keywords_key()->value()->end() != std::find_if((*v)->keywords_key()->value()->begin(),
+                        (*v)->keywords_key()->value()->end(), IsStableKeyword()))
             {
                 /* ensure that an entry exists */
-                slots_to_versions.insert(std::make_pair(metadata->slot,
+                slots_to_versions.insert(std::make_pair((*v)->slot(),
                             SlotsEntry(SlotsEntry::create()
                                 .our_version(VersionSpec("0"))
-                                .best_version(*v))));
+                                .best_version((*v)->version()))));
 
                 /* update the entry to mark our current version as the best
                  * version */
-                if (slots_to_versions.find(metadata->slot)->second.best_version <= *v)
-                    slots_to_versions.find(metadata->slot)->second.best_version = *v;
+                if (slots_to_versions.find((*v)->slot())->second.best_version <= (*v)->version())
+                    slots_to_versions.find((*v)->slot())->second.best_version = (*v)->version();
             }
         }
 

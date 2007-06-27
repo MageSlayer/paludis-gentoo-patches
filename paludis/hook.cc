@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <map>
+#include <set>
 
 using namespace paludis;
 
@@ -47,6 +48,35 @@ namespace paludis
         {
         }
     };
+
+    template<>
+    struct Implementation<Hook::AllowedOutputValues>
+    {
+        std::set<std::string> allowed_values;
+    };
+}
+
+Hook::AllowedOutputValues::AllowedOutputValues() :
+    PrivateImplementationPattern<Hook::AllowedOutputValues>(new Implementation<Hook::AllowedOutputValues>)
+{
+}
+
+Hook::AllowedOutputValues::AllowedOutputValues(const AllowedOutputValues & other) :
+    PrivateImplementationPattern<Hook::AllowedOutputValues>(new Implementation<Hook::AllowedOutputValues>)
+{
+    _imp->allowed_values = other._imp->allowed_values;
+}
+
+Hook::AllowedOutputValues::~AllowedOutputValues()
+{
+}
+
+Hook::AllowedOutputValues
+Hook::AllowedOutputValues::operator() (const std::string & v) const
+{
+    AllowedOutputValues result(*this);
+    result._imp->allowed_values.insert(v);
+    return result;
 }
 
 Hook::Hook(const std::string & n) :
@@ -90,7 +120,7 @@ Hook::grab_output(const AllowedOutputValues & av)
 {
     Hook result(*this);
     result.output_dest = hod_grab;
-    result._imp->allowed_values = av.allowed_values;
+    result._imp->allowed_values = av._imp->allowed_values;
     return result;
 }
 
@@ -121,23 +151,3 @@ Hook::name() const
     return _imp->name;
 }
 
-Hook::AllowedOutputValues::AllowedOutputValues()
-{
-}
-
-Hook::AllowedOutputValues::AllowedOutputValues(const AllowedOutputValues & other) :
-    allowed_values(other.allowed_values)
-{
-}
-
-Hook::AllowedOutputValues::~AllowedOutputValues()
-{
-}
-
-Hook::AllowedOutputValues
-Hook::AllowedOutputValues::operator() (const std::string & v) const
-{
-    AllowedOutputValues result(*this);
-    result.allowed_values.insert(v);
-    return result;
-}

@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,9 +52,7 @@ namespace paludis
         private PrivateImplementationPattern<CRANRepository>
     {
         private:
-            void need_packages() const;
-            void need_version_names(const QualifiedPackageName &) const;
-            void need_virtual_names() const;
+            void need_ids() const;
 
         protected:
             /**
@@ -61,33 +60,38 @@ namespace paludis
              */
             static RepositoryName fetch_repo_name(const std::string & location);
 
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
+            /* RepositoryInstallableInterface */
 
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
+            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
-
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
-
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
-
-            virtual bool do_has_version(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
+            /* RepositorySyncableInterface */
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName &) const;
 
             virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
 
+            /* RepositorySyncableInterface */
+
             virtual bool do_sync() const;
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             /**
@@ -117,7 +121,8 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpportagerepository
      */
-    class PALUDIS_VISIBLE CRANRepositoryConfigurationError : public ConfigurationError
+    class PALUDIS_VISIBLE CRANRepositoryConfigurationError :
+        public ConfigurationError
     {
         public:
             /**

@@ -22,6 +22,7 @@
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -200,6 +201,10 @@ GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_titl
 {
 }
 
+GLSADepTag::~GLSADepTag()
+{
+}
+
 std::string
 GLSADepTag::short_text() const
 {
@@ -218,16 +223,35 @@ GLSADepTag::glsa_title() const
     return _glsa_title;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<GeneralSetDepTag>
+    {
+        const SetName id;
+        const std::string source;
+
+        Implementation(const SetName & n, const std::string s) :
+            id(n),
+            source(s)
+        {
+        }
+    };
+}
+
 GeneralSetDepTag::GeneralSetDepTag(const SetName & id, const std::string & r) :
-    _id(id),
-    _source(r)
+    PrivateImplementationPattern<GeneralSetDepTag>(new Implementation<GeneralSetDepTag>(id, r))
+{
+}
+
+GeneralSetDepTag::~GeneralSetDepTag()
 {
 }
 
 std::string
 GeneralSetDepTag::short_text() const
 {
-    return stringify(_id);
+    return stringify(_imp->id);
 }
 
 std::string
@@ -239,39 +263,61 @@ GeneralSetDepTag::category() const
 std::string
 GeneralSetDepTag::source() const
 {
-    return _source;
+    return _imp->source;
 }
 
-DependencyDepTag::DependencyDepTag(const PackageDatabaseEntry & pde, const PackageDepSpec & spec,
-            tr1::shared_ptr<DependencySpecTree::ConstItem> cond) :
-    _dbe(pde),
-    _cond(cond)
+namespace paludis
 {
-    tr1::shared_ptr<PackageDepSpec> cloned_spec(tr1::static_pointer_cast<PackageDepSpec>(spec.clone()));
-    cloned_spec->set_tag(tr1::shared_ptr<const DepTag>());
-    _spec = cloned_spec;
+    template <>
+    struct Implementation<DependencyDepTag>
+    {
+        mutable std::string str;
+
+        tr1::shared_ptr<const PackageID> id;
+        const tr1::shared_ptr<PackageDepSpec> spec;
+        const tr1::shared_ptr<const DependencySpecTree::ConstItem> cond;
+
+        Implementation(const tr1::shared_ptr<const PackageID> & i,
+                const PackageDepSpec & d, const tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
+            id(i),
+            spec(tr1::static_pointer_cast<PackageDepSpec>(d.clone())),
+            cond(s)
+        {
+            spec->set_tag(tr1::shared_ptr<const DepTag>());
+        }
+    };
+}
+
+DependencyDepTag::DependencyDepTag(const tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d,
+        const tr1::shared_ptr<const DependencySpecTree::ConstItem> & s) :
+    PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d, s))
+{
+}
+
+DependencyDepTag::~DependencyDepTag()
+{
 }
 
 std::string
 DependencyDepTag::full_text() const
 {
-    if (_str.empty())
+    if (_imp->str.empty())
     {
-        _str.append(stringify(_dbe));
-        _str.append(",");
-        _str.append(stringify(*_spec));
-        _str.append(",");
+        _imp->str.append(stringify(*_imp->id));
+        _imp->str.append(",");
+        _imp->str.append(stringify(*_imp->spec));
+        _imp->str.append(",");
         DepSpecPrettyPrinter pretty(0, false);
-        _cond->accept(pretty);
-        _str.append(stringify(pretty));
+        _imp->cond->accept(pretty);
+        _imp->str.append(stringify(pretty));
     }
-    return _str;
+    return _imp->str;
 }
 
 std::string
 DependencyDepTag::short_text() const
 {
-    return stringify(_dbe);
+    return stringify(*_imp->id);
 }
 
 std::string
@@ -280,25 +326,29 @@ DependencyDepTag::category() const
     return "dependency";
 }
 
-PackageDatabaseEntry
-DependencyDepTag::package() const
+const tr1::shared_ptr<const PackageID>
+DependencyDepTag::package_id() const
 {
-    return _dbe;
+    return _imp->id;
 }
 
-tr1::shared_ptr<const PackageDepSpec>
+const tr1::shared_ptr<const PackageDepSpec>
 DependencyDepTag::dependency() const
 {
-    return _spec;
+    return _imp->spec;
 }
 
-tr1::shared_ptr<DependencySpecTree::ConstItem>
+const tr1::shared_ptr<const DependencySpecTree::ConstItem>
 DependencyDepTag::conditions() const
 {
-    return _cond;
+    return _imp->cond;
 }
 
 TargetDepTag::TargetDepTag()
+{
+}
+
+TargetDepTag::~TargetDepTag()
 {
 }
 

@@ -23,6 +23,7 @@
 
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
@@ -32,6 +33,7 @@
 namespace paludis
 {
     class PortageRepositoryEntries;
+    class PortageRepository;
 
     /**
      * Manages the layout of a PortageRepository.
@@ -83,11 +85,8 @@ namespace paludis
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const VersionSpecCollection> version_specs(
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual bool has_version(const QualifiedPackageName &, const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual FSEntry info_packages_file(const FSEntry &) const
@@ -102,10 +101,7 @@ namespace paludis
             virtual FSEntry category_directory(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry package_file(const QualifiedPackageName &, const VersionSpec &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual std::string eapi_string_if_known(const QualifiedPackageName &, const VersionSpec &) const
+            virtual FSEntry package_file(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual tr1::shared_ptr<const FSEntryCollection> arch_list_files() const
@@ -127,6 +123,9 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual FSEntry profiles_base_dir() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual tr1::shared_ptr<const FSEntryCollection> exlibsdirs(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -156,7 +155,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LayoutMaker :
         public VirtualConstructor<std::string,
-            tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+            tr1::shared_ptr<Layout> (*) (const PortageRepository * const, const FSEntry &,
                     tr1::shared_ptr<const PortageRepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>),
             virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,

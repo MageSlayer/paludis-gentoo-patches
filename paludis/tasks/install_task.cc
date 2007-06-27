@@ -196,7 +196,7 @@ InstallTask::execute()
     {
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_pre")
-                    ("TARGET", stringify(dep->package))
+                    ("TARGET", stringify(*dep->package_id))
                     ("KIND", stringify(dep->kind))).max_exit_status)
             throw PackageInstallActionError("Pretend install aborted by hook");
 
@@ -205,7 +205,7 @@ InstallTask::execute()
 
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_post")
-                    ("TARGET", stringify(dep->package))
+                    ("TARGET", stringify(*dep->package_id))
                     ("KIND", stringify(dep->kind))).max_exit_status)
             throw PackageInstallActionError("Pretend install aborted by hook");
     }
@@ -219,10 +219,9 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        const RepositoryPretendInterface * const pretend_interface(
-                _imp->env->package_database()->fetch_repository(dep->package.repository)->pretend_interface);
+        const RepositoryPretendInterface * const pretend_interface(dep->package_id->repository()->pretend_interface);
         if (pretend_interface)
-            pretend_failed |= ! pretend_interface->pretend(dep->package.name, dep->package.version);
+            pretend_failed |= ! pretend_interface->pretend(dep->package_id);
     }
 
     if (_imp->pretend)
@@ -284,9 +283,7 @@ InstallTask::execute()
         ++x;
         _imp->current_dep_list_entry = dep;
 
-        std::string cpvr(stringify(dep->package.name) + "-" +
-                stringify(dep->package.version) + "::" +
-                stringify(dep->package.repository));
+        std::string cpvr(stringify(*dep->package_id));
 
         /* we're about to fetch / install one item */
         if (_imp->install_options.fetch_only)
@@ -308,16 +305,14 @@ InstallTask::execute()
         }
 
         /* fetch / install one item */
-        const RepositoryInstallableInterface * const installable_interface(
-                _imp->env->package_database()->fetch_repository(dep->package.repository)->
-                installable_interface);
+        const RepositoryInstallableInterface * const installable_interface(dep->package_id->repository()->installable_interface);
         if (! installable_interface)
             throw InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
 
         try
         {
             _imp->install_options.destination = dep->destination;
-            installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
+            installable_interface->install(dep->package_id, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
         {
@@ -359,27 +354,27 @@ InstallTask::execute()
                 ((*r).get())->invalidate();
 
         // look for packages with the same name in the same slot in the destination repos
-        tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
+        tr1::shared_ptr<const PackageIDSequence> collision_list;
 
         if (dep->destination)
             if (dep->destination->uninstallable_interface)
                 collision_list = _imp->env->package_database()->query(
                         query::Matches(PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
+                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
                                 tr1::shared_ptr<CategoryNamePart>(),
                                 tr1::shared_ptr<PackageNamePart>(),
                                 tr1::shared_ptr<VersionRequirements>(),
                                 vr_and,
-                                tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
+                                tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
                                 tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
                         query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
-        PackageDatabaseEntryCollection::Concrete clean_list;
+        PackageIDSequence::Concrete clean_list;
         if (collision_list)
-            for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
+            for (PackageIDSequence::Iterator c(collision_list->begin()),
                     c_end(collision_list->end()) ; c != c_end ; ++c)
-                if (dep->package.version != c->version)
+                if (dep->package_id->version() != (*c)->version())
                     clean_list.push_back(*c);
         /* no need to sort clean_list here, although if the above is
          * changed then check that this still holds... */
@@ -392,51 +387,50 @@ InstallTask::execute()
         else
         {
             if (0 != perform_hook(Hook("clean_all_pre")("TARGETS", join(
-                                 clean_list.begin(), clean_list.end(), " "))).max_exit_status)
+                                 indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
                 throw PackageInstallActionError("Clean aborted by hook");
             on_clean_all_pre(*dep, clean_list);
 
-            for (PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
+            for (PackageIDSequence::Iterator c(clean_list.begin()),
                     c_end(clean_list.end()) ; c != c_end ; ++c)
             {
                 /* clean one item */
-                if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(*c))
+                if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(**c))
                              ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
                     throw PackageInstallActionError("Clean of '" + cpvr + "' aborted by hook");
-                on_clean_pre(*dep, *c);
+                on_clean_pre(*dep, **c);
 
-                const RepositoryUninstallableInterface * const uninstall_interface(
-                        _imp->env->package_database()->fetch_repository(c->repository)->
-                        uninstallable_interface);
+                const RepositoryUninstallableInterface * const uninstall_interface((*c)->repository()->uninstallable_interface);
                 if (! uninstall_interface)
                     throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
 
                 try
                 {
-                    uninstall_interface->uninstall(c->name, c->version, _imp->uninstall_options);
+                    uninstall_interface->uninstall(*c, _imp->uninstall_options);
                 }
                 catch (const PackageUninstallActionError & e)
                 {
-                    on_clean_fail(*dep, *c);
-                    HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")("TARGET", stringify(*c))("MESSAGE", e.message())));
+                    on_clean_fail(*dep, **c);
+                    HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
+                                ("TARGET", stringify(**c))("MESSAGE", e.message())));
                     throw;
                 }
 
-                on_clean_post(*dep, *c);
-                if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(*c))
+                on_clean_post(*dep, **c);
+                if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(**c))
                              ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
                     throw PackageInstallActionError("Clean of '" + cpvr + "' aborted by hook");
             }
 
             /* we're done cleaning */
             if (0 != perform_hook(Hook("clean_all_post")("TARGETS", join(
-                                 clean_list.begin(), clean_list.end(), " "))).max_exit_status)
+                                 indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
                 throw PackageInstallActionError("Clean aborted by hook");
             on_clean_all_post(*dep, clean_list);
         }
 
         /* if we installed paludis and a re-exec is available, use it. */
-        if (dep->package.name == QualifiedPackageName("sys-apps/paludis"))
+        if (dep->package_id->name() == QualifiedPackageName("sys-apps/paludis"))
         {
             DepList::Iterator d(dep);
             do

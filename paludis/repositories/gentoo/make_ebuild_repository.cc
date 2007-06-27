@@ -93,7 +93,7 @@ paludis::make_ebuild_repository(
             std::copy(master_repository->params().eclassdirs->begin(),
                     master_repository->params().eclassdirs->end(), eclassdirs->inserter());
 
-        eclassdirs->append(location + "/eclass");
+        eclassdirs->push_back(location + "/eclass");
     }
 
     std::string distdir;

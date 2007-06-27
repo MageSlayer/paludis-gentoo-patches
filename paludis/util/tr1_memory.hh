@@ -30,12 +30,13 @@ namespace paludis
     {
         using std::tr1::shared_ptr;
         using std::tr1::static_pointer_cast;
+        using std::tr1::enable_shared_from_this;
     }
 }
 
 #elif defined(PALUDIS_TR1_MEMORY_IS_BOOST)
 
-#include <boost/shared_ptr.hpp>
+#include  <boost/shared_ptr.hpp>
 
 namespace paludis
 {
@@ -43,6 +44,7 @@ namespace paludis
     {
         using boost::shared_ptr;
         using boost::static_pointer_cast;
+        using boost::enable_shared_from_this;
     }
 }
 

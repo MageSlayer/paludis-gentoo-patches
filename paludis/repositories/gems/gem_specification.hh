@@ -22,10 +22,12 @@
 
 #include <paludis/repositories/gems/gem_specification-fwd.hh>
 #include <paludis/repositories/gems/yaml-fwd.hh>
+#include <paludis/package_id.hh>
+#include <paludis/name-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -58,31 +60,56 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE GemSpecification :
-            private PrivateImplementationPattern<GemSpecification>
+            private PrivateImplementationPattern<GemSpecification>,
+            public PackageID
         {
+            private:
+                Implementation<GemSpecification> * const _imp;
+
+            protected:
+                void need_keys_added() const;
+
             public:
                 ///\name Basic operations
                 ///\{
 
-                GemSpecification(const yaml::Node &);
+                GemSpecification(const tr1::shared_ptr<const Repository> &, const yaml::Node &);
+                GemSpecification(const tr1::shared_ptr<const Repository> &, const PackageNamePart &,
+                        const VersionSpec &, const FSEntry &);
+
                 ~GemSpecification();
 
                 ///\}
 
-                ///\name Specification data
-                ///\{
+                /* PackageID */
+                virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
 
-                const tr1::function<std::string ()> name;
-                const tr1::function<std::string ()> version;
-                const tr1::function<std::string ()> homepage;
-                const tr1::function<std::string ()> rubyforge_project;
-                const tr1::function<std::string ()> authors;
-                const tr1::function<std::string ()> date;
-                const tr1::function<std::string ()> platform;
-                const tr1::function<std::string ()> summary;
-                const tr1::function<std::string ()> description;
+                virtual const QualifiedPackageName name() const;
+                virtual const VersionSpec version() const;
+                virtual const SlotName slot() const;
+                virtual const tr1::shared_ptr<const Repository> repository() const;
+                virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
-                ///\}
+                virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> > keywords_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> > iuse_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> > use_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> > inherited_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
+
+                virtual bool arbitrary_less_than_comparison(const PackageID &) const;
+                virtual std::size_t extra_hash_value() const;
         };
     }
 }

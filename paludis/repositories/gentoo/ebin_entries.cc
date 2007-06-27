@@ -24,6 +24,9 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/metadata_key_raw_printer.hh>
 #include <paludis/eapi.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
@@ -39,6 +42,8 @@
 #include <fstream>
 
 using namespace paludis;
+
+#if 0
 
 namespace paludis
 {
@@ -124,23 +129,17 @@ namespace
 }
 
 void
-EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
+EbinEntries::install(const tr1::shared_ptr<const PackageID> & id,
         const InstallOptions & o, tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
-    if (! _imp->portage_repository->has_version(q, v))
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since has_version failed");
-
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
-    PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
-
     std::string binaries, flat_bin_uri;
     {
         std::set<std::string> already_in_binaries;
 
         /* make B and FLAT_BIN_URI */
-        DepSpecFlattener f(_imp->params.environment, &e);
-        metadata->ebin_interface->bin_uri()->accept(f);
+        DepSpecFlattener f(_imp->params.environment, id);
+        if (id->bin_uri_key())
+            id->bin_uri_key()->value()->accept(f);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
@@ -174,14 +173,13 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 std::string::size_type spos(mirror.find('/'));
 
                 if (std::string::npos == spos)
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                            + stringify(v) + "' since BIN_URI is broken");
+                    throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since BIN_URI is broken");
 
                 tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
                         mirrors->empty())
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                            + stringify(v) + "' since BIN_URI references unknown mirror:// '" +
+                    throw PackageInstallActionError("Can't install '" + stringify(*id)
+                            + "' since BIN_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
                 for (MirrorsCollection::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
@@ -216,7 +214,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     EbinCommandParams command_params(EbinCommandParams::create()
             .environment(_imp->params.environment)
-            .db_entry(&e)
+            .package_id(id)
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
@@ -250,8 +248,8 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     }
 
     if (! o.destination)
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' because no destination was provided");
+        throw PackageInstallActionError("Can't install '" + stringify(*id)
+                + "' because no destination was provided");
 
     EbinFetchCommand fetch_cmd(command_params,
             EbinFetchCommandParams::create()
@@ -275,9 +273,9 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .disable_cfgpro(o.no_config_protect)
             .config_protect(_imp->portage_repository->profile_variable("CONFIG_PROTECT"))
             .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
-            .loadsaveenv_dir(_imp->params.buildroot / stringify(q.category) / (
-                    stringify(q.package) + "-" + stringify(v)) / "temp")
-            .slot(SlotName(metadata->slot)));
+            .loadsaveenv_dir(_imp->params.buildroot / stringify(id->name().category) / (
+                    stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
+            .slot(SlotName(id->slot())));
 
     EbinInstallCommand prepare_cmd(command_params, install_params);
     prepare_cmd();
@@ -295,8 +293,8 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     unpackbin_cmd();
 
     if (! o.destination->destination_interface)
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' to destination '" + stringify(o.destination->name())
+        throw PackageInstallActionError("Can't install '" + stringify(*id)
+                + "' to destination '" + stringify(o.destination->name())
                 + "' because destination does not provide destination_interface");
 
     if (o.destination->destination_interface->want_pre_post_phases())
@@ -310,11 +308,11 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     o.destination->destination_interface->merge(
             MergeOptions::create()
-            .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
-            .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                    + stringify(v)) / "image")
-            .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                    + stringify(v)) / "temp" / "loadsaveenv")
+            .package_id(id)
+            .image_dir(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                    + stringify(id->version())) / "image")
+            .environment_file(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                    + stringify(id->version())) / "temp" / "loadsaveenv")
             );
 
     if (o.destination->destination_interface->want_pre_post_phases())
@@ -339,38 +337,41 @@ EbinEntries::make_ebin_entries(
 }
 
 std::string
-EbinEntries::get_environment_variable(const QualifiedPackageName & q,
-        const VersionSpec & v, const std::string & var, tr1::shared_ptr<const PortageRepositoryProfile>) const
+EbinEntries::get_environment_variable(const tr1::shared_ptr<const PackageID> & id,
+        const std::string & var, tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
-    PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
+    PackageID::Iterator i(id->find(var));
+    if (id->end() != i)
+    {
+        MetadataKeyRawPrinter p;
+        i->accept(p);
+        return stringify(p);
+    }
 
     throw EnvironmentVariableActionError("Couldn't get environment variable '" +
-            stringify(var) + "' for package '" + stringify(for_package) + "'");
+            stringify(var) + "' for package '" + stringify(*id) + "'");
 }
 
 void
 EbinEntries::merge(const MergeOptions & m)
 {
-    Context context("When merging '" + stringify(m.package) + "' at '" + stringify(m.image_dir)
+    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
             + "' to ebin repository '" + stringify(_imp->portage_repository->name()) + "':");
 
-    if (! _imp->portage_repository->destination_interface->is_suitable_destination_for(m.package))
-        throw PackageInstallActionError("Not a suitable destination for '" + stringify(m.package) + "'");
+    if (! _imp->portage_repository->destination_interface->is_suitable_destination_for(m.package()))
+        throw PackageInstallActionError("Not a suitable destination for '" + stringify(*m.package()) + "'");
 
     FSEntry ebin_dir(_imp->params.location);
-    ebin_dir /= stringify(m.package.name.category);
+    ebin_dir /= stringify(m.package_id->name().category);
     ebin_dir.mkdir();
-    ebin_dir /= stringify(m.package.name.package);
+    ebin_dir /= stringify(m.package_id->name().package);
     ebin_dir.mkdir();
 
-    FSEntry ebin_file_name(ebin_dir / (stringify(m.package.name.package) + "-" + stringify(m.package.version) + ".ebin.incomplete"));
+    FSEntry ebin_file_name(ebin_dir / (stringify(m.package_id->name.package()) + "-" +
+                stringify(m.package_id->version()) + ".ebin.incomplete"));
     std::ofstream ebin_file(stringify(ebin_file_name).c_str());
     if (! ebin_file)
         throw PackageInstallActionError("Cannot write to '" + stringify(ebin_file_name) + "'");
-
-    tr1::shared_ptr<const VersionMetadata> metadata(
-            _imp->params.environment->package_database()->fetch_repository(m.package.repository)->
-            version_metadata(m.package.name, m.package.version));
 
     if (metadata->deps_interface)
     {
@@ -416,9 +417,9 @@ EbinEntries::merge(const MergeOptions & m)
 
     FSEntry pkg_file_name(_imp->params.distdir / (
                 stringify(_imp->portage_repository->name()) + "--" +
-                stringify(m.package.name.category) + "--" +
-                stringify(m.package.name.package) + "-" +
-                stringify(m.package.version) + ".tar.bz2"));
+                stringify(m.package_id->name.category) + "--" +
+                stringify(m.package_id->name.package) + "-" +
+                stringify(m.package_id->version) + ".tar.bz2"));
 
     ebin_file << "BIN_URI=" << _imp->params.write_bin_uri_prefix << pkg_file_name.basename() << std::endl;
 
@@ -442,7 +443,7 @@ EbinEntries::merge(const MergeOptions & m)
 
     merge_cmd();
 
-    FSEntry real_ebin_file_name(ebin_dir / (stringify(m.package.name.package) + "-" + stringify(m.package.version) + ".ebin"));
+    FSEntry real_ebin_file_name(ebin_dir / (stringify(m.package_id->name.package) + "-" + stringify(m.package_id->version) + ".ebin"));
     if (real_ebin_file_name.exists())
         real_ebin_file_name.unlink();
     ebin_file_name.rename(real_ebin_file_name);
@@ -467,4 +468,5 @@ EbinEntries::pretend(const QualifiedPackageName &, const VersionSpec &,
 {
     return true;
 }
+#endif
 

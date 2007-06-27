@@ -23,6 +23,7 @@
 #include <paludis/environment_implementation.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/sr.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
@@ -57,7 +58,7 @@ namespace paludis
         private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
     {
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageDatabaseEntry &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:

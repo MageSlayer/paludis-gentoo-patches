@@ -20,6 +20,7 @@
 #include "use_desc.hh"
 #include <paludis/hashed_containers.hh>
 #include <paludis/name.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -27,7 +28,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/config_file.hh>
-#include <paludis/package_database_entry.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -80,10 +80,10 @@ UseDesc::~UseDesc()
 }
 
 std::string
-UseDesc::describe(const UseFlagName & f, const PackageDatabaseEntry & e) const
+UseDesc::describe(const UseFlagName & f, const PackageID & e) const
 {
     MakeHashedMap<std::string, std::string>::Type::const_iterator i(
-            _imp->desc.find(stringify(e.name) + ":" + stringify(f)));
+            _imp->desc.find(stringify(e.name()) + ":" + stringify(f)));
     if (_imp->desc.end() != i)
         return i->second;
 

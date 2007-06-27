@@ -30,8 +30,10 @@
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hooker.hh>
+#include <paludis/hook.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -420,7 +422,7 @@ PortageEnvironment::~PortageEnvironment()
 }
 
 bool
-PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
+PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 {
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Portage environment:");
@@ -435,21 +437,19 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     Save<bool> save_recursive(&recursive, true);
 
     /* first check package database use masks... */
-    tr1::shared_ptr<const Repository> repo(package_database()->fetch_repository(e.repository));
-
-    if (repo->use_interface)
+    if (e.repository()->use_interface)
     {
-        if (repo->use_interface->query_use_mask(f, e))
+        if (e.repository()->use_interface->query_use_mask(f, e))
             return false;
-        if (repo->use_interface->query_use_force(f, e))
+        if (e.repository()->use_interface->query_use_force(f, e))
             return true;
     }
 
     UseFlagState state(use_unspecified);
 
     /* check use: repo */
-    if (repo->use_interface)
-        state = repo->use_interface->query_use(f, e);
+    if (e.repository()->use_interface)
+        state = e.repository()->use_interface->query_use(f, e);
 
     /* check use: general user config */
     std::set<std::string>::const_iterator u(_imp->use_with_expands.find(stringify(f)));
@@ -499,7 +499,7 @@ PortageEnvironment::set_paludis_command(const std::string & s)
 
 bool
 PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameCollection> keywords,
-        const PackageDatabaseEntry & d) const
+        const PackageID & d) const
 {
     bool result(false);
 
@@ -546,7 +546,7 @@ PortageEnvironment::root() const
 }
 
 bool
-PortageEnvironment::masked_by_user(const PackageDatabaseEntry & e) const
+PortageEnvironment::masked_by_user(const PackageID & e) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
@@ -557,7 +557,7 @@ PortageEnvironment::masked_by_user(const PackageDatabaseEntry & e) const
 }
 
 bool
-PortageEnvironment::unmasked_by_user(const PackageDatabaseEntry & e) const
+PortageEnvironment::unmasked_by_user(const PackageID & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
@@ -569,7 +569,7 @@ PortageEnvironment::unmasked_by_user(const PackageDatabaseEntry & e) const
 
 tr1::shared_ptr<const UseFlagNameCollection>
 PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
-        const PackageDatabaseEntry & pde) const
+        const PackageID & pde) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
@@ -635,7 +635,7 @@ PortageEnvironment::bashrc_files() const
 }
 
 bool
-PortageEnvironment::accept_breaks_portage(const PackageDatabaseEntry &) const
+PortageEnvironment::accept_breaks_portage(const PackageID &) const
 {
     return false;
 }

@@ -24,9 +24,9 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/hook.hh>
+#include <paludis/package_id.hh>
 #include <paludis/digests/md5.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -78,29 +78,34 @@ VDBMerger::~VDBMerger()
 Hook
 VDBMerger::extend_hook(const Hook & h)
 {
-    const PackageDatabaseEntry *pde(_imp->options.package);
-    std::string cat(stringify(pde->name.category));
-    std::string pn(stringify(pde->name.package));
-    std::string pvr(stringify(pde->version));
-    std::string pv(stringify(pde->version.remove_revision()));
-    std::string slot(stringify(
-                _imp->options.environment->package_database()->fetch_repository(
-                    pde->repository)->version_metadata(pde->name, pde->version)->slot));
-
     tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
 
-    return Merger::extend_hook(h)
-        ("P", pn + "-" + pv)
-        ("PN", pn)
-        ("CATEGORY", cat)
-        ("PR", pde->version.revision_only())
-        ("PV", pv)
-        ("PVR", pvr)
-        ("PF", pn + "-" + pvr)
-        ("SLOT", slot)
-        ("CONFIG_PROTECT", _imp->options.config_protect)
-        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
-        ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
+    if (_imp->options.package_id)
+    {
+        std::string cat(stringify(_imp->options.package_id->name().category));
+        std::string pn(stringify(_imp->options.package_id->name().package));
+        std::string pvr(stringify(_imp->options.package_id->version()));
+        std::string pv(stringify(_imp->options.package_id->version().remove_revision()));
+        std::string slot(stringify(_imp->options.package_id->slot()));
+
+        return Merger::extend_hook(h)
+            ("P", pn + "-" + pv)
+            ("PN", pn)
+            ("CATEGORY", cat)
+            ("PR", _imp->options.package_id->version().revision_only())
+            ("PV", pv)
+            ("PVR", pvr)
+            ("PF", pn + "-" + pvr)
+            ("SLOT", slot)
+            ("CONFIG_PROTECT", _imp->options.config_protect)
+            ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
+            ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
+    }
+    else
+        return Merger::extend_hook(h)
+            ("CONFIG_PROTECT", _imp->options.config_protect)
+            ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
+            ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
 void

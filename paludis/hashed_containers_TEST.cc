@@ -20,6 +20,7 @@
 #include "hashed_containers.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <paludis/name.hh>
 
 using namespace paludis;
 using namespace test;

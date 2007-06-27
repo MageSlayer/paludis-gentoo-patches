@@ -23,7 +23,11 @@
 
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
+#include <paludis/repository.hh>
+#include <paludis/package_database.hh>
+#include <paludis/metadata_key.hh>
 
 #include <set>
 #include <map>
@@ -38,9 +42,10 @@ using std::endl;
 
 namespace
 {
-    struct CompareByStringLength
+    template <typename T_>
+    struct CompareByStringLength :
+        std::binary_function<const T_ &, const T_ &, bool>
     {
-        template<typename T_>
         bool
         operator() (const T_ & l, const T_ & r) const
         {
@@ -52,15 +57,16 @@ namespace
     write_keywords_graph(const Environment & e, const Repository & repo,
             const QualifiedPackageName & package)
     {
+        using namespace tr1::placeholders;
+
         Context context("When writing keyword graph for '" + stringify(package) + "' in '"
                 + stringify(repo.name()) + "':");
 
         cout << "Keywords for " << package << ":" << endl;
         cout << endl;
 
-        tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
+        tr1::shared_ptr<const PackageIDSequence> packages(e.package_database()->query(
                 query::Matches(PackageDepSpec(
                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
                         tr1::shared_ptr<CategoryNamePart>(),
@@ -70,7 +76,7 @@ namespace
                         tr1::shared_ptr<SlotName>(),
                         tr1::shared_ptr<RepositoryName>(new RepositoryName(repo.name())))),
                 qo_group_by_slot));
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
+        tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -83,18 +89,21 @@ namespace
             return;
 
         std::set<SlotName> slots;
-        for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
-                p != p_end ; ++p)
-            slots.insert(repo.version_metadata(package, p->version)->slot);
+        std::copy(packages->begin(), packages->end(),
+                transform_inserter(std::inserter(slots, slots.begin()), tr1::mem_fn(&PackageID::slot)));
 
-        unsigned version_specs_columns_width(stringify(*std::max_element(versions->begin(),
-                        versions->end(), CompareByStringLength())).length() + 1);
+        unsigned version_specs_columns_width(std::max_element(indirect_iterator(packages->begin()),
+                    indirect_iterator(packages->end()),
+                    tr1::bind(CompareByStringLength<std::string>(),
+                        tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version),
+                        tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _2, idcf_version))
+                    )->canonical_form(idcf_version).length() + 1);
 
         unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags->begin(),
-                            arch_flags->end(), CompareByStringLength())).length(), static_cast<std::size_t>(6)));
+                            arch_flags->end(), CompareByStringLength<UseFlagName>())).length(), static_cast<std::size_t>(6)));
 
         unsigned longest_slot_name(stringify(*std::max_element(slots.begin(),
-                        slots.end(), CompareByStringLength())).length());
+                        slots.end(), CompareByStringLength<SlotName>())).length());
 
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
@@ -125,22 +134,21 @@ namespace
             << std::string(longest_slot_name + 3, '-') << endl;
 
         SlotName old_slot("first_slot");
-        for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
+        for (IndirectIterator<PackageIDSequence::Iterator> p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
-            tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, p->version));
-            if (! metadata->ebuild_interface)
+            if (! p->keywords_key())
                 continue;
 
-            if (metadata->slot != old_slot)
+            if (p->slot() != old_slot)
                 if (old_slot != SlotName("first_slot"))
                     cout << std::string(version_specs_columns_width, '-') << "+"
                         << std::string(arch_flags->size() * 2 + 1, '-') << "+"
                         << std::string(longest_slot_name + 3, '-') << endl;
 
-            cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
+            cout << std::left << std::setw(version_specs_columns_width) << p->canonical_form(idcf_version) << "| ";
 
-            tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
+            tr1::shared_ptr<const KeywordNameCollection> keywords(p->keywords_key()->value());
 
             for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
@@ -157,12 +165,13 @@ namespace
                     cout << "  ";
             }
 
-            cout << "| " << (unused->find(*p) != unused->end() ? "* " : "  ");
+            cout << "| " << (indirect_iterator(unused->end()) !=
+                    std::find(indirect_iterator(unused->begin()), indirect_iterator(unused->end()), *p) ? "* " : "  ");
 
-            if (metadata->slot != old_slot)
+            if (p->slot() != old_slot)
             {
-                cout << metadata->slot;
-                old_slot = metadata->slot;
+                cout << p->slot();
+                old_slot = p->slot();
             }
 
             cout << endl;

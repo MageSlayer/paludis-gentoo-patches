@@ -182,6 +182,6 @@ ConsoleTask::output_right_column(const std::string & s) const
 int
 ConsoleTask::left_column_width() const
 {
-    return 18;
+    return 24;
 }
 

@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -45,12 +46,12 @@ namespace paludis
     {
         const Environment * const env;
 
-        const PackageDatabaseEntry * const pkg;
+        const tr1::shared_ptr<const PackageID> pkg;
 
         mutable std::list<tr1::shared_ptr<const StringDepSpec > > specs;
 
         Implementation(const Environment * const e,
-                const PackageDatabaseEntry * const p) :
+                const tr1::shared_ptr<const PackageID> p) :
             env(e),
             pkg(p)
         {
@@ -60,7 +61,7 @@ namespace paludis
 
 DepSpecFlattener::DepSpecFlattener(
         const Environment * const env,
-        const PackageDatabaseEntry * const pkg) :
+        const tr1::shared_ptr<const PackageID> & pkg) :
     PrivateImplementationPattern<DepSpecFlattener>(new Implementation<DepSpecFlattener>(
                 env, pkg))
 {

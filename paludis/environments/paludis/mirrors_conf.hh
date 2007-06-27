@@ -29,7 +29,6 @@
 namespace paludis
 {
     class PaludisEnvironment;
-    class PackageDatabaseEntry;
 
     namespace paludis_environment
     {

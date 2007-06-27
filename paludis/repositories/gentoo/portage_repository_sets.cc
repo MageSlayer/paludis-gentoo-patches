@@ -158,7 +158,7 @@ PortageRepositorySets::sets_list() const
 namespace
 {
     bool
-    match_range(const PackageDatabaseEntry & e, const GLSARange & r)
+    match_range(const PackageID & e, const GLSARange & r)
     {
         VersionOperatorValue our_op(static_cast<VersionOperatorValue>(-1));
         std::string ver(r.version);
@@ -182,11 +182,11 @@ namespace
             our_op = vo_greater_equal;
 
         if (-1 != our_op)
-            return (VersionOperator(our_op).as_version_spec_comparator()(e.version, VersionSpec(ver)));
+            return (VersionOperator(our_op).as_version_spec_comparator()(e.version(), VersionSpec(ver)));
 
         if (0 == r.op.compare(0, 1, "r"))
         {
-            return e.version.remove_revision() == VersionSpec(ver).remove_revision() &&
+            return e.version().remove_revision() == VersionSpec(ver).remove_revision() &&
                 match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version));
         }
 
@@ -194,7 +194,7 @@ namespace
     }
 
     bool
-    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageDatabaseEntry & c)
+    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c)
     {
         /* a package is affected if it matches any vulnerable line, except if it matches
          * any unaffected line. */
@@ -244,17 +244,17 @@ PortageRepositorySets::security_set(bool insecurity) const
             for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates;
+                tr1::shared_ptr<const PackageIDSequence> candidates;
                 if (insecurity)
                     candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
                 else
                     candidates = _imp->environment->package_database()->query(
                             query::Package(glsa_pkg->name()) & query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
-                for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
+                for (PackageIDSequence::Iterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
-                    if (! is_vulnerable(*glsa_pkg, *c))
+                    if (! is_vulnerable(*glsa_pkg, **c))
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
@@ -264,26 +264,27 @@ PortageRepositorySets::security_set(bool insecurity) const
                     if (insecurity)
                     {
                         tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
-                        v->push_back(VersionRequirement(vo_equal, c->version));
+                        v->push_back(VersionRequirement(vo_equal, (*c)->version()));
                         tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(c->name)),
+                                    tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*c)->name())),
                                     tr1::shared_ptr<CategoryNamePart>(),
                                     tr1::shared_ptr<PackageNamePart>(),
                                     v, vr_and,
                                     tr1::shared_ptr<SlotName>(),
-                                    tr1::shared_ptr<RepositoryName>(new RepositoryName(c->repository))));
+                                    tr1::shared_ptr<RepositoryName>(new RepositoryName((*c)->repository()->name()))));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
                                     new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
                     }
                     else
                     {
+                        Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
+                                + stringify((*c)->slot()) + "'");
+
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
                         bool ok(false);
-                        SlotName wanted_slot(_imp->environment->package_database()->fetch_repository(
-                                    c->repository)->version_metadata(c->name, c->version)->slot);
-                        tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
+                        tr1::shared_ptr<const PackageIDSequence> available(
                                 _imp->environment->package_database()->query(
                                     query::Matches(PackageDepSpec(
                                             tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
@@ -292,30 +293,29 @@ PortageRepositorySets::security_set(bool insecurity) const
                                             tr1::shared_ptr<PackageNamePart>(),
                                             tr1::shared_ptr<VersionRequirements>(),
                                             vr_and,
-                                            tr1::shared_ptr<SlotName>(new SlotName(wanted_slot)))) &
+                                            tr1::shared_ptr<SlotName>(new SlotName((*c)->slot())))) &
                                     query::RepositoryHasInstallableInterface() &
                                     query::NotMasked(),
                                     qo_order_by_version));
 
-                        for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
-                                r_end(available->rend()) ; r != r_end ; ++r)
+                        for (PackageIDSequence::ReverseIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {
-                            if (is_vulnerable(*glsa_pkg, *r))
+                            if (is_vulnerable(*glsa_pkg, **r))
                             {
-                                Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(*r)
+                                Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(**r)
                                         + "' due to is_vulnerable match");
                                 continue;
                             }
 
                             tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
-                            v->push_back(VersionRequirement(vo_equal, r->version));
+                            v->push_back(VersionRequirement(vo_equal, (*r)->version()));
                             tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(r->name)),
+                                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*r)->name())),
                                         tr1::shared_ptr<CategoryNamePart>(),
                                         tr1::shared_ptr<PackageNamePart>(),
                                         v, vr_and,
                                         tr1::shared_ptr<SlotName>(),
-                                        tr1::shared_ptr<RepositoryName>(new RepositoryName(r->repository))));
+                                        tr1::shared_ptr<RepositoryName>(new RepositoryName((*r)->repository()->name()))));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(
                                         new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
@@ -326,7 +326,7 @@ PortageRepositorySets::security_set(bool insecurity) const
                         if (! ok)
                             throw GLSAError("Could not determine upgrade path to resolve '"
                                     + glsa->id() + ": " + glsa->title() + "' for package '"
-                                    + stringify(*c) + "'");
+                                    + stringify(**c) + "'");
                     }
                 }
             }

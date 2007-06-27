@@ -22,6 +22,8 @@
 
 #include <paludis/util/collection-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/version_spec-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -36,6 +38,15 @@ namespace paludis
      * \ingroup grpversions
      */
     typedef SequentialCollection<VersionRequirement> VersionRequirements;
+
+    /**
+     * Convenience function: make VersionRequirements with an equals match on a
+     * single entry.
+     *
+     * \see VersionRequirements
+     * \ingroup grpversions
+     */
+    tr1::shared_ptr<VersionRequirements> make_equal_to_version_requirements(const VersionSpec &) PALUDIS_VISIBLE;
 
     /**
      * Whether our version requirements are an 'and' or an 'or' set.

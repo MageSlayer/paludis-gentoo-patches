@@ -17,7 +17,7 @@ int main(int, char *[])
         paludis::tr1::shared_ptr<paludis::Environment> env(
                 paludis::EnvironmentMaker::get_instance()->make_from_spec(""));
 
-        paludis::tr1::shared_ptr<const paludis::PackageDatabaseEntryCollection> packages(
+        paludis::tr1::shared_ptr<const paludis::PackageIDSequence> packages(
                 env->package_database()->query(
                     paludis::query::Matches(paludis::PackageDepSpec("app-editors/vim", paludis::pds_pm_eapi_0_strict)) &
                     paludis::query::InstalledAtRoot(env->root()), paludis::qo_order_by_version));
@@ -25,7 +25,7 @@ int main(int, char *[])
         if (packages->empty())
             cout << "Vim is not installed" << endl;
         else
-            cout << "Vim " << packages->last()->version << " is installed" << endl;
+            cout << "Vim " << (*packages->last())->canonical_form(paludis::idcf_version) << " is installed" << endl;
     }
     catch (const paludis::Exception & e)
     {

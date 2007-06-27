@@ -28,6 +28,7 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 
@@ -49,7 +50,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                GemSpecifications(const yaml::Node &);
+                GemSpecifications(const tr1::shared_ptr<const Repository> &, const yaml::Node &);
                 ~GemSpecifications();
 
                 ///\}

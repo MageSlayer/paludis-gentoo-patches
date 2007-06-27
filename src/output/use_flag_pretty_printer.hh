@@ -20,13 +20,14 @@
 #ifndef PALUDIS_GUARD_SRC_USE_FLAG_PRETTY_PRINTER_HH
 #define PALUDIS_GUARD_SRC_USE_FLAG_PRETTY_PRINTER_HH 1
 
-#include <paludis/name.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
 {
     class Environment;
-    class PackageDatabaseEntry;
 
     class PALUDIS_VISIBLE UseFlagPrettyPrinter
     {
@@ -47,8 +48,7 @@ namespace paludis
             UseFlagPrettyPrinter(const Environment * const);
             virtual ~UseFlagPrettyPrinter();
 
-            virtual void print_package_flags(const PackageDatabaseEntry &,
-                    const PackageDatabaseEntry * const = 0);
+            virtual void print_package_flags(const PackageID &, const PackageID * const = 0);
 
             virtual void output_flag(const std::string &);
             virtual void output_flag_changed_mark();

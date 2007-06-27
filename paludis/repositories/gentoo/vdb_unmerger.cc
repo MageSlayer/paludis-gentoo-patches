@@ -22,27 +22,27 @@
 
 using namespace paludis;
 
-#include <paludis/environment.hh>
-#include <paludis/repositories/gentoo/vdb_unmerger-sr.cc>
-#include <paludis/util/tokeniser.hh>
-#include <paludis/util/log.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/digests/md5.hh>
+#include <paludis/environment.hh>
 #include <paludis/hook.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/repositories/gentoo/vdb_unmerger-sr.cc>
+#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
-#include <list>
-#include <map>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <paludis/util/log.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tokeniser.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+
+#include <list>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <iostream>
 
 namespace paludis
 {
@@ -133,33 +133,32 @@ VDBUnmerger::~VDBUnmerger()
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const
 {
-    std::string cat(stringify(_imp->options.package_name.category));
-    std::string pn(stringify(_imp->options.package_name.package));
-    std::string pvr(stringify(_imp->options.version));
-    std::string pv(stringify(_imp->options.version.remove_revision()));
-
     tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
-        ("P", pn + "-" + pv)
-        ("PN", pn)
-        ("CATEGORY", cat)
-        ("PR", _imp->options.version.revision_only())
-        ("PV", pv)
-        ("PVR", pvr)
-        ("PF", pn + "-" + pvr)
         ("CONFIG_PROTECT", _imp->options.config_protect)
         ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
         ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " ")));
 
-    if (0 != _imp->options.repository)
+    if (_imp->options.package_id)
     {
-        std::string slot(stringify(_imp->options.repository->version_metadata(
-                        _imp->options.package_name, _imp->options.version)->slot));
-        return result("SLOT", slot);
+        std::string cat(stringify(_imp->options.package_id->name().category));
+        std::string pn(stringify(_imp->options.package_id->name().package));
+        std::string pvr(stringify(_imp->options.package_id->version()));
+        std::string pv(stringify(_imp->options.package_id->version().remove_revision()));
+
+        result
+            ("P", pn + "-" + pv)
+            ("PN", pn)
+            ("CATEGORY", cat)
+            ("PR", _imp->options.package_id->version().revision_only())
+            ("PV", pv)
+            ("PVR", pvr)
+            ("PF", pn + "-" + pvr)
+            ("SLOT", stringify(_imp->options.package_id->slot()));
     }
-    else
-        return result;
+
+    return result;
 }
 
 bool

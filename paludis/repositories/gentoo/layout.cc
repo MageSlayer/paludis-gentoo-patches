@@ -29,7 +29,7 @@
 using namespace paludis;
 
 template class VirtualConstructor<std::string,
-         tr1::shared_ptr<Layout> (*) (const RepositoryName &, const FSEntry &,
+         tr1::shared_ptr<Layout> (*) (const PortageRepository * const, const FSEntry &,
                  tr1::shared_ptr<const PortageRepositoryEntries>,
                  tr1::shared_ptr<const FSEntry>),
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
@@ -55,7 +55,7 @@ namespace
 {
     template <typename T_>
     tr1::shared_ptr<Layout>
-    make_layout(const RepositoryName & n, const FSEntry & b,
+    make_layout(const PortageRepository * const n, const FSEntry & b,
             tr1::shared_ptr<const PortageRepositoryEntries> e,
             tr1::shared_ptr<const FSEntry> f)
     {
@@ -73,5 +73,4 @@ NoSuchLayoutType::NoSuchLayoutType(const std::string & format) throw () :
     ConfigurationError("No available maker for Portage repository layout type '" + format + "'")
 {
 }
-
 

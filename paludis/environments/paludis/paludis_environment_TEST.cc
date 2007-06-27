@@ -37,6 +37,7 @@ namespace test_cases
 
         void run()
         {
+#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -60,6 +61,7 @@ namespace test_cases
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), f));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
+#endif
         }
     } paludis_environment_use_test;
 
@@ -69,6 +71,7 @@ namespace test_cases
 
         void run()
         {
+#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -77,6 +80,7 @@ namespace test_cases
             PackageDatabaseEntry pde1(QualifiedPackageName("cat/one"), VersionSpec("1"), RepositoryName("foo"));
             tr1::shared_ptr<const UseFlagNameCollection> k1(env->known_use_expand_names(UseFlagName("foo_cards"), pde1));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
+#endif
         }
     } paludis_environment_use_test_known;
 
@@ -86,6 +90,7 @@ namespace test_cases
 
         void run()
         {
+#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -109,6 +114,7 @@ namespace test_cases
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), f));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
+#endif
         }
     } paludis_environment_use_test_minus_star;
 
@@ -118,6 +124,7 @@ namespace test_cases
 
         void run()
         {
+#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -141,6 +148,7 @@ namespace test_cases
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), f));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
+#endif
         }
     } paludis_environment_use_test_minus_star_partial;
 
@@ -150,6 +158,7 @@ namespace test_cases
 
         void run()
         {
+#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -166,6 +175,7 @@ namespace test_cases
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
+#endif
         }
     } paludis_environment_repositories;
 }

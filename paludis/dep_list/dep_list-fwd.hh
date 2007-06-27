@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
 
-#include <iosfwd>
-#include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
@@ -32,9 +32,8 @@ namespace paludis
     class DepListEntryDestination;
     class DepListEntry;
     class DepList;
-    class PackageDatabaseEntry;
 
-    bool is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
+    bool is_viable_any_child(const Environment & env, const tr1::shared_ptr<const PackageID> &,
             const DependencySpecTree::ConstItem & i);
 }
 

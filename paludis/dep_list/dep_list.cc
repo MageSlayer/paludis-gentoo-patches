@@ -31,6 +31,7 @@
 #include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
 #include <paludis/version_requirements.hh>
 
@@ -104,11 +105,11 @@ namespace paludis
 
         bool throw_on_blocker;
 
-        const PackageDatabaseEntry * current_pde() const
+        const tr1::shared_ptr<const PackageID> current_package_id() const
         {
             if (current_merge_list_entry != merge_list.end())
-                return &current_merge_list_entry->package;
-            return 0;
+                return current_merge_list_entry->package_id;
+            return tr1::shared_ptr<const PackageID>();
         }
 
         Implementation(const Environment * const e, const DepListOptions & o) :
@@ -126,38 +127,6 @@ namespace paludis
 
 namespace
 {
-    class FakedVirtualVersionMetadata :
-        public VersionMetadata,
-        public VersionMetadataVirtualInterface,
-        public virtual VersionMetadataHasInterfaces
-    {
-        public:
-            FakedVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & e) :
-                VersionMetadata(
-                        VersionMetadataBase::create()
-                        .slot(s)
-                        .homepage("")
-                        .description("")
-                        .eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"))
-                        .interactive(false),
-                        VersionMetadataCapabilities::create()
-                        .cran_interface(0)
-                        .virtual_interface(this)
-                        .ebuild_interface(0)
-                        .deps_interface(0)
-                        .origins_interface(0)
-                        .ebin_interface(0)
-                        .license_interface(0)),
-                VersionMetadataVirtualInterface(make_shared_ptr(new PackageDatabaseEntry(e)))
-            {
-            }
-
-            virtual const VersionMetadata * version_metadata() const
-            {
-                return this;
-            }
-    };
-
     struct GenerationGreaterThan
     {
         long g;
@@ -237,7 +206,7 @@ namespace
                     else
                     {
                         for (std::pair<MergeListIndex::iterator, MergeListIndex::iterator> p(
-                                    _index.equal_range(i->package.name)) ; p.first != p.second ; )
+                                    _index.equal_range(i->package_id->name())) ; p.first != p.second ; )
                             if (p.first->second == i)
                                 _index.erase(p.first++);
                             else
@@ -273,7 +242,7 @@ namespace
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
-                    return match_package(*env, a, e.second->package);
+                    return match_package(*env, a, *e.second->package_id);
 
                 case dlk_block:
                 case dlk_masked:
@@ -294,9 +263,11 @@ namespace
         const PackageDepSpec * const u(get_const_item(i)->as_package_dep_spec());
         if (0 != u && u->package_ptr())
         {
-            return ! env.package_database()->query(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr()))),
-                    is_installed_only, qo_whatever)->empty();
+            return ! env.package_database()->query(
+                    query::RepositoryHasInstalledInterface() &
+                    query::Matches(PackageDepSpec(
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr())))),
+                    qo_whatever)->empty();
         }
         else
             return false;
@@ -347,8 +318,10 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
     /* find already installed things */
     // TODO: check destinations
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
-                a, is_installed_only, qo_order_by_version));
+    tr1::shared_ptr<const PackageIDSequence> already_installed(d->_imp->env->package_database()->query(
+                query::RepositoryHasInstalledInterface() &
+                query::Matches(a),
+                qo_order_by_version));
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -369,9 +342,9 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     .tag(a.tag())
                     .generation(d->_imp->merge_list_generation));
 
-        if (d->_imp->opts->dependency_tags && d->_imp->current_pde())
+        if (d->_imp->opts->dependency_tags && d->_imp->current_package_id())
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde(), a, conditions)))
+                    .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(d->_imp->current_package_id(), a, conditions)))
                     .generation(d->_imp->merge_list_generation));
 
         /* add an appropriate destination */
@@ -387,14 +360,14 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (d->_imp->opts->circular == dl_circular_discard)
             {
                 Log::get_instance()->message(ll_qa, lc_context, "Dropping circular dependency on '"
-                        + stringify(existing_merge_list_entry->package) + "'");
+                        + stringify(*existing_merge_list_entry->package_id) + "'");
                 return;
             }
             else if (d->_imp->opts->circular == dl_circular_discard_silently)
                 return;
 
             throw CircularDependencyError("Atom '" + stringify(a) + "' matched by merge list entry '" +
-                    stringify(existing_merge_list_entry->package) + "', which does not yet have its "
+                    stringify(*existing_merge_list_entry->package_id) + "', which does not yet have its "
                     "dependencies installed");
         }
         else
@@ -402,15 +375,16 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     /* find installable candidates, and find the best visible candidate */
-    const PackageDatabaseEntry * best_visible_candidate(0);
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> installable_candidates(
-            d->_imp->env->package_database()->query(a, is_installable_only, qo_order_by_version));
+    tr1::shared_ptr<const PackageID> best_visible_candidate;
+    tr1::shared_ptr<const PackageIDSequence> installable_candidates(
+            d->_imp->env->package_database()->query(query::RepositoryHasInstallableInterface() & query::Matches(a),
+                qo_order_by_version));
 
-    for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
+    for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
-        if (! d->_imp->env->mask_reasons(*p).any())
+        if (! d->_imp->env->mask_reasons(**p).any())
         {
-            best_visible_candidate = &*p;
+            best_visible_candidate = *p;
             break;
         }
 
@@ -453,13 +427,13 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (masks_to_override[dl_override_unkeyworded])
                 override_options += mro_override_unkeyworded;
 
-            for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
+            for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
-                if (! (d->_imp->env->mask_reasons(*p, override_options).subtract(mask_mask).any()))
+                if (! (d->_imp->env->mask_reasons(**p, override_options).subtract(mask_mask).any()))
                 {
                     d->add_error_package(*p, dlk_masked, a, conditions);
-                    best_visible_candidate = &*p;
+                    best_visible_candidate = *p;
                     break;
                 }
             }
@@ -480,12 +454,12 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     continue;
 
                 case dl_fall_back_as_needed_except_targets:
-                    if (! d->_imp->current_pde())
+                    if (! d->_imp->current_package_id())
                         can_fall_back = false;
                     else if (already_installed->empty())
                         can_fall_back = true;
                     else
-                        can_fall_back = ! d->is_top_level_target(*already_installed->last());
+                        can_fall_back = ! d->is_top_level_target(**already_installed->last());
 
                     continue;
 
@@ -505,12 +479,12 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             if (! a.use_requirements_ptr())
                 throw AllMaskedError(a);
 
-            tr1::shared_ptr<const PackageDatabaseEntryCollection> match_except_reqs(d->_imp->env->package_database()->query(
-                        *a.without_use_requirements(), is_any, qo_whatever));
+            tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
+                        query::Matches(*a.without_use_requirements()), qo_whatever));
 
-            for (PackageDatabaseEntryCollection::Iterator i(match_except_reqs->begin()),
+            for (PackageIDSequence::Iterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
-                if (! (d->_imp->env->mask_reasons(*i).any()))
+                if (! (d->_imp->env->mask_reasons(**i).any()))
                     throw UseRequirementsNotMetError(stringify(a));
 
             throw AllMaskedError(a);
@@ -519,27 +493,16 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         {
             Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
                     + stringify(a) + "', falling back to installed package '"
-                    + stringify(*already_installed->last()) + "'");
+                    + stringify(**already_installed->last()) + "'");
             d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
     }
 
-    tr1::shared_ptr<const VersionMetadata> best_visible_candidate_metadata(
-            d->_imp->env->package_database()->fetch_repository(best_visible_candidate->repository)->
-            version_metadata(best_visible_candidate->name, best_visible_candidate->version));
-    SlotName slot(best_visible_candidate_metadata->slot);
-    std::string best_visible_candidate_as_string(stringify(*best_visible_candidate));
-    if (best_visible_candidate_metadata->virtual_interface)
-        best_visible_candidate_as_string.append(" (for " + stringify(
-                        *best_visible_candidate_metadata->virtual_interface->virtual_for) + ")");
-
-    tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
-            new PackageDatabaseEntryCollection::Concrete);
-    for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
+    tr1::shared_ptr<PackageIDSequence> already_installed_in_same_slot(new PackageIDSequence::Concrete);
+    for (PackageIDSequence::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
-        if (d->_imp->env->package_database()->fetch_repository(aa->repository)->
-                version_metadata(aa->name, aa->version)->slot == slot)
+        if ((*aa)->slot() == best_visible_candidate->slot())
             already_installed_in_same_slot->push_back(*aa);
     /* no need to sort already_installed_in_same_slot here, although if the above is
      * changed then check that this still holds... */
@@ -547,39 +510,40 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* we have an already installed version. do we want to use it? */
     if (! already_installed_in_same_slot->empty())
     {
-        if (d->prefer_installed_over_uninstalled(*already_installed_in_same_slot->last(), *best_visible_candidate))
+        if (d->prefer_installed_over_uninstalled(**already_installed_in_same_slot->last(), *best_visible_candidate))
         {
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(*already_installed_in_same_slot->last()) + "' over '" +
-                    best_visible_candidate_as_string + "'");
+                    + stringify(**already_installed_in_same_slot->last()) + "' over '" +
+                    stringify(*best_visible_candidate) + "'");
             d->add_already_installed_package(*already_installed_in_same_slot->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
             Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(*already_installed_in_same_slot->last()) + "' over '" +
-                    best_visible_candidate_as_string + "'");
+                    + stringify(**already_installed_in_same_slot->last()) + "' over '" +
+                    stringify(*best_visible_candidate) + "'");
     }
     else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts->new_slots))
     {
         /* we have an already installed, but not in the same slot, and our options
          * allow us to take this. */
-        if (d->prefer_installed_over_uninstalled(*already_installed->last(), *best_visible_candidate))
+        if (d->prefer_installed_over_uninstalled(**already_installed->last(), *best_visible_candidate))
         {
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(*already_installed->last()) + "' over '" + best_visible_candidate_as_string
+                    + stringify(**already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
                     + "' (in different slot)");
             d->add_already_installed_package(*already_installed->last(), a.tag(), a, conditions, destinations);
             return;
         }
         else
             Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(*already_installed->last()) + "' over '" +
-                    best_visible_candidate_as_string + "' (in different slot)");
+                    + stringify(**already_installed->last()) + "' over '" +
+                    stringify(*best_visible_candidate) + "' (in different slot)");
     }
     else
-        Log::get_instance()->message(ll_debug, lc_context, "No installed packages in SLOT '"
-                + stringify(slot) + "', taking uninstalled package '" + best_visible_candidate_as_string + "'");
+        Log::get_instance()->message(ll_debug, lc_context) << "No installed packages in SLOT '"
+            << best_visible_candidate->slot() << "', taking uninstalled package '"
+            << *best_visible_candidate << "'";
 
     /* if this is a downgrade, make sure that that's ok */
     switch (d->_imp->opts->downgrade)
@@ -590,39 +554,30 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
         case dl_downgrade_error:
         case dl_downgrade_warning:
             {
-                tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
-                        d->_imp->env->package_database()->query(PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(
-                                    new QualifiedPackageName(best_visible_candidate->name)),
-                                tr1::shared_ptr<CategoryNamePart>(),
-                                tr1::shared_ptr<PackageNamePart>(),
-                                tr1::shared_ptr<VersionRequirements>(),
-                                vr_and,
-                                tr1::shared_ptr<SlotName>(new SlotName(slot))),
-                            is_installed_only, qo_order_by_version));
+                tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
+                        d->_imp->env->package_database()->query(
+                            query::RepositoryHasInstalledInterface() &
+                            query::Matches(PackageDepSpec(
+                                    make_shared_ptr(new QualifiedPackageName(best_visible_candidate->name())),
+                                    tr1::shared_ptr<CategoryNamePart>(),
+                                    tr1::shared_ptr<PackageNamePart>(),
+                                    tr1::shared_ptr<VersionRequirements>(),
+                                    vr_and,
+                                    make_shared_ptr(new SlotName(best_visible_candidate->slot())))),
+                            qo_order_by_version));
 
                 if (are_we_downgrading->empty())
                     break;
 
-                if (are_we_downgrading->last()->version <= best_visible_candidate->version)
+                if ((*are_we_downgrading->last())->version() <= best_visible_candidate->version())
                     break;
 
-                tr1::shared_ptr<const VersionMetadata> are_we_downgrading_last_metadata(
-                        d->_imp->env->package_database()->fetch_repository(
-                            are_we_downgrading->last()->repository)->version_metadata(
-                            are_we_downgrading->last()->name, are_we_downgrading->last()->version));
-                std::string are_we_downgrading_last_as_string(stringify(*are_we_downgrading->last()));
-                if (are_we_downgrading_last_metadata->virtual_interface)
-                    are_we_downgrading_last_as_string.append(" (for " + stringify(
-                                    *are_we_downgrading_last_metadata->virtual_interface->virtual_for) + ")");
-
                 if (d->_imp->opts->downgrade == dl_downgrade_error)
-                    throw DowngradeNotAllowedError(best_visible_candidate_as_string,
-                            are_we_downgrading_last_as_string);
+                    throw DowngradeNotAllowedError(stringify(*best_visible_candidate),
+                            stringify(**are_we_downgrading->last()));
 
-                Log::get_instance()->message(ll_warning, lc_context, "Downgrade to '" +
-                        best_visible_candidate_as_string
-                        + "' from '" + are_we_downgrading_last_as_string + "' forced");
+                Log::get_instance()->message(ll_warning, lc_context) << "Downgrade to '"
+                    << *best_visible_candidate << "' from '" << **are_we_downgrading->last() << "' forced";
             }
             break;
 
@@ -630,7 +585,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             ;
     }
 
-    d->add_package(*best_visible_candidate, a.tag(), a, conditions, destinations);
+    d->add_package(best_visible_candidate, a.tag(), a, conditions, destinations);
 }
 
 void
@@ -643,23 +598,22 @@ DepList::AddVisitor::visit_sequence(const UseDepSpec & a,
 
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
-        if ((d->_imp->current_pde() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_pde()) : false) ^ a.inverse())
+        if ((d->_imp->current_package_id() ? d->_imp->env->query_use(a.flag(), *d->_imp->current_package_id()) : false) ^ a.inverse())
             std::for_each(cur, end, accept_visitor(*this));
     }
     else
     {
         RepositoryUseInterface * u(0);
-        if ((! d->_imp->current_pde()) || (! ((u = d->_imp->env->package_database()->fetch_repository(
-                                d->_imp->current_pde()->repository)->use_interface))))
+        if ((! d->_imp->current_package_id()) || (! ((u = d->_imp->current_package_id()->repository()->use_interface))))
             std::for_each(cur, end, accept_visitor(*this));
         else if (a.inverse())
         {
-            if ((! d->_imp->current_pde()) || (! u->query_use_force(a.flag(), *d->_imp->current_pde())))
+            if ((! d->_imp->current_package_id()) || (! u->query_use_force(a.flag(), *d->_imp->current_package_id())))
                 std::for_each(cur, end, accept_visitor(*this));
         }
         else
         {
-            if ((! d->_imp->current_pde()) || (! u->query_use_mask(a.flag(), *d->_imp->current_pde())))
+            if ((! d->_imp->current_package_id()) || (! u->query_use_mask(a.flag(), *d->_imp->current_package_id())))
                 std::for_each(cur, end, accept_visitor(*this));
         }
     }
@@ -674,7 +628,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
     if (end == std::find_if(cur, end,
-                tr1::bind(&is_viable_any_child, tr1::cref(*d->_imp->env), d->_imp->current_pde(), _1)))
+                tr1::bind(&is_viable_any_child, tr1::cref(*d->_imp->env), d->_imp->current_package_id(), _1)))
         return;
 
     RangeRewriter r;
@@ -694,7 +648,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
      * any upgrades kick in */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *c))
+        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
             continue;
 
         if (d->already_installed(*c, destinations))
@@ -709,7 +663,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
      * the b-2 bit first */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *c))
+        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
             continue;
         if (! is_interesting_any_child(*d->_imp->env, *c))
             continue;
@@ -732,7 +686,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
     /* install first available viable option */
     for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
     {
-        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *c))
+        if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
             continue;
 
         try
@@ -756,7 +710,7 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
         Context block_context("Inside || ( ) block with other options:");
         for (DependencySpecTree::ConstSequenceIterator c(cur) ; c != end ; ++c)
         {
-            if (! is_viable_any_child(*d->_imp->env, d->_imp->current_pde(), *c))
+            if (! is_viable_any_child(*d->_imp->env, d->_imp->current_package_id(), *c))
                 continue;
 
             d->add_not_top_level(*c, destinations, conditions);
@@ -780,14 +734,16 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 
     bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed;
+    tr1::shared_ptr<const PackageIDSequence> already_installed;
 
     if (a.blocked_spec()->package_ptr())
     {
         PackageDepSpec just_package(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                         *a.blocked_spec()->package_ptr())));
         already_installed = d->_imp->env->package_database()->query(
-                just_package, is_installed_only, qo_whatever);
+                query::RepositoryHasInstalledInterface() &
+                query::Matches(just_package),
+                qo_whatever);
 
         MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package);
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
@@ -818,23 +774,21 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)
         return;
 
-    for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
+    for (PackageIDSequence::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), *aa))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa))
             continue;
 
-        tr1::shared_ptr<const VersionMetadata> metadata(d->_imp->env->package_database()->fetch_repository(
-                    aa->repository)->version_metadata(aa->name, aa->version));
         bool replaced(false);
         for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
                 r_end(will_be_installed.end()) ; r != r_end && ! replaced ; ++r)
-            if ((*r)->metadata->slot == metadata->slot)
+            if ((*r)->package_id->slot() == (*aa)->slot())
             {
                 /* if it's a virtual, it only replaces if it's the same package. */
-                if ((*r)->metadata->virtual_interface)
+                if ((*r)->package_id->virtual_for_key())
                 {
-                    if ((*r)->metadata->virtual_interface->virtual_for->name == aa->name)
+                    if ((*r)->package_id->virtual_for_key()->value()->name() == (*aa)->name())
                         replaced = true;
                 }
                 else
@@ -848,13 +802,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
                     || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
-                && d->_imp->current_pde())
+                && d->_imp->current_package_id())
         {
-            if (aa->name == d->_imp->current_pde()->name)
+            if ((*aa)->name() == d->_imp->current_package_id()->name())
                 continue;
 
-            if (metadata->virtual_interface &&
-                    metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
+            if ((*aa)->virtual_for_key() && (*aa)->virtual_for_key()->value()->name() == d->_imp->current_package_id()->name())
                 continue;
         }
 
@@ -883,20 +836,20 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *a.blocked_spec(), (*r)->package))
+        if (! match_package(*d->_imp->env, *a.blocked_spec(), *(*r)->package_id))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
         if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
                     || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
-                && d->_imp->current_pde())
+                && d->_imp->current_package_id())
         {
-            if ((*r)->package.name == d->_imp->current_pde()->name)
+            if ((*r)->package_id->name() == d->_imp->current_package_id()->name())
                 continue;
 
-            if ((*r)->metadata->virtual_interface &&
-                    (*r)->metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
+            if ((*r)->package_id->virtual_for_key() && (*r)->package_id->virtual_for_key()->value()->name() ==
+                    d->_imp->current_package_id()->name())
                 continue;
         }
 
@@ -908,20 +861,20 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, *a.blocked_spec(), r->package))
+            if (! match_package(*d->_imp->env, *a.blocked_spec(), *r->package_id))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
              * ourself */
             if (! (a.blocked_spec()->version_requirements_ptr() || a.blocked_spec()->slot_ptr()
                         || a.blocked_spec()->use_requirements_ptr() || a.blocked_spec()->repository_ptr())
-                    && d->_imp->current_pde())
+                    && d->_imp->current_package_id())
             {
-                if (r->package.name == d->_imp->current_pde()->name)
+                if (r->package_id->name() == d->_imp->current_package_id()->name())
                     continue;
 
-                if (r->metadata->virtual_interface &&
-                        r->metadata->virtual_interface->virtual_for->name == d->_imp->current_pde()->name)
+                if (r->package_id->virtual_for_key() &&
+                        r->package_id->virtual_for_key()->value()->name() == d->_imp->current_package_id()->name())
                     continue;
             }
 
@@ -1000,16 +953,13 @@ DepList::add(const PackageDepSpec & spec, tr1::shared_ptr<const DestinationsColl
 }
 
 void
-DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr<const DepTag> tag,
         const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         tr1::shared_ptr<const DestinationsCollection> destinations)
 {
-    Context context("When adding package '" + stringify(p) + "':");
+    Context context("When adding package '" + stringify(*p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
-
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
-                p.repository)->version_metadata(p.name, p.version));
 
     /* create our merge list entry. insert pre deps before ourself in the list. insert
      * post deps after ourself, and after any provides. */
@@ -1017,26 +967,25 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
-                .package(p)
-                .metadata(metadata)
+                .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(metadata->virtual_interface ? tr1::shared_ptr<Repository>() : find_destination(p, destinations))
+                .destination(p->virtual_for_key() ? tr1::shared_ptr<Repository>() : find_destination(*p, destinations))
                 .associated_entry(0)
-                .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
+                .kind(p->virtual_for_key() ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
-    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
+    _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 
     if (tag)
         our_merge_entry_position->tags->insert(DepTagEntry::create()
                 .generation(_imp->merge_list_generation)
                 .tag(tag));
 
-    if (_imp->opts->dependency_tags && _imp->current_pde())
+    if (_imp->opts->dependency_tags && _imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1045,20 +994,20 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
     _imp->merge_list_insert_position = our_merge_entry_position;
 
     /* add provides */
-    if (metadata->ebuild_interface)
+    if (p->provide_key())
     {
-        DepSpecFlattener f(_imp->env, _imp->current_pde());
-        metadata->ebuild_interface->provide()->accept(f);
+        DepSpecFlattener f(_imp->env, _imp->current_package_id());
+        p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! DistributionData::get_instance()->distribution_from_string(
                     _imp->env->default_distribution())->support_old_style_virtuals)
-            throw DistributionConfigurationError("Package '" + stringify(p) + "' has PROVIDEs, but this distribution "
+            throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 
         for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
-            v->push_back(VersionRequirement(vo_equal, p.version));
+            v->push_back(VersionRequirement(vo_equal, p->version()));
             tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(
                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*i)->text())),
                         tr1::shared_ptr<CategoryNamePart>(),
@@ -1077,23 +1026,11 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
             if (zz != z.second)
                 continue;
 
-            tr1::shared_ptr<const VersionMetadata> m;
-
-            if (_imp->env->package_database()->fetch_repository(RepositoryName("virtuals"))->has_version(
-                        QualifiedPackageName((*i)->text()), p.version))
-                m = _imp->env->package_database()->fetch_repository(RepositoryName("virtuals"))->version_metadata(
-                        QualifiedPackageName((*i)->text()), p.version);
-            else
-            {
-                tr1::shared_ptr<VersionMetadata> mm(new FakedVirtualVersionMetadata(metadata->slot,
-                            PackageDatabaseEntry(p.name, p.version, RepositoryName("virtuals"))));
-                m = mm;
-            }
-
             our_merge_entry_post_position = _imp->merge_list.insert(next(our_merge_entry_post_position),
                     DepListEntry(DepListEntry::create()
-                        .package(PackageDatabaseEntry((*i)->text(), p.version, RepositoryName("virtuals")))
-                        .metadata(m)
+                        .package_id(_imp->env->package_database()->fetch_repository(
+                                RepositoryName("virtuals"))->make_virtuals_interface->make_virtual_package_id(
+                                QualifiedPackageName((*i)->text()), p))
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
@@ -1104,57 +1041,57 @@ DepList::add_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTa
         }
     }
 
-    if (metadata->deps_interface)
+    /* add suggests */
+    if (_imp->opts->suggested == dl_suggested_show && p->suggested_dependencies_key())
     {
-        /* add suggests */
-        if (_imp->opts->suggested == dl_suggested_show)
-        {
-            Context c("When showing suggestions:");
-            Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
-                    next(our_merge_entry_position));
-            ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_pde(), _imp->opts->dependency_tags);
-            metadata->deps_interface->suggested_depend()->accept(visitor);
-        }
-
-        /* add pre dependencies */
-        add_predeps(*metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build", destinations);
-        add_predeps(*metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
-        add_predeps(*metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post", destinations);
-        if (_imp->opts->suggested == dl_suggested_install)
-            add_predeps(*metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
+        Context c("When showing suggestions:");
+        Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
+                next(our_merge_entry_position));
+        ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags);
+        p->suggested_dependencies_key()->value()->accept(visitor);
     }
+
+    /* add pre dependencies */
+    if (p->build_dependencies_key())
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+    if (p->run_dependencies_key())
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+    if (p->post_dependencies_key())
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations);
+    if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
+        add_predeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
 
     our_merge_entry_position->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
-    if (metadata->deps_interface)
-    {
-        /* add post dependencies */
-        add_postdeps(*metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build", destinations);
-        add_postdeps(*metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
-        add_postdeps(*metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post", destinations);
+    /* add post dependencies */
+    if (p->build_dependencies_key())
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+    if (p->run_dependencies_key())
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+    if (p->post_dependencies_key())
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->uninstalled_deps_post, "post", destinations);
 
-        if (_imp->opts->suggested == dl_suggested_install)
-            add_postdeps(*metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
-    }
+    if (_imp->opts->suggested == dl_suggested_install && p->suggested_dependencies_key())
+        add_postdeps(*p->suggested_dependencies_key()->value(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
 
     our_merge_entry_position->state = dle_has_all_deps;
 }
 
 void
-DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKind kind,
+DepList::add_error_package(const tr1::shared_ptr<const PackageID> & p, const DepListEntryKind kind,
         const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
-            _imp->merge_list_index.equal_range(p.name));
+            _imp->merge_list_index.equal_range(p->name()));
 
     for ( ; pp.second != pp.first ; ++pp.first)
     {
-        if (pp.first->second->kind == kind && pp.first->second->package == p)
+        if (pp.first->second->kind == kind && *pp.first->second->package_id == *p)
         {
-            if (_imp->current_pde())
+            if (_imp->current_package_id())
                 pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
+                        .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                         .generation(_imp->merge_list_generation));
             return;
         }
@@ -1163,9 +1100,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list.begin(),
                 DepListEntry::create()
-                .package(p)
-                .metadata(_imp->env->package_database()->fetch_repository(
-                        p.repository)->version_metadata(p.name, p.version))
+                .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
@@ -1173,49 +1108,47 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
-    if (_imp->current_pde())
+    if (_imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
-    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
+    _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 }
 
 void
-DepList::add_suggested_package(const PackageDatabaseEntry & p,
+DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
         const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
-            _imp->merge_list_index.equal_range(p.name));
+            _imp->merge_list_index.equal_range(p->name()));
 
     for ( ; pp.second != pp.first ; ++pp.first)
     {
         if ((pp.first->second->kind == dlk_suggested || pp.first->second->kind == dlk_already_installed
                     || pp.first->second->kind == dlk_package || pp.first->second->kind == dlk_provided
-                    || pp.first->second->kind == dlk_subpackage) && pp.first->second->package == p)
+                    || pp.first->second->kind == dlk_subpackage) && *pp.first->second->package_id == *p)
             return;
     }
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
-                .package(p)
-                .metadata(_imp->env->package_database()->fetch_repository(
-                        p.repository)->version_metadata(p.name, p.version))
+                .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(find_destination(p, destinations))
+                .destination(find_destination(*p, destinations))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
-    if (_imp->current_pde())
+    if (_imp->current_package_id())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
-    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
+    _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry_position));
 }
 
 void
@@ -1273,57 +1206,54 @@ DepList::add_postdeps(DependencySpecTree::ConstItem & d, const DepListDepsOption
 }
 
 void
-DepList::add_already_installed_package(const PackageDatabaseEntry & p, tr1::shared_ptr<const DepTag> tag,
+DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr<const DepTag> tag,
         const PackageDepSpec & pds, tr1::shared_ptr<DependencySpecTree::ConstItem> conditions,
         const tr1::shared_ptr<const DestinationsCollection> destinations)
 {
-    Context context("When adding installed package '" + stringify(p) + "':");
+    Context context("When adding installed package '" + stringify(*p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
-    tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
-                p.repository)->version_metadata(p.name, p.version));
 
     MergeList::iterator our_merge_entry(_imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
-                .package(p)
-                .metadata(metadata)
+                .package_id(p)
                 .generation(_imp->merge_list_generation)
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
                 .destination(tr1::shared_ptr<Repository>())
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
-    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
+    _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry));
 
     if (tag)
         our_merge_entry->tags->insert(DepTagEntry::create()
                 .generation(_imp->merge_list_generation)
                 .tag(tag));
 
-    if (_imp->opts->dependency_tags && _imp->current_pde())
+    if (_imp->opts->dependency_tags && _imp->current_package_id())
         our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde(), pds, conditions)))
+                .tag(tr1::shared_ptr<DepTag>(new DependencyDepTag(_imp->current_package_id(), pds, conditions)))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry);
 
-    if (metadata->deps_interface)
-    {
-        add_predeps(*metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build", destinations);
-        add_predeps(*metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run", destinations);
-        add_predeps(*metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post", destinations);
-    }
+    if (p->build_dependencies_key())
+        add_predeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations);
+    if (p->run_dependencies_key())
+        add_predeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations);
+    if (p->post_dependencies_key())
+        add_predeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations);
 
     our_merge_entry->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
-    if (metadata->deps_interface)
-    {
-        add_postdeps(*metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build", destinations);
-        add_postdeps(*metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run", destinations);
-        add_postdeps(*metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post", destinations);
-    }
+    if (p->build_dependencies_key())
+        add_postdeps(*p->build_dependencies_key()->value(), _imp->opts->installed_deps_pre, "build", destinations);
+    if (p->run_dependencies_key())
+        add_postdeps(*p->run_dependencies_key()->value(), _imp->opts->installed_deps_runtime, "run", destinations);
+    if (p->post_dependencies_key())
+        add_postdeps(*p->post_dependencies_key()->value(), _imp->opts->installed_deps_post, "post", destinations);
 }
 
 namespace
@@ -1358,15 +1288,15 @@ namespace
 }
 
 bool
-DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installed,
-        const PackageDatabaseEntry & uninstalled)
+DepList::prefer_installed_over_uninstalled(const PackageID & installed,
+        const PackageID & uninstalled)
 {
     do
     {
         switch (_imp->opts->target_type)
         {
             case dl_target_package:
-                if (! _imp->current_pde())
+                if (! _imp->current_package_id())
                     return false;
 
                 if (is_top_level_target(uninstalled))
@@ -1391,12 +1321,11 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
         return true;
 
     if (dl_reinstall_scm_never != _imp->opts->reinstall_scm)
-        if (uninstalled.version == installed.version &&
-                (installed.version.is_scm() || is_scm(installed.name)))
+        if (uninstalled.version() == installed.version() &&
+                (installed.version().is_scm() || is_scm(installed.name())))
         {
             static time_t current_time(time(0)); /* static to avoid weirdness */
-            time_t installed_time(_imp->env->package_database()->fetch_repository(installed.repository
-                        )->installed_interface->installed_time(installed.name, installed.version));
+            time_t installed_time(installed.repository()->installed_interface->installed_time(installed));
             do
             {
                 switch (_imp->opts->reinstall_scm)
@@ -1427,21 +1356,16 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 
     /* use != rather than > to correctly force a downgrade when packages are
      * removed. */
-    if (uninstalled.version != installed.version)
+    if (uninstalled.version() != installed.version())
         return false;
 
     if (dl_reinstall_if_use_changed == _imp->opts->reinstall)
     {
-        const VersionMetadataEbuildInterface * const evm_i(_imp->env->package_database()->fetch_repository(
-                    installed.repository)->version_metadata(installed.name, installed.version)->ebuild_interface);
-        const VersionMetadataEbuildInterface * const evm_u(_imp->env->package_database()->fetch_repository(
-                    uninstalled.repository)->version_metadata(uninstalled.name, uninstalled.version)->ebuild_interface);
-
         std::set<UseFlagName> use_common;
-        if (evm_i && evm_u)
+        if (installed.iuse_key() && uninstalled.iuse_key())
             std::set_intersection(
-                    evm_i->iuse()->begin(), evm_i->iuse()->end(),
-                    evm_u->iuse()->begin(), evm_u->iuse()->end(),
+                    installed.iuse_key()->value()->begin(), installed.iuse_key()->value()->end(),
+                    uninstalled.iuse_key()->value()->begin(), uninstalled.iuse_key()->value()->end(),
                     transform_inserter(std::inserter(use_common, use_common.end()),
                         paludis::tr1::mem_fn(&IUseFlag::flag)));
 
@@ -1458,7 +1382,7 @@ bool
 DepList::already_installed(const DependencySpecTree::ConstItem & spec,
         tr1::shared_ptr<const DestinationsCollection> destinations) const
 {
-    QueryVisitor visitor(this, destinations, _imp->env, _imp->current_pde());
+    QueryVisitor visitor(this, destinations, _imp->env, _imp->current_package_id());
     spec.accept(visitor);
     return visitor.result();
 }
@@ -1476,7 +1400,7 @@ DepList::end() const
 }
 
 bool
-DepList::is_top_level_target(const PackageDatabaseEntry & e) const
+DepList::is_top_level_target(const PackageID & e) const
 {
     if (! _imp->current_top_level_target)
         throw InternalError(PALUDIS_HERE, "current_top_level_target not set?");
@@ -1520,7 +1444,7 @@ DepList::has_errors() const
 }
 
 tr1::shared_ptr<Repository>
-DepList::find_destination(const PackageDatabaseEntry & p,
+DepList::find_destination(const PackageID & p,
         tr1::shared_ptr<const DestinationsCollection> dd)
 {
     for (DestinationsCollection::Iterator d(dd->begin()), d_end(dd->end()) ;
@@ -1533,21 +1457,16 @@ DepList::find_destination(const PackageDatabaseEntry & p,
 }
 
 bool
-DepList::replaced(const PackageDatabaseEntry & m) const
+DepList::replaced(const PackageID & m) const
 {
-    tr1::shared_ptr<const VersionMetadata> vm(
-            _imp->env->package_database()->fetch_repository(
-                m.repository)->version_metadata(m.name, m.version));
-    SlotName slot(vm->slot);
-
     std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-            _imp->merge_list_index.equal_range(m.name));
+            _imp->merge_list_index.equal_range(m.name()));
 
-    PackageDepSpec spec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m.name)));
+    PackageDepSpec spec(make_shared_ptr(new QualifiedPackageName(m.name())));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec)))))
     {
-        if (p.first->second->metadata->slot != slot)
+        if (p.first->second->package_id->slot() != m.slot())
             p.first = next(p.first);
         else
             return true;
@@ -1570,12 +1489,12 @@ DepList::match_on_list(const PackageDepSpec & a) const
 }
 
 bool
-paludis::is_viable_any_child(const Environment & env, const PackageDatabaseEntry * const pde,
+paludis::is_viable_any_child(const Environment & env, const tr1::shared_ptr<const PackageID> & id,
         const DependencySpecTree::ConstItem & i)
 {
     const UseDepSpec * const u(get_const_item(i)->as_use_dep_spec());
     if (0 != u)
-        return (pde ? env.query_use(u->flag(), *pde) : false) ^ u->inverse();
+        return (id ? env.query_use(u->flag(), *id) : false) ^ u->inverse();
     else
         return true;
 }

@@ -21,18 +21,19 @@
 #ifndef PALUDIS_GUARD_PALUDIS_HOOK_HH
 #define PALUDIS_GUARD_PALUDIS_HOOK_HH 1
 
+#include <paludis/hook-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/operators.hh>
-#include <utility>
+
 #include <string>
-#include <set>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {
-#include <paludis/hook-se.hh>
+
 #include <paludis/hook-sr.hh>
+
     /**
      * Represents the data for an Environment hook call.
      *
@@ -88,12 +89,10 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE Hook::AllowedOutputValues
+    class PALUDIS_VISIBLE Hook::AllowedOutputValues :
+        private PrivateImplementationPattern<Hook::AllowedOutputValues>
     {
-        private:
-            friend class Hook;
-
-            std::set<std::string> allowed_values;
+        friend class Hook;
 
         public:
             AllowedOutputValues();

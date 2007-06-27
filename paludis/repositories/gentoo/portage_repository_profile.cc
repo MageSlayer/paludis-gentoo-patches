@@ -33,8 +33,9 @@
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
-#include <paludis/version_metadata.hh>
 #include <paludis/distribution.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -598,7 +599,7 @@ PortageRepositoryProfile::~PortageRepositoryProfile()
 
 bool
 PortageRepositoryProfile::use_masked(const UseFlagName & u,
-        const PackageDatabaseEntry & e) const
+        const PackageID & e) const
 {
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
@@ -624,7 +625,7 @@ PortageRepositoryProfile::use_masked(const UseFlagName & u,
 }
 
 bool
-PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageDatabaseEntry & e) const
+PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
 {
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
@@ -651,7 +652,7 @@ PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageDatabas
 
 UseFlagState
 PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
-        const PackageDatabaseEntry & e) const
+        const PackageID & e) const
 {
     UseFlagState result(use_unspecified);
 
@@ -672,13 +673,12 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
         }
     }
 
-    if (use_unspecified == result && _imp->repository->has_version(e.name, e.version))
+    if (use_unspecified == result)
     {
-        tr1::shared_ptr<const VersionMetadata> m(_imp->repository->version_metadata(e.name, e.version));
-        if (m->ebuild_interface)
+        if (e.iuse_key())
         {
-            IUseFlagCollection::Iterator i(m->ebuild_interface->iuse()->find(IUseFlag(u, use_unspecified)));
-            if (i != m->ebuild_interface->iuse()->end())
+            IUseFlagCollection::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified)));
+            if (i != e.iuse_key()->value()->end())
                 result = i->state;
         }
     }
@@ -739,18 +739,16 @@ PortageRepositoryProfile::end_virtuals() const
 }
 
 bool
-PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
-        const VersionSpec & v, const RepositoryName & r) const
+PortageRepositoryProfile::profile_masked(const PackageID & id) const
 {
-    PackageMaskMap::const_iterator rr(_imp->package_mask.find(n));
+    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)
         return false;
     else
     {
-        PackageDatabaseEntry dbe(n, v, r);
         for (std::list<tr1::shared_ptr<const PackageDepSpec> >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, **k, dbe))
+            if (match_package(*_imp->env, **k, id))
                 return true;
     }
 

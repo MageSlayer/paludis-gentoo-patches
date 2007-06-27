@@ -20,7 +20,9 @@
 #include "adapted_environment.hh"
 #include <paludis/hashed_containers.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/hook.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/match_package.hh>
 
@@ -78,7 +80,7 @@ AdaptedEnvironment::package_database() const
 }
 
 bool
-AdaptedEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry & e) const
+AdaptedEnvironment::query_use(const UseFlagName & u, const PackageID & e) const
 {
     UseFlagState result(use_unspecified);
     for (std::pair<Use::const_iterator, Use::const_iterator> p(_imp->use.equal_range(u)) ;
@@ -105,25 +107,25 @@ AdaptedEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry 
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageDatabaseEntry & e) const
+AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageID & e) const
 {
     return _imp->env->known_use_expand_names(u, e);
 }
 
 MaskReasons
-AdaptedEnvironment::mask_reasons(const PackageDatabaseEntry & e, const MaskReasonsOptions & r) const
+AdaptedEnvironment::mask_reasons(const PackageID & e, const MaskReasonsOptions & r) const
 {
     return _imp->env->mask_reasons(e, r);
 }
 
 bool
-AdaptedEnvironment::accept_license(const std::string & l, const PackageDatabaseEntry & e) const
+AdaptedEnvironment::accept_license(const std::string & l, const PackageID & e) const
 {
     return _imp->env->accept_license(l, e);
 }
 
 bool
-AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry & e) const
+AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID & e) const
 {
     return _imp->env->accept_keywords(k, e);
 }

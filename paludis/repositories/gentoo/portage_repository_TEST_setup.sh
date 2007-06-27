@@ -185,7 +185,7 @@ END
 cd ..
 
 
-mkdir -p repo9/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo9/{eclass,distfiles,profiles/profile,cat-one/pkg-one,cat-two/pkg-one} || exit 1
 mkdir -p repo9/{cat-one/pkg-one,cat-two/pkg-two} || exit 1
 cd repo9 || exit 1
 echo "test-repo-9" > profiles/repo_name || exit 1
@@ -213,11 +213,12 @@ END
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
 END
 cat <<END > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
+END
 cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
 END
 cd ..
 
-mkdir -p repo10/{eclass,distfiles,profiles/profile/subprofile} || exit 1
+mkdir -p repo10/{eclass,distfiles,profiles/profile/subprofile,cat/masked,cat/not_masked,cat/was_masked} || exit 1
 cd repo10 || exit 1
 echo "test-repo-10" > profiles/repo_name || exit 1
 cat <<END >profiles/profile/make.defaults || exit 1
@@ -236,6 +237,12 @@ cat <<END >profiles/profile/subprofile/package.mask
 END
 cat <<END >profiles/profile/subprofile/parent
 ..
+END
+cat <<END > cat/masked/masked-0.ebuild
+END
+cat <<END > cat/not_masked/not_masked-0.ebuild
+END
+cat <<END > cat/was_masked/was_masked-0.ebuild
 END
 cd ..
 

@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for VDBRepository.
@@ -57,6 +58,7 @@ namespace paludis
         public RepositoryContentsInterface,
         public RepositoryConfigInterface,
         public RepositoryHookInterface,
+        public tr1::enable_shared_from_this<VDBRepository>,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
@@ -65,67 +67,156 @@ namespace paludis
 
             void regenerate_provides_cache() const;
 
-            void _uninstall(const QualifiedPackageName &, const VersionSpec &, const VersionMetadata &,
-                    const UninstallOptions &, bool reinstalling) const;
+            void _uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &,
+                    bool reinstalling) const;
 
-        protected:
-            virtual bool do_has_category_named(const CategoryNamePart &) const;
+            void need_category_names() const;
+            void need_package_ids(const CategoryNamePart &) const;
 
-            virtual bool do_has_package_named(const QualifiedPackageName &) const;
+            void add_string_to_world(const std::string & n) const;
+            void remove_string_from_world(const std::string &) const;
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
+            const tr1::shared_ptr<const PackageID> package_id_if_exists(const QualifiedPackageName &,
+                    const VersionSpec &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
-                    const CategoryNamePart &) const;
+            const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
+                    const FSEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
-                    const QualifiedPackageName &) const;
+            /* RepositoryInstalledInterface */
 
-            virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
+            virtual time_t do_installed_time(const PackageID &) const;
 
-            virtual tr1::shared_ptr<const VersionMetadata> do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual tr1::shared_ptr<const Contents> do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual time_t do_installed_time(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
-                    const UninstallOptions &) const;
-
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
+            virtual FSEntry root() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUseInterface */
 
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry &) const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* end of RepositoryUseInterface */
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositorySetsInterface */
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryUninstallableInterface */
+
+            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const;
+
+            /* RepositoryWorldInterface */
+
+            virtual void add_to_world(const QualifiedPackageName &) const;
+
+            virtual void add_to_world(const SetName &) const;
+
+            virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual void remove_from_world(const SetName &) const;
+
+            /* RepositoryProvidesInterface */
+
+            virtual tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryEnvironmentVariableInterface */
+
+            virtual std::string get_environment_variable(
+                    const tr1::shared_ptr<const PackageID> & for_package,
+                    const std::string & var) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryDestinationInterface */
+
+            virtual bool is_suitable_destination_for(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool is_default_destination() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool want_pre_post_phases() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual void merge(const MergeOptions &);
+
+            /* RepositoryContentsInterface */
+
+            virtual tr1::shared_ptr<const Contents> do_contents(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryConfigInterface */
+
+            virtual void do_config(const tr1::shared_ptr<const PackageID> &) const;
+
+            /* RepositoryHookInterface */
+
+            virtual HookResult perform_hook(const Hook & hook) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Override in descendents: fetch package names.
+             */
+            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Override in descendents: fetch category names.
+             */
+            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Override in descendents if a fast implementation is available: fetch category names
+             * that contain a particular package.
+             */
             virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
-                    const PackageNamePart &) const;
+                    const PackageNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Add a string to world.
+             * Override in descendents: check for a package.
              */
-            virtual void add_string_to_world(const std::string &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Remove a string from world.
+             * Override in descendents: check for a category.
              */
-            virtual void remove_string_from_world(const std::string &) const;
-
-            virtual void do_config(const QualifiedPackageName &, const VersionSpec &) const;
+            virtual bool do_has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             /**
@@ -148,41 +239,6 @@ namespace paludis
             virtual void invalidate();
 
             virtual void regenerate_cache() const;
-
-            virtual void add_to_world(const QualifiedPackageName &) const;
-
-            virtual void remove_from_world(const QualifiedPackageName &) const;
-
-            virtual void add_to_world(const SetName &) const;
-
-            virtual void remove_from_world(const SetName &) const;
-
-            virtual std::string get_environment_variable(
-                    const PackageDatabaseEntry & for_package,
-                    const std::string & var) const;
-
-            virtual tr1::shared_ptr<const ProvidesCollection> provided_packages() const;
-
-            virtual tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
-                    const RepositoryProvidesEntry &) const;
-
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
-
-            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
-
-            virtual bool is_default_destination() const;
-
-            virtual bool want_pre_post_phases() const;
-
-            void merge(const MergeOptions &);
-
-            virtual std::string do_describe_use_flag(const UseFlagName &,
-                    const PackageDatabaseEntry &) const;
-
-            virtual FSEntry root() const;
-
-            HookResult perform_hook(const Hook &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

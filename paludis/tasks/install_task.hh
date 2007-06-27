@@ -113,15 +113,15 @@ namespace paludis
 
             virtual void on_no_clean_needed(const DepListEntry &) = 0;
             virtual void on_clean_all_pre(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &) = 0;
+                    const PackageIDSequence &) = 0;
             virtual void on_clean_pre(const DepListEntry &,
-                    const PackageDatabaseEntry &) = 0;
+                    const PackageID &) = 0;
             virtual void on_clean_post(const DepListEntry &,
-                    const PackageDatabaseEntry &) = 0;
+                    const PackageID &) = 0;
             virtual void on_clean_fail(const DepListEntry &,
-                    const PackageDatabaseEntry &) = 0;
+                    const PackageID &) = 0;
             virtual void on_clean_all_post(const DepListEntry &,
-                    const PackageDatabaseEntryCollection &) = 0;
+                    const PackageIDSequence &) = 0;
 
             virtual void on_update_world_pre() = 0;
             virtual void on_update_world(const PackageDepSpec &) = 0;

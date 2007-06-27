@@ -18,20 +18,28 @@
  */
 
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
-#include <paludis/repositories/virtuals/vr_entry.hh>
-#include <paludis/util/fast_unique_copy.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/repositories/virtuals/package_id.hh>
+
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
+#include <paludis/package_database.hh>
+#include <paludis/repository_info.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
-#include <vector>
+
 #include <algorithm>
+#include <vector>
 
 using namespace paludis;
+
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
 
 namespace paludis
 {
@@ -41,13 +49,13 @@ namespace paludis
         const Environment * const env;
         const FSEntry root;
 
-        mutable std::vector<VREntry> entries;
-        mutable bool has_entries;
+        mutable IDMap ids;
+        mutable bool has_ids;
 
         Implementation(const Environment * const e, const FSEntry & r) :
             env(e),
             root(r),
-            has_entries(false)
+            has_ids(false)
         {
         }
     };
@@ -89,7 +97,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
         const FSEntry & r) :
     Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
             .installable_interface(0)
-            .mask_interface(this)
+            .mask_interface(0)
             .installed_interface(this)
             .use_interface(0)
             .sets_interface(0)
@@ -105,6 +113,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .destination_interface(0)
             .licenses_interface(0)
             .portage_interface(0)
+            .make_virtuals_interface(0)
             .pretend_interface(0)
             .hook_interface(this),
             "installed_virtuals"),
@@ -121,9 +130,9 @@ InstalledVirtualsRepository::~InstalledVirtualsRepository()
 }
 
 void
-InstalledVirtualsRepository::need_entries() const
+InstalledVirtualsRepository::need_ids() const
 {
-    if (_imp->has_entries)
+    if (_imp->has_ids)
         return;
 
     /* Populate our _imp->entries. We need to iterate over each repository in
@@ -135,31 +144,22 @@ InstalledVirtualsRepository::need_entries() const
         if (! (*r)->provides_interface)
             continue;
 
-        tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesCollection> pp(
+        tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
                 (*r)->provides_interface->provided_packages());
 
-        for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(
+        for (RepositoryProvidesInterface::ProvidesSequence::Iterator p(
                     pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
         {
-            _imp->entries.push_back(VREntry::create()
-                    .virtual_name(p->virtual_name)
-                    .version(p->version)
-                    .provided_by_name(p->provided_by_name)
-                    .provided_by_repository((*r)->name()));
+            IDMap::iterator i(_imp->ids.find(p->virtual_name));
+            if (i == _imp->ids.end())
+                i = _imp->ids.insert(std::make_pair(p->virtual_name, make_shared_ptr(new PackageIDSequence::Concrete))).first;
+
+            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(shared_from_this(), p->virtual_name, p->provided_by));
+            i->second->push_back(id);
         }
     }
 
-    /* Our entries must be sorted, for fast lookups. But it's a bit trickier
-     * than a straight operator< comparison, because the same virtual version
-     * can be provided by more than one thing. For ease of coding elsewhere, we
-     * want the 'best' entry to come earlier (sort lower). We define best as
-     * being from the most important repository, and failing that from the
-     * greater provided name (the second part purely for consistency between
-     * invokations). */
-    std::sort(_imp->entries.begin(), _imp->entries.end(),
-            EntriesComparator(_imp->env->package_database()));
-
-    _imp->has_entries = true;
+    _imp->has_ids = true;
 }
 
 tr1::shared_ptr<Repository>
@@ -178,76 +178,19 @@ InstalledVirtualsRepository::make_installed_virtuals_repository(
     return tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env, FSEntry(root_str)));
 }
 
-bool
-InstalledVirtualsRepository::do_query_repository_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
-{
-    return false;
-}
-
-bool
-InstalledVirtualsRepository::do_query_profile_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
-{
-    return false;
-}
-
-tr1::shared_ptr<const VersionMetadata>
-InstalledVirtualsRepository::do_version_metadata(
-        const QualifiedPackageName & q,
-        const VersionSpec & v) const
-{
-    need_entries();
-
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(q, v, QualifiedPackageName("dummy/package"), RepositoryName("dummy_repository"))));
-
-    if (p.first == p.second)
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-
-    return _imp->env->package_database()->fetch_repository(
-            p.first->provided_by_repository)->provides_interface->provided_package_version_metadata(
-                RepositoryProvidesEntry::create()
-                .virtual_name(p.first->virtual_name)
-                .version(p.first->version)
-                .provided_by_name(p.first->provided_by_name));
-}
-
-bool
-InstalledVirtualsRepository::do_has_version(const QualifiedPackageName & q,
-        const VersionSpec & v) const
+tr1::shared_ptr<const PackageIDSequence>
+InstalledVirtualsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return false;
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
 
-    need_entries();
+    need_ids();
 
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(q, v, QualifiedPackageName("dummy/package"), RepositoryName("dummy_repository"))));
+    IDMap::const_iterator i(_imp->ids.find(q));
+    if (i == _imp->ids.end())
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
 
-    return p.first != p.second;
-}
-
-tr1::shared_ptr<const VersionSpecCollection>
-InstalledVirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
-{
-    if (q.category.data() != "virtual")
-        return tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
-
-    need_entries();
-
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(q, VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesNameComparator()));
-
-    tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
-    for ( ; p.first != p.second ; ++p.first)
-        result->insert(p.first->version);
-
-    return result;
+    return i->second;
 }
 
 tr1::shared_ptr<const QualifiedPackageNameCollection>
@@ -256,18 +199,11 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
     if (c.data() != "virtual")
         return tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
-    need_entries();
-
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(c + PackageNamePart("dummy"), VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesCategoryComparator()));
-
+    need_ids();
 
     tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
-    fast_unique_copy(p.first, p.second,
-            transform_inserter(result->inserter(), EntriesNameExtractor()),
-            EntriesNameComparator());
+    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
+                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first)));
 
     return result;
 }
@@ -277,7 +213,6 @@ InstalledVirtualsRepository::do_category_names() const
 {
     tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("virtual"));
-
     return result;
 }
 
@@ -287,30 +222,15 @@ InstalledVirtualsRepository::do_has_package_named(const QualifiedPackageName & q
     if (q.category.data() != "virtual")
         return false;
 
-    need_entries();
+    need_ids();
 
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(q, VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesNameComparator()));
-
-    return p.first != p.second;
+    return _imp->ids.end() != _imp->ids.find(q);
 }
 
 bool
 InstalledVirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
 {
-    if (c.data() != "virtual")
-        return false;
-
-    need_entries();
-
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(c + PackageNamePart("dummy"), VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesCategoryComparator()));
-
-    return p.first != p.second;
+    return (c.data() == "virtual");
 }
 
 void
@@ -332,5 +252,17 @@ InstalledVirtualsRepository::perform_hook(const Hook & hook) const
             + stringify(name()) + "':");
 
     return HookResult(0, "");
+}
+
+time_t
+InstalledVirtualsRepository::do_installed_time(const PackageID &) const
+{
+    return 0;
+}
+
+bool
+InstalledVirtualsRepository::can_be_favourite_repository() const
+{
+    return false;
 }
 

@@ -16,12 +16,11 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 namespace paludis
 {
-    class Environment;
-    class PackageDatabaseEntry;
-
     /**
      * Return whether the specified spec matches the specified target.
      *
@@ -30,7 +29,7 @@ namespace paludis
     bool match_package(
             const Environment & env,
             const PackageDepSpec & spec,
-            const PackageDatabaseEntry & target)
+            const PackageID & target)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**
@@ -41,7 +40,7 @@ namespace paludis
     bool match_package_in_set(
             const Environment & env,
             const SetSpecTree::ConstItem & spec,
-            const PackageDatabaseEntry & target)
+            const PackageID & target)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 

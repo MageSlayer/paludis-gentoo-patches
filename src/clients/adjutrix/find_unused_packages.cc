@@ -22,6 +22,8 @@
 
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <map>
@@ -81,8 +83,8 @@ void do_find_unused_packages(const Environment & env)
                                 stringify(*c)))
                         continue;
 
-                tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(*p));
-                for (PackageDatabaseEntryCollection::Iterator u(unused->begin()), u_end(unused->end()) ; 
+                tr1::shared_ptr<const PackageIDSequence> unused(task.execute(*p));
+                for (IndirectIterator<PackageIDSequence::Iterator> u(unused->begin()), u_end(unused->end()) ; 
                         u != u_end ; ++u)
                     cout << stringify(*u) << endl;
             }

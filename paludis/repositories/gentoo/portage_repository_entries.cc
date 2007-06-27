@@ -44,6 +44,8 @@ NoSuchPortageRepositoryEntriesType::NoSuchPortageRepositoryEntriesType(const std
 PortageRepositoryEntriesMaker::PortageRepositoryEntriesMaker()
 {
     register_maker("ebuild", &EbuildEntries::make_ebuild_entries);
+#if 0
     register_maker("ebin", &EbinEntries::make_ebin_entries);
+#endif
 }
 

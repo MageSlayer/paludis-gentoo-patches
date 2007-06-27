@@ -6,7 +6,7 @@ make_class_UseDescription()
     visible
 
     key flag UseFlagName
-    key package PackageDatabaseEntry
+    key package_id "tr1::shared_ptr<const PackageID>"
     key state UseDescriptionState
     key description std::string
 

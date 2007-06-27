@@ -25,7 +25,6 @@
 #include "find_reverse_deps.hh"
 #include "find_unused_packages.hh"
 #include "keywords_graph.hh"
-#include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
 #include "what_needs_keywording.hh"
 #include "downgrade_check.hh"
@@ -136,7 +135,6 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_find_unused_packages.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified() +
                     CommandLine::get_instance()->a_reverse_deps.specified() +
-                    CommandLine::get_instance()->a_display_profiles_use.specified() +
                     CommandLine::get_instance()->a_display_default_system_resolution.specified() +
                     CommandLine::get_instance()->a_build_downgrade_check_list.specified() +
                     CommandLine::get_instance()->a_downgrade_check.specified() +
@@ -214,16 +212,6 @@ main(int argc, char *argv[])
                 throw DoHelp("reverse-deps action takes exactly one parameter (the target dep)");
 
             return do_find_reverse_deps(env);
-        }
-
-        if (CommandLine::get_instance()->a_display_profiles_use.specified())
-        {
-            if (CommandLine::get_instance()->begin_parameters() !=
-                        CommandLine::get_instance()->end_parameters())
-                throw DoHelp("display-profiles-use action takes no parameters");
-
-            do_display_profiles_use(env);
-            return EXIT_SUCCESS;
         }
 
         if (CommandLine::get_instance()->a_display_default_system_resolution.specified())

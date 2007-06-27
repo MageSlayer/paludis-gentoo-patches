@@ -25,8 +25,12 @@
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/query.hh>
+#include <paludis/package_database.hh>
 #include <paludis/hook.hh>
+#include <paludis/dep_tag.hh>
+#include <paludis/repository.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -127,7 +131,7 @@ UninstallTask::add_target(const std::string & target)
                     throw MultipleSetTargetsSpecified();
 
                 _imp->had_set_targets = true;
-                DepSpecFlattener f(_imp->env, 0);
+                DepSpecFlattener f(_imp->env, tr1::shared_ptr<const PackageID>());
                 spec->accept(f);
                 for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
                     _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
@@ -196,7 +200,7 @@ UninstallTask::execute()
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
-            tr1::shared_ptr<const PackageDatabaseEntryCollection> r(_imp->env->package_database()->query(
+            tr1::shared_ptr<const PackageIDSequence> r(_imp->env->package_database()->query(
                         query::Matches(**t) & query::RepositoryHasUninstallableInterface(), qo_order_by_version));
             if (r->empty())
             {
@@ -208,12 +212,12 @@ UninstallTask::execute()
                 if (_imp->all_versions)
                 {
                     /* all_versions, not all_packages. */
-                    for (PackageDatabaseEntryCollection::Iterator i_start(r->begin()), i(r->begin()),
+                    for (PackageIDSequence::Iterator i_start(r->begin()), i(r->begin()),
                             i_end(r->end()) ; i != i_end ; ++i)
-                        if (i->name != i_start->name)
+                        if ((*i)->name() != (*i_start)->name())
                             throw AmbiguousUnmergeTargetError(stringify(**t), r);
 
-                    for (PackageDatabaseEntryCollection::Iterator i(r->begin()), i_end(r->end()) ;
+                    for (PackageIDSequence::Iterator i(r->begin()), i_end(r->end()) ;
                             i != i_end ; ++i)
                         list.add(*i);
                 }
@@ -248,19 +252,19 @@ UninstallTask::execute()
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
             if (! i->skip_uninstall)
-                being_removed[i->package.name].insert(i->package.version);
+                being_removed[i->package_id->name()].insert(i->package_id->version());
 
         for (std::map<QualifiedPackageName, std::set<VersionSpec> >::const_iterator
                 i(being_removed.begin()), i_end(being_removed.end()) ; i != i_end ; ++i)
         {
             bool remove(true);
-            tr1::shared_ptr<PackageDatabaseEntryCollection> installed(
+            tr1::shared_ptr<const PackageIDSequence> installed(
                     _imp->env->package_database()->query(query::Matches(PackageDepSpec(
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))) &
                         query::RepositoryHasInstalledInterface(), qo_whatever));
-            for (PackageDatabaseEntryCollection::Iterator r(installed->begin()), r_end(installed->end()) ;
+            for (PackageIDSequence::Iterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
-                if (i->second.end() == i->second.find(r->version))
+                if (i->second.end() == i->second.find((*r)->version()))
                     remove = false;
 
             if (remove)
@@ -296,7 +300,7 @@ UninstallTask::execute()
             continue;
         ++x;
 
-        std::string cpvr(stringify(i->package));
+        std::string cpvr(stringify(*i->package_id));
 
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
@@ -304,15 +308,13 @@ UninstallTask::execute()
             throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
         on_uninstall_pre(*i);
 
-        const RepositoryUninstallableInterface * const uninstall_interface(
-                _imp->env->package_database()->fetch_repository(i->package.repository)->
-                uninstallable_interface);
+        const RepositoryUninstallableInterface * const uninstall_interface(i->package_id->repository()->uninstallable_interface);
         if (! uninstall_interface)
             throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
 
         try
         {
-            uninstall_interface->uninstall(i->package.name, i->package.version, _imp->uninstall_options);
+            uninstall_interface->uninstall(i->package_id, _imp->uninstall_options);
         }
         catch (const PackageUninstallActionError & e)
         {

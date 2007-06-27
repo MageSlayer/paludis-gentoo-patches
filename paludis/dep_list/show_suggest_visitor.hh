@@ -43,7 +43,7 @@ namespace paludis
             ///\{
 
             ShowSuggestVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsCollection> ddd,
-                    const Environment * const, const PackageDatabaseEntry * const, bool);
+                    const Environment * const, const tr1::shared_ptr<const PackageID> &, bool);
             ~ShowSuggestVisitor();
 
             ///\}

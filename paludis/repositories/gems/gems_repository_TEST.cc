@@ -40,6 +40,7 @@ namespace test_cases
             env.package_database()->add_repository(1, make_shared_ptr(new GemsRepository(
                             gems::RepositoryParams::create()
                             .location(FSEntry("gems_repository_TEST_dir/repo"))
+                            .install_dir(FSEntry("gems_repository_TEST_dir/install"))
                             .sync("")
                             .sync_options("")
                             .environment(&env)

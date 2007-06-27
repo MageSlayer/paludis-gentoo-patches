@@ -22,7 +22,6 @@
 
 #include <paludis/environment.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/package_database_entry.hh>
 #include <src/output/console_task.hh>
 
 namespace paludis
@@ -37,17 +36,17 @@ namespace paludis
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepSpec &, const PackageDatabaseEntry * = 0) const;
+            virtual void show(const PackageDepSpec &, const PackageID * = 0) const;
 
-            virtual void display_header(const PackageDepSpec &, const PackageDatabaseEntry &) const;
+            virtual void display_header(const PackageDepSpec &, const PackageID &) const;
             virtual void display_versions_by_repository(const PackageDepSpec &,
-                    tr1::shared_ptr<const PackageDatabaseEntryCollection>, const PackageDatabaseEntry &) const;
-            virtual void display_metadata(const PackageDepSpec &, const PackageDatabaseEntry &) const;
+                    tr1::shared_ptr<const PackageIDSequence>, const PackageID &) const;
+            virtual void display_metadata(const PackageDepSpec &, const PackageID &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
             virtual void display_metadata_license(const std::string &, const std::string &,
-                    tr1::shared_ptr<const LicenseSpecTree::ConstItem>, const PackageDatabaseEntry &) const;
+                    tr1::shared_ptr<const LicenseSpecTree::ConstItem>, const tr1::shared_ptr<const PackageID> &) const;
             virtual void display_metadata_dependency(const std::string &, const std::string &,
                     tr1::shared_ptr<const DependencySpecTree::ConstItem>, const bool one_line) const;
             virtual void display_metadata_provides(const std::string &, const std::string &,
@@ -56,10 +55,10 @@ namespace paludis
                     tr1::shared_ptr<const URISpecTree::ConstItem>, const bool one_line) const;
             virtual void display_metadata_restrict(const std::string &, const std::string &,
                     tr1::shared_ptr<const RestrictSpecTree::ConstItem>, const bool one_line) const;
-            virtual void display_metadata_pde(const std::string &, const std::string &, const PackageDatabaseEntry &) const;
+            virtual void display_metadata_pde(const std::string &, const std::string &, const PackageID &) const;
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,
-                    const PackageDatabaseEntry &) const;
+                    const PackageID &) const;
 
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;

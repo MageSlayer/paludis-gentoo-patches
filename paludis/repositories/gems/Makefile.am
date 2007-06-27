@@ -21,7 +21,6 @@ libpaludisgemsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSI
 paludis_repositories_gems_include_HEADERS = \
 	gems_repository.hh \
 	installed_gems_repository.hh \
-	metadata.hh \
 	exceptions.hh \
 	yaml.hh yaml-fwd.hh \
 	gem_specification.hh gem_specification-fwd.hh \
@@ -32,7 +31,6 @@ libpaludisgemsrepository_la_SOURCES = \
 	gems_repository.cc \
 	installed_gems_repository.cc \
 	params.cc \
-	metadata.cc \
 	exceptions.cc \
 	yaml.cc \
 	gem_specification.cc \

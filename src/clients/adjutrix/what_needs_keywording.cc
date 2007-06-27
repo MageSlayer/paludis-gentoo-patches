@@ -25,6 +25,8 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 
 #include <set>
 #include <map>
@@ -94,17 +96,14 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
         if (dlk_masked == p->kind)
         {
             none = false;
-            cout << std::setw(30) << std::left << stringify(p->package.name);
-            cout << std::setw(20) << std::left << stringify(p->package.version);
+            cout << std::setw(30) << std::left << stringify(p->package_id->name());
+            cout << std::setw(20) << std::left << stringify(p->package_id->canonical_form(idcf_version));
 
             std::string current;
 
-            tr1::shared_ptr<const VersionMetadata> m(env.package_database()->fetch_repository(
-                        p->package.repository)->version_metadata(p->package.name,
-                            p->package.version));
-            if (m->ebuild_interface)
+            if (p->package_id->keywords_key())
             {
-                tr1::shared_ptr<const KeywordNameCollection> keywords(m->ebuild_interface->keywords());
+                tr1::shared_ptr<const KeywordNameCollection> keywords(p->package_id->keywords_key()->value());
                 for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")
@@ -117,7 +116,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string masks;
 
-            MaskReasons r(env.mask_reasons(p->package));
+            MaskReasons r(env.mask_reasons(*p->package_id));
             if (r[mr_repository_mask])
                     masks.append("R");
             if (r[mr_profile_mask])

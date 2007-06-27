@@ -49,8 +49,6 @@ CommandLine::CommandLine() :
             "Selects which basic profile-oriented action to perform. Exactly one action should "
             "be specified."),
 
-    a_display_profiles_use(&profile_action_args,
-            "display-profiles-use",   'u',  "Display USE information for all profiles"),
     a_display_default_system_resolution(&profile_action_args,
             "display-default-system-resolution", 'S', "Display package names and versions that are included in "
             "the default resolution of the system set"),

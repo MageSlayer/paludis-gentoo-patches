@@ -19,7 +19,6 @@
 
 #include <paludis/qa/create_metadata_check.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/eapi.hh>
 

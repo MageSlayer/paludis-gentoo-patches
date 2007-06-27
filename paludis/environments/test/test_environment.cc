@@ -20,7 +20,9 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <string>
@@ -53,13 +55,13 @@ TestEnvironment::~TestEnvironment()
 }
 
 bool
-TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry &) const
+TestEnvironment::query_use(const UseFlagName & u, const PackageID &) const
 {
     return (std::string::npos != u.data().find("enabled"));
 }
 
 bool
-TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageDatabaseEntry &) const
+TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
@@ -86,5 +88,19 @@ void
 TestEnvironment::set_paludis_command(const std::string & s)
 {
     _imp->paludis_command = s;
+}
+
+const tr1::shared_ptr<const PackageID>
+TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
+        const VersionSpec & v, const RepositoryName & r) const
+{
+    using namespace tr1::placeholders;
+
+    tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
+    PackageIDSequence::Iterator i(std::find_if(ids->begin(), ids->end(),
+                tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), v)));
+    if (i == ids->end())
+        throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
+    return *i;
 }
 

@@ -69,8 +69,7 @@ namespace
     {
         private:
             const Environment & _env;
-            std::multimap<PackageDatabaseEntry, std::string,
-                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
+            std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
 
         public:
             using ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>::visit;
@@ -82,9 +81,9 @@ namespace
 
             void visit_leaf(const PackageDepSpec & a)
             {
-                tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
+                tr1::shared_ptr<const PackageIDSequence> insecure(
                         _env.package_database()->query(query::Matches(a), qo_order_by_version));
-                for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
+                for (PackageIDSequence::Iterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a.tag())
                         _found.insert(std::make_pair(*i, a.tag()->short_text()));
@@ -98,18 +97,17 @@ namespace
     std::ostream & operator<< (std::ostream & s, const ListInsecureVisitor & v)
     {
         QualifiedPackageName old_name("dormouse/teapot");
-        for (std::multimap<PackageDatabaseEntry, std::string,
-                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator>::const_iterator
+        for (std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator>::const_iterator
                 f(v._found.begin()), f_end(v._found.end()) ; f != f_end ; ++f)
         {
-            if (f->first.name != old_name)
-                s << std::setw(col_width_package) << (stringify(f->first.name) + " ") << endl;
-            old_name = f->first.name;
-            s << std::setw(col_width_package) << ("  " + stringify(f->first.version) + " ")
+            if (f->first->name() != old_name)
+                s << std::setw(col_width_package) << (stringify(f->first->name()) + " ") << endl;
+            old_name = f->first->name();
+            s << std::setw(col_width_package) << ("  " + stringify(f->first->canonical_form(idcf_version)) + " ")
                 << f->second;
             while (next(f) != f_end)
             {
-                if (next(f)->first != f->first)
+                if (*next(f)->first != *f->first)
                     break;
                 cout << " " << f->second;
                 ++f;

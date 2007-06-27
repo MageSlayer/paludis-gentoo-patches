@@ -30,7 +30,14 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
+#include <paludis/repository.hh>
+#include <paludis/package_database.hh>
+#include <paludis/eapi.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -52,17 +59,17 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
     if (lhs.flag > rhs.flag)
         return false;
 
-    if (lhs.package.name < rhs.package.name)
+    if (lhs.package_id->name() < rhs.package_id->name())
         return true;
-    if (lhs.package.name > rhs.package.name)
+    if (lhs.package_id->name() > rhs.package_id->name())
         return false;
 
-    if (lhs.package.version < rhs.package.version)
+    if (lhs.package_id->version() < rhs.package_id->version())
         return true;
-    if (lhs.package.version < rhs.package.version)
+    if (lhs.package_id->version() < rhs.package_id->version())
         return false;
 
-    if (lhs.package.repository.data() < rhs.package.repository.data())
+    if (lhs.package_id->repository()->name().data() < rhs.package_id->repository()->name().data())
         return true;
 
     return false;
@@ -94,8 +101,7 @@ ConsoleInstallTask::on_build_deplist_post()
 void
 ConsoleInstallTask::on_build_cleanlist_pre(const DepListEntry & d)
 {
-    output_heading("Cleaning stale versions after installing " +
-            stringify(d.package));
+    output_heading("Cleaning stale versions after installing " + stringify(*d.package_id));
 }
 
 void
@@ -105,13 +111,13 @@ ConsoleInstallTask::on_build_cleanlist_post(const DepListEntry &)
 
 void
 ConsoleInstallTask::on_clean_all_pre(const DepListEntry & d,
-        const PackageDatabaseEntryCollection & c)
+        const PackageIDSequence & c)
 {
     display_clean_all_pre_list_start(d, c);
 
-    for (PackageDatabaseEntryCollection::Iterator cc(c.begin()),
-            cc_end(c.end()) ; cc != cc_end ; ++cc)
-        display_one_clean_all_pre_list_entry(*cc);
+    using namespace tr1::placeholders;
+    std::for_each(indirect_iterator(c.begin()), indirect_iterator(c.end()),
+            tr1::bind(tr1::mem_fn(&ConsoleInstallTask::display_one_clean_all_pre_list_entry), this, _1));
 
     display_clean_all_pre_list_end(d, c);
 }
@@ -124,7 +130,7 @@ ConsoleInstallTask::on_no_clean_needed(const DepListEntry &)
 
 void
 ConsoleInstallTask::on_clean_pre(const DepListEntry &,
-        const PackageDatabaseEntry & c)
+        const PackageID & c)
 {
     std::string m("(" + stringify(count<current_count>()) + " of "
             + stringify(count<max_count>()) + ") Cleaning " + stringify(c));
@@ -134,13 +140,13 @@ ConsoleInstallTask::on_clean_pre(const DepListEntry &,
 
 void
 ConsoleInstallTask::on_clean_post(const DepListEntry &,
-        const PackageDatabaseEntry &)
+        const PackageID &)
 {
 }
 
 void
 ConsoleInstallTask::on_clean_fail(const DepListEntry &,
-        const PackageDatabaseEntry & c)
+        const PackageID & c)
 {
     output_xterm_title("(" + stringify(count<current_count>()) + " of "
             + stringify(count<max_count>()) + ") Failed cleaning " + stringify(c));
@@ -148,7 +154,7 @@ ConsoleInstallTask::on_clean_fail(const DepListEntry &,
 
 void
 ConsoleInstallTask::on_clean_all_post(const DepListEntry &,
-        const PackageDatabaseEntryCollection &)
+        const PackageIDSequence &)
 {
 }
 
@@ -220,9 +226,9 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     if (d.destination)
         repo.reset(new RepositoryName(d.destination->name()));
 
-    tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
+    tr1::shared_ptr<const PackageIDSequence> existing_repo(environment()->package_database()->
             query(query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
                         tr1::shared_ptr<CategoryNamePart>(),
                         tr1::shared_ptr<PackageNamePart>(),
                         tr1::shared_ptr<VersionRequirements>(),
@@ -231,14 +237,14 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                         repo)),
                 qo_order_by_version));
 
-    tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
+    tr1::shared_ptr<const PackageIDSequence> existing_slot_repo(environment()->package_database()->
             query(query::Matches(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package_id->name())),
                         tr1::shared_ptr<CategoryNamePart>(),
                         tr1::shared_ptr<PackageNamePart>(),
                         tr1::shared_ptr<VersionRequirements>(),
                         vr_and,
-                        tr1::shared_ptr<SlotName>(new SlotName(d.metadata->slot)),
+                        tr1::shared_ptr<SlotName>(new SlotName(d.package_id->slot())),
                         repo)),
                 qo_order_by_version));
 
@@ -247,8 +253,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_version(d, m);
     display_merge_list_entry_repository(d, m);
 
-    if (d.metadata->virtual_interface)
-        display_merge_list_entry_for(*d.metadata->virtual_interface->virtual_for, m);
+    if (d.package_id->virtual_for_key())
+        display_merge_list_entry_for(*d.package_id->virtual_for_key()->value(), m);
 
     display_merge_list_entry_slot(d, m);
 
@@ -272,7 +278,7 @@ ConsoleInstallTask::on_fetch_pre(const DepListEntry & d)
     set_count<current_count>(count<current_count>() + 1);
 
     std::string m("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Fetching " + stringify(d.package));
+            + stringify(count<max_count>()) + ") Fetching " + stringify(*d.package_id));
 
     output_heading(m);
     output_xterm_title(m);
@@ -299,7 +305,7 @@ ConsoleInstallTask::on_install_pre(const DepListEntry & d)
     set_count<current_count>(count<current_count>() + 1);
 
     std::string m("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Installing " + stringify(d.package));
+            + stringify(count<max_count>()) + ") Installing " + stringify(*d.package_id));
 
     output_heading(m);
     output_xterm_title(m);
@@ -314,7 +320,7 @@ void
 ConsoleInstallTask::on_install_fail(const DepListEntry & d)
 {
     output_xterm_title("(" + stringify(count<current_count>()) + "of "
-            + stringify(count<max_count>()) + ") Failed install of " + stringify(d.package));
+            + stringify(count<max_count>()) + ") Failed install of " + stringify(*d.package_id));
 }
 
 void
@@ -369,20 +375,20 @@ ConsoleInstallTask::on_preserve_world()
 
 void
 ConsoleInstallTask::display_clean_all_pre_list_start(const DepListEntry &,
-        const PackageDatabaseEntryCollection &)
+        const PackageIDSequence &)
 {
 }
 
 void
 ConsoleInstallTask::display_one_clean_all_pre_list_entry(
-        const PackageDatabaseEntry & c)
+        const PackageID & c)
 {
     output_starred_item(render_as_package_name(stringify(c)));
 }
 
 void
 ConsoleInstallTask::display_clean_all_pre_list_end(const DepListEntry &,
-        const PackageDatabaseEntryCollection &)
+        const PackageIDSequence &)
 {
 }
 
@@ -615,7 +621,7 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
             for ( ; i != i_end ; ++i)
             {
                 std::ostringstream s;
-                s << i->description << " (for " << render_as_package_name(stringify(i->package)) << ")";
+                s << i->description << " (for " << render_as_package_name(stringify(*i->package_id)) << ")";
                 output_starred_item(s.str(), 1);
             }
         }
@@ -735,21 +741,21 @@ ConsoleInstallTask::display_merge_list_entry_package_name(const DepListEntry & d
     {
         case normal_entry:
         case suggested_entry:
-            output_no_endl(render_as_package_name(stringify(d.package.name)));
+            output_no_endl(render_as_package_name(stringify(d.package_id->name())));
             break;
 
         case unimportant_entry:
-            output_no_endl(render_as_unimportant(stringify(d.package.name)));
+            output_no_endl(render_as_unimportant(stringify(d.package_id->name())));
             break;
 
         case error_entry:
-            output_no_endl(render_as_error(stringify(d.package.name)));
+            output_no_endl(render_as_error(stringify(d.package_id->name())));
             break;
     }
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_for(const PackageDatabaseEntry & d, const DisplayMode m)
+ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const DisplayMode m)
 {
     switch (m)
     {
@@ -765,8 +771,8 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageDatabaseEntry & d,
 
         case error_entry:
             output_no_endl(" (for ");
-            output_no_endl(render_as_package_name(stringify(d.name)));
-            output_no_endl("-" + stringify(d.version) + "::" + stringify(d.repository));
+            output_no_endl(render_as_package_name(stringify(d.name())));
+            output_no_endl("-" + stringify(d.version()) + "::" + stringify(d.repository()->name()));
             output_no_endl(")");
             break;
     }
@@ -775,16 +781,16 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageDatabaseEntry & d,
 void
 ConsoleInstallTask::display_merge_list_entry_version(const DepListEntry & d, const DisplayMode)
 {
-    if ((VersionSpec("0") != d.package.version) ||
-            CategoryNamePart("virtual") != d.package.name.category)
-        output_no_endl("-" + stringify(d.package.version));
+    if ((VersionSpec("0") != d.package_id->version()) ||
+            CategoryNamePart("virtual") != d.package_id->name().category)
+        output_no_endl("-" + stringify(d.package_id->version()));
 }
 
 void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode)
 {
-    if (environment()->package_database()->favourite_repository() != d.package.repository)
-        output_no_endl("::" + stringify(d.package.repository));
+    if (environment()->package_database()->favourite_repository() != d.package_id->repository()->name())
+        output_no_endl("::" + stringify(d.package_id->repository()->name()));
 }
 
 void
@@ -794,23 +800,23 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
     {
         case normal_entry:
         case suggested_entry:
-            output_no_endl(render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
+            output_no_endl(render_as_slot_name(" {:" + stringify(d.package_id->slot()) + "}"));
             break;
 
         case unimportant_entry:
-            output_no_endl(render_as_unimportant(" {:" + stringify(d.metadata->slot) + "}"));
+            output_no_endl(render_as_unimportant(" {:" + stringify(d.package_id->slot()) + "}"));
             break;
 
         case error_entry:
-            output_no_endl(render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
+            output_no_endl(render_as_slot_name(" {:" + stringify(d.package_id->slot()) + "}"));
             break;
     }
 }
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
+        tr1::shared_ptr<const PackageIDSequence> existing_repo,
+        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
         const DisplayMode m)
 {
     bool need_comma(false);
@@ -852,17 +858,17 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                     set_count<new_slot_count>(count<new_slot_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
-                else if (existing_slot_repo->last()->version < d.package.version)
+                else if ((*existing_slot_repo->last())->version() < d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("U " +
-                                stringify(existing_slot_repo->last()->version) + "" + destination_str));
+                                stringify((*existing_slot_repo->last())->version()) + destination_str));
                     set_count<upgrade_count>(count<upgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
-                else if (existing_slot_repo->last()->version > d.package.version)
+                else if ((*existing_slot_repo->last())->version() > d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("D " +
-                                stringify(existing_slot_repo->last()->version) + "" + destination_str));
+                                stringify((*existing_slot_repo->last())->version()) + destination_str));
                     set_count<downgrade_count>(count<downgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
@@ -909,30 +915,29 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 
 void
 ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameCollection> c,
-        const PackageDatabaseEntry & p, UseDescriptionState s)
+        const tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
 {
     for (UseFlagNameCollection::Iterator f(c->begin()), f_end(c->end()) ;
             f != f_end ; ++f)
     {
         std::string d;
-        const RepositoryUseInterface * const i(environment()->package_database()->
-                fetch_repository(p.repository)->use_interface);
+        const RepositoryUseInterface * const i(p->repository()->use_interface);
 
         if (i)
-            d = i->describe_use_flag(*f, p);
+            d = i->describe_use_flag(*f, *p);
 
         _all_use_descriptions->insert(UseDescription::create()
                 .flag(*f)
                 .state(s)
-                .package(p)
+                .package_id(p)
                 .description(d));
     }
 }
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
+        tr1::shared_ptr<const PackageIDSequence> existing_repo,
+        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
@@ -940,12 +945,12 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 
     output_no_endl(" ");
     tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
-    printer->print_package_flags(d.package, ! existing_slot_repo->empty() ? &*existing_slot_repo->last() :
-                                 ! existing_repo->empty() ? &*existing_repo->last() : 0);
+    printer->print_package_flags(*d.package_id, ! existing_slot_repo->empty() ? existing_slot_repo->last()->get() :
+                                 ! existing_repo->empty() ? existing_repo->last()->get() : 0);
 
-    _add_descriptions(printer->new_flags(), d.package, uds_new);
-    _add_descriptions(printer->changed_flags(), d.package, uds_changed);
-    _add_descriptions(printer->unchanged_flags(), d.package, uds_unchanged);
+    _add_descriptions(printer->new_flags(), d.package_id, uds_new);
+    _add_descriptions(printer->changed_flags(), d.package_id, uds_changed);
+    _add_descriptions(printer->unchanged_flags(), d.package_id, uds_unchanged);
     _all_expand_prefixes->insert(printer->expand_prefixes()->begin(),
             printer->expand_prefixes()->end());
 }
@@ -1116,7 +1121,7 @@ EntryDepTagDisplayer::visit(const GeneralSetDepTag & tag)
 void
 ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e)
 {
-    MaskReasons r(environment()->mask_reasons(e.package));
+    MaskReasons r(environment()->mask_reasons(*e.package_id));
     bool need_comma(false);
 
     output_no_endl("    Masked by: ");
@@ -1130,8 +1135,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
 
             if (mr_eapi == mm)
             {
-                std::string eapi_str(environment()->package_database()->fetch_repository(
-                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi->name);
+                std::string eapi_str(e.package_id->eapi()->name);
 
                 if (eapi_str == "UNKNOWN")
                     output_no_endl(" ( " + render_as_masked(eapi_str) + " ) (probably a broken ebuild)");
@@ -1140,24 +1144,19 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_license == mm)
             {
-                tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->fetch_repository(
-                            e.package.repository)->version_metadata(e.package.name, e.package.version));
-
-                if (metadata->license_interface)
+                if (e.package_id->license_key())
                 {
                     output_no_endl(" ");
 
-                    LicenceDisplayer ld(output_stream(), environment(), e.package);
-                    metadata->license_interface->license()->accept(ld);
+                    LicenceDisplayer ld(output_stream(), environment(), e.package_id);
+                    e.package_id->license_key()->value()->accept(ld);
                 }
             }
             else if (mr_keyword == mm)
             {
-                tr1::shared_ptr<const VersionMetadata> meta(environment()->package_database()->fetch_repository(
-                            e.package.repository)->version_metadata(e.package.name, e.package.version));
-                if (meta->ebuild_interface)
+                if (e.package_id->keywords_key())
                 {
-                    tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                    tr1::shared_ptr<const KeywordNameCollection> keywords(e.package_id->keywords_key()->value());
                     output_no_endl(" ( " + render_as_masked(join(keywords->begin(), keywords->end(), " ")) + " )");
                 }
             }

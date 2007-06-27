@@ -42,25 +42,22 @@ namespace
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(
+        tr1::shared_ptr<const PackageIDSequence> matches(
                 env.package_database()->query(query::NotMasked(), qo_group_by_slot));
 
         QualifiedPackageName old_package("dummy/dummy");
         SlotName old_slot("dummy");
         VersionSpec best_version("0");
-        for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
+        for (IndirectIterator<PackageIDSequence::Iterator> m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
-            SlotName slot(env.package_database()->fetch_repository(m->repository)->version_metadata(
-                        m->name, m->version)->slot);
-
-            if (m->name != old_package || slot != old_slot)
+            if (m->name() != old_package || m->slot() != old_slot)
             {
                 f << old_package << " " << old_slot << " " << best_version << std::endl;
 
-                old_package = m->name;
-                old_slot = slot;
-                best_version = m->version;
+                old_package = m->name();
+                old_slot = m->slot();
+                best_version = m->version();
             }
         }
 

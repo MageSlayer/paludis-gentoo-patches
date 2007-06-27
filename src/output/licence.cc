@@ -19,6 +19,8 @@
 
 #include "licence.hh"
 #include "colour.hh"
+#include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
 #include <ostream>
 #include <algorithm>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -61,7 +63,7 @@ LicenceDisplayer::visit_sequence(const UseDepSpec & spec,
 void
 LicenceDisplayer::visit_leaf(const PlainTextDepSpec & spec)
 {
-    if (env->accept_license(spec.text(), db_entry))
+    if (env->accept_license(spec.text(), *package_id))
         stream << colour(cl_not_masked, spec.text());
     else
         stream << colour(cl_masked, "(" + spec.text() + ")!");
@@ -71,10 +73,10 @@ LicenceDisplayer::visit_leaf(const PlainTextDepSpec & spec)
 LicenceDisplayer::LicenceDisplayer(
         std::ostream & s,
         const Environment * const e,
-        const PackageDatabaseEntry & d) :
+        const tr1::shared_ptr<const PackageID> & d) :
     stream(s),
     env(e),
-    db_entry(d)
+    package_id(d)
 {
 }
 

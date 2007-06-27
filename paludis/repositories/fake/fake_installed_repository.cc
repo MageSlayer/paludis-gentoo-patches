@@ -22,6 +22,9 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/environment.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -48,21 +51,26 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .licenses_interface(0)
             .portage_interface(0)
             .pretend_interface(0)
+            .make_virtuals_interface(0)
             .hook_interface(0),
             "fake_installed")
 {
 }
 
+FakeInstalledRepository::~FakeInstalledRepository()
+{
+}
+
 bool
-FakeInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry &) const
+FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
 {
     return true;
 }
 
-tr1::shared_ptr<const FakeInstalledRepository::ProvidesCollection>
+tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
 FakeInstalledRepository::provided_packages() const
 {
-    tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
+    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence::Concrete);
 
     tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
@@ -72,40 +80,23 @@ FakeInstalledRepository::provided_packages() const
         for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            tr1::shared_ptr<const VersionSpecCollection> vers(version_specs(*p));
-            for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
+            tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
+            for (PackageIDSequence::Iterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
-                tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p, *v));
-                if (! m->ebuild_interface)
+                if (! (*v)->provide_key())
                     continue;
 
-                PackageDatabaseEntry dbe(*p, *v, name());
-                DepSpecFlattener f(environment(), &dbe);
-                m->ebuild_interface->provide()->accept(f);
+                DepSpecFlattener f(environment(), *v);
+                (*v)->provide_key()->value()->accept(f);
 
                 for (DepSpecFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
-                    result->insert(RepositoryProvidesEntry::create()
+                    result->push_back(RepositoryProvidesEntry::create()
                             .virtual_name(QualifiedPackageName((*q)->text()))
-                            .version(*v)
-                            .provided_by_name(*p));
+                            .provided_by(*v));
             }
         }
     }
-
-    return result;
-}
-
-tr1::shared_ptr<const VersionMetadata>
-FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
-{
-    tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_name, p.version));
-    tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
-
-    result->eapi = m->eapi;
-    result->deps_interface->set_build_depend(stringify(p.provided_by_name));
-    result->deps_interface->set_run_depend(stringify(p.provided_by_name));
 
     return result;
 }
@@ -131,5 +122,11 @@ FakeInstalledRepository::want_pre_post_phases() const
 void
 FakeInstalledRepository::merge(const MergeOptions &)
 {
+}
+
+time_t
+FakeInstalledRepository::do_installed_time(const PackageID &) const
+{
+    return 0;
 }
 

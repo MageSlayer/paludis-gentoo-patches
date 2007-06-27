@@ -37,8 +37,6 @@
 
 namespace paludis
 {
-    class VersionMetadata;
-
 #include <paludis/dep_list/dep_list-sr.hh>
 
     /**
@@ -58,7 +56,7 @@ namespace paludis
             /**
              * Find an appropriate destination for a package.
              */
-            tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
+            tr1::shared_ptr<Repository> find_destination(const PackageID &,
                     tr1::shared_ptr<const DestinationsCollection>);
 
             /**
@@ -71,27 +69,27 @@ namespace paludis
              * Return whether we prefer the first parameter, which is installed,
              * over the second, which isn't.
              */
-            bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
-                    const PackageDatabaseEntry &);
+            bool prefer_installed_over_uninstalled(const PackageID &,
+                    const PackageID &);
 
             /**
              * Add a package to the list.
              */
-            void add_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+            void add_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<const DepTag>,
                     const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an already installed package to the list.
              */
-            void add_already_installed_package(const PackageDatabaseEntry &, tr1::shared_ptr<const DepTag>,
+            void add_already_installed_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<const DepTag>,
                     const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 
             /**
              * Add an error package to the list.
              */
-            void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind,
+            void add_error_package(const tr1::shared_ptr<const PackageID> &, const DepListEntryKind,
                     const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>);
 
             /**
@@ -110,7 +108,7 @@ namespace paludis
              * Return whether the specified PackageDatabaseEntry is matched by
              * the top level target.
              */
-            bool is_top_level_target(const PackageDatabaseEntry &) const;
+            bool is_top_level_target(const PackageID &) const;
 
             void add_not_top_level(DependencySpecTree::ConstItem &,
                     tr1::shared_ptr<const DestinationsCollection> target_destinations,
@@ -164,7 +162,7 @@ namespace paludis
             /**
              * Return whether a PackageDatabaseEntry has been replaced.
              */
-            bool replaced(const PackageDatabaseEntry &) const;
+            bool replaced(const PackageID &) const;
 
             /**
              * Return whether a spec matches an item in the list.
@@ -179,7 +177,7 @@ namespace paludis
             /**
              * Add a suggested package to the list.
              */
-            void add_suggested_package(const PackageDatabaseEntry &,
+            void add_suggested_package(const tr1::shared_ptr<const PackageID> &,
                     const PackageDepSpec &, tr1::shared_ptr<DependencySpecTree::ConstItem>,
                     tr1::shared_ptr<const DestinationsCollection> destinations);
 

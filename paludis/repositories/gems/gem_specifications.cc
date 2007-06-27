@@ -20,6 +20,8 @@
 #include <paludis/repositories/gems/gem_specifications.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
@@ -99,9 +101,11 @@ namespace
         ConstVisitor<yaml::NodeVisitorTypes>
     {
         Implementation<GemSpecifications> * const _imp;
+        const tr1::shared_ptr<const Repository> repository;
 
-        GemsVisitor(Implementation<GemSpecifications> * const i) :
-            _imp(i)
+        GemsVisitor(const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+            _imp(i),
+            repository(r)
         {
         }
 
@@ -114,9 +118,8 @@ namespace
 
                 try
                 {
-                    tr1::shared_ptr<GemSpecification> spec(make_shared_ptr(new GemSpecification(*i->second)));
-                    _imp->specs.insert(std::make_pair(std::make_pair(CategoryNamePart("gems") + PackageNamePart(spec->name()),
-                                    VersionSpec(spec->version())), spec));
+                    tr1::shared_ptr<GemSpecification> spec(new GemSpecification(repository, *i->second));
+                    _imp->specs.insert(std::make_pair(std::make_pair(spec->name(), spec->version()), spec));
                 }
                 catch (const Exception & e)
                 {
@@ -145,9 +148,11 @@ namespace
         ConstVisitor<yaml::NodeVisitorTypes>
     {
         Implementation<GemSpecifications> * const _imp;
+        const tr1::shared_ptr<const Repository> repository;
 
-        TopVisitor(Implementation<GemSpecifications> * const i) :
-            _imp(i)
+        TopVisitor(const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+            _imp(i),
+            repository(r)
         {
         }
 
@@ -157,7 +162,7 @@ namespace
             if (n.end() == i)
                 throw BadSpecificationError("Top level map does not contain 'gems' node");
 
-            GemsVisitor g(_imp);
+            GemsVisitor g(repository, _imp);
             i->second->accept(g);
         }
 
@@ -177,10 +182,10 @@ namespace
     }
 }
 
-GemSpecifications::GemSpecifications(const yaml::Node & n) :
+GemSpecifications::GemSpecifications(const tr1::shared_ptr<const Repository> & r, const yaml::Node & n) :
     PrivateImplementationPattern<GemSpecifications>(new Implementation<GemSpecifications>)
 {
-    TopVisitor v(_imp.get());
+    TopVisitor v(r, _imp.get());
     n.accept(v);
 }
 
