@@ -26,7 +26,6 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/metadata_key_raw_printer.hh>
 #include <paludis/eapi.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
