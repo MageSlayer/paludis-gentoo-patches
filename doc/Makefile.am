@@ -53,7 +53,7 @@ libstdc++.tag :
 	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
 
 libwrapiter.tag :
-	wget -O $@ http://libwrapiter.berlios.de/libwrapiter.tag
+	wget -O $@ http://libwrapiter.pioto.org/libwrapiter.tag
 
 www :
 	mkdir -p www
