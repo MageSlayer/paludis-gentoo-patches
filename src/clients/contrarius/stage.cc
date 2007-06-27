@@ -154,7 +154,7 @@ LibCHeadersStage::build(const StageOptions &) const
 bool
 LibCHeadersStage::is_rebuild() const
 {
-    return (! tr1::shared_ptr<const PackageDatabaseEntryCollection>(_env->package_database()->query(
+    return (! tr1::shared_ptr<const PackageIDSequence>(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_unspecific)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever))->empty());
@@ -176,7 +176,7 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->libc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));
@@ -184,7 +184,7 @@ LibCStage::is_rebuild() const
     if (c->empty())
         return false;
 
-    return (! _env->query_use(UseFlagName("crosscompile_opts_headers-only"), *c->last()));
+    return (! _env->query_use(UseFlagName("crosscompile_opts_headers-only"), **c->last()));
 }
 
 int
@@ -210,7 +210,7 @@ FullStage::build(const StageOptions &) const
 bool
 FullStage::is_rebuild() const
 {
-    tr1::shared_ptr<const PackageDatabaseEntryCollection> c(_env->package_database()->query(
+    tr1::shared_ptr<const PackageIDSequence> c(_env->package_database()->query(
                 query::Matches(PackageDepSpec(TargetConfig::get_instance()->gcc(), pds_pm_permissive)) &
                     query::InstalledAtRoot(_env->root()),
                 qo_whatever));
@@ -218,6 +218,6 @@ FullStage::is_rebuild() const
     if (c->empty())
         return false;
 
-    return (! _env->query_use(UseFlagName("nocxx"), *c->last()));
+    return (! _env->query_use(UseFlagName("nocxx"), **c->last()));
 }
 

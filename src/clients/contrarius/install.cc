@@ -37,6 +37,8 @@
 #include <paludis/environment.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/query.hh>
+#include <paludis/eapi.hh>
+#include <paludis/metadata_key.hh>
 
 /** \file
  * Handle the --install action for the contrarius program.
@@ -115,10 +117,7 @@ namespace
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
                 if (dlk_package == i->kind)
-                    resume_command = resume_command + " ="
-                        + stringify(i->package.name) + "-"
-                        + stringify(i->package.version) + "::"
-                        + stringify(i->package.repository);
+                    resume_command = resume_command + " '=" + stringify(*i->package_id) + "'";
 
             if (CommandLine::get_instance()->a_resume_command_template.specified())
             {
@@ -293,7 +292,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
     {
         try
         {
-            tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
+            tr1::shared_ptr<const PackageIDSequence> p(
                     env->package_database()->query(
                         query::Matches(e.query()) &
                         query::RepositoryHasInstallableInterface(),
@@ -312,13 +311,13 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
                 cerr << "Query error:" << endl;
                 cerr << "  * " << e.backtrace("\n  * ");
                 cerr << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
-                for (PackageDatabaseEntryCollection::Iterator pp(p->begin()), pp_end(p->end()) ;
+                for (PackageIDSequence::Iterator pp(p->begin()), pp_end(p->end()) ;
                         pp != pp_end ; ++pp)
                 {
-                    cerr << "    * " << colour(cl_package_name, *pp) << ": Masked by ";
+                    cerr << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
 
                     bool need_comma(false);
-                    MaskReasons m(env->mask_reasons(*pp));
+                    MaskReasons m(env->mask_reasons(**pp));
                     for (unsigned mm = 0 ; mm < last_mr ; ++mm)
                         if (m[static_cast<MaskReason>(mm)])
                         {
@@ -328,37 +327,23 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
 
                             if (mr_eapi == mm)
                             {
-                                std::string eapi_str(env->
-                                        package_database()->fetch_repository(
-                                            pp->repository)->version_metadata(
-                                            pp->name, pp->version)->eapi->name);
-
-                                cerr << " ( " << colour(cl_masked, eapi_str) << " )";
+                                cerr << " ( " << colour(cl_masked, (*pp)->eapi()->name) << " )";
                             }
                             else if (mr_license == mm)
                             {
-                                tr1::shared_ptr<const VersionMetadata> meta(env->
-                                        package_database()->fetch_repository(
-                                            pp->repository)->version_metadata(
-                                                pp->name, pp->version));
-
-                                if (meta->license_interface)
+                                if ((*pp)->license_key())
                                 {
                                     cerr << " ";
 
                                     LicenceDisplayer ld(cerr, env.get(), *pp);
-                                    meta->license_interface->license()->accept(ld);
+                                    (*pp)->license_key()->value()->accept(ld);
                                 }
                             }
                             else if (mr_keyword == mm)
                             {
-                                tr1::shared_ptr<const VersionMetadata> meta(env->
-                                        package_database()->fetch_repository(
-                                            pp->repository)->version_metadata(
-                                            pp->name, pp->version));
-                                if (meta->ebuild_interface)
+                                if ((*pp)->keywords_key())
                                 {
-                                    tr1::shared_ptr<const KeywordNameCollection> keywords(meta->ebuild_interface->keywords());
+                                    tr1::shared_ptr<const KeywordNameCollection> keywords((*pp)->keywords_key()->value());
                                     cerr << " ( " << colour(cl_masked, join(keywords->begin(),
                                                     keywords->end(), " ")) << " )";
                                 }
