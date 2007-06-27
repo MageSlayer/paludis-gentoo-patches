@@ -30,7 +30,8 @@ void PALUDIS_VISIBLE expose_mask_reasons()
     /**
      * Enums
      */
-    enum_auto("MaskReason", last_mr);
+    enum_auto("MaskReason", last_mr,
+            "Each value represents one reason for a package being masked.");
 
     /**
      * MaskReasons

@@ -1076,7 +1076,8 @@ void PALUDIS_VISIBLE expose_dep_spec()
     /**
      * Enums
      */
-    enum_auto("PackageDepSpecParseMode", last_pds_pm);
+    enum_auto("PackageDepSpecParseMode", last_pds_pm,
+            "How to parse a PackageDepSpec string.");
 
     register_tree_to_python<DependencySpecTree>();
     register_tree_to_python<ProvideSpecTree>();

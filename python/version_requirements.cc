@@ -30,7 +30,8 @@ void PALUDIS_VISIBLE expose_version_requirements()
     /**
      * Enums
      */
-    enum_auto("VersionRequirementsMode", last_vr);
+    enum_auto("VersionRequirementsMode", last_vr,
+            "Whether our version requirements are an 'and' or an 'or' set.");
 
     /**
      * VersionRequirement

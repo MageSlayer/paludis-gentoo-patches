@@ -80,8 +80,9 @@ namespace paludis
         // expose stringifyable enums
         template <typename E_>
         void
-        enum_auto(const std::string & name, E_ e_last)
+        enum_auto(const std::string & name, E_ e_last, std::string doc)
         {
+            doc += "\n\nPossible values:";
             boost::python::enum_<E_> enum_(name.c_str());
             for (E_ e(static_cast<E_>(0)); e != e_last ; e = static_cast<E_>(static_cast<int>(e) + 1))
             {
@@ -89,7 +90,11 @@ namespace paludis
                 std::string e_name_up;
                 std::transform(e_name_low.begin(), e_name_low.end(), std::back_inserter(e_name_up), &::toupper);
                 enum_.value(e_name_up.c_str(), e);
+                doc += "\n\t" + e_name_up;
             }
+            // FIXME __doc__ is ro...
+            PyObject * py_doc = PyString_FromString(doc.c_str());
+            PyObject_SetAttrString(enum_.ptr(), "__doc__", py_doc);
         }
 
         // Compare

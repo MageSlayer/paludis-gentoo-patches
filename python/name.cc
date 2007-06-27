@@ -62,8 +62,10 @@ void PALUDIS_VISIBLE expose_name()
     /**
      * Enums
      */
-    enum_auto("UseFlagState", last_use);
-    enum_auto("IUseFlagParseMode", last_iuse_pm);
+    enum_auto("UseFlagState", last_use,
+            "A USE flag can be on, off or unspecified.");
+    enum_auto("IUseFlagParseMode", last_iuse_pm,
+            "How to parse an IUSE flag string.");
 
     /**
      * PackageNamePart

@@ -59,7 +59,8 @@ void PALUDIS_VISIBLE expose_package_database()
     /**
      * Enums
      */
-    enum_auto("QueryOrder", last_qo);
+    enum_auto("QueryOrder", last_qo,
+            "How to order query results.");
 
     /**
      * PackageDatabase

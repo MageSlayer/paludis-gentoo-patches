@@ -66,7 +66,8 @@ void PALUDIS_VISIBLE expose_environment()
     /**
      * Enums
      */
-    enum_auto("MaskReasonsOption", last_mro);
+    enum_auto("MaskReasonsOption", last_mro,
+            "Options for Environment.mask_reasons().");
 
     /**
      * EnvironmentMaker

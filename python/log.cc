@@ -30,8 +30,10 @@ void PALUDIS_VISIBLE expose_log()
     /**
      * Enums
      */
-    enum_auto("LogLevel", last_ll);
-    enum_auto("LogContext", last_lc);
+    enum_auto("LogLevel", last_ll,
+            "Specifies the level of a log message.");
+    enum_auto("LogContext", last_lc,
+            "Specifies whether a log message has context.");
 
     /**
      * Log

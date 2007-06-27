@@ -48,7 +48,8 @@ void PALUDIS_VISIBLE expose_version_operator()
     /**
      * Enums
      */
-    enum_auto("VersionOperatorValue", last_vo);
+    enum_auto("VersionOperatorValue", last_vo,
+            "Represents an operator attached to a VersionSpec.");
 
     /**
      * VersionOperator
