@@ -1036,7 +1036,7 @@ SKIP_FUNCTION_MACROS   = YES
 
 TAGFILES  =
 TAGFILES += "libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen"
-TAGFILES += "libwrapiter.tag = http://libwrapiter.berlios.de/"
+TAGFILES += "libwrapiter.tag = http://libwrapiter.pioto.org/"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create 
 # a tag file that is based on the input files it reads.
