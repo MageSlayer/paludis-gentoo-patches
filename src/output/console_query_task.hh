@@ -20,8 +20,13 @@
 #ifndef PALUDIS_GUARD_SRC_OUTPUT_CONSOLE_QUERY_TASK_HH
 #define PALUDIS_GUARD_SRC_OUTPUT_CONSOLE_QUERY_TASK_HH 1
 
-#include <paludis/environment.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/metadata_key-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/mask_reasons.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <src/output/console_task.hh>
 
 namespace paludis
@@ -36,12 +41,12 @@ namespace paludis
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepSpec &, const PackageID * = 0) const;
+            virtual void show(const PackageDepSpec &, tr1::shared_ptr<const PackageID> = tr1::shared_ptr<const PackageID>()) const;
 
-            virtual void display_header(const PackageDepSpec &, const PackageID &) const;
+            virtual void display_header(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
             virtual void display_versions_by_repository(const PackageDepSpec &,
-                    tr1::shared_ptr<const PackageIDSequence>, const PackageID &) const;
-            virtual void display_metadata(const PackageDepSpec &, const PackageID &) const;
+                    tr1::shared_ptr<const PackageIDSequence>, const tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
@@ -58,7 +63,8 @@ namespace paludis
             virtual void display_metadata_pde(const std::string &, const std::string &, const PackageID &) const;
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,
-                    const PackageID &) const;
+                    const tr1::shared_ptr<const PackageID> & id,
+                    const tr1::shared_ptr<const IUseFlagCollection> &) const;
 
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;

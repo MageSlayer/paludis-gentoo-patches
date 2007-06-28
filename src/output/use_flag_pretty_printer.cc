@@ -58,22 +58,22 @@ UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
 }
 
 void
-UseFlagPrettyPrinter::print_package_flags(const PackageID & pkg,
-        const PackageID * const old_pkg)
+UseFlagPrettyPrinter::print_package_flags(
+        const tr1::shared_ptr<const PackageID> & pkg,
+        const tr1::shared_ptr<const IUseFlagCollection> & iuse_c,
+        const tr1::shared_ptr<const PackageID> & old_pkg,
+        const tr1::shared_ptr<const IUseFlagCollection> & old_iuse_c)
 {
     std::set<UseFlagName> iuse, old_iuse;
 
-    if (! pkg.iuse_key())
-        return;
-
-    std::copy(pkg.iuse_key()->value()->begin(), pkg.iuse_key()->value()->end(),
+    std::copy(iuse_c->begin(), iuse_c->end(),
             transform_inserter(std::inserter(iuse, iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
-    if (old_pkg && old_pkg->iuse_key())
-        std::copy(old_pkg->iuse_key()->value()->begin(), old_pkg->iuse_key()->value()->end(),
+    if (old_pkg && old_iuse_c)
+        std::copy(old_iuse_c->begin(), old_iuse_c->end(),
                 transform_inserter(std::inserter(old_iuse, old_iuse.begin()), tr1::mem_fn(&IUseFlag::flag)));
 
-    const RepositoryUseInterface * const use_interface(pkg.repository()->use_interface);
+    const RepositoryUseInterface * const use_interface(pkg->repository()->use_interface);
 
     /* first pass: only non-expand flags */
     for (std::set<UseFlagName>::const_iterator flag(iuse.begin()), flag_end(iuse.end()) ;
@@ -83,26 +83,26 @@ UseFlagPrettyPrinter::print_package_flags(const PackageID & pkg,
             if (std::string::npos != use_expand_delim_pos(*flag, use_interface->use_expand_prefixes()))
                 continue;
 
-        if (environment()->query_use(*flag, pkg))
+        if (environment()->query_use(*flag, *pkg))
         {
-            if (use_interface && use_interface->query_use_force(*flag, pkg))
+            if (use_interface && use_interface->query_use_force(*flag, *pkg))
                 output_flag(render_as_forced_flag(stringify(*flag)));
             else
                 output_flag(render_as_enabled_flag(stringify(*flag)));
         }
         else
         {
-            if (use_interface && use_interface->query_use_mask(*flag, pkg))
+            if (use_interface && use_interface->query_use_mask(*flag, *pkg))
                 output_flag(render_as_masked_flag(stringify(*flag)));
             else
                 output_flag(render_as_disabled_flag(stringify(*flag)));
         }
 
-        if (old_pkg)
+        if (old_iuse_c)
         {
             if (old_iuse.end() != old_iuse.find(*flag))
             {
-                if (environment()->query_use(*flag, pkg) != environment()->query_use(*flag, *old_pkg))
+                if (environment()->query_use(*flag, *pkg) != environment()->query_use(*flag, *old_pkg))
                 {
                     _changed_flags->insert(*flag);
                     output_flag_changed_mark();
@@ -146,16 +146,16 @@ UseFlagPrettyPrinter::print_package_flags(const PackageID & pkg,
             old_expand_name = expand_name;
         }
 
-        if (environment()->query_use(*flag, pkg))
+        if (environment()->query_use(*flag, *pkg))
         {
-            if (use_interface && use_interface->query_use_force(*flag, pkg))
+            if (use_interface && use_interface->query_use_force(*flag, *pkg))
                 output_flag(render_as_forced_flag(stringify(expand_value)));
             else
                 output_flag(render_as_enabled_flag(stringify(expand_value)));
         }
         else
         {
-            if (use_interface && use_interface->query_use_mask(*flag, pkg))
+            if (use_interface && use_interface->query_use_mask(*flag, *pkg))
                 output_flag(render_as_masked_flag(stringify(expand_value)));
             else
                 output_flag(render_as_disabled_flag(stringify(expand_value)));
@@ -165,7 +165,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageID & pkg,
         {
             if (old_iuse.end() != old_iuse.find(*flag))
             {
-                if (environment()->query_use(*flag, pkg) != environment()->query_use(*flag, *old_pkg))
+                if (environment()->query_use(*flag, *pkg) != environment()->query_use(*flag, *old_pkg))
                 {
                     _changed_flags->insert(*flag);
                     output_flag_changed_mark();

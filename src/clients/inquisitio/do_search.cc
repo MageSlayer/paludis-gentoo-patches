@@ -127,7 +127,7 @@ do_search(const Environment & env)
         InquisitioQueryTask query(&env);
         query.show(PackageDepSpec(
                     tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry->name()))),
-                display_entry.get());
+                display_entry);
     }
 
     return 0;

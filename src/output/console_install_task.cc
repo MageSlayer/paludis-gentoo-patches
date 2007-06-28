@@ -945,8 +945,19 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 
     output_no_endl(" ");
     tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
-    printer->print_package_flags(*d.package_id, ! existing_slot_repo->empty() ? existing_slot_repo->last()->get() :
-                                 ! existing_repo->empty() ? existing_repo->last()->get() : 0);
+    tr1::shared_ptr<const PackageID> old_id;
+    tr1::shared_ptr<const IUseFlagCollection> old;
+
+    if (! existing_slot_repo->empty())
+        old_id = *existing_slot_repo->last();
+    else if (! existing_repo->empty())
+        old_id = *existing_repo->last();
+
+    if (old_id && old_id->iuse_key())
+        old = old_id->iuse_key()->value();
+
+    if (d.package_id->iuse_key())
+        printer->print_package_flags(d.package_id, d.package_id->iuse_key()->value(), old_id, old);
 
     _add_descriptions(printer->new_flags(), d.package_id, uds_new);
     _add_descriptions(printer->changed_flags(), d.package_id, uds_changed);

@@ -32,6 +32,8 @@
 #include <paludis/eapi.hh>
 #include <paludis/package_database.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_id.hh>
 #include <list>
 
 using namespace paludis;
@@ -61,7 +63,7 @@ ConsoleQueryTask::~ConsoleQueryTask()
 }
 
 void
-ConsoleQueryTask::show(const PackageDepSpec & a, const PackageID * display_entry) const
+ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID> display_entry) const
 {
     /* prefer the best installed version, then the best visible version, then
      * the best version */
@@ -76,33 +78,33 @@ ConsoleQueryTask::show(const PackageDepSpec & a, const PackageID * display_entry
 
     if (! display_entry)
     {
-        display_entry = preferred_entries->last()->get();
+        display_entry = *preferred_entries->last();
         for (PackageIDSequence::Iterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
             if (! _imp->env->mask_reasons(**i).any())
-                display_entry = i->get();
+                display_entry = *i;
     }
 
-    display_header(a, *display_entry);
-    display_versions_by_repository(a, entries, *display_entry);
-    display_metadata(a, *display_entry);
+    display_header(a, display_entry);
+    display_versions_by_repository(a, entries, display_entry);
+    display_metadata(a, display_entry);
     output_endl();
 }
 
 void
-ConsoleQueryTask::display_header(const PackageDepSpec & a, const PackageID & e) const
+ConsoleQueryTask::display_header(const PackageDepSpec & a, const tr1::shared_ptr<const PackageID> & e) const
 {
     if (a.version_requirements_ptr() || a.slot_ptr() || a.use_requirements_ptr() ||
             a.repository_ptr())
         output_starred_item(render_as_package_name(stringify(a)));
     else
-        output_starred_item(render_as_package_name(stringify(e.name())));
+        output_starred_item(render_as_package_name(stringify(e->name())));
 }
 
 void
 ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
         tr1::shared_ptr<const PackageIDSequence> entries,
-        const PackageID & display_entry) const
+        const tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* find all repository names. */
     RepositoryNameCollection::Concrete repo_names;
@@ -182,7 +184,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                     right_column.append(render_as_masked("(" + (*e)->canonical_form(idcf_version) + ")" + reasons));
                 }
 
-                if (**e == display_entry)
+                if (**e == *display_entry)
                     right_column.append("*");
                 right_column.append(" ");
             }
@@ -202,73 +204,112 @@ namespace
     {
         private:
             const ConsoleQueryTask * const task;
+            const tr1::shared_ptr<const PackageID> id;
+            const MetadataKeyType type;
 
         public:
-            Displayer(const ConsoleQueryTask * const t) :
-                task(t)
+            Displayer(const ConsoleQueryTask * const t, const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k) :
+                task(t),
+                id(i),
+                type(k)
             {
             }
 
-            void visit(const MetadataCollectionKey<IUseFlagCollection> &)
+            void visit(const MetadataCollectionKey<IUseFlagCollection> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_iuse(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "),
+                            id, k.value());
             }
 
-            void visit(const MetadataCollectionKey<InheritedCollection> &)
+            void visit(const MetadataCollectionKey<InheritedCollection> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
             }
 
-            void visit(const MetadataCollectionKey<UseFlagNameCollection> &)
+            void visit(const MetadataCollectionKey<UseFlagNameCollection> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
             }
 
-            void visit(const MetadataCollectionKey<KeywordNameCollection> &)
+            void visit(const MetadataCollectionKey<KeywordNameCollection> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
             }
 
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
             {
-                task->display_metadata_dependency(k.human_name(), k.raw_name(), k.value(), false);
+                if (k.type() == type)
+                    task->display_metadata_dependency(k.human_name(), k.raw_name(), k.value(), false);
             }
 
-            void visit(const MetadataSpecTreeKey<URISpecTree> &)
+            void visit(const MetadataSpecTreeKey<URISpecTree> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_uri(k.human_name(), k.raw_name(), k.value(), true);
             }
 
-            void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
+            void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_license(k.human_name(), k.raw_name(), k.value(), id);
             }
 
-            void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
+            void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_provides(k.human_name(), k.raw_name(), k.value(), true);
             }
 
-            void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
+            void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
             {
+                if (k.type() == type)
+                    task->display_metadata_restrict(k.human_name(), k.raw_name(), k.value(), true);
             }
 
             void visit(const MetadataPackageIDKey & k)
             {
-                task->display_metadata_pde(k.human_name(), k.raw_name(), *k.value());
+                if (k.type() == type)
+                    task->display_metadata_pde(k.human_name(), k.raw_name(), *k.value());
             }
 
             void visit(const MetadataStringKey & k)
             {
-                task->display_metadata_key(k.human_name(), k.raw_name(), k.value());
+                if (k.type() == type)
+                    task->display_metadata_key(k.human_name(), k.raw_name(), k.value());
             }
     };
 }
 
 void
-ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageID & id) const
+ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
 {
-    if (! id.eapi()->supported)
+    if (! id->eapi()->supported)
     {
-        display_metadata_key("EAPI", "EAPI", id.eapi()->name);
+        display_metadata_key("EAPI", "EAPI", id->eapi()->name);
         return;
     }
 
-    Displayer d(this);
-    std::for_each(id.begin(), id.end(), accept_visitor(d));
+    Displayer ds(this, id, mkt_significant);
+    std::for_each(id->begin(), id->end(), accept_visitor(ds));
+
+    Displayer dn(this, id, mkt_normal);
+    std::for_each(id->begin(), id->end(), accept_visitor(dn));
+
+    if (want_deps() || want_raw())
+    {
+        Displayer dd(this, id, mkt_dependencies);
+        std::for_each(id->begin(), id->end(), accept_visitor(dd));
+    }
+
+    if (want_raw())
+    {
+        Displayer dr(this, id, mkt_internal);
+        std::for_each(id->begin(), id->end(), accept_visitor(dr));
+    }
 }
 
 namespace
@@ -448,7 +489,8 @@ ConsoleQueryTask::display_metadata_time(const std::string & k, const std::string
 
 void
 ConsoleQueryTask::display_metadata_iuse(const std::string & k, const std::string & kk,
-        const std::string & v, const PackageID & e) const
+        const std::string & v, const tr1::shared_ptr<const PackageID> & id,
+        const tr1::shared_ptr<const IUseFlagCollection> & e) const
 {
     if (v.empty())
         return;
@@ -460,7 +502,7 @@ ConsoleQueryTask::display_metadata_iuse(const std::string & k, const std::string
     else
     {
         UseFlagPrettyPrinter printer(_imp->env);
-        printer.print_package_flags(e);
+        printer.print_package_flags(id, e);
         output_right_column("");
     }
 }

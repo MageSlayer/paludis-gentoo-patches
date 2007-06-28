@@ -48,7 +48,11 @@ namespace paludis
             UseFlagPrettyPrinter(const Environment * const);
             virtual ~UseFlagPrettyPrinter();
 
-            virtual void print_package_flags(const PackageID &, const PackageID * const = 0);
+            virtual void print_package_flags(
+                    const tr1::shared_ptr<const PackageID> &,
+                    const tr1::shared_ptr<const IUseFlagCollection> &,
+                    const tr1::shared_ptr<const PackageID> & w = tr1::shared_ptr<const PackageID>(),
+                    const tr1::shared_ptr<const IUseFlagCollection> & x = tr1::shared_ptr<const IUseFlagCollection>());
 
             virtual void output_flag(const std::string &);
             virtual void output_flag_changed_mark();
