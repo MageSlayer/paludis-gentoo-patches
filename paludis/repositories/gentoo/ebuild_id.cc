@@ -405,6 +405,30 @@ EbuildID::long_description_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
+const tr1::shared_ptr<const MetadataContentsKey>
+EbuildID::contents_key() const
+{
+    return tr1::shared_ptr<const MetadataContentsKey>();
+}
+
+const tr1::shared_ptr<const MetadataTimeKey>
+EbuildID::installed_time_key() const
+{
+    return tr1::shared_ptr<const MetadataTimeKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+EbuildID::source_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+EbuildID::binary_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
 const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >
 EbuildID::inherited_key() const
 {

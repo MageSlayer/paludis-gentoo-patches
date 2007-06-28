@@ -208,10 +208,6 @@ RepositoryDestinationInterface::~RepositoryDestinationInterface()
 {
 }
 
-RepositoryContentsInterface::~RepositoryContentsInterface()
-{
-}
-
 RepositoryConfigInterface::~RepositoryConfigInterface()
 {
 }
@@ -359,18 +355,6 @@ tr1::shared_ptr<const CategoryNamePartCollection>
 Repository::category_names() const
 {
     return do_category_names();
-}
-
-time_t
-RepositoryInstalledInterface::installed_time(const PackageID & p) const
-{
-    return do_installed_time(p);
-}
-
-tr1::shared_ptr<const Contents>
-RepositoryContentsInterface::contents(const PackageID & id) const
-{
-    return do_contents(id);
 }
 
 void

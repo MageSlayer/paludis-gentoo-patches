@@ -24,6 +24,8 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/contents-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -46,7 +48,9 @@ namespace paludis
             MetadataSpecTreeKey<URISpecTree>,
             MetadataSpecTreeKey<ProvideSpecTree>,
             MetadataSpecTreeKey<RestrictSpecTree>,
-            MetadataStringKey
+            MetadataStringKey,
+            MetadataContentsKey,
+            MetadataTimeKey
             >
     {
     };
@@ -88,6 +92,30 @@ namespace paludis
 
         public:
             virtual const std::string value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    class PALUDIS_VISIBLE MetadataTimeKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataTimeKey>
+    {
+        protected:
+            MetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const time_t value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    class PALUDIS_VISIBLE MetadataContentsKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataContentsKey>
+    {
+        protected:
+            MetadataContentsKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const tr1::shared_ptr<const Contents> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

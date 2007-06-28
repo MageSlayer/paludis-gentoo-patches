@@ -31,7 +31,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/contents.hh>
 #include <string>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
@@ -394,27 +393,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositoryInstalledInterface
     {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: when was a package installed.
-             */
-            virtual time_t do_installed_time(const PackageID &) const = 0;
-
-            ///\}
-
         public:
             ///\name Installed content queries
             ///\{
-
-            /**
-             * When was a package installed.
-             *
-             * Can return time_t(0) if the installed time is unknown.
-             */
-            time_t installed_time(const PackageID &) const;
 
             /**
              * What is our filesystem root?
@@ -796,41 +777,6 @@ namespace paludis
     };
 
     /**
-     * Interface for handling actions for repositories supporting contents queries.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryContentsInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: fetch the contents.
-             */
-            virtual tr1::shared_ptr<const Contents> do_contents(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-        public:
-            ///\name Installed content queries
-            ///\{
-
-            /**
-             * Fetch contents.
-             */
-            tr1::shared_ptr<const Contents> contents(const PackageID &) const;
-
-            ///\}
-
-            virtual ~RepositoryContentsInterface();
-    };
-
-    /**
      * Interface for handling actions for repositories supporting package configuration.
      *
      * \see Repository
@@ -855,7 +801,7 @@ namespace paludis
             ///\{
 
             /**
-             * Fetch contents.
+             * Configure.
              */
             void config(const tr1::shared_ptr<const PackageID> &) const;
 

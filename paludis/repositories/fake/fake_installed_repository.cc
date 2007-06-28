@@ -35,7 +35,6 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
             .installable_interface(0)
             .installed_interface(this)
-            .contents_interface(0)
             .mask_interface(this)
             .sets_interface(this)
             .syncable_interface(0)

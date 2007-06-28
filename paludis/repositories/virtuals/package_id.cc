@@ -306,6 +306,30 @@ VirtualsPackageID::bin_uri_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
 }
 
+const tr1::shared_ptr<const MetadataContentsKey>
+VirtualsPackageID::contents_key() const
+{
+    return tr1::shared_ptr<const MetadataContentsKey>();
+}
+
+const tr1::shared_ptr<const MetadataTimeKey>
+VirtualsPackageID::installed_time_key() const
+{
+    return tr1::shared_ptr<const MetadataTimeKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VirtualsPackageID::source_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VirtualsPackageID::binary_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
 bool
 VirtualsPackageID::arbitrary_less_than_comparison(const PackageID & a) const
 {

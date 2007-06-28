@@ -55,7 +55,6 @@ namespace paludis
         public RepositoryEnvironmentVariableInterface,
         public RepositoryProvidesInterface,
         public RepositoryDestinationInterface,
-        public RepositoryContentsInterface,
         public RepositoryConfigInterface,
         public RepositoryHookInterface,
         public tr1::enable_shared_from_this<VDBRepository>,
@@ -85,8 +84,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryInstalledInterface */
-
-            virtual time_t do_installed_time(const PackageID &) const;
 
             virtual FSEntry root() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -164,11 +161,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeOptions &);
-
-            /* RepositoryContentsInterface */
-
-            virtual tr1::shared_ptr<const Contents> do_contents(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryConfigInterface */
 

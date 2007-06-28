@@ -82,6 +82,14 @@ namespace
         void visit(const MetadataSpecTreeKey<URISpecTree> &)
         {
         }
+
+        void visit(const MetadataContentsKey &)
+        {
+        }
+
+        void visit(const MetadataTimeKey &)
+        {
+        }
     };
 }
 

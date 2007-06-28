@@ -281,6 +281,16 @@ namespace
                 if (k.type() == type)
                     task->display_metadata_key(k.human_name(), k.raw_name(), k.value());
             }
+
+            void visit(const MetadataTimeKey & k)
+            {
+                if (k.type() == type)
+                    task->display_metadata_time(k.human_name(), k.raw_name(), k.value());
+            }
+
+            void visit(const MetadataContentsKey &)
+            {
+            }
     };
 }
 

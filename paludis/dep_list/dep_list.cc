@@ -1325,7 +1325,10 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
                 (installed.version().is_scm() || is_scm(installed.name())))
         {
             static time_t current_time(time(0)); /* static to avoid weirdness */
-            time_t installed_time(installed.repository()->installed_interface->installed_time(installed));
+            time_t installed_time(current_time);
+            if (installed.installed_time_key())
+                installed_time = installed.installed_time_key()->value();
+
             do
             {
                 switch (_imp->opts->reinstall_scm)

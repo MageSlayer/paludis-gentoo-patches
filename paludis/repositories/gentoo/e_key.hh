@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_E_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {
@@ -184,6 +185,38 @@ namespace paludis
                 ~EInheritedKey();
 
                 const tr1::shared_ptr<const InheritedCollection> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class EContentsKey :
+            public MetadataContentsKey,
+            private PrivateImplementationPattern<EContentsKey>
+        {
+            private:
+                Implementation<EContentsKey> * const _imp;
+
+            public:
+                EContentsKey(const tr1::shared_ptr<const PackageID> &,
+                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+                ~EContentsKey();
+
+                const tr1::shared_ptr<const Contents> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class ECTimeKey :
+            public MetadataTimeKey,
+            private PrivateImplementationPattern<ECTimeKey>
+        {
+            private:
+                Implementation<ECTimeKey> * const _imp;
+
+            public:
+                ECTimeKey(const tr1::shared_ptr<const PackageID> &,
+                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+                ~ECTimeKey();
+
+                const time_t value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

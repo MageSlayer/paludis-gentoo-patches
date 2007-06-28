@@ -57,7 +57,6 @@ make_class_RepositoryCapabilities()
     key virtuals_interface "RepositoryVirtualsInterface *"
     key make_virtuals_interface "RepositoryMakeVirtualsInterface *"
     key destination_interface "RepositoryDestinationInterface *"
-    key contents_interface "RepositoryContentsInterface *"
     key config_interface "RepositoryConfigInterface *"
     key pretend_interface "RepositoryPretendInterface *"
     key licenses_interface "RepositoryLicensesInterface *"

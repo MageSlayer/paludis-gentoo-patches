@@ -138,6 +138,10 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
+            virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const;
+            virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
+            virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
+            virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
 
             const tr1::shared_ptr<FakeMetadataKeywordCollectionKey> keywords_key();
             const tr1::shared_ptr<FakeMetadataIUseCollectionKey> iuse_key();

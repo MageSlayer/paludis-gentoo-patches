@@ -254,7 +254,6 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
                     p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
-            .contents_interface(0)
             .config_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)

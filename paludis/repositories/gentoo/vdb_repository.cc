@@ -137,7 +137,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .virtuals_interface(0)
             .destination_interface(this)
             .config_interface(this)
-            .contents_interface(this)
             .licenses_interface(0)
             .portage_interface(0)
             .pretend_interface(0)
@@ -239,122 +238,6 @@ VDBRepository::do_package_ids(const QualifiedPackageName & n) const
         return make_shared_ptr(new PackageIDSequence::Concrete);
 
     return _imp->ids.find(n)->second;
-}
-
-#if 0
-tr1::shared_ptr<const VersionMetadata>
-VDBRepository::do_version_metadata(
-        const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    Context context("When fetching metadata for '" + stringify(q) +
-            "-" + stringify(v) + "':");
-
-    if (! _imp->entries_valid)
-        _imp->load_entries_for(q.category);
-
-    std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
-        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                        q, v), VDBEntry::CompareVersion()));
-
-    if (r.first == r.second)
-        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
-    else
-    {
-        if (! r.first->metadata)
-            _imp->load_entry(r.first);
-        return r.first->metadata;
-    }
-}
-#endif
-
-tr1::shared_ptr<const Contents>
-VDBRepository::do_contents(const PackageID & id) const
-{
-    Context context("When fetching contents for '" + stringify(id) + "':");
-    tr1::shared_ptr<Contents> result(new Contents);
-
-    FSEntry f(_imp->params.location / stringify(id.name().category) /
-            (stringify(id.name().package) + "-" + stringify(id.version())));
-    if (! (f / "CONTENTS").is_regular_file_or_symlink_to_regular_file())
-    {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "CONTENTS lookup failed for request for '" +
-                stringify(id) + "' in vdb '" +
-                stringify(_imp->params.location) + "'");
-        return result;
-    }
-
-    std::ifstream ff(stringify(f / "CONTENTS").c_str());
-    if (! ff)
-        throw VDBRepositoryKeyReadError("Could not read '" + stringify(f / "CONTENTS") + "'");
-
-    std::string line;
-    unsigned line_number(0);
-    while (std::getline(ff, line))
-    {
-        ++line_number;
-
-        std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
-        if (tokens.empty())
-            continue;
-
-        if (tokens.size() < 2)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "CONTENTS for '" +
-                    stringify(id) + "' in vdb '" +
-                    stringify(_imp->params.location) + "' has broken line " +
-                    stringify(line_number) + ", skipping");
-            continue;
-        }
-
-        if ("obj" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
-        else if ("dir" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
-        else if ("misc" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
-        else if ("fif" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsFifoEntry(tokens.at(1))));
-        else if ("dev" == tokens.at(0))
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsDevEntry(tokens.at(1))));
-        else if ("sym" == tokens.at(0))
-        {
-            if (tokens.size() < 4)
-            {
-                Log::get_instance()->message(ll_warning, lc_no_context, "CONTENTS for '" +
-                        stringify(id) + "' in vdb '" +
-                        stringify(_imp->params.location) + "' has broken sym line " +
-                        stringify(line_number) + ", skipping");
-                continue;
-            }
-
-            result->add(tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(
-                            tokens.at(1), tokens.at(3))));
-        }
-    }
-
-    return result;
-}
-
-time_t
-VDBRepository::do_installed_time(const PackageID & id) const
-{
-    Context context("When finding installed time for '" + stringify(id) + "':");
-
-    FSEntry f(_imp->params.location / stringify(id.name().category) / (stringify(id.name().package) + "-"
-                + stringify(id.version())) / "CONTENTS");
-    try
-    {
-        return f.ctime();
-    }
-    catch (const FSError & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Can't get ctime of '"
-                + stringify(f) + "' due to exception '" + e.message() + "' (" + e.what()
-                + ")");
-        return 0;
-    }
 }
 
 UseFlagState

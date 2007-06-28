@@ -99,8 +99,6 @@ do_one_owner(
     {
         if (! (*r)->installed_interface)
             continue;
-        if (! (*r)->contents_interface)
-            continue;
 
         tr1::shared_ptr<const CategoryNamePartCollection> cats((*r)->category_names());
         for (CategoryNamePartCollection::Iterator c(cats->begin()),
@@ -113,7 +111,10 @@ do_one_owner(
                 tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
                 for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
                 {
-                    tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(**v));
+                    if (! (*v)->contents_key())
+                        continue;
+
+                    tr1::shared_ptr<const Contents> contents((*v)->contents_key()->value());
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
                     if (d.found)

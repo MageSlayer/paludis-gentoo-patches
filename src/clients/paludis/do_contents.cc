@@ -74,10 +74,9 @@ do_one_contents_entry(
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
-    const RepositoryContentsInterface * const contents_interface(e.repository()->contents_interface);
-    if (contents_interface)
+    if (e.contents_key())
     {
-        tr1::shared_ptr<const Contents> contents(contents_interface->contents(e));
+        tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
         ContentsDisplayer d;
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
     }

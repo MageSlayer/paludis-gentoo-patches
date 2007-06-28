@@ -440,6 +440,30 @@ FakePackageID::long_description_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
+const tr1::shared_ptr<const MetadataContentsKey>
+FakePackageID::contents_key() const
+{
+    return tr1::shared_ptr<const MetadataContentsKey>();
+}
+
+const tr1::shared_ptr<const MetadataTimeKey>
+FakePackageID::installed_time_key() const
+{
+    return tr1::shared_ptr<const MetadataTimeKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+FakePackageID::source_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+FakePackageID::binary_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
 void
 FakePackageID::set_slot(const SlotName & s)
 {

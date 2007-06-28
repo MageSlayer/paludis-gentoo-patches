@@ -77,6 +77,16 @@ MetadataStringKey::MetadataStringKey(const std::string & r, const std::string & 
 {
 }
 
+MetadataTimeKey::MetadataTimeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
+MetadataContentsKey::MetadataContentsKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
 MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {

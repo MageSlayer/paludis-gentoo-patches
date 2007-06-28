@@ -77,6 +77,20 @@ namespace paludis
         tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri;
         tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage;
         tr1::shared_ptr<const MetadataStringKey> short_description;
+        tr1::shared_ptr<const MetadataContentsKey> contents;
+        tr1::shared_ptr<const MetadataTimeKey> installed_time;
+        tr1::shared_ptr<const MetadataStringKey> source_origin;
+        tr1::shared_ptr<const MetadataStringKey> binary_origin;
+
+        tr1::shared_ptr<const MetadataStringKey> asflags;
+        tr1::shared_ptr<const MetadataStringKey> cbuild;
+        tr1::shared_ptr<const MetadataStringKey> cflags;
+        tr1::shared_ptr<const MetadataStringKey> chost;
+        tr1::shared_ptr<const MetadataStringKey> ctarget;
+        tr1::shared_ptr<const MetadataStringKey> cxxflags;
+        tr1::shared_ptr<const MetadataStringKey> ldflags;
+        tr1::shared_ptr<const MetadataStringKey> pkgmanager;
+        tr1::shared_ptr<const MetadataStringKey> vdb_format;
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
@@ -113,10 +127,6 @@ VDBID::need_keys_added() const
     _imp->has_keys = true;
 
     Context context("When loading VDB ID keys from '" + stringify(_imp->dir) + "':");
-
-#if 0
-    source_origin;
-#endif
 
     if ((_imp->dir / "USE").exists())
     {
@@ -199,6 +209,84 @@ VDBID::need_keys_added() const
         _imp->homepage.reset(new EURIKey(shared_from_this(), "HOMEPAGE", "Homepage",
                     file_contents(_imp->dir / "HOMEPAGE"), mkt_significant));
         add_key(_imp->homepage);
+    }
+
+    _imp->contents.reset(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",
+                _imp->dir / "CONTENTS", mkt_internal));
+    add_key(_imp->contents);
+
+    _imp->installed_time.reset(new ECTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
+                _imp->dir / "CONTENTS", mkt_normal));
+    add_key(_imp->installed_time);
+
+    if ((_imp->dir / "REPOSITORY").exists())
+    {
+        _imp->source_origin.reset(new EStringKey(shared_from_this(), "REPOSITORY", "Source repository",
+                    file_contents(_imp->dir / "REPOSITORY"), mkt_normal));
+        add_key(_imp->source_origin);
+    }
+
+    if ((_imp->dir / "BINARY_REPOSITORY").exists())
+    {
+        _imp->binary_origin.reset(new EStringKey(shared_from_this(), "BINARY_REPOSITORY", "Binary repository",
+                    file_contents(_imp->dir / "BINARY_REPOSITORY"), mkt_normal));
+        add_key(_imp->binary_origin);
+    }
+
+    if ((_imp->dir / "ASFLAGS").exists())
+    {
+        _imp->asflags.reset(new EStringKey(shared_from_this(), "ASFLAGS", "ASFLAGS",
+                    file_contents(_imp->dir / "ASFLAGS"), mkt_internal));
+        add_key(_imp->asflags);
+    }
+
+    if ((_imp->dir / "CBUILD").exists())
+    {
+        _imp->cbuild.reset(new EStringKey(shared_from_this(), "CBUILD", "CBUILD",
+                    file_contents(_imp->dir / "CBUILD"), mkt_internal));
+        add_key(_imp->cbuild);
+    }
+
+    if ((_imp->dir / "CFLAGS").exists())
+    {
+        _imp->cflags.reset(new EStringKey(shared_from_this(), "CFLAGS", "CFLAGS",
+                    file_contents(_imp->dir / "CFLAGS"), mkt_internal));
+        add_key(_imp->cflags);
+    }
+
+    if ((_imp->dir / "CHOST").exists())
+    {
+        _imp->chost.reset(new EStringKey(shared_from_this(), "CHOST", "CHOST",
+                    file_contents(_imp->dir / "CHOST"), mkt_internal));
+        add_key(_imp->chost);
+    }
+
+    if ((_imp->dir / "CXXFLAGS").exists())
+    {
+        _imp->cxxflags.reset(new EStringKey(shared_from_this(), "CXXFLAGS", "CXXFLAGS",
+                    file_contents(_imp->dir / "CXXFLAGS"), mkt_internal));
+        add_key(_imp->cxxflags);
+    }
+
+    if ((_imp->dir / "LDFLAGS").exists())
+    {
+        _imp->ldflags.reset(new EStringKey(shared_from_this(), "LDFLAGS", "LDFLAGS",
+                    file_contents(_imp->dir / "LDFLAGS"), mkt_internal));
+        add_key(_imp->ldflags);
+    }
+
+    if ((_imp->dir / "PKGMANAGER").exists())
+    {
+        _imp->pkgmanager.reset(new EStringKey(shared_from_this(), "PKGMANAGER", "Installed using",
+                    file_contents(_imp->dir / "PKGMANAGER"), mkt_normal));
+        add_key(_imp->pkgmanager);
+    }
+
+    if ((_imp->dir / "VDB_FORMAT").exists())
+    {
+        _imp->vdb_format.reset(new EStringKey(shared_from_this(), "VDB_FORMAT", "VDB Format",
+                    file_contents(_imp->dir / "VDB_FORMAT"), mkt_internal));
+        add_key(_imp->vdb_format);
     }
 }
 
@@ -403,6 +491,34 @@ const tr1::shared_ptr<const MetadataStringKey>
 VDBID::long_description_key() const
 {
     return tr1::shared_ptr<const MetadataStringKey>();
+}
+
+const tr1::shared_ptr<const MetadataContentsKey>
+VDBID::contents_key() const
+{
+    need_keys_added();
+    return _imp->contents;
+}
+
+const tr1::shared_ptr<const MetadataTimeKey>
+VDBID::installed_time_key() const
+{
+    need_keys_added();
+    return _imp->installed_time;
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VDBID::source_origin_key() const
+{
+    need_keys_added();
+    return _imp->source_origin;
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VDBID::binary_origin_key() const
+{
+    need_keys_added();
+    return _imp->binary_origin;
 }
 
 bool

@@ -460,6 +460,30 @@ GemSpecification::long_description_key() const
     return _imp->description_key;
 }
 
+const tr1::shared_ptr<const MetadataContentsKey>
+GemSpecification::contents_key() const
+{
+    return tr1::shared_ptr<const MetadataContentsKey>();
+}
+
+const tr1::shared_ptr<const MetadataTimeKey>
+GemSpecification::installed_time_key() const
+{
+    return tr1::shared_ptr<const MetadataTimeKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+GemSpecification::source_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+GemSpecification::binary_origin_key() const
+{
+    return tr1::shared_ptr<const MetadataStringKey>();
+}
+
 bool
 GemSpecification::arbitrary_less_than_comparison(const PackageID &) const
 {

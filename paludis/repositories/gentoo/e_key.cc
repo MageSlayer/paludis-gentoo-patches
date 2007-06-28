@@ -25,14 +25,19 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/log.hh>
 
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
+#include <paludis/contents.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
+#include <vector>
+#include <fstream>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -426,5 +431,151 @@ EInheritedKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, _imp->value->inserter());
     return _imp->value;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<EContentsKey>
+    {
+        const tr1::shared_ptr<const PackageID> id;
+        const FSEntry filename;
+        mutable tr1::shared_ptr<Contents> value;
+
+        Implementation(const tr1::shared_ptr<const PackageID> & i, const FSEntry & v) :
+            id(i),
+            filename(v)
+        {
+        }
+    };
+}
+
+EContentsKey::EContentsKey(const tr1::shared_ptr<const PackageID> & id,
+        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
+    MetadataContentsKey(r, h, t),
+    PrivateImplementationPattern<EContentsKey>(new Implementation<EContentsKey>(id, v)),
+    _imp(PrivateImplementationPattern<EContentsKey>::_imp.get())
+{
+}
+
+EContentsKey::~EContentsKey()
+{
+}
+
+const tr1::shared_ptr<const Contents>
+EContentsKey::value() const
+{
+    if (_imp->value)
+        return _imp->value;
+
+    Context context("When creating contents for VDB key '" + stringify(*_imp->id) + "' from '" + stringify(_imp->filename) + "':");
+
+    _imp->value.reset(new Contents);
+
+    FSEntry f(_imp->filename);
+    if (! f.is_regular_file_or_symlink_to_regular_file())
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "CONTENTS lookup failed for request for '" <<
+                *_imp->id << "' using '" << _imp->filename << "'";
+        return _imp->value;
+    }
+
+    std::ifstream ff(stringify(f).c_str());
+    if (! ff)
+        throw ConfigurationError("Could not read '" + stringify(f) + "'");
+
+    std::string line;
+    unsigned line_number(0);
+    while (std::getline(ff, line))
+    {
+        ++line_number;
+
+        std::vector<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+        if (tokens.empty())
+            continue;
+
+        if (tokens.size() < 2)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context) << "CONTENTS has broken line " <<
+                line_number << ", skipping";
+            continue;
+        }
+
+        if ("obj" == tokens.at(0))
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
+        else if ("dir" == tokens.at(0))
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
+        else if ("misc" == tokens.at(0))
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
+        else if ("fif" == tokens.at(0))
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsFifoEntry(tokens.at(1))));
+        else if ("dev" == tokens.at(0))
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsDevEntry(tokens.at(1))));
+        else if ("sym" == tokens.at(0))
+        {
+            if (tokens.size() < 4)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context) << "CONTENTS has broken sym line " <<
+                    line_number << ", skipping";
+                continue;
+            }
+
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(tokens.at(1), tokens.at(3))));
+        }
+    }
+
+    return _imp->value;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<ECTimeKey>
+    {
+        const tr1::shared_ptr<const PackageID> id;
+        const FSEntry filename;
+        mutable tr1::shared_ptr<time_t> value;
+
+        Implementation(const tr1::shared_ptr<const PackageID> & i, const FSEntry & v) :
+            id(i),
+            filename(v)
+        {
+        }
+    };
+}
+
+ECTimeKey::ECTimeKey(const tr1::shared_ptr<const PackageID> & id,
+        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
+    MetadataTimeKey(r, h, t),
+    PrivateImplementationPattern<ECTimeKey>(new Implementation<ECTimeKey>(id, v)),
+    _imp(PrivateImplementationPattern<ECTimeKey>::_imp.get())
+{
+}
+
+ECTimeKey::~ECTimeKey()
+{
+}
+
+const time_t
+ECTimeKey::value() const
+{
+    if (_imp->value)
+        return *_imp->value;
+
+    _imp->value.reset(new time_t(0));
+
+    try
+    {
+        *_imp->value = _imp->filename.ctime();
+    }
+    catch (const FSError & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't get ctime for '"
+            << _imp->filename << "' for ID '" << *_imp->id << "' due to exception '" << e.message()
+            << "' (" << e.what() << ")";
+    }
+
+    return *_imp->value;
 }
 

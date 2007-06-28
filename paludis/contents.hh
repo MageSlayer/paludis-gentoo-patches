@@ -20,6 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONTENTS_HH
 #define PALUDIS_GUARD_PALUDIS_CONTENTS_HH 1
 
+#include <paludis/contents-fwd.hh>
+
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -36,14 +38,6 @@
 
 namespace paludis
 {
-    struct ContentsEntry;
-    struct ContentsFileEntry;
-    struct ContentsDirEntry;
-    struct ContentsSymEntry;
-    struct ContentsFifoEntry;
-    struct ContentsDevEntry;
-    struct ContentsMiscEntry;
-
     /**
      * Visit a contents heirarchy.
      *
@@ -251,21 +245,6 @@ namespace paludis
 
             ///\}
     };
-
-    /**
-     * Write a ContentsSymEntry to a stream
-     *
-     * \ingroup grpcontents
-     */
-    std::ostream & operator<< (std::ostream &, const ContentsSymEntry &) PALUDIS_VISIBLE;
-
-    /**
-     * Write a ContentsEntry to a stream
-     *
-     * \ingroup grpcontents
-     */
-    std::ostream & operator<< (std::ostream &, const ContentsEntry &) PALUDIS_VISIBLE;
-
 }
 
 #endif
