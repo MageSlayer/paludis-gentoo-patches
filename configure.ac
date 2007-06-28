@@ -847,18 +847,18 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran fake gems gentoo virtuals"
-DEFAULT_REPOSITORIES="fake gentoo virtuals"
+ALL_REPOSITORIES="cran e fake gems virtuals"
+DEFAULT_REPOSITORIES="e fake virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
-			  default         Equivalent to fake,gentoo,virtuals
+			  default         Equivalent to e,fake,virtuals
 
 			  cran            The Comprehensive R Archive Network (experimental)
+			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby gems (experimental)
-			  gentoo          Gentoo packages (ebuilds, vdb)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
@@ -1153,13 +1153,13 @@ AC_OUTPUT(
 	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
-	paludis/repositories/gentoo/Makefile
-	paludis/repositories/gentoo/ebuild/Makefile
-	paludis/repositories/gentoo/ebuild/digests/Makefile
-	paludis/repositories/gentoo/ebuild/utils/Makefile
-	paludis/repositories/gentoo/ebuild/utils/exheres-0/Makefile
-	paludis/repositories/gentoo/ebuild/echo_functions.bash
-	paludis/repositories/gentoo/ebuild/work_around_broken_utilities.bash
+	paludis/repositories/e/Makefile
+	paludis/repositories/e/ebuild/Makefile
+	paludis/repositories/e/ebuild/digests/Makefile
+	paludis/repositories/e/ebuild/utils/Makefile
+	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
+	paludis/repositories/e/ebuild/echo_functions.bash
+	paludis/repositories/e/ebuild/work_around_broken_utilities.bash
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
