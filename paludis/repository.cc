@@ -236,6 +236,12 @@ RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
 }
 
+tr1::shared_ptr<FSEntry>
+RepositoryLicensesInterface::license_exists(const std::string & license) const
+{
+    return do_license_exists(license);
+}
+
 bool
 RepositoryPretendInterface::pretend(const tr1::shared_ptr<const PackageID> & id) const
 {
