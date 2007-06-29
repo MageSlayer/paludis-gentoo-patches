@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <unistd.h>
+#include <sys/time.h>
 
 /** \file
  * Implementation for test framework classes.
@@ -253,6 +254,9 @@ RunTest::operator() (TestCase * test_case) const
         if (0 != repeat)
             std::cout << "  (repeat): " << std::flush;
 
+        struct timeval start_tv;
+        ::gettimeofday(&start_tv, 0);
+
         try
         {
             if (TestCaseList::use_alarm)
@@ -278,7 +282,12 @@ RunTest::operator() (TestCase * test_case) const
         if (had_local_failure)
             std::cout << " NOT OK";
         else
-            std::cout << " OK";
+        {
+            struct timeval tv;
+            ::gettimeofday(&tv, 0);
+            const unsigned long delta(((tv.tv_sec - start_tv.tv_sec) * 1000) + ((tv.tv_usec - start_tv.tv_usec) / 1000));
+            std::cout << " OK (" << delta << "ms)";
+        }
 
         std::cout << std::endl;
 
