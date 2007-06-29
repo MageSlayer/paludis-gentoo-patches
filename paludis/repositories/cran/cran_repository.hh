@@ -119,7 +119,7 @@ namespace paludis
      * CRANRepository::make_cran_repository.
      *
      * \ingroup grpexceptions
-     * \ingroup grpportagerepository
+     * \ingroup grpcranrepository
      */
     class PALUDIS_VISIBLE CRANRepositoryConfigurationError :
         public ConfigurationError
