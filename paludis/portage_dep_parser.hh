@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_PARSER_HH
-#define PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_PARSER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_HH
+#define PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_HH 1
 
 #include <paludis/portage_dep_parser-fwd.hh>
 #include <paludis/dep_spec.hh>

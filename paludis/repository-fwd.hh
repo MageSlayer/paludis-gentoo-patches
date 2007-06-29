@@ -27,7 +27,7 @@ namespace paludis
 {
     class Environment;
     class RepositoryNameCache;
-    class PortageRepositoryProfile;
+    class ERepositoryProfile;
     class Hook;
     class HookResult;
 
@@ -49,7 +49,7 @@ namespace paludis
     class RepositoryConfigInterface;
     class RepositoryPretendInterface;
     class RepositoryLicensesInterface;
-    class RepositoryPortageInterface;
+    class RepositoryEInterface;
     class RepositoryHookInterface;
 
     class InstallOptions;

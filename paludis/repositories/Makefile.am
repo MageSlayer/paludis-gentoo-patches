@@ -29,24 +29,10 @@ libpaludisrepositories_la_SOURCES = \
 
 libpaludisrepositories_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-if MONOLITHIC
-
-libpaludisrepositories_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
-	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
-	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	@DYNAMIC_LD_LIBS@
-
-else
-
 libpaludisrepositories_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	@DYNAMIC_LD_LIBS@
-
-endif
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \

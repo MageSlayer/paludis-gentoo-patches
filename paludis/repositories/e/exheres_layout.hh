@@ -25,12 +25,12 @@
 
 namespace paludis
 {
-    class PortageRepositoryEntries;
+    class ERepositoryEntries;
 
     /**
-     * The Exheres tree layout for a PortageRepository.
+     * The Exheres tree layout for a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ExheresLayout :
@@ -46,8 +46,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ExheresLayout(const PortageRepository * const, const FSEntry &,
-                    tr1::shared_ptr<const PortageRepositoryEntries>,
+            ExheresLayout(const ERepository * const, const FSEntry &,
+                    tr1::shared_ptr<const ERepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>);
 
             virtual ~ExheresLayout();

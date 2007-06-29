@@ -1,8 +1,8 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir portage_repository_sets_TEST_dir || exit 1
-cd portage_repository_sets_TEST_dir || exit 1
+mkdir e_repository_sets_TEST_dir || exit 1
+cd e_repository_sets_TEST_dir || exit 1
 
 mkdir -p repo1/{eclass,distfiles,profiles/profile,sets,metadata/glsa} || exit 1
 cd repo1 || exit 1

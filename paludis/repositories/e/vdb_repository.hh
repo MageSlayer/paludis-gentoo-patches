@@ -235,7 +235,7 @@ namespace paludis
 
     /**
      * Thrown if invalid parameters are provided for
-     * PortageRepository::make_portage_repository.
+     * VDBRepository::make_vdb_repository.
      *
      * \ingroup grpvdbrepository
      * \ingroup grpexceptions

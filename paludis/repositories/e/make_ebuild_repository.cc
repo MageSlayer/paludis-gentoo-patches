@@ -21,7 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/repositories/e/portage_repository_exceptions.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -29,7 +29,7 @@
 
 using namespace paludis;
 
-tr1::shared_ptr<PortageRepository>
+tr1::shared_ptr<ERepository>
 paludis::make_ebuild_repository(
         Environment * const env,
         tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
@@ -41,10 +41,10 @@ paludis::make_ebuild_repository(
 
     std::string location;
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
-        throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
+        throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
     tr1::shared_ptr<const RepositoryName> master_repository_name;
-    tr1::shared_ptr<const PortageRepository> master_repository;
+    tr1::shared_ptr<const ERepository> master_repository;
     if (m->end() != m->find("master_repository") && ! m->find("master_repository")->second.empty())
     {
         Context context_local("When finding configuration information for master_repository '"
@@ -56,13 +56,13 @@ paludis::make_ebuild_repository(
                 env->package_database()->fetch_repository(*master_repository_name));
 
         if (master_repository_uncasted->format() != "ebuild")
-            throw PortageRepositoryConfigurationError("Master repository format is '" +
+            throw ERepositoryConfigurationError("Master repository format is '" +
                     stringify(master_repository_uncasted->format()) + "', not 'ebuild'");
 
-        master_repository = tr1::static_pointer_cast<const PortageRepository>(master_repository_uncasted);
+        master_repository = tr1::static_pointer_cast<const ERepository>(master_repository_uncasted);
 
         if (master_repository->params().master_repository)
-            throw PortageRepositoryConfigurationError("Requested master repository has a master_repository of '" +
+            throw ERepositoryConfigurationError("Requested master repository has a master_repository of '" +
                     stringify(master_repository->params().master_repository->name()) + "', so it cannot "
                     "be used as a master repository");
     }
@@ -78,7 +78,7 @@ paludis::make_ebuild_repository(
             std::copy(master_repository->params().profiles->begin(),
                     master_repository->params().profiles->end(), profiles->inserter());
         else
-            throw PortageRepositoryConfigurationError("No profiles have been specified");
+            throw ERepositoryConfigurationError("No profiles have been specified");
     }
 
     tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
@@ -188,7 +188,7 @@ paludis::make_ebuild_repository(
         layout = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_layout;
 
-    return tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
+    return tr1::shared_ptr<ERepository>(new ERepository(ERepositoryParams::create()
                 .entry_format("ebuild")
                 .layout(layout)
                 .environment(env)

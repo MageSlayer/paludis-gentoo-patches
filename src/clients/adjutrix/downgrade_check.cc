@@ -67,7 +67,7 @@ namespace
     }
 
     std::string
-    make_filename(const RepositoryPortageInterface::ProfilesIterator & p, bool unstable)
+    make_filename(const RepositoryEInterface::ProfilesIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -83,7 +83,7 @@ namespace
     }
 
     std::string
-    make_desc(const RepositoryPortageInterface::ProfilesIterator & p, bool unstable)
+    make_desc(const RepositoryEInterface::ProfilesIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -166,14 +166,14 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
     if (! output_dir.mkdir())
         throw ConfigurationError("Output directory already exists");
 
-    for (RepositoryPortageInterface::ProfilesIterator
-            p(env.main_repository()->portage_interface->begin_profiles()),
-            p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
+    for (RepositoryEInterface::ProfilesIterator
+            p(env.main_repository()->e_interface->begin_profiles()),
+            p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.main_repository()->portage_interface->set_profile(p);
+            env.main_repository()->e_interface->set_profile(p);
             std::string n(make_filename(p, i));
             std::cerr << "Generating " << n << "..." << std::endl;
             std::ofstream f(stringify(output_dir / n).c_str());
@@ -199,14 +199,14 @@ do_downgrade_check(NoConfigEnvironment & env)
 
     std::multimap<QPNS, std::string> results;
 
-    for (RepositoryPortageInterface::ProfilesIterator
-            p(env.main_repository()->portage_interface->begin_profiles()),
-            p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
+    for (RepositoryEInterface::ProfilesIterator
+            p(env.main_repository()->e_interface->begin_profiles()),
+            p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.main_repository()->portage_interface->set_profile(p);
+            env.main_repository()->e_interface->set_profile(p);
             std::string n(make_filename(p, i)), desc(make_desc(p, i));
 
             if ((before_dir / n).exists() && (after_dir / n).exists())

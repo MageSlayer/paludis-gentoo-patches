@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_XML_THINGS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_XML_THINGS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_XML_THINGS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_XML_THINGS_HH 1
 
-#include <paludis/repositories/portage/glsa.hh>
+#include <paludis/repositories/e/glsa.hh>
 
 extern "C"
 {

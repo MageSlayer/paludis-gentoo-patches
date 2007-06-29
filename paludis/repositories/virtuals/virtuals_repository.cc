@@ -106,7 +106,7 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             .destination_interface(0)
             .config_interface(0)
             .licenses_interface(0)
-            .portage_interface(0)
+            .e_interface(0)
             .pretend_interface(0)
             .make_virtuals_interface(this)
             .hook_interface(0),

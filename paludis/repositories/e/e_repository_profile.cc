@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/portage_repository_profile.hh>
-#include <paludis/repositories/e/portage_repository_profile_file.hh>
-#include <paludis/repositories/e/portage_repository_exceptions.hh>
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/e_repository_profile_file.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -81,13 +81,13 @@ namespace
 namespace paludis
 {
     /**
-     * Implementation for PortageRepositoryProfile.
+     * Implementation for ERepositoryProfile.
      *
-     * \ingroup grpportagerepository
-     * \see PortageRepositoryProfile
+     * \ingroup grperepository
+     * \see ERepositoryProfile
      */
     template<>
-    class Implementation<PortageRepositoryProfile>
+    class Implementation<ERepositoryProfile>
     {
         private:
             void load_environment();
@@ -115,7 +115,7 @@ namespace paludis
             ///\{
 
             const Environment * const env;
-            const PortageRepository * const repository;
+            const ERepository * const repository;
 
             ///\}
 
@@ -161,7 +161,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Implementation(const Environment * const e, const PortageRepository * const p,
+            Implementation(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSEntryCollection & dirs,
                     bool arch_is_special) :
                 env(e),
@@ -192,14 +192,14 @@ namespace paludis
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_environment()
+Implementation<ERepositoryProfile>::load_environment()
 {
     environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
     environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(const FSEntry & dir)
+Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSEntry & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
     Log::get_instance()->message(ll_debug, lc_context, "Loading profile directory '" + stringify(dir) + "'");
@@ -229,7 +229,7 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_profile_parent(const FSEntry & dir)
+Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
 {
     Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
 
@@ -274,7 +274,7 @@ Implementation<PortageRepositoryProfile>::load_profile_parent(const FSEntry & di
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEntry & dir)
+Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & dir)
 {
     Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
 
@@ -329,7 +329,7 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
+Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 {
     try
     {
@@ -368,7 +368,7 @@ Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
 }
 
 bool
-Implementation<PortageRepositoryProfile>::is_incremental(const std::string & s) const
+Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
     try
     {
@@ -384,7 +384,7 @@ Implementation<PortageRepositoryProfile>::is_incremental(const std::string & s) 
 }
 
 void
-Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
+Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
@@ -455,7 +455,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
+Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
 {
     if (! file.exists())
         return;
@@ -490,7 +490,7 @@ Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & fi
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
+Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
 {
     if (! file.exists())
         return;
@@ -539,7 +539,7 @@ Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & fil
 }
 
 void
-Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
+Implementation<ERepositoryProfile>::add_use_expand_to_use()
 {
     Context context("When adding USE_EXPAND to USE:");
 
@@ -562,13 +562,13 @@ Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
 }
 
 void
-Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
+Implementation<ERepositoryProfile>::handle_profile_arch_var()
 {
     Context context("When handling profile ARCH variable:");
 
     std::string arch_s(environment_variables["ARCH"]);
     if (arch_s.empty())
-        throw PortageRepositoryConfigurationError("ARCH variable is unset or empty");
+        throw ERepositoryConfigurationError("ARCH variable is unset or empty");
 
     stacked_values_list.push_back(StackedValues("arch special values"));
     try
@@ -580,25 +580,25 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
     }
     catch (const Exception &)
     {
-        throw PortageRepositoryConfigurationError("ARCH variable has invalid value '" + arch_s + "'");
+        throw ERepositoryConfigurationError("ARCH variable has invalid value '" + arch_s + "'");
     }
 }
 
-PortageRepositoryProfile::PortageRepositoryProfile(
-        const Environment * const env, const PortageRepository * const p, const RepositoryName & name,
+ERepositoryProfile::ERepositoryProfile(
+        const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntryCollection & location,
         bool arch_is_special) :
-    PrivateImplementationPattern<PortageRepositoryProfile>(
-            new Implementation<PortageRepositoryProfile>(env, p, name, location, arch_is_special))
+    PrivateImplementationPattern<ERepositoryProfile>(
+            new Implementation<ERepositoryProfile>(env, p, name, location, arch_is_special))
 {
 }
 
-PortageRepositoryProfile::~PortageRepositoryProfile()
+ERepositoryProfile::~ERepositoryProfile()
 {
 }
 
 bool
-PortageRepositoryProfile::use_masked(const UseFlagName & u,
+ERepositoryProfile::use_masked(const UseFlagName & u,
         const PackageID & e) const
 {
     bool result(false);
@@ -625,7 +625,7 @@ PortageRepositoryProfile::use_masked(const UseFlagName & u,
 }
 
 bool
-PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
+ERepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e) const
 {
     bool result(false);
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
@@ -651,7 +651,7 @@ PortageRepositoryProfile::use_forced(const UseFlagName & u, const PackageID & e)
 }
 
 UseFlagState
-PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
+ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
         const PackageID & e) const
 {
     UseFlagState result(use_unspecified);
@@ -687,7 +687,7 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
 }
 
 std::string
-PortageRepositoryProfile::environment_variable(const std::string & s) const
+ERepositoryProfile::environment_variable(const std::string & s) const
 {
     EnvironmentVariablesMap::const_iterator i(_imp->environment_variables.find(s));
     if (_imp->environment_variables.end() == i)
@@ -697,49 +697,49 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-PortageRepositoryProfile::system_packages() const
+ERepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
 }
 
-PortageRepositoryProfile::UseExpandIterator
-PortageRepositoryProfile::begin_use_expand() const
+ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::begin_use_expand() const
 {
     return UseExpandIterator(_imp->use_expand.begin());
 }
 
-PortageRepositoryProfile::UseExpandIterator
-PortageRepositoryProfile::end_use_expand() const
+ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::end_use_expand() const
 {
     return UseExpandIterator(_imp->use_expand.end());
 }
 
-PortageRepositoryProfile::UseExpandIterator
-PortageRepositoryProfile::begin_use_expand_hidden() const
+ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::begin_use_expand_hidden() const
 {
     return UseExpandIterator(_imp->use_expand_hidden.begin());
 }
 
-PortageRepositoryProfile::UseExpandIterator
-PortageRepositoryProfile::end_use_expand_hidden() const
+ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::end_use_expand_hidden() const
 {
     return UseExpandIterator(_imp->use_expand_hidden.end());
 }
 
-PortageRepositoryProfile::VirtualsIterator
-PortageRepositoryProfile::begin_virtuals() const
+ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::begin_virtuals() const
 {
     return VirtualsIterator(_imp->virtuals.begin());
 }
 
-PortageRepositoryProfile::VirtualsIterator
-PortageRepositoryProfile::end_virtuals() const
+ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::end_virtuals() const
 {
     return VirtualsIterator(_imp->virtuals.end());
 }
 
 bool
-PortageRepositoryProfile::profile_masked(const PackageID & id) const
+ERepositoryProfile::profile_masked(const PackageID & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)

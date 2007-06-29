@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_repository_profile_file.hh"
+#include "e_repository_profile_file.hh"
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>

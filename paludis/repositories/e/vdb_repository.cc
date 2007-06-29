@@ -138,7 +138,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .destination_interface(this)
             .config_interface(this)
             .licenses_interface(0)
-            .portage_interface(0)
+            .e_interface(0)
             .pretend_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(this),

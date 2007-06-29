@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_METADATA_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_METADATA_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_METADATA_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_METADATA_HH 1
 
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -26,34 +26,34 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/repositories/e/portage_repository_profile.hh>
-#include <paludis/repositories/e/portage_repository_params.hh>
+#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <string>
 
 /** \file
- * Declaration for the PortageRepositoryEntries class.
+ * Declaration for the ERepositoryEntries class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
-    class PortageRepository;
+    class ERepository;
     class Environment;
 
     /**
-     * Handle entries (for example, ebuilds) in a PortageRepository.
+     * Handle entries (for example, ebuilds) in a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PortageRepositoryEntries
+    class PALUDIS_VISIBLE ERepositoryEntries
     {
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~PortageRepositoryEntries() = 0;
+            virtual ~ERepositoryEntries() = 0;
 
             ///\}
 
@@ -74,19 +74,19 @@ namespace paludis
              * Fetch an environment variable.
              */
             virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
             /**
              * Handle an install.
              */
             virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
             /**
              * Handle a pretend.
              */
             virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const = 0;
+                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
             /**
              * Handle a merge.
@@ -101,31 +101,31 @@ namespace paludis
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE NoSuchPortageRepositoryEntriesType : public ConfigurationError
+    class PALUDIS_VISIBLE NoSuchERepositoryEntriesType : public ConfigurationError
     {
         public:
             /**
              * Constructor.
              */
-            NoSuchPortageRepositoryEntriesType(const std::string & format) throw ();
+            NoSuchERepositoryEntriesType(const std::string & format) throw ();
     };
 
     /**
-     * Virtual constructor for PortageRepositoryEntries.
+     * Virtual constructor for ERepositoryEntries.
      *
      * \ingroup grprepository
      */
-    class PALUDIS_VISIBLE PortageRepositoryEntriesMaker :
+    class PALUDIS_VISIBLE ERepositoryEntriesMaker :
         public VirtualConstructor<std::string,
-            tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
-                    const PortageRepositoryParams &),
-            virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >,
-        public InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonTag>
+            tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
+                    const ERepositoryParams &),
+            virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >,
+        public InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonTag>;
+        friend class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
 
         private:
-            PortageRepositoryEntriesMaker();
+            ERepositoryEntriesMaker();
     };
 
 }

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_FILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_FILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
@@ -28,11 +28,11 @@
 namespace paludis
 {
     /**
-     * A file in a PortageRepository profile.
+     * A file in a ERepository profile.
      *
      * Handles -lines, comments, inherits automatically.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     class PALUDIS_VISIBLE ProfileFile :
         private PrivateImplementationPattern<ProfileFile>

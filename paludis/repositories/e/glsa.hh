@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_GLSA_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_GLSA_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_GLSA_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_GLSA_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
@@ -56,7 +56,7 @@ namespace paludis
      * Represents a package entry in a GLSA.
      *
      * \see GLSA
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSAPackage :
@@ -115,7 +115,7 @@ namespace paludis
     /**
      * Represents a GLSA (security advisory).
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSA :

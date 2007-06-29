@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_LEXER_HH
-#define PALUDIS_GUARD_PALUDIS_PORTAGE_DEP_LEXER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_E_DEP_LEXER_HH
+#define PALUDIS_GUARD_PALUDIS_E_DEP_LEXER_HH 1
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>

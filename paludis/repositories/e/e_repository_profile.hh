@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -32,37 +32,37 @@
 #include <string>
 
 /** \file
- * Declaration for the PortageRepositoryProfile class.
+ * Declaration for the ERepositoryProfile class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
     class Environment;
-    class PortageRepository;
+    class ERepository;
 
     /**
      * Holds the profile data (but <em>not</em> the profiles/ top level data) for
-     * a PortageRepository instance.
+     * a ERepository instance.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PortageRepositoryProfile :
-        private PrivateImplementationPattern<PortageRepositoryProfile>,
-        private InstantiationPolicy<PortageRepositoryProfile, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE ERepositoryProfile :
+        private PrivateImplementationPattern<ERepositoryProfile>,
+        private InstantiationPolicy<ERepositoryProfile, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            PortageRepositoryProfile(const Environment * const env,
-                    const PortageRepository * const,
+            ERepositoryProfile(const Environment * const env,
+                    const ERepository * const,
                     const RepositoryName & name,
                     const FSEntryCollection & location,
                     bool arch_is_special);
-            ~PortageRepositoryProfile();
+            ~ERepositoryProfile();
 
             ///\}
 
@@ -83,7 +83,7 @@ namespace paludis
             ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PortageRepositoryProfile, const UseFlagName> UseExpandIterator;
+            typedef libwrapiter::ForwardIterator<ERepositoryProfile, const UseFlagName> UseExpandIterator;
 
             UseExpandIterator begin_use_expand() const;
             UseExpandIterator end_use_expand() const;
@@ -117,7 +117,7 @@ namespace paludis
             ///\name Virtuals
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PortageRepositoryProfile,
+            typedef libwrapiter::ForwardIterator<ERepositoryProfile,
                 const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsIterator;
 
             VirtualsIterator begin_virtuals() const;

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_EBUILD_FLAT_METADATA_CACHE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_EBUILD_FLAT_METADATA_CACHE_HH 1
 
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
@@ -30,12 +30,12 @@ namespace paludis
     namespace erepository
     {
         /**
-         * Implements flat file metadata cache handling for a PortageRepository
+         * Implements flat file metadata cache handling for a ERepository
          * using EbuildEntries.
          *
          * \see EbuildEntries
-         * \see PortageRepository
-         * \ingroup grpportagerepository
+         * \see ERepository
+         * \ingroup grperepository
          * \nosubgrouping
          */
         class EbuildFlatMetadataCache

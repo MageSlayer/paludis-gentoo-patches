@@ -124,7 +124,7 @@ namespace paludis
 
         /**
          * An EbuildVariableCommand is used to fetch the value of an environment
-         * variable for a particular ebuild in a PortageRepository.
+         * variable for a particular ebuild in a ERepository.
          *
          * \ingroup grpebuildinterface
          */
@@ -161,7 +161,7 @@ namespace paludis
 
         /**
          * An EbuildFetchCommand is used to download and verify the digests for a
-         * particular ebuild in a PortageRepository. On failure it throws.
+         * particular ebuild in a ERepository. On failure it throws.
          *
          * \ingroup grpebuildinterface
          */
@@ -187,7 +187,7 @@ namespace paludis
 
         /**
          * An EbuildInstallCommand is used to install an ebuild from a
-         * PortageRepository. On failure it throws.
+         * ERepository. On failure it throws.
          *
          * \ingroup grpebuildinterface
          */

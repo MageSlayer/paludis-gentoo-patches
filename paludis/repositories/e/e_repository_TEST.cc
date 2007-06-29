@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -38,19 +38,19 @@ using namespace test;
 using namespace paludis;
 
 /** \file
- * Test cases for PortageRepository.
+ * Test cases for ERepository.
  *
  */
 
 namespace test_cases
 {
     /**
-     * \test Test PortageRepository repository names.
+     * \test Test ERepository repository names.
      *
      */
-    struct PortageRepositoryRepoNameTest : TestCase
+    struct ERepositoryRepoNameTest : TestCase
     {
-        PortageRepositoryRepoNameTest() : TestCase("repo name") { }
+        ERepositoryRepoNameTest() : TestCase("repo name") { }
 
         void run()
         {
@@ -59,21 +59,21 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
         }
-    } test_portage_repository_repo_name;
+    } test_e_repository_repo_name;
 
     /**
-     * \test Test PortageRepository repository with no names.
+     * \test Test ERepository repository with no names.
      *
      */
-    struct PortageRepositoryNoRepoNameTest : TestCase
+    struct ERepositoryNoRepoNameTest : TestCase
     {
-        PortageRepositoryNoRepoNameTest() : TestCase("no repo name") { }
+        ERepositoryNoRepoNameTest() : TestCase("no repo name") { }
 
         void run()
         {
@@ -82,21 +82,21 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo2");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo2/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo2");
+            keys->insert("profiles", "e_repository_TEST_dir/repo2/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
         }
-    } test_portage_repository_no_repo_name;
+    } test_e_repository_no_repo_name;
 
     /**
-     * \test Test PortageRepository repository empty names.
+     * \test Test ERepository repository empty names.
      *
      */
-    struct PortageRepositoryEmptyRepoNameTest : TestCase
+    struct ERepositoryEmptyRepoNameTest : TestCase
     {
-        PortageRepositoryEmptyRepoNameTest() : TestCase("empty repo name") { }
+        ERepositoryEmptyRepoNameTest() : TestCase("empty repo name") { }
 
         void run()
         {
@@ -105,21 +105,21 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo3");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo3/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo3");
+            keys->insert("profiles", "e_repository_TEST_dir/repo3/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
         }
-    } test_portage_repository_empty_repo_name;
+    } test_e_repository_empty_repo_name;
 
     /**
-     * \test Test PortageRepository repository has_category_named.
+     * \test Test ERepository repository has_category_named.
      *
      */
-    struct PortageRepositoryHasCategoryNamedTest : TestCase
+    struct ERepositoryHasCategoryNamedTest : TestCase
     {
-        PortageRepositoryHasCategoryNamedTest() : TestCase("has category named") { }
+        ERepositoryHasCategoryNamedTest() : TestCase("has category named") { }
 
         void run()
         {
@@ -128,9 +128,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -143,15 +143,15 @@ namespace test_cases
                 TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four")));
             }
         }
-    } test_portage_repository_has_category_named;
+    } test_e_repository_has_category_named;
 
     /**
-     * \test Test PortageRepository category_names.
+     * \test Test ERepository category_names.
      *
      */
-    struct PortageRepositoryCategoryNamesTest : TestCase
+    struct ERepositoryCategoryNamesTest : TestCase
     {
-        PortageRepositoryCategoryNamesTest() : TestCase("category names") { }
+        ERepositoryCategoryNamesTest() : TestCase("category names") { }
 
         void run()
         {
@@ -160,9 +160,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -177,15 +177,15 @@ namespace test_cases
                 TEST_CHECK_EQUAL(3, std::distance(c->begin(), c->end()));
             }
         }
-    } test_portage_repository_category_names;
+    } test_e_repository_category_names;
 
     /**
-     * \test Test PortageRepository has_package_named.
+     * \test Test ERepository has_package_named.
      *
      */
-    struct PortageRepositoryHasPackageNamedTest : TestCase
+    struct ERepositoryHasPackageNamedTest : TestCase
     {
-        PortageRepositoryHasPackageNamedTest() : TestCase("has package named") { }
+        ERepositoryHasPackageNamedTest() : TestCase("has package named") { }
 
         void run()
         {
@@ -194,9 +194,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo4");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo4");
+            keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -217,15 +217,15 @@ namespace test_cases
                 TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
             }
         }
-    } test_portage_repository_has_package_named;
+    } test_e_repository_has_package_named;
 
     /**
-     * \test Test PortageRepository has_package_named cached.
+     * \test Test ERepository has_package_named cached.
      *
      */
-    struct PortageRepositoryHasPackageNamedCachedTest : TestCase
+    struct ERepositoryHasPackageNamedCachedTest : TestCase
     {
-        PortageRepositoryHasPackageNamedCachedTest() : TestCase("has package named cached") { }
+        ERepositoryHasPackageNamedCachedTest() : TestCase("has package named cached") { }
 
         void run()
         {
@@ -234,9 +234,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo4");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo4");
+            keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             repo->package_names(CategoryNamePart("cat-one"));
@@ -261,15 +261,15 @@ namespace test_cases
                 TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
             }
         }
-    } test_portage_repository_has_package_named_cached;
+    } test_e_repository_has_package_named_cached;
 
     /**
-     * \test Test PortageRepository package_names.
+     * \test Test ERepository package_names.
      *
      */
-    struct PortageRepositoryPackageNamesTest : TestCase
+    struct ERepositoryPackageNamesTest : TestCase
     {
-        PortageRepositoryPackageNamesTest() : TestCase("package names") { }
+        ERepositoryPackageNamesTest() : TestCase("package names") { }
 
         void run()
         {
@@ -278,9 +278,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo4");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo4");
+            keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             tr1::shared_ptr<const QualifiedPackageNameCollection> names;
@@ -314,15 +314,15 @@ namespace test_cases
                 TEST_CHECK_EQUAL(0, std::distance(names->begin(), names->end()));
             }
         }
-    } test_portage_repository_package_names;
+    } test_e_repository_package_names;
 
     /**
-     * \test Test PortageRepository bad package names.
+     * \test Test ERepository bad package names.
      *
      */
-    struct PortageRepositoryBadPackageNamesTest : TestCase
+    struct ERepositoryBadPackageNamesTest : TestCase
     {
-        PortageRepositoryBadPackageNamesTest() : TestCase("bad package names") { }
+        ERepositoryBadPackageNamesTest() : TestCase("bad package names") { }
 
         void run()
         {
@@ -331,9 +331,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo5");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo5/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo5");
+            keys->insert("profiles", "e_repository_TEST_dir/repo5/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             tr1::shared_ptr<const QualifiedPackageNameCollection> names;
@@ -348,11 +348,11 @@ namespace test_cases
                 TEST_CHECK_EQUAL(1, std::distance(names->begin(), names->end()));
             }
         }
-    } test_portage_repository_bad_package_names;
+    } test_e_repository_bad_package_names;
 
-    struct PortageRepositoryPackageIDTest : TestCase
+    struct ERepositoryPackageIDTest : TestCase
     {
-        PortageRepositoryPackageIDTest() : TestCase("package_ids") { }
+        ERepositoryPackageIDTest() : TestCase("package_ids") { }
 
         void run()
         {
@@ -363,9 +363,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo4");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo4/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo4");
+            keys->insert("profiles", "e_repository_TEST_dir/repo4/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -392,15 +392,15 @@ namespace test_cases
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
             }
         }
-    } test_portage_repository_versions;
+    } test_e_repository_versions;
 
     /**
-     * \test Test PortageRepository duff versions.
+     * \test Test ERepository duff versions.
      *
      */
-    struct PortageRepositoryDuffVersionsTest : TestCase
+    struct ERepositoryDuffVersionsTest : TestCase
     {
-        PortageRepositoryDuffVersionsTest() : TestCase("duff versions") { }
+        ERepositoryDuffVersionsTest() : TestCase("duff versions") { }
 
         void run()
         {
@@ -411,9 +411,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo8");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo8/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_TEST_dir/repo8");
+            keys->insert("profiles", "e_repository_TEST_dir/repo8/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -440,15 +440,15 @@ namespace test_cases
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
             }
         }
-    } test_portage_repository_duff_versions;
+    } test_e_repository_duff_versions;
 
     /**
-     * \test Test PortageRepository cached metadata.
+     * \test Test ERepository cached metadata.
      *
      */
-    struct PortageRepositoryMetadataCachedTest : TestCase
+    struct ERepositoryMetadataCachedTest : TestCase
     {
-        PortageRepositoryMetadataCachedTest() : TestCase("metadata cached") { }
+        ERepositoryMetadataCachedTest() : TestCase("metadata cached") { }
 
         void run()
         {
@@ -457,9 +457,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo6");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo6/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            keys->insert("location", "e_repository_TEST_dir/repo6");
+            keys->insert("profiles", "e_repository_TEST_dir/repo6/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -472,15 +472,15 @@ namespace test_cases
                 TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description");
             }
         }
-    } test_portage_repository_metadata_cached;
+    } test_e_repository_metadata_cached;
 
     /**
-     * \test Test PortageRepository uncached metadata.
+     * \test Test ERepository uncached metadata.
      *
      */
-    struct PortageRepositoryMetadataUncachedTest : TestCase
+    struct ERepositoryMetadataUncachedTest : TestCase
     {
-        PortageRepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
+        ERepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
 
         bool skip() const
         {
@@ -498,10 +498,10 @@ namespace test_cases
                         new AssociativeCollection<std::string, std::string>::Concrete);
                 keys->insert("format", "ebuild");
                 keys->insert("names_cache", "/var/empty");
-                keys->insert("write_cache", "portage_repository_TEST_dir/repo7/metadata/cache");
-                keys->insert("location", "portage_repository_TEST_dir/repo7");
-                keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
-                tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+                keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
+                keys->insert("location", "e_repository_TEST_dir/repo7");
+                keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
+                tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
                 env.package_database()->add_repository(1, repo);
 
                 for (int pass = 1 ; pass <= 3 ; ++pass)
@@ -542,15 +542,15 @@ namespace test_cases
                 }
             }
         }
-    } test_portage_repository_metadata_uncached;
+    } test_e_repository_metadata_uncached;
 
     /**
-     * \test Test PortageRepository unparsable metadata.
+     * \test Test ERepository unparsable metadata.
      *
      */
-    struct PortageRepositoryMetadataUnparsableTest : TestCase
+    struct ERepositoryMetadataUnparsableTest : TestCase
     {
-        PortageRepositoryMetadataUnparsableTest() : TestCase("metadata unparsable") { }
+        ERepositoryMetadataUnparsableTest() : TestCase("metadata unparsable") { }
 
         bool skip() const
         {
@@ -564,9 +564,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo7");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository( &env, keys));
+            keys->insert("location", "e_repository_TEST_dir/repo7");
+            keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository( &env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -581,15 +581,15 @@ namespace test_cases
                 TEST_CHECK(! id1->short_description_key());
             }
         }
-    } test_portage_repository_metadata_unparsable;
+    } test_e_repository_metadata_unparsable;
 
     /**
-     * \test Test PortageRepository query_use and query_use_mask functions.
+     * \test Test ERepository query_use and query_use_mask functions.
      *
      */
-    struct PortageRepositoryQueryUseTest : TestCase
+    struct ERepositoryQueryUseTest : TestCase
     {
-        PortageRepositoryQueryUseTest() : TestCase("USE query") { }
+        ERepositoryQueryUseTest() : TestCase("USE query") { }
 
         void run()
         {
@@ -598,9 +598,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo9");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo9/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            keys->insert("location", "e_repository_TEST_dir/repo9");
+            keys->insert("profiles", "e_repository_TEST_dir/repo9/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -625,15 +625,15 @@ namespace test_cases
                 TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p1) == use_unspecified);
             }
         }
-    } test_portage_repository_query_use;
+    } test_e_repository_query_use;
 
     /**
-     * \test Test PortageRepository query_profile_masks functions.
+     * \test Test ERepository query_profile_masks functions.
      *
      */
-    struct PortageRepositoryQueryProfileMasksTest : TestCase
+    struct ERepositoryQueryProfileMasksTest : TestCase
     {
-        PortageRepositoryQueryProfileMasksTest() : TestCase("profiles package.mask") { }
+        ERepositoryQueryProfileMasksTest() : TestCase("profiles package.mask") { }
 
         void run()
         {
@@ -642,9 +642,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo10");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo10/profiles/profile/subprofile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(&env, keys));
+            keys->insert("location", "e_repository_TEST_dir/repo10");
+            keys->insert("profiles", "e_repository_TEST_dir/repo10/profiles/profile/subprofile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -659,6 +659,6 @@ namespace test_cases
                                         "=cat/was_masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
             }
         }
-    } test_portage_repository_query_profile_masks;
+    } test_e_repository_query_profile_masks;
 }
 

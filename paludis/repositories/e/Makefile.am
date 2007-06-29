@@ -2,7 +2,7 @@ SUBDIRS = ebuild .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
-	portage_repository_params-sr.hh portage_repository_params-sr.cc \
+	e_repository_params-sr.hh e_repository_params-sr.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	ebuild-sr.hh ebuild-sr.cc \
 	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
@@ -39,15 +39,15 @@ paludis_repositories_e_include_HEADERS = \
 	ebin-sr.hh \
 	glsa.hh \
 	glsa-sr.hh \
-	portage_repository.hh \
-	portage_repository_profile_file.hh \
-	portage_repository_profile.hh \
-	portage_repository_exceptions.hh \
-	portage_repository_news.hh \
-	portage_repository_params.hh \
-	portage_repository_params-sr.hh \
-	portage_repository_sets.hh \
-	portage_repository_entries.hh \
+	e_repository.hh \
+	e_repository_profile_file.hh \
+	e_repository_profile.hh \
+	e_repository_exceptions.hh \
+	e_repository_news.hh \
+	e_repository_params.hh \
+	e_repository_params-sr.hh \
+	e_repository_sets.hh \
+	e_repository_entries.hh \
 	ebuild_entries.hh \
 	ebin_entries.hh \
 	ebuild_flat_metadata_cache.hh \
@@ -73,18 +73,18 @@ libpaludiserepository_la_SOURCES = \
 	ebuild.cc \
 	ebin.cc \
 	glsa.cc \
-	portage_repository.cc \
-	portage_repository_profile_file.cc \
-	portage_repository_profile.cc \
-	portage_repository_exceptions.cc \
-	portage_repository_news.cc \
-	portage_repository_sets.cc \
-	portage_repository_entries.cc \
+	e_repository.cc \
+	e_repository_profile_file.cc \
+	e_repository_profile.cc \
+	e_repository_exceptions.cc \
+	e_repository_news.cc \
+	e_repository_sets.cc \
+	e_repository_entries.cc \
 	ebuild_entries.cc \
 	ebin_entries.cc \
 	ebuild_flat_metadata_cache.cc \
 	eclass_mtimes.cc \
-	portage_repository_params.cc \
+	e_repository_params.cc \
 	make_ebuild_repository.cc \
 	make_ebin_repository.cc \
 	use_desc.cc \
@@ -109,9 +109,9 @@ libpaludiserepository_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
-portage_repository_TEST_SOURCES = portage_repository_TEST.cc
+e_repository_TEST_SOURCES = e_repository_TEST.cc
 
-portage_repository_TEST_LDADD = \
+e_repository_TEST_LDADD = \
 	libpaludiserepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -120,7 +120,7 @@ portage_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
-portage_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
 vdb_unmerger_TEST_SOURCES = vdb_unmerger_TEST.cc
 
@@ -135,9 +135,9 @@ vdb_unmerger_TEST_LDADD = \
 
 vdb_unmerger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
-portage_repository_sets_TEST_SOURCES = portage_repository_sets_TEST.cc
+e_repository_sets_TEST_SOURCES = e_repository_sets_TEST.cc
 
-portage_repository_sets_TEST_LDADD = \
+e_repository_sets_TEST_LDADD = \
 	libpaludiserepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -147,7 +147,7 @@ portage_repository_sets_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
-portage_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
 EXTRA_DIST = \
 	ebuild.sr \
@@ -162,15 +162,15 @@ EXTRA_DIST = \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
-	portage_repository_TEST.cc \
-	portage_repository_TEST_setup.sh \
-	portage_repository_TEST_cleanup.sh \
-	portage_repository_params-sr.hh \
-	portage_repository_params-sr.cc \
-	portage_repository_params.sr \
-	portage_repository_sets_TEST.cc \
-	portage_repository_sets_TEST_setup.sh \
-	portage_repository_sets_TEST_cleanup.sh \
+	e_repository_TEST.cc \
+	e_repository_TEST_setup.sh \
+	e_repository_TEST_cleanup.sh \
+	e_repository_params-sr.hh \
+	e_repository_params-sr.cc \
+	e_repository_params.sr \
+	e_repository_sets_TEST.cc \
+	e_repository_sets_TEST_setup.sh \
+	e_repository_sets_TEST_cleanup.sh \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
 	xml_things_TEST_cleanup.sh \
@@ -191,8 +191,8 @@ EXTRA_DIST = \
 	vdb_unmerger_TEST_cleanup.sh
 
 BUILT_SOURCES = \
-	portage_repository_params-sr.hh \
-	portage_repository_params-sr.cc \
+	e_repository_params-sr.hh \
+	e_repository_params-sr.cc \
 	glsa-sr.hh \
 	glsa-sr.cc \
 	vdb_repository-sr.hh \
@@ -209,10 +209,10 @@ BUILT_SOURCES = \
 	vdb_unmerger-sr.cc
 
 check_SCRIPTS = \
-	portage_repository_TEST_setup.sh portage_repository_TEST_cleanup.sh \
+	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
 	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
-	portage_repository_sets_TEST_setup.sh portage_repository_sets_TEST_cleanup.sh
+	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
@@ -226,11 +226,11 @@ TESTS_ENVIRONMENT = env \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
-portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository_params.sr > $@
+e_repository_params-sr.hh : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/e_repository_params.sr > $@
 
-portage_repository_params-sr.cc : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository_params.sr > $@
+e_repository_params-sr.cc : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_repository_params.sr > $@
 
 vdb_merger-sr.hh : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_merger.sr > $@
@@ -301,7 +301,7 @@ xml_things_TEST_LDADD = \
 
 endif
 
-TESTS = portage_repository_TEST vdb_unmerger_TEST $(GLSA_TESTS) portage_repository_sets_TEST
+TESTS = e_repository_TEST vdb_unmerger_TEST $(GLSA_TESTS) e_repository_sets_TEST
 check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)

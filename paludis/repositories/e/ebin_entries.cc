@@ -19,7 +19,7 @@
 
 #include "ebin_entries.hh"
 #include <paludis/repositories/e/ebin.hh>
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -50,11 +50,11 @@ namespace paludis
     struct Implementation<EbinEntries>
     {
         const Environment * const environment;
-        PortageRepository * const portage_repository;
-        const PortageRepositoryParams params;
+        ERepository * const portage_repository;
+        const ERepositoryParams params;
 
-        Implementation(const Environment * const e, PortageRepository * const p,
-                const PortageRepositoryParams & k) :
+        Implementation(const Environment * const e, ERepository * const p,
+                const ERepositoryParams & k) :
             environment(e),
             portage_repository(p),
             params(k)
@@ -64,7 +64,7 @@ namespace paludis
 }
 
 EbinEntries::EbinEntries(
-        const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
+        const Environment * const e, ERepository * const p, const ERepositoryParams & k) :
     PrivateImplementationPattern<EbinEntries>(new Implementation<EbinEntries>(e, p, k))
 {
 }
@@ -129,7 +129,7 @@ namespace
 
 void
 EbinEntries::install(const tr1::shared_ptr<const PackageID> & id,
-        const InstallOptions & o, tr1::shared_ptr<const PortageRepositoryProfile>) const
+        const InstallOptions & o, tr1::shared_ptr<const ERepositoryProfile>) const
 {
     std::string binaries, flat_bin_uri;
     {
@@ -328,16 +328,16 @@ EbinEntries::install(const tr1::shared_ptr<const PackageID> & id,
     tidyup_cmd();
 }
 
-tr1::shared_ptr<PortageRepositoryEntries>
+tr1::shared_ptr<ERepositoryEntries>
 EbinEntries::make_ebin_entries(
-        const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
+        const Environment * const e, ERepository * const r, const ERepositoryParams & p)
 {
-    return tr1::shared_ptr<PortageRepositoryEntries>(new EbinEntries(e, r, p));
+    return tr1::shared_ptr<ERepositoryEntries>(new EbinEntries(e, r, p));
 }
 
 std::string
 EbinEntries::get_environment_variable(const tr1::shared_ptr<const PackageID> & id,
-        const std::string & var, tr1::shared_ptr<const PortageRepositoryProfile>) const
+        const std::string & var, tr1::shared_ptr<const ERepositoryProfile>) const
 {
     PackageID::Iterator i(id->find(var));
     if (id->end() != i)
@@ -463,7 +463,7 @@ EbinEntries::extract_package_file_version(const QualifiedPackageName & n, const 
 
 bool
 EbinEntries::pretend(const QualifiedPackageName &, const VersionSpec &,
-        tr1::shared_ptr<const PortageRepositoryProfile>) const
+        tr1::shared_ptr<const ERepositoryProfile>) const
 {
     return true;
 }

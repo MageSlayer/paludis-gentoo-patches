@@ -18,40 +18,40 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_SETS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_SETS_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/repository-fwd.hh>
 
 /** \file
- * Declaration for the PortageRepositorySets class.
+ * Declaration for the ERepositorySets class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
     class Environment;
-    class PortageRepository;
+    class ERepository;
 
     /**
-     * Holds the information about sets, except system, for a PortageRepository.
+     * Holds the information about sets, except system, for a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PortageRepositorySets :
-        private PrivateImplementationPattern<PortageRepositorySets>,
-        private InstantiationPolicy<PortageRepositorySets, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE ERepositorySets :
+        private PrivateImplementationPattern<ERepositorySets>,
+        private InstantiationPolicy<ERepositorySets, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            PortageRepositorySets(const Environment * const env, const PortageRepository * const,
-                    const PortageRepositoryParams &);
-            ~PortageRepositorySets();
+            ERepositorySets(const Environment * const env, const ERepository * const,
+                    const ERepositoryParams &);
+            ~ERepositorySets();
 
             ///\}
 

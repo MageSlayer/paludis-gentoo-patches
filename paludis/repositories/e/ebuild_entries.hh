@@ -17,46 +17,46 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_EBUILD_METADATA_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_EBUILD_METADATA_HH 1
 
-#include <paludis/repositories/e/portage_repository_entries.hh>
-#include <paludis/repositories/e/portage_repository_params.hh>
+#include <paludis/repositories/e/e_repository_entries.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declaration for the EbuildEntries class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
     class FSEntry;
-    class PortageRepository;
+    class ERepository;
 
     /**
-     * PortageRepositoryEntries handler for ebuilds.
+     * ERepositoryEntries handler for ebuilds.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     class PALUDIS_VISIBLE EbuildEntries :
-        public PortageRepositoryEntries,
+        public ERepositoryEntries,
         private PrivateImplementationPattern<EbuildEntries>
     {
         public:
             /**
              * Create an EbuildEntries instance.
              */
-            static tr1::shared_ptr<PortageRepositoryEntries> make_ebuild_entries(const Environment * const,
-                        PortageRepository * const, const PortageRepositoryParams &);
+            static tr1::shared_ptr<ERepositoryEntries> make_ebuild_entries(const Environment * const,
+                        ERepository * const, const ERepositoryParams &);
 
             ///\name Basic operations
             ///\{
 
             EbuildEntries(const Environment * const,
-                    PortageRepository * const portage_repository,
-                    const PortageRepositoryParams &);
+                    ERepository * const e_repository,
+                    const ERepositoryParams &);
 
             virtual ~EbuildEntries();
 
@@ -75,13 +75,13 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const ERepositoryProfile>) const;
 
             virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const ERepositoryProfile>) const;
 
             virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<const PortageRepositoryProfile>) const;
+                    tr1::shared_ptr<const ERepositoryProfile>) const;
     };
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,34 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EXCEPTIONS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EXCEPTIONS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_EXCEPTIONS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_EXCEPTIONS_HH 1
 
 #include <paludis/util/exception.hh>
 
 /** \file
- * Declaration for the PortageRepository exception classes.
+ * Declaration for the ERepository exception classes.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
     /**
      * Thrown if invalid parameters are provided for
-     * PortageRepository::make_portage_repository.
+     * ERepository::make_e_repository.
      *
      * \ingroup grpexceptions
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
-    class PALUDIS_VISIBLE PortageRepositoryConfigurationError :
+    class PALUDIS_VISIBLE ERepositoryConfigurationError :
         public ConfigurationError
     {
         public:
             /**
              * Constructor.
              */
-            PortageRepositoryConfigurationError(const std::string & msg) throw ();
+            ERepositoryConfigurationError(const std::string & msg) throw ();
     };
 
 

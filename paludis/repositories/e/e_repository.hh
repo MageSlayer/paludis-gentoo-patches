@@ -17,38 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH
-#define PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_E_REPOSITORY_HH
+#define PALUDIS_GUARD_PALUDIS_E_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/repositories/e/portage_repository_params.hh>
-#include <paludis/repositories/e/portage_repository_profile.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <string>
 
 /** \file
- * Declaration for the PortageRepository class.
+ * Declaration for the ERepository class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
-    class PortageRepositoryProfile;
-    class PortageRepositoryNews;
+    class ERepositoryProfile;
+    class ERepositoryNews;
 
     /**
-     * A PortageRepository is a Repository that handles the layout used by
+     * A ERepository is a Repository that handles the layout used by
      * Portage for the main Gentoo tree.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PortageRepository :
+    class PALUDIS_VISIBLE ERepository :
         public Repository,
         public RepositoryMaskInterface,
         public RepositoryUseInterface,
@@ -60,11 +60,11 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryLicensesInterface,
-        public RepositoryPortageInterface,
+        public RepositoryEInterface,
         public RepositoryHookInterface,
         public RepositoryPretendInterface,
-        public tr1::enable_shared_from_this<PortageRepository>,
-        private PrivateImplementationPattern<PortageRepository>
+        public tr1::enable_shared_from_this<ERepository>,
+        private PrivateImplementationPattern<ERepository>
     {
         private:
             void need_mirrors() const;
@@ -164,12 +164,12 @@ namespace paludis
             /**
              * Constructor.
              */
-            PortageRepository(const PortageRepositoryParams &);
+            ERepository(const ERepositoryParams &);
 
             /**
              * Destructor.
              */
-            ~PortageRepository();
+            ~ERepository();
 
             virtual void invalidate();
 
@@ -201,12 +201,12 @@ namespace paludis
 
             ///\}
 
-            ///\name Information about PortageRepository
+            ///\name Information about ERepository
             ///\{
 
             std::string profile_variable(const std::string &) const;
 
-            const PortageRepositoryParams & params() const;
+            const ERepositoryParams & params() const;
 
             ///\}
 

@@ -26,12 +26,12 @@
 
 namespace paludis
 {
-    class PortageRepositoryEntries;
+    class ERepositoryEntries;
 
     /**
-     * The traditional tree layout (as used by Gentoo) for a PortageRepository.
+     * The traditional tree layout (as used by Gentoo) for a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE TraditionalLayout :
@@ -47,8 +47,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            TraditionalLayout(const PortageRepository * const, const FSEntry &,
-                    tr1::shared_ptr<const PortageRepositoryEntries>,
+            TraditionalLayout(const ERepository * const, const FSEntry &,
+                    tr1::shared_ptr<const ERepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>);
 
             virtual ~TraditionalLayout();

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_repository_entries.hh"
+#include "e_repository_entries.hh"
 #include "ebuild_entries.hh"
 #include "ebin_entries.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
@@ -26,22 +26,22 @@
 using namespace paludis;
 
 template class VirtualConstructor<std::string,
-         tr1::shared_ptr<PortageRepositoryEntries> (*) (const Environment * const, PortageRepository * const,
-                 const PortageRepositoryParams &),
-         virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >;
+         tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
+                 const ERepositoryParams &),
+         virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >;
 
-template class InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonTag>;
+template class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
 
-PortageRepositoryEntries::~PortageRepositoryEntries()
+ERepositoryEntries::~ERepositoryEntries()
 {
 }
 
-NoSuchPortageRepositoryEntriesType::NoSuchPortageRepositoryEntriesType(const std::string & format) throw ():
-    ConfigurationError("No available maker for Portage repository entries type '" + format + "'")
+NoSuchERepositoryEntriesType::NoSuchERepositoryEntriesType(const std::string & format) throw ():
+    ConfigurationError("No available maker for E Repository entries type '" + format + "'")
 {
 }
 
-PortageRepositoryEntriesMaker::PortageRepositoryEntriesMaker()
+ERepositoryEntriesMaker::ERepositoryEntriesMaker()
 {
     register_maker("ebuild", &EbuildEntries::make_ebuild_entries);
 #if 0

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/portage_repository.hh>
-#include <paludis/repositories/e/portage_repository_news.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_news.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
@@ -40,50 +40,50 @@ using namespace paludis;
 namespace paludis
 {
     /**
-     * Implementation data for PortageRepositoryNews.
+     * Implementation data for ERepositoryNews.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     template<>
-    struct Implementation<PortageRepositoryNews>
+    struct Implementation<ERepositoryNews>
     {
         const Environment * const environment;
-        const PortageRepository * const portage_repository;
-        const PortageRepositoryParams params;
+        const ERepository * const e_repository;
+        const ERepositoryParams params;
 
         const FSEntry skip_file;
         const FSEntry unread_file;
 
-        Implementation(const Environment * const e, const PortageRepository * const p,
-                const PortageRepositoryParams & k) :
+        Implementation(const Environment * const e, const ERepository * const p,
+                const ERepositoryParams & k) :
             environment(e),
-            portage_repository(p),
+            e_repository(p),
             params(k),
             skip_file(e->root() / "var" / "lib" / "paludis" / "news" /
-                    ("news-" + stringify(portage_repository->name()) + ".skip")),
+                    ("news-" + stringify(e_repository->name()) + ".skip")),
             unread_file(e->root() / "var" / "lib" / "paludis" / "news" /
-                    ("news-" + stringify(portage_repository->name()) + ".unread"))
+                    ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }
     };
 }
 
-PortageRepositoryNews::PortageRepositoryNews(const Environment * const e, const PortageRepository * const p,
-        const PortageRepositoryParams & k) :
-    PrivateImplementationPattern<PortageRepositoryNews>(new Implementation<PortageRepositoryNews>(e, p, k))
+ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository * const p,
+        const ERepositoryParams & k) :
+    PrivateImplementationPattern<ERepositoryNews>(new Implementation<ERepositoryNews>(e, p, k))
 {
 }
 
-PortageRepositoryNews::~PortageRepositoryNews()
+ERepositoryNews::~ERepositoryNews()
 {
 }
 
 void
-PortageRepositoryNews::update_news() const
+ERepositoryNews::update_news() const
 {
     Context context("When updating news at location '" +
             stringify(_imp->params.newsdir) + "' for repository '" +
-            stringify(_imp->portage_repository->name()) + "':");
+            stringify(_imp->e_repository->name()) + "':");
 
     if (! _imp->params.newsdir.is_directory_or_symlink_to_directory())
         return;
@@ -102,10 +102,10 @@ PortageRepositoryNews::update_news() const
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
-        if (0 == stringify(_imp->portage_repository->name()).compare(0, 2, "x-"))
+        if (0 == stringify(_imp->e_repository->name()).compare(0, 2, "x-"))
         {
             Log::get_instance()->message(ll_warning, lc_context, "Cannot enable GLEP 42 news items for repository '"
-                    + stringify(_imp->portage_repository->name()) + "' because it is using a generated repository name");
+                    + stringify(_imp->e_repository->name()) + "' because it is using a generated repository name");
             return;
         }
 
@@ -140,7 +140,7 @@ PortageRepositoryNews::update_news() const
                 bool local_show(false);
                 for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
                         i_end(news.end_display_if_keyword()) ; i != i_end && ! local_show ; ++i)
-                    if (*i == _imp->portage_repository->profile_variable("ARCH"))
+                    if (*i == _imp->e_repository->profile_variable("ARCH"))
                         local_show = true;
                 show &= local_show;
             }

@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -303,7 +303,7 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! ((s = get(keys, id->eapi()->supported->ebuild_metadata_variables->metadata_eapi))).empty())
         id->set_eapi(s);
     else
-        id->set_eapi(id->portage_repository()->params().eapi_when_unspecified);
+        id->set_eapi(id->e_repository()->params().eapi_when_unspecified);
 
     if (! id->eapi()->supported)
     {

@@ -122,11 +122,11 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
     if (CommandLine::get_instance()->a_profile.begin_args() ==
             CommandLine::get_instance()->a_profile.end_args())
     {
-        for (RepositoryPortageInterface::ProfilesIterator
-                p(env.main_repository()->portage_interface->begin_profiles()),
-                p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
+        for (RepositoryEInterface::ProfilesIterator
+                p(env.main_repository()->e_interface->begin_profiles()),
+                p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
         {
-            env.main_repository()->portage_interface->set_profile(p);
+            env.main_repository()->e_interface->set_profile(p);
             return_code |= display_default_system_resolution(env, p->arch + "." + p->status, p->path);
         }
     }
@@ -135,13 +135,13 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
         for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.begin_args()),
                 i_end(CommandLine::get_instance()->a_profile.end_args()) ; i != i_end ; ++i)
         {
-            RepositoryPortageInterface::ProfilesIterator
-                p(env.main_repository()->portage_interface->find_profile(
+            RepositoryEInterface::ProfilesIterator
+                p(env.main_repository()->e_interface->find_profile(
                             env.main_repository_dir() / "profiles" / (*i)));
-            if (p == env.main_repository()->portage_interface->end_profiles())
+            if (p == env.main_repository()->e_interface->end_profiles())
                 throw ConfigurationError("Repository does not have a profile listed in profiles.desc matching '"
                         + stringify(*i) + "'");
-            env.main_repository()->portage_interface->set_profile(p);
+            env.main_repository()->e_interface->set_profile(p);
             return_code |= display_default_system_resolution(env, *i, env.main_repository_dir()
                     / "profiles" / *i);
         }

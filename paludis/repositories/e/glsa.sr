@@ -12,8 +12,8 @@ make_class_GLSARange()
         /**
          * A version range in a GLSA.
          *
-         * \see PortageRepositorySets
-         * \ingroup grpportagerepository
+         * \see ERepositorySets
+         * \ingroup grperepository
          */
 END
 }

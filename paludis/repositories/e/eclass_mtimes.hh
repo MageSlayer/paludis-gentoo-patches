@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_ECLASS_MTIMES_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_ECLASS_MTIMES_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
@@ -27,10 +27,10 @@
 namespace paludis
 {
     /**
-     * Holds an eclass mtimes cache for a PortageRepository.
+     * Holds an eclass mtimes cache for a ERepository.
      *
-     * \see PortageRepository
-     * \ingroup grpportagerepository
+     * \see ERepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class EclassMtimes :

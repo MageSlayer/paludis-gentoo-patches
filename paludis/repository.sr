@@ -60,7 +60,7 @@ make_class_RepositoryCapabilities()
     key config_interface "RepositoryConfigInterface *"
     key pretend_interface "RepositoryPretendInterface *"
     key licenses_interface "RepositoryLicensesInterface *"
-    key portage_interface "RepositoryPortageInterface *"
+    key e_interface "RepositoryEInterface *"
     key hook_interface "RepositoryHookInterface *"
 
     doxygen_comment << "END"
@@ -76,22 +76,22 @@ END
     allow_named_args
 }
 
-make_class_RepositoryPortageInterfaceProfilesDescLine()
+make_class_RepositoryEInterfaceProfilesDescLine()
 {
     visible
 
     key path FSEntry
     key arch std::string
     key status std::string
-    key profile "tr1::shared_ptr<PortageRepositoryProfile>"
+    key profile "tr1::shared_ptr<ERepositoryProfile>"
     allow_named_args
 
     doxygen_comment << "END"
         /**
-         * A profiles.desc line in a Repository implementing RepositoryPortageInterface.
+         * A profiles.desc line in a Repository implementing RepositoryEInterface.
          *
          * \see Repository
-         * \see RepositoryPortageInterface
+         * \see RepositoryEInterface
          * \nosubgrouping
          */
 END

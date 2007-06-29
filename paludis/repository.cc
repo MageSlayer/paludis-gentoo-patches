@@ -216,7 +216,7 @@ RepositoryLicensesInterface::~RepositoryLicensesInterface()
 {
 }
 
-RepositoryPortageInterface::~RepositoryPortageInterface()
+RepositoryEInterface::~RepositoryEInterface()
 {
 }
 

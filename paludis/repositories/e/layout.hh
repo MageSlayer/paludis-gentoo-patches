@@ -32,13 +32,13 @@
 
 namespace paludis
 {
-    class PortageRepositoryEntries;
-    class PortageRepository;
+    class ERepositoryEntries;
+    class ERepository;
 
     /**
-     * Manages the layout of a PortageRepository.
+     * Manages the layout of a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Layout
@@ -135,7 +135,7 @@ namespace paludis
      * Thrown if a layout of the specified type does not exist.
      *
      * \ingroup grpexceptions
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchLayoutType :
@@ -151,12 +151,12 @@ namespace paludis
     /**
      * Virtual constructor for Layout.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     class PALUDIS_VISIBLE LayoutMaker :
         public VirtualConstructor<std::string,
-            tr1::shared_ptr<Layout> (*) (const PortageRepository * const, const FSEntry &,
-                    tr1::shared_ptr<const PortageRepositoryEntries>,
+            tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
+                    tr1::shared_ptr<const ERepositoryEntries>,
                     tr1::shared_ptr<const FSEntry>),
             virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
         public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>

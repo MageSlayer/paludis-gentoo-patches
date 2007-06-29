@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_PORTAGE_USE_DESC_HH
-#define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_PORTAGE_USE_DESC_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_USE_DESC_HH
+#define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_USE_DESC_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -30,9 +30,9 @@ namespace paludis
     class FSEntry;
 
     /**
-     * Implements use.desc options for PortageRepository.
+     * Implements use.desc options for ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     class UseDesc :
         private PrivateImplementationPattern<UseDesc>,

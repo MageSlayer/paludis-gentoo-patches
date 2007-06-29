@@ -18,8 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/portage_repository.hh>
-#include <paludis/repositories/e/portage_repository_sets.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/glsa.hh>
 
 #include <paludis/environment.hh>
@@ -53,50 +53,50 @@ using namespace paludis;
 namespace paludis
 {
     /**
-     * Implementation data for PortageRepositorySets.
+     * Implementation data for ERepositorySets.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     template<>
-    struct Implementation<PortageRepositorySets>
+    struct Implementation<ERepositorySets>
     {
         const Environment * const environment;
-        const PortageRepository * const portage_repository;
-        const PortageRepositoryParams params;
+        const ERepository * const e_repository;
+        const ERepositoryParams params;
 
-        Implementation(const Environment * const e, const PortageRepository * const p,
-                const PortageRepositoryParams & k) :
+        Implementation(const Environment * const e, const ERepository * const p,
+                const ERepositoryParams & k) :
             environment(e),
-            portage_repository(p),
+            e_repository(p),
             params(k)
         {
         }
     };
 }
 
-PortageRepositorySets::PortageRepositorySets(const Environment * const e, const PortageRepository * const p,
-        const PortageRepositoryParams & k) :
-    PrivateImplementationPattern<PortageRepositorySets>(new Implementation<PortageRepositorySets>(e, p, k))
+ERepositorySets::ERepositorySets(const Environment * const e, const ERepository * const p,
+        const ERepositoryParams & k) :
+    PrivateImplementationPattern<ERepositorySets>(new Implementation<ERepositorySets>(e, p, k))
 {
 }
 
-PortageRepositorySets::~PortageRepositorySets()
+ERepositorySets::~ERepositorySets()
 {
 }
 
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-PortageRepositorySets::package_set(const SetName & s) const
+ERepositorySets::package_set(const SetName & s) const
 {
     if ("system" == s.data())
-        throw InternalError(PALUDIS_HERE, "system set should've been handled by PortageRepository");
+        throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
     else if ("security" == s.data())
         return security_set(false);
     else if ("insecurity" == s.data())
         return security_set(true);
     else if ((_imp->params.setsdir / (stringify(s) + ".conf")).exists())
     {
-        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
+        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->e_repository->name())));
 
         FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
@@ -116,7 +116,7 @@ PortageRepositorySets::package_set(const SetName & s) const
 }
 
 tr1::shared_ptr<const SetNameCollection>
-PortageRepositorySets::sets_list() const
+ERepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
@@ -217,7 +217,7 @@ namespace
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-PortageRepositorySets::security_set(bool insecurity) const
+ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
     tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > security_packages(

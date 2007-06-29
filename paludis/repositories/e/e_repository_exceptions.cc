@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,27 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PARAMS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PARAMS_HH 1
+#include "e_repository_exceptions.hh"
 
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/collection.hh>
-#include <paludis/util/sr.hh>
+using namespace paludis;
 
-/** \file
- * Declaration for the PortageRepositoryParams class.
- *
- * \ingroup grpportagerepository
- */
-
-namespace paludis
+ERepositoryConfigurationError::ERepositoryConfigurationError(
+        const std::string & msg) throw () :
+    ConfigurationError("E Repository configuration error: " + msg)
 {
-    class Environment;
-    class PackageDatabase;
-    class PortageRepository;
-
-#include <paludis/repositories/e/portage_repository_params-sr.hh>
-
 }
 
-#endif

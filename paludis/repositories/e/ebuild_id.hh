@@ -26,7 +26,7 @@
 
 namespace paludis
 {
-    class PortageRepository;
+    class ERepository;
     class EclassMtimes;
 
     namespace erepository
@@ -45,7 +45,7 @@ namespace paludis
             public:
                 EbuildID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const e,
-                        const tr1::shared_ptr<const PortageRepository> &,
+                        const tr1::shared_ptr<const ERepository> &,
                         const FSEntry & file,
                         const std::string & guessed_eapi,
                         const time_t master_mtime,
@@ -89,7 +89,7 @@ namespace paludis
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual tr1::shared_ptr<const PortageRepository> portage_repository() const;
+                virtual tr1::shared_ptr<const ERepository> e_repository() const;
 
                 void set_eapi(const std::string &) const;
                 void set_slot(const SlotName &) const;

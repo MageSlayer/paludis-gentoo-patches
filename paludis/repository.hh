@@ -884,35 +884,35 @@ namespace paludis
             virtual ~RepositoryLicensesInterface();
     };
 
-    class PortageRepositoryParams;
+    class ERepositoryParams;
     class Layout;
 
     /**
-     * Interface for handling PortageRepository specific functionality.
+     * Interface for handling ERepository specific functionality.
      *
      * \see Repository
-     * \see PortageRepository
+     * \see ERepository
      * \ingroup grprepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE RepositoryPortageInterface
+    class PALUDIS_VISIBLE RepositoryEInterface
     {
         public:
-            ///\name Information about a PortageRepository
+            ///\name Information about a ERepository
             ///\{
 
             virtual std::string profile_variable(const std::string &) const = 0;
 
-            virtual const PortageRepositoryParams & params() const = 0;
+            virtual const ERepositoryParams & params() const = 0;
 
             ///\}
 
             ///\name Profile setting and querying functions
             ///\{
 
-            typedef RepositoryPortageInterfaceProfilesDescLine ProfilesDescLine;
+            typedef RepositoryEInterfaceProfilesDescLine ProfilesDescLine;
 
-            typedef libwrapiter::ForwardIterator<RepositoryPortageInterface,
+            typedef libwrapiter::ForwardIterator<RepositoryEInterface,
                     const ProfilesDescLine> ProfilesIterator;
             virtual ProfilesIterator begin_profiles() const = 0;
             virtual ProfilesIterator end_profiles() const = 0;
@@ -928,7 +928,7 @@ namespace paludis
              */
             virtual const tr1::shared_ptr<const Layout> layout() const = 0;
 
-            virtual ~RepositoryPortageInterface();
+            virtual ~RepositoryEInterface();
     };
 
     /**

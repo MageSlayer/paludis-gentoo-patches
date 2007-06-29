@@ -18,9 +18,9 @@
  */
 
 #include <paludis/repositories/e/exheres_layout.hh>
-#include <paludis/repositories/e/portage_repository_entries.hh>
-#include <paludis/repositories/e/portage_repository_exceptions.hh>
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository_entries.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/package_id.hh>
@@ -53,7 +53,7 @@ namespace paludis
     template<>
     struct Implementation<ExheresLayout>
     {
-        const PortageRepository * const repository;
+        const ERepository * const repository;
         const FSEntry tree_root;
 
         mutable bool has_category_names;
@@ -62,7 +62,7 @@ namespace paludis
         mutable IDMap ids;
 
         mutable tr1::shared_ptr<CategoryNamePartCollection> category_names_collection;
-        tr1::shared_ptr<const PortageRepositoryEntries> entries;
+        tr1::shared_ptr<const ERepositoryEntries> entries;
 
         tr1::shared_ptr<FSEntryCollection> arch_list_files;
         tr1::shared_ptr<FSEntryCollection> repository_mask_files;
@@ -70,8 +70,8 @@ namespace paludis
         tr1::shared_ptr<FSEntryCollection> mirror_files;
         tr1::shared_ptr<FSEntryCollection> use_desc_dirs;
 
-        Implementation(const PortageRepository * const n, const FSEntry & t,
-                tr1::shared_ptr<const PortageRepositoryEntries> e) :
+        Implementation(const ERepository * const n, const FSEntry & t,
+                tr1::shared_ptr<const ERepositoryEntries> e) :
             repository(n),
             tree_root(t),
             has_category_names(false),
@@ -86,8 +86,8 @@ namespace paludis
     };
 }
 
-ExheresLayout::ExheresLayout(const PortageRepository * const r, const FSEntry & tree_root,
-        tr1::shared_ptr<const PortageRepositoryEntries> e,
+ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_root,
+        tr1::shared_ptr<const ERepositoryEntries> e,
         tr1::shared_ptr<const FSEntry> f) :
     Layout(f),
     PrivateImplementationPattern<ExheresLayout>(new Implementation<ExheresLayout>(r, tree_root, e))
@@ -156,7 +156,7 @@ ExheresLayout::need_category_names() const
     }
 
     if (! found_one)
-        throw PortageRepositoryConfigurationError("No categories file available for repository '"
+        throw ERepositoryConfigurationError("No categories file available for repository '"
                 + stringify(_imp->repository->name()) + "', and this layout does not allow auto-generation");
 
     _imp->has_category_names = true;
@@ -297,7 +297,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
                     continue;
 
                 if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                            tr1::bind(&PortageRepositoryEntries::is_package_file, _imp->entries.get(),
+                            tr1::bind(&ERepositoryEntries::is_package_file, _imp->entries.get(),
                                 c + PackageNamePart(d->basename()), _1)))
                     continue;
 

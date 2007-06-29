@@ -32,7 +32,7 @@ namespace paludis
          * Holds a parsed EAPI phase.
          *
          * \nosubgrouping
-         * \ingroup grpportagerepository
+         * \ingroup grperepository
          * \ingroup grpeapi
          */
         class EAPIPhase :
@@ -63,7 +63,7 @@ namespace paludis
          * Holds parsed EAPI phases.
          *
          * \nosubgrouping
-         * \ingroup grpportagerepository
+         * \ingroup grperepository
          * \ingroup grpeapi
          */
         class EAPIPhases :

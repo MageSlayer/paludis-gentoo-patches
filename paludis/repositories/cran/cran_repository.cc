@@ -62,7 +62,7 @@ namespace paludis
     /**
      * Implementation data for a CRANRepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     template <>
     struct Implementation<CRANRepository>

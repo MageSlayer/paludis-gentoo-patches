@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
@@ -35,19 +35,19 @@ using namespace test;
 using namespace paludis;
 
 /** \file
- * Test cases for PortageRepositorySets.
+ * Test cases for ERepositorySets.
  *
  */
 
 namespace test_cases
 {
     /**
-     * \test Test PortageRepositorySets sets list.
+     * \test Test ERepositorySets sets list.
      *
      */
-    struct PortageRepositorySetsSetsListTest : TestCase
+    struct ERepositorySetsSetsListTest : TestCase
     {
-        PortageRepositorySetsSetsListTest() : TestCase("sets list") { }
+        ERepositorySetsSetsListTest() : TestCase("sets list") { }
 
         void run()
         {
@@ -56,9 +56,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_sets_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_sets_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
             tr1::shared_ptr<const SetNameCollection> sets_list(repo->sets_interface->sets_list());
@@ -68,15 +68,15 @@ namespace test_cases
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("insecurity")));
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("set1")));
         }
-    } test_portage_repository_sets_sets_list;
+    } test_e_repository_sets_sets_list;
 
     /**
-     * \test Test PortageRepositorySets maintainer-defined sets.
+     * \test Test ERepositorySets maintainer-defined sets.
      *
      */
-    struct PortageRepositorySetsMaintainerDefinedSetsTest : TestCase
+    struct ERepositorySetsMaintainerDefinedSetsTest : TestCase
     {
-        PortageRepositorySetsMaintainerDefinedSetsTest() : TestCase("maintainer-defined sets") { }
+        ERepositorySetsMaintainerDefinedSetsTest() : TestCase("maintainer-defined sets") { }
 
         void run()
         {
@@ -85,9 +85,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_sets_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_sets_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             tr1::shared_ptr<FakeInstalledRepository> installed(
                 new FakeInstalledRepository(&env, RepositoryName("installed")));
@@ -99,16 +99,16 @@ namespace test_cases
             set1->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
-    } test_portage_repository_sets_maintainer_defined_sets_list;
+    } test_e_repository_sets_maintainer_defined_sets_list;
 
 #if ENABLE_GLSA
     /**
-     * \test Test PortageRepositorySets insecurity set.
+     * \test Test ERepositorySets insecurity set.
      *
      */
-    struct PortageRepositorySetsInsecuritySetTest : TestCase
+    struct ERepositorySetsInsecuritySetTest : TestCase
     {
-        PortageRepositorySetsInsecuritySetTest() : TestCase("insecurity set") { }
+        ERepositorySetsInsecuritySetTest() : TestCase("insecurity set") { }
 
         virtual unsigned max_run_time() const
         {
@@ -122,9 +122,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_sets_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_sets_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             env.package_database()->add_repository(1, repo);
 
@@ -135,15 +135,15 @@ namespace test_cases
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
                                        "=cat-three/baz-1.1-r2::test-repo-1 =cat-three/baz-1.2::test-repo-1");
         }
-    } test_portage_repository_sets_insecurity_set;
+    } test_e_repository_sets_insecurity_set;
 
     /**
-     * \test Test PortageRepositorySets security set.
+     * \test Test ERepositorySets security set.
      *
      */
-    struct PortageRepositorySetsSecuritySetTest : TestCase
+    struct ERepositorySetsSecuritySetTest : TestCase
     {
-        PortageRepositorySetsSecuritySetTest() : TestCase("security set") { }
+        ERepositorySetsSecuritySetTest() : TestCase("security set") { }
 
         virtual unsigned max_run_time() const
         {
@@ -157,9 +157,9 @@ namespace test_cases
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_sets_TEST_dir/repo1");
-            keys->insert("profiles", "portage_repository_sets_TEST_dir/repo1/profiles/profile");
-            tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+            keys->insert("location", "e_repository_sets_TEST_dir/repo1");
+            keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakeInstalledRepository> installed(
@@ -174,7 +174,7 @@ namespace test_cases
             security->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }
-    } test_portage_repository_sets_security_set;
+    } test_e_repository_sets_security_set;
 #endif
 }
 

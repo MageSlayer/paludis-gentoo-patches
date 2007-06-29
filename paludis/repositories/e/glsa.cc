@@ -35,7 +35,7 @@ using namespace paludis;
 #include "glsa-sr.cc"
 
 #ifdef MONOLITHIC
-#  include <paludis/repositories/portage/xml_things.hh>
+#  include <paludis/repositories/e/xml_things.hh>
 #endif
 
 namespace paludis
@@ -217,11 +217,11 @@ GLSA::create_from_xml_file(const std::string & filename)
 
 #  else
     if (0 == libxmlhandle.handle)
-        libxmlhandle.handle = dlopen("libpaludisgentoorepositoryxmlthings.so",
+        libxmlhandle.handle = dlopen("libpaludiserepositoryxmlthings.so",
                 RTLD_NOW | RTLD_GLOBAL);
     if (0 == libxmlhandle.handle)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                + stringify(dlerror()) + "' when dlopen(libpaludisgentoorepositoryxmlthings.so)");
+                + stringify(dlerror()) + "' when dlopen(libpaludiserepositoryxmlthings.so)");
 
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
         libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(tr1::shared_ptr<GLSA> (*)(const std::string &),

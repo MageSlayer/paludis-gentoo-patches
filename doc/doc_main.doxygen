@@ -213,7 +213,7 @@
  * \ingroup grprepository
  */
 
-/** \defgroup grpportagerepository Portage repository
+/** \defgroup grperepository Portage repository
  *
  * \ingroup grprepository
  */

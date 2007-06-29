@@ -19,8 +19,8 @@
 
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/ebuild_flat_metadata_cache.hh>
-#include <paludis/repositories/e/portage_repository.hh>
-#include <paludis/repositories/e/portage_repository_params.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
 
@@ -65,7 +65,7 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
-        const tr1::shared_ptr<const PortageRepository> repository;
+        const tr1::shared_ptr<const ERepository> repository;
         const FSEntry ebuild;
         tr1::shared_ptr<const SlotName> slot;
         mutable tr1::shared_ptr<const EAPI> eapi;
@@ -89,7 +89,7 @@ namespace paludis
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const tr1::shared_ptr<const PortageRepository> r, const FSEntry & f, const std::string & g,
+                const tr1::shared_ptr<const ERepository> r, const FSEntry & f, const std::string & g,
                 const time_t t, const tr1::shared_ptr<const EclassMtimes> & m) :
             name(q),
             version(v),
@@ -107,7 +107,7 @@ namespace paludis
 
 EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const tr1::shared_ptr<const PortageRepository> & r,
+        const tr1::shared_ptr<const ERepository> & r,
         const FSEntry & f,
         const std::string & g,
         const time_t t,
@@ -459,8 +459,8 @@ EbuildID::set_slot(const SlotName & s) const
     _imp->slot.reset(new SlotName(s));
 }
 
-tr1::shared_ptr<const PortageRepository>
-EbuildID::portage_repository() const
+tr1::shared_ptr<const ERepository>
+EbuildID::e_repository() const
 {
     return _imp->repository;
 }

@@ -227,7 +227,7 @@ along with various optional others based upon the repository's capabilities.</p>
 <p>The commonly used subclasses are:</p>
 
 <ul>
-    <li>paludis::PortageRepository, which is used for Gentoo-style ebuild
+    <li>paludis::ERepository, which is used for Gentoo-style ebuild
     repositories.</li>
     <li>paludis::VDBRepository, which is used for installed packages.</li>
     <li>paludis::VirtualsRepository, which is used for old-style virtuals.</li>

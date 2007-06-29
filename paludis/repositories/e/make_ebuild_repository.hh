@@ -17,20 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MAKE_EBUILD_REPOSITORY_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MAKE_EBUILD_REPOSITORY_HH 1
 
-#include <paludis/repositories/e/portage_repository.hh>
+#include <paludis/repositories/e/e_repository.hh>
 
 namespace paludis
 {
     /**
      * Create an ebuild format repository.
      *
-     * \see PortageRepository
-     * \ingroup grpportagerepository
+     * \see ERepository
+     * \ingroup grperepository
      */
-    tr1::shared_ptr<PortageRepository>
+    tr1::shared_ptr<ERepository>
     make_ebuild_repository(
             Environment * const,
             tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
@@ -38,8 +38,8 @@ namespace paludis
     /**
      * Create an ebuild format repository (wrapper for our virtual constructor).
      *
-     * \see PortageRepository
-     * \ingroup grpportagerepository
+     * \see ERepository
+     * \ingroup grperepository
      */
     tr1::shared_ptr<Repository>
     make_ebuild_repository_wrapped(

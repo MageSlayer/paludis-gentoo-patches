@@ -17,42 +17,42 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_NEWS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_NEWS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_NEWS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_NEWS_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/config_file.hh>
 
 /** \file
- * Declaration for the PortageRepositoryNews class.
+ * Declaration for the ERepositoryNews class.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 namespace paludis
 {
     class Environment;
     class FSEntry;
-    class PortageRepository;
+    class ERepository;
 
     /**
-     * Holds the news/ data for a PortageRepository instance.
+     * Holds the news/ data for a ERepository instance.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PortageRepositoryNews :
-        private PrivateImplementationPattern<PortageRepositoryNews>,
-        private InstantiationPolicy<PortageRepositoryNews, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE ERepositoryNews :
+        private PrivateImplementationPattern<ERepositoryNews>,
+        private InstantiationPolicy<ERepositoryNews, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            PortageRepositoryNews(const Environment * const, const PortageRepository * const,
-                    const PortageRepositoryParams &);
-            ~PortageRepositoryNews();
+            ERepositoryNews(const Environment * const, const ERepository * const,
+                    const ERepositoryParams &);
+            ~ERepositoryNews();
 
             ///\}
 

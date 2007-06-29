@@ -20,12 +20,12 @@
 
 #include "config.h"
 
-#include <paludis/repositories/e/portage_repository.hh>
-#include <paludis/repositories/e/portage_repository_profile.hh>
-#include <paludis/repositories/e/portage_repository_news.hh>
-#include <paludis/repositories/e/portage_repository_sets.hh>
-#include <paludis/repositories/e/portage_repository_exceptions.hh>
-#include <paludis/repositories/e/portage_repository_entries.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_profile.hh>
+#include <paludis/repositories/e/e_repository_news.hh>
+#include <paludis/repositories/e/e_repository_sets.hh>
+#include <paludis/repositories/e/e_repository_exceptions.hh>
+#include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repository_info.hh>
@@ -65,9 +65,9 @@
 #include <ctype.h>
 
 /** \file
- * Implementation of PortageRepository.
+ * Implementation of ERepository.
  *
- * \ingroup grpportagerepository
+ * \ingroup grperepository
  */
 
 using namespace paludis;
@@ -75,20 +75,20 @@ using namespace paludis;
 typedef MakeHashedMap<QualifiedPackageName, std::list<tr1::shared_ptr<const PackageDepSpec> > >::Type RepositoryMaskMap;
 typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
-typedef std::list<RepositoryPortageInterface::ProfilesDescLine> ProfilesDesc;
+typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
 
 namespace paludis
 {
     /**
-     * Implementation data for a PortageRepository.
+     * Implementation data for a ERepository.
      *
-     * \ingroup grpportagerepository
+     * \ingroup grperepository
      */
     template <>
-    struct Implementation<PortageRepository>
+    struct Implementation<ERepository>
     {
-        PortageRepository * const repo;
-        const PortageRepositoryParams params;
+        ERepository * const repo;
+        const ERepositoryParams params;
 
         tr1::shared_ptr<RepositoryNameCache> names_cache;
 
@@ -107,29 +107,29 @@ namespace paludis
         mutable ProfilesDesc profiles_desc;
         mutable std::list<tr1::shared_ptr<UseDesc> > use_desc;
 
-        mutable tr1::shared_ptr<PortageRepositoryProfile> profile_ptr;
-        mutable tr1::shared_ptr<PortageRepositoryNews> news_ptr;
-        mutable tr1::shared_ptr<PortageRepositorySets> sets_ptr;
-        mutable tr1::shared_ptr<PortageRepositoryEntries> entries_ptr;
+        mutable tr1::shared_ptr<ERepositoryProfile> profile_ptr;
+        mutable tr1::shared_ptr<ERepositoryNews> news_ptr;
+        mutable tr1::shared_ptr<ERepositorySets> sets_ptr;
+        mutable tr1::shared_ptr<ERepositoryEntries> entries_ptr;
         mutable tr1::shared_ptr<Layout> layout;
 
-        Implementation(PortageRepository * const, const PortageRepositoryParams &);
+        Implementation(ERepository * const, const ERepositoryParams &);
         ~Implementation();
 
         void need_profiles() const;
         void need_profiles_desc() const;
     };
 
-    Implementation<PortageRepository>::Implementation(PortageRepository * const r,
-            const PortageRepositoryParams & p) :
+    Implementation<ERepository>::Implementation(ERepository * const r,
+            const ERepositoryParams & p) :
         repo(r),
         params(p),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
         has_repo_mask(false),
         has_mirrors(false),
         has_profiles_desc(false),
-        sets_ptr(new PortageRepositorySets(params.environment, r, p)),
-        entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
+        sets_ptr(new ERepositorySets(params.environment, r, p)),
+        entries_ptr(ERepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         layout(LayoutMaker::get_instance()->find_maker(
                     params.layout)(r, params.location, entries_ptr, params.master_repository ?
@@ -138,23 +138,23 @@ namespace paludis
     {
     }
 
-    Implementation<PortageRepository>::~Implementation()
+    Implementation<ERepository>::~Implementation()
     {
     }
 
     void
-    Implementation<PortageRepository>::need_profiles() const
+    Implementation<ERepository>::need_profiles() const
     {
         if (profile_ptr)
             return;
 
-        profile_ptr.reset(new PortageRepositoryProfile(
+        profile_ptr.reset(new ERepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
                     EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->ebuild_options->want_arch_var));
     }
 
     void
-    Implementation<PortageRepository>::need_profiles_desc() const
+    Implementation<ERepository>::need_profiles_desc() const
     {
         if (has_profiles_desc)
             return;
@@ -182,11 +182,11 @@ namespace paludis
 
                 FSEntryCollection::Concrete profiles;
                 profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
-                profiles_desc.push_back(RepositoryPortageInterface::ProfilesDescLine::create()
+                profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::create()
                         .arch(tokens.at(0))
                         .path(*profiles.begin())
                         .status(tokens.at(2))
-                        .profile(tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
+                        .profile(tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
                                     EAPIData::get_instance()->eapi_from_string(
                                         params.eapi_when_unknown)->supported->ebuild_options->want_arch_var))));
@@ -194,7 +194,7 @@ namespace paludis
         }
 
         if (! found_one)
-            throw PortageRepositoryConfigurationError("No profiles.desc found");
+            throw ERepositoryConfigurationError("No profiles.desc found");
 
         has_profiles_desc = true;
     }
@@ -238,7 +238,7 @@ namespace
     }
 }
 
-PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
+ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
             RepositoryCapabilities::create()
             .mask_interface(this)
@@ -258,11 +258,11 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)
             .make_virtuals_interface(0)
-            .portage_interface(this)
+            .e_interface(this)
             .pretend_interface(this)
             .hook_interface(this),
             p.entry_format),
-    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
+    PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p))
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
     // fairly slow to calculate.
@@ -295,42 +295,42 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     _info->add_section(config_info);
 }
 
-PortageRepository::~PortageRepository()
+ERepository::~ERepository()
 {
 }
 
 bool
-PortageRepository::do_has_category_named(const CategoryNamePart & c) const
+ERepository::do_has_category_named(const CategoryNamePart & c) const
 {
     return _imp->layout->has_category_named(c);
 }
 
 bool
-PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
+ERepository::do_has_package_named(const QualifiedPackageName & q) const
 {
     return _imp->layout->has_package_named(q);
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
-PortageRepository::do_category_names() const
+ERepository::do_category_names() const
 {
     return _imp->layout->category_names();
 }
 
 tr1::shared_ptr<const QualifiedPackageNameCollection>
-PortageRepository::do_package_names(const CategoryNamePart & c) const
+ERepository::do_package_names(const CategoryNamePart & c) const
 {
     return _imp->layout->package_names(c);
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-PortageRepository::do_package_ids(const QualifiedPackageName & n) const
+ERepository::do_package_ids(const QualifiedPackageName & n) const
 {
     return _imp->layout->package_ids(n);
 }
 
 bool
-PortageRepository::do_query_repository_masks(const PackageID & id) const
+ERepository::do_query_repository_masks(const PackageID & id) const
 {
     if (! _imp->has_repo_mask)
     {
@@ -384,21 +384,21 @@ PortageRepository::do_query_repository_masks(const PackageID & id) const
 }
 
 bool
-PortageRepository::do_query_profile_masks(const PackageID & id) const
+ERepository::do_query_profile_masks(const PackageID & id) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->profile_masked(id);
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
+ERepository::do_query_use(const UseFlagName & f, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_state_ignoring_masks(f, e);
 }
 
 bool
-PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageID & e) const
+ERepository::do_query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_masked(u, e) ||
@@ -406,14 +406,14 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageID & e)
 }
 
 bool
-PortageRepository::do_query_use_force(const UseFlagName & u, const PackageID & e) const
+ERepository::do_query_use_force(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_forced(u, e);
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-PortageRepository::do_arch_flags() const
+ERepository::do_arch_flags() const
 {
     if (! _imp->arch_flags)
     {
@@ -444,7 +444,7 @@ PortageRepository::do_arch_flags() const
 }
 
 tr1::shared_ptr<FSEntry>
-PortageRepository::do_license_exists(const std::string & license) const
+ERepository::do_license_exists(const std::string & license) const
 {
     tr1::shared_ptr<FSEntry> p;
 
@@ -463,7 +463,7 @@ PortageRepository::do_license_exists(const std::string & license) const
 }
 
 void
-PortageRepository::need_mirrors() const
+ERepository::need_mirrors() const
 {
     if (! _imp->has_mirrors)
     {
@@ -507,7 +507,7 @@ PortageRepository::need_mirrors() const
 }
 
 void
-PortageRepository::do_install(const tr1::shared_ptr<const PackageID> & id,
+ERepository::do_install(const tr1::shared_ptr<const PackageID> & id,
         const InstallOptions & o) const
 {
     _imp->need_profiles();
@@ -515,14 +515,14 @@ PortageRepository::do_install(const tr1::shared_ptr<const PackageID> & id,
 }
 
 bool
-PortageRepository::do_pretend(const tr1::shared_ptr<const PackageID> & id) const
+ERepository::do_pretend(const tr1::shared_ptr<const PackageID> & id) const
 {
     _imp->need_profiles();
     return _imp->entries_ptr->pretend(id, _imp->profile_ptr);
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-PortageRepository::do_package_set(const SetName & s) const
+ERepository::do_package_set(const SetName & s) const
 {
     if (s.data() == "system")
     {
@@ -534,13 +534,13 @@ PortageRepository::do_package_set(const SetName & s) const
 }
 
 tr1::shared_ptr<const SetNameCollection>
-PortageRepository::sets_list() const
+ERepository::sets_list() const
 {
     return _imp->sets_ptr->sets_list();
 }
 
 bool
-PortageRepository::do_sync() const
+ERepository::do_sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -579,28 +579,28 @@ PortageRepository::do_sync() const
 }
 
 void
-PortageRepository::invalidate()
+ERepository::invalidate()
 {
-    _imp.reset(new Implementation<PortageRepository>(this, _imp->params));
+    _imp.reset(new Implementation<ERepository>(this, _imp->params));
 }
 
 void
-PortageRepository::update_news() const
+ERepository::update_news() const
 {
     if (! _imp->news_ptr)
-        _imp->news_ptr.reset(new PortageRepositoryNews(_imp->params.environment, this, _imp->params));
+        _imp->news_ptr.reset(new ERepositoryNews(_imp->params.environment, this, _imp->params));
 
     _imp->news_ptr->update_news();
 }
 
 const tr1::shared_ptr<const Layout>
-PortageRepository::layout() const
+ERepository::layout() const
 {
     return _imp->layout;
 }
 
 std::string
-PortageRepository::get_environment_variable(
+ERepository::get_environment_variable(
         const tr1::shared_ptr<const PackageID> & for_package,
         const std::string & var) const
 {
@@ -613,7 +613,7 @@ PortageRepository::get_environment_variable(
 }
 
 tr1::shared_ptr<const RepositoryInfo>
-PortageRepository::info(bool verbose) const
+ERepository::info(bool verbose) const
 {
     tr1::shared_ptr<const RepositoryInfo> result_non_verbose(Repository::info(verbose));
     if (! verbose)
@@ -692,29 +692,29 @@ PortageRepository::info(bool verbose) const
 }
 
 std::string
-PortageRepository::profile_variable(const std::string & s) const
+ERepository::profile_variable(const std::string & s) const
 {
     _imp->need_profiles();
 
     return _imp->profile_ptr->environment_variable(s);
 }
 
-PortageRepository::MirrorsIterator
-PortageRepository::begin_mirrors(const std::string & s) const
+ERepository::MirrorsIterator
+ERepository::begin_mirrors(const std::string & s) const
 {
     need_mirrors();
     return MirrorsIterator(_imp->mirrors.equal_range(s).first);
 }
 
-PortageRepository::MirrorsIterator
-PortageRepository::end_mirrors(const std::string & s) const
+ERepository::MirrorsIterator
+ERepository::end_mirrors(const std::string & s) const
 {
     need_mirrors();
     return MirrorsIterator(_imp->mirrors.equal_range(s).second);
 }
 
-tr1::shared_ptr<const PortageRepository::VirtualsSequence>
-PortageRepository::virtual_packages() const
+tr1::shared_ptr<const ERepository::VirtualsSequence>
+ERepository::virtual_packages() const
 {
     Context context("When loading virtual packages for repository '" +
             stringify(name()) + "'");
@@ -723,7 +723,7 @@ PortageRepository::virtual_packages() const
 
     tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence::Concrete);
 
-    for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
+    for (ERepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
         result->push_back(RepositoryVirtualsEntry::create()
                 .provided_by_spec(i->second)
@@ -733,12 +733,12 @@ PortageRepository::virtual_packages() const
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-PortageRepository::do_use_expand_flags() const
+ERepository::do_use_expand_flags() const
 {
     _imp->need_profiles();
 
     tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
         std::list<std::string> values;
@@ -757,12 +757,12 @@ PortageRepository::do_use_expand_flags() const
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-PortageRepository::do_use_expand_prefixes() const
+ERepository::do_use_expand_prefixes() const
 {
     _imp->need_profiles();
 
     tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
         std::string lower_i;
@@ -774,12 +774,12 @@ PortageRepository::do_use_expand_prefixes() const
 }
 
 tr1::shared_ptr<const UseFlagNameCollection>
-PortageRepository::do_use_expand_hidden_prefixes() const
+ERepository::do_use_expand_hidden_prefixes() const
 {
     _imp->need_profiles();
 
     tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
+    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
             i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
     {
         std::string lower_i;
@@ -791,13 +791,13 @@ PortageRepository::do_use_expand_hidden_prefixes() const
 }
 
 void
-PortageRepository::regenerate_cache() const
+ERepository::regenerate_cache() const
 {
     _imp->names_cache->regenerate_cache();
 }
 
 tr1::shared_ptr<const CategoryNamePartCollection>
-PortageRepository::do_category_names_containing_package(const PackageNamePart & p) const
+ERepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
@@ -808,22 +808,22 @@ PortageRepository::do_category_names_containing_package(const PackageNamePart & 
     return result ? result : Repository::do_category_names_containing_package(p);
 }
 
-PortageRepository::ProfilesIterator
-PortageRepository::begin_profiles() const
+ERepository::ProfilesIterator
+ERepository::begin_profiles() const
 {
     _imp->need_profiles_desc();
     return ProfilesIterator(_imp->profiles_desc.begin());
 }
 
-PortageRepository::ProfilesIterator
-PortageRepository::end_profiles() const
+ERepository::ProfilesIterator
+ERepository::end_profiles() const
 {
     _imp->need_profiles_desc();
     return ProfilesIterator(_imp->profiles_desc.end());
 }
 
-PortageRepository::ProfilesIterator
-PortageRepository::find_profile(const FSEntry & location) const
+ERepository::ProfilesIterator
+ERepository::find_profile(const FSEntry & location) const
 {
     _imp->need_profiles_desc();
     for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
@@ -834,7 +834,7 @@ PortageRepository::find_profile(const FSEntry & location) const
 }
 
 void
-PortageRepository::set_profile(const ProfilesIterator & iter)
+ERepository::set_profile(const ProfilesIterator & iter)
 {
     Context context("When setting profile by iterator:");
 
@@ -847,7 +847,7 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
 }
 
 void
-PortageRepository::set_profile_by_arch(const UseFlagName & arch)
+ERepository::set_profile_by_arch(const UseFlagName & arch)
 {
     Context context("When setting profile by arch '" + stringify(arch) + "':");
 
@@ -869,7 +869,7 @@ PortageRepository::set_profile_by_arch(const UseFlagName & arch)
 }
 
 std::string
-PortageRepository::do_describe_use_flag(const UseFlagName & f,
+ERepository::do_describe_use_flag(const UseFlagName & f,
         const PackageID & e) const
 {
     if (_imp->use_desc.empty())
@@ -891,39 +891,39 @@ PortageRepository::do_describe_use_flag(const UseFlagName & f,
     return result;
 }
 
-const PortageRepositoryParams &
-PortageRepository::params() const
+const ERepositoryParams &
+ERepository::params() const
 {
     return _imp->params;
 }
 
 bool
-PortageRepository::is_suitable_destination_for(const PackageID & e) const
+ERepository::is_suitable_destination_for(const PackageID & e) const
 {
     std::string f(e.repository()->format());
     return f == "ebuild" || f == "ebin";
 }
 
 bool
-PortageRepository::is_default_destination() const
+ERepository::is_default_destination() const
 {
     return false;
 }
 
 bool
-PortageRepository::want_pre_post_phases() const
+ERepository::want_pre_post_phases() const
 {
     return false;
 }
 
 void
-PortageRepository::merge(const MergeOptions & o)
+ERepository::merge(const MergeOptions & o)
 {
     _imp->entries_ptr->merge(o);
 }
 
 HookResult
-PortageRepository::perform_hook(const Hook & hook) const
+ERepository::perform_hook(const Hook & hook) const
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

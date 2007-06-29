@@ -201,14 +201,14 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
     _imp->initialise(this);
 
     if (_imp->main_repo)
-        if (_imp->main_repo->portage_interface->end_profiles() != _imp->main_repo->portage_interface->begin_profiles())
-            _imp->main_repo->portage_interface->set_profile(_imp->main_repo->portage_interface->begin_profiles());
+        if (_imp->main_repo->e_interface->end_profiles() != _imp->main_repo->e_interface->begin_profiles())
+            _imp->main_repo->e_interface->set_profile(_imp->main_repo->e_interface->begin_profiles());
 
     if (_imp->master_repo)
-        if (_imp->master_repo->portage_interface->end_profiles() !=
-                _imp->master_repo->portage_interface->begin_profiles())
-            _imp->master_repo->portage_interface->set_profile(
-                    _imp->master_repo->portage_interface->begin_profiles());
+        if (_imp->master_repo->e_interface->end_profiles() !=
+                _imp->master_repo->e_interface->begin_profiles())
+            _imp->master_repo->e_interface->set_profile(
+                    _imp->master_repo->e_interface->begin_profiles());
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -282,11 +282,11 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection
     if (_imp->is_vdb)
         return true;
 
-    std::string ak(_imp->main_repo->portage_interface->profile_variable("ACCEPT_KEYWORDS"));
+    std::string ak(_imp->main_repo->e_interface->profile_variable("ACCEPT_KEYWORDS"));
 
     if (ak.empty())
     {
-        std::string arch(_imp->main_repo->portage_interface->profile_variable("ARCH"));
+        std::string arch(_imp->main_repo->e_interface->profile_variable("ARCH"));
         if (keywords->end() != keywords->find(KeywordName(arch)))
             return true;
 
