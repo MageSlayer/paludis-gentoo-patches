@@ -52,7 +52,7 @@ namespace paludis
         ll_warning,           ///< Warning message
         ll_silent,            ///< Silent (for set_log_level)
         last_ll,              ///< Number of items
-        initial_ll = ll_debug ///< Initial value
+        initial_ll = ll_qa    ///< Initial value
     };
 
 #include <paludis/util/log-se.hh>
