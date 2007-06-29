@@ -24,6 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/mutex.hh>
 
 template <typename OurType_>
 void
@@ -65,16 +66,21 @@ template<typename OurType_>
 OurType_ *
 paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::get_instance()
 {
-    static bool recursive(false);
     OurType_ * * i(_get_instance_ptr());
 
     if (0 == *i)
     {
+        PALUDIS_TLS bool recursive(false);
         if (recursive)
             throw paludis::InternalError(PALUDIS_HERE, "Recursive instantiation");
-
         Save<bool> save_recursive(&recursive, true);
-        *i = new OurType_;
+
+        static Mutex m;
+        Lock l(m);
+
+        i = _get_instance_ptr();
+        if (0 == *i)
+            *i = new OurType_;
     }
 
     return *i;

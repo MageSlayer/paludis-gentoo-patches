@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/action_queue.hh>
 
 /** \file
  * Implementation for Log.
@@ -46,23 +47,91 @@ namespace paludis
     template<>
     struct Implementation<Log>
     {
-        /// Current log level
         LogLevel log_level;
-
-        /// Current output stream
         std::ostream * stream;
-
-        /// Program name
         std::string program_name;
+
+        mutable ActionQueue action_queue;
+
+        Implementation() :
+            log_level(initial_ll),
+            stream(&std::cerr),
+            program_name("paludis")
+        {
+        }
+
+        void message(const LogLevel l, const LogContext c, const std::string & s)
+        {
+            if (l >= log_level)
+            {
+                *stream << program_name << "@" << ::time(0) << ": ";
+                do
+                {
+                    switch (l)
+                    {
+                        case ll_debug:
+                            *stream << "[DEBUG] ";
+                            continue;
+
+                        case ll_qa:
+                            *stream << "[QA] ";
+                            continue;
+
+                        case ll_warning:
+                            *stream << "[WARNING] ";
+                            continue;
+
+                        case ll_silent:
+                            throw InternalError(PALUDIS_HERE, "ll_silent used for a message");
+
+                        case last_ll:
+                            break;
+                    }
+
+                    throw InternalError(PALUDIS_HERE, "Bad value for log_level");
+
+                } while (false);
+
+                if (lc_context == c)
+                {
+                    static std::string previous_context;
+                    std::string context(Context::backtrace("\n ... "));
+                    if (previous_context == context)
+                        *stream << "(same context) " << s << std::endl;
+                    else
+                        *stream << Context::backtrace("\n  ... ") << s << std::endl;
+                    previous_context = context;
+                }
+                else
+                    *stream << s << std::endl;
+            }
+        }
+
+        void set_log_level(const LogLevel l)
+        {
+            log_level = l;
+        }
+
+        void get_log_level(LogLevel & l) const
+        {
+            l = log_level;
+        }
+
+        void set_program_name(const std::string & s)
+        {
+            program_name = s;
+        }
+
+        void set_log_stream(std::ostream * const s)
+        {
+            stream = s;
+        }
     };
 }
 
 Log::Log() :
     PrivateImplementationPattern<Log>(new Implementation<Log>)
 {
-    _imp->log_level = initial_ll;
-    _imp->stream = &std::cerr;
-    _imp->program_name = "paludis";
 }
 
 Log::~Log()
@@ -72,61 +141,22 @@ Log::~Log()
 void
 Log::set_log_level(const LogLevel l)
 {
-    _imp->log_level = l;
+    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::set_log_level), _imp.get(), l));
 }
 
 LogLevel
 Log::log_level() const
 {
-    return _imp->log_level;
+    LogLevel result(static_cast<LogLevel>(1337));
+    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::get_log_level), _imp.get(), tr1::ref(result)));
+    _imp->action_queue.complete_pending();
+    return result;
 }
 
 void
 Log::_message(const LogLevel l, const LogContext c, const std::string & s)
 {
-    if (l >= _imp->log_level)
-    {
-        *_imp->stream << _imp->program_name << "@" << ::time(0) << ": ";
-        do
-        {
-            switch (l)
-            {
-                case ll_debug:
-                    *_imp->stream << "[DEBUG] ";
-                    continue;
-
-                case ll_qa:
-                    *_imp->stream << "[QA] ";
-                    continue;
-
-                case ll_warning:
-                    *_imp->stream << "[WARNING] ";
-                    continue;
-
-                case ll_silent:
-                    throw InternalError(PALUDIS_HERE, "ll_silent used for a message");
-
-                case last_ll:
-                    break;
-            }
-
-            throw InternalError(PALUDIS_HERE, "Bad value for log_level");
-
-        } while (false);
-
-        if (lc_context == c)
-        {
-            static std::string previous_context;
-            std::string context(Context::backtrace("\n ... "));
-            if (previous_context == context)
-                *_imp->stream << "(same context) " << s << std::endl;
-            else
-                *_imp->stream << Context::backtrace("\n  ... ") << s << std::endl;
-            previous_context = context;
-        }
-        else
-            *_imp->stream << s << std::endl;
-    }
+    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, s));
 }
 
 LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :
@@ -151,7 +181,13 @@ Log::message(const LogLevel l, const LogContext c)
 void
 Log::set_log_stream(std::ostream * const s)
 {
-    _imp->stream = s;
+    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::set_log_stream), _imp.get(), s));
+}
+
+void
+Log::complete_pending() const
+{
+    _imp->action_queue.complete_pending();
 }
 
 std::ostream &
@@ -179,13 +215,13 @@ paludis::operator<< (std::ostream & s, const LogLevel & l)
             ;
     };
 
-    throw InternalError(PALUDIS_HERE, "Bad log level");
+    throw InternalError(PALUDIS_HERE, "Bad log level '" + stringify(static_cast<int>(l)) + "'");
 }
 
 void
 Log::set_program_name(const std::string & s)
 {
-    _imp->program_name = s;
+    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::set_program_name), _imp.get(), s));
 }
 
 LogMessageHandler::LogMessageHandler(Log * const ll, const LogLevel l, const LogContext c) :

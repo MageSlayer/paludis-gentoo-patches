@@ -75,4 +75,10 @@
 #  define PALUDIS_HIDDEN
 #endif
 
+#ifdef PALUDIS_ENABLE_THREADS
+#  define PALUDIS_TLS static __thread
+#else
+#  define PALUDIS_TLS static
+#endif
+
 #endif

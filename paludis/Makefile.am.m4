@@ -85,7 +85,7 @@ SUBDIRS = digests distributions eapis fetchers syncers util selinux . dep_list m
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist
-libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
 
 libpaludismanpagethings_la_SOURCES = name.cc
 
@@ -96,20 +96,13 @@ libpaludissohooks_TEST_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_C
 
 libpaludissohooks_TEST_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
 
-if ! MONOLITHIC
-
 libpaludis_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	@DYNAMIC_LD_LIBS@
+	@DYNAMIC_LD_LIBS@ \
+	$(PTHREAD_LIBS)
 
 libpaludismanpagethings_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
-
-else
-
-libpaludis_la_LIBADD = @DYNAMIC_LD_LIBS@
-
-endif
 
 TESTS = testlist
 

@@ -558,6 +558,55 @@ else
 fi
 AC_SUBST([PALUDIS_ENABLE_VISIBILITY])
 AC_SUBST([PALUDIS_CXXFLAGS_VISIBILITY])
+
+AC_MSG_CHECKING([whether to enable threads])
+PTHREAD_LIBS=""
+AC_ARG_ENABLE([threads],
+			  AS_HELP_STRING([--enable-threads], [Enable threads (experimental)]),
+			  [ENABLE_THREADS=$enableval],
+			  [ENABLE_THREADS=no])
+AC_MSG_RESULT([$ENABLE_THREADS])
+AC_SUBST([ENABLE_THREADS])
+if test "x$ENABLE_THREADS" = "xyes" ; then
+	AC_MSG_CHECKING([for compiler __thread support])
+	AC_COMPILE_IFELSE([
+int main(int, char **)
+{
+	static __thread int x(0);
+	return x;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([--enable-threads requires compiler __thread support])])
+
+	AC_MSG_CHECKING([whether -pthread -lpthread gets us posix threads])
+	save_CXXFLAGS=$CXXFLAGS
+	save_LDFLAGS=$LDFLAGS
+	CXXFLAGS="$CXXFLAGS -pthread"
+	LDFLAGS="$LDFLAGS -pthread -lpthread"
+	AC_LINK_IFELSE([
+#include <pthread.h>
+int main(int, char **)
+{
+	pthread_mutexattr_t attr;
+	pthread_mutexattr_init(&attr);
+	return 0;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	AC_MSG_ERROR([don't know how to enable pthreads for your compiler])])
+	CXXFLAGS=$save_CXXFLAGS
+	LDFLAGS=$save_LDFLAGS
+	PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS -DPALUDIS_ENABLE_THREADS=1 -pthread"
+	PTHREAD_LIBS="-pthread -lpthread"
+	PALUDIS_ENABLE_THREADS=1
+else
+	PALUDIS_ENABLE_THREADS=0
+fi
+AC_SUBST([PALUDIS_ENABLE_THREADS])
+AC_SUBST([PTHREAD_LIBS])
 dnl }}}
 
 dnl {{{ sandbox

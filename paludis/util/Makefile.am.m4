@@ -78,7 +78,8 @@ EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 srlist srcleanlist selist seclea
 SUBDIRS = .
 
 libpaludisutil_la_SOURCES = filelist
-libpaludisutil_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisutil_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
+libpaludisutil_la_LIBADD = $(PTHREAD_LIBS)
 
 TESTS = testlist
 
@@ -90,15 +91,7 @@ TESTS_ENVIRONMENT = env \
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludisutil.la
-
-else
-
 lib_LTLIBRARIES = libpaludisutil.la
-
-endif
 
 paludis_util_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/util/
 paludis_util_include_HEADERS = headerlist srheaderlist seheaderlist

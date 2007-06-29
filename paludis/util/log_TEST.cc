@@ -77,6 +77,7 @@ namespace test_cases
 
             TEST_CHECK(s.str().empty());
             Log::get_instance()->message(ll_debug, lc_no_context) << "one";
+            Log::get_instance()->complete_pending();
             TEST_CHECK(! s.str().empty());
             TEST_CHECK(std::string::npos != s.str().find("one"));
 
@@ -86,8 +87,10 @@ namespace test_cases
 
             Log::get_instance()->set_log_level(ll_warning);
             Log::get_instance()->message(ll_debug, lc_no_context) << "two";
+            Log::get_instance()->complete_pending();
             TEST_CHECK(t.str().empty());
             Log::get_instance()->message(ll_warning, lc_no_context) << "three" << "." << 14;
+            Log::get_instance()->complete_pending();
             TEST_CHECK(! t.str().empty());
             TEST_CHECK(std::string::npos == t.str().find("one"));
             TEST_CHECK(std::string::npos == t.str().find("two"));
@@ -109,15 +112,19 @@ namespace test_cases
             TEST_CHECK(s.str().empty());
 
             TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context) << throws_a_monkey(), Monkey);
+            Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
             TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context)
                     << "one" << throws_a_monkey() << "two", Monkey);
+            Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
 
             TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context) << throws_a_monkey_when_stringified(), Monkey);
+            Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
             TEST_CHECK_THROWS(Log::get_instance()->message(ll_debug, lc_no_context)
                     << "one" << throws_a_monkey_when_stringified() << "two", Monkey);
+            Log::get_instance()->complete_pending();
             TEST_CHECK(s.str().empty());
         }
     } test_log_exception;
