@@ -23,6 +23,7 @@ builtin_saveenv()
     ( set ; export -p ) | sed \
         -e '/^\(declare -[rx]\+ \)\?SANDBOX_/d' \
         -e '/^\(declare -[rx]\+ \)\?.\?[UP]ID/d' \
+        -e '/^\(declare -[rx]\+ \)\?BASH_REMATCH/d' \
         -e '/^\(declare -[rx]\+ \)\?BASH_VERSINFO/d' \
         -e '/^\(declare -[rx]\+ \)\?PALUDIS_LOADSAVEENV_DIR/d' \
         -e '/^\(declare -[rx]\+ \)\?PALUDIS_DO_NOTHING_SANDBOXY/d' \

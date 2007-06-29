@@ -179,7 +179,7 @@ ebuild_scrub_environment()
 {
     local filters=(
         -e '/^\(EU\|PP\|U\)ID=/d'
-        -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\)=/d'
+        -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\|REMATCH\)=/d'
         -e '/^BASH_COMPLETION\(_DIR\)\?=/d'
         -e '/^PALUDIS_SOURCE_MERGED_VARIABLES=/d'
         -e '/^bash[0-9]\+[a-z]\?=/d'
