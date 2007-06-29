@@ -17,7 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "thread.hh"
+#include <paludis/util/thread.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
+#include <string.h>
 
 using namespace paludis;
 
@@ -27,7 +30,9 @@ Thread::Thread(const tr1::function<void () throw ()> & f) :
     _thread(new pthread_t),
     _func(f)
 {
-    pthread_create(_thread, 0, &thread_func, this);
+    int err;
+    if (0 != ((err = pthread_create(_thread, 0, &thread_func, this))))
+        throw InternalError(PALUDIS_HERE, "pthread_create failed: " + stringify(strerror(err)));
 }
 
 void *

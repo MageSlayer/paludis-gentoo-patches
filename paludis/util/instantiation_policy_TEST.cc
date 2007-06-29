@@ -19,7 +19,16 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/thread.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/make_shared_ptr.hh>
+
+#include <algorithm>
+#include <vector>
+#include <functional>
 #include <string>
+
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -33,10 +42,6 @@ using namespace paludis;
 
 namespace
 {
-    /**
-     * Test class for InstantiationPolicy.
-     *
-     */
     class MyClass :
         public InstantiationPolicy<MyClass, instantiation_method::SingletonTag>
     {
@@ -94,14 +99,32 @@ namespace
             {
             }
     };
+
+    class MyThreadedClass :
+        public InstantiationPolicy<MyThreadedClass, instantiation_method::SingletonTag>
+    {
+        friend class InstantiationPolicy<MyThreadedClass, instantiation_method::SingletonTag>;
+
+        private:
+            MyThreadedClass()
+            {
+                Lock l(mutex);
+                ++instances;
+            }
+
+        public:
+            std::string s;
+
+            static Mutex mutex;
+            static int instances;
+    };
+
+    int MyThreadedClass::instances = 0;
+    Mutex MyThreadedClass::mutex;
 }
 
 namespace test_cases
 {
-    /**
-     * \test Test singleton behaviour.
-     *
-     */
     struct SingletonPatternTest : TestCase
     {
         SingletonPatternTest() : TestCase("singleton test") { }
@@ -123,10 +146,39 @@ namespace test_cases
         }
     } test_singleton_pattern;
 
-    /**
-     * \test Test singleton behaviour.
-     *
-     */
+    struct SingletonThreadedTest : TestCase
+    {
+        SingletonThreadedTest() : TestCase("singleton threaded test") { }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        static void thread_func(void * * const p) throw ()
+        {
+            *p = MyThreadedClass::get_instance();
+        }
+
+        void run()
+        {
+            using namespace tr1::placeholders;
+            const int c = 1000;
+
+            std::vector<void *> a(c, static_cast<void *>(0));
+            TEST_CHECK_EQUAL(MyThreadedClass::instances, 0);
+            TEST_CHECK(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
+            {
+                std::vector<tr1::shared_ptr<Thread> > t(c);
+                for (int x(0) ; x < c ; ++x)
+                    t[x] = make_shared_ptr(new Thread(tr1::bind(&thread_func, &a[x])));
+            }
+            TEST_CHECK_EQUAL(MyThreadedClass::instances, 1);
+            TEST_CHECK(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));
+            TEST_CHECK(c == std::count(a.begin(), a.end(), MyThreadedClass::get_instance()));
+        }
+    } test_singleton_threaded;
+
     struct SingletonPatternDeleteTest : TestCase
     {
         SingletonPatternDeleteTest() : TestCase("singleton delete test") { }
