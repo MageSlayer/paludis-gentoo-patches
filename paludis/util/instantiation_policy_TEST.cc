@@ -163,7 +163,7 @@ namespace test_cases
         void run()
         {
             using namespace tr1::placeholders;
-            const int c = 1000;
+            const int c = 100;
 
             std::vector<void *> a(c, static_cast<void *>(0));
             TEST_CHECK_EQUAL(MyThreadedClass::instances, 0);
