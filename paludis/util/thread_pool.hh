@@ -17,23 +17,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_THREAD_POOL_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_THREAD_POOL_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE ActionQueue :
-        private PrivateImplementationPattern<ActionQueue>
+    class PALUDIS_VISIBLE ThreadPool :
+        private PrivateImplementationPattern<ThreadPool>
     {
         public:
-            ActionQueue(const unsigned n_threads = 1);
-            ~ActionQueue();
+            ThreadPool();
+            ~ThreadPool();
 
-            void enqueue(const tr1::function<void () throw ()> &);
-            void complete_pending();
+            void create_thread(const tr1::function<void () throw ()> &);
     };
 }
 

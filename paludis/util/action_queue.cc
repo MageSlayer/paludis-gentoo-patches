@@ -23,7 +23,7 @@
 #ifdef PALUDIS_ENABLE_THREADS
 #  include <paludis/util/mutex.hh>
 #  include <paludis/util/condition_variable.hh>
-#  include <paludis/util/thread.hh>
+#  include <paludis/util/thread_pool.hh>
 #  include <list>
 #endif
 
@@ -39,12 +39,13 @@ namespace paludis
         ConditionVariable condition;
         bool should_finish;
         std::list<tr1::function<void () throw ()> > queue;
-        Thread thread;
+        ThreadPool threads;
 
         void finish()
         {
             Lock l(mutex);
             should_finish = true;
+            condition.broadcast();
         }
 
         void thread_func()
@@ -73,23 +74,26 @@ namespace paludis
             }
         }
 
-        Implementation() :
-            should_finish(false),
-            thread(tr1::bind(tr1::mem_fn(&Implementation::thread_func), this))
+        Implementation(const unsigned n_threads) :
+            should_finish(false)
         {
+            for (unsigned x(0) ; x < n_threads ; ++x)
+                threads.create_thread(tr1::bind(tr1::mem_fn(&Implementation::thread_func), this));
         }
 #endif
     };
 }
 
-ActionQueue::ActionQueue() :
-    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>)
+ActionQueue::ActionQueue(const unsigned n_threads) :
+    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads))
 {
 }
 
 ActionQueue::~ActionQueue()
 {
+#ifdef PALUDIS_ENABLE_THREADS
     enqueue(tr1::bind(tr1::mem_fn(&Implementation<ActionQueue>::finish), _imp.get()));
+#endif
 }
 
 void

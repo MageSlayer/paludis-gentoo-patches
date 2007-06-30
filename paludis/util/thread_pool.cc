@@ -17,24 +17,36 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/thread.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <list>
 
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
+using namespace paludis;
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE ActionQueue :
-        private PrivateImplementationPattern<ActionQueue>
+    template <>
+    struct Implementation<ThreadPool>
     {
-        public:
-            ActionQueue(const unsigned n_threads = 1);
-            ~ActionQueue();
-
-            void enqueue(const tr1::function<void () throw ()> &);
-            void complete_pending();
+        std::list<tr1::shared_ptr<Thread> > threads;
     };
 }
 
-#endif
+ThreadPool::ThreadPool() :
+    PrivateImplementationPattern<ThreadPool>(new Implementation<ThreadPool>)
+{
+}
+
+ThreadPool::~ThreadPool()
+{
+}
+
+void
+ThreadPool::create_thread(const tr1::function<void () throw ()> & f)
+{
+    _imp->threads.push_back(make_shared_ptr(new Thread(f)));
+}
+

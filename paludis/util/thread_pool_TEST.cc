@@ -17,24 +17,40 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
+#include <paludis/util/thread_pool.hh>
+#include <test/test_runner.hh>
+#include <test/test_framework.hh>
+#include <vector>
+#include <algorithm>
 
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
+using namespace test;
+using namespace paludis;
 
-namespace paludis
+namespace
 {
-    class PALUDIS_VISIBLE ActionQueue :
-        private PrivateImplementationPattern<ActionQueue>
+    void make_one(int & b) throw ()
     {
-        public:
-            ActionQueue(const unsigned n_threads = 1);
-            ~ActionQueue();
-
-            void enqueue(const tr1::function<void () throw ()> &);
-            void complete_pending();
-    };
+        b = 1;
+    }
 }
 
-#endif
+namespace test_cases
+{
+    struct ThreadPoolTest : TestCase
+    {
+        ThreadPoolTest() : TestCase("thread pool") { }
+
+        void run()
+        {
+            const int n_threads = 10;
+            std::vector<int> t(n_threads, 0);
+            {
+                ThreadPool p;
+                for (int x(0) ; x < n_threads ; ++x)
+                    p.create_thread(tr1::bind(&make_one, tr1::ref(t[x])));
+            }
+            TEST_CHECK(n_threads == std::count(t.begin(), t.end(), 1));
+        }
+    } test_thread_pool;
+}
+
