@@ -35,24 +35,14 @@ namespace paludis
 #ifdef PALUDIS_ENABLE_THREADS
             pthread_t * const _thread;
             const tr1::function<void () throw ()> _func;
-            const tr1::function<void (Thread * const) throw ()> _post_func;
-            bool _detached;
 
             static void * thread_func(void *);
 #endif
 
         public:
             Thread(const tr1::function<void () throw ()> &);
-
-            Thread(const tr1::function<void () throw ()> &,
-                    const tr1::function<void (Thread * const) throw ()> &);
-
             ~Thread();
-
-            void detach();
     };
-
-    void run_detached(const tr1::function<void () throw ()> &) PALUDIS_VISIBLE;
 }
 
 #endif

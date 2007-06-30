@@ -48,27 +48,5 @@ namespace test_cases
             TEST_CHECK(x);
         }
     } test_thread;
-
-    struct RunDetachedTest : TestCase
-    {
-        RunDetachedTest() : TestCase("run detached") { }
-
-        void run()
-        {
-            bool x(false);
-            run_detached(tr1::bind(&make_true, tr1::ref(x)));
-            while (true)
-                if (x)
-                    break;
-                else
-                {
-                    struct timespec t;
-                    t.tv_sec = 0;
-                    t.tv_nsec = 100000;
-                    ::nanosleep(&t, 0);
-                    TEST_CHECK(true);
-                }
-        }
-    } test_run_detached;
 }
 

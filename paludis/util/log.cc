@@ -50,6 +50,7 @@ namespace paludis
         LogLevel log_level;
         std::ostream * stream;
         std::string program_name;
+        std::string previous_context;
 
         mutable ActionQueue action_queue;
 
@@ -60,7 +61,7 @@ namespace paludis
         {
         }
 
-        void message(const LogLevel l, const LogContext c, const std::string & s)
+        void message(const LogLevel l, const LogContext c, const std::string cs, const std::string s)
         {
             if (l >= log_level)
             {
@@ -94,13 +95,11 @@ namespace paludis
 
                 if (lc_context == c)
                 {
-                    static std::string previous_context;
-                    std::string context(Context::backtrace("\n ... "));
-                    if (previous_context == context)
+                    if (previous_context == cs)
                         *stream << "(same context) " << s << std::endl;
                     else
-                        *stream << Context::backtrace("\n  ... ") << s << std::endl;
-                    previous_context = context;
+                        *stream << cs << s << std::endl;
+                    previous_context = cs;
                 }
                 else
                     *stream << s << std::endl;
@@ -156,7 +155,10 @@ Log::log_level() const
 void
 Log::_message(const LogLevel l, const LogContext c, const std::string & s)
 {
-    _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, s));
+    if (lc_context == c)
+        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, Context::backtrace("\n  ... "), s));
+    else
+        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, "", s));
 }
 
 LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :

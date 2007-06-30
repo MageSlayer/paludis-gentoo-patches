@@ -20,6 +20,11 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <libebt/libebt.hh>
+
+#ifdef PALUDIS_ENABLE_THREADS
+#  include <libebt/libebt_pthread_threads.hh>
+#endif
+
 #include "config.h"
 
 #ifdef HAVE_CXA_DEMANGLE
@@ -32,6 +37,19 @@ namespace
 {
     struct ContextTag;
 }
+
+#ifdef PALUDIS_ENABLE_THREADS
+
+namespace libebt
+{
+    template <>
+    struct BacktraceContextHolder<ContextTag> :
+        PthreadBacktraceContextHolder<ContextTag>
+    {
+    };
+}
+
+#endif
 
 struct Context::ContextData
 {

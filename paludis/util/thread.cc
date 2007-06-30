@@ -28,22 +28,10 @@ using namespace paludis;
 
 Thread::Thread(const tr1::function<void () throw ()> & f) :
     _thread(new pthread_t),
-    _func(f),
-    _detached(false)
+    _func(f)
 {
     int err;
-    if (0 != ((err = pthread_create(_thread, 0, &thread_func, this))))
-        throw InternalError(PALUDIS_HERE, "pthread_create failed: " + stringify(strerror(err)));
-}
 
-Thread::Thread(const tr1::function<void () throw ()> & f,
-        const tr1::function<void (Thread * const) throw ()> & pf) :
-    _thread(new pthread_t),
-    _func(f),
-    _post_func(pf),
-    _detached(false)
-{
-    int err;
     if (0 != ((err = pthread_create(_thread, 0, &thread_func, this))))
         throw InternalError(PALUDIS_HERE, "pthread_create failed: " + stringify(strerror(err)));
 }
@@ -52,27 +40,13 @@ void *
 Thread::thread_func(void * r)
 {
     static_cast<Thread *>(r)->_func();
-    if (static_cast<Thread *>(r)->_post_func)
-        static_cast<Thread *>(r)->_post_func(static_cast<Thread *>(r));
-
     return 0;
 }
 
 Thread::~Thread()
 {
-    if (! _detached)
-        pthread_join(*_thread, 0);
+    pthread_join(*_thread, 0);
     delete _thread;
-}
-
-void
-Thread::detach()
-{
-    if (! _detached)
-    {
-        pthread_detach(*_thread);
-        _detached = true;
-    }
 }
 
 #else
@@ -82,35 +56,9 @@ Thread::Thread(const tr1::function<void () throw ()> & f)
     f();
 }
 
-Thread::Thread(const tr1::function<void () throw ()> & f,
-        const tr1::function<void (Thread * const) throw ()> & pf)
-{
-    f();
-    pf();
-}
-
 Thread::~Thread()
 {
 }
 
-void
-Thread::detach()
-{
-}
-
 #endif
-
-namespace
-{
-    void post_delete_func(Thread * const t) throw ()
-    {
-        delete t;
-    }
-}
-
-void
-paludis::run_detached(const tr1::function<void () throw ()> & f)
-{
-    (new Thread(f, &post_delete_func))->detach();
-}
 
