@@ -85,7 +85,11 @@ namespace paludis
 }
 
 ActionQueue::ActionQueue(const unsigned n_threads) :
+#ifdef PALUDIS_ENABLE_THREADS
     PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads))
+#else
+    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
+#endif
 {
 }
 
