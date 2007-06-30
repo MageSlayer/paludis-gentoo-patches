@@ -570,6 +570,12 @@ EbuildID::_idle_load() const throw ()
             _imp->run_dependencies->idle_load();
         if (_imp->post_dependencies)
             _imp->post_dependencies->idle_load();
+        if (_imp->license)
+            _imp->license->idle_load();
+        if (_imp->keywords)
+            _imp->keywords->idle_load();
+        if (_imp->iuse)
+            _imp->iuse->idle_load();
     }
     catch (...)
     {

@@ -120,6 +120,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const LicenseSpecTree::ConstItem> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -145,12 +146,24 @@ ELicenseKey::~ELicenseKey()
 const tr1::shared_ptr<const LicenseSpecTree::ConstItem>
 ELicenseKey::value() const
 {
+    Lock l(_imp->value_mutex);
     if (_imp->value)
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = PortageDepParser::parse_license(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
+}
+
+void
+ELicenseKey::idle_load() const
+{
+    TryLock l(_imp->value_mutex);
+    if (l() && ! _imp->value)
+    {
+        Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
+        _imp->value = PortageDepParser::parse_license(_imp->string_value, *_imp->id->eapi());
+    }
 }
 
 namespace paludis
@@ -280,6 +293,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<IUseFlagCollection> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -305,6 +319,7 @@ EIUseKey::~EIUseKey()
 const tr1::shared_ptr<const IUseFlagCollection>
 EIUseKey::value() const
 {
+    Lock l(_imp->value_mutex);
     if (_imp->value)
         return _imp->value;
 
@@ -319,6 +334,22 @@ EIUseKey::value() const
     return _imp->value;
 }
 
+void
+EIUseKey::idle_load() const
+{
+    TryLock l(_imp->value_mutex);
+    if (l() && ! _imp->value)
+    {
+        Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
+        _imp->value.reset(new IUseFlagCollection::Concrete);
+        std::list<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
+        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
+            _imp->value->insert(IUseFlag(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode));
+    }
+}
+
 namespace paludis
 {
     template <>
@@ -326,6 +357,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<KeywordNameCollection> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -351,6 +383,7 @@ EKeywordsKey::~EKeywordsKey()
 const tr1::shared_ptr<const KeywordNameCollection>
 EKeywordsKey::value() const
 {
+    Lock l(_imp->value_mutex);
     if (_imp->value)
         return _imp->value;
 
@@ -358,6 +391,18 @@ EKeywordsKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
+}
+
+void
+EKeywordsKey::idle_load() const
+{
+    TryLock l(_imp->value_mutex);
+    if (l() && ! _imp->value)
+    {
+        _imp->value.reset(new KeywordNameCollection::Concrete);
+        Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
+        WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
+    }
 }
 
 namespace paludis
