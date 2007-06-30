@@ -58,6 +58,8 @@ namespace paludis
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void idle_load() const;
         };
 
         class EURIKey :

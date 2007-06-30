@@ -511,10 +511,10 @@ namespace test_cases
                     tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                     PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
+                    TEST_CHECK_EQUAL(id1->eapi()->name, "0");
                     TEST_CHECK(id1->eapi()->supported);
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
-                    TEST_CHECK_EQUAL(id1->eapi()->name, "0");
                     DepSpecPrettyPrinter pd(0, false);
                     TEST_CHECK(id1->build_dependencies_key());
                     id1->build_dependencies_key()->value()->accept(pd);
@@ -527,10 +527,10 @@ namespace test_cases
                     tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
                                     PackageDepSpec("=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
+                    TEST_CHECK_EQUAL(id2->eapi()->name, "0");
                     TEST_CHECK(id2->eapi()->supported);
                     TEST_CHECK(id2->short_description_key());
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
-                    TEST_CHECK_EQUAL(id2->eapi()->name, "0");
                     DepSpecPrettyPrinter pd2(0, false);
                     TEST_CHECK(id2->build_dependencies_key());
                     id2->build_dependencies_key()->value()->accept(pd2);

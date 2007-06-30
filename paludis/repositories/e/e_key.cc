@@ -27,6 +27,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/mutex.hh>
 
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
@@ -66,6 +67,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -91,12 +93,24 @@ EDependenciesKey::~EDependenciesKey()
 const tr1::shared_ptr<const DependencySpecTree::ConstItem>
 EDependenciesKey::value() const
 {
+    Lock l(_imp->value_mutex);
     if (_imp->value)
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = PortageDepParser::parse_depend(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
+}
+
+void
+EDependenciesKey::idle_load() const
+{
+    TryLock l(_imp->value_mutex);
+    if (l() && ! _imp->value)
+    {
+        Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
+        _imp->value = PortageDepParser::parse_depend(_imp->string_value, *_imp->id->eapi());
+    }
 }
 
 namespace paludis

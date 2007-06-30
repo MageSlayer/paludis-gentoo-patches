@@ -35,6 +35,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/idle_action_pool.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -227,6 +228,9 @@ EbuildID::need_keys_added() const
                 << canonical_form(idcf_full) << "' because EAPI '" << _imp->eapi->name << "' is unknown";
         }
     }
+
+    if (_imp->eapi->supported)
+        IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EbuildID::_idle_load), this));
 }
 
 const std::string
@@ -278,6 +282,9 @@ EbuildID::slot() const
 
     need_keys_added();
 
+    if (! _imp->slot)
+        throw InternalError(PALUDIS_HERE, "_imp->slot still not set");
+
     return *_imp->slot;
 }
 
@@ -294,6 +301,9 @@ EbuildID::eapi() const
         return _imp->eapi;
 
     need_keys_added();
+
+    if (! _imp->eapi)
+        throw InternalError(PALUDIS_HERE, "_imp->eapi still not set");
 
     return _imp->eapi;
 }
@@ -547,5 +557,23 @@ EbuildID::load_inherited(const std::string & r, const std::string & h, const std
 {
     _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
     add_key(_imp->inherited);
+}
+
+void
+EbuildID::_idle_load() const throw ()
+{
+    try
+    {
+        if (_imp->build_dependencies)
+            _imp->build_dependencies->idle_load();
+        if (_imp->run_dependencies)
+            _imp->run_dependencies->idle_load();
+        if (_imp->post_dependencies)
+            _imp->post_dependencies->idle_load();
+    }
+    catch (...)
+    {
+        // exception will be regenerated outside of the idle task.
+    }
 }
 
