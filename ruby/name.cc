@@ -32,12 +32,17 @@ namespace
 
     void do_register_names()
     {
+        /*
+         * Document-module: Paludis::IUseFlagParseMode
+         *
+         * How to parse an IUSE flag string.
+         */
         c_iuse_flag_parse_mode = rb_define_module_under(paludis_module(), "IUseFlagParseMode");
         for (IUseFlagParseMode l(static_cast<IUseFlagParseMode>(0)), l_end(last_iuse_pm) ; l != l_end ;
                 l = static_cast<IUseFlagParseMode>(static_cast<int>(l) + 1))
             rb_define_const(c_iuse_flag_parse_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/name.hh, , c_log_level>
+        // cc_enum_special<paludis/name-se.hh, IUseFlagParseMode , c_iuse_flag_parse_mode>
     }
 }
 

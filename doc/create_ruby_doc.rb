@@ -59,13 +59,13 @@ module RDoc
             match = Regexp.new(/enum\s+#{type}\s+\{([^}]+)\}/)#, Regexp::MULTILINE)
             if file =~ match
                 enum = $1
-                last = enum[Regexp.new(/\slast_(\w+)\s/),1]
+                last = enum[Regexp.new(/\slast_(\w+)[\s,]/),1]
                 i = 0
                 enum.each_line do |line|
                     next if line =~/last/
                     next if line.strip == ''
                     next unless line =~ /,/
-                    (const, comment) = line.split (',',2)
+                    (const, comment) = line.split(',',2)
                     const.strip!
                     comment.strip!
                     comment.gsub!(%r{^[^a-zA-Z0-9]*},'')

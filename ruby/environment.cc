@@ -689,14 +689,14 @@ namespace
         /*
          * Document-module: Paludis::MaskReasonsOption
          *
-         * Each value represents one reason for a package being masked.
+         * Options for Environment.mask_reasons
          */
         c_mask_reasons_option = rb_define_module_under(paludis_module(), "MaskReasonsOption");
         for (MaskReasonsOption l(static_cast<MaskReasonsOption>(0)), l_end(last_mro) ; l != l_end ;
                 l = static_cast<MaskReasonsOption>(static_cast<int>(l) + 1))
             rb_define_const(c_mask_reasons_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/mask_reasons.hh, MaskReason, c_mask_reason>
+        // cc_enum_special<paludis/environment-se.hh, MaskReasonsOption, c_mask_reasons_option>
     }
 }
 

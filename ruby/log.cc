@@ -105,7 +105,12 @@ namespace
         rb_define_method(c_log, "program_name=", RUBY_FUNC_CAST(&log_set_program_name), 1);
         rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 2);
 
-        c_log_level = rb_define_class_under(paludis_module(), "LogLevel", rb_cObject);
+        /*
+         * Document-module: Paludis::LogLevel
+         *
+         * Specifies the level of a log message
+         */
+        c_log_level = rb_define_module_under(paludis_module(), "LogLevel");
         for (LogLevel l(static_cast<LogLevel>(0)), l_end(last_ll) ; l != l_end ;
                 l = static_cast<LogLevel>(static_cast<int>(l) + 1))
             rb_define_const(c_log_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));

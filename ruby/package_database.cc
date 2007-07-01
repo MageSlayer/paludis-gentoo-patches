@@ -264,7 +264,7 @@ namespace
          *
          * Do we want only installed packages, only installable packages, or any package when querying?
          */
-        c_package_database_install_state = rb_define_class_under(paludis_module(), "InstallState", rb_cObject);
+        c_package_database_install_state = rb_define_module_under(paludis_module(), "InstallState");
         for (InstallState l(static_cast<InstallState>(0)), l_end(last_is) ; l != l_end ;
                 l = static_cast<InstallState>(static_cast<int>(l) + 1))
             rb_define_const(c_package_database_install_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
@@ -276,7 +276,7 @@ namespace
          *
          * How to order query results.
          */
-        c_package_database_query_order = rb_define_class_under(paludis_module(), "QueryOrder", rb_cObject);
+        c_package_database_query_order = rb_define_module_under(paludis_module(), "QueryOrder");
         for (QueryOrder l(static_cast<QueryOrder>(0)), l_end(last_qo) ; l != l_end ;
                 l = static_cast<QueryOrder>(static_cast<int>(l) + 1))
             rb_define_const(c_package_database_query_order, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));

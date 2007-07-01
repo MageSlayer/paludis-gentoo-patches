@@ -1149,7 +1149,7 @@ namespace
                 l = static_cast<DepListTargetType>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_target_type, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListTargetType, c_dep_list_target_type>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListTargetType, c_dep_list_target_type>
 
         /*
          * Document-module: Paludis::DepListReinstallOption
@@ -1162,7 +1162,7 @@ namespace
                 l = static_cast<DepListReinstallOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_reinstall_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstallOption, c_dep_list_reinstall_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListReinstallOption, c_dep_list_reinstall_option>
 
         /*
          * Document-module: Paludis::DepListFallBackOption
@@ -1175,7 +1175,7 @@ namespace
                 l = static_cast<DepListFallBackOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_fall_back_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListFallBackOption, c_dep_list_fall_back_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListFallBackOption, c_dep_list_fall_back_option>
 
         /*
          * Document-module: Paludis::DepListReinstallScmOption
@@ -1188,7 +1188,7 @@ namespace
                 l = static_cast<DepListReinstallScmOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_reinstall_scm_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstallScmOption, c_dep_list_reinstall_scm_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListReinstallScmOption, c_dep_list_reinstall_scm_option>
 
         /*
          * Document-module: Paludis::DepListDowngradeOption
@@ -1201,7 +1201,7 @@ namespace
                 l = static_cast<DepListDowngradeOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_downgrade_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListDowngradeOption, c_dep_list_downgrade_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListDowngradeOption, c_dep_list_downgrade_option>
 
         /*
          * Document-module: Paludis::DepListUpgradeOption
@@ -1214,7 +1214,7 @@ namespace
                 l = static_cast<DepListUpgradeOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_upgrade_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListUpgradeOption, c_dep_list_upgrade_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListUpgradeOption, c_dep_list_upgrade_option>
 
         /*
          * Document-module: Paludis::DepListNewSlotsOption
@@ -1227,7 +1227,7 @@ namespace
                 l = static_cast<DepListNewSlotsOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_new_slots_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListNewSlotsOption, c_dep_list_new_slots_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListNewSlotsOption, c_dep_list_new_slots_option>
 
         /*
          * Document-module: Paludis::DepListDepsOption
@@ -1240,7 +1240,7 @@ namespace
                 l = static_cast<DepListDepsOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_deps_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListDepsOption, c_dep_list_deps_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListDepsOption, c_dep_list_deps_option>
 
         /*
          * Document-module: Paludis::DepListCircularOption
@@ -1253,7 +1253,7 @@ namespace
                 l = static_cast<DepListSuggestedOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_suggested_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListSuggestedOption, c_dep_list_suggested_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListSuggestedOption, c_dep_list_suggested_option>
 
         /*
          * Document-module: Paludis::DepListCircularOption
@@ -1266,7 +1266,7 @@ namespace
                 l = static_cast<DepListCircularOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_circular_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListCircularOption, c_dep_list_circular_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListCircularOption, c_dep_list_circular_option>
 
         /*
          * Document-module: Paludis::DepListUseOption
@@ -1279,7 +1279,7 @@ namespace
                 l = static_cast<DepListUseOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_use_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListBlocksOption, c_dep_list_blocks_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListUseOption, c_dep_list_use_option>
 
         /*
          * Document-module: Paludis::DepListBlocksOption
@@ -1292,7 +1292,7 @@ namespace
                 l = static_cast<DepListBlocksOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_blocks_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListBlocksOption, c_dep_list_blocks_option>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListBlocksOption, c_dep_list_blocks_option>
 
         /*
          * Document-module: Paludis::DepListEntryState
@@ -1305,7 +1305,7 @@ namespace
                 l = static_cast<DepListEntryState>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_entry_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListEntryState, c_dep_list_entry_state>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListEntryState, c_dep_list_entry_state>
 
         /*
          * Document-module: Paludis::DepListEntryKind
@@ -1318,7 +1318,7 @@ namespace
                 l = static_cast<DepListEntryKind>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_entry_kind, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListEntryKind, c_dep_list_entry_kind>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListEntryKind, c_dep_list_entry_kind>
 
         /*
          * Document-module: Paludis::DepListOverrideMask
@@ -1331,7 +1331,7 @@ namespace
                 l = static_cast<DepListOverrideMask>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_override_mask, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListOverrideMask, c_dep_list_override_mask>
+        // cc_enum_special<paludis/dep_list/options-se.hh, DepListOverrideMask, c_dep_list_override_mask>
 
         /*
          * Document-class: Paludis::DepListOptions

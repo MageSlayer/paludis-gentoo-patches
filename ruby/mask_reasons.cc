@@ -141,7 +141,7 @@ namespace
                 l = static_cast<MaskReason>(static_cast<int>(l) + 1))
             rb_define_const(c_mask_reason, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/mask_reasons.hh, MaskReason, c_mask_reason>
+        // cc_enum_special<paludis/mask_reasons-se.hh, MaskReason, c_mask_reason>
     }
 }
 
