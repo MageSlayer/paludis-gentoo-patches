@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,6 +40,23 @@ namespace
     static VALUE c_no_config_environment;
     static VALUE c_adapted_environment;
     static VALUE c_environment_maker;
+    static VALUE c_mask_reasons_option;
+    static VALUE c_mask_reasons_options;
+
+    MaskReasonsOptions
+    value_to_mask_reasons_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_mask_reasons_options))
+        {
+            MaskReasonsOptions * v_ptr;
+            Data_Get_Struct(v, MaskReasonsOptions, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into MaskReasonsOptions", rb_obj_classname(v));
+        }
+    }
 
     tr1::shared_ptr<AdaptedEnvironment>
     value_to_adapted_environment(VALUE v)
@@ -77,18 +95,24 @@ namespace
 
     /*
      * call-seq:
+     *     mask_reasons(package_id) -> MaskReasons
      *     mask_reasons(package_id, mask_reasons_option) -> MaskReasons
      *
      * Return the reasons for a package being masked.
      */
-    /* FIXME
     VALUE
-    environment_mask_reasons(VALUE self, VALUE pid, VALUE mro)
+    environment_mask_reasons(int argc, VALUE* argv, VALUE self)
     {
         try
         {
-            MaskReasonsOption opt = static_cast<MaskReasonsOption>NUM2INT(mro);
-            MaskReasons r(value_to_environment(self)->mask_reasons(*value_to_package_id(pid), opt));
+            MaskReasons r;
+            if (1 == argc) {
+                r = value_to_environment(self)->mask_reasons(*value_to_package_id(argv[0]));
+            } else if (2 == argc) {
+                r = value_to_environment(self)->mask_reasons(*value_to_package_id(argv[0]), value_to_mask_reasons_options(argv[1]));
+            } else {
+                rb_raise(rb_eArgError, "Environment.mask_reasons expects one or two arguments, but got %d", argc);
+            }
             return mask_reasons_to_value(r);
         }
         catch (const std::exception & e)
@@ -96,7 +120,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-    */
+
     /*
      * call-seq:
      *     package_database -> PackageDatabase
@@ -494,6 +518,88 @@ namespace
         }
     }
 
+    VALUE
+    mask_reasons_options_init(VALUE self)
+    {
+        return self;
+    }
+
+    VALUE
+    mask_reasons_options_new(VALUE self)
+    {
+        MaskReasonsOptions * ptr(0);
+        try
+        {
+            ptr = new MaskReasonsOptions;
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<MaskReasonsOptions>::free, ptr));
+            rb_obj_call_init(tdata, 0, &self);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     each {|mask_reasons_option| block } -> Nil
+     *
+     * Iterate through the mask reasons options.
+     */
+    VALUE
+    mask_reasons_options_each(VALUE self)
+    {
+        MaskReasonsOptions * m_ptr;
+        Data_Get_Struct(self, MaskReasonsOptions, m_ptr);
+        for (MaskReasonsOption i(static_cast<MaskReasonsOption>(0)), i_end(last_mro) ; i != i_end ;
+                i = static_cast<MaskReasonsOption>(static_cast<int>(i) + 1))
+            if ((*m_ptr)[i])
+                rb_yield(INT2FIX(i));
+        return Qnil;
+    }
+
+    /*
+     * call-seq:
+     *     empty? -> true or false
+     *
+     * Is the collection empty.
+     */
+    VALUE
+    mask_reasons_options_empty(VALUE self)
+    {
+        MaskReasonsOptions * m_ptr;
+        Data_Get_Struct(self, MaskReasonsOptions, m_ptr);
+        return m_ptr->any() ? Qfalse : Qtrue;
+    }
+
+    /*
+     * call-seq:
+     *     set(mask_reason) -> Nil
+     *
+     * Add MaskReason to collection.
+     */
+    VALUE
+    mask_reasons_options_set(VALUE self, VALUE mask_reasons_option)
+    {
+        MaskReasonsOptions * m_ptr;
+        Data_Get_Struct(self, MaskReasonsOptions, m_ptr);
+        try
+        {
+            int mr = NUM2INT(mask_reasons_option);
+            if (mr < 0 || mr >= last_mro)
+                rb_raise(rb_eArgError, "MaskReasonsOption out of range");
+            *m_ptr += static_cast<MaskReasonsOption>(mr);
+            return Qnil;
+
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_environment()
     {
         rb_require("singleton");
@@ -507,7 +613,7 @@ namespace
         c_environment = environment_class();
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
-        //rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
+        rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), -1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
 #if CIARANM_REMOVED_THIS
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
@@ -563,6 +669,34 @@ namespace
         c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);
         rb_define_method(c_environment_maker, "make_from_spec", RUBY_FUNC_CAST(&environment_maker_make_from_spec), 1);
+
+        /*
+         * Document-class: Paludis::MaskReasons
+         *
+         * A collection of reasons for why a package is masked. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html]
+         * but not Comparable.
+         */
+        c_mask_reasons_options = rb_define_class_under(paludis_module(), "MaskReasonsOptions", rb_cObject);
+        rb_define_singleton_method(c_mask_reasons_options, "new", RUBY_FUNC_CAST(&mask_reasons_options_new), 0);
+        rb_define_method(c_mask_reasons_options, "initialize", RUBY_FUNC_CAST(&mask_reasons_options_init), 0);
+        rb_define_method(c_mask_reasons_options, "each", RUBY_FUNC_CAST(&mask_reasons_options_each), 0);
+        rb_include_module(c_mask_reasons_options, rb_mEnumerable);
+        rb_define_method(c_mask_reasons_options, "empty?", RUBY_FUNC_CAST(&mask_reasons_options_empty), 0);
+        rb_define_method(c_mask_reasons_options, "set", RUBY_FUNC_CAST(&mask_reasons_options_set), 1);
+        rb_define_method(c_mask_reasons_options, "add", RUBY_FUNC_CAST(&mask_reasons_options_set), 1);
+
+        /*
+         * Document-module: Paludis::MaskReasonsOption
+         *
+         * Each value represents one reason for a package being masked.
+         */
+        c_mask_reasons_option = rb_define_module_under(paludis_module(), "MaskReasonsOption");
+        for (MaskReasonsOption l(static_cast<MaskReasonsOption>(0)), l_end(last_mro) ; l != l_end ;
+                l = static_cast<MaskReasonsOption>(static_cast<int>(l) + 1))
+            rb_define_const(c_mask_reasons_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/mask_reasons.hh, MaskReason, c_mask_reason>
     }
 }
 
