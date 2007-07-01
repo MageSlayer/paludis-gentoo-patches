@@ -45,7 +45,7 @@ module Paludis
             assert bar.empty?
             baz = t.execute(QualifiedPackageName.new('foo/baz'))
             assert_equal 1, baz.length
-            assert_kind_of PackageDatabaseEntry, baz.first
+            assert_kind_of PackageID, baz.first
         end
     end
 end

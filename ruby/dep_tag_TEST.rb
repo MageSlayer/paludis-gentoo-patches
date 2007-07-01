@@ -29,42 +29,42 @@ module Paludis
         end
     end
 
-    class TestCase_DependencyDepTag < Test::Unit::TestCase
-        def get_dt
-            DependencyDepTag.new(PackageDatabaseEntry.new('foo/var','0','moo'),
-                                 PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive))
-        end
-
-        def test_create
-            assert_kind_of DependencyDepTag, get_dt
-        end
-
-        def test_create_error
-            assert_raise ArgumentError do
-                DependencyDepTag.new
-            end
-
-            assert_raise ArgumentError do
-                DependencyDepTag.new('a','b','c')
-            end
-
-            assert_raise TypeError do
-                DependencyDepTag.new('a','b')
-            end
-
-            assert_raise ArgumentError do
-                DependencyDepTag.new(1)
-            end
-        end
-
-        def test_methods
-            dt = get_dt
-            {:short_text => 'foo/var-0::moo', :category=>'dependency'}.each do |method, val|
-                assert_respond_to dt, method
-                assert_equal val, dt.send(method)
-            end
-        end
-    end
+###    class TestCase_DependencyDepTag < Test::Unit::TestCase
+###        def get_dt
+###            DependencyDepTag.new(PackageDatabaseEntry.new('foo/var','0','moo'),
+###                                 PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive))
+###        end
+###
+###        def test_create
+###            assert_kind_of DependencyDepTag, get_dt
+###        end
+###
+###        def test_create_error
+###            assert_raise ArgumentError do
+###                DependencyDepTag.new
+###            end
+###
+###            assert_raise ArgumentError do
+###                DependencyDepTag.new('a','b','c')
+###            end
+###
+###            assert_raise TypeError do
+###                DependencyDepTag.new('a','b')
+###            end
+###
+###            assert_raise ArgumentError do
+###                DependencyDepTag.new(1)
+###            end
+###        end
+###
+###        def test_methods
+###            dt = get_dt
+###            {:short_text => 'foo/var-0::moo', :category=>'dependency'}.each do |method, val|
+###                assert_respond_to dt, method
+###                assert_equal val, dt.send(method)
+###            end
+###        end
+###    end
 
     class TestCase_GLSADepTag < Test::Unit::TestCase
         def get_dt

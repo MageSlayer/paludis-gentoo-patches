@@ -86,10 +86,11 @@ namespace
      *  Query the repository, the first argument is either a PackageDepSpec or a Query.
      *  Returns an array of PackageDatabaseEntry.
      */
+
     VALUE
     package_database_query(int argc, VALUE *argv, VALUE self)
     {
-        tr1::shared_ptr<const PackageDatabaseEntryCollection> items;
+        tr1::shared_ptr<const PackageIDSequence> items;
         try
         {
             if (2 == argc && is_kind_of_query(argv[0]))
@@ -150,9 +151,9 @@ namespace
             exception_to_ruby_exception(e);
         }
         VALUE result(rb_ary_new());
-        for (PackageDatabaseEntryCollection::Iterator i(items->begin()),
+        for (PackageIDSequence::Iterator i(items->begin()),
                 i_end(items->end()) ; i != i_end ; ++i)
-            rb_ary_push(result, package_database_entry_to_value(*i));
+            rb_ary_push(result, package_id_to_value(*i));
         return result;
     }
 
@@ -280,7 +281,7 @@ namespace
                 l = static_cast<QueryOrder>(static_cast<int>(l) + 1))
             rb_define_const(c_package_database_query_order, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/package_database.hh, QueryOrder, c_package_database_query_order>
+        // cc_enum_special<paludis/package_database-se.hh, QueryOrder, c_package_database_query_order>
     }
 }
 

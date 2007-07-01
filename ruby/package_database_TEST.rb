@@ -3,6 +3,7 @@
 
 #
 # Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,26 +110,62 @@ module Paludis
 
         def test_package_database_query
             a = db.query(pda, InstallState::InstallableOnly, QueryOrder::Whatever)
-            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
 
             a = db.query(Query::Matches.new(pda) & Query::RepositoryHasInstallableInterface.new,
                          QueryOrder::Whatever)
-            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
 
             a = db.query(pda, InstallState::Any, QueryOrder::Whatever)
-            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
 
             a = db.query(pda2, InstallState::InstallableOnly, QueryOrder::OrderByVersion)
-            assert_equal a, [
-                PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
-                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
-            ]
+            assert_kind_of Array, a
+            assert_equal 2, a.length
+            pid = a.shift
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
+            pid2 = a.shift
+            assert_kind_of PackageID, pid2
+            assert_equal pid.name, pid2.name
+            assert_equal '2.0', pid2.version.to_s
+            assert_equal pid.repository.name, pid2.repository.name
+
 
             a = db.query(Query::Package.new('foo/bar'), QueryOrder::OrderByVersion)
-            assert_equal a, [
-                PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
-                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
-            ]
+            assert_kind_of Array, a
+            assert_equal 2, a.length
+            pid = a.shift
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
+            pid2 = a.shift
+            assert_kind_of PackageID, pid2
+            assert_equal pid.name, pid2.name
+            assert_equal '2.0', pid2.version.to_s
+            assert_equal pid.repository.name, pid2.repository.name
+
 
             a = db.query(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive), InstallState::InstallableOnly, QueryOrder::Whatever)
             assert a.empty?

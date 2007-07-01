@@ -55,6 +55,10 @@ module Paludis
         def no_config_testrepo
             NoConfigEnvironment.new Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
         end
+
+        def p
+            p = db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+        end
     end
 
     class TestCase_Repository < Test::Unit::TestCase
@@ -68,30 +72,6 @@ module Paludis
         def test_format
             assert_equal "vdb", installed_repo.format
             assert_equal "ebuild", repo.format
-        end
-    end
-
-    class TestCase_RepositoryHasVersion < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_has_version
-            assert repo.has_version?("foo/bar", "1.0")
-            assert repo.has_version?("foo/bar", "2.0")
-
-            assert repo.has_version?("foo/bar", VersionSpec.new("1.0"))
-            assert repo.has_version?("foo/bar", VersionSpec.new("2.0"))
-
-            assert ! repo.has_version?("foo/barbar", "1.0")
-            assert ! repo.has_version?("foo/bar", "3.0")
-
-            assert ! repo.has_version?("foo/barbar", VersionSpec.new("1.0"))
-            assert ! repo.has_version?("foo/bar", VersionSpec.new("3.0"))
-        end
-
-        def test_has_version_error
-            assert_raise TypeError do
-                repo.has_version?('foo/bar', PackageDepSpec.new('foo-bar/baz', PackageDepSpecParseMode::Permissive))
-            end
         end
     end
 
@@ -117,20 +97,20 @@ module Paludis
     class TestCase_RepositoryVersionSpecs < Test::Unit::TestCase
         include RepositoryTestCase
 
-        def test_version_specs
-            a = repo.version_specs "foo/bar"
+        def test_package_ids
+            a = repo.package_ids "foo/bar"
             assert_equal 2, a.length
-            assert_equal VersionSpec.new("1.0"), a[0]
-            assert_equal VersionSpec.new("2.0"), a[1]
+            assert_equal VersionSpec.new("1.0"), a[0].version
+            assert_equal VersionSpec.new("2.0"), a[1].version
 
             assert_nothing_raised do
-                repo.version_specs('foo/bar') do |version|
-                    assert_equal VersionSpec.new('1.0'), version
+                repo.package_ids('foo/bar') do |pid|
+                    assert_equal VersionSpec.new('1.0'), pid.version
                     break
                 end
             end
 
-            b = repo.version_specs "bar/baz"
+            b = repo.package_ids "bar/baz"
             assert b.empty?
         end
     end
@@ -191,7 +171,7 @@ module Paludis
             [:installable_interface, :installed_interface, :mask_interface,
                 :sets_interface, :syncable_interface, :uninstallable_interface, :use_interface,
                 :world_interface, :mirrors_interface, :environment_variable_interface,
-                :provides_interface, :virtuals_interface, :contents_interface, :portage_interface].each do |sym|
+                :provides_interface, :virtuals_interface, :e_interface].each do |sym|
                 assert_respond_to repo, sym
             end
         end
@@ -246,20 +226,10 @@ module Paludis
 ###        end
 ###    end
 
-    class TestCase_RepositoryInstalledTime < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_time
-            time = installed_repo.installed_time('cat-one/pkg-one','1')
-            assert_kind_of Time, time
-        end
-    end
-
     class TestCase_RepositoryQueryUse < Test::Unit::TestCase
         include RepositoryTestCase
 
         def test_query_use_local
-            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
 
             assert repo.query_use('test1',p) == true
             assert repo.query_use('test2',p) == false
@@ -286,7 +256,6 @@ module Paludis
         include RepositoryTestCase
 
         def test_query_use_mask_local
-            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
 
             assert ! repo.query_use_mask('test1',p)
             assert ! repo.query_use_mask('test2',p)
@@ -313,7 +282,6 @@ module Paludis
         include RepositoryTestCase
 
         def test_query_use_force_local
-            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
 
             assert ! repo.query_use_force('test1',p)
             assert ! repo.query_use_force('test2',p)
@@ -340,29 +308,29 @@ module Paludis
         include RepositoryTestCase
 
         def test_repository_masks
-            assert repo.query_repository_masks("foo1/bar","1.0")
-            assert repo.query_repository_masks("foo2/bar","1.0")
-            assert ! repo.query_repository_masks("foo3/bar","1.0")
-            assert ! repo.query_repository_masks("foo4/bar","1.0")
+###            assert repo.query_repository_masks("foo1/bar","1.0")
+###            assert repo.query_repository_masks("foo2/bar","1.0")
+###            assert ! repo.query_repository_masks("foo3/bar","1.0")
+###            assert ! repo.query_repository_masks("foo4/bar","1.0")
         end
 
         def test_repository_masks_bad
-            assert_raise TypeError do
-                repo.query_repository_masks(42,"1.0")
-            end
-            assert_raise TypeError do
-                repo.query_repository_masks("foo/bar",[])
-            end
+###            assert_raise TypeError do
+###                repo.query_repository_masks(42,"1.0")
+###            end
+###            assert_raise TypeError do
+###                repo.query_repository_masks("foo/bar",[])
+###            end
 
-            assert_raise ArgumentError do
-                repo.query_repository_masks
-            end
-            assert_raise ArgumentError do
-                repo.query_repository_masks("foo/bar")
-            end
-            assert_raise ArgumentError do
-                repo.query_repository_masks("foo/bar","1.0","baz")
-            end
+###            assert_raise ArgumentError do
+###                repo.query_repository_masks
+###            end
+###            assert_raise ArgumentError do
+###                repo.query_repository_masks("foo/bar")
+###            end
+###            assert_raise ArgumentError do
+###                repo.query_repository_masks("foo/bar","1.0","baz")
+###            end
         end
     end
 
@@ -370,26 +338,26 @@ module Paludis
         include RepositoryTestCase
 
         def test_profile_masks
-            assert repo.query_profile_masks("foo1/bar","1.0")
-            assert ! repo.query_profile_masks("foo2/bar","1.0")
-            assert repo.query_profile_masks("foo3/bar","1.0")
-            assert ! repo.query_profile_masks("foo4/bar","1.0")
+###            assert repo.query_profile_masks("foo1/bar","1.0")
+###            assert ! repo.query_profile_masks("foo2/bar","1.0")
+###            assert repo.query_profile_masks("foo3/bar","1.0")
+###            assert ! repo.query_profile_masks("foo4/bar","1.0")
         end
 
         def test_profile_masks_bad
-            assert_raise TypeError do
-                repo.query_profile_masks(42,"1.0")
-            end
-            assert_raise TypeError do
-                repo.query_profile_masks("foo/bar",[])
-            end
+###            assert_raise TypeError do
+###                repo.query_profile_masks(42,"1.0")
+###            end
+###            assert_raise TypeError do
+###                repo.query_profile_masks("foo/bar",[])
+###            end
 
             assert_raise ArgumentError do
                 repo.query_profile_masks
             end
-            assert_raise ArgumentError do
-                repo.query_profile_masks("foo/bar")
-            end
+###            assert_raise ArgumentError do
+###                repo.query_profile_masks("foo/bar")
+###            end
             assert_raise ArgumentError do
                 repo.query_profile_masks("foo/bar","1.0","baz")
             end
@@ -506,9 +474,8 @@ module Paludis
         end
 
         def test_two_args
-            pde = PackageDatabaseEntry.new('foo/bar','2.0','testrepo')
-            assert_kind_of String, repo.describe_use_flag('test1', pde)
-            assert_equal 'A test local use flag', repo.describe_use_flag('test2', pde)
+            assert_kind_of String, repo.describe_use_flag('test1', p)
+            assert_equal 'A test local use flag', repo.describe_use_flag('test2', p)
         end
     end
 end

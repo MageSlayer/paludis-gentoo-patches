@@ -36,6 +36,7 @@
 #include <paludis/contents.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/eapi.hh>
+#include <paludis/util/stringify.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa/qa.hh>
@@ -65,10 +66,9 @@ namespace paludis
 
         VALUE mask_reasons_to_value(const MaskReasons &);
         VALUE package_database_to_value(tr1::shared_ptr<PackageDatabase>);
-        VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
-        VALUE repository_to_value(tr1::shared_ptr<Repository>);
+        VALUE repository_to_value(tr1::shared_ptr<const Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
-        VALUE version_metadata_to_value(tr1::shared_ptr<const VersionMetadata>);
+        VALUE package_id_to_value(tr1::shared_ptr<const PackageID>);
 #if CIARANM_REMOVED_THIS
         VALUE dep_spec_to_value(tr1::shared_ptr<const DepSpec>);
 #endif
@@ -78,17 +78,16 @@ namespace paludis
         VALUE eapi_to_value(const tr1::shared_ptr<const EAPI> &);
 
         VersionSpec value_to_version_spec(VALUE v);
-        tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
+        tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
         tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
         tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
-        PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         tr1::shared_ptr<Environment> value_to_environment(VALUE v);
         tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
-        RepositoryPortageInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
+        RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
-        tr1::shared_ptr<Repository> value_to_repository(VALUE);
+        tr1::shared_ptr<const Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();

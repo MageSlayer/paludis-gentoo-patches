@@ -40,20 +40,20 @@ module Paludis
             env = EnvironmentMaker.instance.make_from_spec("")
             spec_good = PackageDepSpec.new('>=foo/bar-1', PackageDepSpecParseMode::Permissive)
             spec_bad = PackageDepSpec.new('>=foo/bar-2', PackageDepSpecParseMode::Permissive)
-            pde = PackageDatabaseEntry.new('foo/bar','1','test')
+            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
 
-            assert Paludis::match_package(env, spec_good, pde)
-            assert !Paludis::match_package(env, spec_bad, pde)
+            assert Paludis::match_package(env, spec_good, pid)
+            assert !Paludis::match_package(env, spec_bad, pid)
 
         end
 
         def test_type_errors
             env = EnvironmentMaker.instance.make_from_spec("")
             spec = PackageDepSpec.new('>=foo/bar-1', PackageDepSpecParseMode::Permissive)
-            pde = PackageDatabaseEntry.new('foo/bar','1','test')
+            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
 
             assert_raise TypeError do
-                Paludis::match_package(spec,spec,pde)
+                Paludis::match_package(spec,spec,pid)
             end
 
             assert_raise TypeError do

@@ -952,39 +952,19 @@ namespace
 
     /*
      * call-seq:
-     *     package -> PackageDatabaseEntry
+     *     package_id -> PackageID
      *
-     * Our PackageDatabaseEntry.
+     * Our PackageID.
      */
-    VALUE
-    dep_list_entry_package(VALUE self)
-    {
-        try
-        {
-            DepListEntry * p;
-            Data_Get_Struct(self, DepListEntry, p);
-            return(package_database_entry_to_value(p->package));
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
 
-    /*
-     * call-seq:
-     *     metadata -> VersionMetadata
-     *
-     * Our VersionMetadata.
-     */
     VALUE
-    dep_list_entry_metadata(VALUE self)
+    dep_list_entry_package_id(VALUE self)
     {
         try
         {
             DepListEntry * p;
             Data_Get_Struct(self, DepListEntry, p);
-            return(version_metadata_to_value(p->metadata));
+            return(package_id_to_value(p->package_id));
         }
         catch (const std::exception & e)
         {
@@ -1467,8 +1447,7 @@ namespace
         c_dep_list_entry = rb_define_class_under(paludis_module(), "DepListEntry", rb_cObject);
         rb_funcall(c_dep_list_entry, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind), 0);
-        rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package), 0);
-        rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata), 0);
+        rb_define_method(c_dep_list_entry, "package_id", RUBY_FUNC_CAST(&dep_list_entry_package_id), 0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
 #if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);

@@ -17,24 +17,23 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o Paludis.so .libs/Paludis.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_TESTS = \
-	paludis_ruby_TEST.rb \
+	query_TEST.rb \
+	find_unused_packages_task_TEST.rb \
+	eapi_TEST.rb \
+	package_database_TEST.rb \
 	log_TEST.rb \
-	environment_TEST.rb \
-	package_database_entry_TEST.rb \
 	version_spec_TEST.rb \
 	mask_reasons_TEST.rb \
 	dep_spec_TEST.rb \
-	repository_TEST.rb \
-	version_metadata_TEST.rb \
 	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb \
 	contents_TEST.rb \
 	dep_list_TEST.rb \
+	repository_TEST.rb \
+	environment_TEST.rb \
+	paludis_ruby_TEST.rb \
 	dep_tag_TEST.rb \
-	query_TEST.rb \
-	package_database_TEST.rb \
-	find_unused_packages_task_TEST.rb \
-	eapi_TEST.rb
+	package_id_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -46,14 +45,13 @@ IF_RUBY_QA_TESTS = \
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
 	environment.cc \
-	package_database_entry.cc \
 	version_spec.cc \
 	mask_reasons.cc \
 	dep_spec.cc \
 	log.cc \
 	package_database.cc \
 	repository.cc \
-	version_metadata.cc \
+	package_id.cc \
 	portage_dep_parser.cc \
 	qualified_package_name.cc \
 	contents.cc \
@@ -75,9 +73,8 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	paludis_ruby_so.cc \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
-	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
+	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
-	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
 	check_TEST_setup.sh check_TEST_cleanup.sh \
@@ -85,6 +82,8 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
+	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
 	PALUDIS_NO_XTERM_TITLES="yes" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \

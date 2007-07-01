@@ -19,6 +19,7 @@
  */
 
 #include <paludis_ruby.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <ruby.h>
 
@@ -87,7 +88,7 @@ namespace
         try
         {
             ptr = new tr1::shared_ptr<const DependencyDepTag>(
-                new DependencyDepTag(value_to_package_database_entry(argv[0]),
+                new DependencyDepTag(value_to_package_id(argv[0]),
                     *value_to_package_dep_spec(argv[1]),
                     // XXX make this an argument, once the new
                     // visitors are Rubified
@@ -104,6 +105,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+
 
     VALUE
     glsa_dep_tag_new(int argc, VALUE * argv, VALUE self)

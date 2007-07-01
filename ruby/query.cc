@@ -34,14 +34,14 @@ namespace
     static VALUE c_query;
     static VALUE c_matches;
     static VALUE c_package;
+    static VALUE c_repository;
+    static VALUE c_category;
     static VALUE c_not_masked;
     static VALUE c_repository_has_installed_interface;
     static VALUE c_repository_has_installable_interface;
     static VALUE c_repository_has_uninstallable_interface;
     static VALUE c_installed_at_root;
-    static VALUE c_repository;
     static VALUE c_all;
-    static VALUE c_category;
 
     VALUE
     query_to_value(const Query & v)

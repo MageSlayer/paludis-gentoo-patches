@@ -57,17 +57,17 @@ namespace
 
     /*
      * call-seq:
-     *     query_use(use_flag, package_database_entry) -> true or false
+     *     query_use(use_flag, package_id) -> true or false
      *
-     * Does the user want the specified USE flag set for a PackageDatabaseEntry.
+     * Does the user want the specified USE flag set for a PackageID.
      */
+
     VALUE
-    environment_query_use(VALUE self, VALUE flag, VALUE pdev)
+    environment_query_use(VALUE self, VALUE flag, VALUE pid)
     {
         try
         {
-            PackageDatabaseEntry pde(value_to_package_database_entry(pdev));
-            return value_to_environment(self)->query_use(UseFlagName(StringValuePtr(flag)), pde) ? Qtrue : Qfalse;
+            return value_to_environment(self)->query_use(UseFlagName(StringValuePtr(flag)), *(value_to_package_id(pid))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -77,17 +77,18 @@ namespace
 
     /*
      * call-seq:
-     *     mask_reasons(package_database_entry) -> MaskReasons
+     *     mask_reasons(package_id, mask_reasons_option) -> MaskReasons
      *
-     * Fetch the MaskReasons for a PackageDatabaseEntry.
+     * Return the reasons for a package being masked.
      */
+    /* FIXME
     VALUE
-    environment_mask_reasons(VALUE self, VALUE pde_value)
+    environment_mask_reasons(VALUE self, VALUE pid, VALUE mro)
     {
-        PackageDatabaseEntry pde = value_to_package_database_entry(pde_value);
         try
         {
-            MaskReasons r(value_to_environment(self)->mask_reasons(pde));
+            MaskReasonsOption opt = static_cast<MaskReasonsOption>NUM2INT(mro);
+            MaskReasons r(value_to_environment(self)->mask_reasons(*value_to_package_id(pid), opt));
             return mask_reasons_to_value(r);
         }
         catch (const std::exception & e)
@@ -95,7 +96,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-
+    */
     /*
      * call-seq:
      *     package_database -> PackageDatabase
@@ -138,17 +139,17 @@ namespace
 
     /*
      * call-seq:
-     *     accept_license(license, pde) -> true of false
+     *     accept_license(license, package_id) -> true of false
      *
      * Do we accept a particular license for a particular package?
      */
+
     VALUE
     environment_accept_license(VALUE self, VALUE license, VALUE p)
     {
         try
         {
-            PackageDatabaseEntry pde = value_to_package_database_entry(p);
-            return value_to_environment(self)->accept_license(std::string(StringValuePtr(license)), pde) ? Qtrue : Qfalse;
+            return value_to_environment(self)->accept_license(std::string(StringValuePtr(license)), *(value_to_package_id(p))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -158,16 +159,16 @@ namespace
 
     /*
      * call-seq:
-     *     accept_keywords(keywords, pde) -> true or false
+     *     accept_keywords(keywords, package_id) -> true or false
      *
-     * Do we accept any of the specified keywords for a particular package
+     * Do we accept any of the specified keywords for a particular package?
      */
+
     VALUE
     environment_accept_keywords(VALUE self, VALUE keywords, VALUE p)
     {
         try
         {
-            PackageDatabaseEntry pde = value_to_package_database_entry(p);
             tr1::shared_ptr<KeywordNameCollection> knc (new KeywordNameCollection::Concrete);
             long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
             for (long i = 0; i < len; i++)
@@ -176,7 +177,7 @@ namespace
                 VALUE kw = rb_ary_entry(keywords, i);
                 knc->insert(KeywordName(StringValuePtr(kw)));
             }
-            return value_to_environment(self)->accept_keywords(knc, pde) ? Qtrue : Qfalse;
+            return value_to_environment(self)->accept_keywords(knc, *value_to_package_id(p)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -506,7 +507,7 @@ namespace
         c_environment = environment_class();
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
-        rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
+        //rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
 #if CIARANM_REMOVED_THIS
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);

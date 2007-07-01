@@ -1,8 +1,8 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir version_metadata_TEST_dir || exit 1
-cd version_metadata_TEST_dir || exit 1
+mkdir package_id_TEST_dir || exit 1
+cd package_id_TEST_dir || exit 1
 
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1

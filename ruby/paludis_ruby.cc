@@ -89,7 +89,7 @@ namespace
     /* Document-method: match_package
      *
      * call-seq:
-     *     match_package (env, spec, target)
+     *     match_package (environment, package_dep_spec, target) -> true or false
      *
      * Return whether the specified spec matches the specified target.
      *
@@ -100,8 +100,8 @@ namespace
         {
             tr1::shared_ptr<Environment> env = value_to_environment(en);
             tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
-            PackageDatabaseEntry target = value_to_package_database_entry(t);
-            return match_package(*env, *spec, target) ? Qtrue : Qfalse;
+            tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
+            return match_package(*env, *spec, *target) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -109,6 +109,7 @@ namespace
         }
 
     }
+
 }
 
 RegisterRubyClass::RegisterRubyClass() :

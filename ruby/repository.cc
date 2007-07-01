@@ -20,6 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -38,10 +39,10 @@ namespace
     static VALUE c_profiles_desc_line;
 
     VALUE
-    profiles_desc_line_to_value(const RepositoryPortageInterface::ProfilesDescLine & v)
+    profiles_desc_line_to_value(const RepositoryEInterface::ProfilesDescLine & v)
     {
-        RepositoryPortageInterface::ProfilesDescLine * vv(new RepositoryPortageInterface::ProfilesDescLine(v));
-        return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryPortageInterface::ProfilesDescLine>::free, vv);
+        RepositoryEInterface::ProfilesDescLine * vv(new RepositoryEInterface::ProfilesDescLine(v));
+        return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryEInterface::ProfilesDescLine>::free, vv);
     }
 
     /*
@@ -125,28 +126,6 @@ namespace
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
             return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     has_version?(package_name, version) -> true or false
-     *
-     * Do we have a version spec?
-     */
-    VALUE
-    repository_has_version(VALUE self, VALUE name, VALUE version)
-    {
-        try
-        {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            return (*self_ptr)->has_version(value_to_qualified_package_name(name),
-                    value_to_version_spec(version)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -261,14 +240,15 @@ namespace
 
     /*
      * call-seq:
-     *     version_specs(qualified_package_name) -> Array
-     *     version_specs(qualified_package_name) {|version_spec| block } -> Qnil
+     *     package_ids(qualified_package_name) -> Array
+     *     package_ids(qualified_package_name) {|package_id| block } -> Qnil
      *
-     * Returns the versions for the given package, either as an Array, or as the parameters
+     * Returns the package IDs for the given package, either as an Array, or as the parameters
      * to a block.
      */
+
     VALUE
-    repository_version_specs(VALUE self, VALUE qpn)
+    repository_package_ids(VALUE self, VALUE qpn)
     {
         try
         {
@@ -278,38 +258,16 @@ namespace
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const VersionSpecCollection> c((*self_ptr)->version_specs(q));
-                for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_yield(version_spec_to_value(*i));
+                tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+                for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_yield(package_id_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const VersionSpecCollection> c((*self_ptr)->version_specs(q));
-            for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, version_spec_to_value(*i));
+            tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+            for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, package_id_to_value(*i));
             return result;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     version_metadata(qualified_package_name, version_spec) -> VersionMetadata
-     *
-     * Fetch metadata.
-     */
-    VALUE
-    repository_version_metadata(VALUE self, VALUE name, VALUE version)
-    {
-        try
-        {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            return version_metadata_to_value((*self_ptr)->version_metadata(value_to_qualified_package_name(name),
-                        value_to_version_spec(version)));
         }
         catch (const std::exception & e)
         {
@@ -414,18 +372,10 @@ namespace
      * Returns self if the repository supports the interface, otherwise Nil.
      */
     /*
-     * Document-method: contents_interface
+     * Document-method: e_interface
      *
      * call-seq:
-     *     contents_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: portage_interface
-     *
-     * call-seq:
-     *     portage_interface -> self or Nil
+     *     e_interface -> self or Nil
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
@@ -526,72 +476,6 @@ namespace
     }
 
     /*
-     * call-seq:
-     *     contents(qualified_package_name, version_spec) -> Contents or Nil
-     *
-     * Fetches the package contents, if the Repository includes the installed_interface
-     */
-    VALUE
-    repository_contents(VALUE self, VALUE qpn, VALUE vs)
-    {
-        try
-        {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            RepositoryContentsInterface * const contents_interface ((**self_ptr).contents_interface);
-            if (contents_interface)
-            {
-                return contents_to_value(
-                        contents_interface->contents(
-                            value_to_qualified_package_name(qpn),
-                            value_to_version_spec(vs)
-                            )
-                        );
-            }
-            else
-            {
-                return Qnil;
-            }
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     installed_time(qualified_package_name, version_spec) -> Array or Nil
-     *
-     * Fetches the package install time, if the Repository includes the installed_interface
-     */
-    VALUE
-    repository_installed_time(VALUE self, VALUE qpn, VALUE vs)
-    {
-        try
-        {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            RepositoryInstalledInterface * const installed_interface ((**self_ptr).installed_interface);
-            if (installed_interface)
-            {
-                return rb_time_new(installed_interface->installed_time(
-                            value_to_qualified_package_name(qpn),
-                            value_to_version_spec(vs)
-                            ), 0);
-            }
-            else
-            {
-                return Qnil;
-            }
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
      * Document-method: query_use
      *
      * call-seq:
@@ -623,9 +507,10 @@ namespace
      * repository doesn't implement use_interface.
      */
 
-    template <typename T_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry &) const> struct QueryUseMessage;
 
-    template <typename T_, T_ trueval_, T_ falseval_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageDatabaseEntry &) const>
+    template <typename T_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageID &) const> struct QueryUseMessage;
+
+    template <typename T_, T_ trueval_, T_ falseval_, T_ (RepositoryUseInterface::* m_) (const UseFlagName &, const PackageID &) const>
     struct QueryUse
     {
         static VALUE
@@ -644,8 +529,7 @@ namespace
                         rb_raise(rb_eArgError, QueryUseMessage<T_, m_>::message, argc);
                     }
 
-                    PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
-                    T_ status(((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), pde));
+                    T_ status(((*use_interface).*m_)(UseFlagName(StringValuePtr(argv[0])), *value_to_package_id(argv[1])));
 
                     return status == trueval_ ? Qtrue : status == falseval_ ? Qfalse : Qnil;
                 }
@@ -689,7 +573,7 @@ namespace
      * Document-method: query_repository_masks
      *
      * call-seq:
-     *     query_repository_masks(qualified_package_name, version_spec) -> true or false or nil
+     *     query_repository_masks(package_id) -> true or false or nil
      *
      * Query repository masks.  nil if the repository doesn't implement mask_interface.
      */
@@ -697,16 +581,16 @@ namespace
      * Document-method: query_profile_masks
      *
      * call-seq:
-     *     query_profile_masks(qualified_package_name, version_spec) -> true or false or nil
+     *     query_profile_masks(package_id) -> true or false or nil
      *
      * Query profile masks.  nil if the repository doesn't implement mask_interface.
      */
 
-    template <bool (RepositoryMaskInterface::* m_) (const QualifiedPackageName &, const VersionSpec &) const>
+    template <bool (RepositoryMaskInterface::* m_) (const PackageID &) const>
     struct QueryMasks
     {
         static VALUE
-        query(VALUE self, VALUE qpn, VALUE ver)
+        query(VALUE self, VALUE pid)
         {
             try
             {
@@ -715,16 +599,8 @@ namespace
                 RepositoryMaskInterface * const mask_interface ((**self_ptr).mask_interface);
 
                 if (mask_interface)
-                {
-                    QualifiedPackageName q = value_to_qualified_package_name(qpn);
-                    VersionSpec v = value_to_version_spec(ver);
-
-                    return ((*mask_interface).*m_)(q, v) ? Qtrue : Qfalse;
-                }
-                else
-                {
-                    return Qnil;
-                }
+                    return ((*mask_interface).*m_)(*value_to_package_id(pid)) ? Qtrue : Qfalse;
+                return Qnil;
             }
             catch (const std::exception & e)
             {
@@ -736,11 +612,12 @@ namespace
     /*
      * call-seq:
      *     describe_use_flag(flag_name) -> String or Nil
-     *     describe_use_flag(flag_name, package_database_entry) -> String or Nil
+     *     describe_use_flag(flag_name, package_id) -> String or Nil
      *
      * Returns the description for a use flag name, or nil if the repository does not include 
      * the use_flag_interface.
      */
+
     VALUE
     repository_describe_use_flag(int argc, VALUE * argv, VALUE self)
     {
@@ -752,8 +629,8 @@ namespace
                 if (1 == argc || 2 ==argc)
                 {
                     UseFlagName ufn = UseFlagName(StringValuePtr(argv[0]));
-                    PackageDatabaseEntry pde(value_to_package_database_entry(argv[1]));
-                    return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, pde).c_str()));
+                    tr1::shared_ptr<const PackageID> pid(value_to_package_id(argv[1]));
+                    return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, *pid).c_str()));
 
                 }
                 else
@@ -777,7 +654,7 @@ namespace
      * call-seq:
      *     profiles -> Array
      *
-     * Fetch an array of our profiles, as PortageRepositoryProfilesDescLine.
+     * Fetch an array of our profiles, as ProfilesDescLine.
      */
     VALUE
     repository_profiles(VALUE self)
@@ -786,10 +663,10 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->portage_interface) {
+            if ((*self_ptr)->e_interface) {
                 VALUE result(rb_ary_new());
-                for (RepositoryPortageInterface::ProfilesIterator i((*self_ptr)->portage_interface->begin_profiles()),
-                        i_end((*self_ptr)->portage_interface->end_profiles()) ; i != i_end ; ++i)
+                for (RepositoryEInterface::ProfilesIterator i((*self_ptr)->e_interface->begin_profiles()),
+                        i_end((*self_ptr)->e_interface->end_profiles()) ; i != i_end ; ++i)
                 {
                     rb_ary_push(result, profiles_desc_line_to_value(*i));
                 }
@@ -808,7 +685,7 @@ namespace
 
     /*
      * call-seq:
-     *     find_profile(profile_location) -> PortageRepositoryProfilesDescLine
+     *     find_profile(profile_location) -> ProfilesDescLine
      *
      * Fetches the named profile.
      */
@@ -820,11 +697,11 @@ namespace
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
 
-            if ((*self_ptr)->portage_interface)
+            if ((*self_ptr)->e_interface)
             {
-                RepositoryPortageInterface::ProfilesIterator p((*self_ptr)->portage_interface->find_profile(FSEntry(StringValuePtr(profile))));
+                RepositoryEInterface::ProfilesIterator p((*self_ptr)->e_interface->find_profile(FSEntry(StringValuePtr(profile))));
 
-                if (p == (*self_ptr)->portage_interface->end_profiles())
+                if (p == (*self_ptr)->e_interface->end_profiles())
                     return Qnil;
 
                 return profiles_desc_line_to_value(*p);
@@ -853,9 +730,9 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->portage_interface)
-                (*self_ptr)->portage_interface->set_profile(
-                    (*self_ptr)->portage_interface->find_profile(
+            if ((*self_ptr)->e_interface)
+                (*self_ptr)->e_interface->set_profile(
+                    (*self_ptr)->e_interface->find_profile(
                         value_to_profiles_desc_line(profile).path));
             return Qnil;
         }
@@ -878,8 +755,8 @@ namespace
         {
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            if ((*self_ptr)->portage_interface)
-                return rb_str_new2(((*self_ptr)->portage_interface->profile_variable(StringValuePtr(var))).c_str());
+            if ((*self_ptr)->e_interface)
+                return rb_str_new2(((*self_ptr)->e_interface->profile_variable(StringValuePtr(var))).c_str());
             return Qnil;
         }
         catch (const std::exception & e)
@@ -894,7 +771,7 @@ namespace
      * call-seq:
      *     arch -> String
      *
-     * Fetch arch for this PortageRepositoryProfilesDescLine.
+     * Fetch arch for this ProfilesDescLine.
      */
     /*
      * Document-method: status
@@ -902,7 +779,7 @@ namespace
      * call-seq:
      *     status -> String
      *
-     * Fetch status for this PortageRepositoryProfilesDescLine.
+     * Fetch status for this ProfilesDescLine.
      */
     /*
      * Document-method: path
@@ -910,16 +787,16 @@ namespace
      * call-seq:
      *     path -> String
      *
-     * Fetch path to this PortageRepositoryProfilesDescLine.
+     * Fetch path to this ProfilesDescLine.
      */
-    template <typename T_, T_ RepositoryPortageInterface::ProfilesDescLine::* m_>
+    template <typename T_, T_ RepositoryEInterface::ProfilesDescLine::* m_>
     struct DescLineValue
     {
         static VALUE
         fetch(VALUE self)
         {
-            RepositoryPortageInterface::ProfilesDescLine * ptr;
-            Data_Get_Struct(self, RepositoryPortageInterface::ProfilesDescLine, ptr);
+            RepositoryEInterface::ProfilesDescLine * ptr;
+            Data_Get_Struct(self, RepositoryEInterface::ProfilesDescLine, ptr);
             return rb_str_new2(stringify((*ptr).*m_).c_str());
         }
     };
@@ -938,15 +815,12 @@ namespace
 
         rb_define_method(c_repository, "has_category_named?", RUBY_FUNC_CAST(&repository_has_category_named), 1);
         rb_define_method(c_repository, "has_package_named?", RUBY_FUNC_CAST(&repository_has_package_named), 1);
-        rb_define_method(c_repository, "has_version?", RUBY_FUNC_CAST(&repository_has_version), 2);
 
         rb_define_method(c_repository, "category_names", RUBY_FUNC_CAST(&repository_category_names), 0);
         rb_define_method(c_repository, "category_names_containing_package",
                 RUBY_FUNC_CAST(&repository_category_names_containing_package), 1);
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
-        rb_define_method(c_repository, "version_specs", RUBY_FUNC_CAST(&repository_version_specs), 1);
-
-        rb_define_method(c_repository, "version_metadata", RUBY_FUNC_CAST(&repository_version_metadata), 2);
+        rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
         rb_define_method(c_repository, "installable_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstallableInterface,
                         &Repository::installable_interface>::fetch)), 0);
@@ -972,22 +846,16 @@ namespace
                         &Repository::provides_interface>::fetch)), 0);
         rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<RepositoryVirtualsInterface,
                         &Repository::virtuals_interface>::fetch)), 0);
-        rb_define_method(c_repository, "contents_interface", RUBY_FUNC_CAST((&Interface<RepositoryContentsInterface,
-                        &Repository::contents_interface>::fetch)), 0);
-        rb_define_method(c_repository, "portage_interface", RUBY_FUNC_CAST((&Interface<RepositoryPortageInterface,
-                        &Repository::portage_interface>::fetch)), 0);
+        rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface<RepositoryEInterface,
+                        &Repository::e_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
-        rb_define_method(c_repository, "contents", RUBY_FUNC_CAST(&repository_contents), 2);
-        rb_define_method(c_repository, "installed_time", RUBY_FUNC_CAST(&repository_installed_time), 2);
-
         rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), -1);
         rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), -1);
         rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), -1);
 
-        rb_define_method(c_repository, "query_repository_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_repository_masks>::query), 2);
-        rb_define_method(c_repository, "query_profile_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_profile_masks>::query), 2);
-
+        rb_define_method(c_repository, "query_repository_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_repository_masks>::query), 1);
+        rb_define_method(c_repository, "query_profile_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_profile_masks>::query), 1);
         rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag),-1);
 
         rb_define_method(c_repository, "profiles", RUBY_FUNC_CAST(&repository_profiles),0);
@@ -1022,11 +890,11 @@ namespace
         c_profiles_desc_line = rb_define_class_under(paludis_module(), "ProfilesDescLine", rb_cObject);
         rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_profiles_desc_line, "path",
-                RUBY_FUNC_CAST((&DescLineValue<FSEntry,&RepositoryPortageInterface::ProfilesDescLine::path>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<FSEntry,&RepositoryEInterface::ProfilesDescLine::path>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "arch",
-                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryPortageInterface::ProfilesDescLine::arch>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::arch>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "status",
-                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryPortageInterface::ProfilesDescLine::status>::fetch)), 0);
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::status>::fetch)), 0);
     }
 }
 
@@ -1047,21 +915,21 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 }
 
 VALUE
-paludis::ruby::repository_to_value(tr1::shared_ptr<Repository> m)
+paludis::ruby::repository_to_value(tr1::shared_ptr<const Repository> m)
 {
     if (0 == m)
         return Qnil;
     else
-        return repo_to_value<tr1::shared_ptr<Repository> >(m, &c_repository);
+        return repo_to_value<tr1::shared_ptr<const Repository> >(m, &c_repository);
 }
 
-tr1::shared_ptr<Repository>
+tr1::shared_ptr<const Repository>
 paludis::ruby::value_to_repository(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_repository))
     {
-        tr1::shared_ptr<Repository> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<Repository>, v_ptr);
+        tr1::shared_ptr<const Repository> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<const Repository>, v_ptr);
         return *v_ptr;
     }
     else
@@ -1070,13 +938,13 @@ paludis::ruby::value_to_repository(VALUE v)
     }
 }
 
-RepositoryPortageInterface::ProfilesDescLine
+RepositoryEInterface::ProfilesDescLine
 paludis::ruby::value_to_profiles_desc_line(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_profiles_desc_line))
     {
-        RepositoryPortageInterface::ProfilesDescLine * v_ptr;
-        Data_Get_Struct(v, RepositoryPortageInterface::ProfilesDescLine, v_ptr);
+        RepositoryEInterface::ProfilesDescLine * v_ptr;
+        Data_Get_Struct(v, RepositoryEInterface::ProfilesDescLine, v_ptr);
         return *v_ptr;
     }
     else
