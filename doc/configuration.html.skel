@@ -231,6 +231,12 @@ any other location for all files. For example:</p>
 gentoo http://gentoo.blueyonder.co.uk/distfiles
 </pre>
 
+<p>Note that, for Gentoo mirrors, the last component of the URL must
+be <code>/distfiles</code>.  Portage adds this automatically, so if
+you are obtaining your list of mirrors from <code>make.conf</code> or
+the <code>mirrorselect</code> tool, you will need to add it
+yourself.</p>
+
 <p>If <code>mirrors.bash</code> exists, it is executed and its stdout is used as if
 it were appended to the main file. If a <code>mirrors.conf.d</code> directory
 exists, any file named <code>*.conf</code> in this directory is treated as if it
