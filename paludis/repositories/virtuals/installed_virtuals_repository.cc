@@ -114,6 +114,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .e_interface(0)
             .make_virtuals_interface(0)
             .pretend_interface(0)
+            .qa_interface(0)
             .hook_interface(this),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(

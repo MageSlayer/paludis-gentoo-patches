@@ -1,4 +1,4 @@
-SUBDIRS = ebuild .
+SUBDIRS = ebuild qa .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
@@ -19,7 +19,6 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
-
 paludis_repositories_lib_LTLIBRARIES = libpaludiserepository.la
 
 if ENABLE_GLSA
@@ -101,7 +100,14 @@ libpaludiserepository_la_SOURCES = \
 	e_key.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
+if ENABLE_QA
+libpaludiserepository_la_LIBADD_IF_QA = $(top_builddir)/paludis/repositories/e/qa/libpaludiserepositoryqa.la
+else
+libpaludiserepository_la_LIBADD_IF_QA =
+endif
+
 libpaludiserepository_la_LIBADD = \
+	$(libpaludiserepository_la_LIBADD_IF_QA) \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/merger/libpaludismerger.la \
 	$(top_builddir)/paludis/digests/libpaludisdigests.la \

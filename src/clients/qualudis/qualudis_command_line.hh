@@ -4,7 +4,7 @@
 #define PALUDIS_GUARD_SRC_QUALUDIS_QUALUDIS_COMMAND_LINE_HH 1
 
 #include <paludis/args/args.hh>
-#include <paludis/qa/message.hh>
+#include <paludis/qa-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <src/common_args/log_level_arg.hh>
 
@@ -54,31 +54,13 @@ class QualudisCommandLine :
         /// Check options.
         paludis::args::ArgsGroup check_options;
 
-        /// --qa-checks
-        paludis::args::StringSetArg a_qa_checks;
-
-        /// --exclude-qa-checks
-        paludis::args::StringSetArg a_exclude_qa_checks;
-
-        /// --archs
-        paludis::args::StringSetArg a_archs;
-
-        /// --exclude-archs
-        paludis::args::StringSetArg a_exclude_archs;
-
-        /// --verbose
-        paludis::args::SwitchArg a_verbose;
-
-        /// --quiet
-        paludis::args::SwitchArg a_quiet;
-
         /// --log-level
         paludis::args::LogLevelArg a_log_level;
 
         /// --message-level
         paludis::args::EnumArg a_message_level;
 
-        paludis::qa::QALevel message_level;
+        paludis::QAMessageLevel message_level;
 
         ///\}
 

@@ -32,8 +32,6 @@ get() {
 
 misc/do_m4.bash paludis/Makefile.am || exit $?
 misc/do_m4.bash paludis/paludis.hh || exit $?
-misc/do_m4.bash paludis/qa/Makefile.am || exit $?
-misc/do_m4.bash paludis/qa/qa.hh || exit $?
 misc/do_m4.bash paludis/util/util.hh || exit $?
 misc/do_m4.bash paludis/util/Makefile.am || exit $?
 misc/do_m4.bash hooks/Makefile.am || exit $?

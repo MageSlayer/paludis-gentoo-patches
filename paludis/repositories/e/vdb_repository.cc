@@ -141,6 +141,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .e_interface(0)
             .pretend_interface(0)
             .make_virtuals_interface(0)
+            .qa_interface(0)
             .hook_interface(this),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))

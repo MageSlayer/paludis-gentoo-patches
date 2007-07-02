@@ -232,6 +232,10 @@ RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
 }
 
+RepositoryQAInterface::~RepositoryQAInterface()
+{
+}
+
 tr1::shared_ptr<FSEntry>
 RepositoryLicensesInterface::license_exists(const std::string & license) const
 {

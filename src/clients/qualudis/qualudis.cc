@@ -19,25 +19,28 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
-#include <paludis/qa/qa.hh>
+#include <paludis/qa.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <set>
-#include <paludis/util/tr1_functional.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
 
 #include "qualudis_command_line.hh"
 #include <src/output/colour.hh>
+#include <src/common_args/do_help.hh>
+
 #include "config.h"
 
 using namespace paludis;
@@ -47,522 +50,18 @@ using std::endl;
 
 namespace
 {
-    struct DoHelp
-    {
-        const std::string message;
-
-        DoHelp(const std::string & m = "") :
-            message(m)
-        {
-        }
-    };
-
     struct DoVersion
     {
     };
 
-    static std::string current_entry_heading;
-
-    void
-    need_entry_heading()
+    struct QualudisReporter :
+        QAReporter
     {
-        static std::string last_displayed_entry_heading;
-        if (last_displayed_entry_heading != current_entry_heading)
+        void message(const QAMessageLevel l, const std::string & s, const std::string & m)
         {
-            cout << endl;
-            cout << current_entry_heading << endl;
-            last_displayed_entry_heading = current_entry_heading;
-        }
-    }
-
-    void
-    set_entry_heading(const std::string & s, bool local_quiet = false)
-    {
-        current_entry_heading = s;
-        if (! (QualudisCommandLine::get_instance()->a_quiet.specified() || local_quiet))
-            need_entry_heading();
-    }
-
-    void
-    display_header(const qa::CheckResult & r)
-    {
-        need_entry_heading();
-        cout << r.item() << ": " << r.rule() << ":" << endl;
-    }
-
-    void
-    display_header_once(bool * const once, const qa::CheckResult & r)
-    {
-        if (! *once)
-        {
-            display_header(r);
-            *once = true;
-        }
-    }
-
-    void
-    display_no_errors(const qa::CheckResult & r)
-    {
-        if (QualudisCommandLine::get_instance()->a_verbose.specified())
-            display_header(r);
-    }
-
-    void
-    display_errors(const qa::CheckResult & r)
-    {
-        bool done_out(false);
-
-        for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
-        {
-            if (i->level < QualudisCommandLine::get_instance()->message_level)
-                continue;
-
-            bool show(true);
-            do
-            {
-                switch (i->level)
-                {
-                    case qa::qal_info:
-                        display_header_once(&done_out, r);
-                        cout << "  info:         ";
-                        continue;
-
-                    case qa::qal_skip:
-                        if (QualudisCommandLine::get_instance()->a_verbose.specified())
-                        {
-                            display_header_once(&done_out, r);
-                            cout << "  skip:         ";
-                        }
-                        else
-                            show = false;
-                        continue;
-
-                    case qa::qal_minor:
-                        display_header_once(&done_out, r);
-                        cout << "  minor:        ";
-                        continue;
-
-                    case qa::qal_major:
-                        display_header_once(&done_out, r);
-                        cout << "  major:        ";
-                        continue;
-
-                    case qa::qal_fatal:
-                        display_header_once(&done_out, r);
-                        cout << "  fatal:        ";
-                        continue;
-
-                    case qa::qal_maybe:
-                        display_header_once(&done_out, r);
-                        cout << "  maybe:        ";
-                        continue;
-
-                    case qa::last_qal:
-                        ;
-                }
-
-                throw InternalError(PALUDIS_HERE, "Bad mk_level");
-            }
-            while (false);
-
-            if (show)
-                cout << i->msg << endl;
-        }
-    }
-
-    template <typename VC_>
-    struct IsImportant :
-        std::binary_function<bool, std::string, std::string>
-    {
-        bool operator() (const std::string & k1, const std::string & k2) const
-        {
-            return (*VC_::get_instance()->find_maker(k1))()->is_important() >
-                (*VC_::get_instance()->find_maker(k2))()->is_important();
+            std::cout << l << " " << s << ": " << m << std::endl;
         }
     };
-
-    template <typename VC_, typename P_>
-    void do_check_kind(bool & ok, bool & fatal, bool & show_metadata, const P_ & value)
-    {
-        std::list<std::string> checks;
-        VC_::get_instance()->copy_keys(std::back_inserter(checks));
-        checks.sort();
-        checks.sort(IsImportant<VC_>());
-
-        for (std::list<std::string>::const_iterator i(checks.begin()),
-                i_end(checks.end()) ; i != i_end ; ++i)
-        {
-            if (QualudisCommandLine::get_instance()->a_qa_checks.specified())
-                if (QualudisCommandLine::get_instance()->a_qa_checks.end_args() == std::find(
-                            QualudisCommandLine::get_instance()->a_qa_checks.begin_args(),
-                            QualudisCommandLine::get_instance()->a_qa_checks.end_args(),
-                            *i))
-                    continue;
-
-            if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.specified())
-                if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.end_args() != std::find(
-                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.begin_args(),
-                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.end_args(),
-                            *i))
-                    continue;
-
-            try
-            {
-                Context context("When performing check '" + stringify(*i) + "':");
-
-                qa::CheckResult r((*VC_::get_instance()->find_maker(*i)())(value));
-
-                if (r.empty())
-                {
-                    display_no_errors(r);
-                    continue;
-                }
-
-                display_errors(r);
-
-                do
-                {
-                    switch (r.most_severe_level())
-                    {
-                        case qa::qal_info:
-                        case qa::qal_skip:
-                            continue;
-
-                        case qa::qal_maybe:
-                            show_metadata = true;
-                            continue;
-
-                        case qa::qal_minor:
-                        case qa::qal_major:
-                            show_metadata = true;
-                            ok = false;
-                            continue;
-
-                        case qa::qal_fatal:
-                            show_metadata = true;
-                            ok = false;
-                            fatal = true;
-                            return;
-
-                        case qa::last_qal:
-                            ;
-                    }
-                    throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
-                } while (0);
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & e)
-            {
-                need_entry_heading();
-                std::cout << "Eek! Caught Exception '" << e.message() << "' (" << e.what()
-                    << ") when doing check '" << *i << "'" << endl;
-                ok = false;
-            }
-            catch (const std::exception & e)
-            {
-                need_entry_heading();
-                std::cout << "Eek! Caught std::exception '" << e.what()
-                    << "' when doing check '" << *i << "'" << endl;
-                ok = false;
-            }
-        }
-    }
-
-    bool
-    do_check_package_dir(const FSEntry & dir, qa::QAEnvironment & env)
-    {
-        Context context("When checking package '" + stringify(dir) + "':");
-        cerr << xterm_title("Checking " + dir.dirname().basename() + "/" +
-                dir.basename() + " - qualudis") << std::flush;
-
-        bool ok(true), fatal(false), show_metadata(false);
-
-        set_entry_heading("QA checks for package directory " + stringify(dir) + ":");
-
-        if (! fatal)
-            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, show_metadata, dir);
-
-        if (! fatal)
-        {
-            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
-            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
-            {
-                if (f->basename() == "CVS" || '.' == f->basename().at(0))
-                    continue;
-                if (fatal)
-                    break;
-
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, show_metadata, *f);
-            }
-        }
-
-        if (! fatal)
-        {
-            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
-            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
-            {
-                if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
-                    continue;
-
-                qa::EbuildCheckData d(
-                        QualifiedPackageName(CategoryNamePart(stringify(dir.dirname().basename())),
-                                PackageNamePart(stringify(dir.basename()))),
-                        VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
-                                    stringify(dir.basename()) + "-")),
-                        &env);
-                do_check_kind<qa::EbuildCheckMaker>(ok, fatal, show_metadata, d);
-
-                if (fatal)
-                    break;
-            }
-        }
-
-        if (! fatal)
-        {
-            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
-            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
-            {
-                if (! is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
-                    continue;
-
-                for (RepositoryPortageInterface::ProfilesIterator
-                        i(env.main_repository()->portage_interface->begin_profiles()),
-                        i_end(env.main_repository()->portage_interface->end_profiles()) ; i != i_end ; ++i)
-                {
-                    if (QualudisCommandLine::get_instance()->a_archs.specified())
-                        if (QualudisCommandLine::get_instance()->a_archs.end_args() == std::find(
-                                    QualudisCommandLine::get_instance()->a_archs.begin_args(),
-                                    QualudisCommandLine::get_instance()->a_archs.end_args(),
-                                    i->arch))
-                            continue;
-
-                    if (QualudisCommandLine::get_instance()->a_exclude_archs.specified())
-                        if (QualudisCommandLine::get_instance()->a_exclude_archs.end_args() != std::find(
-                                    QualudisCommandLine::get_instance()->a_exclude_archs.begin_args(),
-                                    QualudisCommandLine::get_instance()->a_exclude_archs.end_args(),
-                                    i->arch))
-                            continue;
-
-                    set_entry_heading("QA checks for package directory " + stringify(dir) +
-                            " with profile " + stringify(i->path) + ":", true);
-
-                    qa::PerProfileEbuildCheckData pd(
-                            QualifiedPackageName(CategoryNamePart(stringify(dir.dirname().basename())),
-                                PackageNamePart(stringify(dir.basename()))),
-                            VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
-                                    stringify(dir.basename()) + "-")),
-                            &env,
-                            i->path);
-                    do_check_kind<qa::PerProfileEbuildCheckMaker>(ok, fatal, show_metadata, pd);
-
-                    if (fatal)
-                        break;
-                }
-
-                if (fatal)
-                    break;
-            }
-        }
-
-        if (show_metadata && (dir / "metadata.xml").is_regular_file())
-        {
-            cout << "metadata.xml:" << endl;
-            qa::MetadataFile metadata(dir / "metadata.xml");
-            if (metadata.end_herds() != metadata.begin_herds())
-                cout << "  herds:        " << join(metadata.begin_herds(), metadata.end_herds(), ", ") << endl;
-            if (metadata.end_maintainers() != metadata.begin_maintainers())
-                for (qa::MetadataFile::MaintainersIterator i(metadata.begin_maintainers()),
-                        i_end(metadata.end_maintainers()) ; i != i_end ; ++i)
-                {
-                    if (i->first.empty() && i->second.empty())
-                        continue;
-
-                    cout << "  maintainer:   ";
-                    if (i->first.empty())
-                        cout << i->second;
-                    else if (i->second.empty())
-                        cout << "<" << i->first << ">";
-                    else
-                        cout << i->second << " <" << i->first << ">";
-                    cout << endl;
-                }
-        }
-
-        return ok;
-    }
-
-    bool
-    do_check_category_dir(const FSEntry & dir, qa::QAEnvironment & env)
-    {
-        Context context("When checking category '" + stringify(dir) + "':");
-
-        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
-
-        set_entry_heading("QA checks for category directory " + stringify(dir) + ":");
-
-        bool ok(true), dummy(false);
-
-        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
-        {
-            if ("CVS" == d->basename())
-                continue;
-            else if ('.' == d->basename().at(0))
-                continue;
-            else if (d->is_directory())
-                ok &= do_check_package_dir(*d, env);
-            else if ("metadata.xml" == d->basename())
-            {
-                bool fatal(false);
-
-                set_entry_heading("QA checks for category file " + stringify(*d) + ":");
-
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, dummy, *d);
-
-                if (fatal)
-                    break;
-            }
-        }
-
-        return ok;
-    }
-
-    bool
-    do_check_eclass_dir(const FSEntry & dir, const qa::QAEnvironment &)
-    {
-        Context context("When checking eclass directory '" + stringify(dir) + "':");
-
-        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
-
-        set_entry_heading("QA checks for eclass directory " + stringify(dir) + ":");
-
-        bool ok(true), dummy(false);
-
-        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
-        {
-            if ("CVS" == d->basename())
-                continue;
-            else if ('.' == d->basename().at(0))
-                continue;
-            else if (is_file_with_extension(d->basename(), ".eclass", IsFileWithOptions()))
-            {
-                bool fatal(false);
-
-                set_entry_heading("QA checks for eclass file " + stringify(*d) + ":");
-
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, dummy, *d);
-
-                if (fatal)
-                    break;
-            }
-        }
-
-        return ok;
-    }
-
-    bool
-    do_check_profiles_dir(const FSEntry & dir, const qa::QAEnvironment & env)
-    {
-        Context context("When checking profiles directory '" + stringify(dir) + "':");
-
-        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
-
-        set_entry_heading("QA checks for profiles directory " + stringify(dir) + ":");
-
-        bool ok(true), fatal(false), dummy(false);
-        do_check_kind<qa::ProfilesCheckMaker>(ok, fatal, dummy, dir);
-
-        for (RepositoryPortageInterface::ProfilesIterator
-                p(env.main_repository()->portage_interface->begin_profiles()),
-                p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
-        {
-            if (fatal)
-                break;
-
-            set_entry_heading("QA checks for profile.desc entry " + stringify(p->arch) + " " +
-                    stringify(p->path) + " " + stringify(p->status) + ":");
-
-            qa::ProfileCheckData data(dir, *p);
-            do_check_kind<qa::ProfileCheckMaker>(ok, fatal, dummy, data);
-        }
-
-        return ok;
-    }
-
-    bool
-    do_check_top_level(const FSEntry & dir)
-    {
-        Context context("When checking top level '" + stringify(dir) + "':");
-
-        set_entry_heading("QA checks for top level directory " + stringify(dir) + ":");
-
-        qa::QAEnvironment env(dir, QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
-                QualudisCommandLine::get_instance()->a_master_repository_dir.argument());
-        bool ok(true);
-
-        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
-        {
-            if (d->basename() == "CVS" || '.' == d->basename().at(0))
-                continue;
-            if (! d->is_directory())
-                continue;
-            if (d->basename() == "eclass")
-                ok &= do_check_eclass_dir(*d, env);
-            else if (d->basename() == "profiles")
-                ok &= do_check_profiles_dir(*d, env);
-            else if (env.package_database()->fetch_repository(
-                        env.package_database()->favourite_repository())->
-                    has_category_named(CategoryNamePart(d->basename())))
-                ok &= do_check_category_dir(*d, env);
-        }
-
-        return ok;
-    }
-
-
-    bool
-    do_check(const FSEntry & dir)
-    {
-        using namespace tr1::placeholders;
-
-        Context context("When checking directory '" + stringify(dir) + "':");
-
-        if (dir.basename() == "eclass" && dir.is_directory())
-        {
-            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
-                    QualudisCommandLine::get_instance()->a_master_repository_dir.argument());
-            return do_check_eclass_dir(dir, env);
-        }
-
-        if (dir.basename() == "profiles" && dir.is_directory())
-        {
-            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
-                    QualudisCommandLine::get_instance()->a_master_repository_dir.argument());
-            return do_check_profiles_dir(dir, env);
-        }
-
-        if (std::count_if(DirIterator(dir), DirIterator(),
-                    tr1::bind(&is_file_with_prefix_extension, _1, dir.basename() + "-", ".ebuild", IsFileWithOptions())))
-        {
-            qa::QAEnvironment env(dir.dirname().dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
-                    QualudisCommandLine::get_instance()->a_master_repository_dir.argument());
-            return do_check_package_dir(dir, env);
-        }
-
-        if ((dir / "profiles").is_directory())
-            return do_check_top_level(dir);
-
-        if ((dir.dirname() / "profiles").is_directory())
-        {
-            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument(),
-                    QualudisCommandLine::get_instance()->a_master_repository_dir.argument());
-            return do_check_category_dir(dir, env);
-        }
-
-        throw DoHelp("qualudis should be run inside a repository");
-    }
 }
 
 int main(int argc, char *argv[])
@@ -575,7 +74,7 @@ int main(int argc, char *argv[])
                 "QUALUDIS_CMDLINE");
 
         if (QualudisCommandLine::get_instance()->a_help.specified())
-            throw DoHelp();
+            throw args::DoHelp();
 
         if (QualudisCommandLine::get_instance()->a_log_level.specified())
             Log::get_instance()->set_log_level(QualudisCommandLine::get_instance()->a_log_level.option());
@@ -583,102 +82,22 @@ int main(int argc, char *argv[])
             Log::get_instance()->set_log_level(ll_qa);
 
         if (! QualudisCommandLine::get_instance()->a_message_level.specified())
-            QualudisCommandLine::get_instance()->message_level = qa::qal_info;
-        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "info")
-            QualudisCommandLine::get_instance()->message_level = qa::qal_info;
+            QualudisCommandLine::get_instance()->message_level = qaml_maybe;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "debug")
+            QualudisCommandLine::get_instance()->message_level = qaml_debug;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "maybe")
+            QualudisCommandLine::get_instance()->message_level = qaml_maybe;
         else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "minor")
-            QualudisCommandLine::get_instance()->message_level = qa::qal_minor;
-        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "major")
-            QualudisCommandLine::get_instance()->message_level = qa::qal_major;
-        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "fatal")
-            QualudisCommandLine::get_instance()->message_level = qa::qal_fatal;
+            QualudisCommandLine::get_instance()->message_level = qaml_minor;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "normal")
+            QualudisCommandLine::get_instance()->message_level = qaml_normal;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "severe")
+            QualudisCommandLine::get_instance()->message_level = qaml_severe;
         else
-            throw DoHelp("bad value for --message-level");
+            throw args::DoHelp("bad value for --message-level");
 
         if (QualudisCommandLine::get_instance()->a_version.specified())
             throw DoVersion();
-
-        if (QualudisCommandLine::get_instance()->a_qa_checks.specified())
-        {
-            std::set<std::string> all_keys;
-            qa::EbuildCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-            qa::FileCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-            qa::PackageDirCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-            qa::PerProfileEbuildCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-            qa::ProfileCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-            qa::ProfilesCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
-
-            for (args::StringSetArg::Iterator q(QualudisCommandLine::get_instance()->a_qa_checks.begin_args()),
-                    q_end(QualudisCommandLine::get_instance()->a_qa_checks.end_args()) ; q != q_end ; ++q)
-                if (all_keys.end() == all_keys.find(*q))
-                    throw DoHelp("bad value '" + *q + "' for --" +
-                            QualudisCommandLine::get_instance()->a_qa_checks.long_name());
-        }
-
-        if (QualudisCommandLine::get_instance()->a_describe.specified())
-        {
-            if (! QualudisCommandLine::get_instance()->empty())
-                throw DoHelp("describe action takes no parameters");
-
-            cout << "Package directory checks:" << endl;
-            std::list<std::string> package_dir_checks;
-            qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
-            for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
-                    i_end(package_dir_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::PackageDirCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            cout << "File checks:" << endl;
-            std::list<std::string> file_checks;
-            qa::FileCheckMaker::get_instance()->copy_keys(std::back_inserter(file_checks));
-            for (std::list<std::string>::const_iterator i(file_checks.begin()),
-                    i_end(file_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::FileCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            cout << "Ebuild checks:" << endl;
-            std::list<std::string> ebuild_checks;
-            qa::EbuildCheckMaker::get_instance()->copy_keys(std::back_inserter(ebuild_checks));
-            for (std::list<std::string>::const_iterator i(ebuild_checks.begin()),
-                    i_end(ebuild_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::EbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            cout << "Per profile ebuild checks:" << endl;
-            std::list<std::string> per_profile_ebuild_checks;
-            qa::PerProfileEbuildCheckMaker::get_instance()->copy_keys(
-                    std::back_inserter(per_profile_ebuild_checks));
-            for (std::list<std::string>::const_iterator i(per_profile_ebuild_checks.begin()),
-                    i_end(per_profile_ebuild_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::PerProfileEbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            cout << "Top level profiles/ checks:" << endl;
-            std::list<std::string> profiles_checks;
-            qa::ProfilesCheckMaker::get_instance()->copy_keys(
-                    std::back_inserter(profiles_checks));
-            for (std::list<std::string>::const_iterator i(profiles_checks.begin()),
-                    i_end(profiles_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::ProfilesCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            cout << "Per profiles.desc entry checks:" << endl;
-            std::list<std::string> profile_checks;
-            qa::ProfileCheckMaker::get_instance()->copy_keys(
-                    std::back_inserter(profile_checks));
-            for (std::list<std::string>::const_iterator i(profile_checks.begin()),
-                    i_end(profile_checks.end()) ; i != i_end ; ++i)
-                cout << "  " << *i << ":" << endl << "    " <<
-                    (*qa::ProfileCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
-            cout << endl;
-
-            return EXIT_SUCCESS;
-        }
 
         if (! QualudisCommandLine::get_instance()->a_write_cache_dir.specified())
             QualudisCommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
@@ -686,31 +105,24 @@ int main(int argc, char *argv[])
         if (! QualudisCommandLine::get_instance()->a_master_repository_dir.specified())
             QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
-        if (! QualudisCommandLine::get_instance()->empty())
-        {
-            QualudisCommandLine *c1 = QualudisCommandLine::get_instance();
-            QualudisCommandLine::ParametersIterator argit = c1->begin_parameters(), arge = c1->end_parameters();
-            for ( ; argit != arge; ++argit )
-            {
-                std::string arg = *argit;
-                try
-                {
-                    if (arg.empty() || '/' != arg.at(0))
-                        do_check(FSEntry::cwd() / arg);
-                    else
-                        do_check(FSEntry(arg));
-                }
-                catch(const DirOpenError & e)
-                {
-                    cout << e.message() << endl;
-                }
-            }
-            return EXIT_SUCCESS;
-        }
-        else
-            return do_check(FSEntry::cwd()) ? EXIT_SUCCESS : EXIT_FAILURE;
+        tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
+                    .repository_dir(FSEntry::cwd())
+                    .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
+                    .accept_unstable(false)
+                    .repository_type(no_config_environment::ncer_ebuild)
+                    .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
+                    ));
 
-        throw InternalError(__PRETTY_FUNCTION__, "no action?");
+        if (! env->main_repository()->qa_interface)
+            throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");
+
+        QualudisReporter r;
+        env->main_repository()->qa_interface->check_qa(
+                r,
+                QACheckProperties(),
+                QACheckProperties(),
+                QualudisCommandLine::get_instance()->message_level,
+                env->main_repository_dir());
     }
     catch (const DoVersion &)
     {
@@ -759,7 +171,7 @@ int main(int argc, char *argv[])
         cerr << "Try " << argv[0] << " --help" << endl;
         return EXIT_FAILURE;
     }
-    catch (const DoHelp & h)
+    catch (const args::DoHelp & h)
     {
         if (h.message.empty())
         {

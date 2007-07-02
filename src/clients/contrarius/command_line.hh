@@ -4,7 +4,6 @@
 #define PALUDIS_GUARD_SRC_CONTRARIUS_COMMAND_LINE_HH 1
 
 #include <paludis/args/args.hh>
-#include <paludis/qa/message.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <src/common_args/log_level_arg.hh>
 

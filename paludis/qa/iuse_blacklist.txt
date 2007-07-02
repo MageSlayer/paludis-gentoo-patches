@@ -1,6 +1,0 @@
-# This file is used by libpaludisqa to determine which use flags
-# should be treated as deprecated.
-
-gtk2
-oggvorbis
-xml2

@@ -36,22 +36,18 @@ QualudisCommandLine::QualudisCommandLine() :
 
     check_options(this, "Options for general checks",
             "Options relevant for the --owner actions."),
-    a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
-    a_exclude_qa_checks(&check_options, "exclude-qa-check", 'C', "Exclude given check."),
-    a_archs(&check_options, "archs", 'a', "Only perform checks for the specified arch."),
-    a_exclude_archs(&check_options, "exclude-archs", 'A', "Do not perform checks for the specified arch."),
-    a_verbose(&check_options, "verbose", 'v', "Be verbose"),
-    a_quiet(&check_options, "quiet", 'q', "Be quiet"),
     a_log_level(&check_options, "log-level", 'L'),
 
     a_message_level(&check_options, "message-level", 'M', "Specify the message level",
-            paludis::args::EnumArg::EnumArgOptions("info", "Show info and upwards")
-            ("minor", "Show minor and upwards")
-            ("major", "Show major and upwards")
-            ("fatal", "Show only fatals"),
-            "info"),
+            paludis::args::EnumArg::EnumArgOptions
+            ("debug",  "Show debug and upwards")
+            ("maybe",  "Show maybe and upwards")
+            ("minor",  "Show minor and upwards")
+            ("normal", "Show normal and upwards")
+            ("severe", "Show severe and upwards"),
+            "maybe"),
 
-    message_level(paludis::qa::qal_info),
+    message_level(paludis::qaml_maybe),
 
     configuration_options(this, "Configuration options",
             "Options that control general configuration."),

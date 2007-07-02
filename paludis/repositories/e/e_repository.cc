@@ -28,8 +28,12 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
-#include <paludis/repository_info.hh>
 
+#ifdef ENABLE_QA
+#  include <paludis/repositories/e/qa/qa_controller.hh>
+#endif
+
+#include <paludis/repository_info.hh>
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
@@ -260,6 +264,11 @@ ERepository::ERepository(const ERepositoryParams & p) :
             .make_virtuals_interface(0)
             .e_interface(this)
             .pretend_interface(this)
+#ifdef ENABLE_QA
+            .qa_interface(this)
+#else
+            .qa_interface(0)
+#endif
             .hook_interface(this),
             p.entry_format),
     PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p))
@@ -934,5 +943,30 @@ ERepository::perform_hook(const Hook & hook) const
         update_news();
 
     return HookResult(0, "");
+}
+
+void
+ERepository::check_qa(
+        QAReporter & reporter,
+        const QACheckProperties & ignore_if,
+        const QACheckProperties & ignore_unless,
+        const QAMessageLevel minimum_level,
+        const FSEntry & dir
+        ) const
+{
+#ifdef ENABLE_QA
+    Context c("When performing QA checks for '" + stringify(dir) + "':");
+
+    erepository::QAController controller(
+            _imp->params.environment,
+            shared_from_this(),
+            ignore_if,
+            ignore_unless,
+            minimum_level,
+            reporter);
+
+    controller.run();
+
+#endif
 }
 

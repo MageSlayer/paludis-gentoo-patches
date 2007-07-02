@@ -63,6 +63,7 @@ namespace paludis
         public RepositoryEInterface,
         public RepositoryHookInterface,
         public RepositoryPretendInterface,
+        public RepositoryQAInterface,
         public tr1::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
     {
@@ -199,7 +200,13 @@ namespace paludis
 
             virtual void merge(const MergeOptions &);
 
-            ///\}
+            virtual void check_qa(
+                    QAReporter &,
+                    const QACheckProperties &,
+                    const QACheckProperties &,
+                    const QAMessageLevel,
+                    const FSEntry &
+                    ) const;
 
             ///\name Information about ERepository
             ///\{

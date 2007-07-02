@@ -25,6 +25,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/qa-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
@@ -929,6 +930,27 @@ namespace paludis
             virtual const tr1::shared_ptr<const Layout> layout() const = 0;
 
             virtual ~RepositoryEInterface();
+    };
+
+    /**
+     * Interface for handling QA tasks.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE RepositoryQAInterface
+    {
+        public:
+            virtual void check_qa(
+                    QAReporter &,
+                    const QACheckProperties &,
+                    const QACheckProperties &,
+                    const QAMessageLevel,
+                    const FSEntry &
+                    ) const = 0;
+
+            virtual ~RepositoryQAInterface();
     };
 
     /**

@@ -650,6 +650,7 @@ if test x"$ENABLE_QA" = "xyes" ; then
 	need_pcrepp_check=yes
 	need_xml_check=yes
 	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
+	AC_DEFINE([ENABLE_QA], [1], [Build QA things])
 fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
@@ -1196,7 +1197,6 @@ AC_OUTPUT(
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/merger/Makefile
-	paludis/qa/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
@@ -1209,6 +1209,7 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/e/ebuild/echo_functions.bash
 	paludis/repositories/e/ebuild/work_around_broken_utilities.bash
+	paludis/repositories/e/qa/Makefile
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile

@@ -81,7 +81,7 @@ DEFS= \
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt hooker.bash
-SUBDIRS = digests distributions eapis fetchers syncers util selinux . dep_list merger repositories environments args qa tasks
+SUBDIRS = digests distributions eapis fetchers syncers util selinux . dep_list merger repositories environments args tasks
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist

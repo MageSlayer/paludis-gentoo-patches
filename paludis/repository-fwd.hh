@@ -51,6 +51,7 @@ namespace paludis
     class RepositoryLicensesInterface;
     class RepositoryEInterface;
     class RepositoryHookInterface;
+    class RepositoryQAInterface;
 
     class InstallOptions;
     class MergeOptions;
