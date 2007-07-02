@@ -267,7 +267,6 @@ module Paludis
         def test_mask_reasons_options
             pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
             mro = MaskReasonsOptions.new
-            puts MaskReasonsOption.constants
             mro.add MaskReasonsOption::OverrideTildeKeywords
             m = env.mask_reasons(pid, mro)
             assert m.empty?
