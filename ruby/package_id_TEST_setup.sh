@@ -24,7 +24,7 @@ DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
-IUSE=""
+IUSE="testflag"
 LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT="monkey"
@@ -36,10 +36,14 @@ cd ..
 
 mkdir -p installed/cat-one/pkg-{one,two}-1 || exit 1
 
+
+echo "cat-one" > installed/cat-one/pkg-one-1/CATEGORY
 touch installed/cat-one/pkg-one-1/CONTENTS
-touch installed/cat-one/pkg-two-1/CONTENTS
-
+echo "0" > installed/cat-one/pkg-one-1/EAPI
+echo "a description" > installed/cat-one/pkg-one-1/DESCRIPTION
+echo "test_inherited" > installed/cat-one/pkg-one-1/INHERITED
+echo "test_iuse test" > installed/cat-one/pkg-one-1/IUSE
+echo "test" > installed/cat-one/pkg-one-1/KEYWORDS
 echo "origin_test" > installed/cat-one/pkg-one-1/REPOSITORY
-echo "0" > installed/cat-one/pkg-one-1/SLOT
-echo "0" > installed/cat-one/pkg-two-1/SLOT
-
+echo "test_slot" > installed/cat-one/pkg-one-1/SLOT
+echo "test test_use" > installed/cat-one/pkg-one-1/USE
