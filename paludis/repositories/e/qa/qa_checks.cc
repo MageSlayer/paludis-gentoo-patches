@@ -34,9 +34,11 @@ namespace paludis
     struct Implementation<QAChecks>
     {
         const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
+        const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
 
         Implementation() :
-            tree_checks_group(new QAChecksGroup<TreeCheckFunction>)
+            tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
+            category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>)
         {
         }
     };
@@ -49,6 +51,9 @@ QAChecks::QAChecks() :
 
     _imp->tree_checks_group->add_check("stray_tree_files",
             tr1::bind(stray_files_check, _1, _3, _4, is_stray_at_tree_dir, "stray_tree_files"));
+
+    _imp->category_dir_checks_group->add_check("stray_category_dir_files",
+            tr1::bind(stray_files_check, _1, _3, _4, is_stray_at_category_dir, "stray_category_dir_files"));
 }
 
 QAChecks::~QAChecks()
@@ -60,4 +65,11 @@ QAChecks::tree_checks_group()
 {
     return _imp->tree_checks_group;
 }
+
+const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
+QAChecks::category_dir_checks_group()
+{
+    return _imp->category_dir_checks_group;
+}
+
 

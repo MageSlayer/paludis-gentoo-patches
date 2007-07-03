@@ -45,6 +45,13 @@ namespace paludis
                 const FSEntry &
                 )> TreeCheckFunction;
 
+        typedef tr1::function<bool (
+                QAReporter &,
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
+                const FSEntry &
+                )> CategoryDirCheckFunction;
+
         class QAChecks :
             private PrivateImplementationPattern<QAChecks>,
             public InstantiationPolicy<QAChecks, instantiation_method::SingletonTag>
@@ -57,6 +64,7 @@ namespace paludis
 
             public:
                 const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+                const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

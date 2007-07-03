@@ -37,6 +37,10 @@ namespace paludis
         bool is_stray_at_tree_dir(
                 const tr1::shared_ptr<const ERepository> &,
                 const FSEntry &);
+
+        bool is_stray_at_category_dir(
+                const tr1::shared_ptr<const ERepository> &,
+                const FSEntry &);
     }
 }
 

@@ -59,3 +59,20 @@ paludis::erepository::is_stray_at_tree_dir(
         return true;
 }
 
+bool
+paludis::erepository::is_stray_at_category_dir(
+        const tr1::shared_ptr<const ERepository> &,
+        const FSEntry & d)
+{
+    if (d.is_directory_or_symlink_to_directory())
+    {
+        return false;
+    }
+    else if (d.is_regular_file_or_symlink_to_regular_file())
+    {
+        return true;
+    }
+    else
+        return true;
+}
+
