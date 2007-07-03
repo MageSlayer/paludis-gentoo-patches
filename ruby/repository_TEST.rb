@@ -57,7 +57,11 @@ module Paludis
         end
 
         def p
-            p = db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+            db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
+        end
+
+        def installed_pid
+            installed_repo.package_ids('cat-one/pkg-one').first
         end
     end
 
@@ -185,46 +189,48 @@ module Paludis
         end
     end
 
-###    class TestCase_RepositoryContents < Test::Unit::TestCase
-###        include RepositoryTestCase
-###
-###        def entries
-###            contents = installed_repo.contents('cat-one/pkg-one','1')
-###            entries = contents.entries
-###        end
-###
-###        def test_contents
-###            contents = installed_repo.contents('cat-one/pkg-one','1')
-###            assert_kind_of Contents, contents
-###        end
-###
-###        def test_contents_entries
-###            assert_kind_of Array, entries
-###            assert_equal 3, entries.length
-###        end
-###
-###        def test_first_entry
-###            assert_kind_of ContentsEntry, entries[0]
-###            assert_kind_of ContentsDirEntry, entries[0]
-###            assert_equal '//test', entries[0].to_s
-###            assert_equal '//test', entries[0].name
-###        end
-###
-###        def test_second_entry
-###            assert_kind_of ContentsEntry, entries[1]
-###            assert_kind_of ContentsFileEntry, entries[1]
-###            assert_equal '/test/test_file', entries[1].to_s
-###            assert_equal '/test/test_file', entries[1].name
-###        end
-###
-###        def test_third_entry
-###            assert_kind_of ContentsEntry, entries[2]
-###            assert_kind_of ContentsSymEntry, entries[2]
-###            assert_equal '/test/test_link -> /test/test_file', entries[2].to_s
-###            assert_equal '/test/test_file', entries[2].target
-###            assert_equal '/test/test_link', entries[2].name
-###        end
-###    end
+    class TestCase_RepositoryContents < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def contents
+            contents = installed_pid.contents_key.value
+        end
+
+        def entries
+            entries = contents.entries
+        end
+
+        def test_contents
+            assert_kind_of Contents, contents
+        end
+
+        def test_contents_entries
+            assert_kind_of Array, entries
+            assert_equal 3, entries.length
+        end
+
+        def test_first_entry
+            assert_kind_of ContentsEntry, entries[0]
+            assert_kind_of ContentsDirEntry, entries[0]
+            assert_equal '//test', entries[0].to_s
+            assert_equal '//test', entries[0].name
+        end
+
+        def test_second_entry
+            assert_kind_of ContentsEntry, entries[1]
+            assert_kind_of ContentsFileEntry, entries[1]
+            assert_equal '/test/test_file', entries[1].to_s
+            assert_equal '/test/test_file', entries[1].name
+        end
+
+        def test_third_entry
+            assert_kind_of ContentsEntry, entries[2]
+            assert_kind_of ContentsSymEntry, entries[2]
+            assert_equal '/test/test_link -> /test/test_file', entries[2].to_s
+            assert_equal '/test/test_file', entries[2].target
+            assert_equal '/test/test_link', entries[2].name
+        end
+    end
 
     class TestCase_RepositoryQueryUse < Test::Unit::TestCase
         include RepositoryTestCase
