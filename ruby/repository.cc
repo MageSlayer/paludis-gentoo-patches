@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006, 2007 Richard Brown <rbrown@gentoo.org>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +22,8 @@
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -37,12 +40,29 @@ namespace
     static VALUE c_repository_info;
     static VALUE c_repository_info_section;
     static VALUE c_profiles_desc_line;
+    static VALUE c_fake_repository_base;
+    static VALUE c_fake_repository;
 
     VALUE
     profiles_desc_line_to_value(const RepositoryEInterface::ProfilesDescLine & v)
     {
         RepositoryEInterface::ProfilesDescLine * vv(new RepositoryEInterface::ProfilesDescLine(v));
         return Data_Wrap_Struct(c_profiles_desc_line, 0, &Common<RepositoryEInterface::ProfilesDescLine>::free, vv);
+    }
+
+    tr1::shared_ptr<FakeRepositoryBase>
+    value_to_fake_repository_base(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_fake_repository_base))
+        {
+            tr1::shared_ptr<FakeRepositoryBase> * v_ptr;
+            Data_Get_Struct(v, tr1::shared_ptr<FakeRepositoryBase>, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into FakeRepositoryBase", rb_obj_classname(v));
+        }
     }
 
     /*
@@ -801,6 +821,127 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     add_category(category_name) -> Nil
+     *
+     * Add a category.
+     */
+    VALUE
+    fake_repository_base_add_category(VALUE self, VALUE category)
+    {
+        try
+        {
+            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::string cat_str(StringValuePtr(category));
+            repo->add_category(CategoryNamePart(cat_str));
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     add_package(qualified_package_name) -> Nil
+     *
+     * Add a package, and a category if necessary.
+     */
+    VALUE
+    fake_repository_base_add_package(VALUE self, VALUE qpn)
+    {
+        try
+        {
+            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            QualifiedPackageName name(value_to_qualified_package_name(qpn));
+            repo->add_package(name);
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     add_version(qualified_package_name, version_spec) -> PackageID
+     *     add_version(category_name, package_name, version_string) -> PackageID
+     *
+     * Add a version, and a package and category if necessary, and set some
+     * default values for its metadata, and return said metadata.
+     */
+    VALUE
+    fake_repository_base_add_version(int argc, VALUE* argv, VALUE self)
+    {
+        try
+        {
+            tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            tr1::shared_ptr<PackageID> pkg;
+
+            switch (argc)
+            {
+                case 2: {
+                    QualifiedPackageName qpn(value_to_qualified_package_name(argv[0]));
+                    VersionSpec ver(value_to_version_spec(argv[1]));
+                    pkg = repo->add_version(qpn, ver);
+                    break;
+                }
+
+                case 3: {
+                    std::string cat(StringValuePtr(argv[0]));
+                    std::string name(StringValuePtr(argv[1]));
+                    std::string ver(StringValuePtr(argv[2]));
+                    pkg = repo->add_version(cat, name, ver);
+                    break;
+                }
+
+                default:
+                    rb_raise(rb_eArgError, "FakeRepositoryBase.add_version expects two or three arguments, but got %d", argc);
+            }
+
+            return package_id_to_value(pkg);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    fake_repository_init(int, VALUE*, VALUE self)
+    {
+        return self;
+    }
+
+    /*
+     * call-seq:
+     *     FakeRepository.new(environment, repo_name) -> FakeRepository
+     *
+     * Create a new FakeRepository.
+     */
+    VALUE
+    fake_repository_new(int argc, VALUE* argv, VALUE self)
+    {
+        try
+        {
+            if (2 != argc)
+                rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
+
+            tr1::shared_ptr<FakeRepository> * r = new tr1::shared_ptr<FakeRepository>(new
+                    FakeRepository(value_to_environment(argv[0]).get(), RepositoryName(StringValuePtr(argv[1]))));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<FakeRepository> >::free, r));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_repository()
     {
         /*
@@ -895,6 +1036,27 @@ namespace
                 RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::arch>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "status",
                 RUBY_FUNC_CAST((&DescLineValue<std::string,&RepositoryEInterface::ProfilesDescLine::status>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::FakeRepositoryBase
+         *
+         * A FakeRepositoryBase is a Repository subclass whose subclasses are used for
+         * various test cases.
+         */
+        c_fake_repository_base = rb_define_class_under(paludis_module(), "FakeRepositoryBase", c_repository);
+        rb_funcall(c_fake_repository_base, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_fake_repository_base, "add_category", RUBY_FUNC_CAST(&fake_repository_base_add_category), 1);
+        rb_define_method(c_fake_repository_base, "add_package", RUBY_FUNC_CAST(&fake_repository_base_add_package), 1);
+        rb_define_method(c_fake_repository_base, "add_version", RUBY_FUNC_CAST(&fake_repository_base_add_version), -1);
+
+        /*
+         * Document-class: Paludis::FakeRepository
+         *
+         * Fake repository for use in test cases.
+         */
+        c_fake_repository = rb_define_class_under(paludis_module(), "FakeRepository", c_fake_repository_base);
+        rb_define_singleton_method(c_fake_repository, "new", RUBY_FUNC_CAST(&fake_repository_new), -1);
+        rb_define_method(c_fake_repository, "initialize", RUBY_FUNC_CAST(&fake_repository_init), -1);
     }
 }
 

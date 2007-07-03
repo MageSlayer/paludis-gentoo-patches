@@ -478,5 +478,140 @@ module Paludis
             assert_equal 'A test local use flag', repo.describe_use_flag('test2', p)
         end
     end
+
+    class TestCase_FakeRepository < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def fake
+            FakeRepository.new(env, 'fake')
+        end
+
+        def test_new
+            f = fake
+
+            assert_kind_of FakeRepository, f
+            assert_kind_of FakeRepositoryBase, f
+            assert_equal 'fake', f.name
+        end
+
+        def test_new_bad
+            assert_raise ArgumentError do FakeRepository.new end
+            assert_raise ArgumentError do FakeRepository.new(env) end
+            assert_raise ArgumentError do FakeRepository.new(env, 'fake', 42) end
+
+            assert_raise TypeError do FakeRepository.new(repo, 'fake') end
+            assert_raise TypeError do FakeRepository.new(env, 42) end
+
+            assert_raise NameError do FakeRepository.new(env, 'f a k e') end
+        end
+
+        def test_add_category
+            f = fake
+
+            assert_equal [], f.category_names
+            f.add_category('foo-bar')
+            assert_equal ['foo-bar'], f.category_names
+            f.add_category('foo-bar')
+            assert_equal ['foo-bar'], f.category_names
+            f.add_category('bar-foo')
+            assert_equal ['bar-foo', 'foo-bar'], f.category_names
+        end
+
+        def test_add_category_bad
+            f = fake
+
+            assert_raise ArgumentError do f.add_category end
+            assert_raise ArgumentError do f.add_category('foo-bar', 'bar-foo') end
+
+            assert_raise TypeError do f.add_category(42) end
+
+            assert_raise CategoryNamePartError do f.add_category('foo bar') end
+        end
+
+        def test_add_package
+            f = fake
+
+            foobar_baz = QualifiedPackageName.new('foo-bar', 'baz')
+            foobar_quux = QualifiedPackageName.new('foo-bar', 'quux')
+            barfoo_xyzzy = QualifiedPackageName.new('bar-foo', 'xyzzy')
+
+            f.add_category('foo-bar')
+            assert_equal [], f.package_names('foo-bar')
+            f.add_package(foobar_baz)
+            assert_equal [foobar_baz], f.package_names('foo-bar')
+            f.add_package('foo-bar/baz')
+            assert_equal [foobar_baz], f.package_names('foo-bar')
+            f.add_package(foobar_quux)
+            assert_equal [foobar_baz, foobar_quux], f.package_names('foo-bar')
+
+            f.add_package(barfoo_xyzzy)
+            assert_equal ['bar-foo', 'foo-bar'], f.category_names
+            assert_equal [barfoo_xyzzy], f.package_names('bar-foo')
+        end
+
+        def test_add_package_bad
+            f = fake
+
+            assert_raise ArgumentError do f.add_package end
+            assert_raise ArgumentError do
+                f.add_package(Paludis::QualifiedPackageName.new('foo-bar', 'baz'), 42)
+            end
+
+            assert_raise TypeError do f.add_package(42) end
+
+            assert_raise NameError do f.add_package('test') end
+            assert_raise CategoryNamePartError do f.add_package('f o o/bar') end
+            assert_raise PackageNamePartError do f.add_package('foo/b a r') end
+        end
+
+        def test_add_version
+            f = fake
+
+            f.add_category('foo-bar')
+            f.add_package('foo-bar/baz')
+            assert_equal [], f.package_ids('foo-bar/baz')
+            pkg = f.add_version('foo-bar/baz', '123')
+            assert_equal [pkg], f.package_ids('foo-bar/baz')
+            assert_kind_of PackageID, pkg
+            assert_equal QualifiedPackageName.new('foo-bar/baz'), pkg.name
+            assert_equal VersionSpec.new('123'), pkg.version
+
+            f.add_version('bar-foo/quux', '42')
+            assert_equal ['bar-foo', 'foo-bar'], f.category_names
+            assert_equal [QualifiedPackageName.new('bar-foo/quux')], f.package_names('bar-foo')
+
+            pkg2 = f.add_version('abc-def', 'ghi', 'scm')
+            assert_kind_of PackageID, pkg2
+            assert_equal QualifiedPackageName.new('abc-def/ghi'), pkg2.name
+            assert_equal VersionSpec.new('scm'), pkg2.version
+            assert_equal ['abc-def', 'bar-foo', 'foo-bar'], f.category_names
+            assert_equal [QualifiedPackageName.new('abc-def/ghi')], f.package_names('abc-def')
+            assert_equal [pkg2], f.package_ids('abc-def/ghi')
+        end
+
+        def test_add_version_bad
+            f = fake
+
+            assert_raise ArgumentError do f.add_version end
+            assert_raise ArgumentError do f.add_version('foo-bar/baz') end
+            assert_raise ArgumentError do f.add_version('foo-bar', 'baz', '3', 'abc') end
+
+            assert_raise TypeError do f.add_version(42, '1') end
+            assert_raise TypeError do f.add_version('foo-bar/baz', []) end
+
+            assert_raise TypeError do f.add_version(proc {}, 'quux', '1.5') end
+            assert_raise TypeError do f.add_version('foo-bar', {}, '9') end
+            assert_raise TypeError do f.add_version('foo-bar', 'baz', Paludis) end
+
+            assert_raise NameError do f.add_version('foo', '42') end
+            assert_raise CategoryNamePartError do f.add_version('f o o/bar', '42') end
+            assert_raise PackageNamePartError do f.add_version('foo/b a r' , '42') end
+            assert_raise BadVersionSpecError do f.add_version('foo/bar', 'abc') end
+
+            assert_raise CategoryNamePartError do f.add_version('f o o', 'bar', '42') end
+            assert_raise PackageNamePartError do f.add_version('foo', 'b a r', '42') end
+            assert_raise BadVersionSpecError do f.add_version('foo', 'bar', 'abc') end
+        end
+    end
 end
 
