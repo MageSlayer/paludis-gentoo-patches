@@ -14,10 +14,12 @@ opts = GetoptLong.new(
     [ '--version',        '-V', GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
     [ '--repository-dir', '-D', GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--write-cache-dir',      GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--master-repository-dir', GetoptLong::REQUIRED_ARGUMENT ])
 
 repository_dir = Dir.pwd
 write_cache_dir = '/var/empty'
+master_repository_dir = '/var/empty'
 
 opts.each do | opt, arg |
     case opt
@@ -25,12 +27,13 @@ opts.each do | opt, arg |
         puts "Usage: " + $0 + " [options] keyword1 keyword2 ...."
         puts
         puts "Options:"
-        puts "  --help                  Display a help message"
-        puts "  --version               Display program version"
+        puts "  --help                         Display a help message"
+        puts "  --version                      Display program version"
         puts
-        puts "  --log-level level       Set log level (debug, qa, warning, silent)"
-        puts "  --repository-dir dir    Repository directory to use (defaults to .)"
-        puts "  --write-cache-dir dir   Use a subdirectory named for the repository name under the specified directory for repository write cache"
+        puts "  --log-level level              Set log level (debug, qa, warning, silent)"
+        puts "  --repository-dir dir           Repository directory to use (defaults to .)"
+        puts "  --write-cache-dir dir          Use a subdirectory named for the repository name under the specified directory for repository write cache"
+        puts "  --master-repository-dir dir    Use a subdirectory named for the repository name under the specified directory for repository write cache"
         exit 0
 
     when '--version'
@@ -58,6 +61,9 @@ opts.each do | opt, arg |
     when '--write-cache-dir'
         write_cache_dir = arg
 
+    when '--master-repository-dir'
+        master_repository_dir = arg
+
     end
 end
 
@@ -67,18 +73,17 @@ if ARGV.empty?
 end
 keywords = ARGV;
 
-env = NoConfigEnvironment.new(repository_dir, write_cache_dir)
+env = NoConfigEnvironment.new(repository_dir, write_cache_dir, master_repository_dir)
 
 def check_one_package(env, search_keywords, repo, pkg)
     results = {}
-    repo.version_specs(pkg).each do |ver|
-        md = repo.version_metadata(pkg, ver)
-        next if md.ebuild_interface.nil?
-        keywords = md.keywords.split(/\s+/)
+    repo.package_ids(pkg).each do |pid|
+        next if pid.keywords_key.nil?
+        keywords = pid.keywords_key.value
         search_keywords.each do |keyword|
             if keywords.include? keyword
                 results[keyword] ||= {}
-                results[keyword][md.slot] = ver
+                results[keyword][pid.slot] = pid.version
             end
         end
     end
@@ -96,7 +101,7 @@ def check_one_package(env, search_keywords, repo, pkg)
 end
 
 env.package_database.repositories.each do |repo|
-    next if repo.name == 'virtuals'
+    next if repo.virtuals_interface.nil?
     repo.category_names.each do |cat|
         repo.package_names(cat).each do |pkg|
             check_one_package(env, keywords, repo, pkg)

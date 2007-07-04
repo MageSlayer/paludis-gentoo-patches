@@ -142,7 +142,7 @@ prelim_search_dirs_mask = (ENV["SEARCH_DIRS_MASK"] || "").split
 
 # XXX make.conf / paludis/bashrc ?
 
-if File.stat("/etc/revdep-rebuild").directory? then
+if File.directory? '/etc/revdep-rebuild' then
     Dir["/etc/revdep-rebuild/[^.#]*[^~]"].sort.each do | filename |
         vars = read_shell_vars filename
         prelim_ld_library_mask  += (vars["LD_LIBRARY_MASK"]  || "").split
@@ -196,13 +196,13 @@ status "Checking linkage for package-manager installed files"
 files = { }
 directories = { }
 env.package_database.repositories.each do | repo |
-    (repo.installed_interface and repo.contents_interface) or next
+    repo.installed_interface or next
 
     repo.category_names.each do | cat |
         repo.package_names(cat).each do | pkg |
-            repo.version_specs(pkg).each do | ver |
-                package = Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
-                repo.contents(pkg, ver).entries.each do | entry |
+            repo.package_ids(pkg).each do | package |
+                next if package.contents_key.nil?
+                package.contents_key.value.entries.each do | entry |
                     entry.kind_of? Paludis::ContentsFileEntry or next
                     eligible?(entry.name) or next
                     (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
@@ -236,14 +236,13 @@ end
 
 puts if verbose
 broken.each do | x |
-    puts "  * " + x.to_s
+    puts "  * " + x.canonical_form(Paludis::PackageIDCanonicalForm::Full)
 end
 
 status "Finding merge targets"
 
 specs = broken.map do | owner |
-    slot = env.package_database.fetch_repository(owner.repository).version_metadata(owner.name, owner.version).slot
-    Paludis::PackageDepSpec.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot, Paludis::PackageDepSpecParseMode::Permissive)
+    "=" + owner.name + "-" + owner.version.to_s + ":" + owner.slot
 end
 
 if specs.empty?

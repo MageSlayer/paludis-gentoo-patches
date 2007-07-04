@@ -12,8 +12,9 @@ def get_contents(repo, files, root)
     in_contents= []
     repo.category_names do |cat|
         repo.package_names(cat) do |pkg|
-            repo.version_specs(pkg) do |ver|
-                contents = repo.contents(pkg,ver)
+            repo.package_ids(pkg) do |pid|
+                next if pid.contents_key.nil?
+                contents = pid.contents_key.value
                 contents.each do |entry|
                     next if entry.kind_of? ContentsMiscEntry
                     files.each do |file|
@@ -101,7 +102,7 @@ in_fs = []
 Find.find(*files) {|file| in_fs << file}
 
 db.repositories do |repo|
-    next unless repo.format == 'vdb'
+    next if repo.installed_interface.nil?
     in_fs-= get_contents(repo, files, root)
 end
 

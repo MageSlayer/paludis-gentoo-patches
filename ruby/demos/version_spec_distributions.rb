@@ -28,10 +28,8 @@ class Distribution
     def add_repository repo
         repo.category_names.each do | cat |
             repo.package_names(cat).each do | pkg |
-                versions = repo.version_specs(pkg)
-                unless versions.empty?
-                    add_version versions.last
-                end
+                pids = repo.package_ids(pkg)
+                add_version pids.last.version unless pids.empty?
             end
         end
     end
@@ -66,16 +64,18 @@ class Distribution
 end
 
 opts = GetoptLong.new(
-    [ '--help',           '-h', GetoptLong::NO_ARGUMENT ],
-    [ '--version',        '-V', GetoptLong::NO_ARGUMENT ],
-    [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--repository-dir', '-D', GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--image',                GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--write-cache-dir',      GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--help',           '-h',  GetoptLong::NO_ARGUMENT ],
+    [ '--version',        '-V',  GetoptLong::NO_ARGUMENT ],
+    [ '--log-level',             GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--repository-dir', '-D',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--image',                 GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--master-repository-dir', GetoptLong::REQUIRED_ARGUMENT ])
 
 output_image = nil
 repository_dir = Dir.getwd
 write_cache_dir = '/var/empty'
+master_repository_dir = '/var/empty'
 
 opts.each do | opt, arg |
     case opt
@@ -83,14 +83,15 @@ opts.each do | opt, arg |
         puts "Usage: " + $0 + " [options]"
         puts
         puts "Options:"
-        puts "  --help                Display a help message"
-        puts "  --version             Display program version"
+        puts "  --help                        Display a help message"
+        puts "  --version                     Display program version"
         puts
-        puts "  --log-level level     Set log level (debug, qa, warning, silent)"
-        puts "  --repository-dir dir  Set repository directory (default: cwd)"
-        puts "  --write-cache-dir dir Use a subdirectory named for the repository name under the specified directory for repository write cache"
+        puts "  --log-level level             Set log level (debug, qa, warning, silent)"
+        puts "  --repository-dir dir          Set repository directory (default: cwd)"
+        puts "  --write-cache-dir dir         Use a subdirectory named for the repository name under the specified directory for repository write cache"
+        puts "  --master-repository-dir dir   Use a subdirectory named for the repository name under the specified directory for repository write cache"
         puts
-        puts "  --image foo.png       Output as the specified image rather than as text"
+        puts "  --image foo.png               Output as the specified image rather than as text"
         exit 0
 
     when '--version'
@@ -118,6 +119,9 @@ opts.each do | opt, arg |
     when '--write-cache-dir'
         write_cache_dir = arg
 
+    when '--master-repository-dir'
+        master_repository_dir = arg
+
     when '--image'
         output_image = arg
 
@@ -125,7 +129,7 @@ opts.each do | opt, arg |
 end
 
 distribution = Distribution.new
-env = Paludis::NoConfigEnvironment.new repository_dir, write_cache_dir
+env = Paludis::NoConfigEnvironment.new repository_dir, write_cache_dir, master_repository_dir
 env.package_database.repositories.each do | repo |
     distribution.add_repository repo
 end
