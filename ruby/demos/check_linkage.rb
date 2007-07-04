@@ -193,7 +193,7 @@ env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 status "Checking linkage for package-manager installed files"
 
 
-files = { }
+pkg_files = { }
 directories = { }
 env.package_database.repositories.each do | repo |
     repo.installed_interface or next
@@ -206,8 +206,8 @@ env.package_database.repositories.each do | repo |
                     entry.kind_of? Paludis::ContentsFileEntry or next
                     eligible?(entry.name) or next
                     (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
-                    files[package] ||= []
-                    files[package] << entry.name
+                    pkg_files[package] ||= []
+                    pkg_files[package] << entry.name
                     directories[File.dirname(entry.name)] = true
                 end
             end
@@ -218,7 +218,7 @@ end
 ENV["LD_LIBRARY_PATH"] = (Dir["/lib*"] + Dir["/usr/lib*"] + ld_so_conf + directories.keys).join(":")
 
 broken = [ ]
-files.each_pair do | package, files |
+pkg_files.each_pair do | package, files |
     files.each do | filename |
         check_file filename or next
         puts "  * #{filename} is broken" if verbose
