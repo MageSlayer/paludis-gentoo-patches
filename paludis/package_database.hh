@@ -29,7 +29,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/collection-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/contents.hh>
 

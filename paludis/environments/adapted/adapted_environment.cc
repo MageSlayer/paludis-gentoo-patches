@@ -106,7 +106,7 @@ AdaptedEnvironment::query_use(const UseFlagName & u, const PackageID & e) const
     throw InternalError(PALUDIS_HERE, "Bad state");
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageID & e) const
 {
     return _imp->env->known_use_expand_names(u, e);
@@ -125,30 +125,30 @@ AdaptedEnvironment::accept_license(const std::string & l, const PackageID & e) c
 }
 
 bool
-AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID & e) const
+AdaptedEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
 {
     return _imp->env->accept_keywords(k, e);
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::bashrc_files() const
 {
     return _imp->env->bashrc_files();
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::syncers_dirs() const
 {
     return _imp->env->syncers_dirs();
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::fetchers_dirs() const
 {
     return _imp->env->fetchers_dirs();
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 AdaptedEnvironment::hook_dirs() const
 {
     return _imp->env->hook_dirs();
@@ -184,13 +184,13 @@ AdaptedEnvironment::reduced_gid() const
     return _imp->env->reduced_gid();
 }
 
-tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsSequence>
 AdaptedEnvironment::mirrors(const std::string & m) const
 {
     return _imp->env->mirrors(m);
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 AdaptedEnvironment::set_names() const
 {
     return _imp->env->set_names();
@@ -202,7 +202,7 @@ AdaptedEnvironment::set(const SetName & s) const
     return _imp->env->set(s);
 }
 
-tr1::shared_ptr<const DestinationsCollection>
+tr1::shared_ptr<const DestinationsSet>
 AdaptedEnvironment::default_destinations() const
 {
     return _imp->env->default_destinations();

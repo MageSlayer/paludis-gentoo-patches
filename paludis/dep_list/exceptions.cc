@@ -18,6 +18,7 @@
  */
 
 #include "exceptions.hh"
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -62,11 +63,11 @@ DowngradeNotAllowedError::~DowngradeNotAllowedError() throw ()
 namespace
 {
     std::string
-    destinations_to_string(tr1::shared_ptr<const DestinationsCollection> dd)
+    destinations_to_string(tr1::shared_ptr<const DestinationsSet> dd)
     {
         std::string result;
         bool need_comma(false);
-        for (DestinationsCollection::Iterator d(dd->begin()), d_end(dd->end()) ;
+        for (DestinationsSet::Iterator d(dd->begin()), d_end(dd->end()) ;
                 d != d_end ; ++d)
         {
             if (need_comma)
@@ -80,7 +81,7 @@ namespace
 }
 
 NoDestinationError::NoDestinationError(const PackageID & p,
-        tr1::shared_ptr<const DestinationsCollection> d) throw () :
+        tr1::shared_ptr<const DestinationsSet> d) throw () :
     DepListError("No suitable destination for '" + stringify(p) + "' in (" +
             destinations_to_string(d) + ")")
 {

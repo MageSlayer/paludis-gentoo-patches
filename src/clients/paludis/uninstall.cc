@@ -22,6 +22,7 @@
 
 #include <paludis/tasks/uninstall_task.hh>
 #include <paludis/tasks/exceptions.hh>
+#include <paludis/util/set.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/package_database.hh>
 
@@ -95,7 +96,7 @@ namespace
                     else
                         max_count = std::numeric_limits<long>::max();
 
-                    for (SortedCollection<tr1::shared_ptr<DepTag> >::Iterator
+                    for (Set<tr1::shared_ptr<DepTag> >::Iterator
                             tag(d.tags->begin()),
                             tag_end(d.tags->end()) ;
                             tag != tag_end ; ++tag)

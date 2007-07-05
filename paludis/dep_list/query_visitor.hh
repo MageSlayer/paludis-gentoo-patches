@@ -40,7 +40,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            QueryVisitor(const DepList * const, tr1::shared_ptr<const DestinationsCollection>,
+            QueryVisitor(const DepList * const, tr1::shared_ptr<const DestinationsSet>,
                     const Environment * const, const tr1::shared_ptr<const PackageID> &);
 
             ~QueryVisitor();

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_NAME_CACHE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 
 namespace paludis
@@ -64,7 +65,7 @@ namespace paludis
              * fall back to Repository::do_category_names_containing_package or
              * its own implementation.
              */
-            tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
+            tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**

@@ -24,6 +24,8 @@
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -84,7 +86,7 @@ namespace
         if (! repo.use_interface)
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        tr1::shared_ptr<const UseFlagNameCollection> arch_flags(repo.use_interface->arch_flags());
+        tr1::shared_ptr<const UseFlagNameSet> arch_flags(repo.use_interface->arch_flags());
         if (arch_flags->empty())
             return;
 
@@ -108,7 +110,7 @@ namespace
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
             cout << std::left << std::setw(version_specs_columns_width) << " " << "| ";
-            for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (UseFlagNameSet::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
             {
                 if ((tallest_arch_name - h) > a->data().length())
@@ -148,9 +150,9 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->canonical_form(idcf_version) << "| ";
 
-            tr1::shared_ptr<const KeywordNameCollection> keywords(p->keywords_key()->value());
+            tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
 
-            for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (UseFlagNameSet::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
             {
                 if (keywords->end() != keywords->find(KeywordName(stringify(*a))))
@@ -192,8 +194,8 @@ void do_keywords_graph(const Environment & env)
         if (r->name() == RepositoryName("virtuals"))
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-        for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -203,8 +205,8 @@ void do_keywords_graph(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())

@@ -45,7 +45,7 @@ namespace paludis
             ///\{
 
             InstallTask(Environment * const env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsCollection> destinations);
+                    tr1::shared_ptr<const DestinationsSet> destinations);
 
             ///\}
 

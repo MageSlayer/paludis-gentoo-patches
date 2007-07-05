@@ -23,7 +23,6 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/collection-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/mask_reasons.hh>
 #include <paludis/name-fwd.hh>
@@ -88,7 +87,7 @@ namespace paludis
              * the specified prefix or merely all enabled use flags. It is not safe to assume
              * that all flags in the returned value will be enabled for the specified package.
              */
-            virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+            virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                     const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -121,7 +120,7 @@ namespace paludis
              *
              * Default behaviour: true if the collection includes "*".
              */
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -144,25 +143,25 @@ namespace paludis
              * Return a collection of bashrc files to be used by the various components
              * that are implemented in bash.
              */
-            virtual tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for syncer scripts.
              */
-            virtual tr1::shared_ptr<const FSEntryCollection> syncers_dirs() const
+            virtual tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for fetcher scripts.
              */
-            virtual tr1::shared_ptr<const FSEntryCollection> fetchers_dirs() const
+            virtual tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for hooks.
              */
-            virtual tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
+            virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -199,7 +198,7 @@ namespace paludis
             /**
              * Return the mirror URI prefixes for a named mirror.
              */
-            virtual tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
+            virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -210,7 +209,7 @@ namespace paludis
             /**
              * Return all known named sets.
              */
-            virtual tr1::shared_ptr<const SetNameCollection> set_names() const
+            virtual tr1::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -229,7 +228,7 @@ namespace paludis
             /**
              * Default destination candidates for installing packages.
              */
-            virtual tr1::shared_ptr<const DestinationsCollection> default_destinations() const
+            virtual tr1::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

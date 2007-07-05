@@ -21,10 +21,10 @@
 #include "licence.hh"
 #include "use_flag_pretty_printer.hh"
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/query.hh>
@@ -107,14 +107,14 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
         const tr1::shared_ptr<const PackageID> & display_entry) const
 {
     /* find all repository names. */
-    RepositoryNameCollection::Concrete repo_names;
+    RepositoryNameSequence repo_names;
     PackageIDSequence::Iterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
         if (repo_names.end() == std::find(repo_names.begin(), repo_names.end(), (*e)->repository()->name()))
             repo_names.push_back((*e)->repository()->name());
 
     /* display versions, by repository. */
-    RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
+    RepositoryNameSequence::Iterator r(repo_names.begin()), r_end(repo_names.end());
     for ( ; r != r_end ; ++r)
     {
         output_left_column(stringify(*r) + ":");
@@ -215,26 +215,26 @@ namespace
             {
             }
 
-            void visit(const MetadataCollectionKey<IUseFlagCollection> & k)
+            void visit(const MetadataSetKey<IUseFlagSet> & k)
             {
                 if (k.type() == type)
                     task->display_metadata_iuse(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "),
                             id, k.value());
             }
 
-            void visit(const MetadataCollectionKey<InheritedCollection> & k)
+            void visit(const MetadataSetKey<InheritedSet> & k)
             {
                 if (k.type() == type)
                     task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
             }
 
-            void visit(const MetadataCollectionKey<UseFlagNameCollection> & k)
+            void visit(const MetadataSetKey<UseFlagNameSet> & k)
             {
                 if (k.type() == type)
                     task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
             }
 
-            void visit(const MetadataCollectionKey<KeywordNameCollection> & k)
+            void visit(const MetadataSetKey<KeywordNameSet> & k)
             {
                 if (k.type() == type)
                     task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
@@ -500,7 +500,7 @@ ConsoleQueryTask::display_metadata_time(const std::string & k, const std::string
 void
 ConsoleQueryTask::display_metadata_iuse(const std::string & k, const std::string & kk,
         const std::string & v, const tr1::shared_ptr<const PackageID> & id,
-        const tr1::shared_ptr<const IUseFlagCollection> & e) const
+        const tr1::shared_ptr<const IUseFlagSet> & e) const
 {
     if (v.empty())
         return;

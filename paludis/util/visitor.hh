@@ -28,7 +28,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor-fwd.hh>
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/operators.hh>
@@ -286,7 +286,7 @@ namespace paludis
                 const TreeSequence & operator= (const TreeSequence &);
 
                 const tr1::shared_ptr<T_> _item;
-                const tr1::shared_ptr<SequentialCollection<tr1::shared_ptr<MutableAcceptInterface<H_> > > > _items;
+                const tr1::shared_ptr<Sequence<tr1::shared_ptr<MutableAcceptInterface<H_> > > > _items;
 
             protected:
                 ///\name Visitor operations
@@ -352,7 +352,7 @@ namespace paludis
                 const ConstTreeSequence & operator= (const ConstTreeSequence &);
 
                 const tr1::shared_ptr<T_> _item;
-                const tr1::shared_ptr<SequentialCollection<tr1::shared_ptr<const ConstAcceptInterface<H_> > > > _items;
+                const tr1::shared_ptr<Sequence<tr1::shared_ptr<const ConstAcceptInterface<H_> > > > _items;
 
             protected:
                 ///\name Visitor operations

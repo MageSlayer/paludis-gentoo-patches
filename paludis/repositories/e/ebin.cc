@@ -23,6 +23,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/eapi.hh>
 #include <paludis/about.hh>
 #include <paludis/package_id.hh>
@@ -74,10 +75,10 @@ EbinCommand::operator() ()
     if (use_sandbox())
         cmd.with_sandbox();
 
-    tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
-    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
+    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment->hook_dirs());
 
     cmd = extend_command(cmd
             .with_setenv("P", stringify(params.package_id->name().package) + "-" +

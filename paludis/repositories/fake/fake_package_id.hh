@@ -29,35 +29,35 @@ namespace paludis
     class FakeRepositoryBase;
 
     template <typename C_>
-    class PALUDIS_VISIBLE FakeMetadataCollectionKey :
-        public MetadataCollectionKey<C_>,
-        private PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >
+    class PALUDIS_VISIBLE FakeMetadataSetKey :
+        public MetadataSetKey<C_>,
+        private PrivateImplementationPattern<FakeMetadataSetKey<C_> >
     {
         protected:
-            Implementation<FakeMetadataCollectionKey> * const _imp;
+            Implementation<FakeMetadataSetKey> * const _imp;
 
-            FakeMetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
+            FakeMetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
-            ~FakeMetadataCollectionKey();
+            ~FakeMetadataSetKey();
 
             virtual const tr1::shared_ptr<const C_> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE FakeMetadataKeywordCollectionKey :
-        public FakeMetadataCollectionKey<KeywordNameCollection>
+    class PALUDIS_VISIBLE FakeMetadataKeywordSetKey :
+        public FakeMetadataSetKey<KeywordNameSet>
     {
         public:
-            FakeMetadataKeywordCollectionKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+            FakeMetadataKeywordSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
 
             void set_from_string(const std::string &);
     };
 
-    class PALUDIS_VISIBLE FakeMetadataIUseCollectionKey :
-        public FakeMetadataCollectionKey<IUseFlagCollection>
+    class PALUDIS_VISIBLE FakeMetadataIUseSetKey :
+        public FakeMetadataSetKey<IUseFlagSet>
     {
         public:
-            FakeMetadataIUseCollectionKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
+            FakeMetadataIUseSetKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
                     const MetadataKeyType);
 
             void set_from_string(const std::string &, const IUseFlagParseMode);
@@ -122,10 +122,10 @@ namespace paludis
             virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> > keywords_key() const;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> > use_key() const;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> > iuse_key() const;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> > inherited_key() const;
+            virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
+            virtual const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use_key() const;
+            virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
+            virtual const tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
@@ -143,8 +143,8 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
 
-            const tr1::shared_ptr<FakeMetadataKeywordCollectionKey> keywords_key();
-            const tr1::shared_ptr<FakeMetadataIUseCollectionKey> iuse_key();
+            const tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
+            const tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();
 
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();

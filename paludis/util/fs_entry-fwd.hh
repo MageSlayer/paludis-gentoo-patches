@@ -22,8 +22,9 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_FS_ENTRY_FWD_HH 1
 
 #include <iosfwd>
-#include <paludis/util/collection-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/set-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 
 namespace paludis
 {
@@ -62,14 +63,19 @@ namespace paludis
      */
     std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
 
-    template <typename T_> class SequentialCollection;
-
     /**
-     * An ordered group of FSEntry instances.
+     * A sequence of FSEntry instances.
      *
      * \ingroup grpfilesystem
      */
-    typedef SequentialCollection<FSEntry> FSEntryCollection;
+    typedef Sequence<FSEntry> FSEntrySequence;
+
+    /**
+     * A set of FSEntry instances.
+     *
+     * \ingroup grpfilesystem
+     */
+    typedef Set<FSEntry> FSEntrySet;
 }
 
 #endif

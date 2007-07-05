@@ -24,6 +24,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
@@ -51,6 +52,8 @@ template class Visits<const DependencyDepTag>;
 template class Visits<const TargetDepTag>;
 
 template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
+
+template class Set<DepTagEntry>;
 
 #include <paludis/dep_tag-sr.cc>
 

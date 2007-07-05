@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/collection.hh>
+#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
@@ -40,7 +40,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            EclassMtimes(tr1::shared_ptr<const FSEntryCollection>);
+            EclassMtimes(tr1::shared_ptr<const FSEntrySequence>);
             ~EclassMtimes();
 
             ///\}

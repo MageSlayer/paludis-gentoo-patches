@@ -25,8 +25,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/map.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
@@ -241,11 +243,11 @@ namespace paludis
     struct Implementation<KeyValueConfigFile::Defaults>
     {
         tr1::shared_ptr<const KeyValueConfigFile> kv;
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > a;
+        tr1::shared_ptr<const Map<std::string, std::string> > a;
         std::string (* f)(const std::string &, const std::string &);
 
         Implementation(tr1::shared_ptr<const KeyValueConfigFile> kvv,
-                tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > av,
+                tr1::shared_ptr<const Map<std::string, std::string> > av,
                 std::string (* fv)(const std::string &, const std::string &)) :
             kv(kvv),
             a(av),
@@ -258,12 +260,12 @@ namespace paludis
 template<>
 KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const KeyValueConfigFile> v) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
-                tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > a) :
+KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const Map<std::string, std::string> > a) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
                 tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
 {
@@ -272,12 +274,12 @@ KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const AssociativeCollecti
 template<>
 KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<KeyValueConfigFile> v) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
-                tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 
 template<>
-KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<AssociativeCollection<std::string, std::string> > a) :
+KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> > a) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
                 tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
 {
@@ -286,14 +288,14 @@ KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<AssociativeCollection<std
 KeyValueConfigFile::Defaults::Defaults(std::string (* f) (const std::string &, const std::string &)) :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
                 tr1::shared_ptr<const KeyValueConfigFile>(),
-                tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), f))
+                tr1::shared_ptr<const Map<std::string, std::string> >(), f))
 {
 }
 
 KeyValueConfigFile::Defaults::Defaults() :
     PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
                 tr1::shared_ptr<const KeyValueConfigFile>(),
-                tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+                tr1::shared_ptr<const Map<std::string, std::string> >(), 0))
 {
 }
 
@@ -322,7 +324,7 @@ KeyValueConfigFile::Defaults::get(const std::string & k) const
         return _imp->kv->get(k);
     else if (_imp->a)
     {
-        AssociativeCollection<std::string, std::string>::Iterator x(_imp->a->find(k));
+        Map<std::string, std::string>::Iterator x(_imp->a->find(k));
         if (x == _imp->a->end())
             return "";
         else

@@ -21,9 +21,10 @@
 #include <paludis/repository.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -68,15 +69,15 @@ RepositoryNameCache::~RepositoryNameCache()
 {
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
     if (! usable())
-        return tr1::shared_ptr<const CategoryNamePartCollection>();
+        return tr1::shared_ptr<const CategoryNamePartSet>();
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->name_cache_map.find(p));
 
     _imp->location = FSEntry(stringify(_imp->location));
@@ -98,7 +99,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                             + "' has version string '" + line + "', which is not supported. Was it generated using "
                             "a different Paludis version?");
                     _usable = false;
-                    return tr1::shared_ptr<const CategoryNamePartCollection>();
+                    return tr1::shared_ptr<const CategoryNamePartSet>();
                 }
                 std::getline(vvf, line);
                 if (line != stringify(_imp->repo->name()))
@@ -107,7 +108,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                             + "' was generated for repository '" + line + "', so it cannot be used. You must not "
                             "have multiple name caches at the same location.");
                     _usable = false;
-                    return tr1::shared_ptr<const CategoryNamePartCollection>();
+                    return tr1::shared_ptr<const CategoryNamePartSet>();
                 }
                 _imp->checked_name_cache_map = true;
             }
@@ -120,7 +121,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                         "directory. You probably want to manually remove '" + stringify(_imp->location.dirname()) +
                         "' and then regenerate the cache.");
                 _usable = false;
-                return tr1::shared_ptr<const CategoryNamePartCollection>();
+                return tr1::shared_ptr<const CategoryNamePartSet>();
             }
             else
             {
@@ -128,7 +129,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                         + "' has no version information, so cannot be used. Either it was generated using "
                         "an older Paludis version or it has not yet been generated.");
                 _usable = false;
-                return tr1::shared_ptr<const CategoryNamePartCollection>();
+                return tr1::shared_ptr<const CategoryNamePartSet>();
             }
         }
 
@@ -169,12 +170,12 @@ RepositoryNameCache::regenerate_cache() const
 
     MakeHashedMap<std::string, std::string>::Type m;
 
-    tr1::shared_ptr<const CategoryNamePartCollection> cats(_imp->repo->category_names());
-    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+    tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
+    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(_imp->repo->package_names(*c));
-        for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+        tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
+        for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
             m[stringify(p->package)].append(stringify(*c) + "\n");
     }

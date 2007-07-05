@@ -27,12 +27,14 @@
 #include <paludis/query.hh>
 #include <paludis/repository_info.hh>
 
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 #include <vector>
 #include <utility>
@@ -211,7 +213,7 @@ VirtualsRepository::need_ids() const
         {
             IDMap::iterator i(_imp->ids.find(v->first));
             if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence::Concrete))).first;
+                i = _imp->ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence))).first;
 
             tr1::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
             if (stringify(id->name().category) != "virtual")
@@ -226,7 +228,7 @@ VirtualsRepository::need_ids() const
 tr1::shared_ptr<Repository>
 VirtualsRepository::make_virtuals_repository(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >)
+        tr1::shared_ptr<const Map<std::string, std::string> >)
 {
     return tr1::shared_ptr<Repository>(new VirtualsRepository(env));
 }
@@ -235,36 +237,36 @@ tr1::shared_ptr<const PackageIDSequence>
 VirtualsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     return i->second;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 VirtualsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
-        return tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
+        return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     need_ids();
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
                 tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first)));
 
     return result;
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::do_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
     return result;
 }

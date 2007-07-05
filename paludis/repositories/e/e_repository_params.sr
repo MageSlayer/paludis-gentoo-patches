@@ -9,12 +9,12 @@ make_class_ERepositoryParams()
     key layout std::string
     key environment "Environment *"
     key location FSEntry
-    key profiles "tr1::shared_ptr<const FSEntryCollection>"
+    key profiles "tr1::shared_ptr<const FSEntrySequence>"
     key cache FSEntry
     key write_cache FSEntry
     key names_cache FSEntry
     key distdir FSEntry
-    key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
+    key eclassdirs "tr1::shared_ptr<const FSEntrySequence>"
     key setsdir FSEntry
     key securitydir FSEntry
     key newsdir FSEntry

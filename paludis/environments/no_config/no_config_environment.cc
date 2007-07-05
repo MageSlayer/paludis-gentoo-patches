@@ -18,10 +18,11 @@
  */
 
 #include "no_config_environment.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/config_file.hh>
@@ -30,6 +31,7 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::no_config_environment;
@@ -139,8 +141,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         if (FSEntry("/var/empty") != params.master_repository_dir)
         {
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
 
             keys->insert("format", "ebuild");
             keys->insert("location", stringify(params.master_repository_dir));
@@ -152,8 +154,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         }
 
-        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
+        tr1::shared_ptr<Map<std::string, std::string> > keys(
+                new Map<std::string, std::string>);
 
         keys->insert("format", "ebuild");
         keys->insert("location", stringify(params.repository_dir));
@@ -168,14 +170,14 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
             package_database->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                        tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+                        tr1::shared_ptr<Map<std::string, std::string> >()));
     }
     else
     {
         Log::get_instance()->message(ll_debug, lc_context, "VDB, using vdb_db");
 
-        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
+        tr1::shared_ptr<Map<std::string, std::string> > keys(
+                new Map<std::string, std::string>);
 
         keys->insert("format", "vdb");
         keys->insert("names_cache", "/var/empty");
@@ -184,8 +186,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         package_database->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
 
-        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
+        tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
+                new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
 
         if (DistributionData::get_instance()->distribution_from_string(env->default_distribution())->support_old_style_virtuals)
@@ -276,7 +278,7 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> keywords,
+NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywords,
         const PackageID &) const
 {
     if (_imp->is_vdb)
@@ -299,7 +301,7 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection
         WhitespaceTokeniser::get_instance()->tokenise(ak,
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
-        for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+        for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                 k != k_end ; ++k)
         {
             if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))

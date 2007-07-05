@@ -27,7 +27,6 @@
 
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/iterator.hh>
@@ -37,6 +36,9 @@
 #include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -86,7 +88,7 @@ namespace paludis
         std::string root;
         std::string config_dir;
         mutable std::string distribution;
-        tr1::shared_ptr<FSEntryCollection> bashrc_files;
+        tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
         std::list<RepositoryConfigEntry> repos;
 
@@ -113,7 +115,7 @@ namespace paludis
         env(e),
         paludis_command("paludis"),
         config_dir("(unset)"),
-        bashrc_files(new FSEntryCollection::Concrete),
+        bashrc_files(new FSEntrySequence),
         keywords_conf(new KeywordsConf(e)),
         use_conf(new UseConf(e)),
         licenses_conf(new LicensesConf(e)),
@@ -258,8 +260,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > conf_vars(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+    tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
+            new Map<std::string, std::string>);
     conf_vars->insert("ROOT", root_prefix);
 
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig real directory is '"
@@ -272,13 +274,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if (DistributionData::get_instance()->distribution_from_string(e->default_distribution())->support_old_style_virtuals)
         {
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
+                    new Map<std::string, std::string>);
             iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
             _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
 
             _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                        tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+                        tr1::shared_ptr<Map<std::string, std::string> >()));
         }
 
         /* add normal repositories */
@@ -316,7 +318,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     filter_inserter(std::back_inserter(repo_files), tr1::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        std::list<tr1::shared_ptr<AssociativeCollection<std::string, std::string> > > later_keys;
+        std::list<tr1::shared_ptr<Map<std::string, std::string> > > later_keys;
         for (std::list<FSEntry>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
                 repo_file != repo_file_end ; ++repo_file)
         {
@@ -353,8 +355,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! kv->get("importance").empty())
                 importance = destringify<int>(kv->get("importance"));
 
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete(kv->begin(), kv->end()));
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::copy(kv->begin(), kv->end(), keys->inserter());
 
             keys->erase("importance");
             keys->insert("importance", stringify(importance));
@@ -378,7 +380,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             }
         }
 
-        for (std::list<tr1::shared_ptr<AssociativeCollection<std::string, std::string> > >::const_iterator
+        for (std::list<tr1::shared_ptr<Map<std::string, std::string> > >::const_iterator
                 k(later_keys.begin()), k_end(later_keys.end()) ; k != k_end ; ++k)
             _imp->repos.push_back(RepositoryConfigEntry((*k)->find("format")->second,
                         destringify<int>((*k)->find("importance")->second), *k));
@@ -544,7 +546,7 @@ PaludisConfig::~PaludisConfig()
 {
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 PaludisConfig::bashrc_files() const
 {
     return _imp->bashrc_files;

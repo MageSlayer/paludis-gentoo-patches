@@ -21,6 +21,10 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -29,6 +33,7 @@
 #include <limits.h>
 #include <cstring>
 #include <cstdlib>
+
 #include "config.h"
 
 /** \file
@@ -38,6 +43,9 @@
  */
 
 using namespace paludis;
+
+template class Sequence<FSEntry>;
+template class Set<FSEntry>;
 
 FSError::FSError(const std::string & our_message) throw () :
     Exception(our_message)

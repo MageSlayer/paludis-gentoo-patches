@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_REQUIREMENTS_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_REQUIREMENTS_HH 1
 
-#include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_operator.hh>

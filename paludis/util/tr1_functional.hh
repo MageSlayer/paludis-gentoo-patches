@@ -33,6 +33,7 @@ namespace paludis
         using std::tr1::ref;
         using std::tr1::cref;
         using std::tr1::function;
+        using std::tr1::reference_wrapper;
 
         namespace placeholders
         {
@@ -65,6 +66,7 @@ namespace paludis
         using boost::ref;
         using boost::cref;
         using boost::function;
+        using boost::reference_wrapper;
 
         namespace placeholders
         {

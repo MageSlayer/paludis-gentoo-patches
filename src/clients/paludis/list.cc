@@ -25,6 +25,7 @@
 #include <paludis/repository_info.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/set.hh>
 #include <src/output/colour.hh>
 
 #include <paludis/util/tr1_memory.hh>
@@ -106,8 +107,8 @@ do_list_categories(tr1::shared_ptr<Environment> env)
                         r->format()))
                 continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-        for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
             cats[*c].push_back(r->name());
     }
@@ -159,8 +160,8 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                         r->format()))
                 continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-        for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -170,8 +171,8 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs[*p].push_back(r->name());
         }
@@ -227,16 +228,16 @@ do_list_sets(tr1::shared_ptr<Environment> env)
                         r->format()))
                 continue;
 
-        tr1::shared_ptr<const SetNameCollection> set_names(r->sets_interface->sets_list());
-        for (SetNameCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        tr1::shared_ptr<const SetNameSet> set_names(r->sets_interface->sets_list());
+        for (SetNameSet::Iterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back(stringify(r->name()));
     }
 
     if (! CommandLine::get_instance()->a_repository.specified())
     {
-        tr1::shared_ptr<const SetNameCollection> set_names(env->set_names());
-        for (SetNameCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        tr1::shared_ptr<const SetNameSet> set_names(env->set_names());
+        for (SetNameSet::Iterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back("environment");
     }

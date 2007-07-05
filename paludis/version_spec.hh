@@ -23,7 +23,6 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/operators.hh>
 
 #include <iosfwd>

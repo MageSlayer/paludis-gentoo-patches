@@ -23,10 +23,12 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hooker.hh>
@@ -42,6 +44,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::portage_environment;
@@ -341,8 +344,8 @@ PortageEnvironment::_load_profile(const FSEntry & d)
 void
 PortageEnvironment::_add_virtuals_repository()
 {
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+    tr1::shared_ptr<Map<std::string, std::string> > keys(
+            new Map<std::string, std::string>);
     package_database()->add_repository(-2,
             RepositoryMaker::get_instance()->find_maker("virtuals")(this, keys));
 }
@@ -350,8 +353,8 @@ PortageEnvironment::_add_virtuals_repository()
 void
 PortageEnvironment::_add_installed_virtuals_repository()
 {
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+    tr1::shared_ptr<Map<std::string, std::string> > keys(
+            new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     package_database()->add_repository(-1,
             RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this, keys));
@@ -368,8 +371,8 @@ void
 PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
         const std::string & sync, int importance)
 {
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+    tr1::shared_ptr<Map<std::string, std::string> > keys(
+            new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
@@ -401,8 +404,8 @@ PortageEnvironment::_add_vdb_repository()
 {
     Context context("When creating vdb repository:");
 
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+    tr1::shared_ptr<Map<std::string, std::string> > keys(
+            new Map<std::string, std::string>);
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(root() / "/var/db/pkg"));
     keys->insert("format", "vdb");
@@ -498,7 +501,7 @@ PortageEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameCollection> keywords,
+PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameSet> keywords,
         const PackageID & d) const
 {
     bool result(false);
@@ -506,7 +509,7 @@ PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameCollection
     if (keywords->end() != keywords->find(KeywordName("*")))
         return true;
 
-    for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+    for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
             k != k_end ; ++k)
     {
         bool local_result(false);
@@ -567,13 +570,13 @@ PortageEnvironment::unmasked_by_user(const PackageID & e) const
     return false;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 PortageEnvironment::known_use_expand_names(const UseFlagName & prefix,
         const PackageID & pde) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
-    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");
@@ -615,19 +618,19 @@ PortageEnvironment::perform_hook(const Hook & hook) const
     return _imp->hooker->perform_hook(hook);
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::hook_dirs() const
 {
     _imp->need_hook_dirs();
-    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
-    std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->inserter());
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());
     return result;
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::bashrc_files() const
 {
-    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
     result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
@@ -652,13 +655,13 @@ PortageEnvironment::package_database() const
     return _imp->package_database;
 }
 
-tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsSequence>
 PortageEnvironment::mirrors(const std::string & m) const
 {
     std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
         p(_imp->mirrors.equal_range(m));
-    tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
-    std::copy(p.first, p.second, transform_inserter(result->inserter(),
+    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::copy(p.first, p.second, transform_inserter(result->back_inserter(),
                 tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
     return result;
 }

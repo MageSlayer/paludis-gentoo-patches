@@ -32,7 +32,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/set.hh>
 #include <list>
 #include <vector>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -199,8 +199,8 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     bool ignore_empty_minus_star(false);
     if (e.repository()->use_interface)
     {
-        tr1::shared_ptr<const UseFlagNameCollection> prefixes(e.repository()->use_interface->use_expand_prefixes());
-        for (UseFlagNameCollection::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
+        tr1::shared_ptr<const UseFlagNameSet> prefixes(e.repository()->use_interface->use_expand_prefixes());
+        for (UseFlagNameSet::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
             {
@@ -310,12 +310,12 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(prefix) + ":");
 
-    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     prefix_lower.append("_");

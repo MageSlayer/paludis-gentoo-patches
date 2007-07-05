@@ -34,7 +34,6 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/operators.hh>
 

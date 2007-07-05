@@ -23,11 +23,11 @@
 #include "licence.hh"
 
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -77,11 +77,11 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
-        tr1::shared_ptr<const DestinationsCollection> d) :
+        tr1::shared_ptr<const DestinationsSet> d) :
     InstallTask(env, options, d),
-    _all_tags(new SortedCollection<DepTagEntry>::Concrete),
-    _all_use_descriptions(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete),
-    _all_expand_prefixes(new UseFlagNameCollection::Concrete)
+    _all_tags(new Set<DepTagEntry>),
+    _all_use_descriptions(new Set<UseDescription, UseDescriptionComparator>),
+    _all_expand_prefixes(new UseFlagNameSet)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
 }
@@ -172,7 +172,7 @@ ConsoleInstallTask::on_display_merge_list_post()
     display_merge_list_post_tags();
 
     display_merge_list_post_use_descriptions("");
-    for (UseFlagNameCollection::Iterator f(_all_expand_prefixes->begin()),
+    for (UseFlagNameSet::Iterator f(_all_expand_prefixes->begin()),
             f_end(_all_expand_prefixes->end()) ; f != f_end ; ++f)
         display_merge_list_post_use_descriptions(stringify(*f));
 }
@@ -471,7 +471,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
         return;
 
     std::set<std::string> tag_categories;
-    for (SortedCollection<DepTagEntry>::Iterator a(all_tags()->begin()),
+    for (Set<DepTagEntry>::Iterator a(all_tags()->begin()),
             a_end(all_tags()->end()) ; a != a_end ; ++a)
         tag_categories.insert(a->tag->category());
 
@@ -489,7 +489,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
         display_tag_summary_tag_title(*c);
         display_tag_summary_tag_pre_text(*c);
 
-        for (SortedCollection<DepTagEntry>::Iterator t(all_tags()->begin()),
+        for (Set<DepTagEntry>::Iterator t(all_tags()->begin()),
                 t_end(all_tags()->end()) ; t != t_end ; ++t)
         {
             if (t->tag->category() != *cat)
@@ -512,9 +512,9 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
     bool started(false);
     UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
 
-    tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > group(
-            new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
-    for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
+    tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > group(
+            new Set<UseDescription, UseDescriptionComparator>);
+    for (Set<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
     {
         switch (i->state)
@@ -538,7 +538,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
         if (prefix.empty())
         {
             bool prefixed(false);
-            for (UseFlagNameCollection::Iterator f(_all_expand_prefixes->begin()),
+            for (UseFlagNameSet::Iterator f(_all_expand_prefixes->begin()),
                     f_end(_all_expand_prefixes->end()) ; f != f_end && ! prefixed ; ++f)
                 if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
                     prefixed = true;
@@ -563,7 +563,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
             if (! group->empty())
                 display_use_summary_flag(prefix, group->begin(), group->end());
             old_flag = i->flag;
-            group.reset(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
+            group.reset(new Set<UseDescription, UseDescriptionComparator>);
         }
 
         group->insert(*i);
@@ -587,8 +587,8 @@ ConsoleInstallTask::display_use_summary_start(const std::string & prefix)
 
 void
 ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
-        SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i,
-        SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i_end)
+        Set<UseDescription, UseDescriptionComparator>::Iterator i,
+        Set<UseDescription, UseDescriptionComparator>::Iterator i_end)
 {
     if (next(i) == i_end)
     {
@@ -601,7 +601,7 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
     else
     {
         bool all_same(true);
-        for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
+        for (Set<UseDescription, UseDescriptionComparator>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
             if (j->description != i->description)
                 all_same = false;
 
@@ -842,7 +842,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                     output_no_endl(render_as_update_mode(", "));
 
                 std::string destination_str;
-                tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
+                tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
                 if (default_destinations->end() == default_destinations->find(d.destination))
                     destination_str = " ::" + stringify(d.destination->name());
 
@@ -914,10 +914,10 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 }
 
 void
-ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameCollection> c,
+ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
         const tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
 {
-    for (UseFlagNameCollection::Iterator f(c->begin()), f_end(c->end()) ;
+    for (UseFlagNameSet::Iterator f(c->begin()), f_end(c->end()) ;
             f != f_end ; ++f)
     {
         std::string d;
@@ -946,7 +946,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     output_no_endl(" ");
     tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
     tr1::shared_ptr<const PackageID> old_id;
-    tr1::shared_ptr<const IUseFlagCollection> old;
+    tr1::shared_ptr<const IUseFlagSet> old;
 
     if (! existing_slot_repo->empty())
         old_id = *existing_slot_repo->last();
@@ -962,8 +962,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     _add_descriptions(printer->new_flags(), d.package_id, uds_new);
     _add_descriptions(printer->changed_flags(), d.package_id, uds_changed);
     _add_descriptions(printer->unchanged_flags(), d.package_id, uds_unchanged);
-    _all_expand_prefixes->insert(printer->expand_prefixes()->begin(),
-            printer->expand_prefixes()->end());
+    std::copy(printer->expand_prefixes()->begin(), printer->expand_prefixes()->end(), _all_expand_prefixes->inserter());
 }
 
 void
@@ -974,7 +973,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
 
     std::string tag_titles;
 
-    for (SortedCollection<DepTagEntry>::Iterator
+    for (Set<DepTagEntry>::Iterator
             tag(d.tags->begin()),
             tag_end(d.tags->end()) ;
             tag != tag_end ; ++tag)
@@ -1017,7 +1016,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
     std::set<std::string> dependents, unsatisfied_dependents;
     unsigned c(0), max_c(want_full_install_reasons() ? std::numeric_limits<long>::max() : 3);
 
-    for (SortedCollection<DepTagEntry>::Iterator
+    for (Set<DepTagEntry>::Iterator
             tag(d.tags->begin()),
             tag_end(d.tags->end()) ;
             tag != tag_end ; ++tag)
@@ -1167,7 +1166,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             {
                 if (e.package_id->keywords_key())
                 {
-                    tr1::shared_ptr<const KeywordNameCollection> keywords(e.package_id->keywords_key()->value());
+                    tr1::shared_ptr<const KeywordNameSet> keywords(e.package_id->keywords_key()->value());
                     output_no_endl(" ( " + render_as_masked(join(keywords->begin(), keywords->end(), " ")) + " )");
                 }
             }

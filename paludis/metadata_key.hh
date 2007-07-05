@@ -39,10 +39,10 @@ namespace paludis
             MetadataKeyVisitorTypes,
             MetadataKey,
             MetadataPackageIDKey,
-            MetadataCollectionKey<UseFlagNameCollection>,
-            MetadataCollectionKey<IUseFlagCollection>,
-            MetadataCollectionKey<KeywordNameCollection>,
-            MetadataCollectionKey<InheritedCollection>,
+            MetadataSetKey<UseFlagNameSet>,
+            MetadataSetKey<IUseFlagSet>,
+            MetadataSetKey<KeywordNameSet>,
+            MetadataSetKey<InheritedSet>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,
             MetadataSpecTreeKey<URISpecTree>,
@@ -120,12 +120,12 @@ namespace paludis
     };
 
     template <typename C_>
-    class PALUDIS_VISIBLE MetadataCollectionKey :
+    class PALUDIS_VISIBLE MetadataSetKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<C_> >
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSetKey<C_> >
     {
         protected:
-            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
+            MetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
             virtual const tr1::shared_ptr<const C_> value() const

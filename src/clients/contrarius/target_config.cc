@@ -21,6 +21,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/options.hh>
 #include <paludis/config_file.hh>
 #include <list>
 #include <string>

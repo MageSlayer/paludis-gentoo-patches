@@ -30,6 +30,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -129,7 +130,7 @@ KeywordsConf::add(const FSEntry & filename)
 }
 
 bool
-KeywordsConf::query(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID & e) const
+KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e) const
 {
     static const KeywordName star_keyword("*");
     static const KeywordName minus_star_keyword("-*");

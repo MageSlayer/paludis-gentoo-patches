@@ -19,8 +19,9 @@
 
 #include "make_ebuild_repository.hh"
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
@@ -32,7 +33,7 @@ using namespace paludis;
 tr1::shared_ptr<ERepository>
 paludis::make_ebuild_repository(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -67,7 +68,7 @@ paludis::make_ebuild_repository(
                     "be used as a master repository");
     }
 
-    tr1::shared_ptr<FSEntryCollection> profiles(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
     if (m->end() != m->find("profiles"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
@@ -76,12 +77,12 @@ paludis::make_ebuild_repository(
     {
         if (master_repository)
             std::copy(master_repository->params().profiles->begin(),
-                    master_repository->params().profiles->end(), profiles->inserter());
+                    master_repository->params().profiles->end(), profiles->back_inserter());
         else
             throw ERepositoryConfigurationError("No profiles have been specified");
     }
 
-    tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
 
     if (m->end() != m->find("eclassdirs"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("eclassdirs")->second,
@@ -91,7 +92,7 @@ paludis::make_ebuild_repository(
     {
         if (master_repository)
             std::copy(master_repository->params().eclassdirs->begin(),
-                    master_repository->params().eclassdirs->end(), eclassdirs->inserter());
+                    master_repository->params().eclassdirs->end(), eclassdirs->back_inserter());
 
         eclassdirs->push_back(location + "/eclass");
     }
@@ -215,7 +216,7 @@ paludis::make_ebuild_repository(
 tr1::shared_ptr<Repository>
 paludis::make_ebuild_repository_wrapped(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     return make_ebuild_repository(env, m);
 }

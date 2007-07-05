@@ -24,7 +24,6 @@
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
@@ -73,7 +72,7 @@ namespace test_cases
                 env(),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
                 virtuals_repo(new VirtualsRepository(&env)),
-                targets(new PackageIDSequence::Concrete),
+                targets(new PackageIDSequence),
                 done_populate(false)
             {
                 env.package_database()->add_repository(2, installed_repo);

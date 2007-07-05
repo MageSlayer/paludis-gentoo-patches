@@ -23,7 +23,6 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/package_database.hh>
 #include <string>
 

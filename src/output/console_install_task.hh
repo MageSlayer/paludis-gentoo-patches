@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH 1
 
 #include <paludis/tasks/install_task.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <src/output/use_flag_pretty_printer.hh>
 #include <src/output/console_task.hh>
@@ -115,16 +116,16 @@ namespace paludis
 
         private:
             int _counts[last_count];
-            tr1::shared_ptr<SortedCollection<DepTagEntry> > _all_tags;
-            tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
-            tr1::shared_ptr<UseFlagNameCollection> _all_expand_prefixes;
+            tr1::shared_ptr<Set<DepTagEntry> > _all_tags;
+            tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > _all_use_descriptions;
+            tr1::shared_ptr<UseFlagNameSet> _all_expand_prefixes;
 
-            void _add_descriptions(tr1::shared_ptr<const UseFlagNameCollection>,
+            void _add_descriptions(tr1::shared_ptr<const UseFlagNameSet>,
                     const tr1::shared_ptr<const PackageID> &, UseDescriptionState);
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsCollection>);
+                    tr1::shared_ptr<const DestinationsSet>);
 
         public:
             virtual void on_build_deplist_pre();
@@ -209,8 +210,8 @@ namespace paludis
             virtual void display_merge_list_post_use_descriptions(const std::string &);
             virtual void display_use_summary_start(const std::string &);
             virtual void display_use_summary_flag(const std::string &,
-                    SortedCollection<UseDescription, UseDescriptionComparator>::Iterator,
-                    SortedCollection<UseDescription, UseDescriptionComparator>::Iterator);
+                    Set<UseDescription, UseDescriptionComparator>::Iterator,
+                    Set<UseDescription, UseDescriptionComparator>::Iterator);
             virtual void display_use_summary_end();
 
             ///\}
@@ -230,12 +231,12 @@ namespace paludis
                 _counts[count_] = value;
             }
 
-            tr1::shared_ptr<SortedCollection<DepTagEntry> > all_tags()
+            tr1::shared_ptr<Set<DepTagEntry> > all_tags()
             {
                 return _all_tags;
             }
 
-            tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > all_use_descriptions()
+            tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > all_use_descriptions()
             {
                 return _all_use_descriptions;
             }

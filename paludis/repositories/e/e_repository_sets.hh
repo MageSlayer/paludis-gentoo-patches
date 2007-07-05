@@ -68,7 +68,7 @@ namespace paludis
             /**
              * Give a list of all the sets in this repo.
              */
-            tr1::shared_ptr<const SetNameCollection> sets_list() const;
+            tr1::shared_ptr<const SetNameSet> sets_list() const;
     };
 }
 

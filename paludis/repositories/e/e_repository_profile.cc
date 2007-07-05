@@ -28,6 +28,8 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -162,7 +164,7 @@ namespace paludis
             ///\{
 
             Implementation(const Environment * const e, const ERepository * const p,
-                    const RepositoryName & name, const FSEntryCollection & dirs,
+                    const RepositoryName & name, const FSEntrySequence & dirs,
                     bool arch_is_special) :
                 env(e),
                 repository(p),
@@ -172,7 +174,7 @@ namespace paludis
             {
                 load_environment();
 
-                for (FSEntryCollection::Iterator d(dirs.begin()), d_end(dirs.end()) ;
+                for (FSEntrySequence::Iterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
                     load_profile_directory_recursively(*d);
 
@@ -586,7 +588,7 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var()
 
 ERepositoryProfile::ERepositoryProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
-        const FSEntryCollection & location,
+        const FSEntrySequence & location,
         bool arch_is_special) :
     PrivateImplementationPattern<ERepositoryProfile>(
             new Implementation<ERepositoryProfile>(env, p, name, location, arch_is_special))
@@ -677,7 +679,7 @@ ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
     {
         if (e.iuse_key())
         {
-            IUseFlagCollection::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified)));
+            IUseFlagSet::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified)));
             if (i != e.iuse_key()->value()->end())
                 result = i->state;
         }

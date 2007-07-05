@@ -38,13 +38,13 @@ namespace paludis
     struct Implementation<ShowSuggestVisitor>
     {
         DepList * const dep_list;
-        tr1::shared_ptr<const DestinationsCollection> destinations;
+        tr1::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
         const tr1::shared_ptr<const PackageID> id;
         bool dependency_tags;
         tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
 
-        Implementation(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
+        Implementation(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
                 const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
             dep_list(d),
             destinations(dd),
@@ -59,7 +59,7 @@ namespace paludis
     };
 }
 
-ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
+ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
         const Environment * const e, const tr1::shared_ptr<const PackageID> & p, bool t) :
     PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t))
 {

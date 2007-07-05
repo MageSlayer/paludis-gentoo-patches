@@ -19,6 +19,7 @@
 
 #include "owner.hh"
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
@@ -100,12 +101,12 @@ do_one_owner(
         if (! (*r)->installed_interface)
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cats((*r)->category_names());
-        for (CategoryNamePartCollection::Iterator c(cats->begin()),
+        tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+        for (CategoryNamePartSet::Iterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
-            tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*r)->package_names(*c));
-            for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()),
+            tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
+            for (QualifiedPackageNameSet::Iterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));

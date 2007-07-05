@@ -22,6 +22,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/eapi.hh>
 #include <fstream>

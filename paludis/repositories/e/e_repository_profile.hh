@@ -60,7 +60,7 @@ namespace paludis
             ERepositoryProfile(const Environment * const env,
                     const ERepository * const,
                     const RepositoryName & name,
-                    const FSEntryCollection & location,
+                    const FSEntrySequence & location,
                     bool arch_is_special);
             ~ERepositoryProfile();
 

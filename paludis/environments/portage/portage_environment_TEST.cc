@@ -20,7 +20,6 @@
 #include "portage_environment.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/join.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>

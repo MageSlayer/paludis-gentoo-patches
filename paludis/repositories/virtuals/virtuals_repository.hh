@@ -22,6 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/map-fwd.hh>
 
 namespace paludis
 {
@@ -52,11 +53,11 @@ namespace paludis
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const
@@ -86,7 +87,7 @@ namespace paludis
              */
             static tr1::shared_ptr<Repository> make_virtuals_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+                    tr1::shared_ptr<const Map<std::string, std::string> >);
 
             virtual void invalidate();
 

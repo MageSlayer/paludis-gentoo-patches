@@ -22,6 +22,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -129,12 +130,12 @@ namespace test_cases
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
 
-            tr1::shared_ptr<const CategoryNamePartCollection> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            tr1::shared_ptr<const CategoryNamePartCollection> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());
@@ -159,12 +160,12 @@ namespace test_cases
             cache.regenerate_cache();
             TEST_CHECK(cache.usable());
 
-            tr1::shared_ptr<const CategoryNamePartCollection> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            tr1::shared_ptr<const CategoryNamePartCollection> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());

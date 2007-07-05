@@ -25,7 +25,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -40,7 +41,7 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 tr1::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     tr1::shared_ptr<const PackageIDSequence> packages(_env->package_database()->query(
                 query::Matches(PackageDepSpec(
                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
@@ -66,9 +67,9 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
             old_slot = (*p)->slot();
         }
 
-        tr1::shared_ptr<const KeywordNameCollection> current_keywords((*p)->keywords_key()->value());
+        tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
         bool used(false);
-        for (KeywordNameCollection::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
+        for (KeywordNameSet::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)
         {
             std::string stable_keyword(stringify(*k));

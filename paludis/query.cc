@@ -18,9 +18,10 @@
  */
 
 #include "query.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -39,28 +40,28 @@ QueryDelegate::~QueryDelegate()
 {
 }
 
-tr1::shared_ptr<RepositoryNameCollection>
+tr1::shared_ptr<RepositoryNameSequence>
 QueryDelegate::repositories(const Environment &) const
 {
-    return tr1::shared_ptr<RepositoryNameCollection>();
+    return tr1::shared_ptr<RepositoryNameSequence>();
 }
 
-tr1::shared_ptr<CategoryNamePartCollection>
-QueryDelegate::categories(const Environment &, tr1::shared_ptr<const RepositoryNameCollection>) const
+tr1::shared_ptr<CategoryNamePartSet>
+QueryDelegate::categories(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>) const
 {
-    return tr1::shared_ptr<CategoryNamePartCollection>();
+    return tr1::shared_ptr<CategoryNamePartSet>();
 }
 
-tr1::shared_ptr<QualifiedPackageNameCollection>
-QueryDelegate::packages(const Environment &, tr1::shared_ptr<const RepositoryNameCollection>,
-        tr1::shared_ptr<const CategoryNamePartCollection>) const
+tr1::shared_ptr<QualifiedPackageNameSet>
+QueryDelegate::packages(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
+        tr1::shared_ptr<const CategoryNamePartSet>) const
 {
-    return tr1::shared_ptr<QualifiedPackageNameCollection>();
+    return tr1::shared_ptr<QualifiedPackageNameSet>();
 }
 
 tr1::shared_ptr<PackageIDSequence>
-QueryDelegate::ids(const Environment &, tr1::shared_ptr<const RepositoryNameCollection>,
-        tr1::shared_ptr<const QualifiedPackageNameCollection>) const
+QueryDelegate::ids(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
+        tr1::shared_ptr<const QualifiedPackageNameSet>) const
 {
     return tr1::shared_ptr<PackageIDSequence>();
 }
@@ -92,12 +93,12 @@ namespace
             return "matches '" + stringify(spec) + "'";
         }
 
-        tr1::shared_ptr<RepositoryNameCollection>
+        tr1::shared_ptr<RepositoryNameSequence>
         repositories(const Environment & e) const
         {
             if (spec.repository_ptr())
             {
-                tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
+                tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
                 for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
                         i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
@@ -113,19 +114,19 @@ namespace
             return QueryDelegate::repositories(e);
         }
 
-        tr1::shared_ptr<CategoryNamePartCollection>
+        tr1::shared_ptr<CategoryNamePartSet>
         categories(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameCollection> r) const
+                tr1::shared_ptr<const RepositoryNameSequence> r) const
         {
             if (spec.package_ptr())
             {
-                tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 result->insert(spec.package_ptr()->category);
                 return result;
             }
             else if (spec.category_name_part_ptr())
             {
-                tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 result->insert(*spec.category_name_part_ptr());
                 return result;
             }
@@ -133,25 +134,25 @@ namespace
                 return QueryDelegate::categories(e, r);
         }
 
-        tr1::shared_ptr<QualifiedPackageNameCollection>
+        tr1::shared_ptr<QualifiedPackageNameSet>
         packages(const Environment & e,
-            tr1::shared_ptr<const RepositoryNameCollection> repos,
-            tr1::shared_ptr<const CategoryNamePartCollection> cats) const
+            tr1::shared_ptr<const RepositoryNameSequence> repos,
+            tr1::shared_ptr<const CategoryNamePartSet> cats) const
         {
             if (spec.package_ptr())
             {
-                tr1::shared_ptr<QualifiedPackageNameCollection> result(
-                        new QualifiedPackageNameCollection::Concrete);
+                tr1::shared_ptr<QualifiedPackageNameSet> result(
+                        new QualifiedPackageNameSet);
                 result->insert(*spec.package_ptr());
                 return result;
             }
             else if (spec.package_name_part_ptr())
             {
-                tr1::shared_ptr<QualifiedPackageNameCollection> result(
-                        new QualifiedPackageNameCollection::Concrete);
-                for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+                tr1::shared_ptr<QualifiedPackageNameSet> result(
+                        new QualifiedPackageNameSet);
+                for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+                    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
                             c != c_end ; ++c)
                         if (e.package_database()->fetch_repository(*r)->has_package_named(*c +
                                     *spec.package_name_part_ptr()))
@@ -164,16 +165,16 @@ namespace
 
         tr1::shared_ptr<PackageIDSequence>
         ids(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameCollection> repos,
-                tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs) const
+                tr1::shared_ptr<const RepositoryNameSequence> repos,
+                tr1::shared_ptr<const QualifiedPackageNameSet> pkgs) const
         {
-            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
-            for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
                 tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
-                for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
                     using namespace tr1::placeholders;
@@ -233,16 +234,16 @@ namespace
 
         tr1::shared_ptr<PackageIDSequence>
         ids(const Environment & e,
-                tr1::shared_ptr<const RepositoryNameCollection> repos,
-                tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs) const
+                tr1::shared_ptr<const RepositoryNameSequence> repos,
+                tr1::shared_ptr<const QualifiedPackageNameSet> pkgs) const
         {
-            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
-            for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
                 tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
-                for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
@@ -296,10 +297,10 @@ namespace
     struct RepositoryHasDelegate :
         QueryDelegate
     {
-        tr1::shared_ptr<RepositoryNameCollection>
+        tr1::shared_ptr<RepositoryNameSequence>
         repositories(const Environment & e) const
         {
-            tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
+            tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
             for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
                     i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
@@ -354,10 +355,10 @@ namespace
         {
         }
 
-        tr1::shared_ptr<RepositoryNameCollection>
+        tr1::shared_ptr<RepositoryNameSequence>
         repositories(const Environment & e) const
         {
-            tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
+            tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
             for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
                     i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
@@ -404,16 +405,16 @@ namespace
         {
         }
 
-        tr1::shared_ptr<RepositoryNameCollection>
+        tr1::shared_ptr<RepositoryNameSequence>
         repositories(const Environment & e) const
         {
-            tr1::shared_ptr<RepositoryNameCollection> r1(q1->repositories(e)), r2(q2->repositories(e));
+            tr1::shared_ptr<RepositoryNameSequence> r1(q1->repositories(e)), r2(q2->repositories(e));
 
             if (r1 && r2)
             {
                 std::set<RepositoryName, RepositoryNameComparator> s1(r1->begin(), r1->end()), s2(r2->begin(), r2->end());
-                tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
-                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->inserter(),
+                tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
+                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->back_inserter(),
                         RepositoryNameComparator());
                 return result;
             }
@@ -423,14 +424,14 @@ namespace
                 return r2;
         }
 
-        tr1::shared_ptr<CategoryNamePartCollection>
-        categories(const Environment & e, tr1::shared_ptr<const RepositoryNameCollection> r) const
+        tr1::shared_ptr<CategoryNamePartSet>
+        categories(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r) const
         {
-            tr1::shared_ptr<CategoryNamePartCollection> r1(q1->categories(e, r)), r2(q2->categories(e, r));
+            tr1::shared_ptr<CategoryNamePartSet> r1(q1->categories(e, r)), r2(q2->categories(e, r));
 
             if (r1 && r2)
             {
-                tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 std::set_intersection(r1->begin(), r1->end(), r2->begin(), r2->end(), result->inserter());
                 return result;
             }
@@ -440,15 +441,15 @@ namespace
                 return r2;
         }
 
-        tr1::shared_ptr<QualifiedPackageNameCollection>
-        packages(const Environment & e, tr1::shared_ptr<const RepositoryNameCollection> r,
-                tr1::shared_ptr<const CategoryNamePartCollection> c) const
+        tr1::shared_ptr<QualifiedPackageNameSet>
+        packages(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r,
+                tr1::shared_ptr<const CategoryNamePartSet> c) const
         {
-            tr1::shared_ptr<QualifiedPackageNameCollection> r1(q1->packages(e, r, c)), r2(q2->packages(e, r, c));
+            tr1::shared_ptr<QualifiedPackageNameSet> r1(q1->packages(e, r, c)), r2(q2->packages(e, r, c));
 
             if (r1 && r2)
             {
-                tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+                tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
                 std::set_intersection(r1->begin(), r1->end(), r2->begin(), r2->end(), result->inserter());
                 return result;
             }
@@ -459,8 +460,8 @@ namespace
         }
 
         tr1::shared_ptr<PackageIDSequence>
-        ids(const Environment & e, tr1::shared_ptr<const RepositoryNameCollection> r,
-                tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
+        ids(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r,
+                tr1::shared_ptr<const QualifiedPackageNameSet> q) const
         {
             tr1::shared_ptr<PackageIDSequence> r1(q1->ids(e, r, q)), r2(q2->ids(e, r, q));
 
@@ -468,8 +469,8 @@ namespace
             {
                 std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>
                     s1(r1->begin(), r1->end()), s2(r2->begin(), r2->end());
-                tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
-                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->inserter(), PackageIDSetComparator());
+                tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->back_inserter(), PackageIDSetComparator());
                 return result;
             }
             else if (r1)

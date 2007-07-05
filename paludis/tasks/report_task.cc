@@ -26,10 +26,12 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
+#include <map>
 
 using namespace paludis;
 
@@ -161,12 +163,12 @@ ReportTask::execute()
         if (! rr->installed_interface)
             continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(rr->category_names());
-        for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
         {
-            tr1::shared_ptr<const QualifiedPackageNameCollection> packages(rr->package_names(*c));
-            for (QualifiedPackageNameCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
+            tr1::shared_ptr<const QualifiedPackageNameSet> packages(rr->package_names(*c));
+            for (QualifiedPackageNameSet::Iterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 on_report_check_package_pre(*p);

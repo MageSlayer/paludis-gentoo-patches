@@ -21,10 +21,11 @@
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -52,8 +53,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
@@ -61,7 +62,7 @@ namespace test_cases
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            tr1::shared_ptr<const SetNameCollection> sets_list(repo->sets_interface->sets_list());
+            tr1::shared_ptr<const SetNameSet> sets_list(repo->sets_interface->sets_list());
             TEST_CHECK_EQUAL(sets_list->size(), 4U);
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("system")));
             TEST_CHECK(sets_list->end() != sets_list->find(SetName("security")));
@@ -81,8 +82,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
@@ -118,8 +119,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");
@@ -153,8 +154,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_sets_TEST_dir/repo1");

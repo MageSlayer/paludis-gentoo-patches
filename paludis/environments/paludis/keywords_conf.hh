@@ -59,7 +59,7 @@ namespace paludis
                 /**
                  * Query a collection of keywords.
                  */
-                bool query(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const;
+                bool query(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const;
         };
     }
 }

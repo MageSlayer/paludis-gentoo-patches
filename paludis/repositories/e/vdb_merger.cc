@@ -23,6 +23,8 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/digests/md5.hh>
@@ -78,7 +80,7 @@ VDBMerger::~VDBMerger()
 Hook
 VDBMerger::extend_hook(const Hook & h)
 {
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment->bashrc_files());
 
     if (_imp->options.package_id)
     {

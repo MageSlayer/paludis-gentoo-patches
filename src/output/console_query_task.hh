@@ -64,7 +64,7 @@ namespace paludis
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,
                     const tr1::shared_ptr<const PackageID> & id,
-                    const tr1::shared_ptr<const IUseFlagCollection> &) const;
+                    const tr1::shared_ptr<const IUseFlagSet> &) const;
 
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;

@@ -8,8 +8,8 @@ make_class_EbuildCommandParams()
     key ebuild_dir FSEntry
     key ebuild_file FSEntry
     key files_dir FSEntry
-    key eclassdirs "tr1::shared_ptr<const FSEntryCollection>"
-    key exlibsdirs "tr1::shared_ptr<const FSEntryCollection>"
+    key eclassdirs "tr1::shared_ptr<const FSEntrySequence>"
+    key exlibsdirs "tr1::shared_ptr<const FSEntrySequence>"
     key portdir FSEntry
     key distdir FSEntry
     key buildroot FSEntry
@@ -38,8 +38,8 @@ make_class_EbuildFetchCommandParams()
     key use_expand std::string
     key flat_src_uri std::string
     key root std::string
-    key profiles "tr1::shared_ptr<const FSEntryCollection>"
-    key expand_vars "tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
+    key profiles "tr1::shared_ptr<const FSEntrySequence>"
+    key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
     key safe_resume bool
 
     doxygen_comment << "END"
@@ -62,8 +62,8 @@ make_class_EbuildInstallCommandParams()
     key use std::string
     key use_expand std::string
     key root std::string
-    key profiles "tr1::shared_ptr<const FSEntryCollection>"
-    key expand_vars "tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
+    key profiles "tr1::shared_ptr<const FSEntrySequence>"
+    key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
     key disable_cfgpro bool
     key debug_build InstallDebugOption
     key slot SlotName
@@ -89,8 +89,8 @@ make_class_EbuildPretendCommandParams()
     key use std::string
     key use_expand std::string
     key root std::string
-    key profiles "tr1::shared_ptr<const FSEntryCollection>"
-    key expand_vars "tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
+    key profiles "tr1::shared_ptr<const FSEntrySequence>"
+    key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
 
     doxygen_comment << "END"
         /**

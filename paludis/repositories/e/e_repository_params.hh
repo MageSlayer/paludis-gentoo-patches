@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PARAMS_HH 1
 
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
 
 /** \file

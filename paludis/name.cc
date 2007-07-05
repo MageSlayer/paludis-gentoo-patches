@@ -21,6 +21,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <ostream>
 #include <utility>
 
@@ -34,6 +36,16 @@ using namespace paludis;
 
 #include <paludis/name-sr.cc>
 #include <paludis/name-se.cc>
+
+template struct Sequence<RepositoryName>;
+template struct Set<PackageNamePart>;
+template struct Set<CategoryNamePart>;
+template struct Set<UseFlagName>;
+template struct Set<QualifiedPackageName>;
+template struct Set<KeywordName>;
+template struct Set<SetName>;
+template struct Set<IUseFlag>;
+template struct Set<std::string>;
 
 QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :
     NameError(s, "qualified package name")

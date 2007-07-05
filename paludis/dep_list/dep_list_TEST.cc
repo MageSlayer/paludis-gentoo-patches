@@ -19,6 +19,7 @@
 
 #include "dep_list_TEST.hh"
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/dep_spec_pretty_printer.hh>

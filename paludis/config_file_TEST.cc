@@ -21,7 +21,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/options.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <sstream>
@@ -229,8 +230,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
 
             std::stringstream t;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > t_defs(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > t_defs(new Map<std::string, std::string>);
             t_defs->insert("a", "moo");
             t_defs->insert("d", "bar");
             t_defs->insert("e", "baz");

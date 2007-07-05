@@ -35,6 +35,8 @@
 
 namespace paludis
 {
+    class PackageDatabase;
+
     class PALUDIS_VISIBLE PackageID :
         private InstantiationPolicy<PackageID, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<PackageID>,
@@ -60,10 +62,10 @@ namespace paludis
             ///\{
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> > keywords_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> > use_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> > iuse_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> > inherited_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const = 0;
@@ -131,6 +133,19 @@ namespace paludis
     class PALUDIS_VISIBLE PackageIDSetComparator
     {
         public:
+            bool operator() (const tr1::shared_ptr<const PackageID> &,
+                    const tr1::shared_ptr<const PackageID> &) const;
+    };
+
+    class PALUDIS_VISIBLE PackageIDComparator :
+        private PrivateImplementationPattern<PackageIDComparator>
+    {
+        public:
+            typedef bool result_type;
+
+            PackageIDComparator(const PackageDatabase * const);
+            ~PackageIDComparator();
+
             bool operator() (const tr1::shared_ptr<const PackageID> &,
                     const tr1::shared_ptr<const PackageID> &) const;
     };

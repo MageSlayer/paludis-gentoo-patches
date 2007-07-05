@@ -25,7 +25,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -89,10 +90,10 @@ EbuildCommand::operator() ()
         cmd.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
 
 
-    tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
-    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
+    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment->hook_dirs());
 
     cmd = extend_command(cmd
             .with_setenv("P", stringify(params.package_id->name().package) + "-" +
@@ -236,7 +237,7 @@ bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     bool ok(false);
-    keys.reset(new AssociativeCollection<std::string, std::string>::Concrete);
+    keys.reset(new Map<std::string, std::string>);
 
     try
     {
@@ -264,7 +265,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message(ll_warning, lc_context) << "Could not generate cache for '"
             << *params.package_id << "'";
-        keys.reset(new AssociativeCollection<std::string, std::string>::Concrete);
+        keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name);
         keys->insert("SLOT", "UNKNOWN");
 
@@ -274,9 +275,9 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
 
 namespace
 {
-    std::string get(const tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > & k, const std::string & s)
+    std::string get(const tr1::shared_ptr<const Map<std::string, std::string> > & k, const std::string & s)
     {
-        AssociativeCollection<std::string, std::string>::Iterator i(k->find(s));
+        Map<std::string, std::string>::Iterator i(k->find(s));
         if (k->end() == i)
             return "";
         return i->second;
@@ -438,7 +439,7 @@ EbuildFetchCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles->begin(),
                     fetch_params.profiles->end(), " ")));
 
-    for (AssociativeCollection<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::Iterator
             i(fetch_params.expand_vars->begin()),
             j(fetch_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
@@ -507,7 +508,7 @@ EbuildInstallCommand::extend_command(const Command & cmd)
                                           install_params.profiles->end(), " "))
             .with_setenv("SLOT", stringify(install_params.slot)));
 
-    for (AssociativeCollection<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::Iterator
             i(install_params.expand_vars->begin()),
             j(install_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
@@ -611,10 +612,10 @@ WriteVDBEntryCommand::operator() ()
             stringify(params.output_directory) + "' '" +
             stringify(params.environment_file) + "'");
 
-    tr1::shared_ptr<const FSEntryCollection> syncers_dirs(params.environment->syncers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(params.environment->bashrc_files());
-    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(params.environment->fetchers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> hook_dirs(params.environment->hook_dirs());
+    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> hook_dirs(params.environment->hook_dirs());
 
     Command cmd(Command(ebuild_cmd)
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
@@ -686,7 +687,7 @@ EbuildPretendCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_PROFILE_DIRS", join(pretend_params.profiles->begin(),
                     pretend_params.profiles->end(), " ")));
 
-    for (AssociativeCollection<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::Iterator
             i(pretend_params.expand_vars->begin()),
             j(pretend_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);

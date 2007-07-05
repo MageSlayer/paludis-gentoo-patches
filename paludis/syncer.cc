@@ -26,6 +26,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -69,10 +70,10 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
     Log::get_instance()->message(ll_debug, lc_context) << "looking for syncer protocol '"
         + stringify(format) << "'";
 
-    tr1::shared_ptr<const FSEntryCollection> syncer_dirs(_environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
     FSEntry syncer("/var/empty");
     bool ok(false);
-    for (FSEntryCollection::Iterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
+    for (FSEntrySequence::Iterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
             d != d_end && ! ok; ++d)
     {
         syncer = FSEntry(*d) / ("do" + format);
@@ -92,9 +93,9 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
 void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_environment->bashrc_files());
-    tr1::shared_ptr<const FSEntryCollection> fetchers_dirs(_environment->fetchers_dirs());
-    tr1::shared_ptr<const FSEntryCollection> syncers_dirs(_environment->syncers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
+    tr1::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
 
     Command cmd(Command(stringify(_syncer) + " " + opts.options + " '" + _local + "' '" + _remote + "'")
             .with_setenv("PALUDIS_ACTION", "sync")

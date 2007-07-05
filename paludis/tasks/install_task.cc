@@ -21,7 +21,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -32,6 +31,7 @@
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -53,7 +53,7 @@ namespace paludis
         std::list<std::string> raw_targets;
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
         tr1::shared_ptr<std::string> add_to_world_spec;
-        tr1::shared_ptr<const DestinationsCollection> destinations;
+        tr1::shared_ptr<const DestinationsSet> destinations;
 
         bool pretend;
         bool preserve_world;
@@ -63,7 +63,7 @@ namespace paludis
         bool override_target_type;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
-                tr1::shared_ptr<const DestinationsCollection> d) :
+                tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
@@ -82,7 +82,7 @@ namespace paludis
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
-        const tr1::shared_ptr<const DestinationsCollection> d) :
+        const tr1::shared_ptr<const DestinationsSet> d) :
     PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
@@ -370,7 +370,7 @@ InstallTask::execute()
                         query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
-        PackageIDSequence::Concrete clean_list;
+        PackageIDSequence clean_list;
         if (collision_list)
             for (PackageIDSequence::Iterator c(collision_list->begin()),
                     c_end(collision_list->end()) ; c != c_end ; ++c)

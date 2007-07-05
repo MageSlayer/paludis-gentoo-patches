@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_MAKE_EBIN_REPOSITORY_HH 1
 
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/util/map-fwd.hh>
 
 namespace paludis
 {
@@ -33,7 +34,7 @@ namespace paludis
     tr1::shared_ptr<ERepository>
     make_ebin_repository(
             Environment * const,
-            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
+            tr1::shared_ptr<const Map<std::string, std::string> >) PALUDIS_VISIBLE;
 
     /**
      * Create an ebin format repository (wrapper for our virtual constructor).
@@ -44,7 +45,7 @@ namespace paludis
     tr1::shared_ptr<Repository>
     make_ebin_repository_wrapped(
             Environment * const env,
-            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
+            tr1::shared_ptr<const Map<std::string, std::string> > m);
 }
 
 

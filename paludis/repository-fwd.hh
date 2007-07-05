@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_FWD_HH 1
 
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/set-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
 namespace paludis
@@ -62,7 +62,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      */
-    typedef SortedCollection<paludis::tr1::shared_ptr<Repository> > DestinationsCollection;
+    typedef Set<paludis::tr1::shared_ptr<Repository> > DestinationsSet;
 
     /**
      * What debug build option to use when installing a package.

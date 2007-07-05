@@ -23,6 +23,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/virtual_constructor.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/repository.hh>
 
 namespace paludis
@@ -93,7 +94,7 @@ namespace paludis
     class PALUDIS_VISIBLE RepositoryMaker :
         public VirtualConstructor<std::string,
             tr1::shared_ptr<Repository> (*) (Environment * const,
-                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >),
+                    tr1::shared_ptr<const Map<std::string, std::string> >),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >,
         public InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<RepositoryMaker>

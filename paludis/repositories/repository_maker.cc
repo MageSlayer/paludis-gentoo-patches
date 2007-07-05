@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/about.hh>
@@ -43,7 +44,7 @@ using namespace paludis;
 
 template class VirtualConstructor<std::string,
          tr1::shared_ptr<Repository> (*) (Environment * const,
-                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >),
+                    tr1::shared_ptr<const Map<std::string, std::string> >),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >;
 
 template class InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonTag>;

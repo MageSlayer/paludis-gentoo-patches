@@ -19,8 +19,9 @@
 
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -61,7 +62,7 @@ TestEnvironment::query_use(const UseFlagName & u, const PackageID &) const
 }
 
 bool
-TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID &) const
+TestEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }

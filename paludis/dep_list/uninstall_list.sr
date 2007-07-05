@@ -31,7 +31,7 @@ make_class_UninstallListEntry()
 
     key package_id "tr1::shared_ptr<const PackageID>"
     key skip_uninstall bool
-    key tags "tr1::shared_ptr<SortedCollection<tr1::shared_ptr<DepTag> > >"
+    key tags "tr1::shared_ptr<Set<tr1::shared_ptr<DepTag> > >"
 
     allow_named_args
 

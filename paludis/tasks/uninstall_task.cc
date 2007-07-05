@@ -21,11 +21,11 @@
 #include <paludis/environment.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/dep_spec_flattener.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
@@ -33,6 +33,8 @@
 #include <paludis/repository.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <map>
+#include <set>
 #include <list>
 
 using namespace paludis;

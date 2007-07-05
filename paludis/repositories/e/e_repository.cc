@@ -46,7 +46,6 @@
 #include <paludis/syncer.hh>
 #include <paludis/eapi.hh>
 
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
@@ -55,15 +54,19 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/tr1_functional.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <map>
+#include <set>
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <list>
 
 #include <strings.h>
 #include <ctype.h>
@@ -102,7 +105,7 @@ namespace paludis
         mutable VirtualsMap our_virtuals;
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
-        mutable tr1::shared_ptr<UseFlagNameCollection> arch_flags;
+        mutable tr1::shared_ptr<UseFlagNameSet> arch_flags;
 
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
@@ -166,8 +169,8 @@ namespace paludis
         Context context("When loading profiles.desc:");
 
         bool found_one(false);
-        tr1::shared_ptr<const FSEntryCollection> profiles_desc_files(layout->profiles_desc_files());
-        for (FSEntryCollection::Iterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
+        tr1::shared_ptr<const FSEntrySequence> profiles_desc_files(layout->profiles_desc_files());
+        for (FSEntrySequence::Iterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->exists())
@@ -184,7 +187,7 @@ namespace paludis
                 if (tokens.size() < 3)
                     continue;
 
-                FSEntryCollection::Concrete profiles;
+                FSEntrySequence profiles;
                 profiles.push_back(layout->profiles_base_dir() / tokens.at(1));
                 profiles_desc.push_back(RepositoryEInterface::ProfilesDescLine::create()
                         .arch(tokens.at(0))
@@ -320,13 +323,13 @@ ERepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->layout->has_package_named(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 ERepository::do_category_names() const
 {
     return _imp->layout->category_names();
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 ERepository::do_package_names(const CategoryNamePart & c) const
 {
     return _imp->layout->package_names(c);
@@ -345,8 +348,8 @@ ERepository::do_query_repository_masks(const PackageID & id) const
     {
         Context context("When querying repository mask for '" + stringify(id) + "':");
 
-        tr1::shared_ptr<const FSEntryCollection> repository_mask_files(_imp->layout->repository_mask_files());
-        for (FSEntryCollection::Iterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
+        tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
+        for (FSEntrySequence::Iterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
                 p != p_end ; ++p)
         {
             Context context_local("When reading '" + stringify(*p) + "':");
@@ -421,17 +424,17 @@ ERepository::do_query_use_force(const UseFlagName & u, const PackageID & e) cons
     return _imp->profile_ptr->use_forced(u, e);
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 ERepository::do_arch_flags() const
 {
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
-        _imp->arch_flags.reset(new UseFlagNameCollection::Concrete);
+        _imp->arch_flags.reset(new UseFlagNameSet);
 
         bool found_one(false);
-        tr1::shared_ptr<const FSEntryCollection> arch_list_files(_imp->layout->arch_list_files());
-        for (FSEntryCollection::Iterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
+        tr1::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
+        for (FSEntrySequence::Iterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->exists())
@@ -477,8 +480,8 @@ ERepository::need_mirrors() const
     if (! _imp->has_mirrors)
     {
         bool found_one(false);
-        tr1::shared_ptr<const FSEntryCollection> mirror_files(_imp->layout->mirror_files());
-        for (FSEntryCollection::Iterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
+        tr1::shared_ptr<const FSEntrySequence> mirror_files(_imp->layout->mirror_files());
+        for (FSEntrySequence::Iterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
                 p != p_end ; ++p)
         {
             if (p->exists())
@@ -542,7 +545,7 @@ ERepository::do_package_set(const SetName & s) const
     return _imp->sets_ptr->package_set(s);
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 ERepository::sets_list() const
 {
     return _imp->sets_ptr->sets_list();
@@ -730,7 +733,7 @@ ERepository::virtual_packages() const
 
     _imp->need_profiles();
 
-    tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence::Concrete);
+    tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
 
     for (ERepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
@@ -741,12 +744,12 @@ ERepository::virtual_packages() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 ERepository::do_use_expand_flags() const
 {
     _imp->need_profiles();
 
-    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
@@ -765,12 +768,12 @@ ERepository::do_use_expand_flags() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 ERepository::do_use_expand_prefixes() const
 {
     _imp->need_profiles();
 
-    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
@@ -782,12 +785,12 @@ ERepository::do_use_expand_prefixes() const
     return result;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 ERepository::do_use_expand_hidden_prefixes() const
 {
     _imp->need_profiles();
 
-    tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
+    tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
             i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
     {
@@ -805,13 +808,13 @@ ERepository::regenerate_cache() const
     _imp->names_cache->regenerate_cache();
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 ERepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
 
-    tr1::shared_ptr<const CategoryNamePartCollection> result(
+    tr1::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::do_category_names_containing_package(p);
@@ -883,8 +886,8 @@ ERepository::do_describe_use_flag(const UseFlagName & f,
 {
     if (_imp->use_desc.empty())
     {
-        tr1::shared_ptr<const FSEntryCollection> use_desc_dirs(_imp->layout->use_desc_dirs());
-        for (FSEntryCollection::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
+        tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
+        for (FSEntrySequence::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
             _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p)));
     }

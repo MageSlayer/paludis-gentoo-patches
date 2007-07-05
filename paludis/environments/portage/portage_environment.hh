@@ -74,7 +74,7 @@ namespace paludis
             void _load_atom_file(const FSEntry &, I_, const std::string &);
 
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection>, const PackageID &) const
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_breaks_portage(const PackageID &) const
@@ -98,20 +98,20 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+            virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                     const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> bashrc_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> hook_dirs() const
+            virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry root() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const MirrorsCollection> mirrors(const std::string &) const
+            virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual HookResult perform_hook(const Hook &) const

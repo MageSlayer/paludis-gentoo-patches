@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_NAME_HH 1
 
 #include <paludis/name-fwd.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>

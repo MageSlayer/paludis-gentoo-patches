@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QUERY_HH
 #define PALUDIS_GUARD_PALUDIS_QUERY_HH 1
 
-#include <paludis/util/collection.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
 #include <iosfwd>
@@ -63,7 +62,7 @@ namespace paludis
              *
              * Default behaviour: return all repositories.
              */
-            virtual tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment &) const;
+            virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const;
 
             /**
              * Fetch the names of categories potentially containing matches.
@@ -71,8 +70,8 @@ namespace paludis
              * Default behaviour: return all categories in the provided
              * repository collection.
              */
-            virtual tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameCollection>) const;
+            virtual tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameSequence>) const;
 
             /**
              * Fetch the names of packages potentially containing matches.
@@ -83,9 +82,9 @@ namespace paludis
              * Note that some entries in the categories collection (but not in
              * the repositories collection) may not exist.
              */
-            virtual tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameCollection>,
-                    tr1::shared_ptr<const CategoryNamePartCollection>) const;
+            virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                    tr1::shared_ptr<const RepositoryNameSequence>,
+                    tr1::shared_ptr<const CategoryNamePartSet>) const;
 
             /**
              * Fetch the IDs of matching packages.
@@ -96,8 +95,8 @@ namespace paludis
              * (but not in the repositories collection) may not exist.
              */
             virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameCollection>,
-                    tr1::shared_ptr<const QualifiedPackageNameCollection>) const;
+                    tr1::shared_ptr<const RepositoryNameSequence>,
+                    tr1::shared_ptr<const QualifiedPackageNameSet>) const;
 
             /**
              * Fetch a string representation of our query.
@@ -138,27 +137,27 @@ namespace paludis
             ///\name Delegate-implemented functions
             ///\{
 
-            tr1::shared_ptr<RepositoryNameCollection> repositories(const Environment & e) const
+            tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
             {
                 return _d->repositories(e);
             }
 
-            tr1::shared_ptr<CategoryNamePartCollection> categories(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameCollection> r) const
+            tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameSequence> r) const
             {
                 return _d->categories(e, r);
             }
 
-            tr1::shared_ptr<QualifiedPackageNameCollection> packages(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameCollection> r,
-                    tr1::shared_ptr<const CategoryNamePartCollection> c) const
+            tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+                    tr1::shared_ptr<const RepositoryNameSequence> r,
+                    tr1::shared_ptr<const CategoryNamePartSet> c) const
             {
                 return _d->packages(e, r, c);
             }
 
             tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameCollection> r,
-                    tr1::shared_ptr<const QualifiedPackageNameCollection> q) const
+                    tr1::shared_ptr<const RepositoryNameSequence> r,
+                    tr1::shared_ptr<const QualifiedPackageNameSet> q) const
             {
                 return _d->ids(e, r, q);
             }

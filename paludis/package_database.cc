@@ -24,7 +24,11 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -214,15 +218,15 @@ PackageDatabase::fetch_unique_qualified_package_name(
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     for (IndirectIterator<RepositoryIterator> r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cats(r->category_names_containing_package(p));
-        for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names_containing_package(p));
+        for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
             result->insert(*c + p);
     }
@@ -235,107 +239,17 @@ PackageDatabase::fetch_unique_qualified_package_name(
     return *(result->begin());
 }
 
-namespace
-{
-    bool compare_name(const tr1::shared_ptr<const PackageID> & a,
-            const tr1::shared_ptr<const PackageID> & b)
-    {
-        return a->name() == b->name();
-    }
-
-    bool compare_name_slot(const tr1::shared_ptr<const PackageID> & a,
-            const tr1::shared_ptr<const PackageID> & b)
-    {
-        if (a->name() != b->name())
-            return false;
-
-        return a->slot() == b->slot();
-    }
-
-    struct PDEComparator
-    {
-        const PackageDatabase * const pde;
-        std::map<std::string, int> rank;
-
-        PDEComparator(const PackageDatabase * const p) :
-            pde(p)
-        {
-            int x(0);
-            for (PackageDatabase::RepositoryIterator r(pde->begin_repositories()), r_end(pde->end_repositories()) ;
-                    r != r_end ; ++r)
-                rank.insert(std::make_pair(stringify((*r)->name()), ++x));
-        }
-
-        bool operator() (const tr1::shared_ptr<const PackageID> & lhs,
-                const tr1::shared_ptr<const PackageID> & rhs) const
-        {
-            if (lhs->name() < rhs->name())
-                return true;
-            if (lhs->name() > rhs->name())
-                return false;
-
-            if (lhs->version() < rhs->version())
-                return true;
-            if (lhs->version() > rhs->version())
-                return false;
-
-            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs->repository()->name())));
-            if (l == rank.end())
-                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs->repository()->name()) + "' not in rank");
-
-            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs->repository()->name())));
-            if (r == rank.end())
-                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs->repository()->name()) + "' not in rank");
-
-            if (l->second < r->second)
-                return true;
-
-            return false;
-        }
-    };
-
-    void sort_package_database_entry_collection(const PackageDatabase * const t,
-            PackageIDSequence::Concrete & p)
-    {
-        if (! p.empty())
-            p.sort(PDEComparator(t));
-    }
-
-    void
-    group_package_database_entry_collection(PackageIDSequence::Concrete & p)
-    {
-        if (p.empty())
-            return;
-
-        for (std::list<tr1::shared_ptr<const PackageID> >::reverse_iterator r(p.list.rbegin()) ;
-                r != p.list.rend() ; ++r)
-        {
-            for (std::list<tr1::shared_ptr<const PackageID> >::reverse_iterator rr(next(r)) ;
-                    rr != p.list.rend() ; ++rr)
-            {
-                if ((*r)->name() != (*rr)->name())
-                    break;
-
-                if ((*r)->slot() != (*rr)->slot())
-                    continue;
-
-                p.list.splice(previous(r.base()), p.list, previous(rr.base()));
-                if (p.list.rend() == ((rr = ++r)))
-                    return;
-            }
-        }
-    }
-}
-
 const tr1::shared_ptr<const PackageIDSequence>
 PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 {
-    tr1::shared_ptr<PackageIDSequence::Concrete> result(new PackageIDSequence::Concrete);
+    using namespace tr1::placeholders;
 
-    tr1::shared_ptr<RepositoryNameCollection> repos(q.repositories(*_imp->environment));
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+
+    tr1::shared_ptr<RepositoryNameSequence> repos(q.repositories(*_imp->environment));
     if (! repos)
     {
-        repos.reset(new RepositoryNameCollection::Concrete);
+        repos.reset(new RepositoryNameSequence);
         for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
                 r != r_end ; ++r)
             repos->push_back((*r)->name());
@@ -346,14 +260,14 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         else
             return result;
 
-    tr1::shared_ptr<CategoryNamePartCollection> cats(q.categories(*_imp->environment, repos));
+    tr1::shared_ptr<CategoryNamePartSet> cats(q.categories(*_imp->environment, repos));
     if (! cats)
     {
-        cats.reset(new CategoryNamePartCollection::Concrete);
-        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+        cats.reset(new CategoryNamePartSet);
+        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
-            tr1::shared_ptr<const CategoryNamePartCollection> local_cats(fetch_repository(*r)->category_names());
+            tr1::shared_ptr<const CategoryNamePartSet> local_cats(fetch_repository(*r)->category_names());
             std::copy(local_cats->begin(), local_cats->end(), cats->inserter());
         }
     }
@@ -363,16 +277,16 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         else
             return result;
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> pkgs(q.packages(*_imp->environment, repos, cats));
+    tr1::shared_ptr<QualifiedPackageNameSet> pkgs(q.packages(*_imp->environment, repos, cats));
     if (! pkgs)
     {
-        pkgs.reset(new QualifiedPackageNameCollection::Concrete);
-        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+        pkgs.reset(new QualifiedPackageNameSet);
+        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
-            for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+            for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
                     c != c_end ; ++c)
             {
-                tr1::shared_ptr<const QualifiedPackageNameCollection> local_pkgs(fetch_repository(*r)->package_names(*c));
+                tr1::shared_ptr<const QualifiedPackageNameSet> local_pkgs(fetch_repository(*r)->package_names(*c));
                 std::copy(local_pkgs->begin(), local_pkgs->end(), pkgs->inserter());
             }
     }
@@ -385,13 +299,13 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     tr1::shared_ptr<PackageIDSequence> ids(q.ids(*_imp->environment, repos, pkgs));
     if (! ids)
     {
-        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
-            for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+            for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> local_ids(fetch_repository(*r)->package_ids(*p));
-                std::copy(local_ids->begin(), local_ids->end(), result->inserter());
+                std::copy(local_ids->begin(), local_ids->end(), result->back_inserter());
             }
     }
     else
@@ -402,7 +316,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             else
                 return result;
 
-        std::copy(ids->begin(), ids->end(), result->inserter());
+        std::copy(ids->begin(), ids->end(), result->back_inserter());
     }
 
     do
@@ -410,32 +324,79 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         switch (query_order)
         {
             case qo_order_by_version:
-                sort_package_database_entry_collection(this, *result);
+                {
+                    PackageIDComparator c(this);
+                    result->sort(tr1::cref(c));
+                }
                 continue;
 
             case qo_group_by_slot:
-                sort_package_database_entry_collection(this, *result);
-                group_package_database_entry_collection(*result);
+                {
+                    /* if someone's bored, they can rewrite this to be a lot faster */
+                    PackageIDComparator c(this);
+                    std::set<tr1::shared_ptr<const PackageID>, tr1::reference_wrapper<const PackageIDComparator> > s(
+                            result->begin(), result->end(), tr1::cref(c));
+                    result.reset(new PackageIDSequence);
+
+                    while (! s.empty())
+                    {
+                        result->push_front(*previous(s.end()));
+                        s.erase(previous(s.end()));
+
+                        for (std::set<tr1::shared_ptr<const PackageID>, tr1::reference_wrapper<const PackageIDComparator> >::reverse_iterator
+                                i(s.rbegin()), new_i(i) ; i != s.rend() ; )
+                        {
+                            if ((*i)->name() == (*result->begin())->name() && (*i)->slot() == (*result->begin())->slot())
+                            {
+                                new_i = next(i);
+                                result->push_front(*i);
+                                s.erase(--(i.base()));
+                                i = new_i;
+                            }
+                            else
+                                ++i;
+                        }
+                    }
+                }
                 continue;
 
             case qo_best_version_only:
                 {
-                    sort_package_database_entry_collection(this, *result);
-                    std::list<tr1::shared_ptr<const PackageID> > l;
-                    std::unique_copy(result->list.rbegin(), result->list.rend(),
-                            std::front_inserter(l), &compare_name);
-                    result->list.swap(l);
+                    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > best;
+                    PackageIDComparator c(this);
+                    for (PackageIDSequence::Iterator r(result->begin()), r_end(result->end()) ;
+                            r != r_end ; ++r)
+                    {
+                        std::pair<std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::iterator, bool> p(
+                                best.insert(std::make_pair((*r)->name(), *r)));
+                        if ((! p.second) && c(p.first->second, *r))
+                            p.first->second = *r;
+                    }
+
+                    result.reset(new PackageIDSequence);
+                    std::copy(best.begin(), best.end(), transform_inserter(result->back_inserter(),
+                                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> >::second)));
                 }
                 continue;
 
             case qo_best_version_in_slot_only:
                 {
-                    sort_package_database_entry_collection(this, *result);
-                    group_package_database_entry_collection(*result);
-                    std::list<tr1::shared_ptr<const PackageID> > l;
-                    std::unique_copy(result->list.rbegin(), result->list.rend(),
-                            std::front_inserter(l), &compare_name_slot);
-                    result->list.swap(l);
+                    std::map<std::pair<QualifiedPackageName, SlotName>, tr1::shared_ptr<const PackageID> > best;
+                    PackageIDComparator c(this);
+                    for (PackageIDSequence::Iterator r(result->begin()), r_end(result->end()) ;
+                            r != r_end ; ++r)
+                    {
+                        std::pair<std::map<std::pair<QualifiedPackageName, SlotName>, tr1::shared_ptr<const PackageID> >::iterator, bool> p(
+                                best.insert(std::make_pair(std::make_pair((*r)->name(), (*r)->slot()), *r)));
+                        if ((! p.second) && c(p.first->second, *r))
+                            p.first->second = *r;
+                    }
+
+                    result.reset(new PackageIDSequence);
+                    std::copy(best.begin(), best.end(), transform_inserter(result->back_inserter(),
+                                tr1::mem_fn(&std::pair<const std::pair<QualifiedPackageName, SlotName>,
+                                    tr1::shared_ptr<const PackageID> >::second)));
+                    result->sort(tr1::cref(c));
                 }
                 continue;
 

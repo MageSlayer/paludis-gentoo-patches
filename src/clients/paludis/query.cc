@@ -26,7 +26,6 @@
 #include <iomanip>
 #include <iostream>
 #include <paludis/paludis.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <string>
 

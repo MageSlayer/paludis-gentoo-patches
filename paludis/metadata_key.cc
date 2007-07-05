@@ -93,7 +93,7 @@ MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::str
 }
 
 template <typename C_>
-MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+MetadataSetKey<C_>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
 }
@@ -104,10 +104,10 @@ MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::s
 {
 }
 
-template class MetadataCollectionKey<KeywordNameCollection>;
-template class MetadataCollectionKey<IUseFlagCollection>;
-template class MetadataCollectionKey<InheritedCollection>;
-template class MetadataCollectionKey<UseFlagNameCollection>;
+template class MetadataSetKey<KeywordNameSet>;
+template class MetadataSetKey<IUseFlagSet>;
+template class MetadataSetKey<InheritedSet>;
+template class MetadataSetKey<UseFlagNameSet>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;

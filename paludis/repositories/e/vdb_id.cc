@@ -65,9 +65,9 @@ namespace paludis
         tr1::shared_ptr<const SlotName> slot;
         tr1::shared_ptr<const EAPI> eapi;
 
-        tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> > use;
-        tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> > inherited;
-        tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> > iuse;
+        tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use;
+        tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited;
+        tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse;
         tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
         tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -385,27 +385,27 @@ VDBID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
 VDBID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
 VDBID::use_key() const
 {
     need_keys_added();
     return _imp->use;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >
+const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
 VDBID::iuse_key() const
 {
     need_keys_added();
     return _imp->iuse;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >
+const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
 VDBID::inherited_key() const
 {
     need_keys_added();

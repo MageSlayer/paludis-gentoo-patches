@@ -23,6 +23,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>

@@ -19,9 +19,9 @@
 
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
@@ -40,7 +40,7 @@ namespace paludis
         tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
 
         Implementation() :
-            virtual_packages(new FakeRepository::VirtualsSequence::Concrete)
+            virtual_packages(new FakeRepository::VirtualsSequence)
         {
         }
     };

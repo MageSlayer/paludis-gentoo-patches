@@ -46,7 +46,6 @@
 
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/fs_entry.hh>
@@ -54,6 +53,9 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
@@ -81,7 +83,7 @@ using namespace paludis::erepository;
 
 #include <paludis/repositories/e/vdb_repository-sr.cc>
 
-typedef MakeHashedMap<CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameCollection> >::Type CategoryMap;
+typedef MakeHashedMap<CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type IDMap;
 
 namespace paludis
@@ -190,33 +192,33 @@ VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
     return cat_iter->second->end() != cat_iter->second->find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 VDBRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
 
     need_category_names();
 
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
 
     std::copy(_imp->categories.begin(), _imp->categories.end(),
             transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameCollection> >::first)));
+                tr1::mem_fn(&std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first)));
 
     return result;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     need_category_names();
     if (! has_category_named(c))
-        return make_shared_ptr(new QualifiedPackageNameCollection::Concrete);
+        return make_shared_ptr(new QualifiedPackageNameSet);
 
     need_package_ids(c);
 
@@ -232,11 +234,11 @@ VDBRepository::do_package_ids(const QualifiedPackageName & n) const
 
     need_category_names();
     if (! has_category_named(n.category))
-        return make_shared_ptr(new PackageIDSequence::Concrete);
+        return make_shared_ptr(new PackageIDSequence);
 
     need_package_ids(n.category);
     if (! has_package_named(n))
-        return make_shared_ptr(new PackageIDSequence::Concrete);
+        return make_shared_ptr(new PackageIDSequence);
 
     return _imp->ids.find(n)->second;
 }
@@ -268,7 +270,7 @@ VDBRepository::do_query_use_force(const UseFlagName & u, const PackageID & e) co
 tr1::shared_ptr<Repository>
 VDBRepository::make_vdb_repository(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
     Context context("When making VDB repository from repo_file '" + repo_file + "':");
@@ -347,7 +349,7 @@ VDBRepository::_uninstall(const tr1::shared_ptr<const PackageID> & id,
 
     std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
 
-    tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
                 (reinstalling_str + stringify(id->name().package) + "-" + stringify(id->version()))));
 
@@ -395,7 +397,7 @@ VDBRepository::_uninstall(const tr1::shared_ptr<const PackageID> & id,
                     .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
                     .files_dir(pkg_dir)
                     .eclassdirs(eclassdirs)
-                    .exlibsdirs(make_shared_ptr(new FSEntryCollection::Concrete))
+                    .exlibsdirs(make_shared_ptr(new FSEntrySequence))
                     .portdir(_imp->params.location)
                     .distdir(pkg_dir)
                     .sandbox(phase->option("sandbox"))
@@ -430,7 +432,7 @@ VDBRepository::do_config(const tr1::shared_ptr<const PackageID> & id) const
         throw PackageInstallActionError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
 
-    tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
                 (stringify(id->name().package) + "-" + stringify(id->version()))));
 
@@ -450,7 +452,7 @@ VDBRepository::do_config(const tr1::shared_ptr<const PackageID> & id) const
                 .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
                 .files_dir(pkg_dir)
                 .eclassdirs(eclassdirs)
-                .exlibsdirs(make_shared_ptr(new FSEntryCollection::Concrete))
+                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
                 .portdir(_imp->params.location)
                 .distdir(pkg_dir)
                 .sandbox(phase->option("sandbox"))
@@ -484,11 +486,11 @@ VDBRepository::do_package_set(const SetName & s) const
         std::for_each(_imp->categories.begin(), _imp->categories.end(),
                 tr1::bind(tr1::mem_fn(&VDBRepository::need_package_ids), this,
                     tr1::bind<CategoryNamePart>(tr1::mem_fn(
-                            &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameCollection> >::first), _1)));
+                            &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
 
         for (CategoryMap::const_iterator i(_imp->categories.begin()), i_end(_imp->categories.end()) ;
                 i != i_end ; ++i)
-            for (QualifiedPackageNameCollection::Iterator e(i->second->begin()), e_end(i->second->end()) ;
+            for (QualifiedPackageNameSet::Iterator e(i->second->begin()), e_end(i->second->end()) ;
                     e != e_end ; ++e)
             {
                 tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
@@ -525,12 +527,12 @@ VDBRepository::do_package_set(const SetName & s) const
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 VDBRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
     result->insert(SetName("world"));
     return result;
@@ -665,28 +667,28 @@ VDBRepository::provided_packages() const
     return _imp->provides;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 VDBRepository::do_arch_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 VDBRepository::do_use_expand_flags() const
 {
-    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 VDBRepository::do_use_expand_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 VDBRepository::do_use_expand_hidden_prefixes() const
 {
-    return tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
+    return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 bool
@@ -697,7 +699,7 @@ VDBRepository::load_provided_using_cache() const
 
     Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache) + "':");
 
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence::Concrete);
+    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
     if (! _imp->params.provides_cache.is_regular_file())
     {
@@ -771,13 +773,13 @@ VDBRepository::load_provided_the_slow_way() const
 
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
 
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence::Concrete);
+    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
     need_category_names();
     std::for_each(_imp->categories.begin(), _imp->categories.end(),
             tr1::bind(tr1::mem_fn(&VDBRepository::need_package_ids), this,
                 tr1::bind<CategoryNamePart>(tr1::mem_fn(
-                        &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameCollection> >::first), _1)));
+                        &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
 
 
     for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
@@ -853,7 +855,7 @@ VDBRepository::regenerate_provides_cache() const
     std::for_each(_imp->categories.begin(), _imp->categories.end(),
             tr1::bind(tr1::mem_fn(&VDBRepository::need_package_ids), this,
                 tr1::bind<CategoryNamePart>(tr1::mem_fn(
-                        &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameCollection> >::first), _1)));
+                        &std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
 
     std::ofstream f(stringify(_imp->params.provides_cache).c_str());
     if (! f)
@@ -887,13 +889,13 @@ VDBRepository::regenerate_provides_cache() const
     }
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 VDBRepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
 
-    tr1::shared_ptr<const CategoryNamePartCollection> result(
+    tr1::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::do_category_names_containing_package(p);
@@ -1040,7 +1042,7 @@ VDBRepository::need_category_names() const
         {
             if (d->is_directory_or_symlink_to_directory())
                 _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
-                            tr1::shared_ptr<QualifiedPackageNameCollection>()));
+                            tr1::shared_ptr<QualifiedPackageNameSet>()));
         }
         catch (const Exception & e)
         {
@@ -1060,7 +1062,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     Context context("When loading package names from '" + stringify(_imp->params.location) +
             "' in category '" + stringify(c) + "':");
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> q(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
 
     for (DirIterator d(_imp->params.location / stringify(c)), d_end ; d != d_end ; ++d)
         try
@@ -1075,7 +1077,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)
-                    i = _imp->ids.insert(std::make_pair(*p.package_ptr(), make_shared_ptr(new PackageIDSequence::Concrete))).first;
+                    i = _imp->ids.insert(std::make_pair(*p.package_ptr(), make_shared_ptr(new PackageIDSequence))).first;
                 i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec, *d));
             }
         }

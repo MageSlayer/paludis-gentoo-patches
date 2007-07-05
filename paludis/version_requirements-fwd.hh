@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_REQUIREMENTS_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_REQUIREMENTS_FWD_HH 1
 
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/version_spec-fwd.hh>
@@ -37,7 +37,7 @@ namespace paludis
      * \see PackageDepSpec
      * \ingroup grpversions
      */
-    typedef SequentialCollection<VersionRequirement> VersionRequirements;
+    typedef Sequence<VersionRequirement> VersionRequirements;
 
     /**
      * Convenience function: make VersionRequirements with an equals match on a

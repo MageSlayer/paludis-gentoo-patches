@@ -22,16 +22,18 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/set-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
 namespace paludis
 {
     class PackageID;
     class PackageIDSetComparator;
+    class PackageIDComparator;
 
-    typedef SequentialCollection<tr1::shared_ptr<const PackageID> > PackageIDSequence;
-    typedef SortedCollection<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
+    typedef Sequence<tr1::shared_ptr<const PackageID> > PackageIDSequence;
+    typedef Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
 
 #include <paludis/package_id-se.hh>
 

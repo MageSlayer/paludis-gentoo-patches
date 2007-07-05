@@ -26,13 +26,15 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+
+#include <list>
 
 using namespace paludis;
 
@@ -40,58 +42,58 @@ namespace paludis
 {
     template <>
     template <typename C_>
-    struct Implementation<FakeMetadataCollectionKey<C_> >
+    struct Implementation<FakeMetadataSetKey<C_> >
     {
         tr1::shared_ptr<C_> collection;
     };
 }
 
 template <typename C_>
-FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
+FakeMetadataSetKey<C_>::FakeMetadataSetKey(
         const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataCollectionKey<C_>(r, h, t),
-    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >),
-    _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp.get())
+    MetadataSetKey<C_>(r, h, t),
+    PrivateImplementationPattern<FakeMetadataSetKey<C_> >(new Implementation<FakeMetadataSetKey<C_> >),
+    _imp(PrivateImplementationPattern<FakeMetadataSetKey<C_> >::_imp.get())
 {
 }
 
 template <typename C_>
-FakeMetadataCollectionKey<C_>::~FakeMetadataCollectionKey()
+FakeMetadataSetKey<C_>::~FakeMetadataSetKey()
 {
 }
 
 template <typename C_>
 const tr1::shared_ptr<const C_>
-FakeMetadataCollectionKey<C_>::value() const
+FakeMetadataSetKey<C_>::value() const
 {
     return _imp->collection;
 }
 
-FakeMetadataKeywordCollectionKey::FakeMetadataKeywordCollectionKey(const std::string & r,
+FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
         const std::string & h, const std::string & v, const MetadataKeyType t) :
-    FakeMetadataCollectionKey<KeywordNameCollection>(r, h, t)
+    FakeMetadataSetKey<KeywordNameSet>(r, h, t)
 {
     set_from_string(v);
 }
 
 void
-FakeMetadataKeywordCollectionKey::set_from_string(const std::string & s)
+FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 {
-    _imp->collection.reset(new KeywordNameCollection::Concrete);
+    _imp->collection.reset(new KeywordNameSet);
     WhitespaceTokeniser::get_instance()->tokenise(s, create_inserter<KeywordName>(_imp->collection->inserter()));
 }
 
-FakeMetadataIUseCollectionKey::FakeMetadataIUseCollectionKey(const std::string & r,
+FakeMetadataIUseSetKey::FakeMetadataIUseSetKey(const std::string & r,
         const std::string & h, const std::string & v, const IUseFlagParseMode m, const MetadataKeyType t) :
-    FakeMetadataCollectionKey<IUseFlagCollection>(r, h, t)
+    FakeMetadataSetKey<IUseFlagSet>(r, h, t)
 {
     set_from_string(v, m);
 }
 
 void
-FakeMetadataIUseCollectionKey::set_from_string(const std::string & s, const IUseFlagParseMode m)
+FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagParseMode m)
 {
-    _imp->collection.reset(new IUseFlagCollection::Concrete);
+    _imp->collection.reset(new IUseFlagSet);
     std::list<std::string> tokens;
     WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -187,8 +189,8 @@ namespace paludis
 
         tr1::shared_ptr<FakeMetadataPackageIDKey> package_id;
         tr1::shared_ptr<FakeMetadataPackageIDKey> virtual_for;
-        tr1::shared_ptr<FakeMetadataKeywordCollectionKey> keywords;
-        tr1::shared_ptr<FakeMetadataIUseCollectionKey> iuse;
+        tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
+        tr1::shared_ptr<FakeMetadataIUseSetKey> iuse;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -207,8 +209,8 @@ namespace paludis
             version(v),
             slot("0"),
             eapi(EAPIData::get_instance()->eapi_from_string("0")),
-            keywords(new FakeMetadataKeywordCollectionKey("KEYWORDS", "Keywords", "test", mkt_normal)),
-            iuse(new FakeMetadataIUseCollectionKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal)),
+            keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal)),
+            iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal)),
             license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
                         "", tr1::bind(&PortageDepParser::parse_license, _1, tr1::cref(*eapi)), mkt_normal)),
             provide(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provided packages",
@@ -302,28 +304,28 @@ FakePackageID::virtual_for_key() const
     return _imp->virtual_for;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
 FakePackageID::keywords_key() const
 {
     return _imp->keywords;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >
+const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
 FakePackageID::iuse_key() const
 {
     return _imp->iuse;
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >
+const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
 FakePackageID::inherited_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
 FakePackageID::use_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
@@ -368,13 +370,13 @@ FakePackageID::restrict_key() const
     return _imp->restrictions;
 }
 
-const tr1::shared_ptr<FakeMetadataKeywordCollectionKey>
+const tr1::shared_ptr<FakeMetadataKeywordSetKey>
 FakePackageID::keywords_key()
 {
     return _imp->keywords;
 }
 
-const tr1::shared_ptr<FakeMetadataIUseCollectionKey>
+const tr1::shared_ptr<FakeMetadataIUseSetKey>
 FakePackageID::iuse_key()
 {
     return _imp->iuse;
@@ -493,6 +495,6 @@ template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<RestrictSpecTree>;
 template class FakeMetadataSpecTreeKey<URISpecTree>;
 
-template class FakeMetadataCollectionKey<KeywordNameCollection>;
-template class FakeMetadataCollectionKey<IUseFlagCollection>;
+template class FakeMetadataSetKey<KeywordNameSet>;
+template class FakeMetadataSetKey<IUseFlagSet>;
 

@@ -22,12 +22,12 @@
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/set.hh>
 
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/eapi.hh>
@@ -294,7 +294,7 @@ namespace paludis
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable tr1::shared_ptr<IUseFlagCollection> value;
+        mutable tr1::shared_ptr<IUseFlagSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
             id(i),
@@ -306,7 +306,7 @@ namespace paludis
 
 EIUseKey::EIUseKey(const tr1::shared_ptr<const PackageID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<IUseFlagCollection>(r, h, t),
+    MetadataSetKey<IUseFlagSet>(r, h, t),
     PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, v)),
     _imp(PrivateImplementationPattern<EIUseKey>::_imp.get())
 {
@@ -316,7 +316,7 @@ EIUseKey::~EIUseKey()
 {
 }
 
-const tr1::shared_ptr<const IUseFlagCollection>
+const tr1::shared_ptr<const IUseFlagSet>
 EIUseKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -324,7 +324,7 @@ EIUseKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value.reset(new IUseFlagCollection::Concrete);
+    _imp->value.reset(new IUseFlagSet);
     std::list<std::string> tokens;
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -341,7 +341,7 @@ EIUseKey::idle_load() const
     if (l() && ! _imp->value)
     {
         Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-        _imp->value.reset(new IUseFlagCollection::Concrete);
+        _imp->value.reset(new IUseFlagSet);
         std::list<std::string> tokens;
         WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
         for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -358,7 +358,7 @@ namespace paludis
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable tr1::shared_ptr<KeywordNameCollection> value;
+        mutable tr1::shared_ptr<KeywordNameSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
             id(i),
@@ -370,7 +370,7 @@ namespace paludis
 
 EKeywordsKey::EKeywordsKey(const tr1::shared_ptr<const PackageID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<KeywordNameCollection>(r, h, t),
+    MetadataSetKey<KeywordNameSet>(r, h, t),
     PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, v)),
     _imp(PrivateImplementationPattern<EKeywordsKey>::_imp.get())
 {
@@ -380,14 +380,14 @@ EKeywordsKey::~EKeywordsKey()
 {
 }
 
-const tr1::shared_ptr<const KeywordNameCollection>
+const tr1::shared_ptr<const KeywordNameSet>
 EKeywordsKey::value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new KeywordNameCollection::Concrete);
+    _imp->value.reset(new KeywordNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
@@ -399,7 +399,7 @@ EKeywordsKey::idle_load() const
     TryLock l(_imp->value_mutex);
     if (l() && ! _imp->value)
     {
-        _imp->value.reset(new KeywordNameCollection::Concrete);
+        _imp->value.reset(new KeywordNameSet);
         Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
         WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     }
@@ -412,7 +412,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
-        mutable tr1::shared_ptr<UseFlagNameCollection> value;
+        mutable tr1::shared_ptr<UseFlagNameSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
             id(i),
@@ -424,7 +424,7 @@ namespace paludis
 
 EUseKey::EUseKey(const tr1::shared_ptr<const PackageID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<UseFlagNameCollection>(r, h, t),
+    MetadataSetKey<UseFlagNameSet>(r, h, t),
     PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, v)),
     _imp(PrivateImplementationPattern<EUseKey>::_imp.get())
 {
@@ -434,13 +434,13 @@ EUseKey::~EUseKey()
 {
 }
 
-const tr1::shared_ptr<const UseFlagNameCollection>
+const tr1::shared_ptr<const UseFlagNameSet>
 EUseKey::value() const
 {
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new UseFlagNameCollection::Concrete);
+    _imp->value.reset(new UseFlagNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     std::list<std::string> tokens;
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
@@ -458,7 +458,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
-        mutable tr1::shared_ptr<InheritedCollection> value;
+        mutable tr1::shared_ptr<InheritedSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
             id(i),
@@ -470,7 +470,7 @@ namespace paludis
 
 EInheritedKey::EInheritedKey(const tr1::shared_ptr<const PackageID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataCollectionKey<InheritedCollection>(r, h, t),
+    MetadataSetKey<InheritedSet>(r, h, t),
     PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
     _imp(PrivateImplementationPattern<EInheritedKey>::_imp.get())
 {
@@ -480,13 +480,13 @@ EInheritedKey::~EInheritedKey()
 {
 }
 
-const tr1::shared_ptr<const InheritedCollection>
+const tr1::shared_ptr<const InheritedSet>
 EInheritedKey::value() const
 {
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new InheritedCollection::Concrete);
+    _imp->value.reset(new InheritedSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, _imp->value->inserter());
     return _imp->value;

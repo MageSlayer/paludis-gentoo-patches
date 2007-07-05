@@ -19,12 +19,16 @@
 
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/config_file.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -43,6 +47,10 @@
 using namespace paludis;
 
 #include <paludis/repository-sr.cc>
+
+template class Set<tr1::shared_ptr<Repository> >;
+template class Sequence<RepositoryVirtualsEntry>;
+template class Sequence<RepositoryProvidesEntry>;
 
 namespace
 {
@@ -130,14 +138,14 @@ Repository::info(bool) const
     return _info;
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 Repository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
-    tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
-    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))
             result->insert(*c);
@@ -271,25 +279,25 @@ RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageID &
     return do_query_use_force(u, pde);
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 RepositoryUseInterface::arch_flags() const
 {
     return do_arch_flags();
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 RepositoryUseInterface::use_expand_flags() const
 {
     return do_use_expand_flags();
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 RepositoryUseInterface::use_expand_hidden_prefixes() const
 {
     return do_use_expand_hidden_prefixes();
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 RepositoryUseInterface::use_expand_prefixes() const
 {
     return do_use_expand_prefixes();
@@ -343,19 +351,19 @@ Repository::has_category_named(const CategoryNamePart & q) const
     return do_has_category_named(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 Repository::category_names_containing_package(const PackageNamePart & p) const
 {
     return do_category_names_containing_package(p);
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 Repository::package_names(const CategoryNamePart & c) const
 {
     return do_package_names(c);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 Repository::category_names() const
 {
     return do_category_names();

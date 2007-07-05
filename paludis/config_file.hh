@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
-#include <paludis/util/collection.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/options.hh>
+#include <paludis/util/options-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
@@ -344,7 +344,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const Map<std::string, std::string> >);
 
     /**
      * Use another KeyValueConfigFile for defaults (non-const).
@@ -360,7 +360,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template<>
-    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<AssociativeCollection<std::string, std::string> >);
+    KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> >);
 }
 
 #endif

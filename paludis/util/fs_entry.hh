@@ -357,10 +357,6 @@ namespace paludis
     };
 
     std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
-
-    template <typename T_> class SequentialCollection;
-
-    typedef SequentialCollection<FSEntry> FSEntryCollection;
 }
 
 #endif

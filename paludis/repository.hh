@@ -103,21 +103,21 @@ namespace paludis
             /**
              * Override in descendents: fetch package names.
              */
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch category names.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents if a fast implementation is available: fetch category names
              * that contain a particular package.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -187,18 +187,18 @@ namespace paludis
             /**
              * Fetch our category names.
              */
-            tr1::shared_ptr<const CategoryNamePartCollection> category_names() const;
+            tr1::shared_ptr<const CategoryNamePartSet> category_names() const;
 
             /**
              * Fetch categories that contain a named package.
              */
-            tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
+            tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**
              * Fetch our package names.
              */
-            tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
+            tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart & c) const;
 
             /**
@@ -305,25 +305,25 @@ namespace paludis
             /**
              * Override in descendents: fetch all arch flags.
              */
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand flags.
              */
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand hidden prefixes.
              */
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Override in descendents: fetch all use expand prefixes.
              */
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -357,22 +357,22 @@ namespace paludis
             /**
              * Fetch all arch flags.
              */
-            tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const;
+            tr1::shared_ptr<const UseFlagNameSet> arch_flags() const;
 
             /**
              * Fetch all expand flags.
              */
-            tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const;
+            tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const;
 
             /**
              * Fetch all expand hidden flags.
              */
-            tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const;
 
             /**
              * Fetch all use expand prefixes.
              */
-            tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const;
 
             /**
              * Describe a use flag.
@@ -513,7 +513,7 @@ namespace paludis
             /**
              * Gives a list of the names of all the sets provided by this repo.
              */
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -670,7 +670,7 @@ namespace paludis
              *
              * \ingroup grprepository
              */
-            typedef SequentialCollection<RepositoryVirtualsEntry> VirtualsSequence;
+            typedef Sequence<RepositoryVirtualsEntry> VirtualsSequence;
 
             /**
              * Fetch our virtual packages.
@@ -718,7 +718,7 @@ namespace paludis
              *
              * \ingroup grprepository
              */
-            typedef SequentialCollection<RepositoryProvidesEntry> ProvidesSequence;
+            typedef Sequence<RepositoryProvidesEntry> ProvidesSequence;
 
             /**
              * Fetch our provided packages.

@@ -30,17 +30,19 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <functional>
 #include <algorithm>
+#include <list>
 
 using namespace paludis;
 
@@ -61,14 +63,14 @@ namespace paludis
         mutable PackagesMap package_names;
         mutable IDMap ids;
 
-        mutable tr1::shared_ptr<CategoryNamePartCollection> category_names_collection;
+        mutable tr1::shared_ptr<CategoryNamePartSet> category_names_collection;
         tr1::shared_ptr<const ERepositoryEntries> entries;
 
-        tr1::shared_ptr<FSEntryCollection> arch_list_files;
-        tr1::shared_ptr<FSEntryCollection> repository_mask_files;
-        tr1::shared_ptr<FSEntryCollection> profiles_desc_files;
-        tr1::shared_ptr<FSEntryCollection> mirror_files;
-        tr1::shared_ptr<FSEntryCollection> use_desc_dirs;
+        tr1::shared_ptr<FSEntrySequence> arch_list_files;
+        tr1::shared_ptr<FSEntrySequence> repository_mask_files;
+        tr1::shared_ptr<FSEntrySequence> profiles_desc_files;
+        tr1::shared_ptr<FSEntrySequence> mirror_files;
+        tr1::shared_ptr<FSEntrySequence> use_desc_dirs;
 
         Implementation(const ERepository * const n, const FSEntry & t,
                 tr1::shared_ptr<const ERepositoryEntries> e) :
@@ -76,11 +78,11 @@ namespace paludis
             tree_root(t),
             has_category_names(false),
             entries(e),
-            arch_list_files(new FSEntryCollection::Concrete),
-            repository_mask_files(new FSEntryCollection::Concrete),
-            profiles_desc_files(new FSEntryCollection::Concrete),
-            mirror_files(new FSEntryCollection::Concrete),
-            use_desc_dirs(new FSEntryCollection::Concrete)
+            arch_list_files(new FSEntrySequence),
+            repository_mask_files(new FSEntrySequence),
+            profiles_desc_files(new FSEntrySequence),
+            mirror_files(new FSEntrySequence),
+            use_desc_dirs(new FSEntrySequence)
         {
         }
     };
@@ -173,7 +175,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(_imp->repository->name()) + ":");
 
-    tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence::Concrete);
+    tr1::shared_ptr<PackageIDSequence> v(new PackageIDSequence);
 
     FSEntry path(_imp->tree_root / "packages" / stringify(n.category) / stringify(n.package));
 
@@ -256,13 +258,13 @@ ExheresLayout::need_category_names_collection() const
 
     need_category_names();
 
-    _imp->category_names_collection.reset(new CategoryNamePartCollection::Concrete);
+    _imp->category_names_collection.reset(new CategoryNamePartSet);
     std::copy(_imp->category_names.begin(), _imp->category_names.end(),
             transform_inserter(_imp->category_names_collection->inserter(),
                 tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first)));
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 ExheresLayout::category_names() const
 {
     Context context("When fetching category names in " + stringify(stringify(_imp->repository->name())) + ":");
@@ -271,7 +273,7 @@ ExheresLayout::category_names() const
     return _imp->category_names_collection;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 ExheresLayout::package_names(const CategoryNamePart & c) const
 {
     using namespace tr1::placeholders;
@@ -286,7 +288,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
+        return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     if ((_imp->tree_root / "packages" / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->tree_root / "packages" / stringify(c)), d_end ; d != d_end ; ++d)
@@ -313,7 +315,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 
     _imp->category_names[c] = true;
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
             p != p_end ; ++p)
@@ -334,7 +336,7 @@ ExheresLayout::package_ids(const QualifiedPackageName & n) const
         return _imp->ids.find(n)->second;
     }
     else
-        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence::Concrete);
+        return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 }
 
 FSEntry
@@ -361,31 +363,31 @@ ExheresLayout::category_directory(const CategoryNamePart & cat) const
     return _imp->tree_root / "packages" / stringify(cat);
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::arch_list_files() const
 {
     return _imp->arch_list_files;
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::repository_mask_files() const
 {
     return _imp->repository_mask_files;
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::profiles_desc_files() const
 {
     return _imp->profiles_desc_files;
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::mirror_files() const
 {
     return _imp->mirror_files;
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::use_desc_dirs() const
 {
     return _imp->use_desc_dirs;
@@ -421,10 +423,10 @@ ExheresLayout::profiles_base_dir() const
     return _imp->tree_root / "profiles";
 }
 
-tr1::shared_ptr<const FSEntryCollection>
+tr1::shared_ptr<const FSEntrySequence>
 ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
 {
-    tr1::shared_ptr<FSEntryCollection> result(new FSEntryCollection::Concrete);
+    tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     if (_imp->repository->params().master_repository)
         result->push_back(_imp->repository->params().master_repository->params().location / "exlibs");

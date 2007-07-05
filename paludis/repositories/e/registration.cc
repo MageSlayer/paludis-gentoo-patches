@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/make_ebin_repository.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/map.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "config.h"
@@ -40,7 +41,7 @@ namespace
     tr1::shared_ptr<Repository>
     make_portage_repository(
             Environment * const env,
-            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+            tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string repo_file = "?";
         if (m->end() != m->find("repo_file"))

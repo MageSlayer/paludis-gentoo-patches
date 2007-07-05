@@ -18,9 +18,10 @@
  */
 
 #include "fake_installed_repository.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -70,14 +71,14 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
 tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
 FakeInstalledRepository::provided_packages() const
 {
-    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence::Concrete);
+    tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
-    tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
-    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+    tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(package_names(*c));
-        for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+        tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
+        for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
             tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));

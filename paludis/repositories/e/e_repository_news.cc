@@ -27,6 +27,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/query.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -148,8 +149,8 @@ ERepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                tr1::shared_ptr<const FSEntryCollection> c(_imp->params.profiles);
-                for (FSEntryCollection::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
+                tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles);
+                for (FSEntrySequence::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),

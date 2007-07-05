@@ -35,14 +35,14 @@ namespace paludis
             const Environment * const _env;
             bool _need_space;
 
-            tr1::shared_ptr<UseFlagNameCollection> _new_flags;
-            tr1::shared_ptr<UseFlagNameCollection> _changed_flags;
-            tr1::shared_ptr<UseFlagNameCollection> _unchanged_flags;
-            tr1::shared_ptr<UseFlagNameCollection> _expand_prefixes;
+            tr1::shared_ptr<UseFlagNameSet> _new_flags;
+            tr1::shared_ptr<UseFlagNameSet> _changed_flags;
+            tr1::shared_ptr<UseFlagNameSet> _unchanged_flags;
+            tr1::shared_ptr<UseFlagNameSet> _expand_prefixes;
 
         protected:
             std::string::size_type use_expand_delim_pos(const UseFlagName & u,
-                    const tr1::shared_ptr<const UseFlagNameCollection> c) const;
+                    const tr1::shared_ptr<const UseFlagNameSet> c) const;
 
         public:
             UseFlagPrettyPrinter(const Environment * const);
@@ -50,9 +50,9 @@ namespace paludis
 
             virtual void print_package_flags(
                     const tr1::shared_ptr<const PackageID> &,
-                    const tr1::shared_ptr<const IUseFlagCollection> &,
+                    const tr1::shared_ptr<const IUseFlagSet> &,
                     const tr1::shared_ptr<const PackageID> & w = tr1::shared_ptr<const PackageID>(),
-                    const tr1::shared_ptr<const IUseFlagCollection> & x = tr1::shared_ptr<const IUseFlagCollection>());
+                    const tr1::shared_ptr<const IUseFlagSet> & x = tr1::shared_ptr<const IUseFlagSet>());
 
             virtual void output_flag(const std::string &);
             virtual void output_flag_changed_mark();
@@ -69,10 +69,10 @@ namespace paludis
             const Environment * environment() const;
             bool need_space() const;
 
-            tr1::shared_ptr<const UseFlagNameCollection> new_flags() const;
-            tr1::shared_ptr<const UseFlagNameCollection> changed_flags() const;
-            tr1::shared_ptr<const UseFlagNameCollection> unchanged_flags() const;
-            tr1::shared_ptr<const UseFlagNameCollection> expand_prefixes() const;
+            tr1::shared_ptr<const UseFlagNameSet> new_flags() const;
+            tr1::shared_ptr<const UseFlagNameSet> changed_flags() const;
+            tr1::shared_ptr<const UseFlagNameSet> unchanged_flags() const;
+            tr1::shared_ptr<const UseFlagNameSet> expand_prefixes() const;
     };
 }
 

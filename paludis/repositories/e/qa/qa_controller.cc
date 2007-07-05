@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/set.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -90,8 +91,8 @@ QAController::run()
                 tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
                     _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
 
-    tr1::shared_ptr<const CategoryNamePartCollection> categories(_imp->repo->category_names());
-    for (CategoryNamePartCollection::Iterator c(categories->begin()), c_end(categories->end()) ;
+    tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());
+    for (CategoryNamePartSet::Iterator c(categories->begin()), c_end(categories->end()) ;
             c != c_end ; ++c)
         std::find_if(
                 QAChecks::get_instance()->category_dir_checks_group()->begin(),

@@ -23,6 +23,8 @@
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>
 
 #include <set>
@@ -55,8 +57,8 @@ void do_find_unused_packages(const Environment & env)
 
         cout << "Searching for unused packages in repository " << stringify(r->name()) << endl;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> categories(r->category_names());
-        for (CategoryNamePartCollection::Iterator c(categories->begin()), c_end(categories->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> categories(r->category_names());
+        for (CategoryNamePartSet::Iterator c(categories->begin()), c_end(categories->end()) ;
                 c != c_end ; ++c)
         {
             Context cat_context("When searching for unused packages in category '" + stringify(*c) + "':");
@@ -69,9 +71,9 @@ void do_find_unused_packages(const Environment & env)
                     continue;
 
             cout << " In category " << stringify(*c) << ":" << endl;
-            tr1::shared_ptr<const QualifiedPackageNameCollection> packages(r->package_names(*c));
+            tr1::shared_ptr<const QualifiedPackageNameSet> packages(r->package_names(*c));
 
-            for (QualifiedPackageNameCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
+            for (QualifiedPackageNameSet::Iterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 Context pkg_context("When searching for unused packages with package name '" + stringify(*p) + "':");

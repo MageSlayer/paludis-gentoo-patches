@@ -32,7 +32,7 @@ namespace paludis
     class MetadataStringKey;
     class MetadataContentsKey;
     class MetadataTimeKey;
-    template <typename C_> class MetadataCollectionKey;
+    template <typename C_> class MetadataSetKey;
     template <typename C_> class MetadataSpecTreeKey;
 
 #include <paludis/metadata_key-se.hh>

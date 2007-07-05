@@ -34,6 +34,7 @@
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/query.hh>
@@ -343,7 +344,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
                             {
                                 if ((*pp)->keywords_key())
                                 {
-                                    tr1::shared_ptr<const KeywordNameCollection> keywords((*pp)->keywords_key()->value());
+                                    tr1::shared_ptr<const KeywordNameSet> keywords((*pp)->keywords_key()->value());
                                     cerr << " ( " << colour(cl_masked, join(keywords->begin(),
                                                     keywords->end(), " ")) << " )";
                                 }

@@ -19,6 +19,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database.hh>

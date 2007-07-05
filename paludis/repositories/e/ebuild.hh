@@ -21,9 +21,9 @@
 #define PALUDIS_GUARD_PALUDIS_EBUILD_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/collection.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/package_database.hh>
 #include <string>
 
@@ -343,7 +343,7 @@ namespace paludis
             public EbuildCommand
         {
             private:
-                tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys;
+                tr1::shared_ptr<Map<std::string, std::string> > keys;
 
             public:
                 EbuildMetadataCommand(const EbuildCommandParams &);

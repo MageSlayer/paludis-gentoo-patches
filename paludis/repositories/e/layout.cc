@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repositories/e/traditional_layout.hh>
 #include <paludis/repositories/e/exheres_layout.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>

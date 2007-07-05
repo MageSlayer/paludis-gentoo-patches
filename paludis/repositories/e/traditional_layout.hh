@@ -61,10 +61,10 @@ namespace paludis
             virtual bool has_package_named(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -87,19 +87,19 @@ namespace paludis
             virtual FSEntry package_file(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> arch_list_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> repository_mask_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> profiles_desc_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> mirror_files() const
+            virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> use_desc_dirs() const
+            virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool eapi_ebuild_suffix() const
@@ -108,7 +108,7 @@ namespace paludis
             virtual FSEntry profiles_base_dir() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntryCollection> exlibsdirs(const QualifiedPackageName &) const
+            virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

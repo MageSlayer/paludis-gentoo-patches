@@ -21,9 +21,9 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/set.hh>
 #include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -36,10 +36,10 @@ using namespace paludis;
 UseFlagPrettyPrinter::UseFlagPrettyPrinter(const Environment * const e) :
     _env(e),
     _need_space(false),
-    _new_flags(new UseFlagNameCollection::Concrete),
-    _changed_flags(new UseFlagNameCollection::Concrete),
-    _unchanged_flags(new UseFlagNameCollection::Concrete),
-    _expand_prefixes(new UseFlagNameCollection::Concrete)
+    _new_flags(new UseFlagNameSet),
+    _changed_flags(new UseFlagNameSet),
+    _unchanged_flags(new UseFlagNameSet),
+    _expand_prefixes(new UseFlagNameSet)
 {
 }
 
@@ -49,9 +49,9 @@ UseFlagPrettyPrinter::~UseFlagPrettyPrinter()
 
 std::string::size_type
 UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
-        const tr1::shared_ptr<const UseFlagNameCollection> c) const
+        const tr1::shared_ptr<const UseFlagNameSet> c) const
 {
-    for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+    for (UseFlagNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
         if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
             return i->data().length();
     return std::string::npos;
@@ -60,9 +60,9 @@ UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
 void
 UseFlagPrettyPrinter::print_package_flags(
         const tr1::shared_ptr<const PackageID> & pkg,
-        const tr1::shared_ptr<const IUseFlagCollection> & iuse_c,
+        const tr1::shared_ptr<const IUseFlagSet> & iuse_c,
         const tr1::shared_ptr<const PackageID> & old_pkg,
-        const tr1::shared_ptr<const IUseFlagCollection> & old_iuse_c)
+        const tr1::shared_ptr<const IUseFlagSet> & old_iuse_c)
 {
     std::set<UseFlagName> iuse, old_iuse;
 
@@ -260,25 +260,25 @@ UseFlagPrettyPrinter::environment() const
     return _env;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 UseFlagPrettyPrinter::new_flags() const
 {
     return _new_flags;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 UseFlagPrettyPrinter::changed_flags() const
 {
     return _changed_flags;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 UseFlagPrettyPrinter::unchanged_flags() const
 {
     return _unchanged_flags;
 }
 
-tr1::shared_ptr<const UseFlagNameCollection>
+tr1::shared_ptr<const UseFlagNameSet>
 UseFlagPrettyPrinter::expand_prefixes() const
 {
     return _expand_prefixes;

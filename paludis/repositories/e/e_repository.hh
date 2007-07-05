@@ -80,7 +80,7 @@ namespace paludis
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
 
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const;
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const;
 
             /* RepositorySyncableInterface */
 
@@ -105,16 +105,16 @@ namespace paludis
             virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string do_describe_use_flag(const UseFlagName &,
@@ -143,14 +143,14 @@ namespace paludis
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
                     const PackageNamePart &) const;
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const

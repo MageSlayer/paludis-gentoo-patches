@@ -23,6 +23,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -37,11 +38,11 @@ namespace paludis
     {
         bool result;
         const DepList * const dep_list;
-        tr1::shared_ptr<const DestinationsCollection> destinations;
+        tr1::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
         const tr1::shared_ptr<const PackageID> id;
 
-        Implementation(const DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
+        Implementation(const DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
                 const Environment * const e, const tr1::shared_ptr<const PackageID> & p) :
             result(true),
             dep_list(d),
@@ -53,7 +54,7 @@ namespace paludis
     };
 }
 
-QueryVisitor::QueryVisitor(const DepList * const d, tr1::shared_ptr<const DestinationsCollection> dd,
+QueryVisitor::QueryVisitor(const DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
         const Environment * const e, const tr1::shared_ptr<const PackageID> & id) :
     PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
 {

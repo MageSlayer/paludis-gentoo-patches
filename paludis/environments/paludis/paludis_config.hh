@@ -22,10 +22,11 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/environments/environment_maker.hh>
 
 #include <string>
@@ -134,7 +135,7 @@ namespace paludis
                 /**
                  * Our bashrc files.
                  */
-                tr1::shared_ptr<const FSEntryCollection> bashrc_files() const;
+                tr1::shared_ptr<const FSEntrySequence> bashrc_files() const;
 
                 /**
                  * The ROOT.

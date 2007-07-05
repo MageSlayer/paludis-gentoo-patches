@@ -30,12 +30,14 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -143,10 +145,10 @@ namespace
 namespace
 {
     FSEntry
-    get_root(tr1::shared_ptr<const DestinationsCollection> destinations)
+    get_root(tr1::shared_ptr<const DestinationsSet> destinations)
     {
         if (destinations)
-            for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
+            for (DestinationsSet::Iterator d(destinations->begin()), d_end(destinations->end()) ;
                     d != d_end ; ++d)
                 if ((*d)->installed_interface)
                     return (*d)->installed_interface->root();
@@ -161,7 +163,7 @@ namespace
         std::string use;
 
         if (id.iuse_key())
-            for (IUseFlagCollection::Iterator i(id.iuse_key()->value()->begin()),
+            for (IUseFlagSet::Iterator i(id.iuse_key()->value()->begin()),
                     i_end(id.iuse_key()->value()->end()) ; i != i_end ; ++i)
                 if (env->query_use(i->flag, id))
                     use += stringify(i->flag) + " ";
@@ -173,14 +175,14 @@ namespace
         return use;
     }
 
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> >
+    tr1::shared_ptr<Map<std::string, std::string> >
     make_expand(const Environment * const env,
             const PackageID & e,
             tr1::shared_ptr<const ERepositoryProfile> profile,
             std::string & use)
     {
-        tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
-            new AssociativeCollection<std::string, std::string>::Concrete);
+        tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
+            new Map<std::string, std::string>);
 
         for (ERepositoryProfile::UseExpandIterator x(profile->begin_use_expand()),
                 x_end(profile->end_use_expand()) ; x != x_end ; ++x)
@@ -196,9 +198,9 @@ namespace
                     create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
             /* possible values from environment */
-            tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(
+            tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
                     env->known_use_expand_names(*x, e));
-            for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
+            for (UseFlagNameSet::Iterator i(possible_values_from_env->begin()),
                     i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
                 possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
 
@@ -212,7 +214,7 @@ namespace
                     use.append(lower_x + "_" + stringify(*u) + " ");
 
                 std::string value;
-                AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
+                Map<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
                 if (expand_vars->end() != i)
                 {
                     value = i->second;
@@ -297,8 +299,8 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
             archives.append(" ");
 
             /* add * mirror entries */
-            tr1::shared_ptr<const MirrorsCollection> star_mirrors(_imp->params.environment->mirrors("*"));
-            for (MirrorsCollection::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
+            tr1::shared_ptr<const MirrorsSequence> star_mirrors(_imp->params.environment->mirrors("*"));
+            for (MirrorsSequence::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
                 flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
 
             if (0 == spec->original_url().compare(0, 9, "mirror://"))
@@ -309,14 +311,14 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
                 if (std::string::npos == spos)
                     throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since SRC_URI is broken");
 
-                tr1::shared_ptr<const MirrorsCollection> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
+                tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
                 if (! _imp->e_repository->is_mirror(mirror.substr(0, spos)) &&
                         mirrors->empty())
                     throw PackageInstallActionError("Can't install '" + stringify(*id) +
                             "' since SRC_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
-                for (MirrorsCollection::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+                for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
                     flat_src_uri.append(*m + "/" + mirror.substr(spos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
@@ -333,9 +335,9 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
             std::string master_mirror(strip_trailing_string(stringify(_imp->e_repository->name()), "x-"));
             if (! no_mirror && _imp->e_repository->is_mirror(master_mirror))
             {
-                tr1::shared_ptr<const MirrorsCollection> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
+                tr1::shared_ptr<const MirrorsSequence> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
 
-                for (MirrorsCollection::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
+                for (MirrorsSequence::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
                     flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
@@ -392,10 +394,10 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use));
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     /* fetch */
     {
@@ -567,7 +569,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const PackageID> &
         throw EAPIConfigurationError("EAPI '" + id->eapi()->name + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(EbuildCommandParams::create()
             .environment(_imp->params.environment)
@@ -646,10 +648,10 @@ EbuildEntries::pretend(const tr1::shared_ptr<const PackageID> & id,
         return true;
 
     std::string use(make_use(_imp->params.environment, *id, p));
-    tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(make_expand(
+    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment, *id, p, use));
 
-    tr1::shared_ptr<const FSEntryCollection> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_pretend);
     for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;

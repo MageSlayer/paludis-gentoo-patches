@@ -129,7 +129,7 @@ namespace paludis
         };
 
         class EIUseKey :
-            public MetadataCollectionKey<IUseFlagCollection>,
+            public MetadataSetKey<IUseFlagSet>,
             private PrivateImplementationPattern<EIUseKey>
         {
             private:
@@ -140,14 +140,14 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EIUseKey();
 
-                const tr1::shared_ptr<const IUseFlagCollection> value() const
+                const tr1::shared_ptr<const IUseFlagSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void idle_load() const;
         };
 
         class EKeywordsKey :
-            public MetadataCollectionKey<KeywordNameCollection>,
+            public MetadataSetKey<KeywordNameSet>,
             private PrivateImplementationPattern<EKeywordsKey>
         {
             private:
@@ -158,14 +158,14 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EKeywordsKey();
 
-                const tr1::shared_ptr<const KeywordNameCollection> value() const
+                const tr1::shared_ptr<const KeywordNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void idle_load() const;
         };
 
         class EUseKey :
-            public MetadataCollectionKey<UseFlagNameCollection>,
+            public MetadataSetKey<UseFlagNameSet>,
             private PrivateImplementationPattern<EUseKey>
         {
             private:
@@ -176,12 +176,12 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EUseKey();
 
-                const tr1::shared_ptr<const UseFlagNameCollection> value() const
+                const tr1::shared_ptr<const UseFlagNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EInheritedKey :
-            public MetadataCollectionKey<InheritedCollection>,
+            public MetadataSetKey<InheritedSet>,
             private PrivateImplementationPattern<EInheritedKey>
         {
             private:
@@ -192,7 +192,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EInheritedKey();
 
-                const tr1::shared_ptr<const InheritedCollection> value() const
+                const tr1::shared_ptr<const InheritedSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

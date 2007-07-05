@@ -41,9 +41,10 @@
 #include <paludis/tasks/exceptions.hh>
 
 #include <paludis/util/fd_output_stream.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
 
 #include <paludis/dep_list/exceptions.hh>
@@ -172,7 +173,7 @@ namespace
 
         public:
             OurInstallTask(tr1::shared_ptr<Environment> env, const DepListOptions & options,
-                    tr1::shared_ptr<const DestinationsCollection> destinations) :
+                    tr1::shared_ptr<const DestinationsSet> destinations) :
                 ConsoleInstallTask(env.get(), options, destinations),
                 _env(env)
             {
@@ -504,12 +505,12 @@ do_install(tr1::shared_ptr<Environment> env)
             (CommandLine::get_instance()->a_show_reasons.argument() == "full"))
         options.dependency_tags = true;
 
-    tr1::shared_ptr<const DestinationsCollection> destinations;
+    tr1::shared_ptr<const DestinationsSet> destinations;
     if (CommandLine::get_instance()->a_destinations.specified())
     {
         Context local_context("When building destinations collection:");
 
-        tr1::shared_ptr<DestinationsCollection> d(new DestinationsCollection::Concrete);
+        tr1::shared_ptr<DestinationsSet> d(new DestinationsSet);
         for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
                 i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
                 i != i_end ; ++i)

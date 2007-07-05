@@ -20,6 +20,8 @@
 #include "eclass_mtimes.hh"
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/fs_entry.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -30,17 +32,17 @@ namespace paludis
     template<>
     struct Implementation<EclassMtimes>
     {
-        tr1::shared_ptr<const FSEntryCollection> eclass_dirs;
+        tr1::shared_ptr<const FSEntrySequence> eclass_dirs;
         mutable MakeHashedMap<std::string, time_t>::Type eclass_mtimes;
 
-        Implementation(tr1::shared_ptr<const FSEntryCollection> d) :
+        Implementation(tr1::shared_ptr<const FSEntrySequence> d) :
             eclass_dirs(d)
         {
         }
     };
 }
 
-EclassMtimes::EclassMtimes(tr1::shared_ptr<const FSEntryCollection> d) :
+EclassMtimes::EclassMtimes(tr1::shared_ptr<const FSEntrySequence> d) :
     PrivateImplementationPattern<EclassMtimes>(new Implementation<EclassMtimes>(d))
 {
 }
@@ -57,7 +59,7 @@ EclassMtimes::mtime(const std::string & e) const
         return i->second;
 
     time_t r(0);
-    for (FSEntryCollection::Iterator d(_imp->eclass_dirs->begin()),
+    for (FSEntrySequence::Iterator d(_imp->eclass_dirs->begin()),
             d_end(_imp->eclass_dirs->end()) ; d != d_end ; ++d)
     {
         FSEntry f(*d / (e + ".eclass"));

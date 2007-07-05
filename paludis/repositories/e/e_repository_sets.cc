@@ -30,7 +30,6 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -38,9 +37,12 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/tr1_functional.hh>
 
 #include <list>
-#include <paludis/util/tr1_functional.hh>
+#include <map>
 #include <set>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -115,12 +117,12 @@ ERepositorySets::package_set(const SetName & s) const
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 ERepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
@@ -263,7 +265,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                     if (insecurity)
                     {
-                        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
                         v->push_back(VersionRequirement(vo_equal, (*c)->version()));
                         tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                     tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*c)->name())),
@@ -307,7 +309,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                            tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
                             v->push_back(VersionRequirement(vo_equal, (*r)->version()));
                             tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                         tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*r)->name())),

@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_NAME_FWD_HH 1
 
 #include <paludis/util/validated-fwd.hh>
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/set-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
 
@@ -43,7 +44,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<PackageNamePart> PackageNamePartCollection;
+    typedef Set<PackageNamePart> PackageNamePartSet;
 
     class CategoryNamePartError;
     class CategoryNamePartValidator;
@@ -61,7 +62,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
+    typedef Set<CategoryNamePart> CategoryNamePartSet;
 
     class UseFlagNameError;
     class IUseFlagNameError;
@@ -79,7 +80,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<UseFlagName> UseFlagNameCollection;
+    typedef Set<UseFlagName> UseFlagNameSet;
 
 #include <paludis/name-se.hh>
 
@@ -105,7 +106,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<QualifiedPackageName> QualifiedPackageNameCollection;
+    typedef Set<QualifiedPackageName> QualifiedPackageNameSet;
 
     class QualifiedPackageNameError;
 
@@ -138,7 +139,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SequentialCollection<RepositoryName> RepositoryNameCollection;
+    typedef Sequence<RepositoryName> RepositoryNameSequence;
 
     class RepositoryNameComparator;
 
@@ -157,7 +158,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<KeywordName> KeywordNameCollection;
+    typedef Set<KeywordName> KeywordNameSet;
 
     class SetNameValidator;
     class SetNameError;
@@ -174,21 +175,21 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<SetName> SetNameCollection;
+    typedef Set<SetName> SetNameSet;
 
     /**
      * A collection of use flags.
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<IUseFlag> IUseFlagCollection;
+    typedef Set<IUseFlag> IUseFlagSet;
 
     /**
      * A collection of inherited packages.
      *
      * \ingroup grpnames
      */
-    typedef SortedCollection<std::string> InheritedCollection;
+    typedef Set<std::string> InheritedSet;
 }
 
 #endif

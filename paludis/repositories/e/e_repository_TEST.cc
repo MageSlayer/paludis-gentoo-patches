@@ -19,11 +19,12 @@
 
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <paludis/eapi.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -55,8 +56,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
@@ -78,8 +79,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo2");
@@ -101,8 +102,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo3");
@@ -124,8 +125,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
@@ -156,8 +157,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo1");
@@ -169,7 +170,7 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                tr1::shared_ptr<const CategoryNamePartCollection> c(repo->category_names());
+                tr1::shared_ptr<const CategoryNamePartSet> c(repo->category_names());
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
@@ -190,8 +191,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
@@ -230,8 +231,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
@@ -274,8 +275,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
@@ -283,7 +284,7 @@ namespace test_cases
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            tr1::shared_ptr<const QualifiedPackageNameCollection> names;
+            tr1::shared_ptr<const QualifiedPackageNameSet> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -327,8 +328,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo5");
@@ -336,7 +337,7 @@ namespace test_cases
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            tr1::shared_ptr<const QualifiedPackageNameCollection> names;
+            tr1::shared_ptr<const QualifiedPackageNameSet> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -359,8 +360,8 @@ namespace test_cases
             using namespace tr1::placeholders;
 
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo4");
@@ -407,8 +408,8 @@ namespace test_cases
             using namespace tr1::placeholders;
 
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo8");
@@ -453,8 +454,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo6");
@@ -494,8 +495,8 @@ namespace test_cases
                 TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
 
                 TestEnvironment env;
-                tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                        new AssociativeCollection<std::string, std::string>::Concrete);
+                tr1::shared_ptr<Map<std::string, std::string> > keys(
+                        new Map<std::string, std::string>);
                 keys->insert("format", "ebuild");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
@@ -560,8 +561,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo7");
@@ -594,8 +595,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo9");
@@ -638,8 +639,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "e_repository_TEST_dir/repo10");

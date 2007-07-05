@@ -33,6 +33,7 @@ using namespace paludis;
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -133,7 +134,7 @@ VDBUnmerger::~VDBUnmerger()
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const
 {
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->options.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options.config_protect)

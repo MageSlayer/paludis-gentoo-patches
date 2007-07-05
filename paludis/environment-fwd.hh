@@ -20,9 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_FWD_HH 1
 
-#include <paludis/util/collection-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -46,7 +47,7 @@ namespace paludis
      * \see Environment
      * \ingroup grpenvironment
      */
-    typedef SequentialCollection<std::string> MirrorsCollection;
+    typedef Sequence<std::string> MirrorsSequence;
 
     class Environment;
 }

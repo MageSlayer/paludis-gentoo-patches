@@ -23,7 +23,6 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -365,7 +364,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                 case '=':
                 case '~':
                     {
-                        _imp->version_requirements.reset(new VersionRequirements::Concrete);
+                        _imp->version_requirements.reset(new VersionRequirements);
                         char needed_mode(0);
 
                         while (! flag.empty())
@@ -566,7 +565,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
             else
                 _imp->package_ptr.reset(new QualifiedPackageName(t));
 
-            _imp->version_requirements.reset(new VersionRequirements::Concrete);
+            _imp->version_requirements.reset(new VersionRequirements);
 
             if ('*' == s.at(s.length() - 1))
             {
@@ -954,8 +953,8 @@ PackageDepSpec::_make_unique()
 
     if (_imp->version_requirements && ! _imp->version_requirements.unique())
     {
-        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
-        std::copy(_imp->version_requirements->begin(), _imp->version_requirements->end(), v->inserter());
+        tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
+        std::copy(_imp->version_requirements->begin(), _imp->version_requirements->end(), v->back_inserter());
         _imp->version_requirements = v;
     }
 

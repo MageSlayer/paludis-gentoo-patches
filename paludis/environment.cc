@@ -20,10 +20,13 @@
 #include <paludis/environment.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/sequence-impl.hh>
 
 using namespace paludis;
 
 #include <paludis/environment-se.cc>
+
+template class Sequence<std::string>;
 
 Environment::~Environment()
 {

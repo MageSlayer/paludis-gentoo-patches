@@ -21,7 +21,12 @@
 #include <paludis/package_database.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/package_id.hh>
+#include <paludis/name.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -74,7 +79,7 @@ namespace
             {
             }
 
-            bool accept_keywords(tr1::shared_ptr<const KeywordNameCollection> k, const PackageID &) const
+            bool accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID &) const
             {
                 return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
             }

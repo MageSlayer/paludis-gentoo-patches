@@ -24,7 +24,6 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -81,8 +80,7 @@ int do_best_version(tr1::shared_ptr<Environment> env)
                 "' resolves to '" << **entries->last() << "', which is a virtual for '"
                 << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                 "new style virtuals.";
-        tr1::shared_ptr<PackageIDSequence> new_entries(
-                new PackageIDSequence::Concrete);
+        tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
@@ -183,8 +181,8 @@ int do_list_sync_protocols(tr1::shared_ptr<Environment> env)
 {
     std::map<std::string, std::string> syncers;
 
-    tr1::shared_ptr<const FSEntryCollection> sd(env->syncers_dirs());
-    for (FSEntryCollection::Iterator d(sd->begin()),
+    tr1::shared_ptr<const FSEntrySequence> sd(env->syncers_dirs());
+    for (FSEntrySequence::Iterator d(sd->begin()),
             d_end(sd->end()) ; d != d_end ; ++d)
     {
         FSEntry dir(*d);

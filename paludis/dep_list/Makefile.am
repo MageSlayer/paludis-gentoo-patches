@@ -41,8 +41,8 @@ libpaludisdeplist_la_SOURCES = \
 libpaludisdeplist_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 libpaludisdeplist_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 lib_LTLIBRARIES = libpaludisdeplist.la
 

@@ -22,10 +22,16 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_database.hh>
+#include <paludis/hashed_containers.hh>
 
 #include <list>
 #include <algorithm>
@@ -35,6 +41,9 @@
 using namespace paludis;
 
 #include <paludis/package_id-se.cc>
+
+template class Sequence<tr1::shared_ptr<const PackageID> >;
+template class Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
 
 namespace paludis
 {
@@ -129,5 +138,58 @@ paludis::operator== (const PackageID & a, const PackageID & b)
         && (a.repository()->name() == b.repository()->name())
         && (! a.arbitrary_less_than_comparison(b))
         && (! b.arbitrary_less_than_comparison(a));
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<PackageIDComparator>
+    {
+        MakeHashedMap<RepositoryName, unsigned>::Type m;
+    };
+}
+
+PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
+    PrivateImplementationPattern<PackageIDComparator>(new Implementation<PackageIDComparator>)
+{
+    unsigned c(0);
+    for (PackageDatabase::RepositoryIterator r(db->begin_repositories()),
+            r_end(db->end_repositories()) ; r != r_end ; ++r)
+        _imp->m.insert(std::make_pair((*r)->name(), ++c));
+}
+
+PackageIDComparator::~PackageIDComparator()
+{
+}
+
+bool
+PackageIDComparator::operator() (const tr1::shared_ptr<const PackageID> & a,
+        const tr1::shared_ptr<const PackageID> & b) const
+{
+    if (a->name() < b->name())
+        return true;
+
+    if (a->name() > b->name())
+        return false;
+
+    if (a->version() < b->version())
+        return true;
+
+    if (a->version() > b->version())
+        return false;
+
+    MakeHashedMap<RepositoryName, unsigned>::Type::const_iterator
+        ma(_imp->m.find(a->repository()->name())),
+        mb(_imp->m.find(b->repository()->name()));
+
+    if (ma == _imp->m.end() || mb == _imp->m.end())
+        throw InternalError(PALUDIS_HERE, "Repository not in database");
+
+    if (ma->second < mb->second)
+        return true;
+    if (ma->second > mb->second)
+        return false;
+
+    return a->arbitrary_less_than_comparison(*b);
 }
 

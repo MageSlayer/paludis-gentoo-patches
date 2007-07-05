@@ -26,8 +26,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <vector>
@@ -85,12 +85,12 @@ MirrorsConf::add(const FSEntry & filename)
     }
 }
 
-tr1::shared_ptr<const MirrorsCollection>
+tr1::shared_ptr<const MirrorsSequence>
 MirrorsConf::query(const std::string & m) const
 {
-    tr1::shared_ptr<MirrorsCollection> result(new MirrorsCollection::Concrete);
+    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
-    std::copy(p.first, p.second, transform_inserter(result->inserter(),
+    std::copy(p.first, p.second, transform_inserter(result->back_inserter(),
                 paludis::tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
     return result;
 }

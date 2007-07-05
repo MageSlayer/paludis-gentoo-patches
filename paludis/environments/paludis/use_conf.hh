@@ -65,7 +65,7 @@ namespace paludis
                 /**
                  * Fetch the known use expand names for a prefix.
                  */
-                tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(
+                tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                         const UseFlagName &, const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };

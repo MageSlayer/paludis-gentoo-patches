@@ -26,6 +26,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>

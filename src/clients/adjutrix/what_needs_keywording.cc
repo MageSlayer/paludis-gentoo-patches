@@ -22,6 +22,8 @@
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>
@@ -103,8 +105,8 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             if (p->package_id->keywords_key())
             {
-                tr1::shared_ptr<const KeywordNameCollection> keywords(p->package_id->keywords_key()->value());
-                for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id->keywords_key()->value());
+                for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")
                             || *k == target_keyword
@@ -137,5 +139,4 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     return return_code;
 }
-
 

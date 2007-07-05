@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_IMPL_HH 1
 
 #include <paludis/util/visitor.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <paludis/util/iterator.hh>
 
 namespace paludis
@@ -170,7 +171,7 @@ namespace paludis
         template <typename H_, typename T_>
         TreeSequence<H_, T_>::TreeSequence(tr1::shared_ptr<T_> i) :
             _item(i),
-            _items(new typename SequentialCollection<tr1::shared_ptr<MutableAcceptInterface<H_> > >::Concrete)
+            _items(new Sequence<tr1::shared_ptr<MutableAcceptInterface<H_> > >)
         {
         }
 
@@ -242,7 +243,7 @@ namespace paludis
         template <typename H_, typename T_>
         ConstTreeSequence<H_, T_>::ConstTreeSequence(tr1::shared_ptr<T_> i) :
             _item(i),
-            _items(new typename SequentialCollection<tr1::shared_ptr<const ConstAcceptInterface<H_> > >::Concrete)
+            _items(new Sequence<tr1::shared_ptr<const ConstAcceptInterface<H_> > >)
         {
         }
 

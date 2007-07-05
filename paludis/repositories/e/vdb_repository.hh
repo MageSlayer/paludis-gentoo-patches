@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/map.hh>
 
 /** \file
  * Declarations for VDBRepository.
@@ -99,16 +100,16 @@ namespace paludis
             virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string do_describe_use_flag(const UseFlagName &,
@@ -120,7 +121,7 @@ namespace paludis
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUninstallableInterface */
@@ -180,21 +181,21 @@ namespace paludis
             /**
              * Override in descendents: fetch package names.
              */
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents: fetch category names.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents if a fast implementation is available: fetch category names
              * that contain a particular package.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -221,7 +222,7 @@ namespace paludis
              */
             static tr1::shared_ptr<Repository> make_vdb_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
+                    tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
