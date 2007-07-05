@@ -21,6 +21,7 @@
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/sequence-impl.hh>
 #include <ruby.h>
 
 using namespace paludis;

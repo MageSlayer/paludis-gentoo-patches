@@ -19,7 +19,6 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/dep_list/dep_list.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <ruby.h>
 

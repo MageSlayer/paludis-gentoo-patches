@@ -18,10 +18,11 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/util/set.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -38,10 +39,10 @@ namespace
     static VALUE c_metadata_string_key;
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
-    static VALUE c_metadata_keyword_name_collection_key;
-    static VALUE c_metadata_use_flag_name_collection_key;
-    static VALUE c_metadata_iuse_flag_collection_key;
-    static VALUE c_metadata_inherited_collection_key;
+    static VALUE c_metadata_keyword_name_set_key;
+    static VALUE c_metadata_use_flag_name_set_key;
+    static VALUE c_metadata_iuse_flag_set_key;
+    static VALUE c_metadata_inherited_set_key;
     static VALUE c_metadata_key_type;
 
     struct V :
@@ -79,28 +80,28 @@ namespace
                         new tr1::shared_ptr<const MetadataContentsKey>(tr1::static_pointer_cast<const MetadataContentsKey>(mm)));
             }
 
-            void visit(const MetadataCollectionKey<KeywordNameCollection> &)
+            void visit(const MetadataSetKey<KeywordNameSet> &)
             {
-                value = Data_Wrap_Struct(c_metadata_keyword_name_collection_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> > >::free,
-                        new tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >(tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameCollection> >(mm)));
+                value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > >::free,
+                        new tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >(tr1::static_pointer_cast<const MetadataSetKey<KeywordNameSet> >(mm)));
             }
 
-            void visit(const MetadataCollectionKey<UseFlagNameCollection> &)
+            void visit(const MetadataSetKey<UseFlagNameSet> &)
             {
-                value = Data_Wrap_Struct(c_metadata_use_flag_name_collection_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> > >::free,
-                        new tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >(tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameCollection> >(mm)));
+                value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > >::free,
+                        new tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >(tr1::static_pointer_cast<const MetadataSetKey<UseFlagNameSet> >(mm)));
             }
 
-            void visit(const MetadataCollectionKey<IUseFlagCollection> &)
+            void visit(const MetadataSetKey<IUseFlagSet> &)
             {
-                value = Data_Wrap_Struct(c_metadata_iuse_flag_collection_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> > >::free,
-                        new tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >(tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagCollection> >(mm)));
+                value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > >::free,
+                        new tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(mm)));
             }
 
-            void visit(const MetadataCollectionKey<InheritedCollection> &)
+            void visit(const MetadataSetKey<InheritedSet> &)
             {
-                value = Data_Wrap_Struct(c_metadata_inherited_collection_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> > >::free,
-                        new tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >(tr1::static_pointer_cast<const MetadataCollectionKey<InheritedCollection> >(mm)));
+                value = Data_Wrap_Struct(c_metadata_inherited_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<InheritedSet> > >::free,
+                        new tr1::shared_ptr<const MetadataSetKey<InheritedSet> >(tr1::static_pointer_cast<const MetadataSetKey<InheritedSet> >(mm)));
             }
 
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
@@ -250,7 +251,7 @@ namespace
      * Document-method: keywords_key
      *
      * call-seq:
-     *     keywords_key -> MetadataCollectionKey
+     *     keywords_key -> MetadataSetKey
      *
      * Our keywords
      */
@@ -258,7 +259,7 @@ namespace
      * Document-method: use_key
      *
      * call-seq:
-     *     use_key -> MetadataCollectionKey
+     *     use_key -> MetadataSetKey
      *
      * Our use flags
      */
@@ -266,7 +267,7 @@ namespace
      * Document-method: iuse_key
      *
      * call-seq:
-     *     iuse_key -> MetadataCollectionKey
+     *     iuse_key -> MetadataSetKey
      *
      * Our iuse flags
      */
@@ -274,7 +275,7 @@ namespace
      * Document-method: inherited_key
      *
      * call-seq:
-     *     inherited_key -> MetadataCollectionKey
+     *     inherited_key -> MetadataSetKey
      *
      * Our inherited
      */
@@ -402,13 +403,13 @@ namespace
     }
 
     template <typename T_>
-    struct CollectionValue
+    struct SetValue
     {
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataCollectionKey<T_> > * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataCollectionKey<T_> >, self_ptr);
+            tr1::shared_ptr<const MetadataSetKey<T_> > * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<T_> >, self_ptr);
             tr1::shared_ptr<const T_> c = (*self_ptr)->value();
             VALUE result (rb_ary_new());
             for (typename T_::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
@@ -433,10 +434,10 @@ namespace
         rb_define_method(c_package_id, "repository", RUBY_FUNC_CAST(&package_id_repository), 0);
         rb_define_method(c_package_id, "eapi", RUBY_FUNC_CAST(&package_id_eapi), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
-        rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameCollection>,&PackageID::keywords_key>::fetch)), 0);
-        rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<UseFlagNameCollection>,&PackageID::use_key>::fetch)), 0);
-        rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<IUseFlagCollection>,&PackageID::iuse_key>::fetch)), 0);
-        rb_define_method(c_package_id, "inherited_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<InheritedCollection>,&PackageID::inherited_key>::fetch)), 0);
+        rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
+        rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<UseFlagNameSet>,&PackageID::use_key>::fetch)), 0);
+        rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
+        rb_define_method(c_package_id, "inherited_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<InheritedSet>,&PackageID::inherited_key>::fetch)), 0);
         rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::short_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::long_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataContentsKey,&PackageID::contents_key>::fetch)), 0);
@@ -500,36 +501,36 @@ namespace
         rb_define_method(c_metadata_contents_key, "value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
 
         /*
-         * Document-class: Paludis::MetadataKeywordNameCollectionKey
+         * Document-class: Paludis::MetadataKeywordNameSetKey
          *
          * Metadata class for Use flag names
          */
-        c_metadata_keyword_name_collection_key = rb_define_class_under(paludis_module(), "MetadataKeywordNameCollectionKey", c_metadata_key);
-        rb_define_method(c_metadata_keyword_name_collection_key, "value", RUBY_FUNC_CAST((&CollectionValue<KeywordNameCollection>::fetch)), 0);
+        c_metadata_keyword_name_set_key = rb_define_class_under(paludis_module(), "MetadataKeywordNameSetKey", c_metadata_key);
+        rb_define_method(c_metadata_keyword_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<KeywordNameSet>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataUseFlagNameCollectionKey
+         * Document-class: Paludis::MetadataUseFlagNameSetKey
          *
          * Metadata class for Use flag names
          */
-        c_metadata_use_flag_name_collection_key = rb_define_class_under(paludis_module(), "MetadataUseFlagNameCollectionKey", c_metadata_key);
-        rb_define_method(c_metadata_use_flag_name_collection_key, "value", RUBY_FUNC_CAST((&CollectionValue<UseFlagNameCollection>::fetch)), 0);
+        c_metadata_use_flag_name_set_key = rb_define_class_under(paludis_module(), "MetadataUseFlagNameSetKey", c_metadata_key);
+        rb_define_method(c_metadata_use_flag_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<UseFlagNameSet>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataIUseFlagCollectionKey
+         * Document-class: Paludis::MetadataIUseFlagSetKey
          *
          * Metadata class for IUse flags
          */
-        c_metadata_iuse_flag_collection_key = rb_define_class_under(paludis_module(), "MetadataIUseFlagCollectionKey", c_metadata_key);
-        rb_define_method(c_metadata_iuse_flag_collection_key, "value", RUBY_FUNC_CAST((&CollectionValue<IUseFlagCollection>::fetch)), 0);
+        c_metadata_iuse_flag_set_key = rb_define_class_under(paludis_module(), "MetadataIUseFlagSetKey", c_metadata_key);
+        rb_define_method(c_metadata_iuse_flag_set_key, "value", RUBY_FUNC_CAST((&SetValue<IUseFlagSet>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataInheritedCollectionKey
+         * Document-class: Paludis::MetadataInheritedSetKey
          *
          * Metadata class for Inherited
          */
-        c_metadata_inherited_collection_key = rb_define_class_under(paludis_module(), "MetadataInheritedCollectionKey", c_metadata_key);
-        rb_define_method(c_metadata_inherited_collection_key, "value", RUBY_FUNC_CAST((&CollectionValue<InheritedCollection>::fetch)), 0);
+        c_metadata_inherited_set_key = rb_define_class_under(paludis_module(), "MetadataInheritedSetKey", c_metadata_key);
+        rb_define_method(c_metadata_inherited_set_key, "value", RUBY_FUNC_CAST((&SetValue<InheritedSet>::fetch)), 0);
 
         /*
          * Document-module: Paludis::MetadataKeyType

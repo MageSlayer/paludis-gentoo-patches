@@ -24,6 +24,7 @@
 #include <paludis/version_operator.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/sequence.hh>
 #include <ruby.h>
 
 using namespace paludis;

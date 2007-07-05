@@ -27,6 +27,8 @@
 #include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -169,14 +171,14 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names());
-                for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+                for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names());
-            for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+            for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
         }
@@ -205,14 +207,14 @@ namespace
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names_containing_package(package));
-                for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+                for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names_containing_package(package));
-            for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+            for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
         }
@@ -241,14 +243,14 @@ namespace
 
             if (rb_block_given_p())
             {
-                tr1::shared_ptr<const QualifiedPackageNameCollection> c((*self_ptr)->package_names(category));
-                for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+                for (QualifiedPackageNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            tr1::shared_ptr<const QualifiedPackageNameCollection> c((*self_ptr)->package_names(category));
-            for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+            for (QualifiedPackageNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
         }

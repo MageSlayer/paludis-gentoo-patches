@@ -23,9 +23,9 @@
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/environment_maker.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/set.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -193,7 +193,7 @@ namespace
     {
         try
         {
-            tr1::shared_ptr<KeywordNameCollection> knc (new KeywordNameCollection::Concrete);
+            tr1::shared_ptr<KeywordNameSet> knc (new KeywordNameSet);
             long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
             for (long i = 0; i < len; i++)
             {
@@ -231,9 +231,9 @@ namespace
     VALUE
     environment_default_destinations(VALUE self)
     {
-        tr1::shared_ptr<const DestinationsCollection> dc (value_to_environment(self)->default_destinations());
+        tr1::shared_ptr<const DestinationsSet> dc (value_to_environment(self)->default_destinations());
         VALUE result(rb_ary_new());
-        for (DestinationsCollection::Iterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
+        for (DestinationsSet::Iterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
             rb_ary_push(result, repository_to_value(*i));
 
         return result;
