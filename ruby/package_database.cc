@@ -85,7 +85,7 @@ namespace
      *     query(spec, install_state, query_order) -> Array
      *
      *  Query the repository, the first argument is either a PackageDepSpec or a Query.
-     *  Returns an array of PackageDatabaseEntry.
+     *  Returns an array of PackageID.
      */
 
     VALUE
