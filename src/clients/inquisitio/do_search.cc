@@ -27,6 +27,8 @@
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <list>
 #include <set>
 #include <iostream>
@@ -72,8 +74,8 @@ do_search(const Environment & env)
                         r->format()))
                 continue;
 
-        tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
-        for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -83,8 +85,8 @@ do_search(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs.insert(*p);
         }
