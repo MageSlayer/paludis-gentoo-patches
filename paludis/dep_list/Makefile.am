@@ -2,7 +2,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	dep_list-sr.hh dep_list-sr.cc \
 	uninstall_list-sr.hh uninstall_list-sr.cc \
-	options-se.hh options-se.cc
+	options-se.hh options-se.cc \
+	uninstall_list-se.hh uninstall_list-se.cc
+
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -26,7 +28,8 @@ paludis_dep_list_include_HEADERS = \
 	dep_list-fwd.hh \
 	uninstall_list-sr.hh \
 	range_rewriter.hh \
-	options-se.hh
+	options-se.hh \
+	uninstall_list-se.hh
 
 libpaludisdeplist_la_SOURCES = \
 	options.cc        options.hh \
@@ -54,7 +57,8 @@ EXTRA_DIST = \
 	range_rewriter_TEST.cc \
 	dep_list.sr dep_list-sr.hh dep_list-sr.cc \
 	uninstall_list.sr uninstall_list-sr.hh uninstall_list-sr.cc \
-	options.se options-se.hh options-se.cc
+	options.se options-se.hh options-se.cc \
+	uninstall_list.se uninstall_list-se.hh uninstall_list-se.cc
 
 TESTS = \
 	dep_list_TEST \
@@ -132,6 +136,12 @@ uninstall_list-sr.hh : uninstall_list.sr $(top_srcdir)/misc/make_sr.bash
 
 uninstall_list-sr.cc : uninstall_list.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/uninstall_list.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+uninstall_list-se.hh : uninstall_list.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/uninstall_list.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+uninstall_list-se.cc : uninstall_list.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/uninstall_list.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 options-se.hh : options.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/options.se > $@ ; then rm -f $@ ; exit 1 ; fi

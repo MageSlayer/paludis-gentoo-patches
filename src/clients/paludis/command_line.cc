@@ -110,6 +110,8 @@ CommandLine::CommandLine() :
             "Also uninstall packages that depend upon the target"),
     a_all_versions(&uninstall_args, "all-versions", '\0',
             "Uninstall all versions of a package"),
+    a_permit_unsafe_uninstalls(&uninstall_args, "permit-unsafe-uninstalls", '\0',
+            "Allow depended-upon packages to uninstalled"),
 
     dl_args(this, "DepList behaviour",
             "Modify dependency list generation behaviour. Use with caution."),

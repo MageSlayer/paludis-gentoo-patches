@@ -110,6 +110,7 @@ _paludis() {
         --show-reasons \
         --show-use-descriptions \
         --with-unused-dependencies \
+        --permit-unsafe-uninstalls \
         --with-dependencies \
         --all-versions \
         ${deplist_opts}"

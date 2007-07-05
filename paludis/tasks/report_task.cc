@@ -153,7 +153,7 @@ ReportTask::execute()
     std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
     for (UninstallList::Iterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
-        if (! i->skip_uninstall)
+        if (i->kind != ulk_virtual)
             unused.insert(i->package_id);
 
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),

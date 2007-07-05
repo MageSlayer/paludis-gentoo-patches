@@ -219,7 +219,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_test;
 
@@ -251,7 +252,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_recursive_test;
 
@@ -283,7 +285,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_with_used_test;
 
@@ -319,7 +322,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_as_errors(false)
+                .with_dependencies_included(false);
         }
     } uninstall_list_with_unused_deps_with_cross_used_test;
 
@@ -358,7 +362,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_world_test;
 
@@ -399,7 +404,8 @@ namespace test_cases
         {
             return UninstallListOptions::create()
                 .with_unused_dependencies(true)
-                .with_dependencies(false);
+                .with_dependencies_included(false)
+                .with_dependencies_as_errors(false);
         }
     } uninstall_list_with_unused_deps_world_target_test;
 }

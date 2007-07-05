@@ -25,6 +25,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
@@ -36,8 +37,40 @@
 #include <map>
 #include <set>
 #include <list>
+#include <algorithm>
+#include <functional>
 
 using namespace paludis;
+
+AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
+        const tr1::shared_ptr<const PackageIDSequence> m) throw () :
+    Exception("Ambiguous unmerge target '" + t + "'"),
+    _t(t),
+    _p(m)
+{
+}
+
+AmbiguousUnmergeTargetError::~AmbiguousUnmergeTargetError() throw ()
+{
+}
+
+AmbiguousUnmergeTargetError::Iterator
+AmbiguousUnmergeTargetError::begin() const
+{
+    return Iterator(_p->begin());
+}
+
+AmbiguousUnmergeTargetError::Iterator
+AmbiguousUnmergeTargetError::end() const
+{
+    return Iterator(_p->end());
+}
+
+std::string
+AmbiguousUnmergeTargetError::target() const
+{
+    return _t;
+}
 
 namespace paludis
 {
@@ -56,6 +89,7 @@ namespace paludis
         bool with_unused_dependencies;
         bool with_dependencies;
         bool unused;
+        bool check_safety;
 
         bool had_set_targets;
         bool had_package_targets;
@@ -69,6 +103,7 @@ namespace paludis
             with_unused_dependencies(false),
             with_dependencies(false),
             unused(false),
+            check_safety(false),
             had_set_targets(false),
             had_package_targets(false)
         {
@@ -101,6 +136,12 @@ void
 UninstallTask::set_preserve_world(const bool v)
 {
     _imp->preserve_world = v;
+}
+
+void
+UninstallTask::set_check_safety(const bool v)
+{
+    _imp->check_safety = v;
 }
 
 void
@@ -186,13 +227,16 @@ UninstallTask::add_unused()
 void
 UninstallTask::execute()
 {
+    using namespace tr1::placeholders;
+
     Context context("When executing uninstall task:");
 
     on_build_unmergelist_pre();
 
     UninstallList list(_imp->env, UninstallListOptions::create()
-            .with_dependencies(_imp->with_dependencies)
-            .with_unused_dependencies(_imp->with_unused_dependencies));
+            .with_unused_dependencies(_imp->with_unused_dependencies)
+            .with_dependencies_included(_imp->with_dependencies)
+            .with_dependencies_as_errors(_imp->check_safety));
 
     if (_imp->unused)
         list.add_unused();
@@ -242,6 +286,12 @@ UninstallTask::execute()
     if (_imp->pretend)
         return;
 
+    if (list.has_errors())
+    {
+        on_not_continuing_due_to_errors();
+        return;
+    }
+
     if (_imp->preserve_world)
         on_preserve_world();
     else
@@ -253,7 +303,7 @@ UninstallTask::execute()
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
-            if (! i->skip_uninstall)
+            if (i->kind != ulk_virtual)
                 being_removed[i->package_id->name()].insert(i->package_id->version());
 
         for (std::map<QualifiedPackageName, std::set<VersionSpec> >::const_iterator
@@ -293,12 +343,12 @@ UninstallTask::execute()
 
     int x(0), y(0);
     for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
-        if (! i->skip_uninstall)
+        if (i->kind != ulk_virtual)
             ++y;
 
     for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
-        if (i->skip_uninstall)
+        if (i->kind == ulk_virtual)
             continue;
         ++x;
 
@@ -336,10 +386,6 @@ UninstallTask::execute()
         _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
                          _imp->raw_targets.end(), " "))).max_exit_status)
         throw PackageUninstallActionError("Uninstall aborted by hook");
-}
-
-AmbiguousUnmergeTargetError::~AmbiguousUnmergeTargetError() throw ()
-{
 }
 
 void

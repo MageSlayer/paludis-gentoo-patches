@@ -231,6 +231,9 @@ class CommandLine :
         /// --all-versions
         paludis::args::SwitchArg a_all_versions;
 
+        /// --permit-unsafe-uninstalls
+        paludis::args::SwitchArg a_permit_unsafe_uninstalls;
+
         ///\}
 
         /// \name DepList behaviour arguments

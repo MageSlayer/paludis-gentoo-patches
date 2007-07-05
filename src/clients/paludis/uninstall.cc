@@ -45,13 +45,14 @@ namespace
         public UninstallTask
     {
         private:
-            int _count, _current_count;
+            int _count, _current_count, _error_count;
 
         public:
             OurUninstallTask(tr1::shared_ptr<Environment> e) :
                 UninstallTask(e.get()),
                 _count(0),
-                _current_count(0)
+                _current_count(0),
+                _error_count(0)
             {
             }
 
@@ -73,21 +74,49 @@ namespace
 
             virtual void on_display_unmerge_list_post()
             {
-                cout << endl << endl <<
-                    "Total: " << _count << (_count == 1 ? " package" : " packages") << endl;
+                cout << endl << endl;
+
+                cout << "Total: " << _count << (_count == 1 ? " package" : " packages");
+
+                if (_error_count)
+                {
+                    cout << " and " << colour(cl_error, stringify(_error_count) + " errors") << endl;
+                    cout << "Use either --" << CommandLine::get_instance()->a_with_dependencies.long_name()
+                        << " or --" << CommandLine::get_instance()->a_permit_unsafe_uninstalls.long_name() << endl;
+                }
+                else
+                    cout << endl;
             }
 
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
-                if (d.skip_uninstall)
+                if (d.kind == ulk_virtual)
                     if (CommandLine::get_instance()->a_show_reasons.argument() != "full")
                         return;
 
-                cout << "* " << colour(d.skip_uninstall ? cl_unimportant : cl_package_name, stringify(*d.package_id));
-                ++_count;
+                switch (d.kind)
+                {
+                    case ulk_package:
+                        cout << "* " << colour(cl_package_name, stringify(*d.package_id));
+                        ++_count;
+                        break;
+
+                    case ulk_virtual:
+                        cout << "* " << colour(cl_unimportant, stringify(*d.package_id));
+                        break;
+
+                    case ulk_required:
+                        cout << "* " << colour(cl_error, stringify(*d.package_id));
+                        ++_error_count;
+                        break;
+
+                    case last_ulk:
+                        break;
+                }
 
                 if ((CommandLine::get_instance()->a_show_reasons.argument() == "summary") ||
-                        (CommandLine::get_instance()->a_show_reasons.argument() == "full"))
+                        (CommandLine::get_instance()->a_show_reasons.argument() == "full") ||
+                        ulk_required == d.kind)
                 {
                     std::string deps;
                     unsigned count(0), max_count;
@@ -116,7 +145,9 @@ namespace
                             deps.append(stringify(count - max_count + 1) + " more, ");
 
                         deps.erase(deps.length() - 2);
-                        cout << " " << colour(d.skip_uninstall ? cl_unimportant : cl_tag,
+                        if (d.kind == ulk_required)
+                            cout << " requires";
+                        cout << " " << colour(d.kind == ulk_virtual ? cl_unimportant : cl_tag,
                                 "<" + deps + ">");
                     }
                 }
@@ -144,6 +175,11 @@ namespace
 
             virtual void on_uninstall_all_post()
             {
+            }
+
+            virtual void on_not_continuing_due_to_errors()
+            {
+                cout << endl << colour(cl_error, "Cannot continue with uninstall due to the errors indicated above") << endl << endl;
             }
 
             virtual void on_update_world_pre()
@@ -190,6 +226,7 @@ namespace
         task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
         task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
         task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
+        task.set_check_safety(! CommandLine::get_instance()->a_permit_unsafe_uninstalls.specified());
         task.set_all_versions(CommandLine::get_instance()->a_all_versions.specified());
 
         try

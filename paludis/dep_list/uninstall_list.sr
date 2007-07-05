@@ -6,7 +6,8 @@ make_class_UninstallListOptions()
     visible
 
     key with_unused_dependencies bool
-    key with_dependencies bool
+    key with_dependencies_included bool
+    key with_dependencies_as_errors bool
 
     extra_constructors <<END
             UninstallListOptions();
@@ -30,8 +31,8 @@ make_class_UninstallListEntry()
     visible
 
     key package_id "tr1::shared_ptr<const PackageID>"
-    key skip_uninstall bool
     key tags "tr1::shared_ptr<Set<tr1::shared_ptr<DepTag> > >"
+    key kind UninstallListEntryKind
 
     allow_named_args
 

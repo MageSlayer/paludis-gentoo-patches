@@ -24,7 +24,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
@@ -49,12 +48,7 @@ namespace paludis
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const tr1::shared_ptr<const PackageIDSequence> matches) throw () :
-                Exception("Ambiguous unmerge target '" + our_target + "'"),
-                _t(our_target),
-                _p(matches)
-            {
-            }
+                    const tr1::shared_ptr<const PackageIDSequence> matches) throw ();
 
             ~AmbiguousUnmergeTargetError() throw ();
 
@@ -63,27 +57,16 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef PackageIDSequence::Iterator Iterator;
-
-            Iterator begin() const
-            {
-                return _p->begin();
-            }
-
-            Iterator end() const
-            {
-                return _p->end();
-            }
+            typedef libwrapiter::ForwardIterator<AmbiguousUnmergeTargetError, const tr1::shared_ptr<const PackageID> > Iterator;
+            Iterator begin() const;
+            Iterator end() const;
 
             ///\}
 
             /**
              * What was our target?
              */
-            const std::string & target() const
-            {
-                return _t;
-            }
+            std::string target() const;
     };
 
     /**
@@ -121,6 +104,7 @@ namespace paludis
             void set_all_versions(const bool value);
             void set_with_unused_dependencies(const bool value);
             void set_with_dependencies(const bool value);
+            void set_check_safety(const bool value);
 
             ///\}
 
@@ -146,6 +130,8 @@ namespace paludis
             virtual void on_uninstall_pre(const UninstallListEntry &) = 0;
             virtual void on_uninstall_post(const UninstallListEntry &) = 0;
             virtual void on_uninstall_all_post() = 0;
+
+            virtual void on_not_continuing_due_to_errors() = 0;
 
             virtual void on_update_world_pre() = 0;
             virtual void on_update_world(const PackageDepSpec &) = 0;

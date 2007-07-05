@@ -30,6 +30,8 @@
 
 namespace paludis
 {
+
+#include <paludis/dep_list/uninstall_list-se.hh>
 #include <paludis/dep_list/uninstall_list-sr.hh>
 
     class Environment;
@@ -45,10 +47,13 @@ namespace paludis
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {
         private:
-            void add_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<DepTag>);
+            void add_package(const tr1::shared_ptr<const PackageID> &, tr1::shared_ptr<DepTag>,
+                    const UninstallListEntryKind k);
+            void real_add(const tr1::shared_ptr<const PackageID> &,
+                    tr1::shared_ptr<DepTag>, const bool);
             void move_package_to_end(const tr1::shared_ptr<const PackageID> &);
             void add_unused_dependencies();
-            void add_dependencies(const PackageID &);
+            void add_dependencies(const PackageID &, const bool);
 
             tr1::shared_ptr<const PackageIDSet> collect_depped_upon(
                     const tr1::shared_ptr<const PackageIDSet> targets) const;
@@ -81,6 +86,11 @@ namespace paludis
              * Add any unused packages that are dependencies of packages to uninstall.
              */
             void add_unused();
+
+            /**
+             * Whether we have any errors.
+             */
+            bool has_errors() const;
 
             ///\name Iterate over our items to remove
             ///\{

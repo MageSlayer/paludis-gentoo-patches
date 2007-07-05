@@ -17,11 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "uninstall_list.hh"
-
-using namespace paludis;
-
-#include <paludis/dep_list/uninstall_list-sr.cc>
+#include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/dep_list/condition_tracker.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/join.hh>
@@ -31,6 +27,7 @@ using namespace paludis;
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
@@ -42,6 +39,11 @@ using namespace paludis;
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <algorithm>
+
+using namespace paludis;
+
+#include <paludis/dep_list/uninstall_list-se.cc>
+#include <paludis/dep_list/uninstall_list-sr.cc>
 
 typedef MakeHashedMap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepListEntryTags> >::Type DepCollectorCache;
 
@@ -97,6 +99,13 @@ UninstallList::~UninstallList()
 void
 UninstallList::add(const tr1::shared_ptr<const PackageID> & e, tr1::shared_ptr<DepTag> t)
 {
+    real_add(e, t, false);
+}
+
+void
+UninstallList::real_add(const tr1::shared_ptr<const PackageID> & e, tr1::shared_ptr<DepTag> t,
+        const bool error)
+{
     std::list<UninstallListEntry>::iterator i;
     if (_imp->uninstall_list.end() != ((i = std::find_if(_imp->uninstall_list.begin(),
                         _imp->uninstall_list.end(), MatchUninstallListEntry(e)))))
@@ -109,10 +118,17 @@ UninstallList::add(const tr1::shared_ptr<const PackageID> & e, tr1::shared_ptr<D
 
     Context context("When adding '" + stringify(*e) + "' to the uninstall list:");
 
-    add_package(e, t);
+    if ((! error) || (! e->virtual_for_key()))
+        add_package(e, t, error ? ulk_required : (e->virtual_for_key() ? ulk_virtual : ulk_package));
 
-    if (_imp->options.with_dependencies)
-        add_dependencies(*e);
+    if (! error)
+    {
+        /* don't recurse errors, it gets horrid */
+        if (_imp->options.with_dependencies_included)
+            add_dependencies(*e, false);
+        else if (_imp->options.with_dependencies_as_errors)
+            add_dependencies(*e, true);
+    }
 
     move_package_to_end(e);
 
@@ -147,7 +163,7 @@ UninstallList::add_unused()
             PackageIDSetComparator());
 
     for (PackageIDSet::Iterator i(unused->begin()), i_end(unused->end()) ; i != i_end ; ++i)
-        add_package(*i, tr1::shared_ptr<DepTag>());
+        add_package(*i, tr1::shared_ptr<DepTag>(), (*i)->virtual_for_key() ? ulk_virtual : ulk_package);
 }
 
 UninstallList::Iterator
@@ -164,19 +180,23 @@ UninstallList::end() const
 
 UninstallListOptions::UninstallListOptions() :
     with_unused_dependencies(false),
-    with_dependencies(false)
+    with_dependencies_included(false),
+    with_dependencies_as_errors(false)
 {
 }
 
 void
-UninstallList::add_package(const tr1::shared_ptr<const PackageID> & e, tr1::shared_ptr<DepTag> t)
+UninstallList::add_package(const tr1::shared_ptr<const PackageID> & e, tr1::shared_ptr<DepTag> t,
+        const UninstallListEntryKind k)
 {
     Context context("When adding package '" + stringify(*e) + "' to the uninstall list:");
 
     std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
-                _imp->uninstall_list.end(), UninstallListEntry(
-                    e, e->virtual_for_key(), tr1::shared_ptr<Set<tr1::shared_ptr<DepTag> > >(
-                        new Set<tr1::shared_ptr<DepTag> >))));
+                _imp->uninstall_list.end(), UninstallListEntry(UninstallListEntry::create()
+                    .package_id(e)
+                    .tags(make_shared_ptr(new Set<tr1::shared_ptr<DepTag> >))
+                    .kind(k))));
+
     if (t)
         i->tags->insert(t);
 }
@@ -334,11 +354,13 @@ UninstallList::add_unused_dependencies()
     {
         added = false;
 
-        /* find packages that're depped upon by anything in our uninstall list */
+        /* find packages that're depped upon by anything in our uninstall list, excluding error
+         * packages */
         tr1::shared_ptr<PackageIDSet> uninstall_list_targets(new PackageIDSet);
         for (std::list<UninstallListEntry>::const_iterator i(_imp->uninstall_list.begin()),
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
-            uninstall_list_targets->insert(i->package_id);
+            if (i->kind == ulk_package || i->kind == ulk_virtual)
+                uninstall_list_targets->insert(i->package_id);
 
         tr1::shared_ptr<const PackageIDSet> depped_upon_list(collect_depped_upon(uninstall_list_targets));
 
@@ -375,14 +397,14 @@ UninstallList::add_unused_dependencies()
                         _imp->uninstall_list.end(), MatchUninstallListEntry(*i)))
                 continue;
 
-            add_package(*i, tr1::shared_ptr<DepTag>());
+            add_package(*i, tr1::shared_ptr<DepTag>(), (*i)->virtual_for_key() ? ulk_virtual : ulk_package);
             added = true;
         }
     }
 }
 
 void
-UninstallList::add_dependencies(const PackageID & e)
+UninstallList::add_dependencies(const PackageID & e, const bool error)
 {
     Context context("When adding things that depend upon '" + stringify(e) + "':");
 
@@ -422,8 +444,8 @@ UninstallList::add_dependencies(const PackageID & e)
                             "' because it depends upon '" << e << "'";
                     logged = true;
                 }
-                add(*i, tr1::shared_ptr<DependencyDepTag>(
-                        new DependencyDepTag(tag->package_id(), *tag->dependency(), tag->conditions())));
+                real_add(*i, tr1::shared_ptr<DependencyDepTag>(
+                        new DependencyDepTag(tag->package_id(), *tag->dependency(), tag->conditions())), error);
             }
         }
 
@@ -445,5 +467,35 @@ UninstallList::collect_world() const
             result->insert(*i);
 
     return result;
+}
+
+namespace
+{
+    struct IsError
+    {
+        bool operator() (const UninstallListEntry & e) const
+        {
+            switch (e.kind)
+            {
+                case ulk_virtual:
+                case ulk_package:
+                    return false;
+
+                case ulk_required:
+                    return true;
+
+                case last_ulk:
+                    ;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad e.kind");
+        }
+    };
+}
+
+bool
+UninstallList::has_errors() const
+{
+    return end() != std::find_if(begin(), end(), IsError());
 }
 

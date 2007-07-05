@@ -37,6 +37,7 @@ _paludis() {
     )
     uninstall_args=(
         "--with-unused-dependencies[Also uninstall any dependencies of the target that are no longer used]"
+        "--permit-unsafe-uninstalls[Permit depended-upon packages to be uninstalled]"
         "--with-dependencies[Also uninstall packages that depend upon the target]"
         "--all-versions[Uninstall all versions of a package]"
     )
