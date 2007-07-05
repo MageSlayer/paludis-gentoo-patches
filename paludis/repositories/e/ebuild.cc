@@ -252,7 +252,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         if (0 == prog.exit_status())
             ok = true;
     }
-    catch (const NameError & e)
+    catch (const Exception & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
                 stringify(e.message()) + "' (" + stringify(e.what()) +
@@ -267,7 +267,6 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
             << *params.package_id << "'";
         keys.reset(new Map<std::string, std::string>);
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name);
-        keys->insert("SLOT", "UNKNOWN");
 
         return false;
     }
@@ -295,6 +294,7 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! id->eapi()->supported)
     {
         Log::get_instance()->message(ll_debug, lc_context) << "ID pre-load EAPI '" << id->eapi()->name << "' not supported";
+        id->set_slot(SlotName("UNKNOWN"));
         return;
     }
     else
@@ -309,6 +309,7 @@ EbuildMetadataCommand::load(const tr1::shared_ptr<const EbuildID> & id)
     if (! id->eapi()->supported)
     {
         Log::get_instance()->message(ll_debug, lc_context) << "ID post-load EAPI '" << id->eapi()->name << "' not supported";
+        id->set_slot(SlotName("UNKNOWN"));
         return;
     }
     else
