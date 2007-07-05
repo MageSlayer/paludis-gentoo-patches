@@ -25,6 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/tr1_memory.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 

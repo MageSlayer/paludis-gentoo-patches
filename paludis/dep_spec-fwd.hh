@@ -35,6 +35,7 @@ namespace paludis
     class AnyDepSpec;
     class UseDepSpec;
     class BlockDepSpec;
+    class StringDepSpec;
 
 #include <paludis/dep_spec-se.hh>
 
