@@ -5,6 +5,7 @@
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -49,7 +50,7 @@ RepositoryInfoModel::set_repository(const RepositoryName & name)
 void
 RepositoryInfoModel::set_repository_in_paludis_thread(const RepositoryName & name)
 {
-    paludis::tr1::shared_ptr<const RepositoryInfo> info(
+    tr1::shared_ptr<const RepositoryInfo> info(
             _imp->main_window->environment()->package_database()->fetch_repository(name)->info(true));
 
     _imp->main_window->gui_thread_action(
@@ -57,7 +58,7 @@ RepositoryInfoModel::set_repository_in_paludis_thread(const RepositoryName & nam
 }
 
 void
-RepositoryInfoModel::set_repository_in_gui_thread(paludis::tr1::shared_ptr<const RepositoryInfo> info)
+RepositoryInfoModel::set_repository_in_gui_thread(tr1::shared_ptr<const RepositoryInfo> info)
 {
     clear();
     for (IndirectIterator<RepositoryInfo::SectionIterator>

@@ -4,14 +4,15 @@
 #include "query_window.hh"
 #include "versions_page.hh"
 #include "markup.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/eapi.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -92,41 +93,40 @@ VersionInfoModel::populate()
 {
     _imp->query_window->paludis_thread_action(
             sigc::bind(sigc::mem_fun(this, &VersionInfoModel::populate_in_paludis_thread),
-                _imp->versions_page->get_pde()), "Populating version information model");
+                _imp->versions_page->get_id()), "Populating version information model");
 }
 
 void
-VersionInfoModel::populate_in_paludis_thread(paludis::tr1::shared_ptr<const PackageDatabaseEntry> p)
+VersionInfoModel::populate_in_paludis_thread(tr1::shared_ptr<const PackageID> p)
 {
-    paludis::tr1::shared_ptr<PopulateData> data(new PopulateData);
+    tr1::shared_ptr<PopulateData> data(new PopulateData);
 
     if (p)
     {
-        paludis::tr1::shared_ptr<const VersionMetadata> metadata(
-                _imp->query_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
-                    p->name, p->version));
-
-        if (metadata->eapi->supported)
+        if (p->eapi()->supported)
         {
-            if (! metadata->description.empty())
-                data->items.push_back(PopulateDataItem("Description", markup_escape(metadata->description)));
+            if (p->short_description_key())
+                data->items.push_back(PopulateDataItem("Description", markup_escape(p->short_description_key()->value())));
 
-            DepSpecPrettyPrinter homepage_printer(0, false);
-            metadata->homepage()->accept(homepage_printer);
-            if (! stringify(homepage_printer).empty())
-                data->items.push_back(PopulateDataItem("Homepage", markup_escape(stringify(homepage_printer))));
+            if (p->homepage_key())
+            {
+                DepSpecPrettyPrinter homepage_printer(0, false);
+                p->homepage_key()->value()->accept(homepage_printer);
+                if (! stringify(homepage_printer).empty())
+                    data->items.push_back(PopulateDataItem("Homepage", markup_escape(stringify(homepage_printer))));
+            }
 
-            if (metadata->ebuild_interface)
+            if (p->keywords_key())
             {
                 std::string km;
-                paludis::tr1::shared_ptr<const KeywordNameCollection> keywords(metadata->ebuild_interface->keywords());
-                for (KeywordNameCollection::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
+                for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                 {
                     if (! km.empty())
                         km.append(" ");
 
-                    paludis::tr1::shared_ptr<KeywordNameCollection> kc(new KeywordNameCollection::Concrete);
+                    tr1::shared_ptr<KeywordNameSet> kc(new KeywordNameSet);
                     kc->insert(*k);
                     if (_imp->query_window->environment()->accept_keywords(kc, *p))
                         km.append(markup_bold(markup_escape(stringify(*k))));
@@ -144,7 +144,7 @@ VersionInfoModel::populate_in_paludis_thread(paludis::tr1::shared_ptr<const Pack
 }
 
 void
-VersionInfoModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const VersionInfoModel::PopulateData> names)
+VersionInfoModel::populate_in_gui_thread(tr1::shared_ptr<const VersionInfoModel::PopulateData> names)
 {
     clear();
 

@@ -5,9 +5,9 @@
 
 #include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/name.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <paludis/name.hh>
 #include <libgtkpaludis/packages_package_filter_option.hh>
 
 namespace gtkpaludis

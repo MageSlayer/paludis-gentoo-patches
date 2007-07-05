@@ -2,9 +2,9 @@
 
 #include "repositories_list_model.hh"
 #include "main_window.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -48,8 +48,7 @@ RepositoriesListModel::populate()
 void
 RepositoriesListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<RepositoryNameCollection> columns(
-            new RepositoryNameCollection::Concrete);
+    tr1::shared_ptr<RepositoryNameSequence> columns(new RepositoryNameSequence);
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator>
             r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
@@ -62,10 +61,10 @@ RepositoriesListModel::populate_in_paludis_thread()
 }
 
 void
-RepositoriesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const RepositoryNameCollection> names)
+RepositoriesListModel::populate_in_gui_thread(tr1::shared_ptr<const RepositoryNameSequence> names)
 {
     clear();
-    for (RepositoryNameCollection::Iterator n(names->begin()), n_end(names->end()) ;
+    for (RepositoryNameSequence::Iterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_repo_name] = stringify(*n);
 }

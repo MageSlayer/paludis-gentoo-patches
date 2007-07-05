@@ -5,6 +5,7 @@
 
 #include <gtkmm/buttonbox.h>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 
 namespace gtkpaludis

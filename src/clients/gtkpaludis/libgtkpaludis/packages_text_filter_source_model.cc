@@ -2,7 +2,6 @@
 
 #include "packages_text_filter_source_model.hh"
 #include "main_window.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>

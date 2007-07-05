@@ -3,9 +3,10 @@
 #include "sets_list_model.hh"
 #include "main_window.hh"
 #include "packages_page.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -51,21 +52,20 @@ SetsListModel::populate()
 void
 SetsListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<SetNameCollection> columns(
-            new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameSet> columns(new SetNameSet);
 
-    paludis::tr1::shared_ptr<RepositoryNameCollection> repos(
+    tr1::shared_ptr<RepositoryNameSequence> repos(
             _imp->packages_page->get_repository_filter()->repositories(*_imp->main_window->environment()));
 
     if (repos)
     {
-        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             RepositorySetsInterface * const i(_imp->main_window->environment()->package_database()->fetch_repository(*r)->sets_interface);
             if (i)
             {
-                paludis::tr1::shared_ptr<const SetNameCollection> sets(i->sets_list());
+                tr1::shared_ptr<const SetNameSet> sets(i->sets_list());
                 std::copy(sets->begin(), sets->end(), columns->inserter());
             }
         }
@@ -80,13 +80,13 @@ SetsListModel::populate_in_paludis_thread()
             RepositorySetsInterface * const i(r->sets_interface);
             if (i)
             {
-                paludis::tr1::shared_ptr<const SetNameCollection> sets(i->sets_list());
+                tr1::shared_ptr<const SetNameSet> sets(i->sets_list());
                 std::copy(sets->begin(), sets->end(), columns->inserter());
             }
         }
     }
 
-    tr1::shared_ptr<const SetNameCollection> sets(_imp->main_window->environment()->set_names());
+    tr1::shared_ptr<const SetNameSet> sets(_imp->main_window->environment()->set_names());
     std::copy(sets->begin(), sets->end(), columns->inserter());
 
     _imp->main_window->gui_thread_action(
@@ -94,10 +94,10 @@ SetsListModel::populate_in_paludis_thread()
 }
 
 void
-SetsListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const SetNameCollection> names)
+SetsListModel::populate_in_gui_thread(tr1::shared_ptr<const SetNameSet> names)
 {
     clear();
-    for (SetNameCollection::Iterator n(names->begin()), n_end(names->end()) ;
+    for (SetNameSet::Iterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_set_name] = stringify(*n);
 }

@@ -3,9 +3,10 @@
 #include "categories_list_model.hh"
 #include "main_window.hh"
 #include "packages_page.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -51,18 +52,17 @@ CategoriesListModel::populate()
 void
 CategoriesListModel::populate_in_paludis_thread()
 {
-    paludis::tr1::shared_ptr<CategoryNamePartCollection> columns(
-            new CategoryNamePartCollection::Concrete);
+    paludis::tr1::shared_ptr<CategoryNamePartSet> columns(new CategoryNamePartSet);
 
-    paludis::tr1::shared_ptr<RepositoryNameCollection> repos(
+    paludis::tr1::shared_ptr<RepositoryNameSequence> repos(
             _imp->packages_page->get_repository_filter()->repositories(*_imp->main_window->environment()));
 
     if (repos)
     {
-        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
-            paludis::tr1::shared_ptr<const CategoryNamePartCollection> cats(
+            paludis::tr1::shared_ptr<const CategoryNamePartSet> cats(
                     _imp->main_window->environment()->package_database()->fetch_repository(*r)->category_names());
             std::copy(cats->begin(), cats->end(), columns->inserter());
         }
@@ -74,7 +74,7 @@ CategoriesListModel::populate_in_paludis_thread()
                 r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
                 r != r_end ; ++r)
         {
-            paludis::tr1::shared_ptr<const CategoryNamePartCollection> cats(r->category_names());
+            paludis::tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names());
             std::copy(cats->begin(), cats->end(), columns->inserter());
         }
     }
@@ -84,10 +84,10 @@ CategoriesListModel::populate_in_paludis_thread()
 }
 
 void
-CategoriesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const CategoryNamePartCollection> names)
+CategoriesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const CategoryNamePartSet> names)
 {
     clear();
-    for (CategoryNamePartCollection::Iterator n(names->begin()), n_end(names->end()) ;
+    for (CategoryNamePartSet::Iterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_cat_name] = stringify(*n);
 }

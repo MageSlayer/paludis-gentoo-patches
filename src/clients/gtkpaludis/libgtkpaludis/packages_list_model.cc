@@ -7,7 +7,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -127,70 +127,69 @@ PackagesListModel::populate()
 namespace
 {
     PopulateItem make_item(const PackageDepSpec & pds,
-            const QualifiedPackageName & qpn,
-            paludis::tr1::shared_ptr<const VersionMetadata> metadata,
+            const tr1::shared_ptr<const PackageID> & id,
             const Environment * const environment)
     {
         PackagesPackageFilterOption best_option(ppfo_all_packages);
         std::string status;
-        paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> ci(
+        paludis::tr1::shared_ptr<const PackageIDSequence> ci(
                 environment->package_database()->query(
                     query::InstalledAtRoot(environment->root()) &
                     query::Matches(pds) &
                     query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
+                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
                             paludis::tr1::shared_ptr<CategoryNamePart>(),
                             paludis::tr1::shared_ptr<PackageNamePart>(),
                             paludis::tr1::shared_ptr<VersionRequirements>(),
                             vr_and,
-                            paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))),
+                            paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))),
                     qo_order_by_version));
 
-        paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> av(
+        paludis::tr1::shared_ptr<const PackageIDSequence> av(
                 environment->package_database()->query(
                     query::RepositoryHasInstallableInterface() &
                     query::Matches(pds) &
                     query::Matches(PackageDepSpec(
-                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
+                            paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
                             paludis::tr1::shared_ptr<CategoryNamePart>(),
                             paludis::tr1::shared_ptr<PackageNamePart>(),
                             paludis::tr1::shared_ptr<VersionRequirements>(),
                             vr_and,
-                            paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))) &
+                            paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
                     query::NotMasked(),
                     qo_order_by_version));
 
         if (! ci->empty())
         {
-            status = markup_escape(stringify(ci->last()->version));
+            status = markup_escape(((*ci->last())->canonical_form(idcf_version)));
             best_option = ppfo_installed_packages;
 
             if (! av->empty())
             {
-                if (av->last()->version < ci->last()->version)
+                if ((*av->last())->version() < (*ci->last())->version())
                 {
-                    status.append(markup_bold(markup_escape(" > " + stringify(av->last()->version))));
+                    status.append(markup_bold(markup_escape(" > " + (*av->last())->canonical_form(idcf_version))));
                     best_option = ppfo_upgradable_packages;
                 }
-                else if (av->last()->version > ci->last()->version)
+                else if ((*av->last())->version() > (*ci->last())->version())
                 {
-                    status.append(markup_bold(markup_escape(" < " + stringify(av->last()->version))));
+                    status.append(markup_bold(markup_escape(" < " + (*av->last())->canonical_form(idcf_version))));
                     best_option = ppfo_upgradable_packages;
                 }
             }
         }
         else
         {
-            paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> av(
+            paludis::tr1::shared_ptr<const PackageIDSequence> av(
                     environment->package_database()->query(
                         query::Matches(pds) &
                         query::Matches(PackageDepSpec(
-                                paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(qpn)),
+                                paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
                                 paludis::tr1::shared_ptr<CategoryNamePart>(),
                                 paludis::tr1::shared_ptr<PackageNamePart>(),
                                 paludis::tr1::shared_ptr<VersionRequirements>(),
                                 vr_and,
-                                paludis::tr1::shared_ptr<SlotName>(new SlotName(metadata->slot)))) &
+                                paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
                         query::RepositoryHasInstallableInterface() &
                         query::NotMasked(),
                         qo_order_by_version));
@@ -201,15 +200,18 @@ namespace
             }
             else
             {
-                status.append(markup_foreground("grey", markup_escape(stringify(av->last()->version))));
+                status.append(markup_foreground("grey", markup_escape((*av->last())->canonical_form(idcf_version))));
                 best_option = ppfo_visible_packages;
             }
         }
 
-        PopulateItem result(stringify(metadata->slot));
+        PopulateItem result(stringify(id->slot()));
         result.status_markup = status;
-        result.description = metadata->description;
-        result.qpn = make_shared_ptr(new QualifiedPackageName(qpn));
+        if (id->short_description_key())
+            result.description = id->short_description_key()->value();
+        else
+            result.description = "(no description)";
+        result.qpn = make_shared_ptr(new QualifiedPackageName(id->name()));
         result.local_best_option = best_option;
         return result;
     }
@@ -222,7 +224,7 @@ PackagesListModel::populate_in_paludis_thread()
 
     if (_imp->packages_page->get_category())
     {
-        paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+        paludis::tr1::shared_ptr<const PackageIDSequence> c(
                 _imp->main_window->environment()->package_database()->query(
                     *_imp->packages_page->get_repository_filter() &
                     query::Category(*_imp->packages_page->get_category()),
@@ -230,31 +232,27 @@ PackagesListModel::populate_in_paludis_thread()
 
         QualifiedPackageName old_qpn("OLD/OLD");
 
-        for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+        for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
                 p != p_end ; ++p)
         {
-            paludis::tr1::shared_ptr<const VersionMetadata> metadata(
-                    _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
-                        p->name, p->version));
-
-            if (old_qpn != p->name)
+            if (old_qpn != (*p)->name())
             {
-                data->items.push_front(PopulateItem(stringify(p->name.package)));
+                data->items.push_front(PopulateItem(stringify((*p)->name().package)));
                 data->items.begin()->children.push_front(make_item(
-                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->name))),
-                            p->name, metadata, _imp->main_window->environment()));
+                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName((*p)->name()))),
+                            *p, _imp->main_window->environment()));
                 data->items.begin()->qpn = data->items.begin()->children.begin()->qpn;
-                old_qpn = p->name;
+                old_qpn = (*p)->name();
             }
             else
                 data->items.begin()->children.push_front(make_item(
-                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName(p->name))),
-                            p->name, metadata, _imp->main_window->environment()));
+                            PackageDepSpec(make_shared_ptr(new QualifiedPackageName((*p)->name()))),
+                            *p, _imp->main_window->environment()));
         }
     }
     else if (_imp->packages_page->get_set())
     {
-        DepSpecFlattener f(_imp->main_window->environment(), 0);
+        DepSpecFlattener f(_imp->main_window->environment(), tr1::shared_ptr<const PackageID>());
         _imp->main_window->environment()->set(*_imp->packages_page->get_set())->accept(f);
         std::set<std::string> a;
         std::transform(indirect_iterator(f.begin()), indirect_iterator(f.end()), std::inserter(a, a.begin()),
@@ -268,27 +266,23 @@ PackagesListModel::populate_in_paludis_thread()
             PackageDepSpec ds(*i, pds_pm_unspecific);
             if (ds.package_ptr())
             {
-                paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+                paludis::tr1::shared_ptr<const PackageIDSequence> c(
                         _imp->main_window->environment()->package_database()->query(
                             *_imp->packages_page->get_repository_filter() &
                             query::Matches(ds),
                             qo_best_version_in_slot_only));
 
-                for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
                         p != p_end ; ++p)
                 {
-                    paludis::tr1::shared_ptr<const VersionMetadata> metadata(
-                            _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
-                                p->name, p->version));
-
                     atom_iter->children.push_back(make_item(ds,
-                                p->name, metadata, _imp->main_window->environment()));
+                                *p, _imp->main_window->environment()));
                     atom_iter->qpn = atom_iter->children.back().qpn;
                 }
             }
             else
             {
-                paludis::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
+                paludis::tr1::shared_ptr<const PackageIDSequence> c(
                         _imp->main_window->environment()->package_database()->query(
                             *_imp->packages_page->get_repository_filter() &
                             query::Matches(ds),
@@ -297,24 +291,20 @@ PackagesListModel::populate_in_paludis_thread()
                 QualifiedPackageName old_qpn("OLD/OLD");
                 std::list<PopulateItem>::iterator pkg_iter;
 
-                for (PackageDatabaseEntryCollection::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
                         p != p_end ; ++p)
                 {
-                    paludis::tr1::shared_ptr<const VersionMetadata> metadata(
-                            _imp->main_window->environment()->package_database()->fetch_repository(p->repository)->version_metadata(
-                                p->name, p->version));
-
-                    if (old_qpn != p->name)
+                    if (old_qpn != (*p)->name())
                     {
-                        pkg_iter = atom_iter->children.insert(atom_iter->children.end(), PopulateItem(stringify(p->name)));
+                        pkg_iter = atom_iter->children.insert(atom_iter->children.end(), PopulateItem(stringify((*p)->name())));
                         pkg_iter->children.push_back(make_item(ds,
-                                    p->name, metadata, _imp->main_window->environment()));
+                                    *p, _imp->main_window->environment()));
                         pkg_iter->qpn = pkg_iter->children.back().qpn;
-                        old_qpn = p->name;
+                        old_qpn = (*p)->name();
                     }
                     else
                         pkg_iter->children.push_front(make_item(ds,
-                                    p->name, metadata, _imp->main_window->environment()));
+                                    *p, _imp->main_window->environment()));
                 }
             }
         }

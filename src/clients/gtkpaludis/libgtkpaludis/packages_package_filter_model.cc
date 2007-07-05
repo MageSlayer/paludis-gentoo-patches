@@ -2,7 +2,6 @@
 
 #include "packages_package_filter_model.hh"
 #include "main_window.hh"
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>

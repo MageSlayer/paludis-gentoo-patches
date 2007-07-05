@@ -18,7 +18,7 @@ namespace gtkpaludis
     {
         protected:
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryNameCollection> names);
+            void populate_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryNameSequence> names);
 
         public:
             PackagesRepositoryFilterModel(MainWindow * const m);

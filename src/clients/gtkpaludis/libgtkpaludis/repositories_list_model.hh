@@ -5,6 +5,7 @@
 
 #include <gtkmm/liststore.h>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 
 namespace gtkpaludis
@@ -17,7 +18,7 @@ namespace gtkpaludis
     {
         protected:
             void populate_in_paludis_thread();
-            void populate_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryNameCollection> names);
+            void populate_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryNameSequence> names);
 
         public:
             RepositoriesListModel(MainWindow * const m);

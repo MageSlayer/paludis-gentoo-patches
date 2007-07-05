@@ -6,7 +6,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
 #include <paludis/query.hh>
-#include <paludis/package_database_entry.hh>
 #include <libgtkpaludis/main_notebook_page.hh>
 #include <libgtkpaludis/packages_package_filter_option.hh>
 #include <libgtkpaludis/packages_text_filter_source_option.hh>
