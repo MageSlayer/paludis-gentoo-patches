@@ -148,7 +148,7 @@ VDBUnmerger::extend_hook(const Hook & h) const
         std::string pvr(stringify(_imp->options.package_id->version()));
         std::string pv(stringify(_imp->options.package_id->version().remove_revision()));
 
-        result
+        return result
             ("P", pn + "-" + pv)
             ("PN", pn)
             ("CATEGORY", cat)
