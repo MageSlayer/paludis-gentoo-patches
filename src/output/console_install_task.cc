@@ -771,8 +771,7 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const Disp
 
         case error_entry:
             output_no_endl(" (for ");
-            output_no_endl(render_as_package_name(stringify(d.name())));
-            output_no_endl("-" + stringify(d.version()) + "::" + stringify(d.repository()->name()));
+            output_no_endl(render_as_package_name(stringify(d)));
             output_no_endl(")");
             break;
     }
@@ -861,14 +860,14 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                 else if ((*existing_slot_repo->last())->version() < d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("U " +
-                                stringify((*existing_slot_repo->last())->version()) + destination_str));
+                                stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + destination_str));
                     set_count<upgrade_count>(count<upgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
                 else if ((*existing_slot_repo->last())->version() > d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("D " +
-                                stringify((*existing_slot_repo->last())->version()) + destination_str));
+                                stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + destination_str));
                     set_count<downgrade_count>(count<downgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
