@@ -51,7 +51,7 @@ TESTS = virtuals_repository_TEST installed_virtuals_repository_TEST
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS =
 
-EXTRA_DIST = virtuals_repository_TEST_SOURCES installed_virtuals_repository_TEST_SOURCES
+EXTRA_DIST = $(virtuals_repository_TEST_SOURCES) $(installed_virtuals_repository_TEST_SOURCES)
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
