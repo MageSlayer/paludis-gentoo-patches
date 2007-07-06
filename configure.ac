@@ -903,6 +903,7 @@ AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
+			  all             All available repositories
 			  default         Equivalent to e,fake,virtuals
 
 			  cran            The Comprehensive R Archive Network (experimental)
@@ -912,7 +913,10 @@ AC_ARG_WITH([repositories],
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
-repositories=`echo $repositories | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_REPOSITORIES," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+repositories=`echo $repositories | tr ' ' '\n' \
+	| sed -e "s,^default\$,$DEFAULT_REPOSITORIES," \
+	| sed -e "s,^all\$,$ALL_REPOSITORIES," \
+	| tr ' ' '\n' | sort -u | tr '\n' ' '`
 AC_MSG_RESULT([$repositories])
 BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
@@ -931,7 +935,8 @@ AC_MSG_CHECKING([which environments to build...])
 AC_ARG_WITH([environments],
 			[  --with-environments=foo,bar,...
 			  Build the specified environments:
-			  default         Equivalent to adapted,no_config,paludis.test
+			  all             All available environments
+			  default         Equivalent to adapted,no_config,paludis,test
 
 			  adapted         An environment adapter, for contrarius etc
 			  no_config       Configurationless environment, for adjutrix etc
@@ -940,7 +945,10 @@ AC_ARG_WITH([environments],
 			  test            For test cases],
 			[environments="`echo $with_environments | tr ',' ' '`"],
 			[environments="$DEFAULT_ENVIRONMENTS"])
-environments=`echo $environments | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_ENVIRONMENTS," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+environments=`echo $environments | tr ' ' '\n' \
+	|sed -e "s,^default\$,$DEFAULT_ENVIRONMENTS," \
+	|sed -e "s,^all\$,$ALL_ENVIRONMENTS," \
+	| tr ' ' '\n' | sort -u | tr '\n' ' '`
 AC_MSG_RESULT([$environments])
 BUILD_ENVIRONMENTS="$environments"
 AC_SUBST([ALL_ENVIRONMENTS])
@@ -967,7 +975,8 @@ fi
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
-			  Build the specified repositories:
+			  Build the specified clients:
+			  all             All available clients
 			  default         Equivalent to adjutrix,paludis
 			                  Also includes qualudis if --enable-qa
 
@@ -979,7 +988,10 @@ AC_ARG_WITH([clients],
 			  qualudis        The QA console client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
-clients=`echo $clients | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_CLIENTS," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+clients=`echo $clients | tr ' ' '\n' \
+	| sed -e "s,^default\$,$DEFAULT_CLIENTS," \
+	| sed -e "s,^all\$,$ALL_CLIENTS," \
+	| tr ' ' '\n' | sort -u | tr '\n' ' '`
 AC_MSG_RESULT([$clients])
 BUILD_CLIENTS="$clients"
 AC_SUBST([ALL_CLIENTS])
