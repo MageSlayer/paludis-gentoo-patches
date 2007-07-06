@@ -39,7 +39,7 @@ struct DepTagCategoryMakerWrapper
 void PALUDIS_VISIBLE expose_dep_tag()
 {
     /**
-     * Exceptions.
+     * Exceptions
      */
     ExceptionRegister::get_instance()->add_exception<NoSuchDepTagCategory>
         ("NoSuchDepTagCategory", "BaseException",
@@ -162,14 +162,14 @@ void PALUDIS_VISIBLE expose_dep_tag()
         (
          "DependencyDepTag",
          "DepTag subclass for dependencies.",
-         bp::init<const PackageDatabaseEntry &, const PackageDepSpec &,
-                tr1::shared_ptr<DependencySpecTree::ConstItem> >(
-                    "__init__(PackageDatabaseEntry, PackageDepSpec, CompositeDepSpec)"
+         bp::init<const tr1::shared_ptr<const PackageID> &, const PackageDepSpec &,
+                const tr1::shared_ptr<const DependencySpecTree::ConstItem> >(
+                    "__init__(PackageID, PackageDepSpec, CompositeDepSpec)"
                     )
         )
-        .add_property("package", &DependencyDepTag::package,
-                "[ro] PackageDatabaseEntry\n"
-                "The PackageDatabaseEntry that contains our dependency."
+        .add_property("package_id", &DependencyDepTag::package_id,
+                "[ro] PackageID\n"
+                "The PackageID that contains our dependency."
                 )
 
         .add_property("dependency", bp::make_function(&DependencyDepTag::dependency,

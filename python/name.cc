@@ -18,8 +18,11 @@
  */
 
 #include <paludis_python.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+
 #include <paludis/name.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -78,13 +81,12 @@ void PALUDIS_VISIBLE expose_name()
         );
 
     /**
-     * PackageNamePartCollection
+     * PackageNamePartIterable
      */
-    class_collection<PackageNamePartCollection>
+    class_iterable<PackageNamePartSet>
         (
-         "PackageNamePartCollection",
-         "Iterable of PackageNamePart.\n"
-         "A collection of PackageNamePart instances."
+         "PackageNamePartIterable",
+         "Iterable of PackageNamePart"
         );
 
     /**
@@ -101,13 +103,12 @@ void PALUDIS_VISIBLE expose_name()
         ;
 
     /**
-     * CategoryNamePartCollection
+     * CategoryNamePartIterable
      */
-    class_collection<CategoryNamePartCollection>
+    class_iterable<CategoryNamePartSet>
         (
-         "CategoryNamePartCollection",
-         "Iterable of CategoryNamePart.\n"
-         "A collection of CategoryNamePart instances."
+         "CategoryNamePartIterable",
+         "Iterable of CategoryNamePart"
         );
 
     /**
@@ -120,13 +121,12 @@ void PALUDIS_VISIBLE expose_name()
         );
 
     /**
-     * UseFlagNameCollection
+     * UseFlagNameIterable
      */
-    class_collection<UseFlagNameCollection>
+    class_iterable<UseFlagNameSet>
         (
-         "UseFlagNameCollection",
-         "Iterable of UseFlagName.\n"
-         "A collection of UseFlagName instances."
+         "UseFlagNameIterable",
+         "Iterable of UseFlagName"
         );
 
     /**
@@ -150,13 +150,12 @@ void PALUDIS_VISIBLE expose_name()
         );
 
     /**
-     * RepositoryNameCollection
+     * RepositoryNameIterable
      */
-    class_collection<RepositoryNameCollection>
+    class_iterable<RepositoryNameSequence>
         (
-         "RepositoryNameCollection",
-         "Iterable of RepositoryName\n"
-         "A collection of RepositoryName instances."
+         "RepositoryNameIterable",
+         "Iterable of RepositoryName"
         );
 
     /**
@@ -171,11 +170,10 @@ void PALUDIS_VISIBLE expose_name()
     /**
      * KeywordNameCollect
      */
-    class_collection<KeywordNameCollection>
+    class_iterable<KeywordNameSet>
         (
-         "KeywordNameCollection",
-         "Iterable of KeywordName\n"
-         "A collection of KeywordName instances."
+         "KeywordNameIterable",
+         "Iterable of KeywordName"
         );
 
     /**
@@ -188,23 +186,21 @@ void PALUDIS_VISIBLE expose_name()
         );
 
     /**
-     * SetNameCollection
+     * SetNameIterable
      */
-    class_collection<SetNameCollection>
+    class_iterable<SetNameSet>
         (
-         "SetNameCollection",
-         "Iterable of SetName\n"
-         "A collection of set names."
+         "SetNameIterable",
+         "Iterable of SetName"
         );
 
     /**
-     * InheritedCollection
+     * InheritedIterable
      */
-    class_collection<InheritedCollection>
+    class_iterable<InheritedSet>
         (
-         "InheritedCollection",
-         "Iterable of string\n"
-         "A collection of inherited packages."
+         "InheritedIterable",
+         "Iterable of string"
         );
 
     /**
@@ -230,13 +226,12 @@ void PALUDIS_VISIBLE expose_name()
         ;
 
     /**
-     * QualifiedPackageNameCollection
+     * QualifiedPackageNameIterable
      */
-    class_collection<QualifiedPackageNameCollection>
+    class_iterable<QualifiedPackageNameSet>
         (
-         "QualifiedPackageNameCollection",
-         "Iterable of QualifiedPackageName\n"
-         "A collection of QualifiedPackageName instances."
+         "QualifiedPackageNameIterable",
+         "Iterable of QualifiedPackageName"
         );
 
     /**
@@ -265,12 +260,11 @@ void PALUDIS_VISIBLE expose_name()
         ;
 
     /**
-     * IUseFlagNameCollection
+     * IUseFlagNameIterable
      */
-    class_collection<IUseFlagCollection>
+    class_iterable<IUseFlagSet>
         (
-         "IUseFlagCollection",
-         "Iterable of IUseFlag\n"
-         "A collection of use flags."
+         "IUseFlagIterable",
+         "Iterable of IUseFlag"
         );
 }

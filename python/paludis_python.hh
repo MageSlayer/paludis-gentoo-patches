@@ -67,13 +67,23 @@ namespace paludis
 {
     namespace python
     {
+        // Which shared_ptrs to expose
+        enum RegisterSharedPointers
+        {
+            rsp_both,
+            rsp_non_const,
+            rsp_const
+        };
+
         // register shared_ptrs
         template <typename T_>
         void
-        register_shared_ptrs_to_python()
+        register_shared_ptrs_to_python(RegisterSharedPointers rsp=rsp_both)
         {
-            boost::python::register_ptr_to_python<tr1::shared_ptr<T_> >();
-            boost::python::register_ptr_to_python<tr1::shared_ptr<const T_> >();
+            if (rsp == rsp_both || rsp == rsp_non_const)
+                boost::python::register_ptr_to_python<tr1::shared_ptr<T_> >();
+            if (rsp == rsp_both || rsp == rsp_const)
+                boost::python::register_ptr_to_python<tr1::shared_ptr<const T_> >();
             boost::python::implicitly_convertible<tr1::shared_ptr<T_>, tr1::shared_ptr<const T_> >();
         }
 
@@ -99,7 +109,7 @@ namespace paludis
 
         // Compare
         template <typename T_>
-        int py_cmp(T_ & a, T_ & b)
+        int py_cmp(const T_ & a, const T_ & b)
         {
             if (a == b)
                 return 0;
@@ -109,9 +119,16 @@ namespace paludis
                 return 1;
         }
 
+        // Equal
+        template <typename T_>
+        bool py_eq(const T_ & a, const T_ & b)
+        {
+            return (a == b);
+        }
+
         // Not equal
         template <typename T_>
-        bool py_ne(T_ & a, T_ & b)
+        bool py_ne(const T_ & a, const T_ & b)
         {
             return ! (a == b);
         }
@@ -133,13 +150,13 @@ namespace paludis
                 }
         };
 
-        // expose *Collection classes
+        // expose iterable classes
         template <typename C_>
-        class class_collection :
+        class class_iterable :
             public boost::python::class_<C_, boost::noncopyable>
         {
             public:
-                class_collection(const std::string & name, const std::string & class_doc) :
+                class_iterable(const std::string & name, const std::string & class_doc) :
                     boost::python::class_<C_, boost::noncopyable>(name.c_str(), class_doc.c_str(),
                             boost::python::no_init)
                 {

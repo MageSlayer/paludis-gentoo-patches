@@ -31,9 +31,10 @@ import unittest
 Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_Environments(unittest.TestCase):
-    def get_envs(self):
-        self.e = EnvironmentMaker.instance.make_from_spec("")
-        self.nce = NoConfigEnvironment(repo)
+    def setUp(self):
+        global e, nce
+        e = EnvironmentMaker.instance.make_from_spec("")
+        nce = NoConfigEnvironment(repo)
 
     def test_01_create(self):
         NoConfigEnvironment(repo)
@@ -50,74 +51,56 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(NoConfigEnvironment(repo), Environment))
 
     def test_04_query_use(self):
-        self.get_envs()
+        pid = iter(e.package_database.query(Query.Matches(
+            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            QueryOrder.REQUIRE_EXACTLY_ONE)).next()
 
-        pde = PackageDatabaseEntry("x/x", "1.0", "testrepo")
+        self.assert_(e.query_use("enabled", pid))
+        self.assert_(not e.query_use("not_enabled", pid))
+        self.assert_(e.query_use("sometimes_enabled", pid))
 
-        self.assert_(self.e.query_use("enabled", pde))
-        self.assert_(not self.e.query_use("not_enabled", pde))
-        self.assert_(not self.e.query_use("sometimes_enabled", pde))
-
-        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
-
-        self.assert_(self.e.query_use("enabled", pde))
-        self.assert_(not self.e.query_use("not_enabled", pde))
-        self.assert_(self.e.query_use("sometimes_enabled", pde))
-
-        self.assert_(not self.nce.query_use("foo", pde))
+        self.assert_(not nce.query_use("foo", pid))
 
     def test_05_mask_reasons(self):
-        self.get_envs()
-        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
+        pid = iter(nce.package_database.query(Query.Matches(
+            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            QueryOrder.REQUIRE_EXACTLY_ONE)).next()
 
-        self.nce.mask_reasons(pde)
+        nce.mask_reasons(pid)
 
     def test_06_package_database(self):
-        self.get_envs()
+        self.assert_(isinstance(e.package_database, PackageDatabase))
+        self.assert_(isinstance(nce.package_database, PackageDatabase))
 
-        self.assert_(isinstance(self.e.package_database, PackageDatabase))
-        self.assert_(isinstance(self.nce.package_database, PackageDatabase))
+    def test_07_sets(self):
+        self.assert_(isinstance(e.set("everything"), AllDepSpec))
+        self.assert_(isinstance(nce.set("everything"), AllDepSpec))
 
-#    def test_07_sets(self):
-#        self.get_envs()
-#
-#        self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
-#        self.assert_(isinstance(self.nce.set("everything"), AllDepSpec))
-#
-#        self.assert_(isinstance(self.e.set_names(), SetNameCollection))
-#        self.assert_(isinstance(self.nce.set_names(), SetNameCollection))
+        self.assert_(isinstance(e.set_names(), SetNameIterable))
+        self.assert_(isinstance(nce.set_names(), SetNameIterable))
 
     def test_08_repositories(self):
-        self.get_envs()
-        self.nce2 = NoConfigEnvironment(repo, master_repository_dir=slaverepo)
+        nce2 = NoConfigEnvironment(repo, master_repository_dir=slaverepo)
 
-        self.assert_(isinstance(self.nce.main_repository, Repository))
-        self.assertEquals(self.nce.master_repository, None)
-        self.assert_(isinstance(self.nce2.main_repository, Repository))
-        self.assert_(isinstance(self.nce2.master_repository, Repository))
+        self.assert_(isinstance(nce.main_repository, Repository))
+        self.assertEquals(nce.master_repository, None)
+        self.assert_(isinstance(nce2.main_repository, Repository))
+        self.assert_(isinstance(nce2.master_repository, Repository))
 
     def test_09_root(self):
-        self.get_envs()
-
-        self.assert_(isinstance(self.e.root(), str))
-        self.assert_(isinstance(self.nce.root(), str))
+        self.assert_(isinstance(e.root(), str))
+        self.assert_(isinstance(nce.root(), str))
 
     def test_10_default_destinations(self):
-        self.get_envs()
-
-        self.assert_(isinstance(self.e.default_destinations(), DestinationsCollection))
-        self.assert_(isinstance(self.nce.default_destinations(), DestinationsCollection))
+        self.assert_(isinstance(e.default_destinations(), DestinationsIterable))
+        self.assert_(isinstance(nce.default_destinations(), DestinationsIterable))
 
     def test_11_set_accept_unstable(self):
-        self.get_envs()
-
-        self.nce.accept_unstable = True
-        self.assertRaises(AttributeError, lambda: self.nce.accept_unstable)
+        nce.accept_unstable = True
+        self.assertRaises(AttributeError, lambda: nce.accept_unstable)
 
     def test_12_config_dir(self):
-        self.get_envs()
-
-        self.assert_(isinstance(self.e.config_dir, str))
+        self.assert_(isinstance(e.config_dir, str))
 
 class TestCase_02_AdaptedEnvironment(unittest.TestCase):
     def test_01_create(self):
@@ -125,35 +108,38 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
 
     def test_02_adapt_use(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
-        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
+        pid = iter(env.package_database.query(Query.Matches(
+            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
 
-        self.assert_(env.query_use("enabled", pde))
-        self.assert_(not env.query_use("not_enabled", pde))
-        self.assert_(env.query_use("sometimes_enabled", pde))
+        self.assert_(env.query_use("enabled", pid))
+        self.assert_(not env.query_use("not_enabled", pid))
+        self.assert_(env.query_use("sometimes_enabled", pid))
 
         env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
-        self.assert_(not env.query_use("enabled", pde))
+        self.assert_(not env.query_use("enabled", pid))
 
         env.adapt_use(pds, "not_enabled", UseFlagState.ENABLED)
-        self.assert_(env.query_use("not_enabled", pde))
+        self.assert_(env.query_use("not_enabled", pid))
 
         env.adapt_use(pds, "sometimes_enabled", UseFlagState.ENABLED)
-        self.assert_(env.query_use("sometimes_enabled", pde))
+        self.assert_(env.query_use("sometimes_enabled", pid))
 
     def test_03_clear_adaptions(self):
         env = AdaptedEnvironment(EnvironmentMaker.instance.make_from_spec(""))
-        pde = PackageDatabaseEntry("foo/bar", "1.0", "testrepo")
+        pid = iter(env.package_database.query(Query.Matches(
+            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
+            QueryOrder.REQUIRE_EXACTLY_ONE)).next()
         pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
 
-        self.assert_(env.query_use("enabled", pde))
+        self.assert_(env.query_use("enabled", pid))
 
         env.adapt_use(pds, "enabled", UseFlagState.DISABLED)
-        self.assert_(not env.query_use("enabled", pde))
+        self.assert_(not env.query_use("enabled", pid))
 
         env.clear_adaptions()
-        self.assert_(env.query_use("enabled", pde))
-
+        self.assert_(env.query_use("enabled", pid))
 
 
 if __name__ == "__main__":

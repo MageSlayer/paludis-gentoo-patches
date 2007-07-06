@@ -25,6 +25,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/package_id.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -127,13 +128,13 @@ void PALUDIS_VISIBLE expose_environment()
             )
 
         .def("query_use", &Environment::query_use,
-                "query_use(UseFlagName, PackageDatabaseEntry) -> bool\n"
+                "query_use(UseFlagName, PackageID) -> bool\n"
                 "Is a particular use flag enabled for a particular package?"
             )
 
         .def("mask_reasons", &Environment::mask_reasons,
-                (bp::arg("PackageDatabaseEntry"), bp::arg("MaskReasonOptions")=MaskReasonsOptions()),
-                "mask_reasons(PackageDatabaseEntry, MaskReasonsOptions=MaskReasonsOptions())"
+                (bp::arg("PackageID"), bp::arg("MaskReasonOptions")=MaskReasonsOptions()),
+                "mask_reasons(PackageID, MaskReasonsOptions=MaskReasonsOptions())"
                 " -> set of MaskReason\n"
                 "Return the reasons for a package being masked."
             )

@@ -70,14 +70,4 @@ void PALUDIS_VISIBLE expose_version_spec()
 
         .def(bp::self_ns::str(bp::self))
         ;
-
-    /**
-     * VersionSpecCollection
-     */
-    class_collection<VersionSpecCollection>
-        (
-         "VersionSpecCollection",
-         "Iterable of VersionSpec.\n"
-         "Collection of VersionSpec instances."
-        );
 }

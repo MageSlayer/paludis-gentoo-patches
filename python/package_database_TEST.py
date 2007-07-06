@@ -51,10 +51,9 @@ class TestCase_PackageDatabase(unittest.TestCase):
     def test_5_query(self):
         self.get_db()
         pkgs = list(self.db.query(Query.Package("foo/bar"), QueryOrder.ORDER_BY_VERSION))
-        self.assertEqual(pkgs, [
-            PackageDatabaseEntry("foo/bar", "1.0", "testrepo"),
-            PackageDatabaseEntry("foo/bar", "2.0", "testrepo"),
-            ])
+        self.assertEqual([x.canonical_form(PackageIDCanonicalForm.FULL) for x in pkgs], [
+            "foo/bar-1.0::testrepo",
+            "foo/bar-2.0::testrepo"])
 
         pkgs = list(self.db.query(Query.Matches(PackageDepSpec(">=foo/bar-10", PackageDepSpecParseMode.PERMISSIVE)),
             QueryOrder.ORDER_BY_VERSION))

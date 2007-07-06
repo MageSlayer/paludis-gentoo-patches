@@ -41,6 +41,10 @@ cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
+foo1
+foo2
+foo3
+foo4
 END
 
 cat <<END > profiles/profiles.desc || exit 1
@@ -93,6 +97,23 @@ foo/bar:test2 - A test local use flag
 END
 
 touch licenses/foo
+
+for i in 1 2 3 4; do
+    mkdir -p foo${i}/bar/
+
+cat <<"END" > foo${i}/bar/bar-1.0.ebuild || exit 1
+DESCRIPTION="Test package"
+HOMEPAGE="http://paludis.pioto.org/"
+SRC_URI=""
+SLOT="0"
+IUSE="test1"
+LICENSE="GPL-2"
+KEYWORDS="test"
+END
+
+done
+
+
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"

@@ -31,7 +31,7 @@ class TestCase_Log(unittest.TestCase):
     def test_03_log_level(self):
         ll = Log.instance.log_level
 
-        self.assertEquals(ll, LogLevel.DEBUG)
+        self.assertEquals(ll, LogLevel.QA)
         self.assert_(ll >= LogLevel.DEBUG)
         self.assert_(ll <= LogLevel.SILENT)
 

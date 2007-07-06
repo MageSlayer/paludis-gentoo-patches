@@ -240,7 +240,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
                 deep_copy(p.package_ptr()),
                 deep_copy(p.category_name_part_ptr()),
                 deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
@@ -251,7 +251,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     if (p.version_requirements_ptr())
     {
         std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-            _imp->version_requirements->inserter());
+            _imp->version_requirements->back_inserter());
     }
 }
 
@@ -261,7 +261,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 deep_copy(p.package_ptr()),
                 deep_copy(p.category_name_part_ptr()),
                 deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
@@ -270,7 +270,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 p.py_str()))
 {
     std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-            _imp->version_requirements->inserter());
+            _imp->version_requirements->back_inserter());
 }
 
 PythonPackageDepSpec::~PythonPackageDepSpec()
@@ -296,7 +296,7 @@ PythonPackageDepSpec::without_use_requirements() const
             deep_copy(package_ptr()),
             deep_copy(category_name_part_ptr()),
             deep_copy(package_name_part_ptr()),
-            tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+            tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
             version_requirements_mode(),
             deep_copy(slot_ptr()),
             deep_copy(repository_ptr()),
@@ -307,7 +307,7 @@ PythonPackageDepSpec::without_use_requirements() const
     if (version_requirements_ptr())
     {
         std::copy(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
-                p.version_requirements_ptr()->inserter());
+                p.version_requirements_ptr()->back_inserter());
     }
 
     return tr1::shared_ptr<PythonPackageDepSpec>(new PythonPackageDepSpec(*p.without_use_requirements()));
@@ -522,7 +522,7 @@ package_dep_spec_from_python(const PythonPackageDepSpec & p)
                 deep_copy(p.package_ptr()),
                 deep_copy(p.category_name_part_ptr()),
                 deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
@@ -532,7 +532,7 @@ package_dep_spec_from_python(const PythonPackageDepSpec & p)
     if (p.version_requirements_ptr())
     {
         std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                result->version_requirements_ptr()->inserter());
+                result->version_requirements_ptr()->back_inserter());
     }
     return result;
 }
@@ -582,6 +582,14 @@ struct AllowedTypes<DependencySpecTree>
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
 };
+
+template<>
+struct AllowedTypes<SetSpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const PackageDepSpec &) {};
+};
+
 
 template <typename>
 struct NiceClassNames;
@@ -998,7 +1006,7 @@ struct RegisterPackageDepSpecFromPython
                     deep_copy(p.package_ptr()),
                     deep_copy(p.category_name_part_ptr()),
                     deep_copy(p.package_name_part_ptr()),
-                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
                     p.version_requirements_mode(),
                     deep_copy(p.slot_ptr()),
                     deep_copy(p.repository_ptr()),
@@ -1009,7 +1017,7 @@ struct RegisterPackageDepSpecFromPython
         if (p.version_requirements_ptr())
         {
             std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                    reinterpret_cast<PackageDepSpec *>(storage)->version_requirements_ptr()->inserter());
+                    reinterpret_cast<PackageDepSpec *>(storage)->version_requirements_ptr()->back_inserter());
         }
         data->convertible = storage;
     }
@@ -1044,7 +1052,7 @@ struct RegisterPackageDepSpecSPFromPython
                     deep_copy(p.package_ptr()),
                     deep_copy(p.category_name_part_ptr()),
                     deep_copy(p.package_name_part_ptr()),
-                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements::Concrete),
+                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
                     p.version_requirements_mode(),
                     deep_copy(p.slot_ptr()),
                     deep_copy(p.repository_ptr()),
@@ -1054,7 +1062,7 @@ struct RegisterPackageDepSpecSPFromPython
         if (p.version_requirements_ptr())
         {
             std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                    (*reinterpret_cast<tr1::shared_ptr<PackageDepSpec> *>(storage))->version_requirements_ptr()->inserter());
+                    (*reinterpret_cast<tr1::shared_ptr<PackageDepSpec> *>(storage))->version_requirements_ptr()->back_inserter());
         }
         data->convertible = storage;
     }
@@ -1084,6 +1092,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
     register_tree_to_python<RestrictSpecTree>();
     register_tree_to_python<URISpecTree>();
     register_tree_to_python<LicenseSpecTree>();
+    register_tree_to_python<SetSpecTree>();
 
     RegisterSpecTreeFromPython<DependencySpecTree>();
     RegisterSpecTreeFromPython<ProvideSpecTree>();

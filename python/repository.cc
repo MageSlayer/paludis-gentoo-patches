@@ -19,10 +19,14 @@
 
 #include <paludis_python.hh>
 
-#include <datetime.h>
-
 #include <paludis/repository.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
+#include <paludis/repository_info.hh>
+#include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/package_id.hh>
+#include <paludis/environment.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
@@ -125,12 +129,6 @@ struct RepositoryWrapper :
         return self.destination_interface;
     }
 
-    static RepositoryContentsInterface *
-    get_contents_interface(const Repository & self)
-    {
-        return self.contents_interface;
-    }
-
     static RepositoryConfigInterface *
     get_config_interface(const Repository & self)
     {
@@ -143,28 +141,30 @@ struct RepositoryWrapper :
         return self.licenses_interface;
     }
 
-    static RepositoryPortageInterface *
-    get_portage_interface(const Repository & self)
+    static RepositoryEInterface *
+    get_e_interface(const Repository & self)
     {
-        return self.portage_interface;
+        return self.e_interface;
     }
 };
 
-struct RepositoryInstalledInterfaceWrapper :
-    RepositoryInstalledInterface
+struct FakeRepositoryWrapper :
+    FakeRepository,
+    bp::wrapper<FakeRepository>
 {
-    static PyObject *
-    installed_time(const RepositoryInstalledInterface & self,
-            const QualifiedPackageName & qpn, const VersionSpec & vs)
+    FakeRepositoryWrapper(const Environment * const env, const RepositoryName & name) :
+        FakeRepository(env, name)
     {
-        PyDateTime_IMPORT;
-        return PyDateTime_FromTimestamp(bp::make_tuple(self.installed_time(qpn, vs)).ptr());
     }
 
+    static tr1::shared_ptr<PackageID>
+    add_version(FakeRepository & self, const QualifiedPackageName & qpn, const VersionSpec & vs)
+    {
+        return self.add_version(qpn, vs);
+    }
 };
 
-struct RepositoryLicensesInterfaceWrapper :
-    RepositoryLicensesInterface
+struct RepositoryLicensesInterfaceWrapper
 {
     static PyObject *
     license_exists(const RepositoryLicensesInterface & self, const std::string & license)
@@ -177,26 +177,41 @@ struct RepositoryLicensesInterfaceWrapper :
     }
 };
 
-struct RepositoryPortageInterfaceWrapper :
-    RepositoryPortageInterface
+struct RepositoryEInterfaceWrapper
 {
     static bp::object
-    my_find_profile(const RepositoryPortageInterface & self, const FSEntry & location)
+    my_find_profile(const RepositoryEInterface & self, const FSEntry & location)
     {
-        ProfilesIterator p(self.find_profile(location));
+        RepositoryEInterface::ProfilesIterator p(self.find_profile(location));
         if (p == self.end_profiles())
             return bp::object();
         return bp::object(bp::ptr(&*p));
     }
 
     static void
-    my_set_profile(RepositoryPortageInterface & self, const ProfilesDescLine & pdl)
+    my_set_profile(RepositoryEInterface & self, const RepositoryEInterface::ProfilesDescLine & pdl)
     {
         self.set_profile(self.find_profile(pdl.path));
     }
-
 };
 
+// FIXME
+//template <typename I_>
+//struct repository_interface_to_python
+//{
+//    static PyObject *
+//    convert(const I_ & i)
+//    {
+//        return 0;
+//        return bp::incref(bp::object(bp::ptr(&i)).ptr());
+//    }
+//};
+//
+//template <typename I_>
+//void register_repository_interface_to_python()
+//{
+//    bp::to_python_converter<I_, repository_interface_to_python<I_> >();
+//}
 
 void PALUDIS_VISIBLE expose_repository()
 {
@@ -223,13 +238,12 @@ void PALUDIS_VISIBLE expose_repository()
          "Thrown if an environment variable query fails.");
 
     /**
-     * DestinationCollection
+     * DestinationIterable
      */
-    class_collection<DestinationsCollection>
+    class_iterable<DestinationsSet>
         (
-         "DestinationsCollection",
-         "Iterable of Repository.\n"
-         "A set of Destinations."
+         "DestinationsIterable",
+         "Iterable of Repository."
         );
 
     /**
@@ -273,15 +287,15 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * Repository
      */
-    register_shared_ptrs_to_python<Repository>();
-    bp::class_<RepositoryWrapper, boost::noncopyable>
+    register_shared_ptrs_to_python<Repository>(rsp_const);
+    bp::class_<RepositoryWrapper, tr1::shared_ptr<Repository>, boost::noncopyable>
         (
          "Repository",
          "A Repository provides a representation of a physical repository to a PackageDatabase.",
          bp::no_init
         )
         .def("info", &Repository::info, &RepositoryWrapper::default_info,
-                "info() -> RepositoryInfo"
+                "info() -> RepositoryInfo\n"
                 "Fetch information about the repository."
             )
 
@@ -302,37 +316,28 @@ void PALUDIS_VISIBLE expose_repository()
             )
 
         .def("has_package_named", &Repository::has_package_named,
+                "has_package_named(QualifiedPackageName) -> bool\n"
                 "Do we have a package in the given category with the given name?"
             )
 
         .add_property("category_names", &Repository::category_names,
-                "[ro] CategoryNamePartCollection\n"
+                "[ro] CategoryNamePartIterable\n"
                 "Our category names."
                 )
 
         .def("category_names_containing_package", &Repository::category_names_containing_package,
-                "category_names_containing_package(PackageNamePart) -> CategoryNamePartCollection\n"
+                "category_names_containing_package(PackageNamePart) -> CategoryNamePartIterable\n"
                 "Fetch categories that contain a named package."
             )
 
         .def("package_names", &Repository::package_names,
-                "package_names(CategoryNamePart) -> QualifiedPackageNameCollection\n"
+                "package_names(CategoryNamePart) -> QualifiedPackageNameIterable\n"
                 "Fetch our package names."
             )
 
-        .def("version_specs", &Repository::version_specs,
-                "version_specs(QualifiedPackageName) -> VersionSpecCollection\n"
+        .def("package_ids", &Repository::package_ids, bp::with_custodian_and_ward_postcall<0, 1>(),
+                "package_ids(QualifiedPackageName) -> PackageIDIterable\n"
                 "Fetch our versions."
-            )
-
-        .def("has_version", &Repository::has_version,
-                "has_version(QualifiedPackageName, VersionSpec) -> bool\n"
-                "Do we have a version spec?"
-            )
-
-        .def("version_metadata", &Repository::version_metadata,
-                "version_metadata(QualifiedPackageName, VersionSpec) -> VersionMetadata\n"
-                "Fetch metadata."
             )
 
         .add_property("mask_interface", bp::make_function(&RepositoryWrapper::get_mask_interface,
@@ -401,11 +406,6 @@ void PALUDIS_VISIBLE expose_repository()
                 "[ro] RepositoryDestinationInterface"
                 )
 
-        .add_property("contents_interface", bp::make_function(&RepositoryWrapper::get_contents_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryContentsInterface"
-                )
-
         .add_property("config_interface", bp::make_function(&RepositoryWrapper::get_config_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryConfigInterface"
@@ -416,34 +416,33 @@ void PALUDIS_VISIBLE expose_repository()
                 "[ro] RepositoryLicensesInterface"
                 )
 
-        .add_property("portage_interface", bp::make_function(&RepositoryWrapper::get_portage_interface,
+        .add_property("e_interface", bp::make_function(&RepositoryWrapper::get_e_interface,
                     bp::return_internal_reference<>()),
-                "[ro] RepositoryPortageInterface"
+                "[ro] RepositoryEInterface"
                 )
         ;
 
     /**
-     * RepositoryPortageInterfaceProfilesDescLine
+     * RepositoryEInterfaceProfilesDescLine
      */
-    bp::class_<RepositoryPortageInterfaceProfilesDescLine>
+    bp::class_<RepositoryEInterfaceProfilesDescLine>
         (
-         "RepositoryPortageInterfaceProfilesDescLine",
-         "A profiles.desc line in a Repository implementing RepositoryPortageInterface.",
+         "RepositoryEInterfaceProfilesDescLine",
+         "A profiles.desc line in a Repository implementing RepositoryEInterface.",
          bp::no_init
         )
-        .add_property("path", bp::make_getter(&RepositoryPortageInterfaceProfilesDescLine::path,
+        .add_property("path", bp::make_getter(&RepositoryEInterfaceProfilesDescLine::path,
                     bp::return_value_policy<bp::return_by_value>())
                 )
 
-        .def_readonly("arch", &RepositoryPortageInterfaceProfilesDescLine::arch)
+        .def_readonly("arch", &RepositoryEInterfaceProfilesDescLine::arch)
 
-        .def_readonly("status", &RepositoryPortageInterfaceProfilesDescLine::status)
+        .def_readonly("status", &RepositoryEInterfaceProfilesDescLine::status)
         ;
 
     /**
      * RepositoryMaskInterface
      */
-    bp::register_ptr_to_python<RepositoryMaskInterface *>();
     bp::class_<RepositoryMaskInterface, boost::noncopyable>
         (
          "RepositoryMaskInterface",
@@ -451,12 +450,12 @@ void PALUDIS_VISIBLE expose_repository()
          bp::no_init
         )
         .def("query_repository_masks", &RepositoryMaskInterface::query_repository_masks,
-                "query_repository_masks(QualifiedPackageName, VersionSpec) -> bool\n"
+                "query_repository_masks(PackageID) -> bool\n"
                 "Query repository masks."
             )
 
         .def("query_profile_masks", &RepositoryMaskInterface::query_profile_masks,
-                "query_profile_masks(QualifiedPackageName, VersionSpec) -> bool\n"
+                "query_profile_masks(PackageID) -> bool\n"
                 "Query profile masks."
             )
         ;
@@ -464,7 +463,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryUseInterface
      */
-    bp::register_ptr_to_python<RepositoryUseInterface *>();
     bp::class_<RepositoryUseInterface, boost::noncopyable>
         (
          "RepositoryUseInterface",
@@ -473,25 +471,25 @@ void PALUDIS_VISIBLE expose_repository()
         )
         .def("query_use", &RepositoryUseInterface::query_use,
                 ("ufn", bp::arg("pde")),
-                "query_use(UseFlagName, PackageDatabaseEntry) -> UseFlagState\n"
+                "query_use(UseFlagName, PackageID) -> UseFlagState\n"
                 "Query the state of the specified use flag."
             )
 
         .def("query_use_mask", &RepositoryUseInterface::query_use_mask,
                 ("ufn", bp::arg("pde")),
-                "query_use_mask(UseFlagName, PackageDatabaseEntry) -> bool\n"
+                "query_use_mask(UseFlagName, PackageID) -> bool\n"
                 "Query whether the specified use flag is masked."
             )
 
         .def("query_use_force", &RepositoryUseInterface::query_use_force,
                 ("ufn", bp::arg("pde")),
-                "query_use_force(UseFlagName, PackageDatabaseEntry) -> bool\n"
+                "query_use_force(UseFlagName, PackageID) -> bool\n"
                 "Query whether the specified use flag is forceed."
             )
 
         .def("describe_use_flag", &RepositoryUseInterface::describe_use_flag,
                 ("ufn", bp::arg("pde")),
-                "describe_use_flag(UseFlagName, PackageDatabaseEntry) -> string\n"
+                "describe_use_flag(UseFlagName, PackageID) -> string\n"
                 "Describe a use flag."
             )
         ;
@@ -499,17 +497,12 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryInstalledInterface
      */
-    bp::register_ptr_to_python<RepositoryInstalledInterface *>();
     bp::class_<RepositoryInstalledInterface, boost::noncopyable>
         (
          "RepositoryInstalledInterface",
          "Interface for handling actions for installed repositories.",
          bp::no_init
         )
-        .def("installed_time", &RepositoryInstalledInterfaceWrapper::installed_time,
-                "installed_time(QualifiedPackageName, VersionSpec) -> datetime\n"
-                "When was a package installed."
-            )
         .def("root", bp::pure_virtual(&RepositoryInstalledInterface::root),
             "What is our filesystem root?"
             )
@@ -518,7 +511,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryInstallableInterface
      */
-    bp::register_ptr_to_python<RepositoryInstallableInterface *>();
     bp::class_<RepositoryInstallableInterface, boost::noncopyable>
         (
          "RepositoryInstallableInterface",
@@ -529,7 +521,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryUninstallableInterface
      */
-    bp::register_ptr_to_python<RepositoryUninstallableInterface *>();
     bp::class_<RepositoryUninstallableInterface, boost::noncopyable>
         (
          "RepositoryUninstallableInterface",
@@ -540,7 +531,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositorySetsInterface
      */
-    bp::register_ptr_to_python<RepositorySetsInterface *>();
     bp::class_<RepositorySetsInterface, boost::noncopyable>
         (
          "RepositorySetsInterface",
@@ -551,7 +541,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositorySyncableInterface
      */
-    bp::register_ptr_to_python<RepositorySyncableInterface *>();
     bp::class_<RepositorySyncableInterface, boost::noncopyable>
         (
          "RepositorySyncableInterface",
@@ -562,7 +551,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryWorldInterface
      */
-    bp::register_ptr_to_python<RepositoryWorldInterface *>();
     bp::class_<RepositoryWorldInterface, boost::noncopyable>
         (
          "RepositoryWorldInterface",
@@ -573,7 +561,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryEnvironmentVariableInterface
      */
-    bp::register_ptr_to_python<RepositoryEnvironmentVariableInterface *>();
     bp::class_<RepositoryEnvironmentVariableInterface, boost::noncopyable>
         (
          "RepositoryEnvironmentVariableInterface",
@@ -584,7 +571,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryMirrorsInterface
      */
-    bp::register_ptr_to_python<RepositoryMirrorsInterface *>();
     bp::class_<RepositoryMirrorsInterface, boost::noncopyable>
         (
          "RepositoryMirrorsInterface",
@@ -595,7 +581,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryVirtualsInterface
      */
-    bp::register_ptr_to_python<RepositoryVirtualsInterface *>();
     bp::class_<RepositoryVirtualsInterface, boost::noncopyable>
         (
          "RepositoryVirtualsInterface",
@@ -606,7 +591,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryProvidesInterface
      */
-    bp::register_ptr_to_python<RepositoryProvidesInterface *>();
     bp::class_<RepositoryProvidesInterface, boost::noncopyable>
         (
          "RepositoryProvidesInterface",
@@ -617,7 +601,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryDestinationInterface
      */
-    bp::register_ptr_to_python<RepositoryDestinationInterface *>();
     bp::class_<RepositoryDestinationInterface, boost::noncopyable>
         (
          "RepositoryDestinationInterface",
@@ -626,25 +609,8 @@ void PALUDIS_VISIBLE expose_repository()
         );
 
     /**
-     * RepositoryContentsInterface
-     */
-    bp::register_ptr_to_python<RepositoryContentsInterface *>();
-    bp::class_<RepositoryContentsInterface, boost::noncopyable>
-        (
-         "RepositoryContentsInterface",
-         "Interface for handling actions for repositories supporting contents queries.",
-         bp::no_init
-        )
-        .def("contents", &RepositoryContentsInterface::contents,
-                "contents(QualifiedPackageName, VersionSpec) -> Contents\n"
-                "Fetch contents."
-            )
-        ;
-
-    /**
      * RepositoryConfigInterface
      */
-    bp::register_ptr_to_python<RepositoryConfigInterface *>();
     bp::class_<RepositoryConfigInterface, boost::noncopyable>
         (
          "RepositoryConfigInterface",
@@ -655,7 +621,6 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * RepositoryLicensesInterface
      */
-    bp::register_ptr_to_python<RepositoryLicensesInterface *>();
     bp::class_<RepositoryLicensesInterface, boost::noncopyable>
         (
          "RepositoryLicensesInterface",
@@ -669,28 +634,47 @@ void PALUDIS_VISIBLE expose_repository()
         ;
 
     /**
-     * RepositoryPortageInterface
+     * RepositoryEInterface
      */
-    bp::register_ptr_to_python<RepositoryPortageInterface *>();
-    bp::class_<RepositoryPortageInterface, boost::noncopyable>
+    bp::class_<RepositoryEInterface, boost::noncopyable>
         (
-         "RepositoryPortageInterface",
-         "Interface for handling PortageRepository specific functionality.",
+         "RepositoryEInterface",
+         "Interface for handling ERepository specific functionality.",
          bp::no_init
         )
-        .add_property("profiles", bp::range(&RepositoryPortageInterface::begin_profiles,
-                    &RepositoryPortageInterface::end_profiles),
+        .add_property("profiles", bp::range(&RepositoryEInterface::begin_profiles,
+                    &RepositoryEInterface::end_profiles),
                 "[ro] Iterable of Profiles"
                 )
 
-        .def("profile_variable", &RepositoryPortageInterface::profile_variable)
+        .def("profile_variable", &RepositoryEInterface::profile_variable)
 
-        .def("find_profile", &RepositoryPortageInterfaceWrapper::my_find_profile,
-                "find_profile(path_string) -> RepositoryPortageInterfaceProfilesDescLine"
+        .def("find_profile", &RepositoryEInterfaceWrapper::my_find_profile,
+                "find_profile(path_string) -> RepositoryEInterfaceProfilesDescLine"
             )
 
-        .add_property("profile", bp::object(), &RepositoryPortageInterfaceWrapper::my_set_profile,
-                "[wo] RepositoryPortageInterfaceProfilesDescLine"
+        .add_property("profile", bp::object(), &RepositoryEInterfaceWrapper::my_set_profile,
+                "[wo] RepositoryEInterfaceProfilesDescLine"
                 )
+        ;
+
+    /**
+     * FakeRepository
+     */
+    tr1::shared_ptr<FakePackageID>
+        (FakeRepository:: *add_version_ptr)(const QualifiedPackageName &, const VersionSpec &) =
+        &FakeRepository::add_version;
+
+    bp::class_<FakeRepositoryWrapper, tr1::shared_ptr<FakeRepository>, bp::bases<Repository>, boost::noncopyable>
+        (
+         "FakeRepository",
+         "Fake repository for use in test cases.",
+         bp::init<const Environment * const, const RepositoryName &>("__init__(Environment, RepositoryName)")
+        )
+        .def("add_category", &FakeRepository::add_category)
+
+        .def("add_package", &FakeRepository::add_package)
+
+        .def("add_version", &FakeRepositoryWrapper::add_version)
         ;
 }

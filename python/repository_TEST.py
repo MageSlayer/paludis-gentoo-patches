@@ -20,7 +20,7 @@
 
 import os
 
-repo = os.path.join(os.getcwd(), "repository_TEST_dir/testrepo")
+repo_path = os.path.join(os.getcwd(), "repository_TEST_dir/testrepo")
 os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "repository_TEST_dir/home")
 
 from paludis import *
@@ -28,89 +28,62 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
-class TestCase_Repository(unittest.TestCase):
-    def get_foo(self):
-        self.e = EnvironmentMaker.instance.make_from_spec("")
-        self.nce = NoConfigEnvironment(repo)
-        self.db = self.e.package_database
-        self.repo = self.db.fetch_repository("testrepo")
-        self.irepo = self.db.fetch_repository("installed")
+class TestCase_01_Repository(unittest.TestCase):
+    def setUp(self):
+        global e, nce, db, repo, irepo
+        e = EnvironmentMaker.instance.make_from_spec("")
+        nce = NoConfigEnvironment(repo_path)
+        db = e.package_database
+        repo = db.fetch_repository("testrepo")
+        irepo = db.fetch_repository("installed")
 
-    def test_01_get(self):
-        self.get_foo()
+    def test_01_fetch(self):
+        self.assert_(isinstance(repo, Repository))
+        self.assert_(isinstance(irepo, Repository))
 
     def test_02_create_error(self):
         self.assertRaises(Exception, Repository)
 
     def test_03_name(self):
-        self.get_foo()
-
-        self.assertEquals(str(self.repo.name), "testrepo")
-        self.assertEquals(str(self.irepo.name), "installed")
+        self.assertEquals(str(repo.name), "testrepo")
+        self.assertEquals(str(irepo.name), "installed")
 
     def test_04_format(self):
-        self.get_foo()
+        self.assertEquals(str(repo.format), "ebuild")
+        self.assertEquals(str(irepo.format), "vdb")
 
-        self.assertEquals(str(self.repo.format), "ebuild")
-        self.assertEquals(str(self.irepo.format), "vdb")
+    def test_05_has_category_named(self):
+        self.assert_(repo.has_category_named("foo"))
+        self.assert_(not repo.has_category_named("bar"))
 
-    def test_05_has_version(self):
-        self.get_foo()
+    def test_06_has_package_named(self):
+        self.assert_(repo.has_package_named("foo/bar"))
+        self.assert_(not repo.has_package_named("foo/foo"))
+        self.assert_(not repo.has_package_named("bar/foo"))
 
-        self.assert_(self.repo.has_version("foo/bar", "1.0"))
-        self.assert_(self.repo.has_version("foo/bar", "2.0"))
-        self.assert_(not self.repo.has_version("foo/barbar", "1.0"))
-        self.assert_(not self.repo.has_version("foo/bar", "3.0"))
-
-    def test_06_has_category_named(self):
-        self.get_foo()
-
-        self.assert_(self.repo.has_category_named("foo"))
-        self.assert_(not self.repo.has_category_named("bar"))
-
-    def test_07_has_package_named(self):
-        self.get_foo()
-
-        self.assert_(self.repo.has_package_named("foo/bar"))
-        self.assert_(not self.repo.has_package_named("foo/foo"))
-        self.assert_(not self.repo.has_package_named("bar/foo"))
-
-    def test_08_version_specs(self):
-        self.get_foo()
-
-        self.assertEquals(list(self.repo.version_specs("foo/bar")),
+    def test_07_package_ids(self):
+        self.assertEquals([x.version for x in repo.package_ids("foo/bar")],
                 [VersionSpec("1.0"), VersionSpec("2.0")]
                 )
-        self.assertEquals(len(list(self.repo.version_specs("bar/baz"))), 0)
+        self.assertEquals(len(list(repo.package_ids("bar/baz"))), 0)
 
-    def test_09_category_names(self):
-        self.get_foo()
+    def test_08_category_names(self):
+        self.assertEquals([str(x) for x in repo.category_names], ["foo", "foo1", "foo2", "foo3", "foo4"])
 
-        for (i, cat) in enumerate(self.repo.category_names):
-            self.assertEquals(i, 0)
-            self.assertEquals(str(cat), "foo")
+    def test_09_category_names_containing_package(self):
+        self.assertEquals([str(x) for x in repo.category_names_containing_package("bar")],
+                ["foo", "foo1", "foo2", "foo3", "foo4"])
 
-    def test_10_category_names_containing_package(self):
-        self.get_foo()
-
-        for (i, cat) in enumerate(self.repo.category_names_containing_package("bar")):
-            self.assertEquals(i, 0)
-            self.assertEquals(str(cat), "foo")
-
-    def test_11_package_names(self):
-        self.get_foo()
-
-        for (i, qpn) in enumerate(self.repo.package_names("bar")):
+    def test_10_package_names(self):
+        for (i, qpn) in enumerate(repo.package_names("bar")):
             self.assertEquals(i, 0)
             self.assertEquals(str(qpn), "foo/bar")
 
-    def test_12_repository_info(self):
-        self.get_foo()
+    def test_11_repository_info(self):
+        self.assert_(isinstance(repo.info(True), RepositoryInfo))
+        self.assert_(isinstance(repo.info(False), RepositoryInfo))
 
-        self.assert_(isinstance(self.repo.info(True), RepositoryInfo))
-        self.assert_(isinstance(self.repo.info(False), RepositoryInfo))
-
-        for (i, section) in enumerate(self.repo.info(False).sections):
+        for (i, section) in enumerate(repo.info(False).sections):
             self.assert_(isinstance(section, RepositoryInfoSection))
             if i == 0:
                 self.assertEquals(section.heading, "Configuration information")
@@ -118,7 +91,7 @@ class TestCase_Repository(unittest.TestCase):
                     if k == "format":
                         self.assertEquals(v, "ebuild")
 
-        for (i, section) in enumerate(self.irepo.info(False).sections):
+        for (i, section) in enumerate(irepo.info(False).sections):
             self.assert_(isinstance(section, RepositoryInfoSection))
             if i == 0:
                 self.assertEquals(section.heading, "Configuration information")
@@ -126,190 +99,210 @@ class TestCase_Repository(unittest.TestCase):
                     if k == "format":
                         self.assertEquals(v, "vdb")
 
-    def test_13_version_metadata(self):
-        self.get_foo()
+class TestCase_02_RepositoryInterfaces(unittest.TestCase):
+    def setUp(self):
+        global e, nce, db, repo, irepo
+        e = EnvironmentMaker.instance.make_from_spec("")
+        nce = NoConfigEnvironment(repo_path)
+        db = e.package_database
+        repo = db.fetch_repository("testrepo")
+        irepo = db.fetch_repository("installed")
 
-        vm = self.repo.version_metadata("foo/bar", "1.0")
-        self.assert_(isinstance(vm, VersionMetadata))
-
-
-    def test_14_installable_interface(self):
-        self.get_foo()
-
-        ii = self.repo.installable_interface
+    def test_01_installable_interface(self):
+        ii = repo.installable_interface
         self.assert_(isinstance(ii, RepositoryInstallableInterface))
 
-    def test_15_installed_interface(self):
-        import datetime
-        self.get_foo()
-
-        ii = self.irepo.installed_interface
-
+    def test_02_installed_interface(self):
+        ii = irepo.installed_interface
         self.assert_(isinstance(ii, RepositoryInstalledInterface))
 
-        time = ii.installed_time("cat-one/pkg-one", "1")
-        self.assert_(type(time) == datetime.datetime)
-
-    def test_16_mask_interface(self):
-        self.get_foo()
-
-        mi = self.repo.mask_interface
+    def test_03_mask_interface(self):
+        mi = repo.mask_interface
         self.assert_(isinstance(mi, RepositoryMaskInterface))
 
-        self.assert_(mi.query_profile_masks("foo1/bar", "1.0"))
-        self.assert_(not mi.query_profile_masks("foo2/bar", "1.0"))
-        self.assert_(mi.query_profile_masks("foo3/bar", "1.0"))
-        self.assert_(not mi.query_profile_masks("foo4/bar", "1.0"))
+        foo = []
+        for i in [1,2,3,4]:
+            foo.append(iter(repo.package_ids("foo"+str(i)+"/bar")).next())
 
-    def test_17_sets_interface(self):
-        self.get_foo()
+        self.assert_(mi.query_profile_masks(foo[0]))
+        self.assert_(not mi.query_profile_masks(foo[1]))
+        self.assert_(mi.query_profile_masks(foo[2]))
+        self.assert_(not mi.query_profile_masks(foo[3]))
 
-        si = self.repo.sets_interface
+    def test_04_sets_interface(self):
+        si = repo.sets_interface
         self.assert_(isinstance(si, RepositorySetsInterface))
 
-    def test_18_syncable_interface(self):
-        self.get_foo()
-
-        si = self.repo.syncable_interface
+    def test_05_syncable_interface(self):
+        si = repo.syncable_interface
         self.assert_(isinstance(si, RepositorySyncableInterface))
 
-    def test_19_uninstallable_interface(self):
-        self.get_foo()
-
-        ui = self.irepo.uninstallable_interface
+    def test_06_uninstallable_interface(self):
+        ui = irepo.uninstallable_interface
         self.assert_(isinstance(ui, RepositoryUninstallableInterface))
 
-    def test_20_use_interface(self):
-        self.get_foo()
-
-        ui = self.repo.use_interface
+    def test_07_use_interface(self):
+        ui = repo.use_interface
         self.assert_(isinstance(ui, RepositoryUseInterface))
 
-        p = PackageDatabaseEntry("foo/bar", "2.0", self.repo.name)
+        pid = list(repo.package_ids("foo/bar"))[1]
 
-        self.assertEquals(ui.query_use("test1",p), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test2",p), UseFlagState.DISABLED)
-        self.assertEquals(ui.query_use("test3",p), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test4",p), UseFlagState.UNSPECIFIED)
-        self.assertEquals(ui.query_use("test5",p), UseFlagState.DISABLED)
-        self.assertEquals(ui.query_use("test6",p), UseFlagState.ENABLED)
-        self.assertEquals(ui.query_use("test7",p), UseFlagState.ENABLED)
+        self.assertEquals(ui.query_use("test1", pid), UseFlagState.ENABLED)
+        self.assertEquals(ui.query_use("test2", pid), UseFlagState.DISABLED)
+        self.assertEquals(ui.query_use("test3", pid), UseFlagState.ENABLED)
+        self.assertEquals(ui.query_use("test4", pid), UseFlagState.UNSPECIFIED)
+        self.assertEquals(ui.query_use("test5", pid), UseFlagState.DISABLED)
+        self.assertEquals(ui.query_use("test6", pid), UseFlagState.ENABLED)
+        self.assertEquals(ui.query_use("test7", pid), UseFlagState.ENABLED)
 
-        self.assert_(not ui.query_use_mask("test1", p))
-        self.assert_(not ui.query_use_mask("test2", p))
-        self.assert_(not ui.query_use_mask("test3", p))
-        self.assert_(not ui.query_use_mask("test4", p))
-        self.assert_(ui.query_use_mask("test5", p))
-        self.assert_(not ui.query_use_mask("test6", p))
-        self.assert_(not ui.query_use_mask("test7", p))
+        self.assert_(not ui.query_use_mask("test1", pid))
+        self.assert_(not ui.query_use_mask("test2", pid))
+        self.assert_(not ui.query_use_mask("test3", pid))
+        self.assert_(not ui.query_use_mask("test4", pid))
+        self.assert_(ui.query_use_mask("test5", pid))
+        self.assert_(not ui.query_use_mask("test6", pid))
+        self.assert_(not ui.query_use_mask("test7", pid))
 
-        self.assert_(not ui.query_use_force("test1", p))
-        self.assert_(not ui.query_use_force("test2", p))
-        self.assert_(not ui.query_use_force("test3", p))
-        self.assert_(not ui.query_use_force("test4", p))
-        self.assert_(not ui.query_use_force("test5", p))
-        self.assert_(ui.query_use_force("test6", p))
-        self.assert_(ui.query_use_force("test7", p))
+        self.assert_(not ui.query_use_force("test1", pid))
+        self.assert_(not ui.query_use_force("test2", pid))
+        self.assert_(not ui.query_use_force("test3", pid))
+        self.assert_(not ui.query_use_force("test4", pid))
+        self.assert_(not ui.query_use_force("test5", pid))
+        self.assert_(ui.query_use_force("test6", pid))
+        self.assert_(ui.query_use_force("test7", pid))
 
-        self.assert_(ui.describe_use_flag("test1", p), "A test use flag")
+        self.assert_(ui.describe_use_flag("test1", pid), "A test use flag")
 
-    def test_21_world_interface(self):
-        self.get_foo()
-
-        wi = self.irepo.world_interface
+    def test_08_world_interface(self):
+        wi = irepo.world_interface
         self.assert_(isinstance(wi, RepositoryWorldInterface))
 
-    def test_22_environment_variable_interface(self):
-        self.get_foo()
-
-        evi = self.repo.environment_variable_interface
+    def test_09_environment_variable_interface(self):
+        evi = repo.environment_variable_interface
         self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))
 
-    def test_23_mirrors_interface(self):
-        self.get_foo()
-
-        mi = self.repo.mirrors_interface
+    def test_10_mirrors_interface(self):
+        mi = repo.mirrors_interface
         self.assert_(isinstance(mi, RepositoryMirrorsInterface))
 
-    def test_24_provides_interface(self):
-        self.get_foo()
-
-        pi = self.irepo.provides_interface
+    def test_11_provides_interface(self):
+        pi = irepo.provides_interface
         self.assert_(isinstance(pi, RepositoryProvidesInterface))
 
-    def test_25_virtuals_interface(self):
-        self.get_foo()
-
-        vi = self.repo.virtuals_interface
+    def test_12_virtuals_interface(self):
+        vi = repo.virtuals_interface
         self.assert_(isinstance(vi, RepositoryVirtualsInterface))
 
-    def test_26_destination_interface(self):
-        self.get_foo()
-
-        di = self.irepo.destination_interface
+    def test_13_destination_interface(self):
+        di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
 
-    def test_27_contents_interface(self):
-        self.get_foo()
-
-        self.assert_(isinstance(self.irepo.contents_interface, RepositoryContentsInterface))
-
-        contents = self.irepo.contents_interface.contents("cat-one/pkg-one", "1")
-
-        for (i, entry) in enumerate(contents):
-            if i == 0:
-                self.assert_(isinstance(entry, ContentsDirEntry))
-                self.assertEqual(str(entry), "//test")
-                self.assertEqual(entry.name, "//test")
-            elif i == 1:
-                self.assert_(isinstance(entry, ContentsFileEntry))
-                self.assertEqual(str(entry), "/test/test_file")
-                self.assertEqual(entry.name, "/test/test_file")
-            elif i == 2:
-                self.assert_(isinstance(entry, ContentsSymEntry))
-                self.assertEqual(str(entry), "/test/test_link -> /test/test_file")
-                self.assertEqual(entry.name, "/test/test_link")
-                self.assertEqual(entry.target, "/test/test_file")
-            else:
-                self.assertEqual("TOO MANY ENTRIES", "OK")
-
-    def test_28_config_interface(self):
-        self.get_foo()
-
-        ci = self.irepo.config_interface
+    def test_14_config_interface(self):
+        ci = irepo.config_interface
         self.assert_(isinstance(ci, RepositoryConfigInterface))
 
-    def test_29_licenses_interface(self):
-        self.get_foo()
-
-        li = self.repo.licenses_interface
+    def test_15_licenses_interface(self):
+        li = repo.licenses_interface
         self.assert_(isinstance(li, RepositoryLicensesInterface))
 
-        self.assertEquals(os.path.realpath(li.license_exists("foo")), os.path.join(repo, "licenses/foo"))
+        self.assertEquals(os.path.realpath(li.license_exists("foo")), os.path.join(repo_path, "licenses/foo"))
         self.assertEquals(li.license_exists("bad"), None)
 
-    def test_30_portage_interface(self):
-        self.get_foo()
+    def test_16_e_interface(self):
+        ei = nce.main_repository
+        ei = nce.main_repository.e_interface
 
-        pi = self.nce.main_repository.portage_interface
-
-        self.assert_(isinstance(pi, RepositoryPortageInterface))
+        self.assert_(isinstance(ei, RepositoryEInterface))
 
         path = os.path.join(os.getcwd(), "repository_TEST_dir/testrepo/profiles/testprofile")
-        profile = pi.find_profile(path)
+        profile = ei.find_profile(path)
 
-        self.assert_(isinstance(profile, RepositoryPortageInterfaceProfilesDescLine))
+        self.assert_(isinstance(profile, RepositoryEInterfaceProfilesDescLine))
         self.assertEquals(profile.path, path)
         self.assertEquals(profile.arch, "x86")
         self.assertEquals(profile.status, "stable")
 
 
-        self.assertEquals(pi.find_profile("broken"), None)
+        self.assertEquals(ei.find_profile("broken"), None)
 
-        profile = iter(pi.profiles).next()
-        pi.profile = profile
+        profile = iter(ei.profiles).next()
+        ei.profile = profile
 
-        self.assertEquals(pi.profile_variable("ARCH"), "test")
+        self.assertEquals(ei.profile_variable("ARCH"), "test")
+
+class TestCase_03_FakeRepository(unittest.TestCase):
+    def setUp(self):
+        global e, f
+        e = EnvironmentMaker.instance.make_from_spec("")
+        f = FakeRepository(e, "fake")
+
+    def test_01_init(self):
+        pass
+        self.assertEquals(str(f.name), "fake")
+
+    def test_02_init_bad(self):
+        self.assertRaises(Exception, FakeRepository, e)
+        self.assertRaises(Exception, FakeRepository, "foo", "foo")
+
+    def test_03_add_category(self):
+        self.assertEquals(list(f.category_names), [])
+
+        f.add_category("cat-foo")
+        self.assertEquals([str(x) for x in f.category_names], ["cat-foo"])
+        f.add_category("cat-foo")
+        self.assertEquals([str(x) for x in f.category_names], ["cat-foo"])
+        f.add_category("cat-bar")
+        self.assertEquals([str(x) for x in f.category_names], ["cat-bar", "cat-foo"])
+
+    def test_04_add_category_bad(self):
+        self.assertRaises(Exception, f.add_category, 1)
+        self.assertRaises(Exception, f.add_category, "a", "b")
+
+    def test_05_add_package(self):
+        foo_1 = QualifiedPackageName("cat-foo/pkg1")
+        foo_2 = QualifiedPackageName("cat-foo/pkg2")
+        bar_1 = QualifiedPackageName("cat-bar/pkg1")
+
+        f.add_category("cat-foo")
+        self.assertEquals(list(f.package_names("cat-foo")), [])
+
+        f.add_package(foo_1)
+        self.assertEquals(list(f.package_names("cat-foo")), [foo_1])
+        f.add_package(foo_1)
+        self.assertEquals(list(f.package_names("cat-foo")), [foo_1])
+
+        f.add_package(foo_2)
+        self.assertEquals(list(f.package_names("cat-foo")), [foo_1, foo_2])
+
+        f.add_package(bar_1)
+        self.assertEquals(list(f.package_names("cat-bar")), [bar_1])
+
+    def test_06_add_package_bad(self):
+        self.assertRaises(Exception, f.add_category, 1)
+        self.assertRaises(Exception, f.add_category, "a", "b")
+
+    def test_07_add_version(self):
+        f.add_package("cat-foo/pkg")
+        self.assertEquals(list(f.package_ids("cat-foo/pkg")), [])
+
+        pkg = f.add_version("cat-foo/pkg", "1")
+        self.assertEquals(list(f.package_ids("cat-foo/pkg")), [pkg])
+        self.assertEquals(pkg.version, VersionSpec("1"))
+
+        pkg2 = f.add_version("cat-foo/pkg", "2")
+        self.assertEquals(list(f.package_ids("cat-foo/pkg")), [pkg, pkg2])
+        self.assertEquals(pkg2.version, VersionSpec("2"))
+
+        pkg3 = f.add_version("cat-bar/pkg", "0")
+        self.assertEquals(list(f.package_ids("cat-bar/pkg")), [pkg3])
+
+        self.assertEquals([str(x) for x in f.category_names], ["cat-bar", "cat-foo"])
+
+    def test_08_add_version_bad(self):
+        self.assertRaises(Exception, f.add_version, 1)
+        self.assertRaises(Exception, f.add_version, "a", "b", "c")
+
 
 if __name__ == "__main__":
     unittest.main()
+

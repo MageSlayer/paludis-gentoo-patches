@@ -45,11 +45,11 @@ class TestCase_Names(unittest.TestCase):
         self.assertRaises(RepositoryNameError, RepositoryName, ":bad")
         self.assertRaises(KeywordNameError, KeywordName, ":bad")
         self.assertRaises(SetNameError, SetName, ":bad")
-        self.assertRaises(Exception, PackageNamePartCollection)
-        self.assertRaises(Exception, CategoryNamePartCollection)
-        self.assertRaises(Exception, QualifiedPackageNameCollection)
-        self.assertRaises(Exception, UseFlagNameCollection)
-        self.assertRaises(Exception, RepositoryNameCollection)
+        self.assertRaises(Exception, PackageNamePartIterable)
+        self.assertRaises(Exception, CategoryNamePartIterable)
+        self.assertRaises(Exception, QualifiedPackageNameIterable)
+        self.assertRaises(Exception, UseFlagNameIterable)
+        self.assertRaises(Exception, RepositoryNameIterable)
 
     def test_3_str(self):
         self.test_1_create()

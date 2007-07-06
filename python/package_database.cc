@@ -22,9 +22,8 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/query.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database_entry.hh>
+#include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/collection.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
@@ -66,18 +65,17 @@ void PALUDIS_VISIBLE expose_package_database()
      * PackageDatabase
      */
     register_shared_ptrs_to_python<PackageDatabase>();
-    tr1::shared_ptr<PackageDatabaseEntryCollection>
-        (PackageDatabase::* query)(const Query &, const QueryOrder) const = &PackageDatabase::query;
-    tr1::shared_ptr<const Repository>
-        (PackageDatabase::* fetch_repository)(const RepositoryName &) const = &PackageDatabase::fetch_repository;
+    tr1::shared_ptr<Repository>
+        (PackageDatabase::* fetch_repository_ptr)(const RepositoryName &) = &PackageDatabase::fetch_repository;
     bp::class_<PackageDatabase, boost::noncopyable>
         (
          "PackageDatabase",
          "A PackageDatabase can be queried for Package instances.\n",
          bp::no_init
         )
-        .def("query", query,
-                "query(Query, QueryOrder) -> PackageDatabaseEntryCollection\n"
+        .def("query", &PackageDatabase::query, bp::with_custodian_and_ward_postcall<0, 1>(),
+
+                "query(Query, QueryOrder) -> PackageIDIterable\n"
                 "Query the repository."
             )
 
@@ -86,7 +84,7 @@ void PALUDIS_VISIBLE expose_package_database()
                 "Name of our 'favourite' repository"
                 )
 
-        .def("fetch_repository", fetch_repository,
+        .def("fetch_repository", fetch_repository_ptr, bp::with_custodian_and_ward_postcall<0, 1>(),
                 "fetch_repository(RepositoryName) -> Repository\n"
                 "Fetch a named repository."
             )
@@ -107,33 +105,4 @@ void PALUDIS_VISIBLE expose_package_database()
                 "Our repositories"
                 )
         ;
-
-    /**
-     * PackageDatabaseEntry
-     */
-    bp::register_ptr_to_python<tr1::shared_ptr<PackageDatabaseEntry> >();
-    bp::class_<PackageDatabaseEntry>
-        (
-         "PackageDatabaseEntry",
-         "Holds an entry in a PackageDatabase, and used to identify"
-         " a specific version of a package in a particular repository.",
-         bp::init<const QualifiedPackageName &, const VersionSpec &, const RepositoryName &>(
-             "__init__(QualifiedPackageName, VersionSpec, RepositoryName)"
-             )
-        )
-        .def(bp::self_ns::str(bp::self))
-
-        .def("__eq__", &PackageDatabaseEntry::operator==)
-
-        .def("__ne__", &py_ne<PackageDatabaseEntry>)
-        ;
-
-    /**
-     * PackageDatabaseEntryCollection
-     */
-    class_collection<PackageDatabaseEntryCollection>
-        (
-         "PackageDatabaseEntryCollection",
-         "An iterable collection of PackageDatabaseEntry instances."
-        );
 }

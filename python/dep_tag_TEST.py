@@ -53,19 +53,21 @@ class TestCase_03_GeneralSetDepTag(unittest.TestCase):
 
 class TestCase_04_DependencyDepTag(unittest.TestCase):
     def setUp(self):
-        global dt, pde, pds, cds
-        pde = PackageDatabaseEntry("cat/foo", "1.0", "repo")
+        global dt, pid, pds, cds
+        env = EnvironmentMaker.instance.make_from_spec("")
+        repo = FakeRepository(env, "repo")
+        pid = repo.add_version("cat/foo", "1.0")
         pds = PackageDepSpec("=cat/boo-1", PackageDepSpecParseMode.PERMISSIVE)
         cds = PortageDepParser.parse_depend("", EAPIData.instance.eapi_from_string("0"))
-        dt = DependencyDepTag(pde, pds, cds);
+        dt = DependencyDepTag(pid, pds, cds);
 
     def test_01_instance(self):
         self.assert_(isinstance(dt, DepTag))
 
     def test_02_properties(self):
         self.assertEquals(dt.category, "dependency")
-        self.assertEquals(dt.short_text, str(pde))
-        self.assertEquals(dt.package, pde)
+        self.assertEquals(dt.short_text, "cat/foo-1.0:0::repo")
+        self.assertEquals(dt.package_id, pid)
         self.assertEquals(str(dt.dependency), str(pds))
         self.assert_(isinstance(dt.conditions, AllDepSpec))
 

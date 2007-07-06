@@ -30,12 +30,13 @@ void expose_exception();
 void expose_fs_entry();
 void expose_log();
 void expose_mask_reasons();
+void expose_metadata_key();
 void expose_name();
 void expose_package_database();
+void expose_package_id();
 void expose_portage_dep_parser();
 void expose_query();
 void expose_repository();
-void expose_version_metadata();
 void expose_version_operator();
 void expose_version_requirements();
 void expose_version_spec();
@@ -54,7 +55,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_eapi();
     expose_contents();
     expose_mask_reasons();
-    expose_version_metadata();
     expose_dep_spec();
     expose_dep_tag();
     expose_portage_dep_parser();
@@ -62,6 +62,8 @@ BOOST_PYTHON_MODULE(paludis)
     expose_log();
     expose_query();
     expose_environment();
+    expose_metadata_key();
+    expose_package_id();
     expose_package_database();
     expose_repository();
 }

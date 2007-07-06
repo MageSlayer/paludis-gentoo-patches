@@ -37,7 +37,8 @@ IF_PYTHON_TESTS = \
 	environment_TEST.py \
 	package_database_TEST.py \
 	repository_TEST.py \
-	version_metadata_TEST.py
+	package_id_TEST.py \
+	metadata_key_TEST.py
 
 IF_PYTHON_QA_TESTS =
 
@@ -50,13 +51,14 @@ IF_PYTHON_SOURCES = \
 	exception.hh exception.cc \
 	fs_entry.cc \
 	mask_reasons.cc \
+	metadata_key.cc \
 	name.cc \
 	log.cc \
 	package_database.cc \
+	package_id.cc \
 	portage_dep_parser.cc \
 	query.cc \
 	repository.cc \
-	version_metadata.cc \
 	version_operator.cc \
 	version_requirements.cc \
 	version_spec.cc
@@ -68,9 +70,10 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	paludis_python.hh \
 	paludis_python_so.cc \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
+	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
-	repository_TEST_setup.sh repository_TEST_cleanup.sh \
-	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh
+	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
+	repository_TEST_setup.sh repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -92,7 +95,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/tasks/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
+			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/fake/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs\`" \
 			| tr -d ' '` \
 	PYTHONPATH="./.libs" \
@@ -120,11 +123,12 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
-	$(top_builddir)/paludis/qa/libpaludisqa.la
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+#	$(top_builddir)/paludis/qa/libpaludisqa.la
 
 TESTS = $(IF_PYTHON_QA_TESTS) $(IF_PYTHON_TESTS)
 
@@ -138,6 +142,7 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \

@@ -18,8 +18,10 @@
  */
 
 #include <paludis_python.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+
 #include <paludis/version_requirements.hh>
+#include <paludis/util/sequence.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -59,7 +61,7 @@ void PALUDIS_VISIBLE expose_version_requirements()
     /**
      * VersionRequirements
      */
-    class_collection<VersionRequirements>
+    class_iterable<VersionRequirements>
         (
          "VersionRequirements",
          "Iterable collection of VersionRequirement instances, usually for a PackageDepSpec."
