@@ -2,9 +2,9 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
 SUBDIRS = .
 
-libexecprogdir = $(libexecdir)/paludis/
+libexecprog0dir = $(libexecdir)/paludis/0/
 
-libexecprog_SCRIPTS =
+libexecprog0_SCRIPTS =
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \

@@ -2,9 +2,9 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
 SUBDIRS = .
 
-libexecprogdir = $(libexecdir)/paludis/
+libexecprogexheresdir = $(libexecdir)/paludis/exheres-0
 
-libexecprog_SCRIPTS = \
+libexecprogexheres_SCRIPTS = \
 	builtin_fetch.bash \
 	pkg_nofetch.bash
 
