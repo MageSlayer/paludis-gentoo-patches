@@ -47,19 +47,19 @@ namespace
         {
         }
 
-        void visit(const MetadataCollectionKey<KeywordNameCollection> &)
+        void visit(const MetadataSetKey<KeywordNameSet> &)
         {
         }
 
-        void visit(const MetadataCollectionKey<UseFlagNameCollection> &)
+        void visit(const MetadataSetKey<UseFlagNameSet> &)
         {
         }
 
-        void visit(const MetadataCollectionKey<IUseFlagCollection> &)
+        void visit(const MetadataSetKey<IUseFlagSet> &)
         {
         }
 
-        void visit(const MetadataCollectionKey<InheritedCollection> &)
+        void visit(const MetadataSetKey<InheritedSet> &)
         {
         }
 

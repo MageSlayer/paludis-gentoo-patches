@@ -26,12 +26,14 @@
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/repository_info.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
@@ -106,10 +108,10 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .destination_interface(0)
             .virtuals_interface(0)
             .config_interface(0)
-            .contents_interface(0)
             .licenses_interface(0)
-            .portage_interface(0)
+            .e_interface(0)
             .pretend_interface(0)
+            .qa_interface(0)
             .hook_interface(0),
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
@@ -148,24 +150,24 @@ CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 CRANRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
 
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
 
     return result;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 CRANRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! do_has_category_named(c))
         return result;
 
@@ -183,7 +185,7 @@ CRANRepository::do_package_ids(const QualifiedPackageName & n) const
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     if (! do_has_package_named(n))
         return result;
 
@@ -227,7 +229,7 @@ CRANRepository::do_install(const tr1::shared_ptr<const PackageID> & id_uncasted,
     if (id->bundle_member_key())
         return;
 
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->params.environment->bashrc_files());
+    tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
             .with_setenv("CATEGORY", "cran")
@@ -319,12 +321,12 @@ CRANRepository::do_package_set(const SetName & s) const
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 CRANRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("base"));
     return result;
 }
@@ -353,7 +355,7 @@ CRANRepository::do_sync() const
 tr1::shared_ptr<Repository>
 CRANRepository::make_cran_repository(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     Context context("When making CRAN repository from repo_file '" +
             (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");

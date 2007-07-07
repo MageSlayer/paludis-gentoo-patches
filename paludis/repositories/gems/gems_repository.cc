@@ -25,9 +25,10 @@
 #include <paludis/repository_info.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -43,8 +44,8 @@ namespace paludis
     {
         const gems::RepositoryParams params;
 
-        mutable tr1::shared_ptr<const CategoryNamePartCollection> category_names;
-        mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameCollection> >::Type package_names;
+        mutable tr1::shared_ptr<const CategoryNamePartSet> category_names;
+        mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type package_names;
         mutable MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type ids;
 
         mutable bool has_category_names;
@@ -77,7 +78,8 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
             .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
-            .portage_interface(0)
+            .e_interface(0)
+            .qa_interface(0)
             .pretend_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(0),
@@ -122,25 +124,25 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.find(q.category)->second->end() != _imp->package_names.find(q.category)->second->find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 GemsRepository::do_category_names() const
 {
     need_category_names();
     return _imp->category_names;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 GemsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (! has_category_named(c))
-        return make_shared_ptr(new QualifiedPackageNameCollection::Concrete);
+        return make_shared_ptr(new QualifiedPackageNameSet);
 
     need_ids();
 
-    MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameCollection> >::Type::const_iterator i(
+    MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type::const_iterator i(
             _imp->package_names.find(c));
     if (i == _imp->package_names.end())
-        return make_shared_ptr(new QualifiedPackageNameCollection::Concrete);
+        return make_shared_ptr(new QualifiedPackageNameSet);
     return i->second;
 }
 
@@ -148,14 +150,14 @@ tr1::shared_ptr<const PackageIDSequence>
 GemsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
     if (! has_package_named(q))
-        return make_shared_ptr(new PackageIDSequence::Concrete);
+        return make_shared_ptr(new PackageIDSequence);
 
     need_ids();
 
     MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::const_iterator i(
             _imp->ids.find(q));
     if (i == _imp->ids.end())
-        return make_shared_ptr(new PackageIDSequence::Concrete);
+        return make_shared_ptr(new PackageIDSequence);
 
     return i->second;
 }
@@ -166,7 +168,7 @@ GemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    tr1::shared_ptr<CategoryNamePartCollection::Concrete> cat(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -181,7 +183,7 @@ GemsRepository::need_ids() const
 
     need_category_names();
 
-    tr1::shared_ptr<QualifiedPackageNameCollection::Concrete> pkgs(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
     _imp->package_names.insert(std::make_pair(CategoryNamePart("gems"), pkgs));
 
     Context context("When loading gems yaml file:");
@@ -201,7 +203,7 @@ GemsRepository::need_ids() const
 
         MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator v(_imp->ids.find(i->first.first));
         if (_imp->ids.end() == v)
-            v = _imp->ids.insert(std::make_pair(i->first.first, make_shared_ptr(new PackageIDSequence::Concrete))).first;
+            v = _imp->ids.insert(std::make_pair(i->first.first, make_shared_ptr(new PackageIDSequence))).first;
 
         v->second->push_back(i->second);
     }

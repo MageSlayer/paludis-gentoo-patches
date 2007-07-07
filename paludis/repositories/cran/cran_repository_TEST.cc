@@ -23,8 +23,8 @@
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/map.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -53,8 +53,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo1");
@@ -79,8 +78,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format",   "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo2");

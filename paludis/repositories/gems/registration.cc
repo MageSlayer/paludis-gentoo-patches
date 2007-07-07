@@ -23,6 +23,7 @@
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/map.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -35,7 +36,7 @@ namespace
     tr1::shared_ptr<Repository>
     make_gems_repository(
             Environment * const env,
-            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+            tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string location;
         if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
@@ -69,7 +70,7 @@ namespace
     tr1::shared_ptr<Repository>
     make_installed_gems_repository(
             Environment * const env,
-            tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+            tr1::shared_ptr<const Map<std::string, std::string> > m)
     {
         std::string install_dir;
         if (m->end() == m->find("install_dir") || ((install_dir = m->find("install_dir")->second)).empty())

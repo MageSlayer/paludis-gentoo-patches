@@ -364,28 +364,28 @@ GemSpecification::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
 GemSpecification::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >
+const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
 GemSpecification::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >
+const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
 GemSpecification::inherited_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<InheritedCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
 }
 
-const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >
+const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
 GemSpecification::use_key() const
 {
-    return tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameCollection> >();
+    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >

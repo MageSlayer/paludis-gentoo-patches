@@ -29,13 +29,15 @@
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
@@ -151,7 +153,6 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .mask_interface(0)
             .installable_interface(0)
             .installed_interface(this)
-            .contents_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .uninstallable_interface(this)
@@ -164,7 +165,8 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .config_interface(0)
             .destination_interface(this)
             .licenses_interface(0)
-            .portage_interface(0)
+            .e_interface(0)
+            .qa_interface(0)
             .make_virtuals_interface(0)
             .pretend_interface(0)
             .hook_interface(0),
@@ -203,21 +205,21 @@ CRANInstalledRepository::do_has_package_named(const QualifiedPackageName & q) co
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-tr1::shared_ptr<const CategoryNamePartCollection>
+tr1::shared_ptr<const CategoryNamePartSet>
 CRANInstalledRepository::do_category_names() const
 {
-    tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
     return result;
 }
 
-tr1::shared_ptr<const QualifiedPackageNameCollection>
+tr1::shared_ptr<const QualifiedPackageNameSet>
 CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
+    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! do_has_category_named(c))
         return result;
 
@@ -235,7 +237,7 @@ CRANInstalledRepository::do_package_ids(const QualifiedPackageName & n) const
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence::Concrete);
+    tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     if (! do_has_package_named(n))
         return result;
 
@@ -367,7 +369,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
 tr1::shared_ptr<Repository>
 CRANInstalledRepository::make_cran_installed_repository(
         Environment * const env,
-        tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
+        tr1::shared_ptr<const Map<std::string, std::string> > m)
 {
     Context context("When making CRAN installed repository from repo_file '" + 
             (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
@@ -475,12 +477,12 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
 }
 
-tr1::shared_ptr<const SetNameCollection>
+tr1::shared_ptr<const SetNameSet>
 CRANInstalledRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    tr1::shared_ptr<SetNameCollection> result(new SetNameCollection::Concrete);
+    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("everything"));
     result->insert(SetName("world"));
     return result;

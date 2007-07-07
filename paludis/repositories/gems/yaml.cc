@@ -28,6 +28,7 @@
 #include <syck.h>
 #include <cstring>
 #include <algorithm>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::yaml;

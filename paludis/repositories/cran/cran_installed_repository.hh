@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/map-fwd.hh>
 
 /** \file
  * Declarations for CRANInstalledRepository.
@@ -46,7 +47,6 @@ namespace paludis
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositoryInstalledInterface,
-        public RepositoryContentsInterface,
         public RepositoryUninstallableInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
@@ -63,11 +63,11 @@ namespace paludis
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const
@@ -80,11 +80,6 @@ namespace paludis
 
             virtual time_t do_installed_time(const PackageID &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryContentsInterface */
-
-            virtual tr1::shared_ptr<const Contents> do_contents(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUninstallableInterface */
 
@@ -106,7 +101,7 @@ namespace paludis
              */
             static tr1::shared_ptr<Repository> make_cran_installed_repository(
                     Environment * const env,
-                    tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
+                    tr1::shared_ptr<const Map<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -121,7 +116,7 @@ namespace paludis
 
             /* RepositorySetsInterface */
 
-            virtual tr1::shared_ptr<const SetNameCollection> sets_list() const
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryWorldInterface */
