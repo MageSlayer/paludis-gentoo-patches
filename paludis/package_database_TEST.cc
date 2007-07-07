@@ -232,6 +232,16 @@ namespace test_cases
             const tr1::shared_ptr<const PackageIDSequence> q8(p.query(query::Matches(c), qo_best_version_in_slot_only));
             TEST_CHECK_EQUAL(join(indirect_iterator(q8->begin()), indirect_iterator(q8->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
+
+            PackageDepSpec b("cat/pkg:a", pds_pm_permissive);
+            const tr1::shared_ptr<const PackageIDSequence> q9(p.query(query::Matches(b), qo_group_by_slot));
+            TEST_CHECK_EQUAL(join(indirect_iterator(q9->begin()), indirect_iterator(q9->end()), " "),
+                    "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
+
+            PackageDepSpec a("cat/pkg[=1|=3]", pds_pm_permissive);
+            const tr1::shared_ptr<const PackageIDSequence> q10(p.query(query::Matches(a), qo_group_by_slot));
+            TEST_CHECK_EQUAL(join(indirect_iterator(q10->begin()), indirect_iterator(q10->end()), " "),
+                    "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1");
         }
     } package_database_query_order_test;
 
