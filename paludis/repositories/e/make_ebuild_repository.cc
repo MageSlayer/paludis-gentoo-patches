@@ -148,6 +148,11 @@ paludis::make_ebuild_repository(
         eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_eapi_when_unspecified;
 
+    std::string profile_eapi;
+    if (m->end() == m->find("profile_eapi") || ((profile_eapi = m->find("profile_eapi")->second)).empty())
+        profile_eapi = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_profile_eapi;
+
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
@@ -210,6 +215,7 @@ paludis::make_ebuild_repository(
                 .write_bin_uri_prefix("")
                 .eapi_when_unknown(eapi_when_unknown)
                 .eapi_when_unspecified(eapi_when_unspecified)
+                .profile_eapi(profile_eapi)
                 .buildroot(buildroot)));
 }
 

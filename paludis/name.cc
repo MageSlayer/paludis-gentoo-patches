@@ -65,12 +65,15 @@ UseFlagNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_@");
+            "0123456789-+_:@");
 
     static const std::string alphanum_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789");
+
+    static const std::string special_chars(
+            ":_");
 
     do
     {
@@ -82,6 +85,20 @@ UseFlagNameValidator::validate(const std::string & s)
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
             break;
+
+        std::string::size_type t;
+        if (std::string::npos != ((t = s.find_first_of(special_chars))))
+        {
+            try
+            {
+                validate(s.substr(0, t));
+                validate(s.substr(t + 1));
+            }
+            catch (const UseFlagNameError & e)
+            {
+                break;
+            }
+        }
 
         return;
 

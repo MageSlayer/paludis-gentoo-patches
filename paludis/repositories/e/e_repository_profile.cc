@@ -32,6 +32,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
@@ -102,7 +103,7 @@ namespace paludis
 
             void add_use_expand_to_use();
             void make_vars_from_file_vars();
-            void handle_profile_arch_var();
+            void handle_profile_arch_var(const std::string &);
             void load_special_make_defaults_vars();
 
             ProfileFile packages_file;
@@ -165,24 +166,28 @@ namespace paludis
 
             Implementation(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSEntrySequence & dirs,
-                    bool arch_is_special) :
+                    const std::string & arch_var_if_special) :
                 env(e),
                 repository(p),
                 system_packages(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                             tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
+                Context context("When loading profiles for repository '" + stringify(name) + "':");
                 load_environment();
 
                 for (FSEntrySequence::Iterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
+                {
+                    Context subcontext("When using directory '" + stringify(*d) + "':");
                     load_profile_directory_recursively(*d);
+                }
 
                 make_vars_from_file_vars();
                 load_special_make_defaults_vars();
                 add_use_expand_to_use();
-                if (arch_is_special)
-                    handle_profile_arch_var();
+                if (! arch_var_if_special.empty())
+                    handle_profile_arch_var(arch_var_if_special);
             }
 
             ~Implementation()
@@ -317,15 +322,18 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
                 stringify(k->first) + "' is now '" + stringify(environment_variables[k->first]) + "'");
     }
 
+    std::string use_expand_var(EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
     try
     {
         use_expand.clear();
-        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
-                create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
+        if (! use_expand_var.empty())
+            WhitespaceTokeniser::get_instance()->tokenise(environment_variables[use_expand_var],
+                    create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
+        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
 }
@@ -333,38 +341,48 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
 void
 Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 {
+    std::string use_var(EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use);
     try
     {
         use.clear();
-        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE"],
-                create_inserter<UseFlagName>(std::inserter(use, use.end())));
+        if (! use_var.empty())
+            WhitespaceTokeniser::get_instance()->tokenise(environment_variables[use_var],
+                    create_inserter<UseFlagName>(std::inserter(use, use.end())));
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading USE failed due to exception: "
+        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_var + "' failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
 
+    std::string use_expand_var(EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
     try
     {
         use_expand.clear();
-        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
-                create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
+        if (! use_expand_var.empty())
+            WhitespaceTokeniser::get_instance()->tokenise(environment_variables[use_expand_var],
+                    create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
+        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_var + "' failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
+
+    std::string use_expand_hidden_var(EAPIData::get_instance()->eapi_from_string(
+                repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand_hidden);
     try
     {
         use_expand_hidden.clear();
-        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND_HIDDEN"],
-                create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
+        if (! use_expand_hidden_var.empty())
+            WhitespaceTokeniser::get_instance()->tokenise(environment_variables[use_expand_hidden_var],
+                    create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
     }
     catch (const Exception & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND_HIDDEN failed due to exception: "
+        Log::get_instance()->message(ll_warning, lc_context, "Loading '" + use_expand_hidden_var + "' failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
 }
@@ -372,16 +390,31 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 bool
 Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
+    tr1::shared_ptr<const EAPI> e(EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
+
     try
     {
-        return (s == "USE") || (s == "USE_EXPAND") || (s == "USE_EXPAND_HIDDEN")
-            || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK")
-            || (use_expand.end() != use_expand.find(UseFlagName(s)));
+        Context c("When checking whether '" + s + "' is incremental:");
+
+        return (! s.empty()) &&
+            (s == e->supported->ebuild_environment_variables->env_use
+             || s == e->supported->ebuild_environment_variables->env_use_expand
+             || s == e->supported->ebuild_environment_variables->env_use_expand_hidden
+             || s == "CONFIG_PROTECT"
+             || s == "CONFIG_PROTECT_MASK"
+             || use_expand.end() != use_expand.find(UseFlagName(s)));
     }
-    catch (const Exception &)
+    catch (const Exception & x)
     {
-        return (s == "USE") || (s == "USE_EXPAND") || (s == "USE_EXPAND_HIDDEN")
-            || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK");
+        Log::get_instance()->message(ll_qa, lc_context) << "Caught exception '" << x.message() << "' (" << x.what()
+            << "), possibly due to weird variable name being used in profile";
+
+        return (! s.empty()) &&
+            (s == e->supported->ebuild_environment_variables->env_use
+             || s == e->supported->ebuild_environment_variables->env_use_expand
+             || s == e->supported->ebuild_environment_variables->env_use_expand_hidden
+             || s == "CONFIG_PROTECT"
+             || s == "CONFIG_PROTECT_MASK");
     }
 }
 
@@ -547,6 +580,9 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
 
     stacked_values_list.push_back(StackedValues("use_expand special values"));
 
+    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
+                    repository->params().profile_eapi)->supported->ebuild_options->use_expand_separator));
+
     for (UseFlagSet::const_iterator x(use_expand.begin()), x_end(use_expand.end()) ;
             x != x_end ; ++x)
     {
@@ -559,18 +595,18 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
                 std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
-            use.insert(UseFlagName(lower_x + "_" + *u));
+            use.insert(UseFlagName(lower_x + expand_sep + *u));
     }
 }
 
 void
-Implementation<ERepositoryProfile>::handle_profile_arch_var()
+Implementation<ERepositoryProfile>::handle_profile_arch_var(const std::string & s)
 {
-    Context context("When handling profile ARCH variable:");
+    Context context("When handling profile " + s + " variable:");
 
-    std::string arch_s(environment_variables["ARCH"]);
+    std::string arch_s(environment_variables[s]);
     if (arch_s.empty())
-        throw ERepositoryConfigurationError("ARCH variable is unset or empty");
+        throw ERepositoryConfigurationError("Variable '" + s + "' is unset or empty");
 
     stacked_values_list.push_back(StackedValues("arch special values"));
     try
@@ -582,16 +618,16 @@ Implementation<ERepositoryProfile>::handle_profile_arch_var()
     }
     catch (const Exception &)
     {
-        throw ERepositoryConfigurationError("ARCH variable has invalid value '" + arch_s + "'");
+        throw ERepositoryConfigurationError("Variable '" + s + "' has invalid value '" + arch_s + "'");
     }
 }
 
 ERepositoryProfile::ERepositoryProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
-        bool arch_is_special) :
+        const std::string & arch_var_if_special) :
     PrivateImplementationPattern<ERepositoryProfile>(
-            new Implementation<ERepositoryProfile>(env, p, name, location, arch_is_special))
+            new Implementation<ERepositoryProfile>(env, p, name, location, arch_var_if_special))
 {
 }
 

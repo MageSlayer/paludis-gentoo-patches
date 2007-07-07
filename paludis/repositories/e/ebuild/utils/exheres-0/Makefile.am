@@ -16,6 +16,7 @@ libexecprog_SCRIPTS = \
 	prepinfo \
 	prepdocs \
 	prepalldocs \
+	dounpack \
 	banned_in_eapi_exheres-0
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@

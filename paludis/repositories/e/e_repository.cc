@@ -157,7 +157,7 @@ namespace paludis
 
         profile_ptr.reset(new ERepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
-                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->ebuild_options->want_arch_var));
+                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch));
     }
 
     void
@@ -196,7 +196,7 @@ namespace paludis
                         .profile(tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
                                     EAPIData::get_instance()->eapi_from_string(
-                                        params.eapi_when_unknown)->supported->ebuild_options->want_arch_var))));
+                                        params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch))));
             }
         }
 
@@ -285,24 +285,25 @@ ERepository::ERepository(const ERepositoryParams & p) :
     config_info->add_kv("location", stringify(_imp->params.location));
     config_info->add_kv("profiles", join(_imp->params.profiles->begin(),
                 _imp->params.profiles->end(), " "));
-    config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),
-                _imp->params.eclassdirs->end(), " "));
     config_info->add_kv("cache", stringify(_imp->params.cache));
     config_info->add_kv("write_cache", stringify(_imp->params.write_cache));
     config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
     config_info->add_kv("distdir", stringify(_imp->params.distdir));
+    config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),
+                _imp->params.eclassdirs->end(), " "));
     config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
     config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
-    config_info->add_kv("format", _imp->params.entry_format);
-    config_info->add_kv("layout", _imp->params.layout);
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
-    config_info->add_kv("eapi_when_unknown", _imp->params.eapi_when_unknown);
-    config_info->add_kv("eapi_when_unspecified", _imp->params.eapi_when_unspecified);
+    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     if (_imp->params.master_repository)
         config_info->add_kv("master_repository", stringify(_imp->params.master_repository->name()));
+    config_info->add_kv("format", _imp->params.entry_format);
+    config_info->add_kv("layout", _imp->params.layout);
+    config_info->add_kv("eapi_when_unknown", _imp->params.eapi_when_unknown);
+    config_info->add_kv("eapi_when_unspecified", _imp->params.eapi_when_unspecified);
+    config_info->add_kv("profile_eapi", _imp->params.profile_eapi);
 
     _info->add_section(config_info);
 }
@@ -749,6 +750,8 @@ ERepository::do_use_expand_flags() const
 {
     _imp->need_profiles();
 
+    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi
+                    )->supported->ebuild_options->use_expand_separator));
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
@@ -759,7 +762,7 @@ ERepository::do_use_expand_flags() const
         for (std::list<std::string>::const_iterator j(values.begin()), j_end(values.end()) ;
                 j != j_end ; ++j)
         {
-            std::string f(stringify(*i) + "_" + *j), lower_f;
+            std::string f(stringify(*i) + expand_sep + *j), lower_f;
             std::transform(f.begin(), f.end(), std::back_inserter(lower_f), &::tolower);
             result->insert(UseFlagName(lower_f));
         }
@@ -886,10 +889,12 @@ ERepository::do_describe_use_flag(const UseFlagName & f,
 {
     if (_imp->use_desc.empty())
     {
+        std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
+                        _imp->params.profile_eapi)->supported->ebuild_options->use_expand_separator));
         tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
         for (FSEntrySequence::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
-            _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p)));
+            _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p, expand_sep)));
     }
 
     std::string result;

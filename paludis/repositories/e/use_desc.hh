@@ -42,7 +42,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UseDesc(const FSEntry &);
+            UseDesc(const FSEntry &, const std::string & expand_sep);
             ~UseDesc();
 
             ///\}

@@ -25,7 +25,7 @@ ebuild_f_metadata()
     local key
 
     for a in ${PALUDIS_EBUILD_MUST_NOT_SET_VARIABLES} ; do
-        [[ -z "${!a}" ]] || die "\$${a} must not be set"
+        [[ "${!a-unset}" == "unset" ]] || die "\$${a} must not be set"
     done
 
     for key in ${EBUILD_METADATA_VARIABLES} ; do

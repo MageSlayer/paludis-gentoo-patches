@@ -148,6 +148,11 @@ paludis::make_ebin_repository(
         eapi_when_unspecified = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_eapi_when_unspecified;
 
+    std::string profile_eapi;
+    if (m->end() == m->find("profile_eapi") || ((profile_eapi = m->find("profile_eapi")->second)).empty())
+        profile_eapi = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_ebuild_profile_eapi;
+
     if (m->end() != m->find("sync_exclude"))
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "The sync_exclude key in '"
@@ -183,6 +188,7 @@ paludis::make_ebin_repository(
                 .write_bin_uri_prefix(write_bin_uri_prefix)
                 .eapi_when_unspecified(eapi_when_unspecified)
                 .eapi_when_unknown(eapi_when_unknown)
+                .profile_eapi(profile_eapi)
                 .buildroot(buildroot)));
 }
 

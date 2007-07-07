@@ -128,88 +128,116 @@ VDBID::need_keys_added() const
 
     Context context("When loading VDB ID keys from '" + stringify(_imp->dir) + "':");
 
-    if ((_imp->dir / "USE").exists())
+    if (! eapi()->supported)
     {
-        _imp->use.reset(new EUseKey(shared_from_this(), "USE", "Use flags", file_contents(_imp->dir / "USE"), mkt_internal));
-        add_key(_imp->use);
+        Log::get_instance()->message(ll_debug, lc_context) << "Not loading further keys for '" << *this << "' because EAPI '"
+            << eapi()->name << "' is not supported";
+        return;
     }
 
-    if ((_imp->dir / "INHERITED").exists())
-    {
-        _imp->inherited.reset(new EInheritedKey(shared_from_this(), "INHERITED", "Inherited", file_contents(_imp->dir / "INHERITED"),
-                    mkt_internal));
-        add_key(_imp->inherited);
-    }
+    const tr1::shared_ptr<const EAPIEbuildMetadataVariables> vars(eapi()->supported->ebuild_metadata_variables);
+    if (! vars)
+        throw InternalError(PALUDIS_HERE, "EAPI '" + eapi()->name + "' supported but has no ebuild_metadata_variables");
 
-    if ((_imp->dir / "IUSE").exists())
-    {
-        _imp->iuse.reset(new EIUseKey(shared_from_this(), "IUSE", "Used use flags", file_contents(_imp->dir / "IUSE"),
-                    mkt_normal));
-        add_key(_imp->iuse);
-    }
+    const tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> env(eapi()->supported->ebuild_environment_variables);
+    if (! env)
+        throw InternalError(PALUDIS_HERE, "EAPI '" + eapi()->name + "' supported but has no ebuild_environment_variables");
 
-    if ((_imp->dir / "LICENSE").exists())
-    {
-        _imp->license.reset(new ELicenseKey(shared_from_this(), "LICENSE", "License", file_contents(_imp->dir / "LICENSE"),
-                    mkt_normal));
-        add_key(_imp->license);
-    }
+    if (! env->env_use.empty())
+        if ((_imp->dir / env->env_use).exists())
+        {
+            _imp->use.reset(new EUseKey(shared_from_this(), env->env_use, env->description_use,
+                        file_contents(_imp->dir / env->env_use), mkt_internal));
+            add_key(_imp->use);
+        }
 
-    if ((_imp->dir / "PROVIDE").exists())
-    {
-        _imp->provide.reset(new EProvideKey(shared_from_this(), "PROVIDE", "Provides", file_contents(_imp->dir / "PROVIDE"),
-                    mkt_internal));
-        add_key(_imp->provide);
-    }
+    if (! vars->metadata_inherited.empty())
+        if ((_imp->dir / vars->metadata_inherited).exists())
+        {
+            _imp->inherited.reset(new EInheritedKey(shared_from_this(), vars->metadata_inherited, vars->description_inherited,
+                        file_contents(_imp->dir / vars->metadata_inherited), mkt_internal));
+            add_key(_imp->inherited);
+        }
 
-    if ((_imp->dir / "DEPEND").exists())
-    {
-        _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), "DEPEND", "Build dependencies",
-                    file_contents(_imp->dir / "DEPEND"), mkt_dependencies));
-        add_key(_imp->build_dependencies);
-    }
+    if (! vars->metadata_iuse.empty())
+        if ((_imp->dir / vars->metadata_iuse).exists())
+        {
+            _imp->iuse.reset(new EIUseKey(shared_from_this(), vars->metadata_iuse, vars->description_iuse,
+                        file_contents(_imp->dir / vars->metadata_iuse), mkt_normal));
+            add_key(_imp->iuse);
+        }
 
-    if ((_imp->dir / "RDEPEND").exists())
-    {
-        _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), "RDEPEND", "Run dependencies",
-                    file_contents(_imp->dir / "RDEPEND"), mkt_dependencies));
-        add_key(_imp->run_dependencies);
-    }
+    if (! vars->metadata_license.empty())
+        if ((_imp->dir / vars->metadata_license).exists())
+        {
+            _imp->license.reset(new ELicenseKey(shared_from_this(), vars->metadata_license, vars->description_license,
+                        file_contents(_imp->dir / vars->metadata_license),  mkt_normal));
+            add_key(_imp->license);
+        }
 
-    if ((_imp->dir / "PDEPEND").exists())
-    {
-        _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), "PDEPEND", "Post dependencies",
-                    file_contents(_imp->dir / "PDEPEND"), mkt_dependencies));
-        add_key(_imp->post_dependencies);
-    }
+    if (! vars->metadata_provide.empty())
+        if ((_imp->dir / vars->metadata_provide).exists())
+        {
+            _imp->provide.reset(new EProvideKey(shared_from_this(), vars->metadata_provide, vars->description_provide,
+                        file_contents(_imp->dir / vars->metadata_provide), mkt_internal));
+            add_key(_imp->provide);
+        }
 
-    if ((_imp->dir / "RESTRICT").exists())
-    {
-        _imp->restrictions.reset(new ERestrictKey(shared_from_this(), "RESTRICT", "Restrictions",
-                    file_contents(_imp->dir / "RESTRICT"), mkt_internal));
-        add_key(_imp->restrictions);
-    }
+    if (! vars->metadata_build_depend.empty())
+        if ((_imp->dir / vars->metadata_build_depend).exists())
+        {
+            _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_build_depend,
+                        vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend), mkt_dependencies));
+            add_key(_imp->build_dependencies);
+        }
 
-    if ((_imp->dir / "SRC_URI").exists())
-    {
-        _imp->src_uri.reset(new EURIKey(shared_from_this(), "SRC_URI", "Source URI",
-                    file_contents(_imp->dir / "SRC_URI"), mkt_dependencies));
-        add_key(_imp->src_uri);
-    }
+    if (! vars->metadata_run_depend.empty())
+        if ((_imp->dir / vars->metadata_run_depend).exists())
+        {
+            _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_run_depend,
+                        vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend), mkt_dependencies));
+            add_key(_imp->run_dependencies);
+        }
 
-    if ((_imp->dir / "DESCRIPTION").exists())
-    {
-        _imp->short_description.reset(new EStringKey(shared_from_this(), "DESCRIPTION", "Description",
-                    file_contents(_imp->dir / "DESCRIPTION"), mkt_significant));
-        add_key(_imp->short_description);
-    }
+    if (! vars->metadata_pdepend.empty())
+        if ((_imp->dir / vars->metadata_pdepend).exists())
+        {
+            _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_pdepend,
+                        vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend), mkt_dependencies));
+            add_key(_imp->post_dependencies);
+        }
 
-    if ((_imp->dir / "HOMEPAGE").exists())
-    {
-        _imp->homepage.reset(new EURIKey(shared_from_this(), "HOMEPAGE", "Homepage",
-                    file_contents(_imp->dir / "HOMEPAGE"), mkt_significant));
-        add_key(_imp->homepage);
-    }
+    if (! vars->metadata_restrict.empty())
+        if ((_imp->dir / vars->metadata_restrict).exists())
+        {
+            _imp->restrictions.reset(new ERestrictKey(shared_from_this(), vars->metadata_restrict, vars->description_restrict,
+                        file_contents(_imp->dir / vars->metadata_restrict), mkt_internal));
+            add_key(_imp->restrictions);
+        }
+
+    if (! vars->metadata_src_uri.empty())
+        if ((_imp->dir / vars->metadata_src_uri).exists())
+        {
+            _imp->src_uri.reset(new EURIKey(shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
+                        file_contents(_imp->dir / vars->metadata_src_uri), mkt_dependencies));
+            add_key(_imp->src_uri);
+        }
+
+    if (! vars->metadata_description.empty())
+        if ((_imp->dir / vars->metadata_description).exists())
+        {
+            _imp->short_description.reset(new EStringKey(shared_from_this(), vars->metadata_description,
+                        vars->description_description, file_contents(_imp->dir / vars->metadata_description), mkt_significant));
+            add_key(_imp->short_description);
+        }
+
+    if (! vars->metadata_homepage.empty())
+        if ((_imp->dir / vars->metadata_homepage).exists())
+        {
+            _imp->homepage.reset(new EURIKey(shared_from_this(), vars->metadata_homepage, vars->description_homepage,
+                        file_contents(_imp->dir / vars->metadata_homepage), mkt_significant));
+            add_key(_imp->homepage);
+        }
 
     _imp->contents.reset(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",
                 _imp->dir / "CONTENTS", mkt_internal));

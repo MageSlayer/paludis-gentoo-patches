@@ -540,14 +540,18 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
             bool prefixed(false);
             for (UseFlagNameSet::Iterator f(_all_expand_prefixes->begin()),
                     f_end(_all_expand_prefixes->end()) ; f != f_end && ! prefixed ; ++f)
-                if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
-                    prefixed = true;
+                if (stringify(*f).length() < stringify(i->flag).length())
+                    if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
+                        prefixed = true;
 
             if (prefixed)
                 continue;
         }
         else
         {
+            if (stringify(i->flag).length() <= prefix.length())
+                continue;
+
             if (0 != stringify(i->flag).compare(0, prefix.length(), prefix))
                 continue;
         }
@@ -590,11 +594,14 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
         Set<UseDescription, UseDescriptionComparator>::Iterator i,
         Set<UseDescription, UseDescriptionComparator>::Iterator i_end)
 {
+    Log::get_instance()->message(ll_debug, lc_context) << "display_use_summary_flag: prefix is '" << prefix
+        << "', i->flag is '" << i->flag << "', i->package_id is '" << *i->package_id << "', i->state is '" << i->state
+        << "', i->description is '" << i->description << "'";
+
     if (next(i) == i_end)
     {
         std::ostringstream s;
-        s << std::left << std::setw(30) << (render_as_tag(
-                    strip_leading_string(stringify(i->flag), prefix + "_")) + ": ");
+        s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ": ");
         s << i->description;
         output_starred_item(s.str());
     }
@@ -608,15 +615,14 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
         if (all_same)
         {
             std::ostringstream s;
-            s << std::left << std::setw(30) << (render_as_tag(
-                        strip_leading_string(stringify(i->flag), prefix + "_")) + ": ");
+            s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ": ");
             s << i->description;
             output_starred_item(s.str());
         }
         else
         {
             output_starred_item(render_as_tag(
-                        strip_leading_string(stringify(i->flag), prefix + "_")) + ":");
+                        stringify(i->flag).substr(prefix.empty() ? 0 : prefix.length() + 1)) + ":");
 
             for ( ; i != i_end ; ++i)
             {

@@ -61,7 +61,7 @@ namespace paludis
                     const ERepository * const,
                     const RepositoryName & name,
                     const FSEntrySequence & location,
-                    bool arch_is_special);
+                    const std::string & arch_var_if_special);
             ~ERepositoryProfile();
 
             ///\}

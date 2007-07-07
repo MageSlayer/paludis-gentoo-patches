@@ -57,7 +57,7 @@ namespace paludis
             }
         }
 
-        Implementation(const FSEntry & f)
+        Implementation(const FSEntry & f, const std::string & expand_sep)
         {
             add(f / "use.desc", "");
             add(f / "use.local.desc", "");
@@ -65,13 +65,13 @@ namespace paludis
             if ((f / "desc").is_directory_or_symlink_to_directory())
                 for (DirIterator d(f / "desc"), d_end ; d != d_end ; ++d)
                     if (is_file_with_extension(*d, ".desc", IsFileWithOptions()))
-                        add(*d, strip_trailing_string(d->basename(), ".desc") + "_");
+                        add(*d, strip_trailing_string(d->basename(), ".desc") + expand_sep);
         }
     };
 }
 
-UseDesc::UseDesc(const FSEntry & f) :
-    PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f))
+UseDesc::UseDesc(const FSEntry & f, const std::string & expand_sep) :
+    PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f, expand_sep))
 {
 }
 

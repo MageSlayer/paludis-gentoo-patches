@@ -24,6 +24,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/log.hh>
 #include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -52,8 +53,16 @@ UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
         const tr1::shared_ptr<const UseFlagNameSet> c) const
 {
     for (UseFlagNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-        if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
-            return i->data().length();
+        if (i->data().length() < u.data().length())
+            if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
+            {
+                Log::get_instance()->message(ll_debug, lc_context) << "use_expand_delim_pos for '" << u
+                    << "' is '" << i->data().length() << "'";
+                return i->data().length();
+            }
+
+    Log::get_instance()->message(ll_debug, lc_context) << "use_expand_delim_pos for '" << u
+        << "' is npos";
     return std::string::npos;
 }
 

@@ -169,8 +169,8 @@ namespace
                     use += stringify(i->flag) + " ";
 
         if (id.eapi()->supported)
-            if (id.eapi()->supported->ebuild_options->want_arch_var)
-                use += profile->environment_variable("ARCH") + " ";
+            if (! id.eapi()->supported->ebuild_environment_variables->env_arch.empty())
+                use += profile->environment_variable(id.eapi()->supported->ebuild_environment_variables->env_arch) + " ";
 
         return use;
     }
@@ -179,7 +179,8 @@ namespace
     make_expand(const Environment * const env,
             const PackageID & e,
             tr1::shared_ptr<const ERepositoryProfile> profile,
-            std::string & use)
+            std::string & use,
+            const std::string & expand_sep)
     {
         tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
@@ -207,11 +208,11 @@ namespace
             for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
                     u != u_end ; ++u)
             {
-                if (! env->query_use(UseFlagName(lower_x + "_" + stringify(*u)), e))
+                if (! env->query_use(UseFlagName(lower_x + expand_sep + stringify(*u)), e))
                     continue;
 
                 if (! e.eapi()->supported->ebuild_options->require_use_expand_in_iuse)
-                    use.append(lower_x + "_" + stringify(*u) + " ");
+                    use.append(lower_x + expand_sep + stringify(*u) + " ");
 
                 std::string value;
                 Map<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
@@ -349,7 +350,7 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
         }
 
         /* make AA */
-        if (id->eapi()->supported->ebuild_options->want_aa_var)
+        if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
         {
             AAFinder g;
             if (id->src_uri_key())
@@ -394,8 +395,9 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
+    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p, use));
+                _imp->params.environment, *id, p, use, expand_sep));
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
@@ -648,8 +650,9 @@ EbuildEntries::pretend(const tr1::shared_ptr<const PackageID> & id,
         return true;
 
     std::string use(make_use(_imp->params.environment, *id, p));
+    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
     tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
-                _imp->params.environment, *id, p, use));
+                _imp->params.environment, *id, p, use, expand_sep));
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 

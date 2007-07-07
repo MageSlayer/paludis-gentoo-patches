@@ -65,20 +65,32 @@ main()
 
     ebuild_section "Writing VDB entry keys ..."
 
+    if [[ -z "${PALUDIS_VDB_FROM_ENV_VARIABLES}" ]] ; then
+        ebuild_notice "warning" "VDB_FROM_ENV_VARIABLES not set, using defaults"
+        PALUDIS_VDB_FROM_ENV_VARIABLES="\
+            CATEGORY CHOST COUNTER DEPEND DESCRIPTION EAPI \
+            FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
+            PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
+            VDB_FORMAT PKGMANAGER"
+    fi
+
+    if [[ -z "${PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES}" ]] ; then
+        ebuild_notice "warning" "PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES not set, using defaults"
+        PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES="\
+            ASFLAGS CBUILD CC CFLAGS CHOST CTARGET CXX CXXFLAGS \
+            EXTRA_ECONF EXTRA_EINSTALL EXTRA_EMAKE LDFLAGS LIBCXXFLAGS \
+            REPOSITORY"
+    fi
+
     local v VDB_FORMAT="paludis-2" COUNTER="$(date +%s )"
-    for v in CATEGORY CHOST COUNTER DEPEND DESCRIPTION EAPI \
-        FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
-        PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
-        VDB_FORMAT PKGMANAGER ; do
+    for v in ${PALUDIS_VDB_FROM_ENV_VARIABLES} ; do
         if ! echo "${!v}" > "${vdbdir}"/${v} ; then
             echo "!!! vdb write ${v} failed"
             exit 1
         fi
     done
 
-    for v in ASFLAGS CBUILD CC CFLAGS CHOST CTARGET CXX CXXFLAGS \
-        EXTRA_ECONF EXTRA_EINSTALL EXTRA_EMAKE LDFLAGS LIBCXXFLAGS \
-        REPOSITORY ; do
+    for v in ${PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES} ; do
         [[ -z "${!v}" ]] && continue
         if ! echo "${!v}" > "${vdbdir}"/${v} ; then
             echo "!!! vdb write ${v} failed"

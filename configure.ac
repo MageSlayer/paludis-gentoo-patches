@@ -1216,6 +1216,8 @@ AC_OUTPUT(
 	paludis/repositories/gems/Makefile
 	paludis/repositories/e/Makefile
 	paludis/repositories/e/ebuild/Makefile
+	paludis/repositories/e/ebuild/0/Makefile
+	paludis/repositories/e/ebuild/exheres-0/Makefile
 	paludis/repositories/e/ebuild/digests/Makefile
 	paludis/repositories/e/ebuild/utils/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile

@@ -75,6 +75,11 @@ namespace paludis
                                     .default_ebuild_layout(k.get("default_ebuild_layout"))
                                     .default_ebuild_eapi_when_unknown(k.get("default_ebuild_eapi_when_unknown"))
                                     .default_ebuild_eapi_when_unspecified(k.get("default_ebuild_eapi_when_unspecified"))
+                                    .default_ebuild_profile_eapi(k.get("default_ebuild_profile_eapi"))
+                                    .paludis_environment_use_conf_filename(k.get("paludis_environment_use_conf_filename"))
+                                    .paludis_environment_keywords_conf_filename(k.get("paludis_environment_keywords_conf_filename"))
+                                    .concept_use(k.get("concept_use"))
+                                    .concept_keyword(k.get("concept_keyword"))
                                     ))));
             }
         }
@@ -95,7 +100,7 @@ DistributionData::distribution_from_string(const std::string & s) const
 {
     MakeHashedMap<std::string, tr1::shared_ptr<const Distribution> >::Type::const_iterator i(_imp->values.find(s));
     if (i == _imp->values.end())
-        return tr1::shared_ptr<const Distribution>();
+        throw DistributionConfigurationError("No distribution configuration found for '" + s + "'");
     else
         return i->second;
 }

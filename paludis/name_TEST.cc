@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -288,7 +288,7 @@ namespace test_cases
 
         void run()
         {
-            UseFlagName u("use0+_@-");
+            UseFlagName u("use0+_x@-x");
             TEST_CHECK_THROWS(u = UseFlagName(""), NameError);
             TEST_CHECK_THROWS(u = UseFlagName("!!!"), NameError);
             TEST_CHECK_THROWS(u = UseFlagName("-foo"), NameError);
@@ -296,6 +296,10 @@ namespace test_cases
             TEST_CHECK_THROWS(u = UseFlagName("@foo"), NameError);
             TEST_CHECK_THROWS(u = UseFlagName("+foo"), NameError);
             TEST_CHECK_THROWS(u = UseFlagName("fo$o"), NameError);
+
+            TEST_CHECK_THROWS(u = UseFlagName("foo:"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName(":foo"), NameError);
+            TEST_CHECK_THROWS(u = UseFlagName("foo:_"), NameError);
         }
     } test_use_flag_name_validation;
 

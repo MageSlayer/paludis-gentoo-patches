@@ -28,6 +28,8 @@
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
+#include <paludis/eapi.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
@@ -284,11 +286,23 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
     if (_imp->is_vdb)
         return true;
 
-    std::string ak(_imp->main_repo->e_interface->profile_variable("ACCEPT_KEYWORDS"));
+    std::string accept_keywords_var(EAPIData::get_instance()->eapi_from_string(
+                _imp->main_repo->e_interface->params().profile_eapi)->supported->ebuild_environment_variables->env_accept_keywords);
+
+    std::string ak;
+    if (! accept_keywords_var.empty())
+        ak = _imp->main_repo->e_interface->profile_variable(accept_keywords_var);
 
     if (ak.empty())
     {
-        std::string arch(_imp->main_repo->e_interface->profile_variable("ARCH"));
+        std::string arch_var(EAPIData::get_instance()->eapi_from_string(
+                    _imp->main_repo->e_interface->params().profile_eapi)->supported->ebuild_environment_variables->env_arch);
+
+        if (arch_var.empty())
+            throw ConfigurationError("Don't know how to work out whether keywords are acceptable");
+
+        std::string arch(_imp->main_repo->e_interface->profile_variable(arch_var));
+
         if (keywords->end() != keywords->find(KeywordName(arch)))
             return true;
 

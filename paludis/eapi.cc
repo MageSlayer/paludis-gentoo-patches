@@ -82,9 +82,6 @@ namespace paludis
 
                                             .ebuild_options(make_shared_ptr(new EAPIEbuildOptions(
                                                         EAPIEbuildOptions::create()
-                                                        .want_aa_var(destringify<bool>(k.get("want_aa_var")))
-                                                        .want_kv_var(destringify<bool>(k.get("want_kv_var")))
-                                                        .want_arch_var(destringify<bool>(k.get("want_arch_var")))
                                                         .want_portage_emulation_vars(destringify<bool>(k.get("want_portage_emulation_vars")))
                                                         .require_use_expand_in_iuse(destringify<bool>(k.get("require_use_expand_in_iuse")))
                                                         .rdepend_defaults_to_depend(destringify<bool>(k.get("rdepend_defaults_to_depend")))
@@ -92,12 +89,17 @@ namespace paludis
                                                         .directory_variables(k.get("directory_variables"))
                                                         .directory_if_exists_variables(k.get("directory_if_exists_variables"))
                                                         .ebuild_must_not_set_variables(k.get("ebuild_must_not_set_variables"))
+                                                        .vdb_from_env_variables(k.get("vdb_from_env_variables"))
+                                                        .vdb_from_env_unless_empty_variables(k.get("vdb_from_env_unless_empty_variables"))
                                                         .source_merged_variables(k.get("source_merged_variables"))
                                                         .must_not_change_variables(k.get("must_not_change_variables"))
+                                                        .save_variables(k.get("save_variables"))
+                                                        .save_base_variables(k.get("save_base_variables"))
                                                         .support_eclasses(destringify<bool>(k.get("support_eclasses")))
                                                         .support_exlibs(destringify<bool>(k.get("support_exlibs")))
                                                         .utility_path_suffixes(k.get("utility_path_suffixes"))
                                                         .ebuild_module_suffixes(k.get("ebuild_module_suffixes"))
+                                                        .use_expand_separator(destringify<char>(k.get("use_expand_separator")))
                                                         )))
 
                                             .ebuild_phases(make_shared_ptr(new EAPIEbuildPhases(
@@ -127,7 +129,37 @@ namespace paludis
                                                             .metadata_iuse(k.get("metadata_iuse"))
                                                             .metadata_pdepend(k.get("metadata_pdepend"))
                                                             .metadata_provide(k.get("metadata_provide"))
-                                                            .metadata_eapi(k.get("metadata_eapi")))))
+                                                            .metadata_eapi(k.get("metadata_eapi"))
+                                                            .description_build_depend(k.get("description_build_depend"))
+                                                            .description_run_depend(k.get("description_run_depend"))
+                                                            .description_slot(k.get("description_slot"))
+                                                            .description_src_uri(k.get("description_src_uri"))
+                                                            .description_restrict(k.get("description_restrict"))
+                                                            .description_homepage(k.get("description_homepage"))
+                                                            .description_license(k.get("description_license"))
+                                                            .description_description(k.get("description_description"))
+                                                            .description_keywords(k.get("description_keywords"))
+                                                            .description_eclass_keywords(k.get("description_eclass_keywords"))
+                                                            .description_inherited(k.get("description_inherited"))
+                                                            .description_iuse(k.get("description_iuse"))
+                                                            .description_pdepend(k.get("description_pdepend"))
+                                                            .description_provide(k.get("description_provide"))
+                                                            .description_eapi(k.get("description_eapi"))
+                                                            )))
+
+                                            .ebuild_environment_variables(make_shared_ptr(new EAPIEbuildEnvironmentVariables(
+                                                            EAPIEbuildEnvironmentVariables::create()
+                                                            .env_use(k.get("env_use"))
+                                                            .env_use_expand(k.get("env_use_expand"))
+                                                            .env_use_expand_hidden(k.get("env_use_expand_hidden"))
+                                                            .env_aa(k.get("env_aa"))
+                                                            .env_arch(k.get("env_arch"))
+                                                            .env_kv(k.get("env_kv"))
+                                                            .env_portdir(k.get("env_portdir"))
+                                                            .env_distdir(k.get("env_distdir"))
+                                                            .env_accept_keywords(k.get("env_accept_keywords"))
+                                                            .description_use(k.get("description_use"))
+                                                            )))
                                             ))))));
             }
 
@@ -149,6 +181,7 @@ namespace paludis
                                         .uri_supports_arrow(false)
                                         .ebuild_options(tr1::shared_ptr<EAPIEbuildOptions>())
                                         .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
+                                        .ebuild_environment_variables(tr1::shared_ptr<EAPIEbuildEnvironmentVariables>())
                                         .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
                                         ))))));
 
@@ -164,6 +197,7 @@ namespace paludis
                                         .uri_supports_arrow(false)
                                         .ebuild_options(tr1::shared_ptr<EAPIEbuildOptions>())
                                         .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
+                                        .ebuild_environment_variables(tr1::shared_ptr<EAPIEbuildEnvironmentVariables>())
                                         .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
                                         ))))));
         }
