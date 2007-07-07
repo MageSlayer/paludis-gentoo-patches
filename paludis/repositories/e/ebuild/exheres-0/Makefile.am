@@ -6,7 +6,9 @@ libexecprogexheresdir = $(libexecdir)/paludis/exheres-0
 
 libexecprogexheres_SCRIPTS = \
 	builtin_fetch.bash \
-	pkg_nofetch.bash
+	pkg_nofetch.bash \
+	list_functions.bash \
+	echo_functions.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \

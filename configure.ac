@@ -1203,27 +1203,28 @@ AC_OUTPUT(
 	paludis/eapis/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile
+	paludis/environments/no_config/Makefile
 	paludis/environments/paludis/Makefile
 	paludis/environments/portage/Makefile
-	paludis/environments/no_config/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/merger/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
-	paludis/repositories/fake/Makefile
-	paludis/repositories/gems/Makefile
 	paludis/repositories/e/Makefile
-	paludis/repositories/e/ebuild/Makefile
 	paludis/repositories/e/ebuild/0/Makefile
-	paludis/repositories/e/ebuild/exheres-0/Makefile
+	paludis/repositories/e/ebuild/Makefile
 	paludis/repositories/e/ebuild/digests/Makefile
+	paludis/repositories/e/ebuild/echo_functions.bash
+	paludis/repositories/e/ebuild/exheres-0/Makefile
+	paludis/repositories/e/ebuild/exheres-0/echo_functions.bash
 	paludis/repositories/e/ebuild/utils/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
-	paludis/repositories/e/ebuild/echo_functions.bash
 	paludis/repositories/e/ebuild/work_around_broken_utilities.bash
 	paludis/repositories/e/qa/Makefile
+	paludis/repositories/fake/Makefile
+	paludis/repositories/gems/Makefile
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
@@ -1234,19 +1235,19 @@ AC_OUTPUT(
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile
-	src/output/Makefile
-	src/common_args/Makefile
 	src/clients/Makefile
+	src/clients/adjutrix/Makefile
 	src/clients/contrarius/Makefile
 	src/clients/gtkpaludis/Makefile
-	src/clients/gtkpaludis/vtemm/Makefile
-	src/clients/gtkpaludis/vtemm/defs/Makefile
-	src/clients/gtkpaludis/vtemm/converts/Makefile
 	src/clients/gtkpaludis/libgtkpaludis/Makefile
+	src/clients/gtkpaludis/vtemm/Makefile
+	src/clients/gtkpaludis/vtemm/converts/Makefile
+	src/clients/gtkpaludis/vtemm/defs/Makefile
 	src/clients/inquisitio/Makefile
 	src/clients/paludis/Makefile
 	src/clients/qualudis/Makefile
-	src/clients/adjutrix/Makefile
+	src/common_args/Makefile
+	src/output/Makefile
 	test/Makefile
 	vim/Makefile
 	vim/ftdetect/Makefile
