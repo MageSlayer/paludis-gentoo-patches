@@ -69,6 +69,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(destringify<float>("0.1"),   0.1f);
             TEST_CHECK_EQUAL(destringify<float>("-1.54"), -1.54f);
             TEST_CHECK_THROWS(destringify<float>("I am a fish"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<float>(""), DestringifyError);
         }
     } test_case_destringify_float;
 
@@ -84,6 +85,7 @@ namespace test_cases
         {
             TEST_CHECK_EQUAL(destringify<std::string>("asdf"),           "asdf");
             TEST_CHECK_EQUAL(destringify<std::string>("  a f     e b "), "  a f     e b ");
+            TEST_CHECK_THROWS(destringify<std::string>(""), DestringifyError);
         }
     } test_case_destringify_string;
 
@@ -105,7 +107,28 @@ namespace test_cases
             TEST_CHECK(!destringify<bool>("-1"));
             TEST_CHECK_THROWS(destringify<bool>("flase"), DestringifyError);
             TEST_CHECK_THROWS(destringify<bool>("432.2413"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<bool>(""), DestringifyError);
         }
     } test_case_destringify_bool;
+
+    /** \test
+     * Test destringify for char.
+     *
+     */
+    struct DestringifyCharTests : TestCase
+    {
+        DestringifyCharTests() : TestCase("destringify char") { }
+
+        void run()
+        {
+            TEST_CHECK_EQUAL(destringify<char>("x"), 'x');
+            TEST_CHECK_EQUAL(destringify<char>("0"), '0');
+            TEST_CHECK_THROWS(destringify<char>("aa"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<char>("a a"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<char>("11"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<char>(""), DestringifyError);
+        }
+    } test_case_destringify_char;
+
 }
 

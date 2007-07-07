@@ -110,20 +110,24 @@ namespace paludis
              */
             static bool do_destringify(const std::string & s)
             {
-                int i;
-                try
-                {
-                    i = Destringifier<int, Exception_>::do_destringify(s);
-                    return i > 0;
-                }
-                catch (const DestringifyError &)
+                std::istringstream ss(s);
+                if ((s[0] >= 'a' && s[0] <= 'z') || (s[0] >= 'A' && s[0] <= 'Z'))
                 {
                     bool b;
-                    std::istringstream ss(s);
                     ss >> std::boolalpha >> b;
-                    if (! ss.eof() || ss.bad())
+                    if (ss.eof() && ! ss.bad())
+                        return b;
+                    else
                         throw Exception_(s);
-                    return b;
+                }
+                else
+                {
+                    int i;
+                    ss >> i;
+                    if (ss.eof() && ! ss.bad())
+                        return i > 0;
+                    else
+                        throw Exception_(s);
                 }
             }
         };
@@ -141,22 +145,10 @@ namespace paludis
              */
             static char do_destringify(const std::string & s)
             {
-                try
-                {
-                    std::string r(Destringifier<std::string, Exception_>::do_destringify(s));
-                    if (r.length() != 1)
-                        throw DestringifyError(s);
-                    return r[0];
-                }
-                catch (const DestringifyError &)
-                {
-                    bool b;
-                    std::istringstream ss(s);
-                    ss >> std::boolalpha >> b;
-                    if (! ss.eof() || ss.bad())
-                        throw Exception_(s);
-                    return b;
-                }
+                if (s.length() == 1)
+                    return s[0];
+                else
+                    throw Exception_(s);
             }
         };
     }
