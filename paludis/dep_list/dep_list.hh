@@ -105,7 +105,7 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsSet> destinations);
 
             /**
-             * Return whether the specified PackageDatabaseEntry is matched by
+             * Return whether the specified PackageID is matched by
              * the top level target.
              */
             bool is_top_level_target(const PackageID &) const;
@@ -160,7 +160,7 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsSet> target_destinations) const;
 
             /**
-             * Return whether a PackageDatabaseEntry has been replaced.
+             * Return whether a PackageID has been replaced.
              */
             bool replaced(const PackageID &) const;
 
