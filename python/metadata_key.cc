@@ -176,7 +176,7 @@ void PALUDIS_VISIBLE expose_metadata_key()
                 )
 
         .add_property("human_name", &MetadataKey::human_name,
-                "[ro] MetadataKeyType\n"
+                "[ro] string\n"
                 )
         ;
     register_metadata_key_to_python();
@@ -230,6 +230,16 @@ void PALUDIS_VISIBLE expose_metadata_key()
         )
         .add_property("value", &MetadataContentsKey::value,
                 "[ro] Contents\n"
+                )
+
+        //Work around epydoc bug
+        .add_property("raw_name", &MetadataContentsKey::raw_name,
+                "[ro] string\n"
+                )
+
+        //Work around epydoc bug
+        .add_property("human_name", &MetadataContentsKey::human_name,
+                "[ro] string\n"
                 )
         ;
 
