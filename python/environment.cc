@@ -111,8 +111,8 @@ void PALUDIS_VISIBLE expose_environment()
          "and provides various methods for querying package visibility and options.",
          bp::no_init
         )
-        .def("default_destinations", &Environment::default_destinations,
-                "default_destinations() -> DestinationsCollection\n"
+        .add_property("default_destinations", &Environment::default_destinations,
+                "[ro] DestinationsIterable\n"
                 "Default destination candidates for installing packages."
             )
 
@@ -139,14 +139,14 @@ void PALUDIS_VISIBLE expose_environment()
                 "Return the reasons for a package being masked."
             )
 
-        .def("root", &Environment::root,
-                "root() -> string\n"
+        .add_property("root", &Environment::root,
+                "[ro] string\n"
                 "Our root location for installs."
             )
 
-        .def("set_names", &Environment::set_names,
-                "set_names() -> SetNamesCollection\n"
-                "Return all known named sets."
+        .add_property("set_names", &Environment::set_names,
+                "[ro] SetNamesIterable\n"
+                "All known named sets."
             )
         ;
 

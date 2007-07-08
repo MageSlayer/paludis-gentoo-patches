@@ -21,6 +21,8 @@
 
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/util/set.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -194,4 +196,13 @@ void PALUDIS_VISIBLE expose_dep_tag()
          bp::init<>("__init__()")
         )
         ;
+
+    /**
+     * DepListEntryTags
+     */
+    class_iterable<DepListEntryTags>
+        (
+         "DepListEntryTags",
+         "Tags attached to a DepListEntry."
+        );
 }

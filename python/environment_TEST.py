@@ -76,8 +76,8 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(e.set("everything"), AllDepSpec))
         self.assert_(isinstance(nce.set("everything"), AllDepSpec))
 
-        self.assert_(isinstance(e.set_names(), SetNameIterable))
-        self.assert_(isinstance(nce.set_names(), SetNameIterable))
+        self.assert_(isinstance(e.set_names, SetNameIterable))
+        self.assert_(isinstance(nce.set_names, SetNameIterable))
 
     def test_08_repositories(self):
         nce2 = NoConfigEnvironment(repo, master_repository_dir=slaverepo)
@@ -88,12 +88,12 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(nce2.master_repository, Repository))
 
     def test_09_root(self):
-        self.assert_(isinstance(e.root(), str))
-        self.assert_(isinstance(nce.root(), str))
+        self.assert_(isinstance(e.root, str))
+        self.assert_(isinstance(nce.root, str))
 
     def test_10_default_destinations(self):
-        self.assert_(isinstance(e.default_destinations(), DestinationsIterable))
-        self.assert_(isinstance(nce.default_destinations(), DestinationsIterable))
+        self.assert_(isinstance(e.default_destinations, DestinationsIterable))
+        self.assert_(isinstance(nce.default_destinations, DestinationsIterable))
 
     def test_11_set_accept_unstable(self):
         nce.accept_unstable = True

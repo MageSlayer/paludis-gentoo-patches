@@ -947,12 +947,12 @@ void register_sp_package_dep_spec_to_python()
 
 
 template <typename H_>
-struct RegisterSpecTreeFromPython
+struct RegisterSpecTreeSPTRFromPython
 {
-    RegisterSpecTreeFromPython()
+    RegisterSpecTreeSPTRFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
-                boost::python::type_id<tr1::shared_ptr<typename H_::ConstItem> >());
+                boost::python::type_id<tr1::shared_ptr<const typename H_::ConstItem> >());
     }
 
     static void *
@@ -1023,9 +1023,9 @@ struct RegisterPackageDepSpecFromPython
     }
 };
 
-struct RegisterPackageDepSpecSPFromPython
+struct RegisterPackageDepSpecSPTRFromPython
 {
-    RegisterPackageDepSpecSPFromPython()
+    RegisterPackageDepSpecSPTRFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
                 boost::python::type_id<tr1::shared_ptr<const PackageDepSpec> >());
@@ -1094,11 +1094,12 @@ void PALUDIS_VISIBLE expose_dep_spec()
     register_tree_to_python<LicenseSpecTree>();
     register_tree_to_python<SetSpecTree>();
 
-    RegisterSpecTreeFromPython<DependencySpecTree>();
-    RegisterSpecTreeFromPython<ProvideSpecTree>();
-    RegisterSpecTreeFromPython<RestrictSpecTree>();
-    RegisterSpecTreeFromPython<URISpecTree>();
-    RegisterSpecTreeFromPython<LicenseSpecTree>();
+    RegisterSpecTreeSPTRFromPython<DependencySpecTree>();
+    RegisterSpecTreeSPTRFromPython<ProvideSpecTree>();
+    RegisterSpecTreeSPTRFromPython<RestrictSpecTree>();
+    RegisterSpecTreeSPTRFromPython<URISpecTree>();
+    RegisterSpecTreeSPTRFromPython<LicenseSpecTree>();
+    RegisterSpecTreeSPTRFromPython<SetSpecTree>();
 
     /**
      * DepSpec
@@ -1215,7 +1216,7 @@ void PALUDIS_VISIBLE expose_dep_spec()
      * PackageDepSpec
      */
     RegisterPackageDepSpecFromPython();
-    RegisterPackageDepSpecSPFromPython();
+    RegisterPackageDepSpecSPTRFromPython();
 
     bp::implicitly_convertible<PackageDepSpec, PythonPackageDepSpec>();
     register_sp_package_dep_spec_to_python();

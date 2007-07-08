@@ -22,6 +22,7 @@
 #include <boost/version.hpp>
 
 void expose_contents();
+void expose_dep_list();
 void expose_dep_spec();
 void expose_dep_tag();
 void expose_eapi();
@@ -57,6 +58,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_mask_reasons();
     expose_dep_spec();
     expose_dep_tag();
+    expose_dep_list();
     expose_portage_dep_parser();
     expose_name();
     expose_log();

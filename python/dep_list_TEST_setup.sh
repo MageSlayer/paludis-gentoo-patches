@@ -1,8 +1,8 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir repository_TEST_dir || exit 1
-cd repository_TEST_dir || exit 1
+mkdir dep_list_TEST_dir || exit 1
+cd dep_list_TEST_dir || exit 1
 
 mkdir -p home/.paludis/repositories
 
@@ -23,102 +23,43 @@ END
 
 cat <<END > home/.paludis/keywords.conf
 */* test
-~foo/bar-1 ~test
+~foo/bar-1.0 ~test
 END
 
 cat <<END > home/.paludis/use.conf
 */* enabled
-~foo/bar-1 sometimes_enabled
+~foo/bar-1.0 sometimes_enabled
+END
+
+cat <<END > home/.paludis/package_mask.conf
+=foo/bar-3*
 END
 
 cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
-mkdir -p testrepo/{eclass,licenses,distfiles,profiles/testprofile,foo/bar/files} || exit 1
+mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
-
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
-foo1
-foo2
-foo3
-foo4
 END
-
-cat <<END > profiles/profiles.desc || exit 1
-x86 testprofile stable
-END
-
-cat <<END > profiles/package.mask || exit 1
-foo1/bar
-foo2/bar
-END
-
-cat <<END > profiles/testprofile/make.defaults || exit 1
+cat <<END > profiles/testprofile/make.defaults
 ARCH=test
 USERLAND=test
 KERNEL=test
-USE="test1 test2 -test5"
 END
-
-cat <<END > profiles/testprofile/package.mask || exit 1
-foo1/bar
-foo3/bar
+cat <<END > profiles/profiles.desc
+test testprofile stable
 END
-
-cat <<END > profiles/testprofile/package.use || exit 1
-foo/bar -test2 test3
-END
-
-cat <<END > profiles/testprofile/use.mask || exit 1
-test4
-END
-
-cat <<END > profiles/testprofile/package.use.mask || exit 1
-foo/bar -test4 test5
-END
-
-cat <<END > profiles/testprofile/use.force || exit 1
-test6
-END
-
-cat <<END > profiles/testprofile/package.use.force || exit 1
-foo/bar test7
-END
-
-cat <<END > profiles/use.desc || exit 1
-test1 - A test use flag
-END
-
-cat <<END > profiles/use.local.desc || exit 1
-foo/bar:test2 - A test local use flag
-END
-
-touch licenses/foo
-
-for i in 1 2 3 4; do
-    mkdir -p foo${i}/bar/
-
-cat <<"END" > foo${i}/bar/bar-1.0.ebuild || exit 1
-DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
-SRC_URI=""
-SLOT="0"
-IUSE="test1"
-LICENSE="GPL-2"
-KEYWORDS="test"
-END
-
-done
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI=""
 SLOT="0"
-IUSE="test1"
+IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 END
@@ -128,7 +69,7 @@ DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI=""
 SLOT="0"
-IUSE="test2"
+IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="~test"
 END
@@ -151,3 +92,4 @@ dir //test
 obj /test/test_file de54c26b0678df67aca147575523b3c2 1165250496
 sym /test/test_link -> /test/test_file 1165250496
 END
+
