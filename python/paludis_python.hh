@@ -102,9 +102,8 @@ namespace paludis
                 enum_.value(e_name_up.c_str(), e);
                 doc += "\n\t" + e_name_up;
             }
-            // FIXME __doc__ is ro...
-            PyObject * py_doc = PyString_FromString(doc.c_str());
-            PyObject_SetAttrString(enum_.ptr(), "__doc__", py_doc);
+            PyTypeObject * pto = reinterpret_cast<PyTypeObject *>(enum_.ptr());
+            PyDict_SetItemString(pto->tp_dict, "__doc__", PyString_FromString(doc.c_str()));
         }
 
         // Compare
