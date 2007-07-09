@@ -19,20 +19,11 @@
 check_for_news()
 {
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+    export ROOT="${ROOT}"
     source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
-
-    mkdir -p ${ROOT}/var/lib/paludis/news/
+    count="$(eselect news count )"
 
     done_echo=
-
-    count=0
-    for f in "${ROOT}/var/lib/paludis/news/"news-*.unread ; do
-        [[ -f "${f}" ]] || continue
-        if grep --silent . "${f}" ; then
-            count=$(( count + $(grep --count . < "${f}" ) ))
-        fi
-    done
-
     if [[ ${count} -gt 0 ]] ; then
         [[ -z "${done_echo}" ]] && echo ; done_echo=yes
         ewarn "You have ${count} unread news items (use 'eselect news' to read)"

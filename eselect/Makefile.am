@@ -5,7 +5,6 @@ SUBDIRS = .
 installeselectdir = $(datadir)/eselect/modules/
 
 installeselect_SCRIPTS = \
-	news.eselect \
 	repo.eselect
 
 TESTS_ENVIRONMENT = env \
