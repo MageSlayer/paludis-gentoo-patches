@@ -39,7 +39,9 @@
 #include <paludis/util/stringify.hh>
 
 #ifdef ENABLE_RUBY_QA
+#if 0
 #include <paludis/qa/qa.hh>
+#endif
 #endif
 
 #include <ruby.h>
@@ -90,6 +92,7 @@ namespace paludis
         tr1::shared_ptr<const Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
+#if 0
         VALUE paludis_qa_module();
         qa::Message value_to_message(VALUE v);
         qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
@@ -108,6 +111,7 @@ namespace paludis
         VALUE profile_check_to_value(tr1::shared_ptr<qa::ProfileCheck>);
         VALUE message_to_value(const qa::Message &);
         VALUE metadata_file_to_value(const qa::MetadataFile &);
+#endif
 #endif
 
         /* registration */
