@@ -71,7 +71,7 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
 	paludis_python.hh \
 	paludis_python_so.cc \
-	dep_tag_TEST_setup.sh dep_tag_TEST_cleanup.sh \
+	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \

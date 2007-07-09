@@ -24,7 +24,6 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_type_traits.hh>
