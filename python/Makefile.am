@@ -79,6 +79,8 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
+	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
 	PALUDIS_NO_XTERM_TITLES="yes" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
@@ -130,6 +132,7 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 #	$(top_builddir)/paludis/qa/libpaludisqa.la
 

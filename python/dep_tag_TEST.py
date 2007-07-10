@@ -18,6 +18,10 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+import os
+
+os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "depp_tag_TEST_dir/home")
+
 from paludis import *
 import unittest
 
@@ -54,7 +58,7 @@ class TestCase_03_GeneralSetDepTag(unittest.TestCase):
 class TestCase_04_DependencyDepTag(unittest.TestCase):
     def setUp(self):
         global dt, pid, pds, cds
-        env = EnvironmentMaker.instance.make_from_spec("")
+        env = TestEnvironment()
         repo = FakeRepository(env, "repo")
         pid = repo.add_version("cat/foo", "1.0")
         pds = PackageDepSpec("=cat/boo-1", PackageDepSpecParseMode.PERMISSIVE)

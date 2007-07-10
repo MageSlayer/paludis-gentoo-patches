@@ -25,6 +25,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_id.hh>
 
 using namespace paludis;
@@ -219,4 +220,16 @@ void PALUDIS_VISIBLE expose_environment()
                 "Should we accept unstable keywords?"
                 )
         ;
+
+    /**
+     * TestEnvironment
+     */
+    bp::class_<TestEnvironment, bp::bases<Environment>, boost::noncopyable>
+        (
+         "TestEnvironment",
+         "A TestEnvironment is an environment used during testing that lets us "
+         "control all the options rather than reading them from configuration files.",
+         bp::init<>("__init__()")
+        );
+
 }

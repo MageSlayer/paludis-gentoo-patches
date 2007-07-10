@@ -141,6 +141,9 @@ class TestCase_02_AdaptedEnvironment(unittest.TestCase):
         env.clear_adaptions()
         self.assert_(env.query_use("enabled", pid))
 
+class TestCase_03_TestEnvironment(unittest.TestCase):
+    def test_01_create(self):
+        env = TestEnvironment()
 
 if __name__ == "__main__":
     unittest.main()
