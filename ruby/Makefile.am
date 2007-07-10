@@ -74,6 +74,7 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	paludis_ruby_so.cc \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
+	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
