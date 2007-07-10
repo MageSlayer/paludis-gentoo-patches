@@ -18,10 +18,6 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-import os
-
-os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "depp_tag_TEST_dir/home")
-
 from paludis import *
 import unittest
 
