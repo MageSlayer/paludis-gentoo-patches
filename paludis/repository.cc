@@ -164,10 +164,6 @@ Repository::format() const
     return _format;
 }
 
-RepositoryInstallableInterface::~RepositoryInstallableInterface()
-{
-}
-
 RepositoryInstalledInterface::~RepositoryInstalledInterface()
 {
 }
@@ -181,10 +177,6 @@ RepositorySetsInterface::~RepositorySetsInterface()
 }
 
 RepositorySyncableInterface::~RepositorySyncableInterface()
-{
-}
-
-RepositoryUninstallableInterface::~RepositoryUninstallableInterface()
 {
 }
 
@@ -216,10 +208,6 @@ RepositoryDestinationInterface::~RepositoryDestinationInterface()
 {
 }
 
-RepositoryConfigInterface::~RepositoryConfigInterface()
-{
-}
-
 RepositoryLicensesInterface::~RepositoryLicensesInterface()
 {
 }
@@ -229,10 +217,6 @@ RepositoryEInterface::~RepositoryEInterface()
 }
 
 RepositoryHookInterface::~RepositoryHookInterface()
-{
-}
-
-RepositoryPretendInterface::~RepositoryPretendInterface()
 {
 }
 
@@ -248,12 +232,6 @@ tr1::shared_ptr<FSEntry>
 RepositoryLicensesInterface::license_exists(const std::string & license) const
 {
     return do_license_exists(license);
-}
-
-bool
-RepositoryPretendInterface::pretend(const tr1::shared_ptr<const PackageID> & id) const
-{
-    return do_pretend(id);
 }
 
 UseFlagState
@@ -369,28 +347,15 @@ Repository::category_names() const
     return do_category_names();
 }
 
-void
-RepositoryConfigInterface::config(const tr1::shared_ptr<const PackageID> & id) const
-{
-    return do_config(id);
-}
-
 bool
 RepositorySyncableInterface::sync() const
 {
     return do_sync();
 }
 
-void
-RepositoryInstallableInterface::install(const tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
+bool
+Repository::some_ids_might_support_action(const SupportsActionTestBase & b) const
 {
-    do_install(id, o);
+    return do_some_ids_might_support_action(b);
 }
-
-void
-RepositoryUninstallableInterface::uninstall(const tr1::shared_ptr<const PackageID> & v, const UninstallOptions & i) const
-{
-    do_uninstall(v, i);
-}
-
 

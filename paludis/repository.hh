@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
+#include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/repository_info-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -50,11 +51,6 @@ namespace paludis
     /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
-     *
-     * We make pretty heavy use of the non-virtual interface idiom here. See
-     * \ref EffCpp items 35 and 37. There's a lot of optional functionality
-     * available. These are split off via get_interface() style functions,
-     * which return 0 if an interface is not available.
      *
      * \ingroup grprepository
      * \nosubgrouping
@@ -133,6 +129,12 @@ namespace paludis
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+            /**
+             * Override in descendents: might some of our IDs support a
+             * particular action?
+             */
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const = 0;
+
             ///\}
 
         public:
@@ -205,6 +207,15 @@ namespace paludis
              * Fetch our IDs.
              */
             tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
+
+            /**
+             * Might some of our IDs support a particular action?
+             *
+             * Used to optimise PackageDatabase::query. If a repository doesn't
+             * support, say, InstallAction, a query can skip searching it
+             * entirely when looking for installable packages.
+             */
+            bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
             ///\}
 
@@ -407,74 +418,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryInstalledInterface();
-    };
-
-    /**
-     * Interface for handling installs for repositories.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryInstallableInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: install.
-             */
-            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const = 0;
-
-            ///\}
-
-        public:
-            ///\name Installable functions
-            ///\{
-
-            /**
-             * Install a package.
-             */
-            void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions & i) const;
-
-            ///\}
-
-            virtual ~RepositoryInstallableInterface();
-    };
-
-    /**
-     * Interface for handling uninstalls for repositories.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryUninstallableInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: uninstall.
-             */
-            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const = 0;
-
-            ///\}
-
-        public:
-            ///\name Uninstall functions
-            ///\{
-
-            /**
-             * Uninstall a package.
-             */
-            void uninstall(const tr1::shared_ptr<const PackageID> & v, const UninstallOptions & i) const;
-
-            ///\}
-
-            virtual ~RepositoryUninstallableInterface();
     };
 
     /**
@@ -775,77 +718,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryDestinationInterface();
-    };
-
-    /**
-     * Interface for handling actions for repositories supporting package configuration.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryConfigInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: do the configuration.
-             */
-            virtual void do_config(const tr1::shared_ptr<const PackageID> &) const = 0;
-
-            ///\}
-
-        public:
-            ///\name Configuration actions
-            ///\{
-
-            /**
-             * Configure.
-             */
-            void config(const tr1::shared_ptr<const PackageID> &) const;
-
-            ///\}
-
-            virtual ~RepositoryConfigInterface();
-    };
-
-    /**
-     * Interface for handling actions for repositories supporting
-     * pretend-phase functions.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryPretendInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: do the pretend.
-             */
-            virtual bool do_pretend(const tr1::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-        public:
-            ///\name Pretend phase actions
-            ///\{
-
-            /**
-             * Do the pretend.
-             */
-            bool pretend(const tr1::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
-
-            virtual ~RepositoryPretendInterface();
     };
 
     /**

@@ -77,7 +77,7 @@ namespace paludis
             virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
                     tr1::shared_ptr<const ERepositoryProfile>) const;
 
-            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
+            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallActionOptions &,
                     tr1::shared_ptr<const ERepositoryProfile>) const;
 
             virtual bool pretend(const tr1::shared_ptr<const PackageID> &,

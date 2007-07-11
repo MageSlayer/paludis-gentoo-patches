@@ -32,11 +32,13 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/eapi.hh>
+#include <paludis/action.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -72,24 +74,20 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
     Repository(RepositoryName("installed-gems"),
             RepositoryCapabilities::create()
             .mask_interface(0)
-            .installable_interface(0)
             .installed_interface(this)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(this)
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
             .provides_interface(0)
-            .config_interface(0)
             .destination_interface(this)
             .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
-            .pretend_interface(0)
             .hook_interface(0),
             "installed_gems"),
     PrivateImplementationPattern<InstalledGemsRepository>(new Implementation<InstalledGemsRepository>(params))
@@ -249,6 +247,7 @@ InstalledGemsRepository::root() const
     return FSEntry("/");
 }
 
+#if 0
 void
 InstalledGemsRepository::do_uninstall(const tr1::shared_ptr<const PackageID> & id,
         const UninstallOptions &) const
@@ -261,10 +260,49 @@ InstalledGemsRepository::do_uninstall(const tr1::shared_ptr<const PackageID> & i
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Uninstall of '" + stringify(*id) + "' failed");
 }
+#endif
 
-time_t
-InstalledGemsRepository::do_installed_time(const PackageID &) const
+namespace
 {
-    return 0;
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+            result = true;
+        }
+    };
+}
+
+bool
+InstalledGemsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

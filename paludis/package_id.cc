@@ -64,7 +64,7 @@ PackageID::~PackageID()
 }
 
 void
-PackageID::add_key(const tr1::shared_ptr<const MetadataKey> & k) const
+PackageID::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
 {
     using namespace tr1::placeholders;
     if (_imp->keys.end() != std::find_if(_imp->keys.begin(), _imp->keys.end(),
@@ -74,27 +74,27 @@ PackageID::add_key(const tr1::shared_ptr<const MetadataKey> & k) const
     _imp->keys.push_back(k);
 }
 
-PackageID::Iterator
-PackageID::begin() const
+PackageID::MetadataIterator
+PackageID::begin_metadata() const
 {
     need_keys_added();
-    return Iterator(indirect_iterator(_imp->keys.begin()));
+    return MetadataIterator(indirect_iterator(_imp->keys.begin()));
 }
 
-PackageID::Iterator
-PackageID::end() const
+PackageID::MetadataIterator
+PackageID::end_metadata() const
 {
     need_keys_added();
-    return Iterator(indirect_iterator(_imp->keys.end()));
+    return MetadataIterator(indirect_iterator(_imp->keys.end()));
 }
 
-PackageID::Iterator
-PackageID::find(const std::string & s) const
+PackageID::MetadataIterator
+PackageID::find_metadata(const std::string & s) const
 {
     using namespace tr1::placeholders;
 
     need_keys_added();
-    return std::find_if(begin(), end(),
+    return std::find_if(begin_metadata(), end_metadata(),
             tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
 }
 

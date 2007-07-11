@@ -51,15 +51,16 @@ namespace
     {
         int return_code(0);
 
-        const RepositoryConfigInterface * conf_if(p->repository()->config_interface);
-        if (! conf_if)
+        ConfigAction a;
+        try
         {
-            std::cerr << "Repository '" << p->repository()->name() <<
-                "' does not support post-install configuration" << std::endl;
+            p->perform_action(a);
+        }
+        catch (const UnsupportedActionError &)
+        {
+            std::cerr << "Package '" << *p << "' does not support post-install configuration" << std::endl;
             return_code |= 1;
         }
-        else
-            conf_if->config(p);
 
         return return_code;
     }

@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/action-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
@@ -64,7 +65,7 @@ namespace paludis
             void set_fetch_only(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
-            void set_debug_mode(const InstallDebugOption value);
+            void set_debug_mode(const InstallActionDebugOption value);
             void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
 

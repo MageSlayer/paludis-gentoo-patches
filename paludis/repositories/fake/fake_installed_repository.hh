@@ -36,9 +36,9 @@ namespace paludis
         public RepositoryProvidesInterface
     {
         protected:
-            /* RepositoryInstalledInterface */
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
-            virtual time_t do_installed_time(const PackageID &) const;
+            /* RepositoryInstalledInterface */
 
             virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

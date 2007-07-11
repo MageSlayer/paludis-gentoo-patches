@@ -109,7 +109,8 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         ConditionTracker(_imp->conditions).add_condition(a) : _imp->conditions);
 
     tr1::shared_ptr<const PackageIDSequence> matches(_imp->environment->package_database()->query(
-                query::RepositoryHasInstallableInterface() & query::Matches(a), qo_order_by_version));
+                query::SupportsAction<InstallAction>() &
+                query::Matches(a), qo_order_by_version));
     if (matches->empty())
     {
         Log::get_instance()->message(ll_warning, lc_context, "Nothing found for '" + stringify(a) + "'");

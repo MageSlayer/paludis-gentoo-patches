@@ -1,0 +1,18 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_InstallActionDebugOption()
+{
+    prefix iado
+
+    key iado_none                "No debugging"
+    key iado_split               "Split debugging"
+    key iado_internal            "Internal debugging"
+
+    doxygen_comment << "END"
+        /**
+         * Debug build mode for an InstallAction.
+         */
+END
+}
+

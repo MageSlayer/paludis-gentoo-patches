@@ -1,54 +1,14 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-make_class_InstallOptions()
-{
-    visible
-
-    key no_config_protect bool
-    key fetch_only bool
-    key debug_build InstallDebugOption
-    key safe_resume bool
-    key destination "tr1::shared_ptr<Repository>"
-
-    doxygen_comment << "END"
-        /**
-         * Options for the Repository::install method.
-         *
-         * \see Repository
-         * \ingroup grprepository
-         * \nosubgrouping
-         */
-END
-}
-
-make_class_UninstallOptions()
-{
-    visible
-
-    key no_config_protect bool
-
-    doxygen_comment << "END"
-        /**
-         * Options for the Repository::uninstall method.
-         *
-         * \see Repository
-         * \ingroup grprepository
-         * \nosubgrouping
-         */
-END
-}
-
 make_class_RepositoryCapabilities()
 {
     visible
 
-    key installable_interface "RepositoryInstallableInterface *"
     key installed_interface "RepositoryInstalledInterface *"
     key mask_interface "RepositoryMaskInterface *"
     key sets_interface "RepositorySetsInterface *"
     key syncable_interface "RepositorySyncableInterface *"
-    key uninstallable_interface "RepositoryUninstallableInterface *"
     key use_interface "RepositoryUseInterface *"
     key world_interface "RepositoryWorldInterface *"
     key mirrors_interface "RepositoryMirrorsInterface *"
@@ -57,8 +17,6 @@ make_class_RepositoryCapabilities()
     key virtuals_interface "RepositoryVirtualsInterface *"
     key make_virtuals_interface "RepositoryMakeVirtualsInterface *"
     key destination_interface "RepositoryDestinationInterface *"
-    key config_interface "RepositoryConfigInterface *"
-    key pretend_interface "RepositoryPretendInterface *"
     key licenses_interface "RepositoryLicensesInterface *"
     key e_interface "RepositoryEInterface *"
     key hook_interface "RepositoryHookInterface *"

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,26 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH
-#define PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH 1
 
-#include <paludis/args/args_option.hh>
-#include <paludis/repository.hh>
+#include <iosfwd>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
-    namespace args
-    {
-        class PALUDIS_VISIBLE DebugBuildArg :
-            public EnumArg
-        {
-            public:
-                DebugBuildArg(ArgsGroup * const, const std::string &, char);
-                ~DebugBuildArg();
+    class Action;
+    class InstallAction;
+    class InstalledAction;
+    class UninstallAction;
+    class PretendAction;
+    class ConfigAction;
 
-                InstallActionDebugOption option() const;
-        };
-    }
+    class SupportsActionTestBase;
+    template <typename A_> class SupportsActionTest;
+
+    class ActionVisitorTypes;
+    class SupportsActionTestVisitorTypes;
+
+    class UnsupportedActionError;
+
+    class InstallActionOptions;
+    class UninstallActionOptions;
+
+#include <paludis/action-se.hh>
+
 }
 
 #endif

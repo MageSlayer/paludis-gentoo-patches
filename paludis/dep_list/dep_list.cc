@@ -266,7 +266,7 @@ namespace
         if (0 != u && u->package_ptr())
         {
             return ! env.package_database()->query(
-                    query::RepositoryHasInstalledInterface() &
+                    query::SupportsAction<InstalledAction>() &
                     query::Matches(PackageDepSpec(
                             tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr())))),
                     qo_whatever)->empty();
@@ -321,7 +321,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find already installed things */
     // TODO: check destinations
     tr1::shared_ptr<const PackageIDSequence> already_installed(d->_imp->env->package_database()->query(
-                query::RepositoryHasInstalledInterface() &
+                query::SupportsAction<InstalledAction>() &
                 query::Matches(a),
                 qo_order_by_version));
 
@@ -379,7 +379,9 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* find installable candidates, and find the best visible candidate */
     tr1::shared_ptr<const PackageID> best_visible_candidate;
     tr1::shared_ptr<const PackageIDSequence> installable_candidates(
-            d->_imp->env->package_database()->query(query::RepositoryHasInstallableInterface() & query::Matches(a),
+            d->_imp->env->package_database()->query(
+                query::SupportsAction<InstallAction>() &
+                query::Matches(a),
                 qo_order_by_version));
 
     for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
@@ -558,7 +560,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             {
                 tr1::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         d->_imp->env->package_database()->query(
-                            query::RepositoryHasInstalledInterface() &
+                            query::SupportsAction<InstalledAction>() &
                             query::Matches(PackageDepSpec(
                                     make_shared_ptr(new QualifiedPackageName(best_visible_candidate->name())),
                                     tr1::shared_ptr<CategoryNamePart>(),
@@ -743,7 +745,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         PackageDepSpec just_package(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
                         *a.blocked_spec()->package_ptr())));
         already_installed = d->_imp->env->package_database()->query(
-                query::RepositoryHasInstalledInterface() &
+                query::SupportsAction<InstalledAction>() &
                 query::Matches(just_package),
                 qo_whatever);
 
@@ -770,7 +772,8 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
         check_whole_list = true;
         /* TODO: InstalledAtRoot? */
         already_installed = d->_imp->env->package_database()->query(
-                query::RepositoryHasInstalledInterface(), qo_whatever);
+                query::SupportsAction<InstalledAction>(),
+                qo_whatever);
     }
 
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)

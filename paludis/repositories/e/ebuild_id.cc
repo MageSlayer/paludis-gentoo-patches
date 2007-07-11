@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/ebuild_flat_metadata_cache.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
 
@@ -30,12 +31,14 @@
 #include <paludis/distribution.hh>
 #include <paludis/eapi.hh>
 #include <paludis/environment.hh>
+#include <paludis/action.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/idle_action_pool.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -479,84 +482,84 @@ void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->short_description.reset(new EStringKey(shared_from_this(), r, h, v, mkt_significant));
-    add_key(_imp->short_description);
+    add_metadata_key(_imp->short_description);
 }
 
 void
 EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
-    add_key(_imp->build_dependencies);
+    add_metadata_key(_imp->build_dependencies);
 }
 
 void
 EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
-    add_key(_imp->run_dependencies);
+    add_metadata_key(_imp->run_dependencies);
 }
 
 void
 EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
-    add_key(_imp->post_dependencies);
+    add_metadata_key(_imp->post_dependencies);
 }
 
 void
 EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->src_uri.reset(new EURIKey(shared_from_this(), r, h, v, mkt_dependencies));
-    add_key(_imp->src_uri);
+    add_metadata_key(_imp->src_uri);
 }
 
 void
 EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->homepage.reset(new EURIKey(shared_from_this(), r, h, v, mkt_significant));
-    add_key(_imp->homepage);
+    add_metadata_key(_imp->homepage);
 }
 
 void
 EbuildID::load_license(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->license.reset(new ELicenseKey(shared_from_this(), r, h, v, mkt_normal));
-    add_key(_imp->license);
+    add_metadata_key(_imp->license);
 }
 
 void
 EbuildID::load_restrict(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->restrictions.reset(new ERestrictKey(shared_from_this(), r, h, v, mkt_internal));
-    add_key(_imp->restrictions);
+    add_metadata_key(_imp->restrictions);
 }
 
 void
 EbuildID::load_provide(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->provide.reset(new EProvideKey(shared_from_this(), r, h, v, mkt_dependencies));
-    add_key(_imp->provide);
+    add_metadata_key(_imp->provide);
 }
 
 void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->iuse.reset(new EIUseKey(shared_from_this(), r, h, v, mkt_normal));
-    add_key(_imp->iuse);
+    add_metadata_key(_imp->iuse);
 }
 
 void
 EbuildID::load_keywords(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->keywords.reset(new EKeywordsKey(shared_from_this(), r, h, v, mkt_normal));
-    add_key(_imp->keywords);
+    add_metadata_key(_imp->keywords);
 }
 
 void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
     _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
-    add_key(_imp->inherited);
+    add_metadata_key(_imp->inherited);
 }
 
 void
@@ -581,5 +584,101 @@ EbuildID::_idle_load() const throw ()
     {
         // exception will be regenerated outside of the idle task.
     }
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+EbuildID::supports_action(const SupportsActionTestBase & b) const
+{
+    SupportsActionQuery q;
+    b.accept(q);
+    return q.result;
+}
+
+namespace
+{
+    struct PerformAction :
+        ConstVisitor<ActionVisitorTypes>
+    {
+        const tr1::shared_ptr<const PackageID> id;
+
+        PerformAction(const tr1::shared_ptr<const PackageID> i) :
+            id(i)
+        {
+        }
+
+        void visit(const InstallAction & a)
+        {
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(id, a.options,
+                    tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+        }
+
+        void visit(const PretendAction &)
+        {
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(id,
+                    tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+        }
+
+        void visit(const InstalledAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const UninstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn));
+    };
+
+    void PerformAction::visit(const InstalledAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+
+    void PerformAction::visit(const UninstallAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+
+    void PerformAction::visit(const ConfigAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+}
+
+void
+EbuildID::perform_action(Action & a) const
+{
+    PerformAction b(shared_from_this());
+    a.accept(b);
 }
 

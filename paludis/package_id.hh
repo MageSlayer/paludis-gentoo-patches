@@ -22,6 +22,7 @@
 
 #include <paludis/package_id-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -43,7 +44,7 @@ namespace paludis
         public equality_operators::HasEqualityOperators
     {
         protected:
-            virtual void add_key(const tr1::shared_ptr<const MetadataKey> &) const;
+            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
             virtual void need_keys_added() const = 0;
 
         public:
@@ -58,7 +59,7 @@ namespace paludis
             virtual const tr1::shared_ptr<const Repository> repository() const = 0;
             virtual const tr1::shared_ptr<const EAPI> eapi() const = 0;
 
-            ///\name Specific keys
+            ///\name Specific metadata keys
             ///\{
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const = 0;
@@ -85,13 +86,21 @@ namespace paludis
 
             ///\}
 
-            ///\name Finding and iterating over keys
+            ///\name Finding and iterating over metadata keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, const MetadataKey> Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator find(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<PackageID, const MetadataKey> MetadataIterator;
+            MetadataIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+            ///\name Actions
+            ///\{
+
+            virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual void perform_action(Action &) const = 0;
 
             ///\}
 

@@ -52,7 +52,6 @@ namespace paludis
         public Repository,
         public RepositoryMaskInterface,
         public RepositoryUseInterface,
-        public RepositoryInstallableInterface,
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
         public RepositoryEnvironmentVariableInterface,
@@ -62,7 +61,6 @@ namespace paludis
         public RepositoryLicensesInterface,
         public RepositoryEInterface,
         public RepositoryHookInterface,
-        public RepositoryPretendInterface,
         public RepositoryQAInterface,
         public tr1::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
@@ -121,20 +119,11 @@ namespace paludis
                     const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* RepositoryInstallableInterface */
-
-            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
-
             /* RepositoryEnvironmentVariableInterface */
 
             virtual std::string get_environment_variable(
                     const tr1::shared_ptr<const PackageID> & for_package,
                     const std::string & var) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryPretendInterface */
-
-            virtual bool do_pretend(const tr1::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */
@@ -158,6 +147,8 @@ namespace paludis
 
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
         public:
             virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
@@ -238,6 +229,8 @@ namespace paludis
             void update_news() const;
 
             const tr1::shared_ptr<const Layout> layout() const;
+            const tr1::shared_ptr<const ERepositoryEntries> entries() const;
+            const tr1::shared_ptr<const ERepositoryProfile> profile() const;
 
             void regenerate_cache() const;
     };

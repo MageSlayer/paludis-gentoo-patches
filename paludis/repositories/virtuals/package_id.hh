@@ -73,7 +73,8 @@ namespace paludis
                 VirtualsPackageID(
                         const tr1::shared_ptr<const Repository> & repo,
                         const QualifiedPackageName & virtual_name,
-                        const tr1::shared_ptr<const PackageID> & virtual_for);
+                        const tr1::shared_ptr<const PackageID> & virtual_for,
+                        const bool exact);
 
                 virtual ~VirtualsPackageID();
 
@@ -106,6 +107,9 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
+
+                virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void perform_action(Action &) const;
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

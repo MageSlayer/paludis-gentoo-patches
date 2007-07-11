@@ -45,6 +45,7 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/eapi.hh>
+#include <paludis/action.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
@@ -57,6 +58,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -249,11 +251,9 @@ ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
             RepositoryCapabilities::create()
             .mask_interface(this)
-            .installable_interface(this)
             .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
-            .uninstallable_interface(0)
             .use_interface(this)
             .world_interface(0)
             .environment_variable_interface(this)
@@ -261,12 +261,10 @@ ERepository::ERepository(const ERepositoryParams & p) :
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
                     p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
-            .config_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this)
             .make_virtuals_interface(0)
             .e_interface(this)
-            .pretend_interface(this)
 #ifdef ENABLE_QA
             .qa_interface(this)
 #else
@@ -490,18 +488,18 @@ ERepository::need_mirrors() const
                 LineConfigFile mirrors(*p, LineConfigFileOptions());
                 for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
-                    std::vector<std::string> entries;
-                    WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(entries));
-                    if (! entries.empty())
+                    std::vector<std::string> ee;
+                    WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(ee));
+                    if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
                         static Random r;
-                        std::random_shuffle(next(entries.begin()), entries.end(), r);
-                        if (entries.size() > 6)
-                            entries.resize(6);
-                        for (std::vector<std::string>::const_iterator e(next(entries.begin())),
-                                e_end(entries.end()) ; e != e_end ; ++e)
-                            _imp->mirrors.insert(std::make_pair(entries.at(0), *e));
+                        std::random_shuffle(next(ee.begin()), ee.end(), r);
+                        if (ee.size() > 6)
+                            ee.resize(6);
+                        for (std::vector<std::string>::const_iterator e(next(ee.begin())),
+                                e_end(ee.end()) ; e != e_end ; ++e)
+                            _imp->mirrors.insert(std::make_pair(ee.at(0), *e));
                     }
                 }
             }
@@ -517,21 +515,6 @@ ERepository::need_mirrors() const
 
         _imp->has_mirrors = true;
     }
-}
-
-void
-ERepository::do_install(const tr1::shared_ptr<const PackageID> & id,
-        const InstallOptions & o) const
-{
-    _imp->need_profiles();
-    _imp->entries_ptr->install(id, o, _imp->profile_ptr);
-}
-
-bool
-ERepository::do_pretend(const tr1::shared_ptr<const PackageID> & id) const
-{
-    _imp->need_profiles();
-    return _imp->entries_ptr->pretend(id, _imp->profile_ptr);
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
@@ -610,6 +593,19 @@ const tr1::shared_ptr<const Layout>
 ERepository::layout() const
 {
     return _imp->layout;
+}
+
+const tr1::shared_ptr<const ERepositoryProfile>
+ERepository::profile() const
+{
+    _imp->need_profiles();
+    return _imp->profile_ptr;
+}
+
+const tr1::shared_ptr<const ERepositoryEntries>
+ERepository::entries() const
+{
+    return _imp->entries_ptr;
 }
 
 std::string
@@ -976,5 +972,49 @@ ERepository::check_qa(
     controller.run();
 
 #endif
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+ERepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 
+#include <paludis/action.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -125,12 +126,10 @@ namespace paludis
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed"),
             RepositoryCapabilities::create()
-            .installable_interface(0)
             .installed_interface(this)
             .mask_interface(0)
             .sets_interface(this)
             .syncable_interface(0)
-            .uninstallable_interface(this)
             .use_interface(this)
             .world_interface(this)
             .environment_variable_interface(this)
@@ -138,10 +137,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .provides_interface(this)
             .virtuals_interface(0)
             .destination_interface(this)
-            .config_interface(this)
             .licenses_interface(0)
             .e_interface(0)
-            .pretend_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(this),
@@ -332,14 +329,8 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 void
-VDBRepository::do_uninstall(const tr1::shared_ptr<const PackageID> & id, const UninstallOptions & o) const
-{
-    _uninstall(id, o, false);
-}
-
-void
-VDBRepository::_uninstall(const tr1::shared_ptr<const PackageID> & id,
-        const UninstallOptions & o, bool reinstalling) const
+VDBRepository::perform_uninstall(const tr1::shared_ptr<const PackageID> & id,
+        const UninstallActionOptions & o, bool reinstalling) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
@@ -424,7 +415,7 @@ VDBRepository::_uninstall(const tr1::shared_ptr<const PackageID> & id,
 }
 
 void
-VDBRepository::do_config(const tr1::shared_ptr<const PackageID> & id) const
+VDBRepository::perform_config(const tr1::shared_ptr<const PackageID> & id) const
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
@@ -1009,8 +1000,8 @@ VDBRepository::merge(const MergeOptions & m)
 
     if (is_replace)
     {
-        UninstallOptions uninstall_options(false);
-        _uninstall(m.package_id, uninstall_options, true);
+        UninstallActionOptions uninstall_options(false);
+        perform_uninstall(m.package_id, uninstall_options, true);
     }
 
     VDBPostMergeCommand post_merge_command(
@@ -1114,5 +1105,50 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
     if (_imp->ids[q]->end() == i)
         return tr1::shared_ptr<const PackageID>();
     return *i;
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+            result = true;
+        }
+    };
+}
+
+bool
+VDBRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

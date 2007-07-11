@@ -52,12 +52,12 @@ PackagesRepositoryFilterModel::populate()
     r = append();
     (*r)[_imp->columns.col_text] = "Installable repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::RepositoryHasInstallableInterface);
+    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::SupportsAction<InstallAction>());
 
     r = append();
     (*r)[_imp->columns.col_text] = "Installed repositories";
     (*r)[_imp->columns.col_sensitive] = true;
-    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::RepositoryHasInstalledInterface);
+    (*r)[_imp->columns.col_query] = paludis::tr1::shared_ptr<Query>(new query::SupportsAction<InstalledAction>());
 
     _imp->main_window->paludis_thread_action(
             sigc::mem_fun(this, &PackagesRepositoryFilterModel::populate_in_paludis_thread), "Populating repository filter model");

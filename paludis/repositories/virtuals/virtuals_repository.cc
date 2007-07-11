@@ -26,6 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <paludis/repository_info.hh>
+#include <paludis/action.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -35,6 +36,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <vector>
 #include <utility>
@@ -93,23 +95,19 @@ namespace
 
 VirtualsRepository::VirtualsRepository(const Environment * const env) :
     Repository(RepositoryName("virtuals"), RepositoryCapabilities::create()
-            .installable_interface(this)
             .mask_interface(0)
             .installed_interface(0)
             .use_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(0)
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .world_interface(0)
             .provides_interface(0)
             .virtuals_interface(0)
             .destination_interface(0)
-            .config_interface(0)
             .licenses_interface(0)
             .e_interface(0)
-            .pretend_interface(0)
             .make_virtuals_interface(this)
             .qa_interface(0)
             .hook_interface(0),
@@ -201,7 +199,9 @@ VirtualsRepository::need_ids() const
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
         tr1::shared_ptr<const PackageIDSequence> matches(_imp->env->package_database()->query(
-                    query::Matches(*v->second) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
+                    query::Matches(*v->second) &
+                    query::SupportsAction<InstallAction>(),
+                    qo_order_by_version));
 
         if (matches->empty())
             Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"
@@ -301,11 +301,6 @@ VirtualsRepository::invalidate()
     _imp.reset(new Implementation<VirtualsRepository>(_imp->env));
 }
 
-void
-VirtualsRepository::do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const
-{
-}
-
 const tr1::shared_ptr<const PackageID>
 VirtualsRepository::make_virtual_package_id(
         const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
@@ -314,12 +309,55 @@ VirtualsRepository::make_virtual_package_id(
         throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
                 + stringify(*provider) + "'");
 
-    return make_shared_ptr(new virtuals::VirtualsPackageID(shared_from_this(), virtual_name, provider));
+    return make_shared_ptr(new virtuals::VirtualsPackageID(shared_from_this(), virtual_name, provider, true));
 }
 
 bool
 VirtualsRepository::can_be_favourite_repository() const
 {
     return false;
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+VirtualsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

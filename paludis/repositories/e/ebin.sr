@@ -48,7 +48,7 @@ make_class_EbinInstallCommandParams()
     key b std::string
     key root std::string
     key disable_cfgpro bool
-    key debug_build InstallDebugOption
+    key debug_build InstallActionDebugOption
     key slot SlotName
     key phase EbinInstallCommandPhase
     key config_protect std::string

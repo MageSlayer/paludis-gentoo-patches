@@ -130,7 +130,7 @@ ERepositoryNews::update_news() const
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! _imp->environment->package_database()->query(
                                 query::Matches(PackageDepSpec(*i, pds_pm_permissive)) &
-                                query::RepositoryHasInstalledInterface(),
+                                query::SupportsAction<InstalledAction>(),
                                 qo_whatever)->empty())
                         local_show = true;
                 show &= local_show;

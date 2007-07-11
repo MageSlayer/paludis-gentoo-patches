@@ -219,17 +219,20 @@ EbinInstallCommand::extend_command(const Command & cmd)
     {
         switch (install_params.debug_build)
         {
-            case ido_none:
+            case iado_none:
                 debug_build = "none";
                 continue;
 
-            case ido_split:
+            case iado_split:
                 debug_build = "split";
                 continue;
 
-            case ido_internal:
+            case iado_internal:
                 debug_build = "internal";
                 continue;
+
+            case last_iado:
+                break;
         }
 
         throw InternalError(PALUDIS_HERE, "Bad debug_build value");

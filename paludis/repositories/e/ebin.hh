@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/package_database.hh>
+#include <paludis/action-fwd.hh>
 #include <string>
 
 namespace paludis

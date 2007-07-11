@@ -113,6 +113,9 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
 
+                virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void perform_action(Action &) const;
+
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const;
                 virtual std::size_t extra_hash_value() const;
         };

@@ -621,7 +621,7 @@ do_install(tr1::shared_ptr<Environment> env)
         {
             tr1::shared_ptr<const PackageIDSequence> p(
                     env->package_database()->query(
-                        query::Matches(e.query()) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
+                        query::Matches(e.query()) & query::SupportsAction<InstallAction>(), qo_order_by_version));
             if (p->empty())
             {
                 cout << endl;

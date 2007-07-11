@@ -251,7 +251,9 @@ ERepositorySets::security_set(bool insecurity) const
                     candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
                 else
                     candidates = _imp->environment->package_database()->query(
-                            query::Package(glsa_pkg->name()) & query::RepositoryHasInstalledInterface(), qo_order_by_version);
+                            query::Package(glsa_pkg->name()) &
+                            query::SupportsAction<InstalledAction>(),
+                            qo_order_by_version);
 
                 for (PackageIDSequence::Iterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
@@ -296,7 +298,7 @@ ERepositorySets::security_set(bool insecurity) const
                                             tr1::shared_ptr<VersionRequirements>(),
                                             vr_and,
                                             tr1::shared_ptr<SlotName>(new SlotName((*c)->slot())))) &
-                                    query::RepositoryHasInstallableInterface() &
+                                    query::SupportsAction<InstallAction>() &
                                     query::NotMasked(),
                                     qo_order_by_version));
 

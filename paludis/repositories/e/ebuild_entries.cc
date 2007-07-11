@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 
 #include <paludis/eapi.hh>
+#include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -234,7 +235,7 @@ namespace
 
 void
 EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
-        const InstallOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
+        const InstallActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
 {
     using namespace tr1::placeholders;
 

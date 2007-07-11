@@ -22,9 +22,11 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
+#include <paludis/action.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
@@ -266,79 +268,6 @@ query::NotMasked::NotMasked() :
 
 namespace
 {
-    template <typename I_>
-    struct DelegateName;
-
-    template <>
-    struct DelegateName<RepositoryInstalledInterface>
-    {
-        static const char * value;
-    };
-
-    const char * DelegateName<RepositoryInstalledInterface>::value = "RepositoryInstalledInterface";
-
-    template <>
-    struct DelegateName<RepositoryUninstallableInterface>
-    {
-        static const char * value;
-    };
-
-    const char * DelegateName<RepositoryUninstallableInterface>::value = "RepositoryUninstallableInterface";
-
-    template <>
-    struct DelegateName<RepositoryInstallableInterface>
-    {
-        static const char * value;
-    };
-
-    const char * DelegateName<RepositoryInstallableInterface>::value = "RepositoryInstallableInterface";
-
-    template <typename I_, I_ * (RepositoryCapabilities::* i_)>
-    struct RepositoryHasDelegate :
-        QueryDelegate
-    {
-        tr1::shared_ptr<RepositoryNameSequence>
-        repositories(const Environment & e) const
-        {
-            tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
-
-            for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
-                    i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
-                if ((**i).*i_)
-                    result->push_back((*i)->name());
-
-            return result;
-        }
-
-        std::string
-        as_human_readable_string() const
-        {
-            return "repository has '" + std::string(DelegateName<I_>::value) + "'";
-        }
-
-    };
-}
-
-query::RepositoryHasInstalledInterface::RepositoryHasInstalledInterface() :
-    Query(tr1::shared_ptr<QueryDelegate>(
-                new RepositoryHasDelegate<RepositoryInstalledInterface, &RepositoryCapabilities::installed_interface>))
-{
-}
-
-query::RepositoryHasInstallableInterface::RepositoryHasInstallableInterface() :
-    Query(tr1::shared_ptr<QueryDelegate>(
-                new RepositoryHasDelegate<RepositoryInstallableInterface, &RepositoryCapabilities::installable_interface>))
-{
-}
-
-query::RepositoryHasUninstallableInterface::RepositoryHasUninstallableInterface() :
-    Query(tr1::shared_ptr<QueryDelegate>(
-                new RepositoryHasDelegate<RepositoryUninstallableInterface, &RepositoryCapabilities::uninstallable_interface>))
-{
-}
-
-namespace
-{
     struct InstalledAtRootDelegate :
         QueryDelegate
     {
@@ -517,4 +446,120 @@ query::All::All() :
                 new AllDelegate))
 {
 }
+
+namespace
+{
+    template <typename T_>
+    struct SupportsNames;
+
+    template <>
+    struct SupportsNames<InstallAction>
+    {
+        static const std::string name()
+        {
+            return "supports install action";
+        }
+    };
+
+    template <>
+    struct SupportsNames<InstalledAction>
+    {
+        static const std::string name()
+        {
+            return "supports installed action";
+        }
+    };
+
+    template <>
+    struct SupportsNames<UninstallAction>
+    {
+        static const std::string name()
+        {
+            return "supports uninstall action";
+        }
+    };
+
+    template <>
+    struct SupportsNames<ConfigAction>
+    {
+        static const std::string name()
+        {
+            return "supports config action";
+        }
+    };
+
+    template <>
+    struct SupportsNames<PretendAction>
+    {
+        static const std::string name()
+        {
+            return "supports pretend action";
+        }
+    };
+
+    template <typename T_>
+    struct SupportsDelegate :
+        QueryDelegate
+    {
+        std::string
+        as_human_readable_string() const
+        {
+            return SupportsNames<T_>::name();
+        }
+
+        tr1::shared_ptr<RepositoryNameSequence>
+        repositories(const Environment & e) const
+        {
+            SupportsActionTest<T_> t;
+
+            tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
+
+            for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
+                    i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
+                if ((*i)->some_ids_might_support_action(t))
+                    result->push_back((*i)->name());
+
+            return result;
+        }
+
+        tr1::shared_ptr<PackageIDSequence>
+        ids(const Environment & e,
+                tr1::shared_ptr<const RepositoryNameSequence> repos,
+                tr1::shared_ptr<const QualifiedPackageNameSet> pkgs) const
+        {
+            SupportsActionTest<T_> t;
+
+            tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+                     r != r_end ; ++r)
+            {
+                tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
+
+                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                        p != p_end ; ++p)
+                {
+                    tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
+                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
+                            v != v_end ; ++v)
+                        if ((*v)->supports_action(t))
+                            result->push_back(*v);
+                }
+            }
+
+            return result;
+        }
+    };
+}
+
+template <typename A_>
+query::SupportsAction<A_>::SupportsAction() :
+    Query(tr1::shared_ptr<QueryDelegate>(new SupportsDelegate<A_>))
+{
+}
+
+template class query::SupportsAction<InstallAction>;
+template class query::SupportsAction<UninstallAction>;
+template class query::SupportsAction<InstalledAction>;
+template class query::SupportsAction<PretendAction>;
+template class query::SupportsAction<ConfigAction>;
 

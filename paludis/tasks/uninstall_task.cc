@@ -19,6 +19,7 @@
 
 #include "uninstall_task.hh"
 #include <paludis/environment.hh>
+#include <paludis/action.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/tasks/exceptions.hh>
@@ -78,7 +79,7 @@ namespace paludis
     struct Implementation<UninstallTask>
     {
         Environment * const env;
-        UninstallOptions uninstall_options;
+        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::list<tr1::shared_ptr<PackageDepSpec> > targets;
@@ -247,7 +248,9 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             tr1::shared_ptr<const PackageIDSequence> r(_imp->env->package_database()->query(
-                        query::Matches(**t) & query::RepositoryHasUninstallableInterface(), qo_order_by_version));
+                        query::Matches(**t) &
+                        query::SupportsAction<UninstallAction>(),
+                        qo_order_by_version));
             if (r->empty())
             {
                 if (! _imp->had_set_targets)
@@ -313,7 +316,8 @@ UninstallTask::execute()
             tr1::shared_ptr<const PackageIDSequence> installed(
                     _imp->env->package_database()->query(query::Matches(PackageDepSpec(
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))) &
-                        query::RepositoryHasInstalledInterface(), qo_whatever));
+                        query::SupportsAction<InstalledAction>(),
+                        qo_whatever));
             for (PackageIDSequence::Iterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
                 if (i->second.end() == i->second.find((*r)->version()))
@@ -360,13 +364,10 @@ UninstallTask::execute()
             throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
         on_uninstall_pre(*i);
 
-        const RepositoryUninstallableInterface * const uninstall_interface(i->package_id->repository()->uninstallable_interface);
-        if (! uninstall_interface)
-            throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-
         try
         {
-            uninstall_interface->uninstall(i->package_id, _imp->uninstall_options);
+            UninstallAction uninstall_action(_imp->uninstall_options);
+            i->package_id->perform_action(uninstall_action);
         }
         catch (const PackageUninstallActionError & e)
         {

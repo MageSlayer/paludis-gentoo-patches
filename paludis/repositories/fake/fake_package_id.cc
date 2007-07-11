@@ -21,6 +21,7 @@
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/eapi.hh>
 #include <paludis/name.hh>
+#include <paludis/action.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
@@ -233,14 +234,14 @@ FakePackageID::FakePackageID(const tr1::shared_ptr<const FakeRepositoryBase> & r
     PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(r, q, v)),
     _imp(PrivateImplementationPattern<FakePackageID>::_imp.get())
 {
-    add_key(_imp->keywords);
-    add_key(_imp->iuse);
-    add_key(_imp->license);
-    add_key(_imp->provide);
-    add_key(_imp->build_dependencies);
-    add_key(_imp->run_dependencies);
-    add_key(_imp->post_dependencies);
-    add_key(_imp->suggested_dependencies);
+    add_metadata_key(_imp->keywords);
+    add_metadata_key(_imp->iuse);
+    add_metadata_key(_imp->license);
+    add_metadata_key(_imp->provide);
+    add_metadata_key(_imp->build_dependencies);
+    add_metadata_key(_imp->run_dependencies);
+    add_metadata_key(_imp->post_dependencies);
+    add_metadata_key(_imp->suggested_dependencies);
 }
 
 FakePackageID::~FakePackageID()
@@ -487,6 +488,68 @@ std::size_t
 FakePackageID::extra_hash_value() const
 {
     return CRCHash<SlotName>()(slot());
+}
+
+bool
+FakePackageID::supports_action(const SupportsActionTestBase & b) const
+{
+    return repository()->some_ids_might_support_action(b);
+}
+
+namespace
+{
+    struct PerformAction :
+        ConstVisitor<ActionVisitorTypes>
+    {
+        const PackageID * const id;
+
+        PerformAction(const PackageID * const i) :
+            id(i)
+        {
+        }
+
+        void visit(const InstallAction & a)
+        {
+            SupportsActionTest<InstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const InstalledAction & a)
+        {
+            SupportsActionTest<InstalledAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const UninstallAction & a)
+        {
+            SupportsActionTest<UninstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const ConfigAction & a)
+        {
+            SupportsActionTest<ConfigAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const PretendAction & a)
+        {
+            SupportsActionTest<PretendAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+    };
+}
+
+void
+FakePackageID::perform_action(Action & a) const
+{
+    PerformAction b(this);
+    a.accept(b);
 }
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;

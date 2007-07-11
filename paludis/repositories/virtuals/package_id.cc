@@ -23,12 +23,14 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/action.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -122,13 +124,14 @@ namespace paludis
          Implementation(
                 const tr1::shared_ptr<const Repository> & o,
                 const QualifiedPackageName & n,
-                const tr1::shared_ptr<const PackageID> & p) :
+                const tr1::shared_ptr<const PackageID> & p,
+                const bool b) :
             repository(o),
             name(n),
             version(p->version()),
             virtual_for(new virtuals::VirtualsPackageIDKey(p)),
-            bdep(new virtuals::VirtualsDepKey("DEPEND", "Build dependencies", p, o->installable_interface)),
-            rdep(new virtuals::VirtualsDepKey("RDEPEND", "Run dependencies", p, o->installable_interface))
+            bdep(new virtuals::VirtualsDepKey("DEPEND", "Build dependencies", p, b)),
+            rdep(new virtuals::VirtualsDepKey("RDEPEND", "Run dependencies", p, b))
         {
         }
     };
@@ -137,14 +140,15 @@ namespace paludis
 VirtualsPackageID::VirtualsPackageID(
         const tr1::shared_ptr<const Repository> & owner,
         const QualifiedPackageName & virtual_name,
-        const tr1::shared_ptr<const PackageID> & virtual_for) :
+        const tr1::shared_ptr<const PackageID> & virtual_for,
+        const bool exact) :
     PrivateImplementationPattern<VirtualsPackageID>(
-            new Implementation<VirtualsPackageID>(owner, virtual_name, virtual_for)),
+            new Implementation<VirtualsPackageID>(owner, virtual_name, virtual_for, exact)),
     _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp.get())
 {
-    add_key(_imp->virtual_for);
-    add_key(_imp->bdep);
-    add_key(_imp->rdep);
+    add_metadata_key(_imp->virtual_for);
+    add_metadata_key(_imp->bdep);
+    add_metadata_key(_imp->rdep);
 }
 
 VirtualsPackageID::~VirtualsPackageID()
@@ -347,5 +351,67 @@ VirtualsPackageID::extra_hash_value() const
 void
 VirtualsPackageID::need_keys_added() const
 {
+}
+
+namespace
+{
+    struct PerformAction :
+        ConstVisitor<ActionVisitorTypes>
+    {
+        const PackageID * const id;
+
+        PerformAction(const PackageID * const i) :
+            id(i)
+        {
+        }
+
+        void visit(const InstallAction & a)
+        {
+            SupportsActionTest<InstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const InstalledAction & a)
+        {
+            SupportsActionTest<InstalledAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const UninstallAction & a)
+        {
+            SupportsActionTest<UninstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const ConfigAction & a)
+        {
+            SupportsActionTest<ConfigAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const PretendAction & a)
+        {
+            SupportsActionTest<PretendAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+    };
+}
+
+void
+VirtualsPackageID::perform_action(Action & a) const
+{
+    PerformAction b(this);
+    a.accept(b);
+}
+
+bool
+VirtualsPackageID::supports_action(const SupportsActionTestBase & b) const
+{
+    return repository()->some_ids_might_support_action(b);
 }
 

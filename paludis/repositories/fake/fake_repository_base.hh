@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_FAKE_REPOSITORY_BASE_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/action-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file

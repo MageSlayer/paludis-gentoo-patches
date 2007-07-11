@@ -21,6 +21,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
+#include <paludis/action.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -47,8 +48,8 @@ namespace paludis
         Environment * const env;
         DepList dep_list;
         DepList::Iterator current_dep_list_entry;
-        InstallOptions install_options;
-        UninstallOptions uninstall_options;
+        InstallActionOptions install_options;
+        UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > targets;
@@ -67,7 +68,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none, false, tr1::shared_ptr<Repository>()),
+            install_options(false, false, iado_none, false, tr1::shared_ptr<Repository>()),
             uninstall_options(false),
             targets(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
             destinations(d),
@@ -216,13 +217,15 @@ InstallTask::execute()
     /* do pretend phase things */
     bool pretend_failed(false);
 
+    SupportsActionTest<PretendAction> pretend_action_query;
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
-    {
-        const RepositoryPretendInterface * const pretend_interface(dep->package_id->repository()->pretend_interface);
-        if (pretend_interface)
-            pretend_failed |= ! pretend_interface->pretend(dep->package_id);
-    }
+        if (dep->package_id->supports_action(pretend_action_query))
+        {
+            PretendAction pretend_action;
+            dep->package_id->perform_action(pretend_action);
+            pretend_failed |= pretend_action.failed();
+        }
 
     if (_imp->pretend)
     {
@@ -305,14 +308,11 @@ InstallTask::execute()
         }
 
         /* fetch / install one item */
-        const RepositoryInstallableInterface * const installable_interface(dep->package_id->repository()->installable_interface);
-        if (! installable_interface)
-            throw InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
-
         try
         {
             _imp->install_options.destination = dep->destination;
-            installable_interface->install(dep->package_id, _imp->install_options);
+            InstallAction install_action(_imp->install_options);
+            dep->package_id->perform_action(install_action);
         }
         catch (const PackageInstallActionError & e)
         {
@@ -357,17 +357,17 @@ InstallTask::execute()
         tr1::shared_ptr<const PackageIDSequence> collision_list;
 
         if (dep->destination)
-            if (dep->destination->uninstallable_interface)
-                collision_list = _imp->env->package_database()->query(
-                        query::Matches(PackageDepSpec(
-                                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
-                                tr1::shared_ptr<CategoryNamePart>(),
-                                tr1::shared_ptr<PackageNamePart>(),
-                                tr1::shared_ptr<VersionRequirements>(),
-                                vr_and,
-                                tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
-                                tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
-                        query::RepositoryHasInstalledInterface(), qo_order_by_version);
+            collision_list = _imp->env->package_database()->query(
+                    query::Matches(PackageDepSpec(
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
+                            tr1::shared_ptr<CategoryNamePart>(),
+                            tr1::shared_ptr<PackageNamePart>(),
+                            tr1::shared_ptr<VersionRequirements>(),
+                            vr_and,
+                            tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
+                            tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
+                    query::SupportsAction<UninstallAction>(),
+                    qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageIDSequence clean_list;
@@ -400,13 +400,10 @@ InstallTask::execute()
                     throw PackageInstallActionError("Clean of '" + cpvr + "' aborted by hook");
                 on_clean_pre(*dep, **c);
 
-                const RepositoryUninstallableInterface * const uninstall_interface((*c)->repository()->uninstallable_interface);
-                if (! uninstall_interface)
-                    throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-
                 try
                 {
-                    uninstall_interface->uninstall(*c, _imp->uninstall_options);
+                    UninstallAction uninstall_action(_imp->uninstall_options);
+                    (*c)->perform_action(uninstall_action);
                 }
                 catch (const PackageUninstallActionError & e)
                 {
@@ -546,7 +543,7 @@ InstallTask::set_preserve_world(const bool value)
 }
 
 void
-InstallTask::set_debug_mode(const InstallDebugOption value)
+InstallTask::set_debug_mode(const InstallActionDebugOption value)
 {
     _imp->install_options.debug_build = value;
 }

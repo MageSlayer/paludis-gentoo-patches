@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_METADATA_HH 1
 
 #include <paludis/name-fwd.hh>
+#include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -79,7 +80,7 @@ namespace paludis
             /**
              * Handle an install.
              */
-            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &,
+            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallActionOptions &,
                     tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
             /**

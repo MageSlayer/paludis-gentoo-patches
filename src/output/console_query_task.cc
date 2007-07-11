@@ -304,21 +304,21 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr
     }
 
     Displayer ds(this, id, mkt_significant);
-    std::for_each(id->begin(), id->end(), accept_visitor(ds));
+    std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(ds));
 
     Displayer dn(this, id, mkt_normal);
-    std::for_each(id->begin(), id->end(), accept_visitor(dn));
+    std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dn));
 
     if (want_deps() || want_raw())
     {
         Displayer dd(this, id, mkt_dependencies);
-        std::for_each(id->begin(), id->end(), accept_visitor(dd));
+        std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dd));
     }
 
     if (want_raw())
     {
         Displayer dr(this, id, mkt_internal);
-        std::for_each(id->begin(), id->end(), accept_visitor(dr));
+        std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dr));
     }
 }
 

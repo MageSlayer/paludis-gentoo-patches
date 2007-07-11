@@ -156,6 +156,10 @@ namespace paludis
 
             virtual bool arbitrary_less_than_comparison(const PackageID &) const;
             virtual std::size_t extra_hash_value() const;
+
+            virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void perform_action(Action &) const;
+
     };
 }
 

@@ -229,11 +229,11 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
     if (CommandLine::get_instance()->a_debug_build.specified())
     {
         if (CommandLine::get_instance()->a_debug_build.argument() == "none")
-            task.set_debug_mode(ido_none);
+            task.set_debug_mode(iado_none);
         else if (CommandLine::get_instance()->a_debug_build.argument() == "split")
-            task.set_debug_mode(ido_split);
+            task.set_debug_mode(iado_split);
         else if (CommandLine::get_instance()->a_debug_build.argument() == "internal")
-            task.set_debug_mode(ido_internal);
+            task.set_debug_mode(iado_internal);
         else
             throw DoHelp("bad value for --debug-build");
     }
@@ -296,7 +296,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
             tr1::shared_ptr<const PackageIDSequence> p(
                     env->package_database()->query(
                         query::Matches(e.query()) &
-                        query::RepositoryHasInstallableInterface(),
+                        query::SupportsAction<InstallAction>(),
                         qo_order_by_version));
 
             if (p->empty())

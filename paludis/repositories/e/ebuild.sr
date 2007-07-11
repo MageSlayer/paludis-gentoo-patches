@@ -65,7 +65,7 @@ make_class_EbuildInstallCommandParams()
     key profiles "tr1::shared_ptr<const FSEntrySequence>"
     key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
     key disable_cfgpro bool
-    key debug_build InstallDebugOption
+    key debug_build InstallActionDebugOption
     key slot SlotName
     key config_protect std::string
     key config_protect_mask std::string

@@ -21,11 +21,14 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/action.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -49,12 +52,10 @@ namespace paludis
 FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
-            .installable_interface(this)
             .installed_interface(0)
             .mask_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
-            .uninstallable_interface(0)
             .use_interface(this)
             .world_interface(0)
             .mirrors_interface(0)
@@ -62,11 +63,9 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .provides_interface(0)
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
                     e->default_distribution())->support_old_style_virtuals ? this : 0)
-            .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
             .e_interface(0)
-            .pretend_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(0),
@@ -76,11 +75,6 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
 }
 
 FakeRepository::~FakeRepository()
-{
-}
-
-void
-FakeRepository::do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const
 {
 }
 
@@ -108,5 +102,48 @@ extern "C"
 
 void register_repositories(RepositoryMaker *)
 {
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+FakeRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

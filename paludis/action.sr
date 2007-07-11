@@ -1,0 +1,39 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_InstallActionOptions()
+{
+    visible
+
+    key no_config_protect bool
+    key fetch_only bool
+    key debug_build InstallActionDebugOption
+    key safe_resume bool
+    key destination "tr1::shared_ptr<Repository>"
+
+    doxygen_comment << "END"
+        /**
+         * Options for InstallAction.
+         *
+         * \see InstallAction
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_UninstallActionOptions()
+{
+    visible
+
+    key no_config_protect bool
+
+    doxygen_comment << "END"
+        /**
+         * Options for UninstallAction.
+         *
+         * \see UninstallAction
+         * \nosubgrouping
+         */
+END
+}
+

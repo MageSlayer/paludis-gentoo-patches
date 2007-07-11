@@ -24,6 +24,7 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
+#include <paludis/action.hh>
 #include <paludis/repository_info.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
@@ -31,6 +32,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/map.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -98,24 +100,20 @@ namespace
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
     Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
-            .installable_interface(0)
             .mask_interface(0)
             .installed_interface(this)
             .use_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(0)
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .world_interface(0)
             .provides_interface(0)
             .virtuals_interface(0)
-            .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
-            .pretend_interface(0)
             .qa_interface(0)
             .hook_interface(this),
             "installed_virtuals"),
@@ -156,7 +154,7 @@ InstalledVirtualsRepository::need_ids() const
             if (i == _imp->ids.end())
                 i = _imp->ids.insert(std::make_pair(p->virtual_name, make_shared_ptr(new PackageIDSequence))).first;
 
-            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(shared_from_this(), p->virtual_name, p->provided_by));
+            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(shared_from_this(), p->virtual_name, p->provided_by, false));
             i->second->push_back(id);
         }
     }
@@ -267,4 +265,48 @@ InstalledVirtualsRepository::can_be_favourite_repository() const
 {
     return false;
 }
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+InstalledVirtualsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
+}
+
 

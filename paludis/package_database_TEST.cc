@@ -162,7 +162,7 @@ namespace test_cases
 
             PackageDepSpec d9("r1c1/r1c1p1", pds_pm_permissive);
             const tr1::shared_ptr<const PackageIDSequence> q9(p.query(
-                        query::Matches(d9) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
+                        query::Matches(d9) & query::SupportsAction<InstallAction>(), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q9->begin(), q9->end()), 1);
         }
     } package_database_query_test;

@@ -37,7 +37,6 @@ namespace paludis
         public Repository,
         public RepositoryDestinationInterface,
         public RepositoryInstalledInterface,
-        public RepositoryUninstallableInterface,
         public tr1::enable_shared_from_this<InstalledGemsRepository>,
         private PrivateImplementationPattern<InstalledGemsRepository>
     {
@@ -48,13 +47,7 @@ namespace paludis
         protected:
             /* RepositoryInstalledInterface */
 
-            virtual time_t do_installed_time(const PackageID &) const;
-
             virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryUninstallableInterface */
-
-            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const;
 
             /* Repository */
 
@@ -74,6 +67,8 @@ namespace paludis
 
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
         public:
             /**

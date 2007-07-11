@@ -29,8 +29,10 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/action.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <fstream>
@@ -64,23 +66,19 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
     Repository(RepositoryName("gems"),
             RepositoryCapabilities::create()
             .mask_interface(0)
-            .installable_interface(this)
             .installed_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(0)
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
             .provides_interface(0)
-            .config_interface(0)
             .destination_interface(0)
             .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
-            .pretend_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(0),
             "gems"),
@@ -211,6 +209,7 @@ GemsRepository::need_ids() const
     _imp->has_ids = true;
 }
 
+#if 0
 void
 GemsRepository::do_install(const tr1::shared_ptr<const PackageID> & id, const InstallOptions & o) const
 {
@@ -224,5 +223,49 @@ GemsRepository::do_install(const tr1::shared_ptr<const PackageID> & id, const In
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Install of '" + stringify(*id) + "' failed");
+}
+#endif
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+GemsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 

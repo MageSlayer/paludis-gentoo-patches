@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/package_database.hh>
+#include <paludis/action-fwd.hh>
 #include <string>
 
 /** \file

@@ -28,6 +28,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/action.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -275,16 +276,16 @@ GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r, 
     node.accept(v);
 
     if (_imp->summary_key)
-        add_key(_imp->summary_key);
+        add_metadata_key(_imp->summary_key);
 
     if (_imp->description_key)
-        add_key(_imp->description_key);
+        add_metadata_key(_imp->description_key);
 
     if (_imp->authors_key)
-        add_key(_imp->authors_key);
+        add_metadata_key(_imp->authors_key);
 
     if (_imp->rubyforge_project_key)
-        add_key(_imp->rubyforge_project_key);
+        add_metadata_key(_imp->rubyforge_project_key);
 }
 
 
@@ -536,4 +537,66 @@ InstalledGemsRepository::need_version_metadata(const QualifiedPackageName & q, c
     m->eapi = EAPIData::get_instance()->eapi_from_string("gems-1");
 }
 #endif
+
+bool
+GemSpecification::supports_action(const SupportsActionTestBase & b) const
+{
+    return repository()->some_ids_might_support_action(b);
+}
+
+namespace
+{
+    struct PerformAction :
+        ConstVisitor<ActionVisitorTypes>
+    {
+        const PackageID * const id;
+
+        PerformAction(const PackageID * const i) :
+            id(i)
+        {
+        }
+
+        void visit(const InstallAction & a)
+        {
+            SupportsActionTest<InstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const InstalledAction & a)
+        {
+            SupportsActionTest<InstalledAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const UninstallAction & a)
+        {
+            SupportsActionTest<UninstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const ConfigAction & a)
+        {
+            SupportsActionTest<ConfigAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const PretendAction & a)
+        {
+            SupportsActionTest<PretendAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+    };
+}
+
+void
+GemSpecification::perform_action(Action & a) const
+{
+    PerformAction b(this);
+    a.accept(b);
+}
 

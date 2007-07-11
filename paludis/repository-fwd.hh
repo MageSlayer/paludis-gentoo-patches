@@ -32,12 +32,10 @@ namespace paludis
     class HookResult;
 
     class Repository;
-    class RepositoryInstallableInterface;
     class RepositoryInstalledInterface;
     class RepositoryMaskInterface;
     class RepositorySetsInterface;
     class RepositorySyncableInterface;
-    class RepositoryUninstallableInterface;
     class RepositoryUseInterface;
     class RepositoryWorldInterface;
     class RepositoryEnvironmentVariableInterface;
@@ -46,16 +44,12 @@ namespace paludis
     class RepositoryVirtualsInterface;
     class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
-    class RepositoryConfigInterface;
-    class RepositoryPretendInterface;
     class RepositoryLicensesInterface;
     class RepositoryEInterface;
     class RepositoryHookInterface;
     class RepositoryQAInterface;
 
-    class InstallOptions;
     class MergeOptions;
-    class UninstallOptions;
 
     /**
      * A set of destinations.
@@ -63,18 +57,6 @@ namespace paludis
      * \ingroup grpdepresolver
      */
     typedef Set<paludis::tr1::shared_ptr<Repository> > DestinationsSet;
-
-    /**
-     * What debug build option to use when installing a package.
-     *
-     * \ingroup grprepository
-     */
-    enum InstallDebugOption
-    {
-        ido_none,
-        ido_split,
-        ido_internal
-    };
 }
 
 #endif

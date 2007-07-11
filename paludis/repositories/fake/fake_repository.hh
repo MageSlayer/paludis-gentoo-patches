@@ -32,16 +32,13 @@ namespace paludis
     class PALUDIS_VISIBLE FakeRepository :
         private PrivateImplementationPattern<FakeRepository>,
         public FakeRepositoryBase,
-        public RepositoryInstallableInterface,
         public RepositoryVirtualsInterface
     {
         private:
             Implementation<FakeRepository> * const _imp;
 
         protected:
-            /* RepositoryInstallableInterface */
-
-            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
         public:
             ///\name Basic operations

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_VDB_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
@@ -50,13 +51,11 @@ namespace paludis
         public Repository,
         public RepositoryInstalledInterface,
         public RepositoryUseInterface,
-        public RepositoryUninstallableInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryProvidesInterface,
         public RepositoryDestinationInterface,
-        public RepositoryConfigInterface,
         public RepositoryHookInterface,
         public tr1::enable_shared_from_this<VDBRepository>,
         public PrivateImplementationPattern<VDBRepository>
@@ -66,9 +65,6 @@ namespace paludis
             void load_provided_the_slow_way() const;
 
             void regenerate_provides_cache() const;
-
-            void _uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &,
-                    bool reinstalling) const;
 
             void need_category_names() const;
             void need_package_ids(const CategoryNamePart &) const;
@@ -124,10 +120,6 @@ namespace paludis
             virtual tr1::shared_ptr<const SetNameSet> sets_list() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* RepositoryUninstallableInterface */
-
-            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const;
-
             /* RepositoryWorldInterface */
 
             virtual void add_to_world(const QualifiedPackageName &) const;
@@ -162,10 +154,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeOptions &);
-
-            /* RepositoryConfigInterface */
-
-            virtual void do_config(const tr1::shared_ptr<const PackageID> &) const;
 
             /* RepositoryHookInterface */
 
@@ -211,6 +199,8 @@ namespace paludis
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
+
         public:
             /**
              * Constructor.
@@ -232,6 +222,17 @@ namespace paludis
             virtual void invalidate();
 
             virtual void regenerate_cache() const;
+
+            ///\name For use by VDBID
+            ///\{
+
+            void perform_uninstall(const tr1::shared_ptr<const PackageID> & id,
+                    const UninstallActionOptions & o, bool reinstalling) const;
+
+            void perform_config(const tr1::shared_ptr<const PackageID> & id) const;
+
+            ///\}
+
     };
 
     /**

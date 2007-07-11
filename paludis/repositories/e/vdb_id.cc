@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/vdb_repository.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -26,7 +27,9 @@
 #include <paludis/distribution.hh>
 #include <paludis/eapi.hh>
 #include <paludis/environment.hh>
+#include <paludis/action.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -148,7 +151,7 @@ VDBID::need_keys_added() const
         {
             _imp->use.reset(new EUseKey(shared_from_this(), env->env_use, env->description_use,
                         file_contents(_imp->dir / env->env_use), mkt_internal));
-            add_key(_imp->use);
+            add_metadata_key(_imp->use);
         }
 
     if (! vars->metadata_inherited.empty())
@@ -156,7 +159,7 @@ VDBID::need_keys_added() const
         {
             _imp->inherited.reset(new EInheritedKey(shared_from_this(), vars->metadata_inherited, vars->description_inherited,
                         file_contents(_imp->dir / vars->metadata_inherited), mkt_internal));
-            add_key(_imp->inherited);
+            add_metadata_key(_imp->inherited);
         }
 
     if (! vars->metadata_iuse.empty())
@@ -164,7 +167,7 @@ VDBID::need_keys_added() const
         {
             _imp->iuse.reset(new EIUseKey(shared_from_this(), vars->metadata_iuse, vars->description_iuse,
                         file_contents(_imp->dir / vars->metadata_iuse), mkt_normal));
-            add_key(_imp->iuse);
+            add_metadata_key(_imp->iuse);
         }
 
     if (! vars->metadata_license.empty())
@@ -172,7 +175,7 @@ VDBID::need_keys_added() const
         {
             _imp->license.reset(new ELicenseKey(shared_from_this(), vars->metadata_license, vars->description_license,
                         file_contents(_imp->dir / vars->metadata_license),  mkt_normal));
-            add_key(_imp->license);
+            add_metadata_key(_imp->license);
         }
 
     if (! vars->metadata_provide.empty())
@@ -180,7 +183,7 @@ VDBID::need_keys_added() const
         {
             _imp->provide.reset(new EProvideKey(shared_from_this(), vars->metadata_provide, vars->description_provide,
                         file_contents(_imp->dir / vars->metadata_provide), mkt_internal));
-            add_key(_imp->provide);
+            add_metadata_key(_imp->provide);
         }
 
     if (! vars->metadata_build_depend.empty())
@@ -188,7 +191,7 @@ VDBID::need_keys_added() const
         {
             _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_build_depend,
                         vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend), mkt_dependencies));
-            add_key(_imp->build_dependencies);
+            add_metadata_key(_imp->build_dependencies);
         }
 
     if (! vars->metadata_run_depend.empty())
@@ -196,7 +199,7 @@ VDBID::need_keys_added() const
         {
             _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_run_depend,
                         vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend), mkt_dependencies));
-            add_key(_imp->run_dependencies);
+            add_metadata_key(_imp->run_dependencies);
         }
 
     if (! vars->metadata_pdepend.empty())
@@ -204,7 +207,7 @@ VDBID::need_keys_added() const
         {
             _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_pdepend,
                         vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend), mkt_dependencies));
-            add_key(_imp->post_dependencies);
+            add_metadata_key(_imp->post_dependencies);
         }
 
     if (! vars->metadata_restrict.empty())
@@ -212,7 +215,7 @@ VDBID::need_keys_added() const
         {
             _imp->restrictions.reset(new ERestrictKey(shared_from_this(), vars->metadata_restrict, vars->description_restrict,
                         file_contents(_imp->dir / vars->metadata_restrict), mkt_internal));
-            add_key(_imp->restrictions);
+            add_metadata_key(_imp->restrictions);
         }
 
     if (! vars->metadata_src_uri.empty())
@@ -220,7 +223,7 @@ VDBID::need_keys_added() const
         {
             _imp->src_uri.reset(new EURIKey(shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
                         file_contents(_imp->dir / vars->metadata_src_uri), mkt_dependencies));
-            add_key(_imp->src_uri);
+            add_metadata_key(_imp->src_uri);
         }
 
     if (! vars->metadata_description.empty())
@@ -228,7 +231,7 @@ VDBID::need_keys_added() const
         {
             _imp->short_description.reset(new EStringKey(shared_from_this(), vars->metadata_description,
                         vars->description_description, file_contents(_imp->dir / vars->metadata_description), mkt_significant));
-            add_key(_imp->short_description);
+            add_metadata_key(_imp->short_description);
         }
 
     if (! vars->metadata_homepage.empty())
@@ -236,85 +239,85 @@ VDBID::need_keys_added() const
         {
             _imp->homepage.reset(new EURIKey(shared_from_this(), vars->metadata_homepage, vars->description_homepage,
                         file_contents(_imp->dir / vars->metadata_homepage), mkt_significant));
-            add_key(_imp->homepage);
+            add_metadata_key(_imp->homepage);
         }
 
     _imp->contents.reset(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",
                 _imp->dir / "CONTENTS", mkt_internal));
-    add_key(_imp->contents);
+    add_metadata_key(_imp->contents);
 
     _imp->installed_time.reset(new ECTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
                 _imp->dir / "CONTENTS", mkt_normal));
-    add_key(_imp->installed_time);
+    add_metadata_key(_imp->installed_time);
 
     if ((_imp->dir / "REPOSITORY").exists())
     {
         _imp->source_origin.reset(new EStringKey(shared_from_this(), "REPOSITORY", "Source repository",
                     file_contents(_imp->dir / "REPOSITORY"), mkt_normal));
-        add_key(_imp->source_origin);
+        add_metadata_key(_imp->source_origin);
     }
 
     if ((_imp->dir / "BINARY_REPOSITORY").exists())
     {
         _imp->binary_origin.reset(new EStringKey(shared_from_this(), "BINARY_REPOSITORY", "Binary repository",
                     file_contents(_imp->dir / "BINARY_REPOSITORY"), mkt_normal));
-        add_key(_imp->binary_origin);
+        add_metadata_key(_imp->binary_origin);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
     {
         _imp->asflags.reset(new EStringKey(shared_from_this(), "ASFLAGS", "ASFLAGS",
                     file_contents(_imp->dir / "ASFLAGS"), mkt_internal));
-        add_key(_imp->asflags);
+        add_metadata_key(_imp->asflags);
     }
 
     if ((_imp->dir / "CBUILD").exists())
     {
         _imp->cbuild.reset(new EStringKey(shared_from_this(), "CBUILD", "CBUILD",
                     file_contents(_imp->dir / "CBUILD"), mkt_internal));
-        add_key(_imp->cbuild);
+        add_metadata_key(_imp->cbuild);
     }
 
     if ((_imp->dir / "CFLAGS").exists())
     {
         _imp->cflags.reset(new EStringKey(shared_from_this(), "CFLAGS", "CFLAGS",
                     file_contents(_imp->dir / "CFLAGS"), mkt_internal));
-        add_key(_imp->cflags);
+        add_metadata_key(_imp->cflags);
     }
 
     if ((_imp->dir / "CHOST").exists())
     {
         _imp->chost.reset(new EStringKey(shared_from_this(), "CHOST", "CHOST",
                     file_contents(_imp->dir / "CHOST"), mkt_internal));
-        add_key(_imp->chost);
+        add_metadata_key(_imp->chost);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
     {
         _imp->cxxflags.reset(new EStringKey(shared_from_this(), "CXXFLAGS", "CXXFLAGS",
                     file_contents(_imp->dir / "CXXFLAGS"), mkt_internal));
-        add_key(_imp->cxxflags);
+        add_metadata_key(_imp->cxxflags);
     }
 
     if ((_imp->dir / "LDFLAGS").exists())
     {
         _imp->ldflags.reset(new EStringKey(shared_from_this(), "LDFLAGS", "LDFLAGS",
                     file_contents(_imp->dir / "LDFLAGS"), mkt_internal));
-        add_key(_imp->ldflags);
+        add_metadata_key(_imp->ldflags);
     }
 
     if ((_imp->dir / "PKGMANAGER").exists())
     {
         _imp->pkgmanager.reset(new EStringKey(shared_from_this(), "PKGMANAGER", "Installed using",
                     file_contents(_imp->dir / "PKGMANAGER"), mkt_normal));
-        add_key(_imp->pkgmanager);
+        add_metadata_key(_imp->pkgmanager);
     }
 
     if ((_imp->dir / "VDB_FORMAT").exists())
     {
         _imp->vdb_format.reset(new EStringKey(shared_from_this(), "VDB_FORMAT", "VDB Format",
                     file_contents(_imp->dir / "VDB_FORMAT"), mkt_internal));
-        add_key(_imp->vdb_format);
+        add_metadata_key(_imp->vdb_format);
     }
 }
 
@@ -559,5 +562,99 @@ std::size_t
 VDBID::extra_hash_value() const
 {
     return 0;
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+            result = true;
+        }
+    };
+}
+
+bool
+VDBID::supports_action(const SupportsActionTestBase & b) const
+{
+    SupportsActionQuery q;
+    b.accept(q);
+    return q.result;
+}
+
+namespace
+{
+    struct PerformAction :
+        ConstVisitor<ActionVisitorTypes>
+    {
+        const tr1::shared_ptr<const PackageID> id;
+
+        PerformAction(const tr1::shared_ptr<const PackageID> i) :
+            id(i)
+        {
+        }
+
+        void visit(const UninstallAction & a)
+        {
+            tr1::static_pointer_cast<const VDBRepository>(id->repository())->perform_uninstall(id,
+                    a.options, false);
+        }
+
+        void visit(const InstalledAction &)
+        {
+        }
+
+        void visit(const ConfigAction &)
+        {
+            tr1::static_pointer_cast<const VDBRepository>(id->repository())->perform_config(id);
+        }
+
+        void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PretendAction & a) PALUDIS_ATTRIBUTE((noreturn));
+    };
+
+    void PerformAction::visit(const InstallAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+
+    void PerformAction::visit(const PretendAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+}
+
+void
+VDBID::perform_action(Action & a) const
+{
+    PerformAction b(shared_from_this());
+    a.accept(b);
 }
 

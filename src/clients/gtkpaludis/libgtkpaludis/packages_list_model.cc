@@ -147,7 +147,7 @@ namespace
 
         paludis::tr1::shared_ptr<const PackageIDSequence> av(
                 environment->package_database()->query(
-                    query::RepositoryHasInstallableInterface() &
+                    query::SupportsAction<InstallAction>() &
                     query::Matches(pds) &
                     query::Matches(PackageDepSpec(
                             paludis::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(id->name())),
@@ -190,7 +190,7 @@ namespace
                                 paludis::tr1::shared_ptr<VersionRequirements>(),
                                 vr_and,
                                 paludis::tr1::shared_ptr<SlotName>(new SlotName(id->slot())))) &
-                        query::RepositoryHasInstallableInterface() &
+                        query::SupportsAction<InstallAction>() &
                         query::NotMasked(),
                         qo_order_by_version));
             if (av->empty())

@@ -197,7 +197,6 @@ namespace paludis
          * Fetch packages with a given package name.
          *
          * \see Query
-         * \see PackageData
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
@@ -217,7 +216,6 @@ namespace paludis
          * Fetch packages in a given repository.
          *
          * \see Query
-         * \see PackageData
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
@@ -237,7 +235,6 @@ namespace paludis
          * Fetch packages in a given category.
          *
          * \see Query
-         * \see PackageData
          * \ingroup grpquerybase::query
          * \nosubgrouping
          */
@@ -257,8 +254,7 @@ namespace paludis
          * Fetch packages that are not masked.
          *
          * \see Query
-         * \see PackageData
-         * \ingroup grpquerybase::query
+         * \ingroup grpquery
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE NotMasked :
@@ -274,64 +270,22 @@ namespace paludis
         };
 
         /**
-         * Fetch packages from a repository that has
-         * RepositoryInstalledInterface.
+         * Fetch packages that support a particular action.
          *
          * \see Query
-         * \see PackageData
-         * \ingroup grpquerybase::query
-         * \nosubgrouping
-         */
-        class PALUDIS_VISIBLE RepositoryHasInstalledInterface :
-            public Query
-        {
-            public:
-                ///\name Basic operations
-                ///\{
-
-                RepositoryHasInstalledInterface();
-
-                ///\}
-        };
-
-        /**
-         * Fetch packages from a repository that has
-         * RepositoryInstallableInterface.
-         *
          * \see PackageDatabase::query
-         * \see Query
          * \ingroup grpquery
          * \nosubgrouping
          */
-        class PALUDIS_VISIBLE RepositoryHasInstallableInterface :
+        template <typename A_>
+        class PALUDIS_VISIBLE SupportsAction :
             public Query
         {
             public:
                 ///\name Basic operations
                 ///\{
 
-                RepositoryHasInstallableInterface();
-
-                ///\}
-        };
-
-        /**
-         * Fetch packages from a repository that has
-         * RepositoryUninstallableInterface.
-         *
-         * \see PackageDatabase::query
-         * \see Query
-         * \ingroup grpquery
-         * \nosubgrouping
-         */
-        class PALUDIS_VISIBLE RepositoryHasUninstallableInterface :
-            public Query
-        {
-            public:
-                ///\name Basic operations
-                ///\{
-
-                RepositoryHasUninstallableInterface();
+                SupportsAction();
 
                 ///\}
         };

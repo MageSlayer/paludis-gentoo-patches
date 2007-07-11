@@ -1032,7 +1032,9 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
         tr1::shared_ptr<const PackageDepSpec> spec(
             tr1::static_pointer_cast<const DependencyDepTag>(tag->tag)->dependency());
         if (d.kind != dlk_masked && d.kind != dlk_block && environment()->package_database()->query(
-                query::Matches(*spec) & query::RepositoryHasInstalledInterface(), qo_whatever)->empty())
+                query::Matches(*spec) &
+                query::SupportsAction<InstalledAction>(),
+                qo_whatever)->empty())
             unsatisfied_dependents.insert(tag->tag->short_text());
         else
             dependents.insert(tag->tag->short_text());

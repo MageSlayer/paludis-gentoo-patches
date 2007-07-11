@@ -66,6 +66,8 @@ namespace paludis
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
+
         public:
             ///\name Basic operations
             //\{
