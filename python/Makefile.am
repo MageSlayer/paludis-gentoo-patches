@@ -2,6 +2,7 @@ SUBDIRS = .
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      -I$(top_builddir)/ \
+	      @PALUDIS_CXXFLAGS@ \
 	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
 	      @PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS@ \
 	      @PALUDIS_CXXFLAGS_NO_WUNUSED@ \
@@ -111,7 +112,7 @@ if ENABLE_PYTHON
 lib_LTLIBRARIES = libpaludispython.la
 
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@ $(PTHREAD_LIBS)
+libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
 
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -133,8 +134,7 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
-	$(PTHREAD_LIBS)
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 #	$(top_builddir)/paludis/qa/libpaludisqa.la
 
 TESTS = $(IF_PYTHON_QA_TESTS) $(IF_PYTHON_TESTS)
@@ -154,8 +154,7 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
-	$(PTHREAD_LIBS)
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
 TESTS = $(IF_PYTHON_TESTS)
 
@@ -170,7 +169,7 @@ pythonlib_DATA = paludis.so
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
-	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@ \
+	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
@@ -179,7 +178,7 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
-	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@ \
+	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
