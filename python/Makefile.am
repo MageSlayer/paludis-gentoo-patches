@@ -2,7 +2,6 @@ SUBDIRS = .
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      -I$(top_builddir)/ \
-	      @PALUDIS_CXXFLAGS@ \
 	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
 	      @PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS@ \
 	      @PALUDIS_CXXFLAGS_NO_WUNUSED@ \
