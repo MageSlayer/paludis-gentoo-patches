@@ -175,7 +175,7 @@ PStreamInBuf::exit_status()
         Log::get_instance()->message(ll_debug, lc_no_context,
                 "manual pclose " + stringify(fdn) + " -> " + stringify(_exit_status));
     }
-    return WEXITSTATUS(_exit_status);
+    return WIFSIGNALED(_exit_status) ? WTERMSIG(_exit_status) + 128 : WEXITSTATUS(_exit_status);
 }
 
 void

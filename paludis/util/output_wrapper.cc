@@ -255,7 +255,7 @@ main(int argc, char *argv[])
             std::cerr << argv[0] << ": wait failed: " << strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
-        return WEXITSTATUS(status);
+        return WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status);
     }
 }
 

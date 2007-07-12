@@ -353,7 +353,7 @@ paludis::run_command(const Command & cmd)
         int status(-1);
         if (-1 == wait(&status))
             throw RunCommandError("wait failed: " + stringify(strerror(errno)));
-        return WEXITSTATUS(status);
+        return WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status);
     }
 
     throw InternalError(PALUDIS_HERE, "should never be reached");
