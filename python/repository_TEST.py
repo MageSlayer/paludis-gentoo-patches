@@ -108,15 +108,7 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         repo = db.fetch_repository("testrepo")
         irepo = db.fetch_repository("installed")
 
-    def test_01_installable_interface(self):
-        ii = repo.installable_interface
-        self.assert_(isinstance(ii, RepositoryInstallableInterface))
-
-    def test_02_installed_interface(self):
-        ii = irepo.installed_interface
-        self.assert_(isinstance(ii, RepositoryInstalledInterface))
-
-    def test_03_mask_interface(self):
+    def test_01_mask_interface(self):
         mi = repo.mask_interface
         self.assert_(isinstance(mi, RepositoryMaskInterface))
 
@@ -129,19 +121,15 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         self.assert_(mi.query_profile_masks(foo[2]))
         self.assert_(not mi.query_profile_masks(foo[3]))
 
-    def test_04_sets_interface(self):
+    def test_02_sets_interface(self):
         si = repo.sets_interface
         self.assert_(isinstance(si, RepositorySetsInterface))
 
-    def test_05_syncable_interface(self):
+    def test_03_syncable_interface(self):
         si = repo.syncable_interface
         self.assert_(isinstance(si, RepositorySyncableInterface))
 
-    def test_06_uninstallable_interface(self):
-        ui = irepo.uninstallable_interface
-        self.assert_(isinstance(ui, RepositoryUninstallableInterface))
-
-    def test_07_use_interface(self):
+    def test_04_use_interface(self):
         ui = repo.use_interface
         self.assert_(isinstance(ui, RepositoryUseInterface))
 
@@ -173,42 +161,38 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
 
         self.assert_(ui.describe_use_flag("test1", pid), "A test use flag")
 
-    def test_08_world_interface(self):
+    def test_05_world_interface(self):
         wi = irepo.world_interface
         self.assert_(isinstance(wi, RepositoryWorldInterface))
 
-    def test_09_environment_variable_interface(self):
+    def test_06_environment_variable_interface(self):
         evi = repo.environment_variable_interface
         self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))
 
-    def test_10_mirrors_interface(self):
+    def test_07_mirrors_interface(self):
         mi = repo.mirrors_interface
         self.assert_(isinstance(mi, RepositoryMirrorsInterface))
 
-    def test_11_provides_interface(self):
+    def test_08_provides_interface(self):
         pi = irepo.provides_interface
         self.assert_(isinstance(pi, RepositoryProvidesInterface))
 
-    def test_12_virtuals_interface(self):
+    def test_09_virtuals_interface(self):
         vi = repo.virtuals_interface
         self.assert_(isinstance(vi, RepositoryVirtualsInterface))
 
-    def test_13_destination_interface(self):
+    def test_10_destination_interface(self):
         di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
 
-    def test_14_config_interface(self):
-        ci = irepo.config_interface
-        self.assert_(isinstance(ci, RepositoryConfigInterface))
-
-    def test_15_licenses_interface(self):
+    def test_11_licenses_interface(self):
         li = repo.licenses_interface
         self.assert_(isinstance(li, RepositoryLicensesInterface))
 
         self.assertEquals(os.path.realpath(li.license_exists("foo")), os.path.join(repo_path, "licenses/foo"))
         self.assertEquals(li.license_exists("bad"), None)
 
-    def test_16_e_interface(self):
+    def test_12_e_interface(self):
         ei = nce.main_repository
         ei = nce.main_repository.e_interface
 

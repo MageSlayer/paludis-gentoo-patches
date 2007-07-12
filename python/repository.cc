@@ -51,18 +51,6 @@ struct RepositoryWrapper :
         return Repository::info(verbose);
     }
 
-    static RepositoryInstallableInterface *
-    get_installable_interface(const Repository & self)
-    {
-        return self.installable_interface;
-    }
-
-    static RepositoryInstalledInterface *
-    get_installed_interface(const Repository & self)
-    {
-        return self.installed_interface;
-    }
-
     static RepositoryMaskInterface *
     get_mask_interface(const Repository & self)
     {
@@ -79,12 +67,6 @@ struct RepositoryWrapper :
     get_syncable_interface(const Repository & self)
     {
         return self.syncable_interface;
-    }
-
-    static RepositoryUninstallableInterface *
-    get_uninstallable_interface(const Repository & self)
-    {
-        return self.uninstallable_interface;
     }
 
     static RepositoryUseInterface *
@@ -127,12 +109,6 @@ struct RepositoryWrapper :
     get_destination_interface(const Repository & self)
     {
         return self.destination_interface;
-    }
-
-    static RepositoryConfigInterface *
-    get_config_interface(const Repository & self)
-    {
-        return self.config_interface;
     }
 
     static RepositoryLicensesInterface *
@@ -350,21 +326,6 @@ void PALUDIS_VISIBLE expose_repository()
                 "[ro] RepositoryUseInterface"
                 )
 
-        .add_property("installed_interface", bp::make_function(&RepositoryWrapper::get_installed_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryInstalledInterface"
-                )
-
-        .add_property("installable_interface", bp::make_function(&RepositoryWrapper::get_installable_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryInstallableInterface"
-                )
-
-        .add_property("uninstallable_interface", bp::make_function(&RepositoryWrapper::get_uninstallable_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryUninstallableInterface"
-                )
-
         .add_property("sets_interface", bp::make_function(&RepositoryWrapper::get_sets_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositorySetsInterface"
@@ -404,11 +365,6 @@ void PALUDIS_VISIBLE expose_repository()
         .add_property("destination_interface", bp::make_function(&RepositoryWrapper::get_destination_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryDestinationInterface"
-                )
-
-        .add_property("config_interface", bp::make_function(&RepositoryWrapper::get_config_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryConfigInterface"
                 )
 
         .add_property("licenses_interface", bp::make_function(&RepositoryWrapper::get_licenses_interface,
@@ -509,26 +465,6 @@ void PALUDIS_VISIBLE expose_repository()
     ;
 
     /**
-     * RepositoryInstallableInterface
-     */
-    bp::class_<RepositoryInstallableInterface, boost::noncopyable>
-        (
-         "RepositoryInstallableInterface",
-         "Interface for handling installs for repositories.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryUninstallableInterface
-     */
-    bp::class_<RepositoryUninstallableInterface, boost::noncopyable>
-        (
-         "RepositoryUninstallableInterface",
-         "Interface for handling uninstalls for repositories.",
-         bp::no_init
-        );
-
-    /**
      * RepositorySetsInterface
      */
     bp::class_<RepositorySetsInterface, boost::noncopyable>
@@ -605,16 +541,6 @@ void PALUDIS_VISIBLE expose_repository()
         (
          "RepositoryDestinationInterface",
          "Interface for repositories that can be used as an install destination.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryConfigInterface
-     */
-    bp::class_<RepositoryConfigInterface, boost::noncopyable>
-        (
-         "RepositoryConfigInterface",
-         "Interface for handling actions for repositories supporting package configuration.",
          bp::no_init
         );
 

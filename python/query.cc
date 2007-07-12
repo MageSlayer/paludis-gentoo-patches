@@ -27,6 +27,22 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
+template <typename A_>
+class class_supports_action :
+    public bp::class_<query::SupportsAction<A_>, bp::bases<Query> >
+{
+    public:
+        class_supports_action(const std::string & action) :
+            bp::class_<query::SupportsAction<A_>, bp::bases<Query> >(
+                    ("Supports" + action + "Action").c_str(),
+                    ("Fetch packages that support " + action + "Action.").c_str(),
+                    bp::init<>("__init__()")
+                    )
+        {
+        }
+};
+
+
 void PALUDIS_VISIBLE expose_query()
 {
     /**
@@ -94,34 +110,13 @@ void PALUDIS_VISIBLE expose_query()
         );
 
     /**
-     * RepositoryHasInstalledInterface
+     * SupportsAction
      */
-    bp::class_<query::RepositoryHasInstalledInterface, bp::bases<Query> >
-        (
-         "RepositoryHasInstalledInterface",
-         "Fetch packages from a repository that has RepositoryInstalledInterface.",
-         bp::init<>("__init__()")
-        );
-
-    /**
-     * RepositoryHasInstallableInterface
-     */
-    bp::class_<query::RepositoryHasInstallableInterface, bp::bases<Query> >
-        (
-         "RepositoryHasInstallableInterface",
-         "Fetch packages from a repository that has RepositoryInstallableInterface.",
-         bp::init<>("__init__()")
-        );
-
-    /**
-     * RepositoryHasUninstallableInterface
-     */
-    bp::class_<query::RepositoryHasUninstallableInterface, bp::bases<Query> >
-        (
-         "RepositoryHasUninstallableInterface",
-         "Fetch packages from a repository that has RepositoryUninstallableInterface.",
-         bp::init<>("__init__()")
-        );
+    class_supports_action<InstallAction>("Install");
+    class_supports_action<UninstallAction>("Uninstall");
+    class_supports_action<InstalledAction>("Installed");
+    class_supports_action<PretendAction>("Pretend");
+    class_supports_action<ConfigAction>("Config");
 
     /**
      * InstalledAtRoot

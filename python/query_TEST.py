@@ -24,9 +24,11 @@ import unittest
 class TestCase_Queries(unittest.TestCase):
     def test_1_create(self):
         self.queries = []
-        self.queries.append(Query.RepositoryHasInstallableInterface())
-        self.queries.append(Query.RepositoryHasInstalledInterface())
-        self.queries.append(Query.RepositoryHasUninstallableInterface())
+        self.queries.append(Query.SupportsInstallAction())
+        self.queries.append(Query.SupportsUninstallAction())
+        self.queries.append(Query.SupportsInstalledAction())
+        self.queries.append(Query.SupportsPretendAction())
+        self.queries.append(Query.SupportsConfigAction())
         self.queries.append(Query.InstalledAtRoot("/bar"))
         self.queries.append(Query.NotMasked())
         self.queries.append(Query.Package("foo/bar"))

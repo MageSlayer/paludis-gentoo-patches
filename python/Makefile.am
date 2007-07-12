@@ -111,7 +111,7 @@ if ENABLE_PYTHON
 lib_LTLIBRARIES = libpaludispython.la
 
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
+libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@ $(PTHREAD_LIBS)
 
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -133,7 +133,8 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
+	$(PTHREAD_LIBS)
 #	$(top_builddir)/paludis/qa/libpaludisqa.la
 
 TESTS = $(IF_PYTHON_QA_TESTS) $(IF_PYTHON_TESTS)
@@ -152,7 +153,9 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
+	$(PTHREAD_LIBS)
 
 TESTS = $(IF_PYTHON_TESTS)
 

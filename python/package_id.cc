@@ -34,10 +34,10 @@ namespace bp = boost::python;
 struct PackageIDWrapper
 {
     static PyObject *
-    find(const PackageID & self, const std::string & key)
+    find_metadata(const PackageID & self, const std::string & key)
     {
-        PackageID::Iterator i(self.find(key));
-        if (i != self.end())
+        PackageID::MetadataIterator i(self.find_metadata(key));
+        if (i != self.end_metadata())
             return bp::incref(bp::object(*i).ptr());
         else
             return Py_None;
@@ -85,10 +85,10 @@ void PALUDIS_VISIBLE expose_package_id()
                 "[ro] EAPI\n"
                 )
 
-        .def("__iter__", bp::range(&PackageID::begin, &PackageID::end))
+        .def("__iter__", bp::range(&PackageID::begin_metadata, &PackageID::end_metadata))
 
-        .def("find", &PackageIDWrapper::find,
-                "find(string) -> MetadataKey\n"
+        .def("find_metadata", &PackageIDWrapper::find_metadata,
+                "find_metadata(string) -> MetadataKey\n"
             )
 
         .def("__eq__", &py_eq<PackageID>)

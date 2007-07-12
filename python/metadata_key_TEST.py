@@ -37,36 +37,36 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         ipid = iter(ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one")).next()
 
     def test_01_contents(self):
-        self.assertEquals(pid.find("CONTENTS"), None)
-        self.assert_(isinstance(ipid.find("CONTENTS"), MetadataContentsKey))
+        self.assertEquals(pid.find_metadata("CONTENTS"), None)
+        self.assert_(isinstance(ipid.find_metadata("CONTENTS"), MetadataContentsKey))
 
     def test_02_installed_time(self):
-        self.assertEquals(pid.find("INSTALLED_TIME"), None)
-        self.assert_(isinstance(ipid.find("INSTALLED_TIME"), MetadataTimeKey))
+        self.assertEquals(pid.find_metadata("INSTALLED_TIME"), None)
+        self.assert_(isinstance(ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey))
 
     def test_03_repository(self):
-        self.assertEquals(pid.find("REPOSITORY"), None)
-        self.assert_(isinstance(ipid.find("REPOSITORY"), MetadataStringKey))
+        self.assertEquals(pid.find_metadata("REPOSITORY"), None)
+        self.assert_(isinstance(ipid.find_metadata("REPOSITORY"), MetadataStringKey))
 
     def test_04_keywords(self):
-        self.assert_(isinstance(pid.find("KEYWORDS"), MetadataKeywordNameIterableKey))
-        self.assertEquals(ipid.find("KEYWORDS"), None)
+        self.assert_(isinstance(pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey))
+        self.assertEquals(ipid.find_metadata("KEYWORDS"), None)
 
     def test_05_use(self):
-        self.assertEquals(pid.find("USE"), None)
-        self.assert_(isinstance(ipid.find("USE"), MetadataUseFlagNameIterableKey))
+        self.assertEquals(pid.find_metadata("USE"), None)
+        self.assert_(isinstance(ipid.find_metadata("USE"), MetadataUseFlagNameIterableKey))
 
     def test_06_iuse(self):
-        self.assert_(isinstance(pid.find("IUSE"), MetadataIUseFlagIterableKey))
-        self.assert_(isinstance(ipid.find("IUSE"), MetadataIUseFlagIterableKey))
+        self.assert_(isinstance(pid.find_metadata("IUSE"), MetadataIUseFlagIterableKey))
+        self.assert_(isinstance(ipid.find_metadata("IUSE"), MetadataIUseFlagIterableKey))
 
     def test_07_inherited(self):
-        self.assert_(isinstance(pid.find("INHERITED"), MetadataInheritedIterableKey))
-        self.assert_(isinstance(ipid.find("INHERITED"), MetadataInheritedIterableKey))
+        self.assert_(isinstance(pid.find_metadata("INHERITED"), MetadataInheritedIterableKey))
+        self.assert_(isinstance(ipid.find_metadata("INHERITED"), MetadataInheritedIterableKey))
 
     def test_08_depend(self):
-        self.assert_(isinstance(pid.find("DEPEND"), MetadataDependencySpecTreeKey))
-        self.assertEquals(ipid.find("DEPEND"), None)
+        self.assert_(isinstance(pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
+        self.assertEquals(ipid.find_metadata("DEPEND"), None)
 
 if __name__ == "__main__":
     unittest.main()

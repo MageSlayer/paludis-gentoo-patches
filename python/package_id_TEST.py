@@ -68,8 +68,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(ipid.canonical_form(PackageIDCanonicalForm.VERSION), "1")
         self.assertEquals(ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "cat-one/pkg-one::installed")
 
-    def test_08_find(self):
-        self.assert_(isinstance(pid.find("DEPEND"), MetadataDependencySpecTreeKey))
+    def test_08_find_metadata(self):
+        self.assert_(isinstance(pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
 
 if __name__ == "__main__":
     unittest.main()
