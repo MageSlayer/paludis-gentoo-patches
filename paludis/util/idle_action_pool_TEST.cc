@@ -27,9 +27,10 @@ using namespace paludis;
 
 namespace
 {
-    void make_true(bool & b) throw ()
+    IdleActionResult make_true(bool & b) throw ()
     {
         b = true;
+        return iar_success;
     }
 }
 

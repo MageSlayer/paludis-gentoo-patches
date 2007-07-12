@@ -1,0 +1,20 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_IdleActionResult()
+{
+    prefix iar
+
+    key iar_success               "Success"
+    key iar_already_completed     "Already completed"
+    key iar_failure               "Failure"
+
+    doxygen_comment << "END"
+        /**
+         * The result of an idle action.
+         *
+         * \see IdleActionPool
+         */
+END
+}
+

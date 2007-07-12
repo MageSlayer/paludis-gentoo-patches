@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_IDLE_ACTION_POOL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_IDLE_ACTION_POOL_HH 1
 
-#include <paludis/util/attributes.hh>
+#include <paludis/util/idle_action_pool-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -37,9 +37,11 @@ namespace paludis
             IdleActionPool();
             ~IdleActionPool();
 
+            void _count_result(const tr1::function<IdleActionResult () throw ()> &);
+
         public:
-            void required_idle_action(const tr1::function<void () throw ()> &);
-            void optional_idle_action(const tr1::function<void () throw ()> &);
+            void required_idle_action(const tr1::function<IdleActionResult () throw ()> &);
+            void optional_idle_action(const tr1::function<IdleActionResult () throw ()> &);
     };
 }
 

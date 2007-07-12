@@ -23,6 +23,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/idle_action_pool-fwd.hh>
 
 namespace paludis
 {
@@ -39,7 +40,7 @@ namespace paludis
             private:
                 Implementation<EbuildID> * const _imp;
 
-                void _idle_load() const throw ();
+                IdleActionResult _idle_load() const throw ();
 
             protected:
                 virtual void need_keys_added() const;

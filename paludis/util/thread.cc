@@ -20,11 +20,21 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/log.hh>
 #include <string.h>
+#include <errno.h>
+
+#ifdef __linux__
+#  include <sys/time.h>
+#  include <sys/resource.h>
+#  include <unistd.h>
+#  include <sys/syscall.h>
+#endif
 
 using namespace paludis;
 
 #ifdef PALUDIS_ENABLE_THREADS
+
 
 Thread::Thread(const tr1::function<void () throw ()> & f) :
     _thread(new pthread_t),
@@ -49,6 +59,17 @@ Thread::~Thread()
     delete _thread;
 }
 
+void
+Thread::idle_adapter(const tr1::function<void () throw ()> & f)
+{
+#ifdef __linux__
+    setpriority(PRIO_PROCESS, syscall(SYS_gettid), 10);
+#else
+#  warning "Don't know how to set thread priorities on your platform"
+#endif
+    f();
+}
+
 #else
 
 Thread::Thread(const tr1::function<void () throw ()> & f)
@@ -58,6 +79,12 @@ Thread::Thread(const tr1::function<void () throw ()> & f)
 
 Thread::~Thread()
 {
+}
+
+void
+Thread::idle_adapter(const tr1::function<void () throw ()> & f)
+{
+    f();
 }
 
 #endif

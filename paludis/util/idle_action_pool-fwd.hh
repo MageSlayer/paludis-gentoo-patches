@@ -17,25 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_IDLE_ACTION_POOL_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_IDLE_ACTION_POOL_FWD_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE ActionQueue :
-        private PrivateImplementationPattern<ActionQueue>
-    {
-        public:
-            ActionQueue(const unsigned n_threads = 1, const bool nice = false);
-            ~ActionQueue();
 
-            void enqueue(const tr1::function<void () throw ()> &);
-            void complete_pending();
-            void forget_pending();
-    };
+#include <paludis/util/idle_action_pool-se.hh>
+
+    class IdleActionPool;
 }
 
 #endif

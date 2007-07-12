@@ -562,28 +562,33 @@ EbuildID::load_inherited(const std::string & r, const std::string & h, const std
     add_metadata_key(_imp->inherited);
 }
 
-void
+IdleActionResult
 EbuildID::_idle_load() const throw ()
 {
+    IdleActionResult result(iar_success);
+
     try
     {
         if (_imp->build_dependencies)
-            _imp->build_dependencies->idle_load();
+            result = std::max(result, _imp->build_dependencies->idle_load());
         if (_imp->run_dependencies)
-            _imp->run_dependencies->idle_load();
+            result = std::max(result, _imp->run_dependencies->idle_load());
         if (_imp->post_dependencies)
-            _imp->post_dependencies->idle_load();
+            result = std::max(result, _imp->post_dependencies->idle_load());
         if (_imp->license)
-            _imp->license->idle_load();
+            result = std::max(result, _imp->license->idle_load());
         if (_imp->keywords)
-            _imp->keywords->idle_load();
+            result = std::max(result, _imp->keywords->idle_load());
         if (_imp->iuse)
-            _imp->iuse->idle_load();
+            result = std::max(result, _imp->iuse->idle_load());
     }
     catch (...)
     {
         // exception will be regenerated outside of the idle task.
+        result = iar_failure;
     }
+
+    return result;
 }
 
 namespace

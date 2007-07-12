@@ -102,7 +102,7 @@ EDependenciesKey::value() const
     return _imp->value;
 }
 
-void
+IdleActionResult
 EDependenciesKey::idle_load() const
 {
     TryLock l(_imp->value_mutex);
@@ -110,7 +110,10 @@ EDependenciesKey::idle_load() const
     {
         Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
         _imp->value = PortageDepParser::parse_depend(_imp->string_value, *_imp->id->eapi());
+        return iar_success;
     }
+
+    return iar_already_completed;
 }
 
 namespace paludis
@@ -155,7 +158,7 @@ ELicenseKey::value() const
     return _imp->value;
 }
 
-void
+IdleActionResult
 ELicenseKey::idle_load() const
 {
     TryLock l(_imp->value_mutex);
@@ -163,7 +166,10 @@ ELicenseKey::idle_load() const
     {
         Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
         _imp->value = PortageDepParser::parse_license(_imp->string_value, *_imp->id->eapi());
+        return iar_success;
     }
+
+    return iar_already_completed;
 }
 
 namespace paludis
@@ -334,7 +340,7 @@ EIUseKey::value() const
     return _imp->value;
 }
 
-void
+IdleActionResult
 EIUseKey::idle_load() const
 {
     TryLock l(_imp->value_mutex);
@@ -347,7 +353,11 @@ EIUseKey::idle_load() const
         for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                 t != t_end ; ++t)
             _imp->value->insert(IUseFlag(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode));
+
+        return iar_success;
     }
+
+    return iar_already_completed;
 }
 
 namespace paludis
@@ -393,7 +403,7 @@ EKeywordsKey::value() const
     return _imp->value;
 }
 
-void
+IdleActionResult
 EKeywordsKey::idle_load() const
 {
     TryLock l(_imp->value_mutex);
@@ -402,7 +412,10 @@ EKeywordsKey::idle_load() const
         _imp->value.reset(new KeywordNameSet);
         Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
         WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
+        return iar_success;
     }
+
+    return iar_already_completed;
 }
 
 namespace paludis

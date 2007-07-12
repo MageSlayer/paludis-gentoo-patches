@@ -24,6 +24,7 @@
 #  include <paludis/util/mutex.hh>
 #  include <paludis/util/condition_variable.hh>
 #  include <paludis/util/thread_pool.hh>
+#  include <paludis/util/thread.hh>
 #  include <list>
 #endif
 
@@ -74,19 +75,23 @@ namespace paludis
             }
         }
 
-        Implementation(const unsigned n_threads) :
+        Implementation(const unsigned n_threads, const bool nice) :
             should_finish(false)
         {
             for (unsigned x(0) ; x < n_threads ; ++x)
-                threads.create_thread(tr1::bind(tr1::mem_fn(&Implementation::thread_func), this));
+                if (nice)
+                    threads.create_thread(tr1::bind(&Thread::idle_adapter,
+                                tr1::function<void () throw ()>(tr1::bind(tr1::mem_fn(&Implementation::thread_func), this))));
+                else
+                    threads.create_thread(tr1::bind(tr1::mem_fn(&Implementation::thread_func), this));
         }
 #endif
     };
 }
 
-ActionQueue::ActionQueue(const unsigned n_threads) :
+ActionQueue::ActionQueue(const unsigned n_threads, const bool nice) :
 #ifdef PALUDIS_ENABLE_THREADS
-    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads))
+    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads, nice))
 #else
     PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
 #endif
@@ -122,6 +127,15 @@ ActionQueue::complete_pending()
 
     enqueue(tr1::bind(tr1::mem_fn(&ConditionVariable::acquire_then_signal), &c, tr1::ref(m)));
     c.wait(m);
+#endif
+}
+
+void
+ActionQueue::forget_pending()
+{
+#ifdef PALUDIS_ENABLE_THREADS
+    Lock l(_imp->mutex);
+    _imp->queue.clear();
 #endif
 }
 

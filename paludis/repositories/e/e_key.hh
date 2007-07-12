@@ -22,6 +22,7 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/idle_action_pool-fwd.hh>
 
 namespace paludis
 {
@@ -59,7 +60,7 @@ namespace paludis
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void idle_load() const;
+                IdleActionResult idle_load() const;
         };
 
         class EURIKey :
@@ -125,7 +126,7 @@ namespace paludis
                 virtual const tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void idle_load() const;
+                IdleActionResult idle_load() const;
         };
 
         class EIUseKey :
@@ -143,7 +144,7 @@ namespace paludis
                 const tr1::shared_ptr<const IUseFlagSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void idle_load() const;
+                IdleActionResult idle_load() const;
         };
 
         class EKeywordsKey :
@@ -161,7 +162,7 @@ namespace paludis
                 const tr1::shared_ptr<const KeywordNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void idle_load() const;
+                IdleActionResult idle_load() const;
         };
 
         class EUseKey :

@@ -42,6 +42,8 @@ namespace paludis
         public:
             Thread(const tr1::function<void () throw ()> &);
             ~Thread();
+
+            static void idle_adapter(const tr1::function<void () throw ()> &);
     };
 }
 
