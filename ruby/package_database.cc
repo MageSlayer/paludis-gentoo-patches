@@ -113,11 +113,11 @@ namespace
                 switch (is)
                 {
                     case is_installed_only:
-                        q = q & query::RepositoryHasInstalledInterface();
+                        q = q & query::SupportsAction<InstalledAction>();
                         break;
 
                     case is_installable_only:
-                        q = q & query::RepositoryHasInstallableInterface();
+                        q = q & query::SupportsAction<InstallAction>();
                         break;
 
                     case is_any:

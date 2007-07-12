@@ -149,7 +149,8 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
+	$(PTHREAD_LIBS)
 
 TESTS = $(IF_RUBY_TESTS)
 
@@ -163,7 +164,7 @@ rubylib_DATA = Paludis.so
 	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) $(PTHREAD_LIBS) \
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
@@ -172,7 +173,7 @@ rubylib_DATA = Paludis.so
 Paludis.so : libpaludisruby.la paludis_ruby_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) $(PTHREAD_LIBS) \
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
 	    -o $@ \
 	    .libs/paludis_ruby_so.o \
@@ -182,5 +183,4 @@ endif
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
 

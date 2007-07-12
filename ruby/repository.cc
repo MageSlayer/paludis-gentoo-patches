@@ -965,8 +965,6 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "installable_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstallableInterface,
-                        &Repository::installable_interface>::fetch)), 0);
         rb_define_method(c_repository, "installed_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstalledInterface,
                         &Repository::installed_interface>::fetch)), 0);
         rb_define_method(c_repository, "mask_interface", RUBY_FUNC_CAST((&Interface<RepositoryMaskInterface,
@@ -975,8 +973,6 @@ namespace
                         &Repository::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,
                         &Repository::syncable_interface>::fetch)), 0);
-        rb_define_method(c_repository, "uninstallable_interface", RUBY_FUNC_CAST((&Interface<RepositoryUninstallableInterface,
-                        &Repository::uninstallable_interface>::fetch)), 0);
         rb_define_method(c_repository, "use_interface", RUBY_FUNC_CAST((&Interface<RepositoryUseInterface,
                         &Repository::use_interface>::fetch)), 0);
         rb_define_method(c_repository, "world_interface", RUBY_FUNC_CAST((&Interface<RepositoryWorldInterface,
