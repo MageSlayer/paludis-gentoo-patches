@@ -233,7 +233,20 @@ EbuildID::need_keys_added() const
     }
 
     if (_imp->eapi->supported)
-        IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EbuildID::_idle_load), this));
+    {
+        if (_imp->build_dependencies)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->build_dependencies));
+        if (_imp->run_dependencies)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->run_dependencies));
+        if (_imp->post_dependencies)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->post_dependencies));
+        if (_imp->keywords)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EKeywordsKey::idle_load), _imp->keywords));
+        if (_imp->iuse)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EIUseKey::idle_load), _imp->iuse));
+        if (_imp->license)
+            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&ELicenseKey::idle_load), _imp->license));
+    }
 }
 
 const std::string
@@ -560,35 +573,6 @@ EbuildID::load_inherited(const std::string & r, const std::string & h, const std
 {
     _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->inherited);
-}
-
-IdleActionResult
-EbuildID::_idle_load() const throw ()
-{
-    IdleActionResult result(iar_success);
-
-    try
-    {
-        if (_imp->build_dependencies)
-            result = std::max(result, _imp->build_dependencies->idle_load());
-        if (_imp->run_dependencies)
-            result = std::max(result, _imp->run_dependencies->idle_load());
-        if (_imp->post_dependencies)
-            result = std::max(result, _imp->post_dependencies->idle_load());
-        if (_imp->license)
-            result = std::max(result, _imp->license->idle_load());
-        if (_imp->keywords)
-            result = std::max(result, _imp->keywords->idle_load());
-        if (_imp->iuse)
-            result = std::max(result, _imp->iuse->idle_load());
-    }
-    catch (...)
-    {
-        // exception will be regenerated outside of the idle task.
-        result = iar_failure;
-    }
-
-    return result;
 }
 
 namespace

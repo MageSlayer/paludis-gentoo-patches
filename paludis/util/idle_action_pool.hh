@@ -42,6 +42,9 @@ namespace paludis
         public:
             void required_idle_action(const tr1::function<IdleActionResult () throw ()> &);
             void optional_idle_action(const tr1::function<IdleActionResult () throw ()> &);
+
+            void increase_used_stat();
+            void increase_unprepared_stat();
     };
 }
 

@@ -40,8 +40,6 @@ namespace paludis
             private:
                 Implementation<EbuildID> * const _imp;
 
-                IdleActionResult _idle_load() const throw ();
-
             protected:
                 virtual void need_keys_added() const;
 

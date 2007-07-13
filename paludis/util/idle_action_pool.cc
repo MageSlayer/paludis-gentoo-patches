@@ -41,21 +41,25 @@ namespace
     struct Stats
     {
         Mutex mutex;
-        unsigned success, failure, already_completed, enqueued;
+        unsigned success, failure, already_completed, enqueued, used, unprepared;
 
         Stats() :
             success(0),
             failure(0),
             already_completed(0),
-            enqueued(0)
+            enqueued(0),
+            used(0),
+            unprepared(0)
         {
         }
 
         ~Stats()
         {
+            Lock l(mutex);
             Log::get_instance()->message(ll_debug, lc_no_context) << "Idle action pool stats: success "
                 << success << " failure " << failure << " already completed " << already_completed
-                << " forgotten " << (enqueued - success - failure - already_completed);
+                << " forgotten " << (enqueued - success - failure - already_completed) << " used " << used
+                << " unprepared " << unprepared;
         }
     };
 #endif
@@ -148,6 +152,24 @@ IdleActionPool::_count_result(const tr1::function<IdleActionResult () throw ()> 
                 break;
         }
     }
+#endif
+}
+
+void
+IdleActionPool::increase_used_stat()
+{
+#ifdef PALUDIS_ENABLE_THREADS
+    Lock l(_imp->stats.mutex);
+    ++_imp->stats.used;
+#endif
+}
+
+void
+IdleActionPool::increase_unprepared_stat()
+{
+#ifdef PALUDIS_ENABLE_THREADS
+    Lock l(_imp->stats.mutex);
+    ++_imp->stats.unprepared;
 #endif
 }
 
