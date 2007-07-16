@@ -21,6 +21,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
@@ -73,6 +74,8 @@ namespace paludis
     template <>
     struct Implementation<GemSpecification>
     {
+        mutable Mutex mutex;
+
         std::string name_part;
         std::string version;
         std::string date;
@@ -610,6 +613,8 @@ GemSpecification::perform_action(Action & a) const
 void
 GemSpecification::need_masks_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_masks)
         return;
 

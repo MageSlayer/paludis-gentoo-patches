@@ -43,7 +43,7 @@ namespace paludis
         unsigned indent;
         bool use_newlines;
         bool outer_block;
-        mutable bool need_space;
+        bool need_space;
 
         Implementation(unsigned i, bool b) :
             indent(i),
@@ -162,7 +162,7 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 }
 
 std::string
-DepSpecPrettyPrinter::newline() const
+DepSpecPrettyPrinter::newline()
 {
     if (_imp->use_newlines)
         return "\n";
@@ -174,7 +174,7 @@ DepSpecPrettyPrinter::newline() const
 }
 
 std::string
-DepSpecPrettyPrinter::indent() const
+DepSpecPrettyPrinter::indent()
 {
     if (_imp->use_newlines)
         return std::string(_imp->indent, ' ');

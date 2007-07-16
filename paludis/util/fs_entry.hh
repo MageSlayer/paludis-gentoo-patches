@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 #include <iosfwd>
 #include <paludis/util/tr1_memory.hh>
@@ -64,22 +65,12 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FSEntry :
         public relational_operators::HasRelationalOperators,
-        public arithmetic_operators::HasArithmeticOperators
+        public arithmetic_operators::HasArithmeticOperators,
+        private PrivateImplementationPattern<FSEntry>
     {
         friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
 
         private:
-            std::string _path;
-
-            mutable tr1::shared_ptr<struct ::stat> _stat_info;
-
-            mutable bool _exists;
-
-            /**
-             * Whether or not we have run _stat() on this location yet
-             */
-            mutable bool _checked;
-
             void _normalise();
 
             /**

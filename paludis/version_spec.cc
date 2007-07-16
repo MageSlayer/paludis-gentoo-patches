@@ -25,6 +25,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>
@@ -89,10 +90,12 @@ namespace paludis
         std::vector<Part> parts;
 
         /// Our hash
+        mutable Mutex hash_mutex;
         mutable bool has_hash;
         mutable std::size_t hash;
 
         /// Our is_scm
+        mutable Mutex is_scm_mutex;
         mutable bool has_is_scm;
         mutable bool is_scm;
 
@@ -502,6 +505,8 @@ VersionSpec::equal_star_compare(const VersionSpec & other) const
 std::size_t
 VersionSpec::hash_value() const
 {
+    Lock l(_imp->hash_mutex);
+
     if (_imp->has_hash)
         return _imp->hash;
 
@@ -622,6 +627,8 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
 bool
 VersionSpec::is_scm() const
 {
+    Lock l(_imp->is_scm_mutex);
+
     if (_imp->has_is_scm)
         return _imp->is_scm;
 

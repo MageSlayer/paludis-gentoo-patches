@@ -27,6 +27,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -41,6 +42,8 @@ namespace paludis
     template<>
     struct Implementation<RepositoryNameCache>
     {
+        mutable Mutex mutex;
+
         mutable FSEntry location;
         const Repository * const repo;
 
@@ -72,6 +75,8 @@ RepositoryNameCache::~RepositoryNameCache()
 tr1::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
+    Lock l(_imp->mutex);
+
     if (! usable())
         return tr1::shared_ptr<const CategoryNamePartSet>();
 
@@ -153,6 +158,8 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
 void
 RepositoryNameCache::regenerate_cache() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->location == FSEntry("/var/empty"))
         return;
 

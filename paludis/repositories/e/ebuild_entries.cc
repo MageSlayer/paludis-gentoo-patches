@@ -120,7 +120,7 @@ namespace
         public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, UseDepSpec>
     {
         private:
-            mutable std::list<const URIDepSpec *> _specs;
+            std::list<const URIDepSpec *> _specs;
 
         public:
             void visit_leaf(const URIDepSpec & a)

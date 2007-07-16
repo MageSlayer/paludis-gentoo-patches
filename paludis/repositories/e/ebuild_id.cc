@@ -37,6 +37,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/idle_action_pool.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -69,6 +70,8 @@ namespace paludis
     template <>
     struct Implementation<EbuildID>
     {
+        Mutex mutex;
+
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
@@ -133,6 +136,8 @@ EbuildID::~EbuildID()
 void
 EbuildID::need_keys_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_keys)
         return;
 
@@ -317,6 +322,8 @@ namespace
 void
 EbuildID::need_masks_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_masks)
         return;
 
@@ -591,12 +598,14 @@ EbuildID::extra_hash_value() const
 void
 EbuildID::set_eapi(const std::string & s) const
 {
+    Lock l(_imp->mutex);
     _imp->eapi = EAPIData::get_instance()->eapi_from_string(s);
 }
 
 void
 EbuildID::set_slot(const SlotName & s) const
 {
+    Lock l(_imp->mutex);
     _imp->slot.reset(new SlotName(s));
 }
 
@@ -609,6 +618,7 @@ EbuildID::e_repository() const
 void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->short_description.reset(new EStringKey(shared_from_this(), r, h, v, mkt_significant));
     add_metadata_key(_imp->short_description);
 }
@@ -616,6 +626,7 @@ EbuildID::load_short_description(const std::string & r, const std::string & h, c
 void
 EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->build_dependencies);
 }
@@ -623,6 +634,7 @@ EbuildID::load_build_depend(const std::string & r, const std::string & h, const 
 void
 EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->run_dependencies);
 }
@@ -630,6 +642,7 @@ EbuildID::load_run_depend(const std::string & r, const std::string & h, const st
 void
 EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->post_dependencies);
 }
@@ -637,6 +650,7 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
 void
 EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->src_uri.reset(new EURIKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->src_uri);
 }
@@ -644,6 +658,7 @@ EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::
 void
 EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->homepage.reset(new EURIKey(shared_from_this(), r, h, v, mkt_significant));
     add_metadata_key(_imp->homepage);
 }
@@ -651,6 +666,7 @@ EbuildID::load_homepage(const std::string & r, const std::string & h, const std:
 void
 EbuildID::load_license(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->license.reset(new ELicenseKey(shared_from_this(), r, h, v, mkt_normal));
     add_metadata_key(_imp->license);
 }
@@ -658,6 +674,7 @@ EbuildID::load_license(const std::string & r, const std::string & h, const std::
 void
 EbuildID::load_restrict(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->restrictions.reset(new ERestrictKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->restrictions);
 }
@@ -665,6 +682,7 @@ EbuildID::load_restrict(const std::string & r, const std::string & h, const std:
 void
 EbuildID::load_provide(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->provide.reset(new EProvideKey(shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->provide);
 }
@@ -672,6 +690,7 @@ EbuildID::load_provide(const std::string & r, const std::string & h, const std::
 void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->iuse.reset(new EIUseKey(shared_from_this(), r, h, v, mkt_normal));
     add_metadata_key(_imp->iuse);
 }
@@ -679,6 +698,7 @@ EbuildID::load_iuse(const std::string & r, const std::string & h, const std::str
 void
 EbuildID::load_keywords(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->keywords.reset(new EKeywordsKey(shared_from_this(), r, h, v, mkt_normal));
     add_metadata_key(_imp->keywords);
 }
@@ -686,6 +706,7 @@ EbuildID::load_keywords(const std::string & r, const std::string & h, const std:
 void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
+    Lock l(_imp->mutex);
     _imp->inherited.reset(new EInheritedKey(shared_from_this(), r, h, v, mkt_internal));
     add_metadata_key(_imp->inherited);
 }

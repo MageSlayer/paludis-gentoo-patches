@@ -34,6 +34,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/mutex.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -53,6 +54,7 @@ namespace paludis
         const Environment * const env;
         const FSEntry root;
 
+        mutable Mutex ids_mutex;
         mutable IDMap ids;
         mutable bool has_ids;
 
@@ -131,6 +133,8 @@ InstalledVirtualsRepository::~InstalledVirtualsRepository()
 void
 InstalledVirtualsRepository::need_ids() const
 {
+    Lock l(_imp->ids_mutex);
+
     if (_imp->has_ids)
         return;
 

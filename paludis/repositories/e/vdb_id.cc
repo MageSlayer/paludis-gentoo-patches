@@ -34,6 +34,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/mutex.hh>
 #include <iterator>
 #include <fstream>
 
@@ -58,6 +59,8 @@ namespace paludis
     template <>
     struct Implementation<VDBID>
     {
+        mutable Mutex mutex;
+
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
@@ -125,6 +128,8 @@ VDBID::~VDBID()
 void
 VDBID::need_keys_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_keys)
         return;
     _imp->has_keys = true;
@@ -370,6 +375,8 @@ VDBID::version() const
 const SlotName
 VDBID::slot() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->slot)
         return *_imp->slot;
 
@@ -396,6 +403,8 @@ VDBID::repository() const
 const tr1::shared_ptr<const EAPI>
 VDBID::eapi() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->eapi)
         return _imp->eapi;
 

@@ -37,6 +37,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/mutex.hh>
 
 #include <vector>
 #include <utility>
@@ -54,6 +55,8 @@ namespace paludis
     struct Implementation<VirtualsRepository>
     {
         const Environment * const env;
+
+        mutable Mutex big_nasty_mutex;
 
         mutable std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > names;
         mutable bool has_names;
@@ -126,6 +129,8 @@ VirtualsRepository::~VirtualsRepository()
 void
 VirtualsRepository::need_names() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->has_names)
         return;
 
@@ -185,6 +190,8 @@ VirtualsRepository::need_names() const
 void
 VirtualsRepository::need_ids() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->has_ids)
         return;
 

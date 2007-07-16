@@ -42,6 +42,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/mutex.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <fstream>
@@ -87,6 +88,7 @@ namespace paludis
         std::string paludis_command;
         std::string root;
         std::string config_dir;
+        mutable Mutex distribution_mutex;
         mutable std::string distribution;
         tr1::shared_ptr<FSEntrySequence> bashrc_files;
 
@@ -99,9 +101,11 @@ namespace paludis
         tr1::shared_ptr<PackageMaskConf> package_unmask_conf;
         tr1::shared_ptr<MirrorsConf> mirrors_conf;
 
+        mutable Mutex reduced_mutex;
         mutable tr1::shared_ptr<uid_t> reduced_uid;
         mutable tr1::shared_ptr<gid_t> reduced_gid;
 
+        mutable Mutex environment_conf_mutex;
         mutable bool has_environment_conf;
         mutable bool accept_breaks_portage;
         mutable std::string reduced_username;
@@ -131,6 +135,8 @@ namespace paludis
     void
     Implementation<PaludisConfig>::need_environment_conf() const
     {
+        Lock lock(environment_conf_mutex);
+
         if (has_environment_conf)
             return;
 
@@ -579,6 +585,8 @@ PaludisConfig::config_dir() const
 uid_t
 PaludisConfig::reduced_uid() const
 {
+    Lock lock(_imp->reduced_mutex);
+
     if (! _imp->reduced_uid)
     {
         Context context("When determining reduced UID:");
@@ -608,6 +616,8 @@ PaludisConfig::reduced_uid() const
 gid_t
 PaludisConfig::reduced_gid() const
 {
+    Lock lock(_imp->reduced_mutex);
+
     if (! _imp->reduced_gid)
     {
         if (0 != getuid())
@@ -688,6 +698,8 @@ PaludisConfig::mirrors_conf() const
 std::string
 PaludisConfig::distribution() const
 {
+    Lock lock(_imp->distribution_mutex);
+
     if (! _imp->distribution.empty())
         return _imp->distribution;
 

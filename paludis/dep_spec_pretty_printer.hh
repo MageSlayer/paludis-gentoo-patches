@@ -43,8 +43,8 @@ namespace paludis
         friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
         private:
-            std::string newline() const;
-            std::string indent() const;
+            std::string newline();
+            std::string indent();
 
         public:
             ///\name Basic operations

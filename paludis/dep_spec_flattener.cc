@@ -48,7 +48,7 @@ namespace paludis
 
         const tr1::shared_ptr<const PackageID> pkg;
 
-        mutable std::list<tr1::shared_ptr<const StringDepSpec > > specs;
+        std::list<tr1::shared_ptr<const StringDepSpec > > specs;
 
         Implementation(const Environment * const e,
                 const tr1::shared_ptr<const PackageID> p) :

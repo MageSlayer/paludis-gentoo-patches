@@ -219,6 +219,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const URISpecTree::ConstItem> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -244,6 +245,8 @@ EURIKey::~EURIKey()
 const tr1::shared_ptr<const URISpecTree::ConstItem>
 EURIKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -259,6 +262,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const RestrictSpecTree::ConstItem> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -284,6 +288,8 @@ ERestrictKey::~ERestrictKey()
 const tr1::shared_ptr<const RestrictSpecTree::ConstItem>
 ERestrictKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -299,6 +305,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const ProvideSpecTree::ConstItem> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -324,6 +331,8 @@ EProvideKey::~EProvideKey()
 const tr1::shared_ptr<const ProvideSpecTree::ConstItem>
 EProvideKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -504,6 +513,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<UseFlagNameSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -529,6 +539,8 @@ EUseKey::~EUseKey()
 const tr1::shared_ptr<const UseFlagNameSet>
 EUseKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -550,6 +562,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const std::string string_value;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<InheritedSet> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const std::string & v) :
@@ -575,6 +588,8 @@ EInheritedKey::~EInheritedKey()
 const tr1::shared_ptr<const InheritedSet>
 EInheritedKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -591,6 +606,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const FSEntry filename;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<Contents> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const FSEntry & v) :
@@ -616,6 +632,8 @@ EContentsKey::~EContentsKey()
 const tr1::shared_ptr<const Contents>
 EContentsKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return _imp->value;
 
@@ -686,6 +704,7 @@ namespace paludis
     {
         const tr1::shared_ptr<const PackageID> id;
         const FSEntry filename;
+        mutable Mutex value_mutex;
         mutable tr1::shared_ptr<time_t> value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & i, const FSEntry & v) :
@@ -711,6 +730,8 @@ ECTimeKey::~ECTimeKey()
 const time_t
 ECTimeKey::value() const
 {
+    Lock l(_imp->value_mutex);
+
     if (_imp->value)
         return *_imp->value;
 

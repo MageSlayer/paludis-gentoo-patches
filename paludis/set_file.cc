@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
@@ -66,6 +67,8 @@ namespace
         public SetFileHandler
     {
         private:
+            mutable Mutex _mutex;
+
             const SetFileParams _p;
             std::list<std::string> _lines;
             mutable tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
@@ -101,6 +104,8 @@ namespace
         public SetFileHandler
     {
         private:
+            mutable Mutex _mutex;
+
             const SetFileParams _p;
             std::list<std::string> _lines;
             mutable tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > _contents;
@@ -296,6 +301,8 @@ SimpleHandler::_create_contents() const
 tr1::shared_ptr<SetSpecTree::ConstItem>
 SimpleHandler::contents() const
 {
+    Lock l(_mutex);
+
     if (! _contents)
         _create_contents();
 
@@ -305,6 +312,8 @@ SimpleHandler::contents() const
 void
 SimpleHandler::add(const std::string & p)
 {
+    Lock l(_mutex);
+
     if (_lines.end() == std::find(_lines.begin(), _lines.end(), p))
         _lines.push_back(p);
 
@@ -314,6 +323,8 @@ SimpleHandler::add(const std::string & p)
 void
 SimpleHandler::remove(const std::string & p)
 {
+    Lock l(_mutex);
+
     Context context("When removing '" + stringify(p) + "' from simple set file '" + stringify(_p.file_name) + "':");
 
     _contents.reset();
@@ -323,6 +334,8 @@ SimpleHandler::remove(const std::string & p)
 void
 SimpleHandler::rewrite() const
 {
+    Lock l(_mutex);
+
     Context context("When rewriting simple set file '" + stringify(_p.file_name) + "':");
 
     std::ofstream f(stringify(_p.file_name).c_str());
@@ -360,6 +373,8 @@ PaludisConfHandler::_create_contents() const
 tr1::shared_ptr<SetSpecTree::ConstItem>
 PaludisConfHandler::contents() const
 {
+    Lock l(_mutex);
+
     if (! _contents)
         _create_contents();
 
@@ -369,6 +384,8 @@ PaludisConfHandler::contents() const
 void
 PaludisConfHandler::add(const std::string & p)
 {
+    Lock l(_mutex);
+
     if (_lines.end() == std::find_if(_lines.begin(), _lines.end(), TokenOneIs(p)))
         _lines.push_back("* " + p);
 
@@ -380,6 +397,8 @@ PaludisConfHandler::remove(const std::string & p)
 {
     Context context("When removing '" + stringify(p) + "' from paludis conf set file '" + stringify(_p.file_name) + "':");
 
+    Lock l(_mutex);
+
     _contents.reset();
     _lines.remove_if(TokenOneIs(p));
 }
@@ -388,6 +407,8 @@ void
 PaludisConfHandler::rewrite() const
 {
     Context context("When rewriting paludis conf set file '" + stringify(_p.file_name) + "':");
+
+    Lock l(_mutex);
 
     std::ofstream f(stringify(_p.file_name).c_str());
     if (! f)

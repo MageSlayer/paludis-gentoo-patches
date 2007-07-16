@@ -22,6 +22,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -33,6 +34,7 @@ namespace paludis
     struct Implementation<EclassMtimes>
     {
         tr1::shared_ptr<const FSEntrySequence> eclass_dirs;
+        mutable Mutex mutex;
         mutable MakeHashedMap<std::string, time_t>::Type eclass_mtimes;
 
         Implementation(tr1::shared_ptr<const FSEntrySequence> d) :
@@ -54,6 +56,8 @@ EclassMtimes::~EclassMtimes()
 time_t
 EclassMtimes::mtime(const std::string & e) const
 {
+    Lock l(_imp->mutex);
+
     MakeHashedMap<std::string, time_t>::Type::const_iterator i(_imp->eclass_mtimes.find(e));
     if (i != _imp->eclass_mtimes.end())
         return i->second;

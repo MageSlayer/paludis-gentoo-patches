@@ -184,6 +184,7 @@ MapNode::find(const std::string & s) const
 
 namespace
 {
+    static Mutex document_error_table_mutex;
     static std::map<void *, std::string> document_error_table;
 
     template <typename R_, typename T_>
@@ -260,6 +261,7 @@ namespace
 
     void error_handler(SyckParser * p, char * s)
     {
+        Lock l(document_error_table_mutex);
         document_error_table[p] = s;
     }
 }
@@ -314,11 +316,14 @@ Document::Document(const std::string & s) :
 
     SYMID root_id(syck_parse(_imp->parser.get()));
 
-    if (document_error_table.end() != document_error_table.find(_imp->parser.get()))
     {
-        std::string e(document_error_table.find(_imp->parser.get())->second);
-        document_error_table.erase(_imp->parser.get());
-        throw ParseError(e);
+        Lock l(document_error_table_mutex);
+        if (document_error_table.end() != document_error_table.find(_imp->parser.get()))
+        {
+            std::string e(document_error_table.find(_imp->parser.get())->second);
+            document_error_table.erase(_imp->parser.get());
+            throw ParseError(e);
+        }
     }
 
     char * root_uncasted(0);

@@ -47,7 +47,6 @@ namespace paludis
     struct Implementation<DistributionData>
     {
         MakeHashedMap<std::string, tr1::shared_ptr<const Distribution> >::Type values;
-        mutable tr1::shared_ptr<const Distribution> default_distribution;
 
         Implementation()
         {

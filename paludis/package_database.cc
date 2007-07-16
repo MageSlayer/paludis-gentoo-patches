@@ -334,8 +334,9 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                 {
                     /* if someone's bored, they can rewrite this to be a lot faster */
                     PackageIDComparator c(this);
-                    std::set<tr1::shared_ptr<const PackageID>, tr1::function<bool (tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const PackageID>)> > s(
-                            result->begin(), result->end(), tr1::bind(&PackageIDComparator::operator(), tr1::cref(c), _2, _1));
+                    std::set<tr1::shared_ptr<const PackageID>, tr1::function<bool (tr1::shared_ptr<const PackageID>,
+                            tr1::shared_ptr<const PackageID>)> > s(
+                                result->begin(), result->end(), tr1::bind(&PackageIDComparator::operator(), tr1::cref(c), _2, _1));
                     result.reset(new PackageIDSequence);
 
                     while (! s.empty())
@@ -343,7 +344,8 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                         result->push_front(*s.begin());
                         s.erase(s.begin());
 
-                        for (std::set<tr1::shared_ptr<const PackageID>, tr1::function<bool (tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const PackageID>)> >::iterator
+                        for (std::set<tr1::shared_ptr<const PackageID>, tr1::function<bool (tr1::shared_ptr<const PackageID>,
+                                    tr1::shared_ptr<const PackageID>)> >::iterator
                                 i(s.begin()) ; i != s.end() ; )
                         {
                             if ((*i)->name() == (*result->begin())->name() && (*i)->slot() == (*result->begin())->slot())

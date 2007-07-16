@@ -28,6 +28,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
@@ -58,6 +59,7 @@ namespace paludis
         UninstallListOptions options;
         std::list<UninstallListEntry> uninstall_list;
 
+        mutable Mutex dep_collector_cache_mutex;
         mutable DepCollectorCache dep_collector_cache;
 
         Implementation(const Environment * const e, const UninstallListOptions & o) :
@@ -312,6 +314,7 @@ UninstallList::collect_depped_upon(tr1::shared_ptr<const PackageIDSet> targets) 
 
     tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
+    Lock l(_imp->dep_collector_cache_mutex);
     for (PackageIDSet::Iterator i(targets->begin()), i_end(targets->end()) ;
             i != i_end ; ++i)
     {
@@ -409,6 +412,9 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
     Context context("When adding things that depend upon '" + stringify(e) + "':");
 
     tr1::shared_ptr<const PackageIDSet> everything(collect_all_installed());
+
+    Lock l(_imp->dep_collector_cache_mutex);
+
     for (PackageIDSet::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {

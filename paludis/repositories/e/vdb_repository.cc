@@ -49,6 +49,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fast_unique_copy.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
@@ -98,6 +99,8 @@ namespace paludis
     struct Implementation<VDBRepository>
     {
         VDBRepositoryParams params;
+
+        mutable Mutex big_nasty_mutex;
 
         mutable CategoryMap categories;
         mutable bool has_category_names;
@@ -164,6 +167,8 @@ VDBRepository::~VDBRepository()
 bool
 VDBRepository::do_has_category_named(const CategoryNamePart & c) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When checking for category '" + stringify(c) +
             "' in " + stringify(name()) + ":");
 
@@ -174,6 +179,8 @@ VDBRepository::do_has_category_named(const CategoryNamePart & c) const
 bool
 VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When checking for package '" + stringify(q) +
             "' in " + stringify(name()) + ":");
 
@@ -191,6 +198,8 @@ VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
 tr1::shared_ptr<const CategoryNamePartSet>
 VDBRepository::do_category_names() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When fetching category names in " + stringify(name()) + ":");
 
     need_category_names();
@@ -207,6 +216,8 @@ VDBRepository::do_category_names() const
 tr1::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::do_package_names(const CategoryNamePart & c) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
@@ -224,6 +235,8 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
 tr1::shared_ptr<const PackageIDSequence>
 VDBRepository::do_package_ids(const QualifiedPackageName & n) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
@@ -242,6 +255,8 @@ VDBRepository::do_package_ids(const QualifiedPackageName & n) const
 UseFlagState
 VDBRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (! e.use_key())
         return use_unspecified;
 
@@ -531,12 +546,16 @@ VDBRepository::sets_list() const
 void
 VDBRepository::invalidate()
 {
+    Lock l(_imp->big_nasty_mutex);
+
     _imp.reset(new Implementation<VDBRepository>(this, _imp->params));
 }
 
 void
 VDBRepository::add_string_to_world(const std::string & n) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
 
     if (! _imp->params.world.exists())
@@ -563,6 +582,8 @@ VDBRepository::add_string_to_world(const std::string & n) const
 void
 VDBRepository::remove_string_from_world(const std::string & n) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
 
     if (_imp->params.world.exists())
@@ -648,6 +669,8 @@ VDBRepository::get_environment_variable(
 tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
 VDBRepository::provided_packages() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->provides)
         return _imp->provides;
 
@@ -684,6 +707,8 @@ VDBRepository::do_use_expand_hidden_prefixes() const
 bool
 VDBRepository::load_provided_using_cache() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->params.provides_cache == FSEntry("/var/empty"))
         return false;
 
@@ -757,6 +782,8 @@ VDBRepository::load_provided_using_cache() const
 void
 VDBRepository::load_provided_the_slow_way() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     using namespace tr1::placeholders;
 
     Context context("When loading VDB PROVIDEs map the slow way:");
@@ -823,6 +850,8 @@ VDBRepository::load_provided_the_slow_way() const
 void
 VDBRepository::regenerate_cache() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     regenerate_provides_cache();
     _imp->names_cache->regenerate_cache();
 }
@@ -830,6 +859,8 @@ VDBRepository::regenerate_cache() const
 void
 VDBRepository::regenerate_provides_cache() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     using namespace tr1::placeholders;
 
     if (_imp->params.provides_cache == FSEntry("/var/empty"))
@@ -882,6 +913,8 @@ VDBRepository::regenerate_provides_cache() const
 tr1::shared_ptr<const CategoryNamePartSet>
 VDBRepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
 
@@ -1022,6 +1055,8 @@ VDBRepository::perform_hook(const Hook & hook) const
 void
 VDBRepository::need_category_names() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->has_category_names)
         return;
 
@@ -1046,6 +1081,8 @@ VDBRepository::need_category_names() const
 void
 VDBRepository::need_package_ids(const CategoryNamePart & c) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->categories[c])
         return;
 
@@ -1083,6 +1120,8 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 const tr1::shared_ptr<const PackageID>
 VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
     tr1::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment, shared_from_this(), f));
@@ -1092,6 +1131,8 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 const tr1::shared_ptr<const PackageID>
 VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const VersionSpec & v) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (! has_package_named(q))
         return tr1::shared_ptr<const PackageID>();
 

@@ -20,6 +20,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -52,20 +53,40 @@ FSError::FSError(const std::string & our_message) throw () :
 {
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<FSEntry>
+    {
+        std::string path;
+
+        mutable Mutex mutex;
+        mutable tr1::shared_ptr<struct ::stat> stat_info;
+        mutable bool exists;
+        mutable bool checked;
+
+        Implementation(const std::string & p) :
+            path(p),
+            exists(false),
+            checked(false)
+        {
+        }
+    };
+}
+
 FSEntry::FSEntry(const std::string & path) :
-    _path(path),
-    _exists(false),
-    _checked(false)
+    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(path))
 {
     _normalise();
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
-    _path(other._path),
-    _stat_info(other._stat_info),
-    _exists(other._exists),
-    _checked(other._checked)
+    PrivateImplementationPattern<FSEntry>(new Implementation<FSEntry>(other._imp->path))
 {
+    Lock l(other._imp->mutex);
+    _imp->stat_info = other._imp->stat_info;
+    _imp->exists = other._imp->exists;
+    _imp->checked = other._imp->checked;
 }
 
 FSEntry::~FSEntry()
@@ -75,10 +96,11 @@ FSEntry::~FSEntry()
 const FSEntry &
 FSEntry::operator= (const FSEntry & other)
 {
-    _path = other._path;
-    _stat_info = other._stat_info;
-    _exists = other._exists;
-    _checked = other._checked;
+    Lock l(other._imp->mutex);
+    _imp->path = other._imp->path;
+    _imp->stat_info = other._imp->stat_info;
+    _imp->exists = other._imp->exists;
+    _imp->checked = other._imp->checked;
 
     return *this;
 }
@@ -86,20 +108,20 @@ FSEntry::operator= (const FSEntry & other)
 const FSEntry &
 FSEntry::operator/= (const FSEntry & rhs)
 {
-    if (_path.empty() || '/' != _path.at(_path.length() - 1))
-        _path.append("/");
+    if (_imp->path.empty() || '/' != _imp->path.at(_imp->path.length() - 1))
+        _imp->path.append("/");
 
-    if (! rhs._path.empty())
+    if (! rhs._imp->path.empty())
     {
-        if ('/' == rhs._path.at(0))
-            _path.append(rhs._path.substr(1));
+        if ('/' == rhs._imp->path.at(0))
+            _imp->path.append(rhs._imp->path.substr(1));
         else
-            _path.append(rhs._path);
+            _imp->path.append(rhs._imp->path);
     }
 
-    _checked = false;
-    _exists = false;
-    _stat_info.reset();
+    _imp->checked = false;
+    _imp->exists = false;
+    _imp->stat_info.reset();
 
     return *this;
 }
@@ -113,13 +135,13 @@ FSEntry::operator/ (const std::string & rhs) const
 bool
 FSEntry::operator< (const FSEntry & other) const
 {
-    return _path < other._path;
+    return _imp->path < other._imp->path;
 }
 
 bool
 FSEntry::operator== (const FSEntry & other) const
 {
-    return _path == other._path;
+    return _imp->path == other._imp->path;
 }
 
 bool
@@ -127,7 +149,7 @@ FSEntry::exists() const
 {
     _stat();
 
-    return _exists;
+    return _imp->exists;
 }
 
 bool
@@ -135,8 +157,8 @@ FSEntry::is_directory() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISDIR((*_stat_info).st_mode);
+    if (_imp->exists)
+        return S_ISDIR((*_imp->stat_info).st_mode);
 
     return false;
 }
@@ -146,8 +168,8 @@ FSEntry::is_directory_or_symlink_to_directory() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISDIR((*_stat_info).st_mode) ||
+    if (_imp->exists)
+        return S_ISDIR((*_imp->stat_info).st_mode) ||
             (is_symbolic_link() && realpath_if_exists().is_directory());
 
     return false;
@@ -158,8 +180,8 @@ FSEntry::is_fifo() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISFIFO((*_stat_info).st_mode);
+    if (_imp->exists)
+        return S_ISFIFO((*_imp->stat_info).st_mode);
 
     return false;
 }
@@ -169,8 +191,8 @@ FSEntry::is_device() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISBLK((*_stat_info).st_mode) || S_ISCHR((*_stat_info).st_mode);
+    if (_imp->exists)
+        return S_ISBLK((*_imp->stat_info).st_mode) || S_ISCHR((*_imp->stat_info).st_mode);
 
     return false;
 }
@@ -180,8 +202,8 @@ FSEntry::is_regular_file() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISREG((*_stat_info).st_mode);
+    if (_imp->exists)
+        return S_ISREG((*_imp->stat_info).st_mode);
 
     return false;
 }
@@ -191,8 +213,8 @@ FSEntry::is_regular_file_or_symlink_to_regular_file() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISREG((*_stat_info).st_mode) ||
+    if (_imp->exists)
+        return S_ISREG((*_imp->stat_info).st_mode) ||
             (is_symbolic_link() && realpath_if_exists().is_regular_file());
 
     return false;
@@ -203,8 +225,8 @@ FSEntry::is_symbolic_link() const
 {
     _stat();
 
-    if (_exists)
-        return S_ISLNK((*_stat_info).st_mode);
+    if (_imp->exists)
+        return S_ISLNK((*_imp->stat_info).st_mode);
 
     return false;
 }
@@ -213,12 +235,12 @@ FSEntry::is_symbolic_link() const
 bool
 FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const
 {
-    Context context("When checking permissions on '" + stringify(_path) + "':");
+    Context context("When checking permissions on '" + stringify(_imp->path) + "':");
 
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
     switch (user_group)
     {
@@ -227,11 +249,11 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
                 switch (fs_perm)
                 {
                     case fs_perm_read:
-                        return (*_stat_info).st_mode & S_IRUSR;
+                        return (*_imp->stat_info).st_mode & S_IRUSR;
                     case fs_perm_write:
-                        return (*_stat_info).st_mode & S_IWUSR;
+                        return (*_imp->stat_info).st_mode & S_IWUSR;
                     case fs_perm_execute:
-                        return (*_stat_info).st_mode & S_IXUSR;
+                        return (*_imp->stat_info).st_mode & S_IXUSR;
                 }
                 throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
             }
@@ -240,11 +262,11 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
                 switch (fs_perm)
                 {
                     case fs_perm_read:
-                        return (*_stat_info).st_mode & S_IRGRP;
+                        return (*_imp->stat_info).st_mode & S_IRGRP;
                     case fs_perm_write:
-                        return (*_stat_info).st_mode & S_IWGRP;
+                        return (*_imp->stat_info).st_mode & S_IWGRP;
                     case fs_perm_execute:
-                        return (*_stat_info).st_mode & S_IXGRP;
+                        return (*_imp->stat_info).st_mode & S_IXGRP;
                 }
                 throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
             }
@@ -253,11 +275,11 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
                 switch (fs_perm)
                 {
                     case fs_perm_read:
-                        return (*_stat_info).st_mode & S_IROTH;
+                        return (*_imp->stat_info).st_mode & S_IROTH;
                     case fs_perm_write:
-                        return (*_stat_info).st_mode & S_IWOTH;
+                        return (*_imp->stat_info).st_mode & S_IWOTH;
                     case fs_perm_execute:
-                        return (*_stat_info).st_mode & S_IXOTH;
+                        return (*_imp->stat_info).st_mode & S_IXOTH;
                 }
                 throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
             }
@@ -269,14 +291,14 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
 mode_t
 FSEntry::permissions() const
 {
-    Context context("When fetching permissions for '" + stringify(_path) + "':");
+    Context context("When fetching permissions for '" + stringify(_imp->path) + "':");
 
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return _stat_info->st_mode;
+    return _imp->stat_info->st_mode;
 }
 
 void
@@ -284,34 +306,34 @@ FSEntry::_normalise()
 {
     try
     {
-        if (std::string::npos != _path.find("//"))
+        if (std::string::npos != _imp->path.find("//"))
         {
             std::string new_path;
             std::string::size_type p(0);
-            while (p < _path.length())
+            while (p < _imp->path.length())
             {
-                if ('/' == _path[p])
+                if ('/' == _imp->path[p])
                 {
                     new_path += '/';
-                    while (++p < _path.length())
-                        if ('/' != _path[p])
+                    while (++p < _imp->path.length())
+                        if ('/' != _imp->path[p])
                             break;
                 }
                 else
-                    new_path += _path[p++];
+                    new_path += _imp->path[p++];
             }
-            _path = new_path;
+            _imp->path = new_path;
         }
 
-        if (! _path.empty())
-            if ('/' == _path.at(_path.length() - 1))
-                _path.erase(_path.length() - 1);
-        if (_path.empty())
-            _path = "/";
+        if (! _imp->path.empty())
+            if ('/' == _imp->path.at(_imp->path.length() - 1))
+                _imp->path.erase(_imp->path.length() - 1);
+        if (_imp->path.empty())
+            _imp->path = "/";
     }
     catch (const std::exception & e)
     {
-        Context c("When normalising FSEntry path '" + _path + "':");
+        Context c("When normalising FSEntry path '" + _imp->path + "':");
         throw InternalError(PALUDIS_HERE,
                 "caught std::exception '" + stringify(e.what()) + "'");
     }
@@ -320,34 +342,35 @@ FSEntry::_normalise()
 void
 FSEntry::_stat() const
 {
-    if (_checked)
+    Lock l(_imp->mutex);
+    if (_imp->checked)
         return;
 
-    Context context("When calling stat() on '" + stringify(_path) + "':");
+    Context context("When calling stat() on '" + stringify(_imp->path) + "':");
 
-    _stat_info.reset(new struct stat);
-    if (0 != lstat(_path.c_str(), _stat_info.get()))
+    _imp->stat_info.reset(new struct stat);
+    if (0 != lstat(_imp->path.c_str(), _imp->stat_info.get()))
     {
         if (errno != ENOENT)
-            throw FSError("Error running stat() on '" + stringify(_path) + "': "
+            throw FSError("Error running stat() on '" + stringify(_imp->path) + "': "
                     + strerror(errno));
 
-        _exists = false;
-        _stat_info.reset();
+        _imp->exists = false;
+        _imp->stat_info.reset();
     }
     else
-        _exists = true;
+        _imp->exists = true;
 
-    _checked = true;
+    _imp->checked = true;
 }
 
 std::string
 FSEntry::basename() const
 {
-    if (_path == "/")
-        return _path;
+    if (_imp->path == "/")
+        return _imp->path;
 
-    return _path.substr(_path.rfind('/') + 1);
+    return _imp->path.substr(_imp->path.rfind('/') + 1);
 }
 
 FSEntry
@@ -357,29 +380,29 @@ FSEntry::strip_leading(const FSEntry & f) const
 
     if (root == "/")
         root.clear();
-    if (0 != _path.compare(0, root.length(), root))
-        throw FSError("Can't strip leading '" + root + "' from FSEntry '" + _path + "'");
-    return FSEntry(_path.substr(root.length()));
+    if (0 != _imp->path.compare(0, root.length(), root))
+        throw FSError("Can't strip leading '" + root + "' from FSEntry '" + _imp->path + "'");
+    return FSEntry(_imp->path.substr(root.length()));
 }
 
 FSEntry
 FSEntry::dirname() const
 {
-    if (_path == "/")
-        return FSEntry(_path);
+    if (_imp->path == "/")
+        return FSEntry(_imp->path);
 
-    return FSEntry(_path.substr(0, _path.rfind('/')));
+    return FSEntry(_imp->path.substr(0, _imp->path.rfind('/')));
 }
 
 FSEntry
 FSEntry::realpath() const
 {
-    Context context("When fetching realpath of '" + stringify(_path) + "':");
+    Context context("When fetching realpath of '" + stringify(_imp->path) + "':");
 
 #ifdef HAVE_CANONICALIZE_FILE_NAME
-    char * r(canonicalize_file_name(_path.c_str()));
+    char * r(canonicalize_file_name(_imp->path.c_str()));
     if (! r)
-        throw FSError("Could not resolve path '" + _path + "'");
+        throw FSError("Could not resolve path '" + _imp->path + "'");
     FSEntry result(r);
     std::free(r);
     return result;
@@ -387,12 +410,12 @@ FSEntry::realpath() const
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
     if (! exists())
-        throw FSError("Could not resolve path '" + _path + "'");
-    if (! ::realpath(_path.c_str(), r))
-        throw FSError("Could not resolve path '" + _path + "'");
+        throw FSError("Could not resolve path '" + _imp->path + "'");
+    if (! ::realpath(_imp->path.c_str(), r))
+        throw FSError("Could not resolve path '" + _imp->path + "'");
     FSEntry result(r);
     if (! result.exists())
-        throw FSError("Could not resolve path '" + _path + "'");
+        throw FSError("Could not resolve path '" + _imp->path + "'");
     return result;
 #endif
 }
@@ -400,10 +423,10 @@ FSEntry::realpath() const
 FSEntry
 FSEntry::realpath_if_exists() const
 {
-    Context context("When fetching realpath of '" + stringify(_path) + "', if it exists:");
+    Context context("When fetching realpath of '" + stringify(_imp->path) + "', if it exists:");
 
 #ifdef HAVE_CANONICALIZE_FILE_NAME
-    char * r(canonicalize_file_name(_path.c_str()));
+    char * r(canonicalize_file_name(_imp->path.c_str()));
     if (! r)
         return *this;
     FSEntry result(r);
@@ -414,7 +437,7 @@ FSEntry::realpath_if_exists() const
     std::memset(r, 0, PATH_MAX + 1);
     if (! exists())
         return *this;
-    if (! ::realpath(_path.c_str(), r))
+    if (! ::realpath(_imp->path.c_str(), r))
         return *this;
     FSEntry result(r);
     if (! result.exists())
@@ -436,7 +459,7 @@ FSEntry::cwd()
 std::ostream &
 paludis::operator<< (std::ostream & s, const FSEntry & f)
 {
-    s << f._path;
+    s << f._imp->path;
     return s;
 }
 
@@ -445,10 +468,10 @@ FSEntry::ctime() const
 {
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return (*_stat_info).st_ctime;
+    return (*_imp->stat_info).st_ctime;
 }
 
 time_t
@@ -456,10 +479,10 @@ FSEntry::mtime() const
 {
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return (*_stat_info).st_mtime;
+    return (*_imp->stat_info).st_mtime;
 }
 
 off_t
@@ -467,19 +490,19 @@ FSEntry::file_size() const
 {
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
     if (! is_regular_file())
-        throw FSError("file_size called on non-regular file '" + _path + "'");
+        throw FSError("file_size called on non-regular file '" + _imp->path + "'");
 
-    return _stat_info->st_size;
+    return _imp->stat_info->st_size;
 }
 
 bool
 FSEntry::mkdir(mode_t mode)
 {
-    if (0 == ::mkdir(_path.c_str(), mode))
+    if (0 == ::mkdir(_imp->path.c_str(), mode))
         return true;
 
     int e(errno);
@@ -487,45 +510,45 @@ FSEntry::mkdir(mode_t mode)
     {
         if (is_directory())
             return false;
-        throw FSError("mkdir '" + _path + "' failed: target exists and is not a directory");
+        throw FSError("mkdir '" + _imp->path + "' failed: target exists and is not a directory");
     }
     else
-        throw FSError("mkdir '" + _path + "' failed: " + ::strerror(e));
+        throw FSError("mkdir '" + _imp->path + "' failed: " + ::strerror(e));
 }
 
 bool
 FSEntry::unlink()
 {
 #ifdef HAVE_LCHFLAGS
-    if (0 != ::lchflags(_path.c_str(), 0))
+    if (0 != ::lchflags(_imp->path.c_str(), 0))
     {
         int e(errno);
         if (e != ENOENT)
-            throw FSError("lchflags for unlink '" + _path + "' failed: " + ::strerror(e));
+            throw FSError("lchflags for unlink '" + _imp->path + "' failed: " + ::strerror(e));
     }
 #endif
 
-    if (0 == ::unlink(_path.c_str()))
+    if (0 == ::unlink(_imp->path.c_str()))
         return true;
 
     int e(errno);
     if (e == ENOENT)
         return false;
     else
-        throw FSError("unlink '" + _path + "' failed: " + ::strerror(e));
+        throw FSError("unlink '" + _imp->path + "' failed: " + ::strerror(e));
 }
 
 bool
 FSEntry::rmdir()
 {
-    if (0 == ::rmdir(_path.c_str()))
+    if (0 == ::rmdir(_imp->path.c_str()))
         return true;
 
     int e(errno);
     if (e == ENOENT)
         return false;
     else
-        throw FSError("rmdir '" + _path + "' failed: " + ::strerror(e));
+        throw FSError("rmdir '" + _imp->path + "' failed: " + ::strerror(e));
 }
 
 std::string
@@ -533,24 +556,24 @@ FSEntry::readlink() const
 {
     char buf[PATH_MAX + 1];
     std::memset(buf, 0, PATH_MAX + 1);
-    if (-1 == ::readlink(_path.c_str(), buf, PATH_MAX))
-        throw FSError("readlink '" + _path + "' failed: " + ::strerror(errno));
+    if (-1 == ::readlink(_imp->path.c_str(), buf, PATH_MAX))
+        throw FSError("readlink '" + _imp->path + "' failed: " + ::strerror(errno));
     return buf;
 }
 
 void
 FSEntry::chown(const uid_t new_owner, const gid_t new_group)
 {
-    if (0 != ::chown(_path.c_str(), new_owner, new_group))
-        throw FSError("chown '" + _path + "' to '" + stringify(new_owner) + "', '"
+    if (0 != ::chown(_imp->path.c_str(), new_owner, new_group))
+        throw FSError("chown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
                 + stringify(new_group) + "' failed: " + ::strerror(errno));
 }
 
 void
 FSEntry::chmod(const mode_t mode)
 {
-    if (0 != ::chmod(_path.c_str(), mode))
-        throw FSError("chmod '" + _path + "' failed: " + ::strerror(errno));
+    if (0 != ::chmod(_imp->path.c_str(), mode))
+        throw FSError("chmod '" + _imp->path + "' failed: " + ::strerror(errno));
 }
 
 uid_t
@@ -558,10 +581,10 @@ FSEntry::owner() const
 {
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return _stat_info->st_uid;
+    return _imp->stat_info->st_uid;
 }
 
 gid_t
@@ -569,17 +592,17 @@ FSEntry::group() const
 {
     _stat();
 
-    if (! _exists)
-        throw FSError("Filesystem entry '" + _path + "' does not exist");
+    if (! _imp->exists)
+        throw FSError("Filesystem entry '" + _imp->path + "' does not exist");
 
-    return _stat_info->st_gid;
+    return _imp->stat_info->st_gid;
 }
 
 void
 FSEntry::rename(const FSEntry & new_name)
 {
-    if (0 != ::rename(_path.c_str(), new_name._path.c_str()))
-        throw FSError("rename('" + stringify(_path) + "', '" + stringify(new_name._path) + "') failed: " +
+    if (0 != ::rename(_imp->path.c_str(), new_name._imp->path.c_str()))
+        throw FSError("rename('" + stringify(_imp->path) + "', '" + stringify(new_name._imp->path) + "') failed: " +
                 ::strerror(errno));
 }
 

@@ -34,6 +34,7 @@
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <iterator>
@@ -361,6 +362,7 @@ namespace paludis
     {
         const Environment * const env;
         std::list<std::pair<FSEntry, bool> > dirs;
+        mutable Mutex hook_files_mutex;
         mutable std::map<std::string, std::list<tr1::shared_ptr<HookFile> > > hook_files;
 
         Implementation(const Environment * const e) :
@@ -383,6 +385,7 @@ Hooker::~Hooker()
 void
 Hooker::add_dir(const FSEntry & dir, const bool v)
 {
+    Lock l(_imp->hook_files_mutex);
     _imp->hook_files.clear();
     _imp->dirs.push_back(std::make_pair(dir, v));
 }
@@ -440,6 +443,7 @@ Hooker::perform_hook(const Hook & hook) const
 
     /* file hooks, but only if necessary */
 
+    Lock l(_imp->hook_files_mutex);
     std::map<std::string, std::list<tr1::shared_ptr<HookFile> > >::iterator h(_imp->hook_files.find(hook.name()));
 
     if (h == _imp->hook_files.end())

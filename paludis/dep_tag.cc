@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
@@ -274,6 +275,7 @@ namespace paludis
     template <>
     struct Implementation<DependencyDepTag>
     {
+        mutable Mutex mutex;
         mutable std::string str;
 
         tr1::shared_ptr<const PackageID> id;
@@ -304,6 +306,8 @@ DependencyDepTag::~DependencyDepTag()
 std::string
 DependencyDepTag::full_text() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->str.empty())
     {
         _imp->str.append(stringify(*_imp->id));
@@ -314,6 +318,7 @@ DependencyDepTag::full_text() const
         _imp->cond->accept(pretty);
         _imp->str.append(stringify(pretty));
     }
+
     return _imp->str;
 }
 

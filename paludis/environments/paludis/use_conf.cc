@@ -33,6 +33,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/mutex.hh>
 #include <list>
 #include <vector>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -59,6 +60,7 @@ namespace paludis
         const PaludisEnvironment * const env;
         Qualified qualified;
         Unqualified unqualified;
+        mutable Mutex set_mutex;
         mutable Sets sets;
 
         Implementation(const PaludisEnvironment * const e) :
@@ -244,6 +246,7 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     /* next: named sets */
     for (Sets::iterator r(_imp->sets.begin()), r_end(_imp->sets.end()) ; r != r_end ; ++r)
     {
+        Lock lock(_imp->set_mutex);
         if (! r->second.first)
         {
             r->second.first = _imp->env->set(r->first);
@@ -333,27 +336,30 @@ UseConf::known_use_expand_names(const UseFlagName & prefix, const PackageID & e)
                     result->insert(i->first);
         }
 
-    for (Sets::iterator r(_imp->sets.begin()), r_end(_imp->sets.end()) ; r != r_end ; ++r)
     {
-        if (! r->second.first)
+        Lock lock(_imp->set_mutex);
+        for (Sets::iterator r(_imp->sets.begin()), r_end(_imp->sets.end()) ; r != r_end ; ++r)
         {
-            r->second.first = _imp->env->set(r->first);
             if (! r->second.first)
             {
-                Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
-                    << r->first << "' does not exist";
-                r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
-                            tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                r->second.first = _imp->env->set(r->first);
+                if (! r->second.first)
+                {
+                    Log::get_instance()->message(ll_warning, lc_no_context) << "Set name '"
+                        << r->first << "' does not exist";
+                    r->second.first.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                                tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                }
             }
+
+            if (! match_package_in_set(*_imp->env, *r->second.first, e))
+                continue;
+
+            for (UseFlagWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
+                    i != i_end ; ++i)
+                if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
+                    result->insert(i->first);
         }
-
-        if (! match_package_in_set(*_imp->env, *r->second.first, e))
-            continue;
-
-        for (UseFlagWithStateMap::const_iterator i(r->second.second.first.begin()), i_end(r->second.second.first.end()) ;
-                i != i_end ; ++i)
-            if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower))
-                result->insert(i->first);
     }
 
     for (Unqualified::const_iterator p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ; p != p_end ; ++p)

@@ -41,6 +41,7 @@
 #include <paludis/package_id.hh>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <functional>
@@ -82,6 +83,7 @@ namespace paludis
         PackageMask package_mask;
         PackageUnmask package_unmask;
 
+        mutable Mutex hook_mutex;
         mutable bool done_hooks;
         mutable tr1::shared_ptr<Hooker> hooker;
         mutable std::list<FSEntry> hook_dirs;
@@ -433,7 +435,7 @@ PortageEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Portage environment:");
 
-    static bool recursive(false);
+    PALUDIS_TLS bool recursive(false);
     if (recursive)
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
@@ -599,6 +601,7 @@ PortageEnvironment::perform_hook(const Hook & hook) const
 {
     using namespace tr1::placeholders;
 
+    Lock l(_imp->hook_mutex);
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs();
@@ -613,6 +616,7 @@ PortageEnvironment::perform_hook(const Hook & hook) const
 tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::hook_dirs() const
 {
+    Lock l(_imp->hook_mutex);
     _imp->need_hook_dirs();
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());

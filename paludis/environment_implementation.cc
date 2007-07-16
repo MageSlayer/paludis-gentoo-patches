@@ -25,6 +25,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/eapi.hh>
 #include <paludis/hook.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -42,8 +43,7 @@ EnvironmentImplementation::~EnvironmentImplementation()
 tr1::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::bashrc_files() const
 {
-    static tr1::shared_ptr<const FSEntrySequence> result(new FSEntrySequence);
-    return result;
+    return make_shared_ptr(new FSEntrySequence);
 }
 
 tr1::shared_ptr<const FSEntrySequence>
@@ -167,8 +167,7 @@ EnvironmentImplementation::default_distribution() const
 tr1::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
-    static tr1::shared_ptr<const SetNameSet> result(new SetNameSet);
-    return result;
+    return make_shared_ptr(new SetNameSet);
 }
 
 bool

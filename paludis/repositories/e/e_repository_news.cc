@@ -212,9 +212,9 @@ namespace paludis
     template<>
     struct Implementation<NewsFile>
     {
-        mutable std::list<std::string> display_if_installed;
-        mutable std::list<std::string> display_if_keyword;
-        mutable std::list<std::string> display_if_profile;
+        std::list<std::string> display_if_installed;
+        std::list<std::string> display_if_keyword;
+        std::list<std::string> display_if_profile;
     };
 }
 

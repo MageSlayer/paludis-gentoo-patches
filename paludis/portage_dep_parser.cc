@@ -210,7 +210,8 @@ namespace
     template <typename H_, bool>
     struct HandleAny
     {
-        static void handle(const std::string &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > & stack)
+        static void handle(const std::string &, std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > &
+                stack)
         {
              tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > a(new ConstTreeSequence<H_, AnyDepSpec>(
                          tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
@@ -307,7 +308,8 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                                      tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
                                                  tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                                      stack.top().first(a);
-                                     stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
+                                     stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                                                     tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
                                      state = dps_had_paren;
                                  }
                                  continue;

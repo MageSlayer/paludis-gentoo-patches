@@ -24,6 +24,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -122,6 +123,7 @@ namespace paludis
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
         mutable bool has_masks;
+        mutable Mutex mutex;
 
          Implementation(
                 const tr1::shared_ptr<const Repository> & o,
@@ -452,6 +454,8 @@ namespace
 void
 VirtualsPackageID::need_masks_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_masks)
         return;
 

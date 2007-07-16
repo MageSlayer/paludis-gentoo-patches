@@ -27,6 +27,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
@@ -277,6 +278,8 @@ namespace paludis
     template <>
     struct Implementation<FakePackageID>
     {
+        mutable Mutex mutex;
+
         const Environment * const env;
         const tr1::shared_ptr<const FakeRepositoryBase> repository;
         const QualifiedPackageName name;
@@ -659,6 +662,8 @@ namespace
 void
 FakePackageID::need_masks_added() const
 {
+    Lock l(_imp->mutex);
+
     if (_imp->has_masks)
         return;
 

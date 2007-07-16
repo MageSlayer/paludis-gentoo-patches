@@ -30,6 +30,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
@@ -57,6 +58,8 @@ namespace paludis
     {
         const ERepository * const repository;
         const FSEntry tree_root;
+
+        mutable Mutex big_nasty_mutex;
 
         mutable bool has_category_names;
         mutable CategoryMap category_names;
@@ -117,6 +120,8 @@ ExheresLayout::~ExheresLayout()
 void
 ExheresLayout::need_category_names() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->has_category_names)
         return;
 
@@ -167,6 +172,8 @@ ExheresLayout::need_category_names() const
 void
 ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     using namespace tr1::placeholders;
 
     if (_imp->package_names[n])
@@ -210,6 +217,8 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 bool
 ExheresLayout::has_category_named(const CategoryNamePart & c) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->repository->name()) + "':");
 
     need_category_names();
@@ -219,6 +228,8 @@ ExheresLayout::has_category_named(const CategoryNamePart & c) const
 bool
 ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->repository->name()) + ":");
 
     need_category_names();
@@ -253,6 +264,8 @@ ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 void
 ExheresLayout::need_category_names_collection() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     if (_imp->category_names_collection)
         return;
 
@@ -267,6 +280,8 @@ ExheresLayout::need_category_names_collection() const
 tr1::shared_ptr<const CategoryNamePartSet>
 ExheresLayout::category_names() const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When fetching category names in " + stringify(stringify(_imp->repository->name())) + ":");
 
     need_category_names_collection();
@@ -276,6 +291,8 @@ ExheresLayout::category_names() const
 tr1::shared_ptr<const QualifiedPackageNameSet>
 ExheresLayout::package_names(const CategoryNamePart & c) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     using namespace tr1::placeholders;
 
     /* this isn't particularly fast because it isn't called very often. avoid
@@ -328,6 +345,8 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 tr1::shared_ptr<const PackageIDSequence>
 ExheresLayout::package_ids(const QualifiedPackageName & n) const
 {
+    Lock l(_imp->big_nasty_mutex);
+
     Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->repository->name()) + ":");
 
     if (has_package_named(n))

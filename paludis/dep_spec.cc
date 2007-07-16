@@ -27,6 +27,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -124,6 +125,8 @@ namespace paludis
     template<>
     struct Implementation<PackageDepSpec>
     {
+        Mutex mutex;
+
         bool unique;
 
         tr1::shared_ptr<QualifiedPackageName> package_ptr;
@@ -939,6 +942,8 @@ PackageDepSpec::set_tag(const tr1::shared_ptr<const DepTag> & s)
 void
 PackageDepSpec::_make_unique()
 {
+    Lock l(_imp->mutex);
+
     if (_imp->unique)
         return;
 

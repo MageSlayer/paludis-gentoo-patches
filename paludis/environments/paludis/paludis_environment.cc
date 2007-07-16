@@ -47,6 +47,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -62,6 +63,7 @@ namespace paludis
     template<>
     struct Implementation<PaludisEnvironment>
     {
+        mutable Mutex hook_mutex;
         mutable bool done_hooks;
         mutable tr1::shared_ptr<Hooker> hooker;
         mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
@@ -161,7 +163,7 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
     Context context("When querying use flag '" + stringify(f) + "' for '" + stringify(e) +
             "' in Paludis environment:");
 
-    static bool recursive(false);
+    PALUDIS_TLS bool recursive(false);
     if (recursive)
     {
         Log::get_instance()->message(ll_warning, lc_context) <<
@@ -268,6 +270,8 @@ PaludisEnvironment::set_paludis_command(const std::string & s)
 HookResult
 PaludisEnvironment::perform_hook(const Hook & hook) const
 {
+    Lock lock(_imp->hook_mutex);
+
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs(_imp->config->config_dir());
@@ -283,6 +287,8 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
 tr1::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::hook_dirs() const
 {
+    Lock lock(_imp->hook_mutex);
+
     _imp->need_hook_dirs(_imp->config->config_dir());
 
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);

@@ -30,6 +30,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -58,6 +59,7 @@ namespace paludis
         SpecificMap qualified;
         UnspecificMap unqualified;
         mutable NamedSetMap set;
+        mutable Mutex set_mutex;
 
         Implementation(const PaludisEnvironment * const e) :
             env(e)
@@ -171,6 +173,8 @@ KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e
 
     /* next: named sets */
     {
+        Lock lock(_imp->set_mutex);
+
         for (NamedSetMap::iterator i(_imp->set.begin()), i_end(_imp->set.end()) ;
                  i != i_end ; ++i)
         {
