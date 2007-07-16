@@ -201,10 +201,15 @@ namespace test_cases
             URIDepSpec a("foo");
             TEST_CHECK_EQUAL(a.original_url(), "foo");
             TEST_CHECK_EQUAL(a.renamed_url_suffix(), "");
+            TEST_CHECK_EQUAL(a.filename(), "foo");
 
             URIDepSpec b("fnord -> bar");
             TEST_CHECK_EQUAL(b.original_url(), "fnord");
             TEST_CHECK_EQUAL(b.renamed_url_suffix(), "bar");
+            TEST_CHECK_EQUAL(b.filename(), "bar");
+
+            URIDepSpec c("http://example.com/download/baz");
+            TEST_CHECK_EQUAL(c.filename(), "baz");
         }
     } test_uri_dep_spec;
 

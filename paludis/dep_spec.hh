@@ -404,6 +404,7 @@ namespace paludis
 
             std::string original_url() const;
             std::string renamed_url_suffix() const;
+            std::string filename() const;
 
             virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

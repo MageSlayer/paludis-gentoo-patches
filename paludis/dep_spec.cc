@@ -1007,6 +1007,21 @@ URIDepSpec::renamed_url_suffix() const
         return text().substr(p + 4);
 }
 
+std::string
+URIDepSpec::filename() const
+{
+    std::string rus = renamed_url_suffix();
+    if (! rus.empty())
+        return rus;
+
+    std::string orig = original_url();
+    std::string::size_type p(orig.rfind('/'));
+
+    if (std::string::npos == p)
+        return orig;
+    return orig.substr(p+1);
+}
+
 tr1::shared_ptr<DepSpec>
 URIDepSpec::clone() const
 {
