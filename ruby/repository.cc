@@ -22,6 +22,7 @@
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
+#include <paludis/util/options.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>

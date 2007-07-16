@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/qa.hh>
+#include <paludis/util/options.hh>
 #include <ruby.h>
 
 using namespace paludis;
