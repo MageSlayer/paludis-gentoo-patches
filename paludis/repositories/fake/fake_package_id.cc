@@ -22,6 +22,7 @@
 #include <paludis/eapi.hh>
 #include <paludis/name.hh>
 #include <paludis/action.hh>
+#include <paludis/environment.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
@@ -30,7 +31,9 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -177,11 +180,104 @@ FakeMetadataPackageIDKey::value() const
 
 namespace paludis
 {
+    template <>
+    struct Implementation<FakeUnacceptedMask>
+    {
+        const char key;
+        const std::string description;
+        const tr1::shared_ptr<const MetadataKey> unaccepted_key;
+
+        Implementation(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & u) :
+            key(k),
+            description(d),
+            unaccepted_key(u)
+        {
+        }
+    };
+}
+
+FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const tr1::shared_ptr<const MetadataKey> & k) :
+    PrivateImplementationPattern<FakeUnacceptedMask>(new Implementation<FakeUnacceptedMask>(c, s, k))
+{
+}
+
+FakeUnacceptedMask::~FakeUnacceptedMask()
+{
+}
+
+const char
+FakeUnacceptedMask::key() const
+{
+    return _imp->key;
+}
+
+const std::string
+FakeUnacceptedMask::description() const
+{
+    return _imp->description;
+}
+
+const tr1::shared_ptr<const MetadataKey>
+FakeUnacceptedMask::unaccepted_key() const
+{
+    return _imp->unaccepted_key;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<FakeUnsupportedMask>
+    {
+        const char key;
+        const std::string description;
+        const std::string eapi_name;
+
+        Implementation(const char k, const std::string & d, const std::string & n) :
+            key(k),
+            description(d),
+            eapi_name(n)
+        {
+        }
+    };
+}
+
+FakeUnsupportedMask::FakeUnsupportedMask(const char c, const std::string & s, const std::string & n) :
+    PrivateImplementationPattern<FakeUnsupportedMask>(new Implementation<FakeUnsupportedMask>(c, s, n))
+{
+}
+
+FakeUnsupportedMask::~FakeUnsupportedMask()
+{
+}
+
+const char
+FakeUnsupportedMask::key() const
+{
+    return _imp->key;
+}
+
+const std::string
+FakeUnsupportedMask::description() const
+{
+    return _imp->description;
+}
+
+const std::string
+FakeUnsupportedMask::explanation() const
+{
+    if (_imp->eapi_name == "UNKNOWN")
+        return "Unsupported EAPI 'UNKNOWN' (likely a broken package or configuration error)";
+    return "Unsupported EAPI '" + _imp->eapi_name + "'";
+}
+
+namespace paludis
+{
     using namespace tr1::placeholders;
 
     template <>
     struct Implementation<FakePackageID>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const FakeRepositoryBase> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
@@ -203,8 +299,11 @@ namespace paludis
         tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > bin_uri;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > homepage;
 
-        Implementation(const tr1::shared_ptr<const FakeRepositoryBase> & r,
+        mutable bool has_masks;
+
+        Implementation(const Environment * const e, const tr1::shared_ptr<const FakeRepositoryBase> & r,
                 const QualifiedPackageName & q, const VersionSpec & v) :
+            env(e),
             repository(r),
             name(q),
             version(v),
@@ -223,15 +322,16 @@ namespace paludis
             post_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
                         "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies))
+                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
+            has_masks(false)
         {
         }
     };
 }
 
-FakePackageID::FakePackageID(const tr1::shared_ptr<const FakeRepositoryBase> & r,
+FakePackageID::FakePackageID(const Environment * const e, const tr1::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
-    PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(r, q, v)),
+    PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v)),
     _imp(PrivateImplementationPattern<FakePackageID>::_imp.get())
 {
     add_metadata_key(_imp->keywords);
@@ -494,6 +594,106 @@ bool
 FakePackageID::supports_action(const SupportsActionTestBase & b) const
 {
     return repository()->some_ids_might_support_action(b);
+}
+
+namespace
+{
+    struct LicenceChecker :
+        ConstVisitor<LicenseSpecTree>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>
+    {
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>::visit_sequence;
+
+        bool ok;
+        const Environment * const env;
+        bool  (Environment::* const func) (const std::string &, const PackageID &) const;
+        const PackageID * const id;
+
+        LicenceChecker(const Environment * const e,
+                bool (Environment::* const f) (const std::string &, const PackageID &) const,
+                const PackageID * const d) :
+            ok(true),
+            env(e),
+            func(f),
+            id(d)
+        {
+        }
+
+        void visit_sequence(const AnyDepSpec &,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
+        {
+            bool local_ok(false);
+
+            if (begin == end)
+                local_ok = true;
+            else
+            {
+                for ( ; begin != end ; ++begin)
+                {
+                    Save<bool> save_ok(&ok, true);
+                    begin->accept(*this);
+                    local_ok |= ok;
+                }
+            }
+
+            ok &= local_ok;
+        }
+
+        void visit_sequence(const UseDepSpec & spec,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
+        {
+            if (env->query_use(spec.flag(), *id))
+                std::for_each(begin, end, accept_visitor(*this));
+        }
+
+        void visit_leaf(const PlainTextDepSpec & spec)
+        {
+            if (! (env->*func)(spec.text(), *id))
+                ok = false;
+        }
+    };
+}
+
+void
+FakePackageID::need_masks_added() const
+{
+    if (_imp->has_masks)
+        return;
+
+    _imp->has_masks = true;
+
+    Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
+
+    if (! eapi()->supported)
+    {
+        add_mask(make_shared_ptr(new FakeUnsupportedMask('E', "eapi", eapi()->name)));
+        return;
+    }
+
+    if (keywords_key())
+        if (! _imp->env->accept_keywords(keywords_key()->value(), *this))
+            add_mask(make_shared_ptr(new FakeUnacceptedMask('K', "keywords", keywords_key())));
+
+    if (license_key())
+    {
+        LicenceChecker c(_imp->env, &Environment::accept_license, this);
+        license_key()->value()->accept(c);
+        if (! c.ok)
+            add_mask(make_shared_ptr(new FakeUnacceptedMask('L', "license", license_key())));
+    }
+
+    if (! _imp->env->unmasked_by_user(*this))
+    {
+        tr1::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this));
+        if (user_mask)
+            add_mask(user_mask);
+    }
+
+    tr1::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));
+    if (breaks_mask)
+        add_mask(breaks_mask);
 }
 
 namespace

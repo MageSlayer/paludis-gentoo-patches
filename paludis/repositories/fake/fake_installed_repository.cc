@@ -38,7 +38,6 @@ using namespace paludis;
 FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name) :
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
             .installed_interface(this)
-            .mask_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(this)

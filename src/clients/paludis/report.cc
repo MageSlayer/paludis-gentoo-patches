@@ -20,6 +20,8 @@
 #include "report.hh"
 #include <src/output/colour.hh>
 #include <paludis/tasks/report_task.hh>
+#include <paludis/mask.hh>
+#include <paludis/package_id.hh>
 #include <iostream>
 
 /** \file
@@ -51,7 +53,7 @@ namespace
             virtual void on_report_check_package_pre(const QualifiedPackageName & p);
             virtual void on_report_package_success(const PackageID & id);
             virtual void on_report_package_failure_pre(const PackageID & id);
-            virtual void on_report_package_is_masked(const PackageID & id, const MaskReasons & mr);
+            virtual void on_report_package_is_masked(const PackageID & id);
             virtual void on_report_package_is_vulnerable_pre(const PackageID & id);
             virtual void on_report_package_is_vulnerable(const PackageID & id, const std::string & tag);
             virtual void on_report_package_is_vulnerable_post(const PackageID & id);
@@ -90,19 +92,19 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_masked(const PackageID &, const MaskReasons & mr)
+    OurReportTask::on_report_package_is_masked(const PackageID & id)
     {
         cout << endl << "    Masked by: ";
 
         bool comma(false);
-        for (unsigned i(0), i_end(last_mr); i != i_end; ++i)
-            if (mr[static_cast<MaskReason>(i)])
-            {
-                if (comma)
-                    cout << ", ";
-                cout << colour(cl_masked, MaskReason(i));
-                comma = true;
-            }
+        for (PackageID::MasksIterator m(id.begin_masks()), m_end(id.end_masks()) ;
+                m != m_end ; ++m)
+        {
+            if (comma)
+                cout << ", ";
+            cout << colour(cl_masked, m->description());
+            comma = true;
+        }
         ++_n_errors;
     }
 

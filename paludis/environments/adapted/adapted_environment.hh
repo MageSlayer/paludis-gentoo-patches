@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_ADAPTED_ADAPTED_ENVIRONMENT_HH 1
 
 #include <paludis/environment.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
 {
@@ -62,10 +63,6 @@ namespace paludis
 
             virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
                     const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual MaskReasons mask_reasons(const PackageID &,
-                    const MaskReasonsOptions & = MaskReasonsOptions()) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_license(const std::string &, const PackageID &) const
@@ -118,6 +115,15 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string default_distribution() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

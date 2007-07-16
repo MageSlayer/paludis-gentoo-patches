@@ -108,19 +108,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         repo = db.fetch_repository("testrepo")
         irepo = db.fetch_repository("installed")
 
-    def test_01_mask_interface(self):
-        mi = repo.mask_interface
-        self.assert_(isinstance(mi, RepositoryMaskInterface))
-
-        foo = []
-        for i in [1,2,3,4]:
-            foo.append(iter(repo.package_ids("foo"+str(i)+"/bar")).next())
-
-        self.assert_(mi.query_profile_masks(foo[0]))
-        self.assert_(not mi.query_profile_masks(foo[1]))
-        self.assert_(mi.query_profile_masks(foo[2]))
-        self.assert_(not mi.query_profile_masks(foo[3]))
-
     def test_02_sets_interface(self):
         si = repo.sets_interface
         self.assert_(isinstance(si, RepositorySetsInterface))

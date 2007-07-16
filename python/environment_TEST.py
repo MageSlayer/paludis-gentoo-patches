@@ -61,13 +61,6 @@ class TestCase_01_Environments(unittest.TestCase):
 
         self.assert_(not nce.query_use("foo", pid))
 
-    def test_05_mask_reasons(self):
-        pid = iter(nce.package_database.query(Query.Matches(
-            PackageDepSpec("=foo/bar-1.0", PackageDepSpecParseMode.PERMISSIVE)),
-            QueryOrder.REQUIRE_EXACTLY_ONE)).next()
-
-        nce.mask_reasons(pid)
-
     def test_06_package_database(self):
         self.assert_(isinstance(e.package_database, PackageDatabase))
         self.assert_(isinstance(nce.package_database, PackageDatabase))

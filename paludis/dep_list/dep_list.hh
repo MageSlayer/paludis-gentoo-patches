@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/mask-fwd.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_list/options.hh>
 #include <paludis/dep_list/dep_list-fwd.hh>
@@ -29,6 +30,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/version_spec.hh>
 
 #include <iosfwd>
@@ -37,6 +39,8 @@
 
 namespace paludis
 {
+    typedef Sequence<tr1::function<bool (const PackageID &, const Mask &)> > DepListOverrideMasksFunctions;
+
 #include <paludis/dep_list/dep_list-sr.hh>
 
     /**

@@ -63,19 +63,20 @@ namespace
 
 void do_one_package_query(
         const tr1::shared_ptr<Environment> env,
-        MaskReasons & mask_reasons_to_explain,
+        const tr1::shared_ptr<Map<char, std::string> > & masks_to_explain,
         tr1::shared_ptr<PackageDepSpec> spec)
 {
     QueryTask query(env);
     query.show(*spec);
-    mask_reasons_to_explain |= query.mask_reasons_to_explain();
+    std::copy(query.masks_to_explain()->begin(), query.masks_to_explain()->end(),
+            masks_to_explain->inserter());
     cout << endl;
 }
 
 void do_one_set_query(
         const tr1::shared_ptr<Environment>,
         const std::string & q,
-        MaskReasons &,
+        const tr1::shared_ptr<Map<char, std::string> > &,
         tr1::shared_ptr<const SetSpecTree::ConstItem> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
@@ -88,7 +89,7 @@ void do_one_set_query(
 void do_one_query(
         const tr1::shared_ptr<Environment> env,
         const std::string & q,
-        MaskReasons & mask_reasons_to_explain)
+        const tr1::shared_ptr<Map<char, std::string> > & masks_to_explain)
 {
     Context local_context("When handling query '" + q + "':");
 
@@ -113,9 +114,9 @@ void do_one_query(
         spec.reset(new PackageDepSpec(q, pds_pm_permissive));
 
     if (spec)
-        do_one_package_query(env, mask_reasons_to_explain, spec);
+        do_one_package_query(env, masks_to_explain, spec);
     else
-        do_one_set_query(env, q, mask_reasons_to_explain, set);
+        do_one_set_query(env, q, masks_to_explain, set);
 }
 
 int do_query(tr1::shared_ptr<Environment> env)
@@ -124,7 +125,7 @@ int do_query(tr1::shared_ptr<Environment> env)
 
     Context context("When performing query action from command line:");
 
-    MaskReasons mask_reasons_to_explain;
+    tr1::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
@@ -132,7 +133,7 @@ int do_query(tr1::shared_ptr<Environment> env)
     {
         try
         {
-            do_one_query(env, *q, mask_reasons_to_explain);
+            do_one_query(env, *q, masks_to_explain);
         }
         catch (const AmbiguousPackageNameError & e)
         {
@@ -163,53 +164,13 @@ int do_query(tr1::shared_ptr<Environment> env)
         }
     }
 
-    if (mask_reasons_to_explain.any())
+    if (! masks_to_explain->empty())
     {
         cout << colour(cl_heading, "Key to mask reasons:") << endl << endl;
 
-        /* use for/case to get compiler warnings when new mr_ are added */
-        for (MaskReason m(MaskReason(0)) ; m < last_mr ;
-                m = MaskReason(static_cast<int>(m) + 1))
-        {
-            if (! mask_reasons_to_explain[m])
-                continue;
-
-            switch (m)
-            {
-                case mr_keyword:
-                    cout << "* " << colour(cl_masked, "K") << ": keyword";
-                    break;
-                case mr_user_mask:
-                    cout << "* " << colour(cl_masked, "U") << ": user mask";
-                    break;
-                case mr_profile_mask:
-                    cout << "* " << colour(cl_masked, "P") << ": profile mask";
-                    break;
-                case mr_repository_mask:
-                    cout << "* " << colour(cl_masked, "R") << ": repository mask";
-                    break;
-                case mr_eapi:
-                    cout << "* " << colour(cl_masked, "E") << ": EAPI";
-                    break;
-                case mr_license:
-                    cout << "* " << colour(cl_masked, "L") << ": licence";
-                    break;
-                case mr_by_association:
-                    cout << "* " << colour(cl_masked, "A") << ": by association";
-                    break;
-                case mr_chost:
-                    cout << "* " << colour(cl_masked, "C") << ": wrong CHOST";
-                    break;
-                case mr_breaks_portage:
-                    cout << "* " << colour(cl_masked, "B") << ": breaks Portage";
-                    break;
-
-                case last_mr:
-                    break;
-            }
-
-            cout << endl;
-        }
+        for (Map<char, std::string>::Iterator m(masks_to_explain->begin()), m_end(masks_to_explain->end()) ;
+                m != m_end ; ++m)
+            cout << "* " << colour(cl_masked, m->first) << ": " << m->second << endl;
 
         cout << endl;
     }

@@ -177,31 +177,9 @@ ReportTask::execute()
                 for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ;
                         v != v_end ; ++v)
                 {
-                    bool is_masked(false);
+                    bool is_masked((*v)->masked());
                     bool is_vulnerable(false);
-                    bool is_missing(false);
                     bool is_unused(false);
-
-                    MaskReasons mr;
-                    try
-                    {
-#if 0
-                        if ((*v)->source_origin_key())
-                        {
-                            mr = e->mask_reasons(*((*v)->source_origin_key()->value()));
-                            if (mr.any())
-                                is_masked = true;
-                        }
-#endif
-                    }
-                    catch (const NoSuchPackageError &)
-                    {
-                        is_missing = true;
-                    }
-                    catch (const NoSuchRepositoryError &)
-                    {
-                        is_missing = true;
-                    }
 
                     std::pair<VulnerableChecker::ConstIterator, VulnerableChecker::ConstIterator> pi(vuln.insecure_tags(*v));
                     if (pi.first != pi.second)
@@ -210,11 +188,11 @@ ReportTask::execute()
                     if (unused.end() != unused.find(*v))
                         is_unused = true;
 
-                    if (is_masked || is_vulnerable || is_missing || is_unused)
+                    if (is_masked || is_vulnerable || is_unused)
                     {
                         on_report_package_failure_pre(**v);
                         if (is_masked)
-                            on_report_package_is_masked(**v, mr);
+                            on_report_package_is_masked(**v);
                         if (is_vulnerable)
                         {
                             on_report_package_is_vulnerable_pre(**v);
@@ -222,8 +200,6 @@ ReportTask::execute()
                                 on_report_package_is_vulnerable(**v, itag->second->short_text());
                             on_report_package_is_vulnerable_post(**v);
                         }
-                        if (is_missing)
-                            on_report_package_is_missing(**v);
                         if (is_unused)
                             on_report_package_is_unused(**v);
                         on_report_package_failure_post(**v);

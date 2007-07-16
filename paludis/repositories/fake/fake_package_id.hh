@@ -22,6 +22,7 @@
 
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 #include <paludis/util/tr1_functional.hh>
 
 namespace paludis
@@ -98,6 +99,32 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE FakeUnacceptedMask :
+        public UnacceptedMask,
+        private PrivateImplementationPattern<FakeUnacceptedMask>
+    {
+        public:
+            FakeUnacceptedMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
+            ~FakeUnacceptedMask();
+
+            const char key() const;
+            const std::string description() const;
+            const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
+    };
+
+    class PALUDIS_VISIBLE FakeUnsupportedMask :
+        public UnsupportedMask,
+        private PrivateImplementationPattern<FakeUnsupportedMask>
+    {
+        public:
+            FakeUnsupportedMask(const char, const std::string &, const std::string &);
+            ~FakeUnsupportedMask();
+
+            const char key() const;
+            const std::string description() const;
+            const std::string explanation() const;
+    };
+
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
         private PrivateImplementationPattern<FakePackageID>
@@ -107,9 +134,11 @@ namespace paludis
 
         protected:
             virtual void need_keys_added() const;
+            virtual void need_masks_added() const;
 
         public:
-            FakePackageID(const tr1::shared_ptr<const FakeRepositoryBase> &,
+            FakePackageID(const Environment * const e,
+                    const tr1::shared_ptr<const FakeRepositoryBase> &,
                     const QualifiedPackageName &, const VersionSpec &);
             ~FakePackageID();
 

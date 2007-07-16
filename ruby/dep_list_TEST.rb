@@ -46,7 +46,7 @@ module Paludis
                 DepListCircularOption::Error,
                 DepListUseOption::Standard,
                 DepListBlocksOption::Accumulate,
-                DepListOverrideMasks.new,
+                nil,
                 false
             )
         end
@@ -71,7 +71,6 @@ module Paludis
                 :circular => DepListCircularOption::Error,
                 :use => DepListUseOption::Standard,
                 :blocks => DepListBlocksOption::Accumulate,
-                :override_masks => DepListOverrideMasks.new,
                 :dependency_tags => false
             }
         end
@@ -100,7 +99,6 @@ module Paludis
                 :circular => DepListCircularOption::Discard,
                 :use => DepListUseOption::TakeAll,
                 :blocks => DepListBlocksOption::Error,
-                :override_masks => DepListOverrideMasks.new,
                 :dependency_tags => true
             }
         end
@@ -148,17 +146,12 @@ module Paludis
             #This will fail if the defaults change, please also update the rdoc.
             default_options.each_pair do |method, value|
                 assert_respond_to options, method
-                next if method == :override_masks
                 assert_equal value, options.send(method)
                 #check setters work
                 assert_nothing_raised do
                     options.send("#{method}=", options_hash[method])
                     assert_equal options_hash[method], options.send(method)
                 end
-            end
-            assert_kind_of DepListOverrideMasks, options.override_masks
-            assert_nothing_raised do
-                options.override_masks = DepListOverrideMasks.new
             end
         end
 
@@ -265,49 +258,5 @@ module Paludis
 ###            end
 ###        end
 ###    end
-
-
-    class TestCase_DepListOverrideMasks < Test::Unit::TestCase
-        def test_create
-            m = DepListOverrideMasks.new
-        end
-
-        def test_each
-            m = DepListOverrideMasks.new
-            assert_equal [], m.to_a
-        end
-
-        def test_empty
-            m = DepListOverrideMasks.new
-            assert m.empty?
-            m.set DepListOverrideMask::Licenses
-            assert !m.empty?
-        end
-
-        def test_set
-            m = DepListOverrideMasks.new
-            m.set DepListOverrideMask::Licenses
-            m.set DepListOverrideMask::ProfileMasks
-
-            assert ! m.empty?
-            assert_equal 2, m.entries.length
-
-            assert m.include?(DepListOverrideMask::Licenses)
-            assert m.include?(DepListOverrideMask::ProfileMasks)
-        end
-
-        def test_clear
-            m = DepListOverrideMasks.new
-            m.set DepListOverrideMask::Licenses
-            m.set DepListOverrideMask::ProfileMasks
-            m.set DepListOverrideMask::TildeKeywords
-
-            assert_equal 3, m.entries.length
-            m.reset DepListOverrideMask::TildeKeywords
-            assert_equal 2, m.entries.length
-            m.reset
-            assert m.empty?
-        end
-    end
 end
 

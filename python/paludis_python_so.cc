@@ -30,7 +30,6 @@ void expose_environment();
 void expose_exception();
 void expose_fs_entry();
 void expose_log();
-void expose_mask_reasons();
 void expose_metadata_key();
 void expose_name();
 void expose_package_database();
@@ -55,7 +54,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_fs_entry();
     expose_eapi();
     expose_contents();
-    expose_mask_reasons();
     expose_dep_spec();
     expose_dep_tag();
     expose_dep_list();

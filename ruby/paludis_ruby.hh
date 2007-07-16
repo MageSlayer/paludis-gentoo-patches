@@ -27,7 +27,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/mask_reasons.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -66,7 +65,6 @@ namespace paludis
 
         /* constructors */
 
-        VALUE mask_reasons_to_value(const MaskReasons &);
         VALUE package_database_to_value(tr1::shared_ptr<PackageDatabase>);
         VALUE repository_to_value(tr1::shared_ptr<const Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
@@ -87,7 +85,6 @@ namespace paludis
         tr1::shared_ptr<Environment> value_to_environment(VALUE v);
         tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
-        MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
         tr1::shared_ptr<const Repository> value_to_repository(VALUE);
 

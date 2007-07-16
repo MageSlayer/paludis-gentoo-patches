@@ -24,12 +24,12 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/mask_reasons.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/mask-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -39,7 +39,6 @@
 
 namespace paludis
 {
-
     /**
      * Represents a working environment, which contains an available packages
      * database and provides various methods for querying package visibility
@@ -97,18 +96,7 @@ namespace paludis
             ///\{
 
             /**
-             * Return the reasons for a package being masked.
-             *
-             * \see paludis::query::NotMasked
-             */
-            virtual MaskReasons mask_reasons(const PackageID &,
-                    const MaskReasonsOptions & = MaskReasonsOptions()) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
              * Do we accept a particular license for a particular package?
-             *
-             * Default behaviour: true.
              */
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -117,10 +105,33 @@ namespace paludis
              * Do we accept any of the specified keywords for a particular package?
              *
              * If the collection includes "*", should return true.
-             *
-             * Default behaviour: true if the collection includes "*".
              */
             virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Do we have a 'breaks' mask for a particular package?
+             *
+             * Returns a zero pointer if no.
+             */
+            virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Do we have a 'user' mask for a particular package?
+             *
+             * Returns a zero pointer if no.
+             */
+            virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Do we have a user unmask for a particular package?
+             *
+             * This is only applied to repository and profile style masks, not
+             * keywords, licences etc. If true, user_mask shouldn't be used.
+             */
+            virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

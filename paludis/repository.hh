@@ -237,52 +237,6 @@ namespace paludis
     };
 
     /**
-     * Interface for handling masks for the Repository class.
-     *
-     * \see Repository
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryMaskInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: check for a mask.
-             */
-            virtual bool do_query_repository_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: check for a mask.
-             */
-            virtual bool do_query_profile_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-        public:
-            ///\name Mask queries
-            ///\{
-
-            /**
-             * Query repository masks.
-             */
-            bool query_repository_masks(const PackageID &) const;
-
-            /**
-             * Query profile masks.
-             */
-            bool query_profile_masks(const PackageID &) const;
-
-            ///\}
-
-            virtual ~RepositoryMaskInterface();
-    };
-
-    /**
      * Interface for handling USE flags for the Repository class.
      *
      * \see Repository

@@ -59,6 +59,8 @@
 
 using namespace paludis;
 
+template class Sequence<tr1::function<bool (const PackageID &, const Mask &)> >;
+
 #include <paludis/dep_list/dep_list-sr.cc>
 
 DepListOptions::DepListOptions() :
@@ -386,62 +388,46 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
     for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
-        if (! d->_imp->env->mask_reasons(**p).any())
+        if (! (*p)->masked())
         {
             best_visible_candidate = *p;
             break;
         }
 
     /* are we allowed to override mask reasons? */
-    if (! best_visible_candidate && d->_imp->opts->override_masks.any())
+    if (! best_visible_candidate && d->_imp->opts->override_masks)
     {
-        DepListOverrideMask next(static_cast<DepListOverrideMask>(0));
-        DepListOverrideMasks masks_to_override;
-
-        do
+        for (DepListOverrideMasksFunctions::Iterator of(d->_imp->opts->override_masks->begin()),
+                of_end(d->_imp->opts->override_masks->end()) ; of != of_end ; ++of)
         {
-            while (next != last_dl_override)
-            {
-                if (masks_to_override[next])
-                    next = static_cast<DepListOverrideMask>(static_cast<int>(next) + 1);
-                else if (d->_imp->opts->override_masks[next])
-                {
-                    masks_to_override += next;
-                    break;
-                }
-                else
-                    next = static_cast<DepListOverrideMask>(static_cast<int>(next) + 1);
-            }
-
-            if (next == last_dl_override)
+            if (best_visible_candidate)
                 break;
-
-            MaskReasons mask_mask;
-            if (masks_to_override[dl_override_repository_masks])
-                mask_mask += mr_repository_mask;
-            if (masks_to_override[dl_override_profile_masks])
-                mask_mask += mr_profile_mask;
-            if (masks_to_override[dl_override_licenses])
-                mask_mask += mr_license;
-            mask_mask += mr_by_association;
-
-            MaskReasonsOptions override_options;
-            if (masks_to_override[dl_override_tilde_keywords])
-                override_options += mro_override_tilde_keywords;
-            if (masks_to_override[dl_override_unkeyworded])
-                override_options += mro_override_unkeyworded;
 
             for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
-                if (! (d->_imp->env->mask_reasons(**p, override_options).subtract(mask_mask).any()))
+                bool success(true);
+                for (PackageID::MasksIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
+                        m != m_end ; ++m)
+                {
+                    bool local_success(false);
+                    for (DepListOverrideMasksFunctions::Iterator o(d->_imp->opts->override_masks->begin()),
+                            o_end(next(of)) ; o != o_end ; ++o)
+                        if ((*o)(**p, *m))
+                            local_success = true;
+
+                    success &= local_success;
+                    if (! success)
+                        break;
+                }
+
+                if (success)
                 {
                     d->add_error_package(*p, dlk_masked, a, conditions);
                     best_visible_candidate = *p;
-                    break;
                 }
             }
-        } while (! best_visible_candidate);
+        }
     }
 
     /* no installable candidates. if we're already installed, that's ok (except for top level
@@ -488,7 +474,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
 
             for (PackageIDSequence::Iterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
-                if (! (d->_imp->env->mask_reasons(**i).any()))
+                if (! (*i)->masked())
                     throw UseRequirementsNotMetError(stringify(a));
 
             throw AllMaskedError(a);
@@ -678,7 +664,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
+            Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(*c, destinations, conditions);
             return;
         }
@@ -699,7 +686,8 @@ DepList::AddVisitor::visit_sequence(const AnyDepSpec & a,
 
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
-            Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
+            Save<tr1::shared_ptr<DepListOverrideMasksFunctions> > save_o(&d->_imp->opts->override_masks,
+                    tr1::shared_ptr<DepListOverrideMasksFunctions>());
             d->add_not_top_level(*c, destinations, conditions);
             return;
         }

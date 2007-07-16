@@ -29,10 +29,13 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
+#include <paludis/mask.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -549,17 +552,6 @@ PortageEnvironment::root() const
 }
 
 bool
-PortageEnvironment::masked_by_user(const PackageID & e) const
-{
-    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
-            i != i_end ; ++i)
-        if (match_package(*this, **i, e))
-            return true;
-
-    return false;
-}
-
-bool
 PortageEnvironment::unmasked_by_user(const PackageID & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
@@ -637,12 +629,6 @@ PortageEnvironment::bashrc_files() const
     return result;
 }
 
-bool
-PortageEnvironment::accept_breaks_portage(const PackageID &) const
-{
-    return false;
-}
-
 tr1::shared_ptr<PackageDatabase>
 PortageEnvironment::package_database()
 {
@@ -664,5 +650,85 @@ PortageEnvironment::mirrors(const std::string & m) const
     std::copy(p.first, p.second, transform_inserter(result->back_inserter(),
                 tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
     return result;
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+PortageEnvironment::local_set(const SetName &) const
+{
+    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+bool
+PortageEnvironment::accept_license(const std::string &, const PackageID &) const
+{
+    return true;
+}
+
+namespace
+{
+    class BreaksPortageMask :
+        public UnsupportedMask
+    {
+        const char key() const
+        {
+            return 'B';
+        }
+
+        const std::string description() const
+        {
+            return "breaks Portage";
+        }
+
+        const std::string explanation() const
+        {
+            return "";
+        }
+    };
+
+    class UserConfigMask :
+        public UserMask
+    {
+        const char key() const
+        {
+            return 'U';
+        }
+
+        const std::string description() const
+        {
+            return "user";
+        }
+    };
+}
+
+const tr1::shared_ptr<const Mask>
+PortageEnvironment::mask_for_breakage(const PackageID & id) const
+{
+    if (breaks_portage(id))
+        return make_shared_ptr(new BreaksPortageMask);
+
+    return tr1::shared_ptr<const Mask>();
+}
+
+const tr1::shared_ptr<const Mask>
+PortageEnvironment::mask_for_user(const PackageID & d) const
+{
+    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
+            i != i_end ; ++i)
+        if (match_package(*this, **i, d))
+            return make_shared_ptr(new UserConfigMask);
+
+    return tr1::shared_ptr<const Mask>();
+}
+
+gid_t
+PortageEnvironment::reduced_gid() const
+{
+    return getgid();
+}
+
+uid_t
+PortageEnvironment::reduced_uid() const
+{
+    return getuid();
 }
 

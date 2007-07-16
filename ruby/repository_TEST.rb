@@ -172,8 +172,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.main_repository
-            [:installed_interface, :mask_interface,
-                :sets_interface, :syncable_interface, :use_interface,
+            [:installed_interface, :sets_interface, :syncable_interface, :use_interface,
                 :world_interface, :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :e_interface].each do |sym|
                 assert_respond_to repo, sym
@@ -181,7 +180,7 @@ module Paludis
         end
 
         def test_interfaces
-            assert_equal repo.name, repo.mask_interface.name
+            assert_equal repo.name, repo.use_interface.name
             assert_nil repo.installed_interface
 
             assert_equal installed_repo.name, installed_repo.provides_interface.name
@@ -337,36 +336,6 @@ module Paludis
 ###            assert_raise ArgumentError do
 ###                repo.query_repository_masks("foo/bar","1.0","baz")
 ###            end
-        end
-    end
-
-    class TestCase_QueryProfileMasks < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_profile_masks
-###            assert repo.query_profile_masks("foo1/bar","1.0")
-###            assert ! repo.query_profile_masks("foo2/bar","1.0")
-###            assert repo.query_profile_masks("foo3/bar","1.0")
-###            assert ! repo.query_profile_masks("foo4/bar","1.0")
-        end
-
-        def test_profile_masks_bad
-###            assert_raise TypeError do
-###                repo.query_profile_masks(42,"1.0")
-###            end
-###            assert_raise TypeError do
-###                repo.query_profile_masks("foo/bar",[])
-###            end
-
-            assert_raise ArgumentError do
-                repo.query_profile_masks
-            end
-###            assert_raise ArgumentError do
-###                repo.query_profile_masks("foo/bar")
-###            end
-            assert_raise ArgumentError do
-                repo.query_profile_masks("foo/bar","1.0","baz")
-            end
         end
     end
 

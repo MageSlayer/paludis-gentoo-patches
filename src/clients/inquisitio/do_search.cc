@@ -109,7 +109,7 @@ do_search(const Environment & env)
         tr1::shared_ptr<const PackageID> display_entry(*preferred_entries->last());
         for (PackageIDSequence::Iterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
-            if (! env.mask_reasons(**i).any())
+            if (! (*i)->masked())
                 display_entry = *i;
 
         bool match(false);

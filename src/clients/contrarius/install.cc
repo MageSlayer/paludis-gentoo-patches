@@ -40,6 +40,7 @@
 #include <paludis/query.hh>
 #include <paludis/eapi.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 
 /** \file
  * Handle the --install action for the contrarius program.
@@ -318,40 +319,14 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
                     cerr << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
 
                     bool need_comma(false);
-                    MaskReasons m(env->mask_reasons(**pp));
-                    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
-                        if (m[static_cast<MaskReason>(mm)])
-                        {
-                            if (need_comma)
-                                cerr << ", ";
-                            cerr << MaskReason(mm);
-
-                            if (mr_eapi == mm)
-                            {
-                                cerr << " ( " << colour(cl_masked, (*pp)->eapi()->name) << " )";
-                            }
-                            else if (mr_license == mm)
-                            {
-                                if ((*pp)->license_key())
-                                {
-                                    cerr << " ";
-
-                                    LicenceDisplayer ld(cerr, env.get(), *pp);
-                                    (*pp)->license_key()->value()->accept(ld);
-                                }
-                            }
-                            else if (mr_keyword == mm)
-                            {
-                                if ((*pp)->keywords_key())
-                                {
-                                    tr1::shared_ptr<const KeywordNameSet> keywords((*pp)->keywords_key()->value());
-                                    cerr << " ( " << colour(cl_masked, join(keywords->begin(),
-                                                    keywords->end(), " ")) << " )";
-                                }
-                            }
-
-                            need_comma = true;
-                        }
+                    for (PackageID::MasksIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
+                            m != m_end ; ++m)
+                    {
+                        if (need_comma)
+                            cerr << ", ";
+                        cerr << m->description();
+                        need_comma = true;
+                    }
                     cerr << endl;
                 }
             }

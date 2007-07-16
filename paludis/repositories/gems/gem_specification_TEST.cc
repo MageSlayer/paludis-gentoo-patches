@@ -21,6 +21,7 @@
 #include <test/test_framework.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
@@ -118,7 +119,8 @@ namespace test_cases
             yaml::Document spec_doc(spec_text);
             TEST_CHECK(spec_doc.top());
 
-            GemSpecification spec(tr1::shared_ptr<Repository>(), *spec_doc.top());
+            TestEnvironment env;
+            GemSpecification spec(&env, tr1::shared_ptr<Repository>(), *spec_doc.top());
 
             TEST_CHECK(spec.short_description_key());
             TEST_CHECK_EQUAL(spec.short_description_key()->value(), "This is the summary");

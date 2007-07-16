@@ -50,7 +50,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                GemSpecifications(const tr1::shared_ptr<const Repository> &, const yaml::Node &);
+                GemSpecifications(const Environment * const, const tr1::shared_ptr<const Repository> &, const yaml::Node &);
                 ~GemSpecifications();
 
                 ///\}

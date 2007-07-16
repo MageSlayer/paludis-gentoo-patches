@@ -95,7 +95,6 @@ namespace
 
 VirtualsRepository::VirtualsRepository(const Environment * const env) :
     Repository(RepositoryName("virtuals"), RepositoryCapabilities::create()
-            .mask_interface(0)
             .installed_interface(0)
             .use_interface(0)
             .sets_interface(0)

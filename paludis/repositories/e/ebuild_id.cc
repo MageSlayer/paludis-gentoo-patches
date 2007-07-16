@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/e_mask.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -39,6 +40,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/idle_action_pool.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/save.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -77,6 +80,7 @@ namespace paludis
         const time_t master_mtime;
         const tr1::shared_ptr<const EclassMtimes> eclass_mtimes;
         mutable bool has_keys;
+        mutable bool has_masks;
 
         mutable tr1::shared_ptr<const EStringKey> short_description;
         mutable tr1::shared_ptr<const EDependenciesKey> build_dependencies;
@@ -103,7 +107,8 @@ namespace paludis
             guessed_eapi(g),
             master_mtime(t),
             eclass_mtimes(m),
-            has_keys(false)
+            has_keys(false),
+            has_masks(false)
         {
         }
     };
@@ -247,6 +252,116 @@ EbuildID::need_keys_added() const
         if (_imp->license)
             IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&ELicenseKey::idle_load), _imp->license));
     }
+}
+
+namespace
+{
+    struct LicenceChecker :
+        ConstVisitor<LicenseSpecTree>,
+        ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>
+    {
+        using ConstVisitor<LicenseSpecTree>::VisitConstSequence<LicenceChecker, AllDepSpec>::visit_sequence;
+
+        bool ok;
+        const Environment * const env;
+        bool  (Environment::* const func) (const std::string &, const PackageID &) const;
+        const PackageID * const id;
+
+        LicenceChecker(const Environment * const e,
+                bool (Environment::* const f) (const std::string &, const PackageID &) const,
+                const PackageID * const d) :
+            ok(true),
+            env(e),
+            func(f),
+            id(d)
+        {
+        }
+
+        void visit_sequence(const AnyDepSpec &,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
+        {
+            bool local_ok(false);
+
+            if (begin == end)
+                local_ok = true;
+            else
+            {
+                for ( ; begin != end ; ++begin)
+                {
+                    Save<bool> save_ok(&ok, true);
+                    begin->accept(*this);
+                    local_ok |= ok;
+                }
+            }
+
+            ok &= local_ok;
+        }
+
+        void visit_sequence(const UseDepSpec & spec,
+                LicenseSpecTree::ConstSequenceIterator begin,
+                LicenseSpecTree::ConstSequenceIterator end)
+        {
+            if (env->query_use(spec.flag(), *id))
+                std::for_each(begin, end, accept_visitor(*this));
+        }
+
+        void visit_leaf(const PlainTextDepSpec & spec)
+        {
+            if (! (env->*func)(spec.text(), *id))
+                ok = false;
+        }
+    };
+}
+
+void
+EbuildID::need_masks_added() const
+{
+    if (_imp->has_masks)
+        return;
+
+    _imp->has_masks = true;
+
+    Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
+
+    if (! eapi()->supported)
+    {
+        add_mask(make_shared_ptr(new EUnsupportedMask('E', "eapi", eapi()->name)));
+        return;
+    }
+
+    if (keywords_key())
+        if (! _imp->environment->accept_keywords(keywords_key()->value(), *this))
+            add_mask(make_shared_ptr(new EUnacceptedMask('K', "keywords", keywords_key())));
+
+    if (license_key())
+    {
+        LicenceChecker c(_imp->environment, &Environment::accept_license, this);
+        license_key()->value()->accept(c);
+        if (! c.ok)
+            add_mask(make_shared_ptr(new EUnacceptedMask('L', "license", license_key())));
+    }
+
+    if (! _imp->environment->unmasked_by_user(*this))
+    {
+        /* repo unless user */
+        if (tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this))
+            add_mask(make_shared_ptr(new ERepositoryMask('R', "repository")));
+
+        /* profile unless user */
+        if (tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this))
+            add_mask(make_shared_ptr(new ERepositoryMask('P', "profile")));
+
+        /* user */
+        tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
+        if (user_mask)
+            add_mask(user_mask);
+    }
+
+    /* break portage */
+    tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
+    if (breaks_mask)
+        add_mask(breaks_mask);
 }
 
 const std::string

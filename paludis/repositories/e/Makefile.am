@@ -31,73 +31,75 @@ paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/pal
 libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_e_include_HEADERS = \
-	ebuild.hh \
-	ebuild-sr.hh \
-	ebin.hh \
-	ebin-se.hh \
-	ebin-sr.hh \
-	glsa.hh \
-	glsa-sr.hh \
+	e_key.hh \
+	e_mask.hh \
 	e_repository.hh \
-	e_repository_profile_file.hh \
-	e_repository_profile.hh \
+	e_repository_entries.hh \
 	e_repository_exceptions.hh \
 	e_repository_news.hh \
-	e_repository_params.hh \
 	e_repository_params-sr.hh \
+	e_repository_params.hh \
+	e_repository_profile.hh \
+	e_repository_profile_file.hh \
 	e_repository_sets.hh \
-	e_repository_entries.hh \
-	ebuild_entries.hh \
+	eapi_phase.hh \
+	ebin-se.hh \
+	ebin-sr.hh \
+	ebin.hh \
 	ebin_entries.hh \
+	ebuild-sr.hh \
+	ebuild.hh \
+	ebuild_entries.hh \
 	ebuild_flat_metadata_cache.hh \
+	ebuild_id.hh \
 	eclass_mtimes.hh \
-	make_ebuild_repository.hh \
+	exheres_layout.hh \
+	glsa-sr.hh \
+	glsa.hh \
+	layout.hh \
 	make_ebin_repository.hh \
+	make_ebuild_repository.hh \
+	traditional_layout.hh \
 	use_desc.hh \
-	vdb_repository.hh \
-	vdb_repository-sr.hh \
+	vdb_id.hh \
 	vdb_merger-sr.hh \
 	vdb_merger.hh \
+	vdb_repository-sr.hh \
+	vdb_repository.hh \
 	vdb_unmerger-sr.hh \
-	vdb_unmerger.hh \
-	layout.hh \
-	traditional_layout.hh \
-	exheres_layout.hh \
-	eapi_phase.hh \
-	ebuild_id.hh \
-	vdb_id.hh \
-	e_key.hh
+	vdb_unmerger.hh
 
 libpaludiserepository_la_SOURCES = \
-	ebuild.cc \
-	ebin.cc \
-	glsa.cc \
+	e_key.cc \
+	e_mask.cc \
 	e_repository.cc \
-	e_repository_profile_file.cc \
-	e_repository_profile.cc \
+	e_repository_entries.cc \
 	e_repository_exceptions.cc \
 	e_repository_news.cc \
-	e_repository_sets.cc \
-	e_repository_entries.cc \
-	ebuild_entries.cc \
-	ebin_entries.cc \
-	ebuild_flat_metadata_cache.cc \
-	eclass_mtimes.cc \
 	e_repository_params.cc \
-	make_ebuild_repository.cc \
-	make_ebin_repository.cc \
-	use_desc.cc \
-	registration.cc \
-	vdb_repository.cc \
-	vdb_merger.cc \
-	vdb_unmerger.cc \
-	layout.cc \
-	traditional_layout.cc \
-	exheres_layout.cc \
+	e_repository_profile.cc \
+	e_repository_profile_file.cc \
+	e_repository_sets.cc \
 	eapi_phase.cc \
+	ebin.cc \
+	ebin_entries.cc \
+	ebuild.cc \
+	ebuild_entries.cc \
+	ebuild_flat_metadata_cache.cc \
 	ebuild_id.cc \
+	eclass_mtimes.cc \
+	exheres_layout.cc \
+	glsa.cc \
+	layout.cc \
+	make_ebin_repository.cc \
+	make_ebuild_repository.cc \
+	registration.cc \
+	traditional_layout.cc \
+	use_desc.cc \
 	vdb_id.cc \
-	e_key.cc \
+	vdb_merger.cc \
+	vdb_repository.cc \
+	vdb_unmerger.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
 if ENABLE_QA

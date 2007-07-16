@@ -81,7 +81,6 @@ FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
         const RepositoryName & our_name, const RepositoryCapabilities & caps,
         const std::string & f) :
     Repository(our_name, caps, f),
-    RepositoryMaskInterface(),
     RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e))
 {
@@ -158,21 +157,9 @@ tr1::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
-    tr1::shared_ptr<FakePackageID> id(new FakePackageID(shared_from_this(), q, v));
+    tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
-}
-
-bool
-FakeRepositoryBase::do_query_repository_masks(const PackageID &) const
-{
-    return false;
-}
-
-bool
-FakeRepositoryBase::do_query_profile_masks(const PackageID &) const
-{
-    return false;
 }
 
 UseFlagState

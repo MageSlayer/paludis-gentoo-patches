@@ -29,7 +29,8 @@ paludis_dep_list_include_HEADERS = \
 	uninstall_list-sr.hh \
 	range_rewriter.hh \
 	options-se.hh \
-	uninstall_list-se.hh
+	uninstall_list-se.hh \
+	override_functions.hh
 
 libpaludisdeplist_la_SOURCES = \
 	options.cc        options.hh \
@@ -39,7 +40,8 @@ libpaludisdeplist_la_SOURCES = \
 	range_rewriter.cc range_rewriter.hh \
 	query_visitor.cc  query_visitor.hh \
 	show_suggest_visitor.cc show_suggest_visitor.hh \
-	condition_tracker.cc condition_tracker.hh
+	condition_tracker.cc condition_tracker.hh \
+	override_functions.cc override_functions.hh
 
 libpaludisdeplist_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

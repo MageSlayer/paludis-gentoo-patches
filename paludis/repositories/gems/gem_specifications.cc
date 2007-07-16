@@ -101,10 +101,13 @@ namespace
         ConstVisitor<yaml::NodeVisitorTypes>
     {
         Implementation<GemSpecifications> * const _imp;
+        const Environment * const environment;
         const tr1::shared_ptr<const Repository> repository;
 
-        GemsVisitor(const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+        GemsVisitor(const Environment * const e,
+                const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
             _imp(i),
+            environment(e),
             repository(r)
         {
         }
@@ -118,7 +121,7 @@ namespace
 
                 try
                 {
-                    tr1::shared_ptr<GemSpecification> spec(new GemSpecification(repository, *i->second));
+                    tr1::shared_ptr<GemSpecification> spec(new GemSpecification(environment, repository, *i->second));
                     _imp->specs.insert(std::make_pair(std::make_pair(spec->name(), spec->version()), spec));
                 }
                 catch (const Exception & e)
@@ -148,10 +151,13 @@ namespace
         ConstVisitor<yaml::NodeVisitorTypes>
     {
         Implementation<GemSpecifications> * const _imp;
+        const Environment * const environment;
         const tr1::shared_ptr<const Repository> repository;
 
-        TopVisitor(const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+        TopVisitor(const Environment * const e,
+                const tr1::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
             _imp(i),
+            environment(e),
             repository(r)
         {
         }
@@ -162,7 +168,7 @@ namespace
             if (n.end() == i)
                 throw BadSpecificationError("Top level map does not contain 'gems' node");
 
-            GemsVisitor g(repository, _imp);
+            GemsVisitor g(environment, repository, _imp);
             i->second->accept(g);
         }
 
@@ -182,10 +188,11 @@ namespace
     }
 }
 
-GemSpecifications::GemSpecifications(const tr1::shared_ptr<const Repository> & r, const yaml::Node & n) :
+GemSpecifications::GemSpecifications(const Environment * const e,
+        const tr1::shared_ptr<const Repository> & r, const yaml::Node & n) :
     PrivateImplementationPattern<GemSpecifications>(new Implementation<GemSpecifications>)
 {
-    TopVisitor v(r, _imp.get());
+    TopVisitor v(e, r, _imp.get());
     n.accept(v);
 }
 

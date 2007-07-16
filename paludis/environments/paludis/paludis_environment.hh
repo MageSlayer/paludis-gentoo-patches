@@ -50,20 +50,6 @@ namespace paludis
         private PrivateImplementationPattern<PaludisEnvironment>
    {
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool accept_license(const std::string &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool accept_breaks_portage(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool masked_by_user(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool unmasked_by_user(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & id) const;
 
@@ -136,6 +122,21 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string default_distribution() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_license(const std::string &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

@@ -21,7 +21,9 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_id.hh>
+#include <paludis/mask.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/dep_list/override_functions.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -835,6 +837,21 @@ namespace test_cases
         }
     } test_dep_list_37;
 
+    struct DepListTestCase38 : DepListTestCase<38>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->keywords_key()->set_from_string("test");
+            repo->add_version("cat", "one", "2")->keywords_key()->set_from_string("~test");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_38;
+
     /**
      * \test Test DepList resolution behaviour.
      *
@@ -1282,7 +1299,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            opts.override_masks += dl_override_tilde_keywords;
+            using namespace tr1::placeholders;
+            opts.override_masks.reset(new DepListOverrideMasksFunctions);
+            opts.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1352,7 +1371,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            opts.override_masks += dl_override_tilde_keywords;
+            using namespace tr1::placeholders;
+            opts.override_masks.reset(new DepListOverrideMasksFunctions);
+            opts.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()

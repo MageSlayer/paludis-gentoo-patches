@@ -120,7 +120,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
     for (PackageIDSequence::Iterator m(matches->begin()), m_end(matches->end()) ;
             m != m_end ; ++m)
     {
-        if (_imp->environment->mask_reasons(**m).any())
+        if ((*m)->masked())
             continue;
 
         _imp->dep_list->add_suggested_package(*m, a, _imp->conditions, _imp->destinations);

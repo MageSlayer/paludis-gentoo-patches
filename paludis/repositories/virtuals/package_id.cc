@@ -31,6 +31,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
+#include <paludis/mask.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -120,6 +121,7 @@ namespace paludis
         const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
+        mutable bool has_masks;
 
          Implementation(
                 const tr1::shared_ptr<const Repository> & o,
@@ -131,7 +133,8 @@ namespace paludis
             version(p->version()),
             virtual_for(new virtuals::VirtualsPackageIDKey(p)),
             bdep(new virtuals::VirtualsDepKey("DEPEND", "Build dependencies", p, b)),
-            rdep(new virtuals::VirtualsDepKey("RDEPEND", "Run dependencies", p, b))
+            rdep(new virtuals::VirtualsDepKey("RDEPEND", "Run dependencies", p, b)),
+            has_masks(false)
         {
         }
     };
@@ -413,5 +416,48 @@ bool
 VirtualsPackageID::supports_action(const SupportsActionTestBase & b) const
 {
     return repository()->some_ids_might_support_action(b);
+}
+
+namespace
+{
+    class VirtualsAssociationMask :
+        public AssociationMask
+    {
+        private:
+            const tr1::shared_ptr<const PackageID> _id;
+
+        public:
+            VirtualsAssociationMask(const tr1::shared_ptr<const PackageID> & i) :
+                _id(i)
+            {
+            }
+
+            const char key() const
+            {
+                return 'A';
+            }
+
+            const std::string description() const
+            {
+                return "by association";
+            }
+
+            const tr1::shared_ptr<const PackageID> associated_package() const
+            {
+                return _id;
+            }
+    };
+}
+
+void
+VirtualsPackageID::need_masks_added() const
+{
+    if (_imp->has_masks)
+        return;
+
+    if (_imp->virtual_for->value()->masked())
+        add_mask(make_shared_ptr(new VirtualsAssociationMask(_imp->virtual_for->value())));
+
+    _imp->has_masks = true;
 }
 

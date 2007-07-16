@@ -244,45 +244,6 @@ module Paludis
         end
     end
 
-    class TestCase_NoConfigEnvironmentMaskReasons < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_mask_reasons
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
-            m = env.mask_reasons(pid)
-            assert m.empty?
-        end
-
-        def test_mask_reasons_not_empty
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
-
-            m = env.mask_reasons(pid)
-            assert ! m.empty?
-            assert m.include?(MaskReason::Keyword)
-            assert_equal([MaskReason::Keyword], m.to_a)
-        end
-
-        def test_mask_reasons_options
-            pid = env.package_database.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-2.0::testrepo', PackageDepSpecParseMode::Permissive)), QueryOrder::RequireExactlyOne).first
-            mro = MaskReasonsOptions.new
-            mro.add MaskReasonsOption::OverrideTildeKeywords
-            m = env.mask_reasons(pid, mro)
-            assert m.empty?
-        end
-
-        def test_mask_reasons_bad
-            assert_raise ArgumentError do
-                env.mask_reasons(1, 2, 3)
-            end
-
-            assert_raise TypeError do
-                env.mask_reasons(123)
-            end
-        end
-    end
-
     class TestCase_EnvironmentPackageDatabase < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentMaker.instance.make_from_spec("")

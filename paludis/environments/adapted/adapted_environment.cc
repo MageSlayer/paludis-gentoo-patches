@@ -112,12 +112,6 @@ AdaptedEnvironment::known_use_expand_names(const UseFlagName & u, const PackageI
     return _imp->env->known_use_expand_names(u, e);
 }
 
-MaskReasons
-AdaptedEnvironment::mask_reasons(const PackageID & e, const MaskReasonsOptions & r) const
-{
-    return _imp->env->mask_reasons(e, r);
-}
-
 bool
 AdaptedEnvironment::accept_license(const std::string & l, const PackageID & e) const
 {
@@ -218,5 +212,23 @@ std::string
 AdaptedEnvironment::default_distribution() const
 {
     return _imp->env->default_distribution();
+}
+
+const tr1::shared_ptr<const Mask>
+AdaptedEnvironment::mask_for_breakage(const PackageID & id) const
+{
+    return _imp->env->mask_for_breakage(id);
+}
+
+const tr1::shared_ptr<const Mask>
+AdaptedEnvironment::mask_for_user(const PackageID & id) const
+{
+    return _imp->env->mask_for_user(id);
+}
+
+bool
+AdaptedEnvironment::unmasked_by_user(const PackageID & id) const
+{
+    return _imp->env->unmasked_by_user(id);
 }
 

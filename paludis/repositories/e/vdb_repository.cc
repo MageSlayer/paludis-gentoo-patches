@@ -127,7 +127,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed"),
             RepositoryCapabilities::create()
             .installed_interface(this)
-            .mask_interface(0)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(this)

@@ -25,9 +25,12 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/map-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/query.hh>
+#include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/eapi.hh>
 #include <paludis/package_database.hh>
@@ -38,16 +41,19 @@
 
 using namespace paludis;
 
+template class Map<char, std::string>;
+
 namespace paludis
 {
     template<>
     struct Implementation<ConsoleQueryTask>
     {
         const Environment * const env;
-        mutable MaskReasons mask_reasons_to_explain;
+        mutable tr1::shared_ptr<Map<char, std::string> > masks_to_explain;
 
         Implementation(const Environment * const e) :
-            env(e)
+            env(e),
+            masks_to_explain(new Map<char, std::string>)
         {
         }
     };
@@ -81,7 +87,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID
         display_entry = *preferred_entries->last();
         for (PackageIDSequence::Iterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
-            if (! _imp->env->mask_reasons(**i).any())
+            if (! (*i)->masked())
                 display_entry = *i;
     }
 
@@ -134,53 +140,17 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                     right_column.append(render_as_slot_name("{:" + old_slot + "} "));
                 old_slot = slot_name;
 
-                const MaskReasons masks(_imp->env->mask_reasons(**e));
-
-                if (masks.none())
+                if (! (*e)->masked())
                     right_column.append(render_as_visible((*e)->canonical_form(idcf_version)));
                 else
                 {
                     std::string reasons;
-                    for (MaskReason m(MaskReason(0)) ; m < last_mr ;
-                            m = MaskReason(static_cast<int>(m) + 1))
+                    for (PackageID::MasksIterator m((*e)->begin_masks()), m_end((*e)->end_masks()) ;
+                            m != m_end ; ++m)
                     {
-                        if (! masks[m])
-                            continue;
-
-                        switch (m)
-                        {
-                            case mr_keyword:
-                                reasons.append("K");
-                                break;
-                            case mr_user_mask:
-                                reasons.append("U");
-                                break;
-                            case mr_profile_mask:
-                                reasons.append("P");
-                                break;
-                            case mr_repository_mask:
-                                reasons.append("R");
-                                break;
-                            case mr_eapi:
-                                reasons.append("E");
-                                break;
-                            case mr_license:
-                                reasons.append("L");
-                                break;
-                            case mr_by_association:
-                                reasons.append("A");
-                                break;
-                            case mr_chost:
-                                reasons.append("C");
-                                break;
-                            case mr_breaks_portage:
-                                reasons.append("B");
-                                break;
-                            case last_mr:
-                                break;
-                        }
+                        reasons.append(stringify(m->key()));
+                        _imp->masks_to_explain->insert(m->key(), m->description());
                     }
-                    _imp->mask_reasons_to_explain |= masks;
                     right_column.append(render_as_masked("(" + (*e)->canonical_form(idcf_version) + ")" + reasons));
                 }
 
@@ -517,9 +487,9 @@ ConsoleQueryTask::display_metadata_iuse(const std::string & k, const std::string
     }
 }
 
-const MaskReasons
-ConsoleQueryTask::mask_reasons_to_explain() const
+const tr1::shared_ptr<const Map<char, std::string> >
+ConsoleQueryTask::masks_to_explain() const
 {
-    return _imp->mask_reasons_to_explain;
+    return _imp->masks_to_explain;
 }
 

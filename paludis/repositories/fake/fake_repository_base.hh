@@ -44,7 +44,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeRepositoryBase :
         public Repository,
-        public RepositoryMaskInterface,
         public RepositoryUseInterface,
         public RepositorySetsInterface,
         private PrivateImplementationPattern<FakeRepositoryBase>,
@@ -56,14 +55,6 @@ namespace paludis
              */
             FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
                     const RepositoryCapabilities & caps, const std::string &);
-
-            /* RepositoryMaskInterface */
-
-            virtual bool do_query_repository_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_query_profile_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUseInterface */
 

@@ -36,55 +36,11 @@ namespace paludis
         public Environment
     {
         protected:
-            ///\name Mask reasons
 
-            /**
-             * Do we accept a particular EAPI?
-             *
-             * Default behaviour: recognised EAPIs accepted.
-             */
-            virtual bool accept_eapi(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Accept packages with versions, EAPIs etc that will break Portage?
-             *
-             * Default behaviour: true.
-             */
-            virtual bool accept_breaks_portage(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Is a package masked by user settings?
-             *
-             * Default behaviour: false.
-             */
-            virtual bool masked_by_user(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Is a package unmasked by user settings?
-             *
-             * Default behaviour: false.
-             */
-            virtual bool unmasked_by_user(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Does a package break Portage?
-             */
-            virtual bool breaks_portage(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
-
-            ///\name Package sets
-            ///\{
-
-            /**
-             * Return the environment-specific named set, or a zero pointer if no such set is available.
-             */
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual bool breaks_portage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -98,20 +54,6 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
-                    const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual MaskReasons mask_reasons(const PackageID &,
-                    const MaskReasonsOptions & = MaskReasonsOptions()) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool accept_license(const std::string &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -119,21 +61,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual uid_t reduced_uid() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual gid_t reduced_gid() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const SetNameSet> set_names() const
@@ -145,11 +72,9 @@ namespace paludis
             virtual tr1::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual HookResult perform_hook(const Hook &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::string default_distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
     };
 }
 

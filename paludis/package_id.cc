@@ -51,6 +51,7 @@ namespace paludis
     struct Implementation<PackageID>
     {
         mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
+        mutable std::list<tr1::shared_ptr<const Mask> > masks;
     };
 }
 
@@ -67,6 +68,7 @@ void
 PackageID::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
 {
     using namespace tr1::placeholders;
+
     if (_imp->keys.end() != std::find_if(_imp->keys.begin(), _imp->keys.end(),
                 tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
         throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "' to ID '" + stringify(*this) + "'");
@@ -86,6 +88,32 @@ PackageID::end_metadata() const
 {
     need_keys_added();
     return MetadataIterator(indirect_iterator(_imp->keys.end()));
+}
+
+void
+PackageID::add_mask(const tr1::shared_ptr<const Mask> & k) const
+{
+    _imp->masks.push_back(k);
+}
+
+PackageID::MasksIterator
+PackageID::begin_masks() const
+{
+    need_masks_added();
+    return MasksIterator(indirect_iterator(_imp->masks.begin()));
+}
+
+PackageID::MasksIterator
+PackageID::end_masks() const
+{
+    need_masks_added();
+    return MasksIterator(indirect_iterator(_imp->masks.end()));
+}
+
+bool
+PackageID::masked() const
+{
+    return begin_masks() != end_masks();
 }
 
 PackageID::MetadataIterator

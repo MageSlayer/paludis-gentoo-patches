@@ -592,46 +592,6 @@ namespace
         "Repository.query_use_force expects two arguments, but got %d";
 
     /*
-     * Document-method: query_repository_masks
-     *
-     * call-seq:
-     *     query_repository_masks(package_id) -> true or false or nil
-     *
-     * Query repository masks.  nil if the repository doesn't implement mask_interface.
-     */
-    /*
-     * Document-method: query_profile_masks
-     *
-     * call-seq:
-     *     query_profile_masks(package_id) -> true or false or nil
-     *
-     * Query profile masks.  nil if the repository doesn't implement mask_interface.
-     */
-
-    template <bool (RepositoryMaskInterface::* m_) (const PackageID &) const>
-    struct QueryMasks
-    {
-        static VALUE
-        query(VALUE self, VALUE pid)
-        {
-            try
-            {
-                tr1::shared_ptr<Repository> * self_ptr;
-                Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-                RepositoryMaskInterface * const mask_interface ((**self_ptr).mask_interface);
-
-                if (mask_interface)
-                    return ((*mask_interface).*m_)(*value_to_package_id(pid)) ? Qtrue : Qfalse;
-                return Qnil;
-            }
-            catch (const std::exception & e)
-            {
-                exception_to_ruby_exception(e);
-            }
-        }
-    };
-
-    /*
      * call-seq:
      *     describe_use_flag(flag_name) -> String or Nil
      *     describe_use_flag(flag_name, package_id) -> String or Nil
@@ -967,8 +927,6 @@ namespace
 
         rb_define_method(c_repository, "installed_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstalledInterface,
                         &Repository::installed_interface>::fetch)), 0);
-        rb_define_method(c_repository, "mask_interface", RUBY_FUNC_CAST((&Interface<RepositoryMaskInterface,
-                        &Repository::mask_interface>::fetch)), 0);
         rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<RepositorySetsInterface,
                         &Repository::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,
@@ -993,8 +951,6 @@ namespace
         rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), -1);
         rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), -1);
 
-        rb_define_method(c_repository, "query_repository_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_repository_masks>::query), 1);
-        rb_define_method(c_repository, "query_profile_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_profile_masks>::query), 1);
         rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag),-1);
 
         rb_define_method(c_repository, "profiles", RUBY_FUNC_CAST(&repository_profiles),0);

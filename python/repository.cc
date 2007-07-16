@@ -51,12 +51,6 @@ struct RepositoryWrapper :
         return Repository::info(verbose);
     }
 
-    static RepositoryMaskInterface *
-    get_mask_interface(const Repository & self)
-    {
-        return self.mask_interface;
-    }
-
     static RepositorySetsInterface *
     get_sets_interface(const Repository & self)
     {
@@ -316,11 +310,6 @@ void PALUDIS_VISIBLE expose_repository()
                 "Fetch our versions."
             )
 
-        .add_property("mask_interface", bp::make_function(&RepositoryWrapper::get_mask_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryMaskInterface"
-                )
-
         .add_property("use_interface", bp::make_function(&RepositoryWrapper::get_use_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryUseInterface"
@@ -394,26 +383,6 @@ void PALUDIS_VISIBLE expose_repository()
         .def_readonly("arch", &RepositoryEInterfaceProfilesDescLine::arch)
 
         .def_readonly("status", &RepositoryEInterfaceProfilesDescLine::status)
-        ;
-
-    /**
-     * RepositoryMaskInterface
-     */
-    bp::class_<RepositoryMaskInterface, boost::noncopyable>
-        (
-         "RepositoryMaskInterface",
-         "Interface for handling masks for the Repository class.",
-         bp::no_init
-        )
-        .def("query_repository_masks", &RepositoryMaskInterface::query_repository_masks,
-                "query_repository_masks(PackageID) -> bool\n"
-                "Query repository masks."
-            )
-
-        .def("query_profile_masks", &RepositoryMaskInterface::query_profile_masks,
-                "query_profile_masks(PackageID) -> bool\n"
-                "Query profile masks."
-            )
         ;
 
     /**

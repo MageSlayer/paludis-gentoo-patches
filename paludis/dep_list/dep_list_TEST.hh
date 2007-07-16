@@ -136,7 +136,8 @@ namespace test_cases
                 d.add(PackageDepSpec(merge_target, pds_pm_unspecific), env.default_destinations());
                 TEST_CHECK(true);
 
-                TestMessageSuffix s("d={ " + join(d.begin(), d.end(), ", ") + " }", false);
+                TestMessageSuffix s("got={ " + join(d.begin(), d.end(), ", ") + " }", false);
+                TestMessageSuffix s2("expected={ " + join(expected.begin(), expected.end(), ", ") + " }", false);
 
                 unsigned n(0);
                 std::list<std::string>::const_iterator exp(expected.begin());

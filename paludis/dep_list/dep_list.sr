@@ -26,7 +26,7 @@ make_class_DepListOptions()
     key circular DepListCircularOption
     key use DepListUseOption
     key blocks DepListBlocksOption
-    key override_masks DepListOverrideMasks
+    key override_masks "tr1::shared_ptr<DepListOverrideMasksFunctions>"
 
     key dependency_tags bool
 

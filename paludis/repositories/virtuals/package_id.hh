@@ -68,6 +68,7 @@ namespace paludis
 
             protected:
                 virtual void need_keys_added() const;
+                virtual void need_masks_added() const;
 
             public:
                 VirtualsPackageID(

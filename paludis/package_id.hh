@@ -21,18 +21,21 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_ID_HH 1
 
 #include <paludis/package_id-fwd.hh>
-#include <paludis/metadata_key-fwd.hh>
-#include <paludis/action-fwd.hh>
+
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/tr1_memory.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/name-fwd.hh>
-#include <paludis/version_spec-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
+
+#include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/eapi-fwd.hh>
+#include <paludis/mask-fwd.hh>
+#include <paludis/metadata_key-fwd.hh>
+#include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 
 namespace paludis
 {
@@ -45,7 +48,10 @@ namespace paludis
     {
         protected:
             virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
+            virtual void add_mask(const tr1::shared_ptr<const Mask> &) const;
+
             virtual void need_keys_added() const = 0;
+            virtual void need_masks_added() const = 0;
 
         public:
             PackageID();
@@ -101,6 +107,16 @@ namespace paludis
 
             virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual void perform_action(Action &) const = 0;
+
+            ///\}
+
+            ///\name Masks
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<PackageID, const Mask> MasksIterator;
+            MasksIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MasksIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

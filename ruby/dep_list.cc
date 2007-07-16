@@ -43,11 +43,9 @@ namespace
     static VALUE c_dep_list_use_option;
     static VALUE c_dep_list_entry_state;
     static VALUE c_dep_list_entry_kind;
-    static VALUE c_dep_list_override_mask;
     static VALUE c_dep_list_options;
     static VALUE c_dep_list;
     static VALUE c_dep_list_entry;
-    static VALUE c_dep_list_override_masks;
 
     tr1::shared_ptr<DepListOptions>
     value_to_dep_list_options(VALUE v)
@@ -88,27 +86,6 @@ namespace
     }
 
     VALUE
-    dep_list_override_masks_to_value(const DepListOverrideMasks & m)
-    {
-        return Data_Wrap_Struct(c_dep_list_override_masks, 0, &Common<DepListOverrideMasks>::free, new DepListOverrideMasks(m));
-    }
-
-    DepListOverrideMasks
-    value_to_dep_list_override_masks(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_dep_list_override_masks))
-        {
-            DepListOverrideMasks * v_ptr;
-            Data_Get_Struct(v, DepListOverrideMasks, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into DepListOverrideMasks", rb_obj_classname(v));
-        }
-    }
-
-    VALUE
     dep_list_options_init(int, VALUE *, VALUE self)
     {
         return self;
@@ -143,7 +120,6 @@ namespace
      *           :circular => DepListCircularOption::Error,
      *           :use => DepListUseOption::Standard,
      *           :blocks => DepListBlocksOption::Accumulate,
-     *           :override_masks => DepListOverrideMasks.new,
      *           :dependency_tags => false
      *       }
      */
@@ -188,7 +164,6 @@ namespace
                 int value_for_circular;
                 int value_for_use;
                 int value_for_blocks;
-                DepListOverrideMasks value_for_override_masks;
                 bool value_for_dependency_tags;
 
                 if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
@@ -229,8 +204,6 @@ namespace
                         rb_raise(rb_eArgError, "Missing Parameter: use");
                     if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("blocks"))))
                         rb_raise(rb_eArgError, "Missing Parameter: blocks");
-                    if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("override_masks"))))
-                        rb_raise(rb_eArgError, "Missing Parameter: override_masks");
                     if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags"))))
                         rb_raise(rb_eArgError, "Missing Parameter: dependency_tags");
                     value_for_reinstall =
@@ -269,9 +242,6 @@ namespace
                         NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("use"))));
                     value_for_blocks =
                         NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("blocks"))));
-                    value_for_override_masks = value_to_dep_list_override_masks(
-                        rb_hash_aref(argv[0], ID2SYM(rb_intern("override_masks")))
-                            );
                     value_for_dependency_tags =
                         Qtrue == (rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags")))) ? true : false;
                 }
@@ -295,7 +265,6 @@ namespace
                     value_for_circular                      = NUM2INT(argv[15]);
                     value_for_use                           = NUM2INT(argv[16]);
                     value_for_blocks                        = NUM2INT(argv[17]);
-                    value_for_override_masks    = value_to_dep_list_override_masks(argv[18]);
                     value_for_dependency_tags = Qtrue == argv[19] ? true : false;
                 }
                 else
@@ -360,7 +329,7 @@ namespace
                             static_cast<DepListCircularOption>(value_for_circular),
                             static_cast<DepListUseOption>(value_for_use),
                             static_cast<DepListBlocksOption>(value_for_blocks),
-                            value_for_override_masks,
+                            tr1::shared_ptr<DepListOverrideMasksFunctions>(),
                             value_for_dependency_tags
                             )
                         );
@@ -703,42 +672,6 @@ namespace
 
     /*
      * call-seq:
-     *     override_masks -> DepListOverrideMasks
-     *
-     * A copy of our override DepListOverrideMasks.
-     */
-    VALUE
-    dep_list_options_override_masks(VALUE self)
-    {
-        tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
-        return dep_list_override_masks_to_value((*p)->override_masks);
-    }
-
-    /*
-     * call-seq:
-     *     override_masks=(dep_list_override_masks) -> Qnil
-     *
-     * Set our override DepListOverrideMasks.
-     */
-    VALUE
-    dep_list_options_override_masks_set(VALUE self, VALUE mr)
-    {
-        tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, tr1::shared_ptr<DepListOptions>, p);
-        try
-        {
-            (*p)->override_masks = value_to_dep_list_override_masks(mr);
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
      *     dependancy_tags -> true or false
      *
      * Our dependency_tags
@@ -1021,120 +954,6 @@ namespace
         }
     }
 
-    VALUE
-    dep_list_override_masks_init(VALUE self)
-    {
-        return self;
-    }
-
-    VALUE
-    dep_list_override_masks_new(VALUE self)
-    {
-        DepListOverrideMasks * ptr(0);
-        try
-        {
-            ptr = new DepListOverrideMasks;
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<DepListOverrideMasks>::free, ptr));
-            rb_obj_call_init(tdata, 0, &self);
-            return tdata;
-        }
-        catch (const std::exception & e)
-        {
-            delete ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     each {|override_mask| block } -> Nil
-     *
-     * Iterate through the mask reasons.
-     */
-    VALUE
-    dep_list_override_masks_each(VALUE self)
-    {
-        DepListOverrideMasks * m_ptr;
-        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
-        for (DepListOverrideMask i(static_cast<DepListOverrideMask>(0)), i_end(last_dl_override) ; i != i_end ;
-                i = static_cast<DepListOverrideMask>(static_cast<int>(i) + 1))
-            if ((*m_ptr)[i])
-                rb_yield(INT2FIX(i));
-        return Qnil;
-    }
-
-    /*
-     * call-seq:
-     *     empty? -> true or false
-     *
-     * Is the collection empty.
-     */
-    VALUE
-    dep_list_override_masks_empty(VALUE self)
-    {
-        DepListOverrideMasks * m_ptr;
-        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
-        return m_ptr->any() ? Qfalse : Qtrue;
-    }
-
-    /*
-     * call-seq:
-     *     set(mask_reason) -> Nil
-     *
-     * Add DepListOverrideMask to collection.
-     */
-    VALUE
-    dep_list_override_masks_set(VALUE self, VALUE mask_reason)
-    {
-        DepListOverrideMasks * m_ptr;
-        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
-        try
-        {
-            int mr = NUM2INT(mask_reason);
-            if (mr < 0 || mr >= last_dl_override)
-                rb_raise(rb_eArgError, "DepListOverrideMask out of range");
-            *m_ptr += static_cast<DepListOverrideMask>(mr);
-            return Qnil;
-
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    VALUE
-    dep_list_override_masks_reset(int argc, VALUE * argv, VALUE self)
-    {
-        DepListOverrideMasks * m_ptr;
-        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
-        if (argc == 0)
-        {
-            *m_ptr = DepListOverrideMasks();
-            return Qnil;
-        }
-        else if (argc == 1)
-        {
-            try
-            {
-                int mr = NUM2INT(argv[0]);
-                if (mr < 0 || mr >= last_dl_override)
-                    rb_raise(rb_eArgError, "DepListOverrideMask out of range");
-                *m_ptr -= static_cast<DepListOverrideMask>(mr);
-                return Qnil;
-
-            }
-            catch (const std::exception & e)
-            {
-                exception_to_ruby_exception(e);
-            }
-        }
-        else
-        {
-            rb_raise(rb_eArgError, "clear expects one or zero arguments, but got %d",argc);
-        }
-    }
-
     void do_register_dep_list()
     {
         /*
@@ -1320,19 +1139,6 @@ namespace
         // cc_enum_special<paludis/dep_list/options-se.hh, DepListEntryKind, c_dep_list_entry_kind>
 
         /*
-         * Document-module: Paludis::DepListOverrideMask
-         *
-         * Masks that can be overriden.
-         *
-         */
-        c_dep_list_override_mask = rb_define_module_under(paludis_module(), "DepListOverrideMask");
-        for (DepListOverrideMask l(static_cast<DepListOverrideMask>(0)), l_end(last_dl_override) ; l != l_end ;
-                l = static_cast<DepListOverrideMask>(static_cast<int>(l) + 1))
-            rb_define_const(c_dep_list_override_mask, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/dep_list/options-se.hh, DepListOverrideMask, c_dep_list_override_mask>
-
-        /*
          * Document-class: Paludis::DepListOptions
          *
          * Parameters for a DepList.
@@ -1415,9 +1221,7 @@ namespace
                 RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::set)),1);
 
 
-        rb_define_method(c_dep_list_options, "override_masks", RUBY_FUNC_CAST(&dep_list_options_override_masks),0);
         rb_define_method(c_dep_list_options, "dependency_tags", RUBY_FUNC_CAST(&dep_list_options_dependency_tags),0);
-        rb_define_method(c_dep_list_options, "override_masks=", RUBY_FUNC_CAST(&dep_list_options_override_masks_set),1);
         rb_define_method(c_dep_list_options, "dependency_tags=", RUBY_FUNC_CAST(&dep_list_options_dependency_tags_set),1);
 
         /*
@@ -1451,20 +1255,6 @@ namespace
 #if CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
 #endif
-
-        /*
-         * Document-class: DepListOverrideMasks
-         *
-         * Set of masks that can be overriden.
-         */
-        c_dep_list_override_masks = rb_define_class_under(paludis_module(), "DepListOverrideMasks", rb_cObject);
-        rb_define_singleton_method(c_dep_list_override_masks, "new", RUBY_FUNC_CAST(&dep_list_override_masks_new), 0);
-        rb_define_method(c_dep_list_override_masks, "initialize", RUBY_FUNC_CAST(&dep_list_override_masks_init), 0);
-        rb_define_method(c_dep_list_override_masks, "each", RUBY_FUNC_CAST(&dep_list_override_masks_each), 0);
-        rb_include_module(c_dep_list_override_masks, rb_mEnumerable);
-        rb_define_method(c_dep_list_override_masks, "empty?", RUBY_FUNC_CAST(&dep_list_override_masks_empty), 0);
-        rb_define_method(c_dep_list_override_masks, "set", RUBY_FUNC_CAST(&dep_list_override_masks_set), 1);
-        rb_define_method(c_dep_list_override_masks, "reset", RUBY_FUNC_CAST(&dep_list_override_masks_reset), -1);
     }
 }
 

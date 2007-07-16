@@ -100,7 +100,6 @@ namespace
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
     Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
-            .mask_interface(0)
             .installed_interface(this)
             .use_interface(0)
             .sets_interface(0)

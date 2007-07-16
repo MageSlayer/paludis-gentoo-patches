@@ -44,7 +44,7 @@ namespace paludis
         public EnvironmentImplementation
     {
         protected:
-            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -76,6 +76,40 @@ namespace paludis
              */
             const tr1::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
                     const VersionSpec &, const RepositoryName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
+                    const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_license(const std::string &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool unmasked_by_user(const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const FSEntry root() const;
+
+            virtual uid_t reduced_uid() const;
+
+            virtual gid_t reduced_gid() const;
+
+            virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual HookResult perform_hook(const Hook &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

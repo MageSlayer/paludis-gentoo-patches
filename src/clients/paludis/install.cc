@@ -48,11 +48,13 @@
 #include <paludis/util/system.hh>
 
 #include <paludis/dep_list/exceptions.hh>
+#include <paludis/dep_list/override_functions.hh>
 
 #include <paludis/hook.hh>
 #include <paludis/query.hh>
 #include <paludis/eapi.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -439,16 +441,19 @@ do_install(tr1::shared_ptr<Environment> env)
         for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.begin_args()),
                 a_end(CommandLine::get_instance()->dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
+            if (! options.override_masks)
+                options.override_masks.reset(new DepListOverrideMasksFunctions);
+
+            using namespace tr1::placeholders;
+
             if (*a == "tilde-keyword")
-                options.override_masks += dl_override_tilde_keywords;
+                options.override_masks->push_back(tr1::bind(&override_tilde_keywords, env.get(), _1, _2));
             else if (*a == "unkeyworded")
-                options.override_masks += dl_override_unkeyworded;
+                options.override_masks->push_back(tr1::bind(&override_unkeyworded, env.get(), _1, _2));
             else if (*a == "repository")
-                options.override_masks += dl_override_repository_masks;
-            else if (*a == "profile")
-                options.override_masks += dl_override_repository_masks;
+                options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
             else if (*a == "license")
-                options.override_masks += dl_override_licenses;
+                options.override_masks->push_back(tr1::bind(&override_license, _2));
             else
                 throw args::DoHelp("bad value for --dl-override-masks");
         }
@@ -641,44 +646,15 @@ do_install(tr1::shared_ptr<Environment> env)
                     cerr << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
 
                     bool need_comma(false);
-                    MaskReasons m(env->mask_reasons(**pp));
-                    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
-                        if (m[static_cast<MaskReason>(mm)])
-                        {
-                            if (need_comma)
-                                cerr << ", ";
-                            cerr << MaskReason(mm);
+                    for (PackageID::MasksIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
+                            m != m_end ; ++m)
+                    {
+                        if (need_comma)
+                            cerr << ", ";
+                        cerr << m->description();
 
-                            if (mr_eapi == mm)
-                            {
-                                std::string eapi_str((*pp)->eapi()->name);
-
-                                if (eapi_str == "UNKNOWN")
-                                    cerr << " ( " << colour(cl_masked, eapi_str) <<
-                                        " ) (probably a broken ebuild)";
-                                else
-                                    cerr << " ( " << colour(cl_masked, eapi_str) << " )";
-                            }
-                            else if (mr_license == mm)
-                            {
-                                if ((*pp)->license_key())
-                                {
-                                    cerr << " ";
-                                    LicenceDisplayer ld(cerr, env.get(), *pp);
-                                    (*pp)->license_key()->value()->accept(ld);
-                                }
-                            }
-                            else if (mr_keyword == mm)
-                            {
-                                if ((*pp)->keywords_key())
-                                {
-                                    cerr << " ( " << colour(cl_masked, join((*pp)->keywords_key()->value()->begin(),
-                                                    (*pp)->keywords_key()->value()->end(), " ")) << " )";
-                                }
-                            }
-
-                            need_comma = true;
-                        }
+                        need_comma = true;
+                    }
                     cerr << endl;
                 }
             }

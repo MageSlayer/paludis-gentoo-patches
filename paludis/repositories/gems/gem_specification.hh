@@ -68,13 +68,14 @@ namespace paludis
 
             protected:
                 void need_keys_added() const;
+                virtual void need_masks_added() const;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                GemSpecification(const tr1::shared_ptr<const Repository> &, const yaml::Node &);
-                GemSpecification(const tr1::shared_ptr<const Repository> &, const PackageNamePart &,
+                GemSpecification(const Environment * const e, const tr1::shared_ptr<const Repository> &, const yaml::Node &);
+                GemSpecification(const Environment * const e, const tr1::shared_ptr<const Repository> &, const PackageNamePart &,
                         const VersionSpec &, const FSEntry &);
 
                 ~GemSpecification();

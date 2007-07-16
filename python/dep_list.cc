@@ -104,17 +104,6 @@ void PALUDIS_VISIBLE expose_dep_list()
             "State of a DepListEntry.");
     enum_auto("DepListEntryKind", last_dlk,
             "Kind of a DepListEntry.");
-    enum_auto("DepListOverrideMask", last_dl_override,
-            "Masks that can be overridden.");
-
-    /**
-     * Options
-     */
-    class_options<DepListOverrideMasks>
-        (
-         "DepListOverrideMasks", "DepListOverrideMask",
-         "Set of masks that can be overridden."
-        );
 
     /**
      * DepListOptions
@@ -196,10 +185,6 @@ void PALUDIS_VISIBLE expose_dep_list()
 
         .def_readwrite("blocks", &DepListOptions::blocks,
                 "[rw] DepListBlocksOption"
-                )
-
-        .def_readwrite("override_masks", &DepListOptions::override_masks,
-                "[rw] DepListOverrideMasks"
                 )
 
         .def_readwrite("dependency_tags", &DepListOptions::dependency_tags,

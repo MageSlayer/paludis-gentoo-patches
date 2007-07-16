@@ -66,12 +66,6 @@ void PALUDIS_VISIBLE expose_environment()
          "Thrown if the config directory cannot be found by PaludisConfig.");
 
     /**
-     * Enums
-     */
-    enum_auto("MaskReasonsOption", last_mro,
-            "Options for Environment.mask_reasons().");
-
-    /**
      * EnvironmentMaker
      */
     bp::class_<EnvironmentMaker, boost::noncopyable> 
@@ -90,15 +84,6 @@ void PALUDIS_VISIBLE expose_environment()
                 "Make Environment from specification."
             )
         ;
-
-    /**
-     * MaskReasonsOptions
-     */
-    class_options<MaskReasonsOptions>
-        (
-         "MaskReasonsOptions", "MaskReasonsOption",
-         "Options for Environment.mask_reasons()."
-        );
 
     /**
      * Environment
@@ -131,13 +116,6 @@ void PALUDIS_VISIBLE expose_environment()
         .def("query_use", &Environment::query_use,
                 "query_use(UseFlagName, PackageID) -> bool\n"
                 "Is a particular use flag enabled for a particular package?"
-            )
-
-        .def("mask_reasons", &Environment::mask_reasons,
-                (bp::arg("PackageID"), bp::arg("MaskReasonOptions")=MaskReasonsOptions()),
-                "mask_reasons(PackageID, MaskReasonsOptions=MaskReasonsOptions())"
-                " -> set of MaskReason\n"
-                "Return the reasons for a package being masked."
             )
 
         .add_property("root", &Environment::root,

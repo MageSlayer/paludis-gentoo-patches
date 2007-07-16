@@ -253,23 +253,3 @@ make_enum_DepListEntryKind()
 END
 }
 
-make_enum_DepListOverrideMask()
-{
-    prefix dl_override
-
-    key dl_override_licenses         "Override unaccepted licences"
-    key dl_override_tilde_keywords   "Override ~keywords"
-    key dl_override_unkeyworded      "Override unkeyworded"
-    key dl_override_repository_masks "Override repository masks"
-    key dl_override_profile_masks    "Override profile masks"
-
-    doxygen_comment <<"END"
-        /**
-         * Masks that can be overridden.
-         *
-         * \ingroup grpdepresolver
-         * \see DepListOverrideMasks
-         */
-END
-}
-

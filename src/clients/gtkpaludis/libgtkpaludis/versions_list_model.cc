@@ -12,6 +12,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
+#include <paludis/mask.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -114,53 +115,16 @@ VersionsListModel::populate_in_paludis_thread()
             p != p_end ; ++p)
     {
         bool prefer_default(true);
-
-        MaskReasons mask_reasons(_imp->query_window->environment()->mask_reasons(**p));
         std::string mr_string;
 
-        for (MaskReason m(MaskReason(0)) ; m < last_mr ;
-                m = MaskReason(static_cast<int>(m) + 1))
+        for (PackageID::MasksIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
+                m != m_end ; ++m)
         {
-            if (! mask_reasons[m])
-                continue;
-
             prefer_default = false;
             if (! mr_string.empty())
                 mr_string.append(", ");
 
-            switch (m)
-            {
-                case mr_keyword:
-                    mr_string.append("keyword");
-                    break;
-                case mr_user_mask:
-                    mr_string.append("user mask");
-                    break;
-                case mr_profile_mask:
-                    mr_string.append("profile mask");
-                    break;
-                case mr_repository_mask:
-                    mr_string.append("repository mask");
-                    break;
-                case mr_eapi:
-                    mr_string.append("EAPI");
-                    break;
-                case mr_license:
-                    mr_string.append("licence");
-                    break;
-                case mr_by_association:
-                    mr_string.append("by association");
-                    break;
-                case mr_chost:
-                    mr_string.append("wrong CHOST");
-                    break;
-                case mr_breaks_portage:
-                    mr_string.append("breaks Portage");
-                    break;
-
-                case last_mr:
-                    break;
-            }
+            mr_string.append(m->description());
         }
 
         data->items.push_back(PopulateDataItem(*p, mr_string, prefer_default));

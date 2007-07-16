@@ -25,8 +25,10 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/mask_reasons.hh>
+#include <paludis/mask-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/map-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <src/output/console_task.hh>
 
 namespace paludis
@@ -69,7 +71,7 @@ namespace paludis
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;
 
-            const MaskReasons mask_reasons_to_explain() const;
+            const tr1::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
     };
 }
 

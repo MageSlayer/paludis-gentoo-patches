@@ -50,7 +50,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ERepository :
         public Repository,
-        public RepositoryMaskInterface,
         public RepositoryUseInterface,
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
@@ -83,14 +82,6 @@ namespace paludis
             /* RepositorySyncableInterface */
 
             virtual bool do_sync() const;
-
-            /* RepositoryMaskInterface */
-
-            virtual bool do_query_repository_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_query_profile_masks(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUseInterface */
 
@@ -231,6 +222,8 @@ namespace paludis
             const tr1::shared_ptr<const Layout> layout() const;
             const tr1::shared_ptr<const ERepositoryEntries> entries() const;
             const tr1::shared_ptr<const ERepositoryProfile> profile() const;
+
+            bool repository_masked(const PackageID &) const;
 
             void regenerate_cache() const;
     };

@@ -321,6 +321,11 @@ VDBID::need_keys_added() const
     }
 }
 
+void
+VDBID::need_masks_added() const
+{
+}
+
 const std::string
 VDBID::canonical_form(const PackageIDCanonicalForm f) const
 {

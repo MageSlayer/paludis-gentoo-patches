@@ -65,7 +65,6 @@ namespace paludis
 GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
     Repository(RepositoryName("gems"),
             RepositoryCapabilities::create()
-            .mask_interface(0)
             .installed_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
@@ -192,7 +191,7 @@ GemsRepository::need_ids() const
 
     std::string output((std::istreambuf_iterator<char>(yaml_file)), std::istreambuf_iterator<char>());
     yaml::Document master_doc(output);
-    gems::GemSpecifications specs(shared_from_this(), *master_doc.top());
+    gems::GemSpecifications specs(_imp->params.environment, shared_from_this(), *master_doc.top());
 
     for (gems::GemSpecifications::Iterator i(specs.begin()), i_end(specs.end()) ;
             i != i_end ; ++i)

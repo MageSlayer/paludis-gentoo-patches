@@ -158,7 +158,6 @@ namespace test_cases
 
         void run()
         {
-#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
@@ -175,7 +174,6 @@ namespace test_cases
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
-#endif
         }
     } paludis_environment_repositories;
 }

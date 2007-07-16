@@ -23,12 +23,15 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/eapi.hh>
+#include <paludis/hook.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -328,5 +331,77 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
     }
 
     return false;
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+NoConfigEnvironment::local_set(const SetName &) const
+{
+    return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+bool
+NoConfigEnvironment::unmasked_by_user(const PackageID &) const
+{
+    return false;
+}
+
+const tr1::shared_ptr<const Mask>
+NoConfigEnvironment::mask_for_breakage(const PackageID &) const
+{
+    return tr1::shared_ptr<const Mask>();
+}
+
+const tr1::shared_ptr<const Mask>
+NoConfigEnvironment::mask_for_user(const PackageID &) const
+{
+    return tr1::shared_ptr<const Mask>();
+}
+
+uid_t
+NoConfigEnvironment::reduced_uid() const
+{
+    return getuid();
+}
+
+gid_t
+NoConfigEnvironment::reduced_gid() const
+{
+    return getgid();
+}
+
+tr1::shared_ptr<const MirrorsSequence>
+NoConfigEnvironment::mirrors(const std::string &) const
+{
+    return make_shared_ptr(new MirrorsSequence);
+}
+
+bool
+NoConfigEnvironment::accept_license(const std::string &, const PackageID &) const
+{
+    return true;
+}
+
+const FSEntry
+NoConfigEnvironment::root() const
+{
+    return FSEntry("/");
+}
+
+HookResult
+NoConfigEnvironment::perform_hook(const Hook &) const
+{
+    return HookResult(0, "");
+}
+
+tr1::shared_ptr<const FSEntrySequence>
+NoConfigEnvironment::hook_dirs() const
+{
+    return make_shared_ptr(new FSEntrySequence);
+}
+
+tr1::shared_ptr<const UseFlagNameSet>
+NoConfigEnvironment::known_use_expand_names(const UseFlagName &, const PackageID &) const
+{
+    return make_shared_ptr(new UseFlagNameSet);
 }
 

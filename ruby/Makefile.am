@@ -23,7 +23,6 @@ IF_RUBY_TESTS = \
 	package_database_TEST.rb \
 	log_TEST.rb \
 	version_spec_TEST.rb \
-	mask_reasons_TEST.rb \
 	dep_spec_TEST.rb \
 	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb \
@@ -46,7 +45,6 @@ IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
 	environment.cc \
 	version_spec.cc \
-	mask_reasons.cc \
 	dep_spec.cc \
 	log.cc \
 	package_database.cc \

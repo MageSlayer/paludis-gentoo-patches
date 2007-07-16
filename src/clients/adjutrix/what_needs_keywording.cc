@@ -24,11 +24,14 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/override_functions.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 
 #include <set>
 #include <map>
@@ -43,6 +46,8 @@ using std::endl;
 
 int do_what_needs_keywording(NoConfigEnvironment & env)
 {
+    using namespace tr1::placeholders;
+
     int return_code(0);
 
     Context context("When performing what-needs-keywording action:");
@@ -65,10 +70,10 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     d_options.circular = dl_circular_discard_silently;
     d_options.use = dl_use_deps_take_all;
     d_options.blocks = dl_blocks_discard_completely;
-    d_options.override_masks += dl_override_tilde_keywords;
-    d_options.override_masks += dl_override_unkeyworded;
-    d_options.override_masks += dl_override_repository_masks;
-    d_options.override_masks += dl_override_profile_masks;
+    d_options.override_masks.reset(new DepListOverrideMasksFunctions);
+    d_options.override_masks->push_back(tr1::bind(&override_tilde_keywords, &env, _1, _2));
+    d_options.override_masks->push_back(tr1::bind(&override_unkeyworded, &env, _1, _2));
+    d_options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
 
     DepList d(&env, d_options);
 
@@ -118,11 +123,9 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string masks;
 
-            MaskReasons r(env.mask_reasons(*p->package_id));
-            if (r[mr_repository_mask])
-                    masks.append("R");
-            if (r[mr_profile_mask])
-                    masks.append("P");
+            for (PackageID::MasksIterator m(p->package_id->begin_masks()), m_end(p->package_id->end_masks()) ;
+                    m != m_end ; ++m)
+                masks.append(stringify(m->key()));
 
             cout << std::setw(10) << std::left << masks;
 

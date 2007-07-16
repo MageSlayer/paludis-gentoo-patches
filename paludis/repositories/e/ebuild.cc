@@ -26,6 +26,7 @@
 #include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/map.hh>
 
 #include <paludis/about.hh>

@@ -251,7 +251,7 @@ namespace
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
                     for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
-                        if (! e.mask_reasons(**v).any())
+                        if (! ((*v)->masked()))
                             result->push_back(*v);
                 }
             }

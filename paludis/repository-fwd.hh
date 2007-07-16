@@ -33,7 +33,6 @@ namespace paludis
 
     class Repository;
     class RepositoryInstalledInterface;
-    class RepositoryMaskInterface;
     class RepositorySetsInterface;
     class RepositorySyncableInterface;
     class RepositoryUseInterface;

@@ -24,7 +24,6 @@ IF_PYTHON_TESTS = \
 	version_spec_TEST.py \
 	version_operator_TEST.py \
 	version_requirements_TEST.py \
-	mask_reasons_TEST.py \
 	contents_TEST.py \
 	dep_spec_TEST.py \
 	eapi_TEST.py \
@@ -51,7 +50,6 @@ IF_PYTHON_SOURCES = \
 	environment.cc \
 	exception.hh exception.cc \
 	fs_entry.cc \
-	mask_reasons.cc \
 	metadata_key.cc \
 	name.cc \
 	log.cc \

@@ -56,7 +56,6 @@ class TestCase_01_DepListOptions(unittest.TestCase):
         self.assert_(isinstance(dlo.circular, DepListCircularOption))
         self.assert_(isinstance(dlo.use, DepListUseOption))
         self.assert_(isinstance(dlo.blocks, DepListBlocksOption))
-        self.assert_(isinstance(dlo.override_masks, DepListOverrideMasks))
         self.assert_(isinstance(dlo.dependency_tags, bool))
 
     def test_03_data_members_set(self):

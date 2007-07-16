@@ -34,12 +34,14 @@
 #include <paludis/distribution.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
+#include <paludis/mask.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -220,12 +222,6 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageID & e) const
 }
 
 bool
-PaludisEnvironment::accept_breaks_portage(const PackageID &) const
-{
-    return _imp->config->accept_breaks_portage();
-}
-
-bool
 PaludisEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> k,
         const PackageID & e) const
 {
@@ -243,12 +239,6 @@ PaludisEnvironment::accept_license(const std::string & license, const PackageID 
     Context context("When checking license of '" + license + "' for '" + stringify(d) + "':");
 
     return _imp->config->licenses_conf()->query(license, d);
-}
-
-bool
-PaludisEnvironment::masked_by_user(const PackageID & d) const
-{
-    return _imp->config->package_mask_conf()->query(d);
 }
 
 bool
@@ -444,5 +434,59 @@ std::string
 PaludisEnvironment::default_distribution() const
 {
     return _imp->config->distribution();
+}
+
+namespace
+{
+    class BreaksPortageMask :
+        public UnsupportedMask
+    {
+        const char key() const
+        {
+            return 'B';
+        }
+
+        const std::string description() const
+        {
+            return "breaks Portage";
+        }
+
+        const std::string explanation() const
+        {
+            return "";
+        }
+    };
+
+    class UserConfigMask :
+        public UserMask
+    {
+        const char key() const
+        {
+            return 'U';
+        }
+
+        const std::string description() const
+        {
+            return "user";
+        }
+    };
+}
+
+const tr1::shared_ptr<const Mask>
+PaludisEnvironment::mask_for_breakage(const PackageID & id) const
+{
+    if ((! _imp->config->accept_breaks_portage()) && breaks_portage(id))
+        return make_shared_ptr(new BreaksPortageMask);
+
+    return tr1::shared_ptr<const Mask>();
+}
+
+const tr1::shared_ptr<const Mask>
+PaludisEnvironment::mask_for_user(const PackageID & d) const
+{
+    if (_imp->config->package_mask_conf()->query(d))
+        return make_shared_ptr(new UserConfigMask);
+
+    return tr1::shared_ptr<const Mask>();
 }
 

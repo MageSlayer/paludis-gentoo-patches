@@ -37,6 +37,7 @@
 #include <paludis/eapi.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -1135,51 +1136,55 @@ EntryDepTagDisplayer::visit(const GeneralSetDepTag & tag)
     text() = tag.short_text(); // + "<" + tag->source() + ">";
 }
 
+namespace
+{
+    struct MaskDisplayer :
+        ConstVisitor<MaskVisitorTypes>
+    {
+        std::ostringstream s;
+
+        void visit(const UnacceptedMask & m)
+        {
+            s << m.description();
+        }
+
+        void visit(const RepositoryMask & m)
+        {
+            s << m.description();
+        }
+
+        void visit(const UserMask & m)
+        {
+            s << m.description();
+        }
+
+        void visit(const UnsupportedMask & m)
+        {
+            s << m.description();
+        }
+
+        void visit(const AssociationMask & m)
+        {
+             s << m.description();
+        }
+    };
+}
+
 void
 ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e)
 {
-    MaskReasons r(environment()->mask_reasons(*e.package_id));
     bool need_comma(false);
-
     output_no_endl("    Masked by: ");
 
-    for (unsigned mm = 0 ; mm < last_mr ; ++mm)
-        if (r[static_cast<MaskReason>(mm)])
-        {
-            if (need_comma)
-                output_no_endl(", ");
-            output_no_endl(stringify(MaskReason(mm)));
-
-            if (mr_eapi == mm)
-            {
-                std::string eapi_str(e.package_id->eapi()->name);
-
-                if (eapi_str == "UNKNOWN")
-                    output_no_endl(" ( " + render_as_masked(eapi_str) + " ) (probably a broken ebuild)");
-                else
-                    output_no_endl(" ( " + render_as_masked(eapi_str) + " )");
-            }
-            else if (mr_license == mm)
-            {
-                if (e.package_id->license_key())
-                {
-                    output_no_endl(" ");
-
-                    LicenceDisplayer ld(output_stream(), environment(), e.package_id);
-                    e.package_id->license_key()->value()->accept(ld);
-                }
-            }
-            else if (mr_keyword == mm)
-            {
-                if (e.package_id->keywords_key())
-                {
-                    tr1::shared_ptr<const KeywordNameSet> keywords(e.package_id->keywords_key()->value());
-                    output_no_endl(" ( " + render_as_masked(join(keywords->begin(), keywords->end(), " ")) + " )");
-                }
-            }
-
-            need_comma = true;
-        }
+    for (PackageID::MasksIterator m(e.package_id->begin_masks()), m_end(e.package_id->end_masks()) ;
+            m != m_end ; ++m)
+    {
+        if (need_comma)
+            output_no_endl(", ");
+        MaskDisplayer d;
+        m->accept(d);
+        output_no_endl(d.s.str());
+    }
 
     output_endl();
 }

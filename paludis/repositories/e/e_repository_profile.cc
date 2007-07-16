@@ -30,6 +30,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/options.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/eapi.hh>

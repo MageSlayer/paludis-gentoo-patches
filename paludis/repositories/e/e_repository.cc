@@ -51,6 +51,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/random.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -250,7 +251,6 @@ namespace
 ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
             RepositoryCapabilities::create()
-            .mask_interface(this)
             .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
@@ -341,7 +341,7 @@ ERepository::do_package_ids(const QualifiedPackageName & n) const
 }
 
 bool
-ERepository::do_query_repository_masks(const PackageID & id) const
+ERepository::repository_masked(const PackageID & id) const
 {
     if (! _imp->has_repo_mask)
     {
@@ -392,13 +392,6 @@ ERepository::do_query_repository_masks(const PackageID & id) const
                 return true;
 
     return false;
-}
-
-bool
-ERepository::do_query_profile_masks(const PackageID & id) const
-{
-    _imp->need_profiles();
-    return _imp->profile_ptr->profile_masked(id);
 }
 
 UseFlagState

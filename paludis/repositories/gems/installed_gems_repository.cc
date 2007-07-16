@@ -73,7 +73,6 @@ namespace paludis
 InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepositoryParams & params) :
     Repository(RepositoryName("installed-gems"),
             RepositoryCapabilities::create()
-            .mask_interface(0)
             .installed_interface(this)
             .sets_interface(0)
             .syncable_interface(0)
@@ -212,7 +211,8 @@ InstalledGemsRepository::need_ids() const
 
         if (_imp->ids.end() == _imp->ids.find(gems + p))
             _imp->ids.insert(std::make_pair(gems + p, make_shared_ptr(new PackageIDSequence)));
-        _imp->ids.find(gems + p)->second->push_back(make_shared_ptr(new gems::GemSpecification(shared_from_this(), p, v, *d)));
+        _imp->ids.find(gems + p)->second->push_back(make_shared_ptr(new gems::GemSpecification(
+                        _imp->params.environment, shared_from_this(), p, v, *d)));
     }
 }
 

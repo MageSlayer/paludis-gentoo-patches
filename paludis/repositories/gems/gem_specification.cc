@@ -29,6 +29,7 @@
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/environment.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -85,12 +86,17 @@ namespace paludis
 
         tr1::shared_ptr<const FSEntry> load_from_file;
 
+        const Environment * const environment;
         const tr1::shared_ptr<const Repository> repository;
         const tr1::shared_ptr<const EAPI> eapi;
 
-        Implementation(const tr1::shared_ptr<const Repository> & r) :
+        mutable bool has_masks;
+
+        Implementation(const Environment * const e, const tr1::shared_ptr<const Repository> & r) :
+            environment(e),
             repository(r),
-            eapi(EAPIData::get_instance()->eapi_from_string("gems-1"))
+            eapi(EAPIData::get_instance()->eapi_from_string("gems-1")),
+            has_masks(false)
         {
         }
     };
@@ -268,8 +274,9 @@ namespace
     }
 }
 
-GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
-    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(r)),
+GemSpecification::GemSpecification(const Environment * const e,
+        const tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
+    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
 {
     TopVisitor v(_imp);
@@ -289,9 +296,9 @@ GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r, 
 }
 
 
-GemSpecification::GemSpecification(const tr1::shared_ptr<const Repository> & r,
+GemSpecification::GemSpecification(const Environment * const e, const tr1::shared_ptr<const Repository> & r,
         const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
-    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(r)),
+    PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
     _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
 {
     _imp->name_part = stringify(q);
@@ -598,5 +605,29 @@ GemSpecification::perform_action(Action & a) const
 {
     PerformAction b(this);
     a.accept(b);
+}
+
+void
+GemSpecification::need_masks_added() const
+{
+    if (_imp->has_masks)
+        return;
+
+    _imp->has_masks = true;
+
+    Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
+
+    if (! _imp->environment->unmasked_by_user(*this))
+    {
+        /* user */
+        tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
+        if (user_mask)
+            add_mask(user_mask);
+    }
+
+    /* break portage */
+    tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
+    if (breaks_mask)
+        add_mask(breaks_mask);
 }
 

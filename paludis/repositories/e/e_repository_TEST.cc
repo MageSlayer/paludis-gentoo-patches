@@ -652,12 +652,12 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
-                                        "=cat/masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
-                TEST_CHECK(! repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
-                                        "=cat/not_masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
-                TEST_CHECK(! repo->query_profile_masks(**env.package_database()->query(query::Matches(PackageDepSpec(
-                                        "=cat/was_masked-0", pds_pm_unspecific)), qo_require_exactly_one)->begin()));
+                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/masked-0", pds_pm_unspecific)),
+                            qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
+                            qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/not_masked-0", pds_pm_unspecific)),
+                            qo_require_exactly_one)->begin())->masked());
             }
         }
     } test_e_repository_query_profile_masks;

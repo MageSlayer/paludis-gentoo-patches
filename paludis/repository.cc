@@ -168,10 +168,6 @@ RepositoryInstalledInterface::~RepositoryInstalledInterface()
 {
 }
 
-RepositoryMaskInterface::~RepositoryMaskInterface()
-{
-}
-
 RepositorySetsInterface::~RepositorySetsInterface()
 {
 }
@@ -291,18 +287,6 @@ bool
 RepositoryMirrorsInterface::is_mirror(const std::string & s) const
 {
     return begin_mirrors(s) != end_mirrors(s);
-}
-
-bool
-RepositoryMaskInterface::query_repository_masks(const PackageID & e) const
-{
-    return do_query_repository_masks(e);
-}
-
-bool
-RepositoryMaskInterface::query_profile_masks(const PackageID & e) const
-{
-    return do_query_profile_masks(e);
 }
 
 tr1::shared_ptr<const PackageIDSequence>

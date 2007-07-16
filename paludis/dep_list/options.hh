@@ -22,20 +22,10 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/options.hh>
 
 namespace paludis
 {
-
 #include <paludis/dep_list/options-se.hh>
-
-    /**
-     * Set of masks that can be overridden.
-     *
-     * \ingroup grpdepresolver
-     * \see DepListOverrideMask
-     */
-    typedef Options<DepListOverrideMask> DepListOverrideMasks;
 }
 
 #endif
