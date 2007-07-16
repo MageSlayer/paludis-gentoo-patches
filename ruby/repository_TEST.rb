@@ -27,6 +27,7 @@ require 'Paludis'
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
+
     class TestCase_Repository < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
@@ -174,7 +175,8 @@ module Paludis
             repo = no_config_testrepo.main_repository
             [:installed_interface, :sets_interface, :syncable_interface, :use_interface,
                 :world_interface, :mirrors_interface, :environment_variable_interface,
-                :provides_interface, :virtuals_interface, :e_interface].each do |sym|
+                :provides_interface, :virtuals_interface, :e_interface,
+                :qa_interface].each do |sym|
                 assert_respond_to repo, sym
             end
         end
@@ -185,6 +187,52 @@ module Paludis
 
             assert_equal installed_repo.name, installed_repo.provides_interface.name
             assert_nil installed_repo.syncable_interface
+        end
+    end
+
+    class TestCase_RepositoryCheckQA < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_responds
+            assert_respond_to(no_config_testrepo.main_repository, :check_qa)
+        end
+
+        if Paludis.const_defined? :QAReporter
+            class TestQAReporter < QAReporter
+                @messages
+
+                def message(l, s, m)
+                    @messages+=1
+                end
+
+                def messages
+                    @messages||=0
+                    return @messages
+                end
+            end
+
+            def test_check_qa
+                repo = no_config_testrepo.main_repository
+                assert_equal repo, repo.qa_interface
+                dir =  Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
+                assert_nil repo.check_qa(QAReporter.new, QACheckProperties.new, QACheckProperties.new, 0, dir)
+            end
+
+            def test_message
+                repo = no_config_testrepo.main_repository
+                dir =  Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
+                reporter = TestQAReporter.new
+                assert_equal 0, reporter.messages
+                assert_nothing_raised do 
+                    repo.check_qa(reporter, QACheckProperties.new, QACheckProperties.new, 0, dir)
+                end
+                assert reporter.messages > 0
+            end
+        else
+            def test_check_qa
+                repo = no_config_testrepo.main_repository
+                assert_nil repo.qa_interface
+            end
         end
     end
 

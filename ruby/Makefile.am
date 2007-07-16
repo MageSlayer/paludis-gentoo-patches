@@ -34,12 +34,8 @@ IF_RUBY_TESTS = \
 	dep_tag_TEST.rb \
 	package_id_TEST.rb
 
-### IF_RUBY_QA_TESTS = \
-### 	message_TEST.rb \
-### 	check_result_TEST.rb \
-### 	metadata_file_TEST.rb \
-### 	qa_environment_TEST.rb \
-### 	check_TEST.rb
+IF_RUBY_QA_TESTS = \
+	qa_TEST.rb
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
@@ -60,12 +56,8 @@ IF_RUBY_SOURCES = \
 	eapi.cc \
 	name.cc
 
-### IF_RUBY_QA_SOURCES = \
-### 	message.cc \
-### 	check.cc \
-### 	check_result.cc \
-### 	qa_environment.cc \
-### 	metadata_file.cc
+IF_RUBY_QA_SOURCES = \
+	qa.cc
 
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
@@ -118,26 +110,18 @@ paludis_ruby_so.o : paludis_ruby_so.cc
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(RUBY_SITEARCHDIR) -I$(RUBY_ARCHDIR) -c \
 	    -o $@ $(srcdir)/paludis_ruby_so.cc ; then ln -fs .libs/paludis_ruby_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
-### if ENABLE_QA
-### 
-### libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
-### libpaludisruby_la_LIBADD = \
-### 	$(top_builddir)/paludis/libpaludis.la \
-### 	$(top_builddir)/paludis/util/libpaludisutil.la \
-### 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-### 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
-### 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
-### 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
-### 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-### 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-### 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
-### 	$(top_builddir)/paludis/qa/libpaludisqa.la
-### 
-### TESTS = $(IF_RUBY_QA_TESTS) $(IF_RUBY_TESTS)
-### 
-### else
+if ENABLE_QA
+
+libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
+TESTS = $(IF_RUBY_TESTS) $(IF_RUBY_QA_TESTS)
+
+else
 
 libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES)
+TESTS = $(IF_RUBY_TESTS)
+
+endif
+
 libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -149,10 +133,6 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(PTHREAD_LIBS)
-
-TESTS = $(IF_RUBY_TESTS)
-
-### endif
 
 check_DATA = .libs/Paludis.so
 rubylibdir = @RUBY_INSTALL_DIR@

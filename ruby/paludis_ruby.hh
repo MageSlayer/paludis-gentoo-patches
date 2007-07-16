@@ -38,9 +38,7 @@
 #include <paludis/util/stringify.hh>
 
 #ifdef ENABLE_RUBY_QA
-#if 0
-#include <paludis/qa/qa.hh>
-#endif
+#include <paludis/qa.hh>
 #endif
 
 #include <ruby.h>
@@ -50,6 +48,17 @@ namespace paludis
 
     namespace ruby
     {
+
+#ifdef ENABLE_RUBY_QA
+        class RubyQAReporter : public QAReporter
+        {
+            VALUE* reporter;
+
+            public:
+                RubyQAReporter(VALUE*);
+                void message(const QAMessageLevel, const std::string &, const std::string &);
+        };
+#endif
 
         /* general utilities */
 
@@ -89,26 +98,7 @@ namespace paludis
         tr1::shared_ptr<const Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
-#if 0
-        VALUE paludis_qa_module();
-        qa::Message value_to_message(VALUE v);
-        qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
-        qa::PerProfileEbuildCheckData value_to_per_profile_ebuild_check_data(VALUE v);
-        qa::ProfileCheckData value_to_profile_check_data(VALUE v);
-        tr1::shared_ptr<qa::QAEnvironment> value_to_qa_environment(VALUE v);
-        VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
-        VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
-        VALUE profile_check_data_to_value(const qa::ProfileCheckData &);
-        VALUE check_result_to_value(const qa::CheckResult &);
-        VALUE package_dir_check_to_value(tr1::shared_ptr<qa::PackageDirCheck>);
-        VALUE file_check_to_value(tr1::shared_ptr<qa::FileCheck>);
-        VALUE ebuild_check_to_value(tr1::shared_ptr<qa::EbuildCheck>);
-        VALUE per_profile_ebuild_check_to_value(tr1::shared_ptr<qa::PerProfileEbuildCheck>);
-        VALUE profiles_check_to_value(tr1::shared_ptr<qa::ProfilesCheck>);
-        VALUE profile_check_to_value(tr1::shared_ptr<qa::ProfileCheck>);
-        VALUE message_to_value(const qa::Message &);
-        VALUE metadata_file_to_value(const qa::MetadataFile &);
-#endif
+        QACheckProperties value_to_qa_check_properties(VALUE);
 #endif
 
         /* registration */

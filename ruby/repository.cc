@@ -401,6 +401,14 @@ namespace
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
+    /*
+     * Document-method: qa_interface
+     *
+     * call-seq:
+     *     qa_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
     template <typename T_, T_ * RepositoryCapabilities::* m_>
     struct Interface
     {
@@ -785,6 +793,39 @@ namespace
 
     /*
      * call-seq:
+     *     check_qa(qa_reporter, qa_check_properties_ignore_if, qa_check_properties_ignore_unless, qa_message_minimum_level, dir) -> Qnil
+     *
+     * Check qa in the specified dir. qa_reporter.message (QAReporter) will be called for each error found.
+     *
+     */
+    VALUE
+    repository_check_qa(VALUE self, VALUE reporter, VALUE ignore_if, VALUE ignore_unless, VALUE minumum_level, VALUE dir)
+    {
+        try
+        {
+            tr1::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+#ifdef ENABLE_RUBY_QA
+            if ((*self_ptr)->qa_interface)
+            {
+                RubyQAReporter* qar = new RubyQAReporter(&reporter);
+                (*self_ptr)->qa_interface->check_qa(*qar,
+                        value_to_qa_check_properties((ignore_if)),
+                        value_to_qa_check_properties((ignore_unless)),
+                        static_cast<QAMessageLevel>(NUM2INT(minumum_level)),
+                        FSEntry(StringValuePtr(dir)));
+            }
+#endif
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     add_category(category_name) -> Nil
      *
      * Add a category.
@@ -945,6 +986,8 @@ namespace
                         &Repository::virtuals_interface>::fetch)), 0);
         rb_define_method(c_repository, "e_interface", RUBY_FUNC_CAST((&Interface<RepositoryEInterface,
                         &Repository::e_interface>::fetch)), 0);
+        rb_define_method(c_repository, "qa_interface", RUBY_FUNC_CAST((&Interface<RepositoryQAInterface,
+                        &Repository::qa_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), -1);
@@ -957,6 +1000,8 @@ namespace
         rb_define_method(c_repository, "find_profile", RUBY_FUNC_CAST(&repository_find_profile),1);
         rb_define_method(c_repository, "profile_variable", RUBY_FUNC_CAST(&repository_profile_variable),1);
         rb_define_method(c_repository, "set_profile", RUBY_FUNC_CAST(&repository_set_profile),1);
+
+        rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
 
         /*
          * Document-class: Paludis::RepositoryInfo

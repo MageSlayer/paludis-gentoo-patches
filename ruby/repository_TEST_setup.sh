@@ -92,6 +92,7 @@ cat <<END > profiles/use.local.desc || exit 1
 foo/bar:test2 - A test local use flag
 END
 
+touch foo/metadata.xml
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"

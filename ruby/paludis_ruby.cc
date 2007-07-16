@@ -28,12 +28,6 @@
 #include <list>
 #include <ctype.h>
 
-#ifdef ENABLE_RUBY_QA
-#if 0
-#include <paludis/qa/qa_environment.hh>
-#endif
-#endif
-
 using namespace paludis;
 using namespace paludis::ruby;
 
@@ -79,16 +73,6 @@ namespace
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
-
-#ifdef ENABLE_RUBY_QA
-#if 0
-    static VALUE c_paludis_qa_module;
-    static VALUE c_profiles_desc_error;
-    static VALUE c_no_such_file_check_type_error;
-    static VALUE c_no_such_package_dir_check_type_error;
-    static VALUE c_no_such_ebuild_check_type_error;
-#endif
-#endif
 
     /* Document-method: match_package
      *
@@ -190,16 +174,6 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_no_destination_error, dynamic_cast<const paludis::NoDestinationError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DepListError *>(&ee))
         rb_raise(c_dep_list_error, dynamic_cast<const paludis::DepListError *>(&ee)->message().c_str());
-#ifdef ENABLE_RUBY_QA
-#if 0
-    else if (0 != dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee))
-        rb_raise(c_no_such_file_check_type_error, dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::qa::NoSuchPackageDirCheckTypeError *>(&ee))
-        rb_raise(c_no_such_package_dir_check_type_error, dynamic_cast<const paludis::qa::NoSuchPackageDirCheckTypeError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::qa::NoSuchEbuildCheckTypeError *>(&ee))
-        rb_raise(c_no_such_ebuild_check_type_error, dynamic_cast<const paludis::qa::NoSuchEbuildCheckTypeError *>(&ee)->message().c_str());
-#endif
-#endif
     else if (0 != dynamic_cast<const paludis::ConfigFileError *>(&ee))
         rb_raise(c_config_file_error, dynamic_cast<const paludis::ConfigFileError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigurationError *>(&ee))
@@ -253,16 +227,6 @@ paludis::ruby::no_config_environment_class()
 {
     return c_no_config_environment;
 }
-
-#ifdef ENABLE_RUBY_QA
-#if 0
-VALUE
-paludis::ruby::paludis_qa_module()
-{
-    return c_paludis_qa_module;
-}
-#endif
-#endif
 
 static VALUE
 has_query_property_error_init(int argc, VALUE* argv, VALUE self)
@@ -355,15 +319,29 @@ void PALUDIS_VISIBLE paludis::ruby::init()
 
     rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                     + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
-#ifdef ENABLE_RUBY_QA
-#if 0
-    c_paludis_qa_module = rb_define_module_under(c_paludis_module,"QA");
-    c_profiles_desc_error = rb_define_class_under(c_paludis_qa_module, "ProfilesDescError", c_configuration_error);
-    c_no_such_file_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchFileCheckTypeError", rb_eTypeError);
-    c_no_such_package_dir_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchPackageDirCheckTypeError", rb_eTypeError);
-    cno_such_ebuild_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchEbuildCheckTypeError", rb_eTypeError);
-#endif
-#endif
     RegisterRubyClass::get_instance()->execute();
 }
+
+#ifdef ENABLE_RUBY_QA
+paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter) {
+    this->reporter = ruby_reporter;
+}
+
+void
+paludis::ruby::RubyQAReporter::message(const QAMessageLevel l, const std::string & s, const std::string & m)
+{
+    try
+    {
+        ID message_id = rb_intern("message");
+        VALUE l_val = INT2FIX(l);
+        VALUE s_val = rb_str_new2(s.c_str());
+        VALUE m_val = rb_str_new2(m.c_str());
+        rb_funcall(*(this->reporter), message_id, 3, l_val, s_val, m_val);
+    }
+    catch (const std::exception & e)
+    {
+        exception_to_ruby_exception(e);
+    }
+}
+#endif
 
