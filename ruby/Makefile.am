@@ -67,8 +67,6 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
-	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
-	check_TEST_setup.sh check_TEST_cleanup.sh \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh
 
