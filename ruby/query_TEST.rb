@@ -150,5 +150,95 @@ module Paludis
             assert_kind_of Query::Query, get_query
         end
     end
+
+    class TestCase_SupportsInstallAction < Test::Unit::TestCase
+        def get_query
+            Query::SupportsInstallAction.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_SupportsUninstallAction < Test::Unit::TestCase
+        def get_query
+            Query::SupportsUninstallAction.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_SupportsInstalledAction < Test::Unit::TestCase
+        def get_query
+            Query::SupportsInstalledAction.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_SupportsPretendAction < Test::Unit::TestCase
+        def get_query
+            Query::SupportsPretendAction.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
+
+    class TestCase_SupportsConfigAction < Test::Unit::TestCase
+        def get_query
+            Query::SupportsConfigAction.new
+        end
+
+        def test_create
+            assert_nothing_raised do
+                get_query
+            end
+        end
+
+        def test_and
+            q = get_query
+            assert_respond_to q, :&
+            assert_kind_of Query::Query, get_query
+        end
+    end
 end
 

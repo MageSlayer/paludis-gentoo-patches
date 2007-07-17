@@ -39,6 +39,11 @@ namespace
     static VALUE c_not_masked;
     static VALUE c_installed_at_root;
     static VALUE c_all;
+    static VALUE c_supports_install_action;
+    static VALUE c_supports_uninstall_action;
+    static VALUE c_supports_installed_action;
+    static VALUE c_supports_pretend_action;
+    static VALUE c_supports_config_action;
 
     VALUE
     query_to_value(const Query & v)
@@ -312,6 +317,51 @@ namespace
          */
         c_category = rb_define_class_under(c_query_module, "Category", c_query);
         rb_define_singleton_method(c_category, "new", RUBY_FUNC_CAST(&category_new), 1);
+
+        /*
+         * Document-class: Paludis::Query::SupportsInstallAction
+         *
+         * Fetch packages that support InstallAction
+         */
+        c_supports_install_action = rb_define_class_under(c_query_module, "SupportsInstallAction", c_query);
+        rb_define_singleton_method(c_supports_install_action, "new",
+                RUBY_FUNC_CAST(&QueryNew<query::SupportsAction<InstallAction> >::query_new), 0);
+
+        /*
+         * Document-class: Paludis::Query::SupportsUninstallAction
+         *
+         * Fetch packages that support UninstallAction
+         */
+        c_supports_uninstall_action = rb_define_class_under(c_query_module, "SupportsUninstallAction", c_query);
+        rb_define_singleton_method(c_supports_uninstall_action, "new",
+                RUBY_FUNC_CAST(&QueryNew<query::SupportsAction<UninstallAction> >::query_new), 0);
+
+        /*
+         * Document-class: Paludis::Query::SupportsInstalledAction
+         *
+         * Fetch packages that support InstalledAction
+         */
+        c_supports_installed_action = rb_define_class_under(c_query_module, "SupportsInstalledAction", c_query);
+        rb_define_singleton_method(c_supports_installed_action, "new",
+                RUBY_FUNC_CAST(&QueryNew<query::SupportsAction<InstalledAction> >::query_new), 0);
+
+        /*
+         * Document-class: Paludis::Query::SupportsPretendAction
+         *
+         * Fetch packages that support PretendAction
+         */
+        c_supports_pretend_action = rb_define_class_under(c_query_module, "SupportsPretendAction", c_query);
+        rb_define_singleton_method(c_supports_pretend_action, "new",
+                RUBY_FUNC_CAST(&QueryNew<query::SupportsAction<PretendAction> >::query_new), 0);
+
+        /*
+         * Document-class: Paludis::Query::SupportsConfigAction
+         *
+         * Fetch packages that support ConfigAction
+         */
+        c_supports_config_action = rb_define_class_under(c_query_module, "SupportsConfigAction", c_query);
+        rb_define_singleton_method(c_supports_config_action, "new",
+                RUBY_FUNC_CAST(&QueryNew<query::SupportsAction<ConfigAction> >::query_new), 0);
     }
 }
 

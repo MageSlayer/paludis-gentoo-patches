@@ -118,15 +118,15 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository.name
 
-####            a = db.query(Query::Matches.new(pda) & Query::RepositoryHasInstallableInterface.new,
-####                         QueryOrder::Whatever)
-####            assert_kind_of Array, a
-####            assert_equal 1, a.length
-####            pid = a.first
-####            assert_kind_of PackageID, pid
-####            assert_equal 'foo/bar', pid.name
-####            assert_equal '1.0', pid.version.to_s
-####            assert_equal 'testrepo', pid.repository.name
+            a = db.query(Query::Matches.new(pda) & Query::SupportsInstallAction.new,
+                         QueryOrder::Whatever)
+            assert_kind_of Array, a
+            assert_equal 1, a.length
+            pid = a.first
+            assert_kind_of PackageID, pid
+            assert_equal 'foo/bar', pid.name
+            assert_equal '1.0', pid.version.to_s
+            assert_equal 'testrepo', pid.repository.name
 
             a = db.query(pda, InstallState::Any, QueryOrder::Whatever)
             assert_kind_of Array, a
