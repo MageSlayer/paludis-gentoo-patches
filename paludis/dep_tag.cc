@@ -19,7 +19,6 @@
 
 #include "dep_tag.hh"
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -27,6 +26,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <sstream>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.
@@ -181,22 +181,103 @@ DepTag::~DepTag()
 {
 }
 
-std::string
-DepTag::full_text() const
+namespace
 {
-    return short_text();
+    struct DepSpecStringifier :
+        ConstVisitor<DependencySpecTree>
+    {
+        std::ostringstream s;
+
+        void
+        visit_sequence(const AllDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << "( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << "|| ( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_sequence(const UseDepSpec & a,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << (a.inverse() ? "!" : "") << a.flag() << "? ( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_leaf(const PackageDepSpec & p)
+        {
+            s << p << " ";
+        }
+
+        void
+        visit_leaf(const BlockDepSpec & b)
+        {
+            s << "!" << *b.blocked_spec() << " ";
+        }
+
+    };
+
+    struct DepTagComparator :
+        ConstVisitor<DepTagVisitorTypes>
+    {
+        std::string value;
+
+        void visit(const GLSADepTag & t)
+        {
+            value = t.short_text();
+        }
+
+        void visit(const GeneralSetDepTag & t)
+        {
+            value = t.short_text();
+        }
+
+        void visit(const DependencyDepTag & t)
+        {
+            value = stringify(*t.package_id()) + "," + stringify(*t.dependency()) + ",";
+            DepSpecStringifier s;
+            t.conditions()->accept(s);
+            value.append(s.s.str());
+        }
+
+        void visit(const TargetDepTag & t)
+        {
+            value = t.short_text();
+        }
+    };
 }
 
 bool
 DepTag::operator== (const DepTag & other) const
 {
-    return full_text() == other.full_text();
+    DepTagComparator c1, c2;
+    accept(c1);
+    other.accept(c2);
+    return c1.value == c2.value;
 }
 
 bool
 DepTag::operator< (const DepTag & other) const
 {
-    return full_text() < other.full_text();
+    DepTagComparator c1, c2;
+    accept(c1);
+    other.accept(c2);
+    return c1.value < c2.value;
 }
 
 GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title) :
@@ -301,25 +382,6 @@ DependencyDepTag::DependencyDepTag(const tr1::shared_ptr<const PackageID> & i, c
 
 DependencyDepTag::~DependencyDepTag()
 {
-}
-
-std::string
-DependencyDepTag::full_text() const
-{
-    Lock l(_imp->mutex);
-
-    if (_imp->str.empty())
-    {
-        _imp->str.append(stringify(*_imp->id));
-        _imp->str.append(",");
-        _imp->str.append(stringify(*_imp->spec));
-        _imp->str.append(",");
-        DepSpecPrettyPrinter pretty(0, false);
-        _imp->cond->accept(pretty);
-        _imp->str.append(stringify(pretty));
-    }
-
-    return _imp->str;
 }
 
 std::string

@@ -26,8 +26,6 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/portage_dep_parser.hh>
-#include <paludis/eapi.hh>
 #include <paludis/repository_info.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>

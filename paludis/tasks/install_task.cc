@@ -19,8 +19,6 @@
 
 #include "install_task.hh"
 #include <paludis/dep_spec.hh>
-#include <paludis/portage_dep_parser.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/action.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
@@ -115,10 +113,6 @@ InstallTask::add_target(const std::string & target)
     {
         if ((target != "insecurity") && ((s = ((_imp->env->set(SetName(target)))))))
         {
-            DepSpecPrettyPrinter p(0, false);
-            s->accept(p);
-            Log::get_instance()->message(ll_debug, lc_context) << "target '" << target << "' is set '" << p << "'";
-
             if (_imp->had_set_targets)
                 throw MultipleSetTargetsSpecified();
 
@@ -177,9 +171,6 @@ InstallTask::execute()
 
     /* build up our dep list */
     on_build_deplist_pre();
-    DepSpecPrettyPrinter p(0, false);
-    _imp->targets->accept(p);
-    Log::get_instance()->message(ll_debug, lc_context) << "_imp->targets is '" << p << "'";
     _imp->dep_list.add(*_imp->targets, _imp->destinations);
     on_build_deplist_post();
 

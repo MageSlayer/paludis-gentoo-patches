@@ -21,6 +21,8 @@
 #include <paludis/repositories/e/e_repository_profile_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -33,7 +35,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
@@ -323,7 +324,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
                 stringify(k->first) + "' is now '" + stringify(environment_variables[k->first]) + "'");
     }
 
-    std::string use_expand_var(EAPIData::get_instance()->eapi_from_string(
+    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
                 repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
     try
     {
@@ -342,7 +343,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
 void
 Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 {
-    std::string use_var(EAPIData::get_instance()->eapi_from_string(
+    std::string use_var(erepository::EAPIData::get_instance()->eapi_from_string(
                 repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use);
     try
     {
@@ -357,7 +358,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 + e.message() + " (" + e.what() + ")");
     }
 
-    std::string use_expand_var(EAPIData::get_instance()->eapi_from_string(
+    std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
                 repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand);
     try
     {
@@ -372,7 +373,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
                 + e.message() + " (" + e.what() + ")");
     }
 
-    std::string use_expand_hidden_var(EAPIData::get_instance()->eapi_from_string(
+    std::string use_expand_hidden_var(erepository::EAPIData::get_instance()->eapi_from_string(
                 repository->params().profile_eapi)->supported->ebuild_environment_variables->env_use_expand_hidden);
     try
     {
@@ -391,7 +392,7 @@ Implementation<ERepositoryProfile>::load_special_make_defaults_vars()
 bool
 Implementation<ERepositoryProfile>::is_incremental(const std::string & s) const
 {
-    tr1::shared_ptr<const EAPI> e(EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
+    tr1::shared_ptr<const erepository::EAPI> e(erepository::EAPIData::get_instance()->eapi_from_string(repository->params().profile_eapi));
 
     try
     {
@@ -581,7 +582,7 @@ Implementation<ERepositoryProfile>::add_use_expand_to_use()
 
     stacked_values_list.push_back(StackedValues("use_expand special values"));
 
-    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
+    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
                     repository->params().profile_eapi)->supported->ebuild_options->use_expand_separator));
 
     for (UseFlagSet::const_iterator x(use_expand.begin()), x_end(use_expand.end()) ;

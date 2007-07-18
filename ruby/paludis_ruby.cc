@@ -58,9 +58,6 @@ namespace
     static VALUE c_ambiguous_package_name_error;
     static VALUE c_no_such_package_error;
     static VALUE c_no_such_repository_error;
-    static VALUE c_dep_string_error;
-    static VALUE c_dep_string_parse_error;
-    static VALUE c_dep_string_nesting_error;
     static VALUE c_configuration_error;
     static VALUE c_config_file_error;
     static VALUE c_dep_list_error;
@@ -149,12 +146,6 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_package_database_lookup_error, dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseError *>(&ee))
         rb_raise(c_package_database_error, dynamic_cast<const paludis::PackageDatabaseError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::DepStringNestingError *>(&ee))
-        rb_raise(c_dep_string_nesting_error, dynamic_cast<const paludis::DepStringNestingError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::DepStringParseError *>(&ee))
-        rb_raise(c_dep_string_parse_error, dynamic_cast<const paludis::DepStringParseError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::DepStringError *>(&ee))
-        rb_raise(c_dep_string_error, dynamic_cast<const paludis::DepStringError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::AllMaskedError *>(&ee))
     {
         VALUE ex_args[2];
@@ -274,9 +265,6 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
     c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
     c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
-    c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
-    c_dep_string_parse_error = rb_define_class_under(c_paludis_module, "DepStringParseError", c_dep_string_error);
-    c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
     c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
     c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
     c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);

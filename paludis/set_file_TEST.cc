@@ -20,7 +20,6 @@
 #include "set_file.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -28,6 +27,58 @@
 
 using namespace test;
 using namespace paludis;
+
+namespace
+{
+    struct DepSpecStringifier :
+        ConstVisitor<DependencySpecTree>
+    {
+        std::ostringstream s;
+
+        void
+        visit_sequence(const AllDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << "( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << "|| ( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_sequence(const UseDepSpec & a,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            s << (a.inverse() ? "!" : "") << a.flag() << "? ( ";
+            std::for_each(cur, end, accept_visitor(*this));
+            s << ") ";
+        }
+
+        void
+        visit_leaf(const PackageDepSpec & p)
+        {
+            s << p << " ";
+        }
+
+        void
+        visit_leaf(const BlockDepSpec & b)
+        {
+            s << "!" << *b.blocked_spec() << " ";
+        }
+
+    };
+}
 
 namespace test_cases
 {
@@ -45,17 +96,17 @@ namespace test_cases
                     .environment(0));
 
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 ) ");
             }
 
             f.add("foo/bar");
             f.add("moo/oink");
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar >=bar/baz-1.23 moo/oink");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 moo/oink ) ");
             }
 
             f.rewrite();
@@ -71,9 +122,9 @@ namespace test_cases
             f.remove("bar/cow");
 
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "foo/bar moo/oink");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar moo/oink ) ");
             }
 
             f.rewrite();
@@ -106,17 +157,17 @@ namespace test_cases
                     .environment(0));
 
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 ) ");
             }
 
             f.add("foo/bar");
             f.add("moo/oink");
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, ">=bar/baz-1.23 moo/oink");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 moo/oink ) ");
             }
 
             f.rewrite();
@@ -132,9 +183,9 @@ namespace test_cases
             f.remove("bar/cow");
 
             {
-                DepSpecPrettyPrinter p(0, false);
+                DepSpecStringifier p;
                 f.contents()->accept(p);
-                TEST_CHECK_STRINGIFY_EQUAL(p, "moo/oink");
+                TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink ) ");
             }
 
             f.rewrite();

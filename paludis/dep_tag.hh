@@ -179,12 +179,6 @@ namespace paludis
         public virtual ConstAcceptInterface<DepTagVisitorTypes>
     {
         protected:
-            /**
-             * Return a string containing all our state, for
-             * comparison with other tags.
-             */
-            virtual std::string full_text() const;
-
             ///\name Basic operations
             ///\{
 
@@ -292,10 +286,6 @@ namespace paludis
     {
         private:
             void _make_str() const;
-
-        protected:
-            virtual std::string full_text() const;
-
 
         public:
             ///\name Basic operations

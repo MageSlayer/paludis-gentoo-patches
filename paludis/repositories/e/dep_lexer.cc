@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_spec.hh>
-#include <paludis/portage_dep_lexer.hh>
+#include <paludis/repositories/e/dep_lexer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
@@ -33,18 +33,19 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 namespace paludis
 {
     /**
-     * Implementation data for PortageDepLexer.
+     * Implementation data for DepLexer.
      *
      * \ingroup grpdeplexer
      */
     template<>
-    struct Implementation<PortageDepLexer>
+    struct Implementation<DepLexer>
     {
-        std::list<std::pair<PortageDepLexerLexeme, std::string> > tokens;
+        std::list<std::pair<DepLexerLexeme, std::string> > tokens;
     };
 }
 
@@ -59,8 +60,8 @@ DepStringError::DepStringError(const std::string & d, const std::string & m) thr
 {
 }
 
-PortageDepLexer::PortageDepLexer(const std::string & s) :
-    PrivateImplementationPattern<PortageDepLexer>(new Implementation<PortageDepLexer>)
+DepLexer::DepLexer(const std::string & s) :
+    PrivateImplementationPattern<DepLexer>(new Implementation<DepLexer>)
 {
     Context context("When lexing dependency string '" + s + "':");
 
@@ -97,18 +98,18 @@ PortageDepLexer::PortageDepLexer(const std::string & s) :
     }
 }
 
-PortageDepLexer::~PortageDepLexer()
+DepLexer::~DepLexer()
 {
 }
 
-PortageDepLexer::Iterator
-PortageDepLexer::begin() const
+DepLexer::Iterator
+DepLexer::begin() const
 {
     return Iterator(_imp->tokens.begin());
 }
 
-PortageDepLexer::Iterator
-PortageDepLexer::end() const
+DepLexer::Iterator
+DepLexer::end() const
 {
     return Iterator(_imp->tokens.end());
 }

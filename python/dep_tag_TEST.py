@@ -58,7 +58,7 @@ class TestCase_04_DependencyDepTag(unittest.TestCase):
         repo = FakeRepository(env, "repo")
         pid = repo.add_version("cat/foo", "1.0")
         pds = PackageDepSpec("=cat/boo-1", PackageDepSpecParseMode.PERMISSIVE)
-        cds = PortageDepParser.parse_depend("", EAPIData.instance.eapi_from_string("0"))
+        cds = env.set("everything")
         dt = DependencyDepTag(pid, pds, cds);
 
     def test_01_instance(self):

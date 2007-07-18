@@ -89,7 +89,6 @@ namespace paludis
                 virtual const VersionSpec version() const;
                 virtual const SlotName slot() const;
                 virtual const tr1::shared_ptr<const Repository> repository() const;
-                virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
@@ -119,6 +118,8 @@ namespace paludis
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const;
                 virtual std::size_t extra_hash_value() const;
+
+                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

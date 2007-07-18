@@ -17,19 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_EAPI_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_EAPI_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_ID_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_ID_HH 1
+
+#include <paludis/package_id.hh>
+#include <paludis/repositories/e/eapi-fwd.hh>
 
 namespace paludis
 {
-    class EAPI;
-    class SupportedEAPI;
-    class EAPIData;
-    class EAPIConfigurationError;
-    class EAPIEbuildPhases;
-    class EAPIEbuildMetadataVariables;
-    class EAPIEbuildEnvironmentVariables;
-    class EAPIEbuildOptions;
+    namespace erepository
+    {
+        class ERepositoryID :
+            public PackageID
+        {
+            public:
+                virtual const tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
 #endif

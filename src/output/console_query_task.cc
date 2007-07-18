@@ -32,9 +32,7 @@
 #include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/eapi.hh>
 #include <paludis/package_database.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <list>
@@ -174,12 +172,15 @@ namespace
     {
         private:
             const ConsoleQueryTask * const task;
+            const Environment * const env;
             const tr1::shared_ptr<const PackageID> id;
             const MetadataKeyType type;
 
         public:
-            Displayer(const ConsoleQueryTask * const t, const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k) :
+            Displayer(const ConsoleQueryTask * const t, const Environment * const e,
+                    const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k) :
                 task(t),
+                env(e),
                 id(i),
                 type(k)
             {
@@ -213,31 +214,100 @@ namespace
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_dependency(k.human_name(), k.raw_name(), k.value(), false);
+                {
+                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name());
+                        task->output_right_column(k.pretty_print_flat());
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column("");
+                        task->output_stream() << k.pretty_print();
+                        task->output_endl();
+                    }
+                }
             }
 
             void visit(const MetadataSpecTreeKey<URISpecTree> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_uri(k.human_name(), k.raw_name(), k.value(), true);
+                {
+                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name());
+                        task->output_right_column(k.pretty_print_flat());
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_stream() << k.pretty_print();
+                        task->output_right_column("");
+                    }
+                }
             }
 
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_license(k.human_name(), k.raw_name(), k.value(), id);
+                {
+                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name());
+                        task->output_right_column(k.pretty_print_flat());
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        LicenceDisplayer d(task->output_stream(), env, id);
+                        k.value()->accept(d);
+                        task->output_right_column("");
+                    }
+                }
             }
 
             void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_provides(k.human_name(), k.raw_name(), k.value(), true);
+                {
+                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name());
+                        task->output_right_column(k.pretty_print_flat());
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column("");
+                        task->output_stream() << k.pretty_print();
+                        task->output_endl();
+                    }
+                }
             }
 
             void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_restrict(k.human_name(), k.raw_name(), k.value(), true);
+                {
+                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name());
+                        task->output_right_column(k.pretty_print_flat());
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column("");
+                        task->output_stream() << k.pretty_print();
+                        task->output_endl();
+                    }
+                }
             }
 
             void visit(const MetadataPackageIDKey & k)
@@ -267,27 +337,21 @@ namespace
 void
 ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
 {
-    if (! id->eapi()->supported)
-    {
-        display_metadata_key("EAPI", "EAPI", id->eapi()->name);
-        return;
-    }
-
-    Displayer ds(this, id, mkt_significant);
+    Displayer ds(this, _imp->env, id, mkt_significant);
     std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(ds));
 
-    Displayer dn(this, id, mkt_normal);
+    Displayer dn(this, _imp->env, id, mkt_normal);
     std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dn));
 
     if (want_deps() || want_raw())
     {
-        Displayer dd(this, id, mkt_dependencies);
+        Displayer dd(this, _imp->env, id, mkt_dependencies);
         std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dd));
     }
 
     if (want_raw())
     {
-        Displayer dr(this, id, mkt_internal);
+        Displayer dr(this, _imp->env, id, mkt_internal);
         std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dr));
     }
 }
@@ -310,26 +374,6 @@ ConsoleQueryTask::display_metadata_key(const std::string & k, const std::string 
 
     output_left_column((want_raw() ? kk : k) + ":");
     output_right_column(normalise(v));
-}
-
-void
-ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, tr1::shared_ptr<const LicenseSpecTree::ConstItem> l,
-        const tr1::shared_ptr<const PackageID> & display_entry) const
-{
-    output_left_column((want_raw() ? kk : k) + ":");
-
-    if (want_raw())
-    {
-        DepSpecPrettyPrinter p(0, false);
-        l->accept(p);
-        output_right_column(stringify(p));
-    }
-    else
-    {
-        LicenceDisplayer d(output_stream(), _imp->env, display_entry);
-        l->accept(d);
-        output_right_column("");
-    }
 }
 
 namespace
@@ -379,61 +423,6 @@ namespace
         d->accept(e);
         return e.empty;
     }
-}
-
-namespace
-{
-    template <typename T_>
-    void display_dep(const ConsoleQueryTask * const q, const std::string & k,
-            const std::string & kk, tr1::shared_ptr<const T_> d, const bool one_line)
-    {
-        if (is_spec_empty(d))
-            return;
-
-        q->output_left_column((q->want_raw() ? kk : k) + ":");
-
-        if (one_line)
-        {
-            DepSpecPrettyPrinter p(0, false);
-            d->accept(p);
-            q->output_stream() << p << std::endl;
-        }
-        else
-        {
-            q->output_right_column("");
-            DepSpecPrettyPrinter p(q->left_column_width() + 5);
-            d->accept(p);
-            q->output_stream() << p;
-        }
-    }
-}
-
-void
-ConsoleQueryTask::display_metadata_dependency(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const DependencySpecTree::ConstItem> d, const bool one_line) const
-{
-    display_dep(this, k, kk, d, one_line);
-}
-
-void
-ConsoleQueryTask::display_metadata_uri(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const URISpecTree::ConstItem> d, const bool one_line) const
-{
-    display_dep(this, k, kk, d, one_line);
-}
-
-void
-ConsoleQueryTask::display_metadata_provides(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const ProvideSpecTree::ConstItem> d, const bool one_line) const
-{
-    display_dep(this, k, kk, d, one_line);
-}
-
-void
-ConsoleQueryTask::display_metadata_restrict(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const RestrictSpecTree::ConstItem> d, const bool one_line) const
-{
-    display_dep(this, k, kk, d, one_line);
 }
 
 void

@@ -30,7 +30,6 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/eapi-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -63,7 +62,6 @@ namespace paludis
             virtual const VersionSpec version() const = 0;
             virtual const SlotName slot() const = 0;
             virtual const tr1::shared_ptr<const Repository> repository() const = 0;
-            virtual const tr1::shared_ptr<const EAPI> eapi() const = 0;
 
             ///\name Specific metadata keys
             ///\{
@@ -117,6 +115,14 @@ namespace paludis
             MasksIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Do we break Portage?
+             *
+             * This method may be used by Environment implementations to apply a "we don't
+             * want packages that break Portage" mask.
+             */
+            virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 

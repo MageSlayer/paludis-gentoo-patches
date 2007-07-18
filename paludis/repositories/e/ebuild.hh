@@ -42,6 +42,7 @@ namespace paludis
     namespace erepository
     {
         class EbuildID;
+        class ERepositoryID;
 
 #include <paludis/repositories/e/ebuild-sr.hh>
 

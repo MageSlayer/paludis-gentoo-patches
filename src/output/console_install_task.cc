@@ -34,7 +34,6 @@
 #include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
-#include <paludis/eapi.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>

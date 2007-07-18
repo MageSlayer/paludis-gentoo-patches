@@ -81,7 +81,7 @@ DEFS= \
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt hooker.bash
-SUBDIRS = digests distributions eapis fetchers syncers util selinux . dep_list merger repositories environments args tasks
+SUBDIRS = digests distributions fetchers syncers util selinux . dep_list merger repositories environments args tasks
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist
@@ -148,7 +148,7 @@ built-sources : $(BUILT_SOURCES)
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \

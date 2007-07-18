@@ -23,7 +23,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>

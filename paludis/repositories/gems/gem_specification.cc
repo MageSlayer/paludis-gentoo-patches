@@ -25,7 +25,6 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
-#include <paludis/eapi.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
@@ -91,14 +90,12 @@ namespace paludis
 
         const Environment * const environment;
         const tr1::shared_ptr<const Repository> repository;
-        const tr1::shared_ptr<const EAPI> eapi;
 
         mutable bool has_masks;
 
         Implementation(const Environment * const e, const tr1::shared_ptr<const Repository> & r) :
             environment(e),
             repository(r),
-            eapi(EAPIData::get_instance()->eapi_from_string("gems-1")),
             has_masks(false)
         {
         }
@@ -361,12 +358,6 @@ const tr1::shared_ptr<const Repository>
 GemSpecification::repository() const
 {
     return _imp->repository;
-}
-
-const tr1::shared_ptr<const EAPI>
-GemSpecification::eapi() const
-{
-    return _imp->eapi;
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>
@@ -634,5 +625,11 @@ GemSpecification::need_masks_added() const
     tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
     if (breaks_mask)
         add_mask(breaks_mask);
+}
+
+bool
+GemSpecification::breaks_portage() const
+{
+    return true;
 }
 

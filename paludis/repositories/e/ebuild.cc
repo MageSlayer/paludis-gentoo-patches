@@ -20,6 +20,8 @@
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -32,10 +34,8 @@
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
-#include <paludis/eapi.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/portage_dep_parser.hh>
 
 #include <sys/resource.h>
 #include <sys/time.h>

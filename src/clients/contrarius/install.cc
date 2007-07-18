@@ -38,7 +38,6 @@
 #include <paludis/environment.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/query.hh>
-#include <paludis/eapi.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 

@@ -22,7 +22,6 @@
 
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>

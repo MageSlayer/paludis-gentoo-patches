@@ -34,7 +34,6 @@
 #include <paludis/repository.hh>
 #include <paludis/contents.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/eapi.hh>
 #include <paludis/util/stringify.hh>
 
 #ifdef ENABLE_RUBY_QA
@@ -84,7 +83,6 @@ namespace paludis
         VALUE dep_tag_to_value(tr1::shared_ptr<const DepTag>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(tr1::shared_ptr<const Contents>);
-        VALUE eapi_to_value(const tr1::shared_ptr<const EAPI> &);
 
         VersionSpec value_to_version_spec(VALUE v);
         tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);

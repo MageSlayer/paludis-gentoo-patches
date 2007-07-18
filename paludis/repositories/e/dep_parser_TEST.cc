@@ -17,7 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/paludis.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sstream>
@@ -26,278 +28,279 @@
 
 using namespace test;
 using namespace paludis;
+using namespace paludis::erepository;
 
 /** \file
- * Test cases for PortageDepParser.
+ * Test cases for DepParser.
  *
  */
 
 namespace test_cases
 {
     /**
-     * \test Test PortageDepParser with an empty input.
+     * \test Test DepParser with an empty input.
      *
      */
-    struct PortageDepParserEmptyTest : TestCase
+    struct DepParserEmptyTest : TestCase
     {
-        PortageDepParserEmptyTest() : TestCase("empty") { }
+        DepParserEmptyTest() : TestCase("empty") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("",
+            DepParser::parse_depend("",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_empty;
 
     /**
-     * \test Test PortageDepParser with a blank input.
+     * \test Test DepParser with a blank input.
      *
      */
-    struct PortageDepParserBlankTest : TestCase
+    struct DepParserBlankTest : TestCase
     {
-        PortageDepParserBlankTest() : TestCase("blank") { }
+        DepParserBlankTest() : TestCase("blank") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("   \n   \t",
+            DepParser::parse_depend("   \n   \t",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_blank;
 
     /**
-     * \test Test PortageDepParser with a package.
+     * \test Test DepParser with a package.
      *
      */
-    struct PortageDepParserPackageTest : TestCase
+    struct DepParserPackageTest : TestCase
     {
-        PortageDepParserPackageTest() : TestCase("package") { }
+        DepParserPackageTest() : TestCase("package") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("app-editors/vim",
+            DepParser::parse_depend("app-editors/vim",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
         }
     } test_dep_spec_parser_package;
 
     /**
-     * \test Test PortageDepParser with a decorated package.
+     * \test Test DepParser with a decorated package.
      *
      */
-    struct PortageDepParserDecoratedPackageTest : TestCase
+    struct DepParserDecoratedPackageTest : TestCase
     {
-        PortageDepParserDecoratedPackageTest() : TestCase("decorated package") { }
+        DepParserDecoratedPackageTest() : TestCase("decorated package") { }
 
         void run()
         {
             DepSpecPrettyPrinter d1(0, false);
-            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha",
+            DepParser::parse_depend(">=app-editors/vim-6.4_alpha",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
 
             DepSpecPrettyPrinter d2(0, false);
-            PortageDepParser::parse_depend("=app-editors/vim-6.4_alpha-r1",
+            DepParser::parse_depend("=app-editors/vim-6.4_alpha-r1",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
 
             DepSpecPrettyPrinter d3(0, false);
-            PortageDepParser::parse_depend(">=app-editors/vim-6.4_alpha:one",
+            DepParser::parse_depend(">=app-editors/vim-6.4_alpha:one",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
         }
     } test_dep_spec_parser_decorated_package;
 
     /**
-     * \test Test PortageDepParser with a sequence of packages.
+     * \test Test DepParser with a sequence of packages.
      *
      */
-    struct PortageDepParserPackagesTest : TestCase
+    struct DepParserPackagesTest : TestCase
     {
-        PortageDepParserPackagesTest() : TestCase("packages") { }
+        DepParserPackagesTest() : TestCase("packages") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
+            DepParser::parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
         }
     } test_dep_spec_parser_packages;
 
-    struct PortageDepParserAnyTest : TestCase
+    struct DepParserAnyTest : TestCase
     {
-        PortageDepParserAnyTest() : TestCase("any") { }
+        DepParserAnyTest() : TestCase("any") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("|| ( one/one two/two )",
+            DepParser::parse_depend("|| ( one/one two/two )",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
 
-    struct PortageDepParserAnyUseTest : TestCase
+    struct DepParserAnyUseTest : TestCase
     {
-        PortageDepParserAnyUseTest() : TestCase("any use") { }
+        DepParserAnyUseTest() : TestCase("any use") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
+            DepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
                     *EAPIData::get_instance()->eapi_from_string("0"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
 
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
+            TEST_CHECK_THROWS(DepParser::parse_depend("|| ( one/one foo? ( two/two ) )",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
 
             DepSpecPrettyPrinter e(0, false);
-            PortageDepParser::parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
+            DepParser::parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
         }
     } test_dep_spec_parser_any_use;
 
     /**
-     * \test Test PortageDepParser with an all group.
+     * \test Test DepParser with an all group.
      *
      */
-    struct PortageDepParserAllTest : TestCase
+    struct DepParserAllTest : TestCase
     {
-        PortageDepParserAllTest() : TestCase("all") { }
+        DepParserAllTest() : TestCase("all") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend(" ( one/one two/two )    ",
+            DepParser::parse_depend(" ( one/one two/two )    ",
                     *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
         }
     } test_dep_spec_parser_all;
 
     /**
-     * \test Test PortageDepParser with a use group.
+     * \test Test DepParser with a use group.
      *
      */
-    struct PortageDepParserUseTest : TestCase
+    struct DepParserUseTest : TestCase
     {
-        PortageDepParserUseTest() : TestCase("use") { }
+        DepParserUseTest() : TestCase("use") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            DepParser::parse_depend("foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
         }
     } test_dep_spec_parser_use;
 
     /**
-     * \test Test PortageDepParser with an inverse use group.
+     * \test Test DepParser with an inverse use group.
      *
      */
-    struct PortageDepParserInvUseTest : TestCase
+    struct DepParserInvUseTest : TestCase
     {
-        PortageDepParserInvUseTest() : TestCase("!use") { }
+        DepParserInvUseTest() : TestCase("!use") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            PortageDepParser::parse_depend("!foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            DepParser::parse_depend("!foo? ( one/one )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
         }
     } test_dep_spec_parser_inv_use;
 
-    struct PortageDepParserURITest : TestCase
+    struct DepParserURITest : TestCase
     {
-        PortageDepParserURITest() : TestCase("uri") { }
+        DepParserURITest() : TestCase("uri") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, true);
-            PortageDepParser::parse_uri("a\n->\tb", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
+            DepParser::parse_uri("a\n->\tb", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "a -> b\n");
 
             DepSpecPrettyPrinter e(0, true);
-            PortageDepParser::parse_uri("a-> b", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
+            DepParser::parse_uri("a-> b", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
 
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> b",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a -> b",
                         *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_uri;
 
     /**
-     * \test Test PortageDepParser nesting errors.
+     * \test Test DepParser nesting errors.
      *
      */
-    struct PortageDepParserBadNestingTest : TestCase
+    struct DepParserBadNestingTest : TestCase
     {
-        PortageDepParserBadNestingTest() : TestCase("bad nesting") { }
+        DepParserBadNestingTest() : TestCase("bad nesting") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one",
+            TEST_CHECK_THROWS(DepParser::parse_depend("!foo? ( one/one",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ( one/one ) )",
+            TEST_CHECK_THROWS(DepParser::parse_depend("!foo? ( one/one ) )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) )",
+            TEST_CHECK_THROWS(DepParser::parse_depend("( ( ( ) )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("( ( ( ) ) ) )",
+            TEST_CHECK_THROWS(DepParser::parse_depend("( ( ( ) ) ) )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")",
+            TEST_CHECK_THROWS(DepParser::parse_depend(")",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_nesting;
 
     /**
-     * \test Test PortageDepParser weird errors.
+     * \test Test DepParser weird errors.
      *
      */
-    struct PortageDepParserBadValuesTest : TestCase
+    struct DepParserBadValuesTest : TestCase
     {
-        PortageDepParserBadValuesTest() : TestCase("bad values") { }
+        DepParserBadValuesTest() : TestCase("bad values") { }
 
         void run()
         {
             DepSpecPrettyPrinter d(0, false);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("||",
+            TEST_CHECK_THROWS(DepParser::parse_depend("||",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("|| ",
+            TEST_CHECK_THROWS(DepParser::parse_depend("|| ",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("foo?",
+            TEST_CHECK_THROWS(DepParser::parse_depend("foo?",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("!foo? ||",
+            TEST_CHECK_THROWS(DepParser::parse_depend("!foo? ||",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(((",
+            TEST_CHECK_THROWS(DepParser::parse_depend("(((",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend(")",
+            TEST_CHECK_THROWS(DepParser::parse_depend(")",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_depend("(foo/bar)",
+            TEST_CHECK_THROWS(DepParser::parse_depend("(foo/bar)",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_license("a -> b",
+            TEST_CHECK_THROWS(DepParser::parse_license("a -> b",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
 
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("( -> )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("( -> )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("( -> )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("( -> )",
                         *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("foo? -> bar",
+            TEST_CHECK_THROWS(DepParser::parse_uri("foo? -> bar",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a ->",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a ->",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> ( )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a -> ( )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a -> )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> || ( )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a -> || ( )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
-            TEST_CHECK_THROWS(PortageDepParser::parse_uri("a -> foo? ( )",
+            TEST_CHECK_THROWS(DepParser::parse_uri("a -> foo? ( )",
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_values;

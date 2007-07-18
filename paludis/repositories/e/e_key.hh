@@ -26,10 +26,10 @@
 
 namespace paludis
 {
-    class PackageID;
-
     namespace erepository
     {
+        class ERepositoryID;
+
         class EStringKey :
             public MetadataStringKey
         {
@@ -37,7 +37,7 @@ namespace paludis
                 const std::string _value;
 
             public:
-                EStringKey(const tr1::shared_ptr<const PackageID> &,
+                EStringKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EStringKey();
 
@@ -53,11 +53,17 @@ namespace paludis
                 Implementation<EDependenciesKey> * const _imp;
 
             public:
-                EDependenciesKey(const tr1::shared_ptr<const PackageID> &,
+                EDependenciesKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EDependenciesKey();
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 IdleActionResult idle_load() const;
@@ -71,11 +77,17 @@ namespace paludis
                 Implementation<EURIKey> * const _imp;
 
             public:
-                EURIKey(const tr1::shared_ptr<const PackageID> &,
+                EURIKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EURIKey();
 
                 virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -87,11 +99,17 @@ namespace paludis
                 Implementation<ERestrictKey> * const _imp;
 
             public:
-                ERestrictKey(const tr1::shared_ptr<const PackageID> &,
+                ERestrictKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ERestrictKey();
 
                 virtual const tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -103,11 +121,17 @@ namespace paludis
                 Implementation<EProvideKey> * const _imp;
 
             public:
-                EProvideKey(const tr1::shared_ptr<const PackageID> &,
+                EProvideKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EProvideKey();
 
                 virtual const tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -119,7 +143,7 @@ namespace paludis
                 Implementation<ELicenseKey> * const _imp;
 
             public:
-                ELicenseKey(const tr1::shared_ptr<const PackageID> &,
+                ELicenseKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
@@ -127,6 +151,12 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 IdleActionResult idle_load() const;
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EIUseKey :
@@ -137,7 +167,7 @@ namespace paludis
                 Implementation<EIUseKey> * const _imp;
 
             public:
-                EIUseKey(const tr1::shared_ptr<const PackageID> &,
+                EIUseKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EIUseKey();
 
@@ -155,7 +185,7 @@ namespace paludis
                 Implementation<EKeywordsKey> * const _imp;
 
             public:
-                EKeywordsKey(const tr1::shared_ptr<const PackageID> &,
+                EKeywordsKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EKeywordsKey();
 
@@ -173,7 +203,7 @@ namespace paludis
                 Implementation<EUseKey> * const _imp;
 
             public:
-                EUseKey(const tr1::shared_ptr<const PackageID> &,
+                EUseKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EUseKey();
 
@@ -189,7 +219,7 @@ namespace paludis
                 Implementation<EInheritedKey> * const _imp;
 
             public:
-                EInheritedKey(const tr1::shared_ptr<const PackageID> &,
+                EInheritedKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EInheritedKey();
 
@@ -205,7 +235,7 @@ namespace paludis
                 Implementation<EContentsKey> * const _imp;
 
             public:
-                EContentsKey(const tr1::shared_ptr<const PackageID> &,
+                EContentsKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~EContentsKey();
 
@@ -221,7 +251,7 @@ namespace paludis
                 Implementation<ECTimeKey> * const _imp;
 
             public:
-                ECTimeKey(const tr1::shared_ptr<const PackageID> &,
+                ECTimeKey(const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~ECTimeKey();
 

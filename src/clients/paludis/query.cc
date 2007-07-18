@@ -73,6 +73,27 @@ void do_one_package_query(
     cout << endl;
 }
 
+namespace
+{
+    struct SetPrettyPrinter :
+        ConstVisitor<SetSpecTree>
+    {
+        std::ostringstream stream;
+
+        void visit_leaf(const PackageDepSpec & d)
+        {
+            stream << "            " << d << std::endl;
+        }
+
+        void visit_sequence(const AllDepSpec &,
+                SetSpecTree::ConstSequenceIterator cur,
+                SetSpecTree::ConstSequenceIterator end)
+        {
+            std::for_each(cur, end, accept_visitor(*this));
+        }
+    };
+}
+
 void do_one_set_query(
         const tr1::shared_ptr<Environment>,
         const std::string & q,
@@ -80,10 +101,10 @@ void do_one_set_query(
         tr1::shared_ptr<const SetSpecTree::ConstItem> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
-    DepSpecPrettyPrinter packages(12);
+    SetPrettyPrinter packages;
     set->accept(packages);
     cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
-        << endl << packages << endl;
+        << endl << packages.stream.str() << endl;
 }
 
 void do_one_query(

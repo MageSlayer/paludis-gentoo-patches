@@ -24,6 +24,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/idle_action_pool-fwd.hh>
+#include <paludis/repositories/e/eapi-fwd.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 
 namespace paludis
 {
@@ -33,7 +35,7 @@ namespace paludis
     namespace erepository
     {
         class EbuildID :
-            public PackageID,
+            public ERepositoryID,
             public tr1::enable_shared_from_this<EbuildID>,
             private PrivateImplementationPattern<EbuildID>
         {
@@ -61,7 +63,6 @@ namespace paludis
                 virtual const VersionSpec version() const;
                 virtual const SlotName slot() const;
                 virtual const tr1::shared_ptr<const Repository> repository() const;
-                virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
@@ -111,6 +112,8 @@ namespace paludis
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
+
+                virtual const tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

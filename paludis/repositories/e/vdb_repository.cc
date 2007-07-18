@@ -22,14 +22,15 @@
 #include <paludis/repositories/e/vdb_unmerger.hh>
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 
 #include <paludis/action.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
@@ -37,7 +38,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repository_info.hh>
 #include <paludis/repository_name_cache.hh>
@@ -343,7 +343,7 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 void
-VDBRepository::perform_uninstall(const tr1::shared_ptr<const PackageID> & id,
+VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id,
         const UninstallActionOptions & o, bool reinstalling) const
 {
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
@@ -429,7 +429,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const PackageID> & id,
 }
 
 void
-VDBRepository::perform_config(const tr1::shared_ptr<const PackageID> & id) const
+VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) const
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
@@ -765,7 +765,7 @@ VDBRepository::load_provided_using_cache() const
         }
 
         DepSpecFlattener f(_imp->params.environment, id);
-        tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(PortageDepParser::parse_provide(
+        tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(DepParser::parse_provide(
                     join(next(next(tokens.begin())), tokens.end(), " "), *EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
@@ -978,7 +978,7 @@ VDBRepository::merge(const MergeOptions & m)
     WriteVDBEntryCommand write_vdb_entry_command(
             WriteVDBEntryParams::create()
             .environment(_imp->params.environment)
-            .package_id(m.package_id)
+            .package_id(tr1::static_pointer_cast<const ERepositoryID>(m.package_id))
             .output_directory(tmp_vdb_dir)
             .environment_file(m.environment_file));
 
@@ -1033,7 +1033,7 @@ VDBRepository::merge(const MergeOptions & m)
     if (is_replace)
     {
         UninstallActionOptions uninstall_options(false);
-        perform_uninstall(m.package_id, uninstall_options, true);
+        perform_uninstall(tr1::static_pointer_cast<const ERepositoryID>(m.package_id), uninstall_options, true);
     }
 
     VDBPostMergeCommand post_merge_command(
@@ -1117,7 +1117,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     _imp->categories[c] = q;
 }
 
-const tr1::shared_ptr<const PackageID>
+const tr1::shared_ptr<const ERepositoryID>
 VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f) const
 {
     Lock l(_imp->big_nasty_mutex);
@@ -1128,13 +1128,13 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
     return result;
 }
 
-const tr1::shared_ptr<const PackageID>
+const tr1::shared_ptr<const ERepositoryID>
 VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     Lock l(_imp->big_nasty_mutex);
 
     if (! has_package_named(q))
-        return tr1::shared_ptr<const PackageID>();
+        return tr1::shared_ptr<const ERepositoryID>();
 
     need_package_ids(q.category);
 
@@ -1143,8 +1143,8 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
     PackageIDSequence::Iterator i(std::find_if(_imp->ids[q]->begin(), _imp->ids[q]->end(),
                 tr1::bind(std::equal_to<VersionSpec>(), v, tr1::bind(tr1::mem_fn(&PackageID::version), _1))));
     if (_imp->ids[q]->end() == i)
-        return tr1::shared_ptr<const PackageID>();
-    return *i;
+        return tr1::shared_ptr<const ERepositoryID>();
+    return tr1::static_pointer_cast<const ERepositoryID>(*i);
 }
 
 namespace

@@ -1204,7 +1204,6 @@ AC_OUTPUT(
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
 	paludis/distributions/Makefile
-	paludis/eapis/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile
 	paludis/environments/no_config/Makefile
@@ -1217,6 +1216,7 @@ AC_OUTPUT(
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/e/Makefile
+	paludis/repositories/e/eapis/Makefile
 	paludis/repositories/e/ebuild/0/Makefile
 	paludis/repositories/e/ebuild/Makefile
 	paludis/repositories/e/ebuild/digests/Makefile

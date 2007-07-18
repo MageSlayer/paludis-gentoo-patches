@@ -712,7 +712,6 @@ namespace paludis
     };
 
     class ERepositoryParams;
-    class Layout;
 
     /**
      * Interface for handling ERepository specific functionality.
@@ -729,6 +728,8 @@ namespace paludis
             ///\{
 
             virtual std::string profile_variable(const std::string &) const = 0;
+            virtual std::string accept_keywords_variable() const = 0;
+            virtual std::string arch_variable() const = 0;
 
             virtual const ERepositoryParams & params() const = 0;
 
@@ -749,11 +750,6 @@ namespace paludis
             virtual void set_profile_by_arch(const UseFlagName &) = 0;
 
             ///\}
-
-            /**
-             * Gives our current Layout
-             */
-            virtual const tr1::shared_ptr<const Layout> layout() const = 0;
 
             virtual ~RepositoryEInterface();
     };

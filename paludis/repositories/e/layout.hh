@@ -32,140 +32,144 @@
 
 namespace paludis
 {
-    class ERepositoryEntries;
     class ERepository;
 
-    /**
-     * Manages the layout of a ERepository.
-     *
-     * \ingroup grperepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE Layout
+    namespace erepository
     {
-        private:
-            tr1::shared_ptr<const FSEntry> _master_repository_location;
+        class ERepositoryEntries;
 
-        protected:
-            ///\name Basic operations
-            ///\{
+        /**
+         * Manages the layout of a ERepository.
+         *
+         * \ingroup grperepository
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE Layout
+        {
+            private:
+                tr1::shared_ptr<const FSEntry> _master_repository_location;
 
-            Layout(tr1::shared_ptr<const FSEntry> master_repository_location);
+            protected:
+                ///\name Basic operations
+                ///\{
 
-            ///\}
+                Layout(tr1::shared_ptr<const FSEntry> master_repository_location);
 
-        public:
-            ///\name Basic operations
-            ///\{
+                ///\}
 
-            virtual ~Layout() = 0;
+            public:
+                ///\name Basic operations
+                ///\{
 
-            ///\}
+                virtual ~Layout() = 0;
 
-            ///\name Configuration information
-            ///\{
+                ///\}
 
-            tr1::shared_ptr<const FSEntry> master_repository_location() const;
+                ///\name Configuration information
+                ///\{
 
-            ///\}
+                tr1::shared_ptr<const FSEntry> master_repository_location() const;
 
-            ///\name Layout operations
-            ///\{
+                ///\}
 
-            virtual bool has_category_named(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                ///\name Layout operations
+                ///\{
 
-            virtual bool has_package_named(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual bool has_category_named(const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual bool has_package_named(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
-                    const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
-                    const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                        const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry info_packages_file(const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                        const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry info_variables_file(const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry info_packages_file(const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry package_directory(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry info_variables_file(const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry category_directory(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry package_directory(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry package_file(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry category_directory(const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry package_file(const PackageID &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual bool eapi_ebuild_suffix() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual FSEntry profiles_base_dir() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual bool eapi_ebuild_suffix() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSEntry profiles_base_dir() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            ///\}
-    };
+                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-    /**
-     * Thrown if a layout of the specified type does not exist.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grperepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE NoSuchLayoutType :
-        public ConfigurationError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NoSuchLayoutType(const std::string & format) throw ();
-    };
+                ///\}
+        };
 
-    /**
-     * Virtual constructor for Layout.
-     *
-     * \ingroup grperepository
-     */
-    class PALUDIS_VISIBLE LayoutMaker :
-        public VirtualConstructor<std::string,
-            tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
-                    tr1::shared_ptr<const ERepositoryEntries>,
-                    tr1::shared_ptr<const FSEntry>),
-            virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
-        public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
-    {
-        friend class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+        /**
+         * Thrown if a layout of the specified type does not exist.
+         *
+         * \ingroup grpexceptions
+         * \ingroup grperepository
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE NoSuchLayoutType :
+            public ConfigurationError
+        {
+            public:
+                /**
+                 * Constructor.
+                 */
+                NoSuchLayoutType(const std::string & format) throw ();
+        };
 
-        private:
-            LayoutMaker();
-    };
+        /**
+         * Virtual constructor for Layout.
+         *
+         * \ingroup grperepository
+         */
+        class PALUDIS_VISIBLE LayoutMaker :
+            public VirtualConstructor<std::string,
+                tr1::shared_ptr<Layout> (*) (const ERepository * const, const FSEntry &,
+                        tr1::shared_ptr<const ERepositoryEntries>,
+                        tr1::shared_ptr<const FSEntry>),
+                virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >,
+            public InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>
+        {
+            friend class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+
+            private:
+                LayoutMaker();
+        };
+    }
 }
 
 #endif

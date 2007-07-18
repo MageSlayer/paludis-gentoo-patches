@@ -104,7 +104,7 @@ module Paludis
         end
 
         def test_members
-            [:name, :version, :slot, :repository, :eapi, :==, :keywords_key,
+            [:name, :version, :slot, :repository, :==, :keywords_key,
                 :use_key, :iuse_key, :inherited_key, :short_description_key,
                 :long_description_key, :contents_key, :installed_time_key,
                 :source_origin_key, :binary_origin_key].each do |method|
@@ -139,11 +139,6 @@ module Paludis
         def test_repository
             assert_kind_of Repository, pid_testrepo.repository
             assert_equal 'testrepo', pid_testrepo.repository.name
-        end
-
-        def test_eapi
-            assert_kind_of EAPI, pid_testrepo.eapi
-            assert_equal '0', pid_testrepo.eapi.name
         end
 
         def test_slot
@@ -222,11 +217,6 @@ module Paludis
         def test_repository
             assert_kind_of Repository, pid_installed.repository
             assert_equal 'installed', pid_installed.repository.name
-        end
-
-        def test_eapi
-            assert_kind_of EAPI, pid_installed.eapi
-            assert_equal '0', pid_installed.eapi.name
         end
 
         def test_slot

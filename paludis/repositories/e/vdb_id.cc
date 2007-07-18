@@ -20,12 +20,12 @@
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
+#include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/distribution.hh>
-#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/util/fs_entry.hh>
@@ -628,9 +628,9 @@ namespace
     struct PerformAction :
         ConstVisitor<ActionVisitorTypes>
     {
-        const tr1::shared_ptr<const PackageID> id;
+        const tr1::shared_ptr<const erepository::ERepositoryID> id;
 
-        PerformAction(const tr1::shared_ptr<const PackageID> i) :
+        PerformAction(const tr1::shared_ptr<const erepository::ERepositoryID> i) :
             id(i)
         {
         }

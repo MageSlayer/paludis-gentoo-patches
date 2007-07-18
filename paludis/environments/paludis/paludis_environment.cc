@@ -481,7 +481,7 @@ namespace
 const tr1::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 {
-    if ((! _imp->config->accept_breaks_portage()) && breaks_portage(id))
+    if ((! _imp->config->accept_breaks_portage()) && id.breaks_portage())
         return make_shared_ptr(new BreaksPortageMask);
 
     return tr1::shared_ptr<const Mask>();

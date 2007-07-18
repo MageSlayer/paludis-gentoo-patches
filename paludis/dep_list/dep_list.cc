@@ -26,9 +26,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/distribution.hh>
-#include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>

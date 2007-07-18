@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,20 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_FWD_HH 1
+#include <paludis/version_spec.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 
-#include <iosfwd>
-#include <paludis/util/attributes.hh>
+using namespace paludis;
+using namespace paludis::erepository;
 
-namespace paludis
+bool
+ERepositoryID::breaks_portage() const
 {
-    class PortageDepParser;
-    class DepStringNestingError;
-    class DepStringParseError;
-
-#include <paludis/portage_dep_parser-se.hh>
-
+    return (version().has_try_part() || version().has_scm_part()
+            || (! eapi()->supported) || (eapi()->supported->breaks_portage));
 }
 
-#endif

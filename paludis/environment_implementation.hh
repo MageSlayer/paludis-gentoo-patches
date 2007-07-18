@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_IMPLEMENTATION_HH 1
 
 #include <paludis/environment.hh>
-#include <paludis/eapi-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
 namespace paludis
@@ -39,9 +38,6 @@ namespace paludis
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual bool breaks_portage(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations

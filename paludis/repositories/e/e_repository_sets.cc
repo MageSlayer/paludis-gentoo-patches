@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/glsa.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
@@ -29,7 +30,6 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>

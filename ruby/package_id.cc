@@ -204,22 +204,6 @@ namespace
     };
 
     /*
-     * Document-method: eapi
-     *
-     * call-seq:
-     *     eapi -> EAPI
-     *
-     * Our EAPI.
-     */
-    VALUE
-    package_id_eapi(VALUE self)
-    {
-        tr1::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        return eapi_to_value((*self_ptr)->eapi());
-    }
-
-    /*
      * call-seq:
      *     version -> VersionSpec
      *
@@ -432,7 +416,6 @@ namespace
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository", RUBY_FUNC_CAST(&package_id_repository), 0);
-        rb_define_method(c_package_id, "eapi", RUBY_FUNC_CAST(&package_id_eapi), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<UseFlagNameSet>,&PackageID::use_key>::fetch)), 0);

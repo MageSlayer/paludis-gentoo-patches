@@ -81,10 +81,6 @@ void PALUDIS_VISIBLE expose_package_id()
                 "[ro] Repository\n"
                 )
 
-        .add_property("eapi", &PackageID::eapi,
-                "[ro] EAPI\n"
-                )
-
         .def("__iter__", bp::range(&PackageID::begin_metadata, &PackageID::end_metadata))
 
         .def("find_metadata", &PackageIDWrapper::find_metadata,

@@ -17,14 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ebin.hh"
-#include <paludis/portage_dep_parser.hh>
+#include <paludis/repositories/e/ebin.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/eapi.hh>
 #include <paludis/about.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>

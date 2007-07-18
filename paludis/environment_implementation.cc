@@ -26,7 +26,6 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/eapi.hh>
 #include <paludis/hook.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -168,12 +167,5 @@ tr1::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
     return make_shared_ptr(new SetNameSet);
-}
-
-bool
-EnvironmentImplementation::breaks_portage(const PackageID & e) const
-{
-    return (e.version().has_try_part() || e.version().has_scm_part()
-            || (! e.eapi()->supported) || (e.eapi()->supported->breaks_portage));
 }
 

@@ -46,6 +46,7 @@
 #include <list>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;

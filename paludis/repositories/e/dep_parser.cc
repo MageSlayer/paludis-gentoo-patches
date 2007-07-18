@@ -18,9 +18,9 @@
  */
 
 #include <paludis/dep_spec.hh>
-#include <paludis/eapi.hh>
-#include <paludis/portage_dep_lexer.hh>
-#include <paludis/portage_dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_lexer.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -36,8 +36,9 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
-#include <paludis/portage_dep_parser-se.cc>
+#include <paludis/repositories/e/dep_parser-se.cc>
 
 DepStringParseError::DepStringParseError(const std::string & d,
         const std::string & m) throw () :
@@ -52,7 +53,7 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 
 namespace
 {
-    enum PortageDepParserState
+    enum DepParserState
     {
         dps_initial,
         dps_had_double_bar,
@@ -251,7 +252,7 @@ namespace
 
 template <typename H_, typename I_, bool any_, bool use_>
 tr1::shared_ptr<typename H_::ConstItem>
-PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ & p)
+DepParser::_parse(const std::string & s, bool disallow_any_use, const I_ & p)
 {
     Context context("When parsing dependency string '" + s + "':");
 
@@ -262,9 +263,9 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
             tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result, _1)), false));
 
     std::string arrow_lhs;
-    PortageDepParserState state(dps_initial);
-    PortageDepLexer lexer(s);
-    PortageDepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
+    DepParserState state(dps_initial);
+    DepLexer lexer(s);
+    DepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
 
     for ( ; i != i_end ; ++i)
     {
@@ -290,7 +291,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
 
-                                     PortageDepLexer::Iterator i_fwd(next(i));
+                                     DepLexer::Iterator i_fwd(next(i));
                                      if (i_fwd != i_end && i_fwd->first == dpl_whitespace && ++i_fwd != i_end
                                              && i_fwd->first == dpl_arrow)
                                      {
@@ -555,7 +556,7 @@ PortageDepParser::_parse(const std::string & s, bool disallow_any_use, const I_ 
 }
 
 tr1::shared_ptr<DependencySpecTree::ConstItem>
-PortageDepParser::parse_depend(const std::string & s, const EAPI & e)
+DepParser::parse_depend(const std::string & s, const EAPI & e)
 {
     Context c("When parsing dependency string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -568,7 +569,7 @@ PortageDepParser::parse_depend(const std::string & s, const EAPI & e)
 }
 
 tr1::shared_ptr<ProvideSpecTree::ConstItem>
-PortageDepParser::parse_provide(const std::string & s, const EAPI & e)
+DepParser::parse_provide(const std::string & s, const EAPI & e)
 {
     Context c("When parsing provide string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -580,7 +581,7 @@ PortageDepParser::parse_provide(const std::string & s, const EAPI & e)
 }
 
 tr1::shared_ptr<RestrictSpecTree::ConstItem>
-PortageDepParser::parse_restrict(const std::string & s, const EAPI & e)
+DepParser::parse_restrict(const std::string & s, const EAPI & e)
 {
     Context c("When parsing restrict string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -592,7 +593,7 @@ PortageDepParser::parse_restrict(const std::string & s, const EAPI & e)
 }
 
 tr1::shared_ptr<URISpecTree::ConstItem>
-PortageDepParser::parse_uri(const std::string & s, const EAPI & e)
+DepParser::parse_uri(const std::string & s, const EAPI & e)
 {
     Context c("When parsing URI string '" + s + "' using EAPI '" + e.name + "':");
 
@@ -604,7 +605,7 @@ PortageDepParser::parse_uri(const std::string & s, const EAPI & e)
 }
 
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
-PortageDepParser::parse_license(const std::string & s, const EAPI & e)
+DepParser::parse_license(const std::string & s, const EAPI & e)
 {
     Context c("When parsing license string '" + s + "' using EAPI '" + e.name + "':");
 

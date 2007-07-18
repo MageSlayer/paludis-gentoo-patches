@@ -24,6 +24,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 template class VirtualConstructor<std::string,
          tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,

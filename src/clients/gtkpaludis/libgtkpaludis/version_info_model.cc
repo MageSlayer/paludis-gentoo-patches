@@ -11,9 +11,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/query.hh>
-#include <paludis/eapi.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -103,39 +101,31 @@ VersionInfoModel::populate_in_paludis_thread(tr1::shared_ptr<const PackageID> p)
 
     if (p)
     {
-        if (p->eapi()->supported)
+        if (p->short_description_key())
+            data->items.push_back(PopulateDataItem("Description", markup_escape(p->short_description_key()->value())));
+
+        if (p->homepage_key())
+            data->items.push_back(PopulateDataItem("Homepage", markup_escape(p->homepage_key()->pretty_print_flat())));
+
+        if (p->keywords_key())
         {
-            if (p->short_description_key())
-                data->items.push_back(PopulateDataItem("Description", markup_escape(p->short_description_key()->value())));
-
-            if (p->homepage_key())
+            std::string km;
+            tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
+            for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                    k != k_end ; ++k)
             {
-                DepSpecPrettyPrinter homepage_printer(0, false);
-                p->homepage_key()->value()->accept(homepage_printer);
-                if (! stringify(homepage_printer).empty())
-                    data->items.push_back(PopulateDataItem("Homepage", markup_escape(stringify(homepage_printer))));
+                if (! km.empty())
+                    km.append(" ");
+
+                tr1::shared_ptr<KeywordNameSet> kc(new KeywordNameSet);
+                kc->insert(*k);
+                if (_imp->query_window->environment()->accept_keywords(kc, *p))
+                    km.append(markup_bold(markup_escape(stringify(*k))));
+                else
+                    km.append(markup_italic(markup_escape(stringify(*k))));
             }
 
-            if (p->keywords_key())
-            {
-                std::string km;
-                tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
-                for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
-                        k != k_end ; ++k)
-                {
-                    if (! km.empty())
-                        km.append(" ");
-
-                    tr1::shared_ptr<KeywordNameSet> kc(new KeywordNameSet);
-                    kc->insert(*k);
-                    if (_imp->query_window->environment()->accept_keywords(kc, *p))
-                        km.append(markup_bold(markup_escape(stringify(*k))));
-                    else
-                        km.append(markup_italic(markup_escape(stringify(*k))));
-                }
-
-                data->items.push_back(PopulateDataItem("Keywords", km));
-            }
+            data->items.push_back(PopulateDataItem("Keywords", km));
         }
     }
 

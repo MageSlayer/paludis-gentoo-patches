@@ -52,7 +52,6 @@
 
 #include <paludis/hook.hh>
 #include <paludis/query.hh>
-#include <paludis/eapi.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 

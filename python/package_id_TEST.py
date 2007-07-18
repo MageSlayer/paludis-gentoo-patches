@@ -55,10 +55,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(str(pid.repository.name), "testrepo")
         self.assertEquals(str(ipid.repository.name), "installed")
 
-    def test_06_eapi(self):
-        self.assertEquals(pid.eapi.name, "0")
-        self.assertEquals(ipid.eapi.name, "0")
-
     def test_07_canonical_form(self):
         self.assertEquals(pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0::testrepo")
         self.assertEquals(pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")

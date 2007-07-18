@@ -39,7 +39,7 @@ cat <<END > home/.paludis/licenses.conf
 */* *
 END
 
-mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
+mkdir -p testrepo/{eclass,sets,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
@@ -52,6 +52,9 @@ KERNEL=test
 END
 cat <<END > profiles/profiles.desc
 test testprofile stable
+END
+cat <<END > sets/bar.conf
+* foo/bar
 END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1

@@ -81,6 +81,12 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
+
+            virtual std::string pretty_print() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataPackageIDKey :
@@ -112,19 +118,6 @@ namespace paludis
             const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
     };
 
-    class PALUDIS_VISIBLE FakeUnsupportedMask :
-        public UnsupportedMask,
-        private PrivateImplementationPattern<FakeUnsupportedMask>
-    {
-        public:
-            FakeUnsupportedMask(const char, const std::string &, const std::string &);
-            ~FakeUnsupportedMask();
-
-            const char key() const;
-            const std::string description() const;
-            const std::string explanation() const;
-    };
-
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
         private PrivateImplementationPattern<FakePackageID>
@@ -148,7 +141,6 @@ namespace paludis
             virtual const VersionSpec version() const;
             virtual const SlotName slot() const;
             virtual const tr1::shared_ptr<const Repository> repository() const;
-            virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
             virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
@@ -188,6 +180,8 @@ namespace paludis
 
             virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void perform_action(Action &) const;
+
+            virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
     };
 }

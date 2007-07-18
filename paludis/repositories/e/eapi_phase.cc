@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "eapi_phase.hh"
+#include <paludis/repositories/e/eapi_phase.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/eapi.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>

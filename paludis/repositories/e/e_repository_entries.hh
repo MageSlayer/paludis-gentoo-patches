@@ -25,10 +25,13 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 #include <string>
 
 /** \file
@@ -40,95 +43,96 @@
 namespace paludis
 {
     class ERepository;
-    class Environment;
 
-    /**
-     * Handle entries (for example, ebuilds) in a ERepository.
-     *
-     * \ingroup grperepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE ERepositoryEntries
+    namespace erepository
     {
-        public:
-            ///\name Basic operations
-            ///\{
+        /**
+         * Handle entries (for example, ebuilds) in a ERepository.
+         *
+         * \ingroup grperepository
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE ERepositoryEntries
+        {
+            public:
+                ///\name Basic operations
+                ///\{
 
-            virtual ~ERepositoryEntries() = 0;
+                virtual ~ERepositoryEntries() = 0;
 
-            ///\}
+                ///\}
 
-            virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            /**
-             * Create a PackageID.
-             */
-            virtual const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
-                    const FSEntry &, const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                /**
+                 * Create an ERepositoryID.
+                 */
+                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
+                        const FSEntry &, const std::string &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            /**
-             * Fetch an environment variable.
-             */
-            virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
-                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                /**
+                 * Fetch an environment variable.
+                 */
+                virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
+                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
-            /**
-             * Handle an install.
-             */
-            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallActionOptions &,
-                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                /**
+                 * Handle an install.
+                 */
+                virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
-            /**
-             * Handle a pretend.
-             */
-            virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+                /**
+                 * Handle a pretend.
+                 */
+                virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
-            /**
-             * Handle a merge.
-             */
-            virtual void merge(const MergeOptions &) = 0;
-    };
+                /**
+                 * Handle a merge.
+                 */
+                virtual void merge(const MergeOptions &) = 0;
+        };
 
-    /**
-     * Thrown if a repository of the specified type does not exist.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE NoSuchERepositoryEntriesType : public ConfigurationError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NoSuchERepositoryEntriesType(const std::string & format) throw ();
-    };
+        /**
+         * Thrown if a repository of the specified type does not exist.
+         *
+         * \ingroup grpexceptions
+         * \ingroup grprepository
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE NoSuchERepositoryEntriesType : public ConfigurationError
+        {
+            public:
+                /**
+                 * Constructor.
+                 */
+                NoSuchERepositoryEntriesType(const std::string & format) throw ();
+        };
 
-    /**
-     * Virtual constructor for ERepositoryEntries.
-     *
-     * \ingroup grprepository
-     */
-    class PALUDIS_VISIBLE ERepositoryEntriesMaker :
-        public VirtualConstructor<std::string,
-            tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
-                    const ERepositoryParams &),
-            virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >,
-        public InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>
-    {
-        friend class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
+        /**
+         * Virtual constructor for ERepositoryEntries.
+         *
+         * \ingroup grprepository
+         */
+        class PALUDIS_VISIBLE ERepositoryEntriesMaker :
+            public VirtualConstructor<std::string,
+                tr1::shared_ptr<ERepositoryEntries> (*) (const Environment * const, ERepository * const,
+                        const ERepositoryParams &),
+                virtual_constructor_not_found::ThrowException<NoSuchERepositoryEntriesType> >,
+            public InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>
+        {
+            friend class InstantiationPolicy<ERepositoryEntriesMaker, instantiation_method::SingletonTag>;
 
-        private:
-            ERepositoryEntriesMaker();
-    };
-
+            private:
+                ERepositoryEntriesMaker();
+        };
+    }
 }
 
 #endif

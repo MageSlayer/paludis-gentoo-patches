@@ -24,11 +24,11 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/action.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>

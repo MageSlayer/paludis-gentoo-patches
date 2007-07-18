@@ -1,4 +1,4 @@
-SUBDIRS = ebuild qa .
+SUBDIRS = eapis ebuild qa .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
@@ -7,7 +7,9 @@ DISTCLEANFILES = \
 	ebuild-sr.hh ebuild-sr.cc \
 	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
 	vdb_merger-sr.hh vdb_merger-sr.cc \
-	vdb_unmerger-sr.hh vdb_unmerger-sr.cc
+	vdb_unmerger-sr.hh vdb_unmerger-sr.cc \
+	eapi-sr.hh eapi-sr.cc \
+	dep_parser-se.hh dep_parser-se.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -31,17 +33,24 @@ paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/pal
 libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_e_include_HEADERS = \
+	dep_lexer.hh \
+	dep_parser.hh \
+	dep_parser-se.hh \
+	dep_spec_pretty_printer.hh \
 	e_key.hh \
 	e_mask.hh \
 	e_repository.hh \
 	e_repository_entries.hh \
 	e_repository_exceptions.hh \
+	e_repository_id.hh \
 	e_repository_news.hh \
 	e_repository_params-sr.hh \
 	e_repository_params.hh \
 	e_repository_profile.hh \
 	e_repository_profile_file.hh \
 	e_repository_sets.hh \
+	eapi.hh \
+	eapi-sr.hh \
 	eapi_phase.hh \
 	ebin-se.hh \
 	ebin-sr.hh \
@@ -70,16 +79,21 @@ paludis_repositories_e_include_HEADERS = \
 	vdb_unmerger.hh
 
 libpaludiserepository_la_SOURCES = \
+	dep_lexer.cc \
+	dep_parser.cc \
+	dep_spec_pretty_printer.cc \
 	e_key.cc \
 	e_mask.cc \
 	e_repository.cc \
 	e_repository_entries.cc \
 	e_repository_exceptions.cc \
+	e_repository_id.cc \
 	e_repository_news.cc \
 	e_repository_params.cc \
 	e_repository_profile.cc \
 	e_repository_profile_file.cc \
 	e_repository_sets.cc \
+	eapi.cc \
 	eapi_phase.cc \
 	ebin.cc \
 	ebin_entries.cc \
@@ -157,7 +171,37 @@ e_repository_sets_TEST_LDADD = \
 
 e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
+dep_lexer_TEST_SOURCES = dep_lexer_TEST.cc
+
+dep_lexer_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+dep_parser_TEST_SOURCES = dep_parser_TEST.cc
+
+dep_parser_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 EXTRA_DIST = \
+	dep_lexer_TEST.cc \
+	dep_parser.se \
+	dep_parser-se.hh \
+	dep_parser-se.cc \
+	dep_parser_TEST.cc \
+	eapi.sr \
+	eapi-sr.hh \
+	eapi-sr.cc \
 	ebuild.sr \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
@@ -199,6 +243,8 @@ EXTRA_DIST = \
 	vdb_unmerger_TEST_cleanup.sh
 
 BUILT_SOURCES = \
+	dep_parser-se.hh \
+	dep_parser-se.cc \
 	e_repository_params-sr.hh \
 	e_repository_params-sr.cc \
 	glsa-sr.hh \
@@ -214,7 +260,9 @@ BUILT_SOURCES = \
 	vdb_merger-sr.hh \
 	vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh \
-	vdb_unmerger-sr.cc
+	vdb_unmerger-sr.cc \
+	eapi-sr.hh \
+	eapi-sr.cc
 
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
@@ -226,7 +274,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -266,6 +314,12 @@ ebin-sr.hh : ebin.sr $(top_srcdir)/misc/make_sr.bash
 ebin-sr.cc : ebin.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebin.sr > $@
 
+eapi-sr.hh : eapi.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/eapi.sr > $@
+
+eapi-sr.cc : eapi.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/eapi.sr > $@
+
 glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/glsa.sr > $@
 
@@ -283,6 +337,12 @@ ebin-se.hh : ebin.se $(top_srcdir)/misc/make_se.bash
 
 ebin-se.cc : ebin.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+dep_parser-se.cc : dep_parser.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 
 libpaludiserepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh
@@ -311,7 +371,14 @@ xml_things_TEST_LDADD = \
 
 endif
 
-TESTS = e_repository_TEST vdb_unmerger_TEST $(GLSA_TESTS) e_repository_sets_TEST
+TESTS = \
+	dep_lexer_TEST \
+	dep_parser_TEST \
+	e_repository_TEST \
+	vdb_unmerger_TEST \
+	$(GLSA_TESTS) \
+	e_repository_sets_TEST
+
 check_PROGRAMS = $(TESTS)
 
 built-sources : $(BUILT_SOURCES)

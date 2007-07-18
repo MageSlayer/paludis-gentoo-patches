@@ -23,8 +23,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
-#include <paludis/eapi.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <fstream>
 #include <set>
 #include <list>
@@ -85,8 +85,6 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
             Log::get_instance()->message(ll_warning, lc_no_context) << "Stale cache file at '"
                 << _filename << "'";
         return ok;
-
-        return true;
     }
     else
     {

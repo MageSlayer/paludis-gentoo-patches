@@ -23,14 +23,14 @@
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 
-#include <paludis/eapi.hh>
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
@@ -99,7 +99,7 @@ EbuildEntries::~EbuildEntries()
 {
 }
 
-const tr1::shared_ptr<const PackageID>
+const tr1::shared_ptr<const ERepositoryID>
 EbuildEntries::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f,
         const std::string & guessed_eapi) const
 {
@@ -158,7 +158,7 @@ namespace
     }
 
     std::string make_use(const Environment * const env,
-            const PackageID & id,
+            const ERepositoryID & id,
             tr1::shared_ptr<const ERepositoryProfile> profile)
     {
         std::string use;
@@ -178,7 +178,7 @@ namespace
 
     tr1::shared_ptr<Map<std::string, std::string> >
     make_expand(const Environment * const env,
-            const PackageID & e,
+            const ERepositoryID & e,
             tr1::shared_ptr<const ERepositoryProfile> profile,
             std::string & use,
             const std::string & expand_sep)
@@ -234,7 +234,7 @@ namespace
 }
 
 void
-EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
+EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         const InstallActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
 {
     using namespace tr1::placeholders;
@@ -562,7 +562,7 @@ EbuildEntries::install(const tr1::shared_ptr<const PackageID> & id,
 }
 
 std::string
-EbuildEntries::get_environment_variable(const tr1::shared_ptr<const PackageID> & id,
+EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & var, tr1::shared_ptr<const ERepositoryProfile>) const
 {
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_variable);
@@ -638,7 +638,7 @@ EbuildEntries::extract_package_file_version(const QualifiedPackageName & n, cons
 }
 
 bool
-EbuildEntries::pretend(const tr1::shared_ptr<const PackageID> & id,
+EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
         tr1::shared_ptr<const ERepositoryProfile> p) const
 {
     using namespace tr1::placeholders;

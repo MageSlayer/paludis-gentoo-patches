@@ -20,13 +20,14 @@
 #include "ebin_entries.hh"
 #include <paludis/repositories/e/ebin.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/config_file.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/eapi.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
@@ -34,7 +35,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>

@@ -26,6 +26,7 @@
 #include <paludis/repositories/e/e_repository_sets.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_entries.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/repositories/e/layout.hh>
 
@@ -44,7 +45,6 @@
 #include <paludis/query.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
-#include <paludis/eapi.hh>
 #include <paludis/action.hh>
 
 #include <paludis/util/fs_entry.hh>
@@ -130,8 +130,8 @@ namespace paludis
         mutable tr1::shared_ptr<ERepositoryNews> news_ptr;
 
         mutable tr1::shared_ptr<ERepositorySets> sets_ptr;
-        mutable tr1::shared_ptr<ERepositoryEntries> entries_ptr;
-        mutable tr1::shared_ptr<Layout> layout;
+        mutable tr1::shared_ptr<erepository::ERepositoryEntries> entries_ptr;
+        mutable tr1::shared_ptr<erepository::Layout> layout;
 
         Implementation(ERepository * const, const ERepositoryParams &);
         ~Implementation();
@@ -149,9 +149,9 @@ namespace paludis
         has_mirrors(false),
         has_profiles_desc(false),
         sets_ptr(new ERepositorySets(params.environment, r, p)),
-        entries_ptr(ERepositoryEntriesMaker::get_instance()->find_maker(
+        entries_ptr(erepository::ERepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
-        layout(LayoutMaker::get_instance()->find_maker(
+        layout(erepository::LayoutMaker::get_instance()->find_maker(
                     params.layout)(r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
                         tr1::shared_ptr<FSEntry>()))
@@ -172,7 +172,8 @@ namespace paludis
 
         profile_ptr.reset(new ERepositoryProfile(
                     params.environment, repo, repo->name(), *params.profiles,
-                    EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch));
+                    erepository::EAPIData::get_instance()->eapi_from_string(
+                        params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch));
     }
 
     void
@@ -212,7 +213,7 @@ namespace paludis
                         .status(tokens.at(2))
                         .profile(tr1::shared_ptr<ERepositoryProfile>(new ERepositoryProfile(
                                     params.environment, repo, repo->name(), profiles,
-                                    EAPIData::get_instance()->eapi_from_string(
+                                    erepository::EAPIData::get_instance()->eapi_from_string(
                                         params.eapi_when_unknown)->supported->ebuild_environment_variables->env_arch))));
             }
         }
@@ -603,7 +604,7 @@ ERepository::update_news() const
     _imp->news_ptr->update_news();
 }
 
-const tr1::shared_ptr<const Layout>
+const tr1::shared_ptr<const erepository::Layout>
 ERepository::layout() const
 {
     return _imp->layout;
@@ -616,7 +617,7 @@ ERepository::profile() const
     return _imp->profile_ptr;
 }
 
-const tr1::shared_ptr<const ERepositoryEntries>
+const tr1::shared_ptr<const erepository::ERepositoryEntries>
 ERepository::entries() const
 {
     return _imp->entries_ptr;
@@ -632,7 +633,8 @@ ERepository::get_environment_variable(
 
     _imp->need_profiles();
 
-    return _imp->entries_ptr->get_environment_variable(for_package, var, _imp->profile_ptr);
+    return _imp->entries_ptr->get_environment_variable(tr1::static_pointer_cast<const erepository::ERepositoryID>(for_package),
+            var, _imp->profile_ptr);
 }
 
 tr1::shared_ptr<const RepositoryInfo>
@@ -760,7 +762,7 @@ ERepository::do_use_expand_flags() const
 {
     _imp->need_profiles();
 
-    std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi
+    std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi
                     )->supported->ebuild_options->use_expand_separator));
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
     for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
@@ -901,7 +903,7 @@ ERepository::do_describe_use_flag(const UseFlagName & f,
 
     if (_imp->use_desc.empty())
     {
-        std::string expand_sep(stringify(EAPIData::get_instance()->eapi_from_string(
+        std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
                         _imp->params.profile_eapi)->supported->ebuild_options->use_expand_separator));
         tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
         for (FSEntrySequence::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
@@ -1032,5 +1034,19 @@ ERepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) 
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+std::string
+ERepository::accept_keywords_variable() const
+{
+    return erepository::EAPIData::get_instance()->eapi_from_string(
+            params().profile_eapi)->supported->ebuild_environment_variables->env_accept_keywords;
+}
+
+std::string
+ERepository::arch_variable() const
+{
+    return erepository::EAPIData::get_instance()->eapi_from_string(
+            params().profile_eapi)->supported->ebuild_environment_variables->env_arch;
 }
 

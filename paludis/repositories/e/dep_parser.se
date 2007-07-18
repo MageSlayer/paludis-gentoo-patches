@@ -5,6 +5,7 @@ make_enum_DependencySpecTreeParseMode()
 {
     prefix dst_pm
     want_destringify
+    namespace paludis::erepository
 
     key dst_pm_eapi_0        "EAPI 0"
     key dst_pm_exheres_0     "EAPI exheres-0"
@@ -12,9 +13,9 @@ make_enum_DependencySpecTreeParseMode()
 
     doxygen_comment << "END"
         /**
-         * How PortageDepParser should parse a DependencySpecTree string.
+         * How DepParser should parse a DependencySpecTree string.
          *
-         * \see PortageDepParser
+         * \see DepParser
          * \ingroup grpdepspecs
          */
 END

@@ -194,6 +194,8 @@ namespace paludis
             ///\{
 
             std::string profile_variable(const std::string &) const;
+            virtual std::string accept_keywords_variable() const;
+            virtual std::string arch_variable() const;
 
             const ERepositoryParams & params() const;
 
@@ -219,8 +221,8 @@ namespace paludis
              */
             void update_news() const;
 
-            const tr1::shared_ptr<const Layout> layout() const;
-            const tr1::shared_ptr<const ERepositoryEntries> entries() const;
+            const tr1::shared_ptr<const erepository::Layout> layout() const;
+            const tr1::shared_ptr<const erepository::ERepositoryEntries> entries() const;
             const tr1::shared_ptr<const ERepositoryProfile> profile() const;
 
             bool repository_masked(const PackageID &) const;

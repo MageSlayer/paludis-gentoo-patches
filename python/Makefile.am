@@ -26,8 +26,6 @@ IF_PYTHON_TESTS = \
 	version_requirements_TEST.py \
 	contents_TEST.py \
 	dep_spec_TEST.py \
-	eapi_TEST.py \
-	portage_dep_parser_TEST.py \
 	dep_tag_TEST.py \
 	log_TEST.py \
 	name_TEST.py \
@@ -46,7 +44,6 @@ IF_PYTHON_SOURCES = \
 	dep_list.cc \
 	dep_spec.hh dep_spec.cc \
 	dep_tag.cc \
-	eapi.cc \
 	environment.cc \
 	exception.hh exception.cc \
 	fs_entry.cc \
@@ -55,7 +52,6 @@ IF_PYTHON_SOURCES = \
 	log.cc \
 	package_database.cc \
 	package_id.cc \
-	portage_dep_parser.cc \
 	query.cc \
 	repository.cc \
 	version_operator.cc \
@@ -82,7 +78,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_XTERM_TITLES="yes" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \

@@ -35,54 +35,57 @@ namespace paludis
     class FSEntry;
     class ERepository;
 
-    /**
-     * ERepositoryEntries handler for ebuilds.
-     *
-     * \ingroup grperepository
-     */
-    class PALUDIS_VISIBLE EbuildEntries :
-        public ERepositoryEntries,
-        private PrivateImplementationPattern<EbuildEntries>
+    namespace erepository
     {
-        public:
-            /**
-             * Create an EbuildEntries instance.
-             */
-            static tr1::shared_ptr<ERepositoryEntries> make_ebuild_entries(const Environment * const,
-                        ERepository * const, const ERepositoryParams &);
+        /**
+         * ERepositoryEntries handler for ebuilds.
+         *
+         * \ingroup grperepository
+         */
+        class PALUDIS_VISIBLE EbuildEntries :
+            public ERepositoryEntries,
+            private PrivateImplementationPattern<EbuildEntries>
+        {
+            public:
+                /**
+                 * Create an EbuildEntries instance.
+                 */
+                static tr1::shared_ptr<ERepositoryEntries> make_ebuild_entries(const Environment * const,
+                            ERepository * const, const ERepositoryParams &);
 
-            ///\name Basic operations
-            ///\{
+                ///\name Basic operations
+                ///\{
 
-            EbuildEntries(const Environment * const,
-                    ERepository * const e_repository,
-                    const ERepositoryParams &);
+                EbuildEntries(const Environment * const,
+                        ERepository * const e_repository,
+                        const ERepositoryParams &);
 
-            virtual ~EbuildEntries();
+                virtual ~EbuildEntries();
 
-            ///\}
+                ///\}
 
-            virtual void merge(const MergeOptions &) PALUDIS_ATTRIBUTE((noreturn));
+                virtual void merge(const MergeOptions &) PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
-                    const FSEntry &, const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const tr1::shared_ptr<const ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
+                        const FSEntry &, const std::string &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string get_environment_variable(const tr1::shared_ptr<const PackageID> &, const std::string & var,
-                    tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
+                        tr1::shared_ptr<const ERepositoryProfile>) const;
 
-            virtual void install(const tr1::shared_ptr<const PackageID> &, const InstallActionOptions &,
-                    tr1::shared_ptr<const ERepositoryProfile>) const;
+                virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const;
 
-            virtual bool pretend(const tr1::shared_ptr<const PackageID> &,
-                    tr1::shared_ptr<const ERepositoryProfile>) const;
-    };
+                virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const;
+        };
+    }
 }
 
 #endif

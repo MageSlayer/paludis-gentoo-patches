@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/eapi.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>

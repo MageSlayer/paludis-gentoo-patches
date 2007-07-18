@@ -19,7 +19,6 @@
 
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/visitor-impl.hh>
 
 #include <test/test_runner.hh>

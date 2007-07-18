@@ -53,7 +53,7 @@ namespace paludis
     template <>
     struct Implementation<VirtualsDepKey>
     {
-        const tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
+        const tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
 
         Implementation(const tr1::shared_ptr<const PackageID> & v, bool exact) :
             value(exact ?
@@ -109,6 +109,18 @@ const tr1::shared_ptr<const DependencySpecTree::ConstItem>
 VirtualsDepKey::value() const
 {
     return _imp->value;
+}
+
+std::string
+VirtualsDepKey::pretty_print() const
+{
+    return stringify(*_imp->value->item());
+}
+
+std::string
+VirtualsDepKey::pretty_print_flat() const
+{
+    return stringify(*_imp->value->item());
 }
 
 namespace paludis
@@ -205,12 +217,6 @@ const tr1::shared_ptr<const Repository>
 VirtualsPackageID::repository() const
 {
     return _imp->repository;
-}
-
-const tr1::shared_ptr<const EAPI>
-VirtualsPackageID::eapi() const
-{
-    return _imp->virtual_for->value()->eapi();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>
@@ -464,4 +470,11 @@ VirtualsPackageID::need_masks_added() const
 
     _imp->has_masks = true;
 }
+
+bool
+VirtualsPackageID::breaks_portage() const
+{
+    return (version().has_try_part() || version().has_scm_part());
+}
+
 

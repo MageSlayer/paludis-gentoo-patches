@@ -24,13 +24,14 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         class VDBID :
-            public PackageID,
+            public ERepositoryID,
             public tr1::enable_shared_from_this<VDBID>,
             private PrivateImplementationPattern<VDBID>
         {

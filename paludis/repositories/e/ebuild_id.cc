@@ -25,12 +25,12 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_mask.hh>
+#include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/distribution.hh>
-#include <paludis/eapi.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 
@@ -241,6 +241,8 @@ EbuildID::need_keys_added() const
                 << canonical_form(idcf_full) << "' because EAPI '" << _imp->eapi->name << "' is unknown";
         }
     }
+
+    add_metadata_key(make_shared_ptr(new EStringKey(shared_from_this(), "EAPI", "EAPI", _imp->eapi->name, mkt_internal)));
 
     if (_imp->eapi->supported)
     {
@@ -769,13 +771,16 @@ namespace
 
         void visit(const InstallAction & a)
         {
-            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(id, a.options,
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(
+                    tr1::static_pointer_cast<const ERepositoryID>(id),
+                    a.options,
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 
         void visit(const PretendAction &)
         {
-            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(id,
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
+                    tr1::static_pointer_cast<const ERepositoryID>(id),
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }
 

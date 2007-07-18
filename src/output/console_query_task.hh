@@ -52,16 +52,6 @@ namespace paludis
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
-            virtual void display_metadata_license(const std::string &, const std::string &,
-                    tr1::shared_ptr<const LicenseSpecTree::ConstItem>, const tr1::shared_ptr<const PackageID> &) const;
-            virtual void display_metadata_dependency(const std::string &, const std::string &,
-                    tr1::shared_ptr<const DependencySpecTree::ConstItem>, const bool one_line) const;
-            virtual void display_metadata_provides(const std::string &, const std::string &,
-                    tr1::shared_ptr<const ProvideSpecTree::ConstItem>, const bool one_line) const;
-            virtual void display_metadata_uri(const std::string &, const std::string &,
-                    tr1::shared_ptr<const URISpecTree::ConstItem>, const bool one_line) const;
-            virtual void display_metadata_restrict(const std::string &, const std::string &,
-                    tr1::shared_ptr<const RestrictSpecTree::ConstItem>, const bool one_line) const;
             virtual void display_metadata_pde(const std::string &, const std::string &, const PackageID &) const;
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,

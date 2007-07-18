@@ -57,6 +57,12 @@ namespace paludis
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class VirtualsPackageID :
@@ -85,7 +91,6 @@ namespace paludis
                 virtual const VersionSpec version() const;
                 virtual const SlotName slot() const;
                 virtual const tr1::shared_ptr<const Repository> repository() const;
-                virtual const tr1::shared_ptr<const EAPI> eapi() const;
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
@@ -117,6 +122,8 @@ namespace paludis
 
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

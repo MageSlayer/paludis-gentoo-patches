@@ -19,12 +19,13 @@
 
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository_base.hh>
-#include <paludis/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/name.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/portage_dep_parser.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
@@ -40,6 +41,7 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <list>
+#include <sstream>
 
 using namespace paludis;
 
@@ -113,6 +115,7 @@ namespace paludis
     struct Implementation<FakeMetadataSpecTreeKey<C_> >
     {
         tr1::shared_ptr<const typename C_::ConstItem> value;
+        std::string string_value;
         const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> func;
 
         Implementation(const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f) :
@@ -141,6 +144,7 @@ template <typename C_>
 void
 FakeMetadataSpecTreeKey<C_>::set_from_string(const std::string & s)
 {
+    _imp->string_value = s;
     _imp->value = _imp->func(s);
 }
 
@@ -149,6 +153,20 @@ const tr1::shared_ptr<const typename C_::ConstItem>
 FakeMetadataSpecTreeKey<C_>::value() const
 {
     return _imp->value;
+}
+
+template <typename C_>
+std::string
+FakeMetadataSpecTreeKey<C_>::pretty_print() const
+{
+    return _imp->string_value;
+}
+
+template <typename C_>
+std::string
+FakeMetadataSpecTreeKey<C_>::pretty_print_flat() const
+{
+    return _imp->string_value;
 }
 
 namespace paludis
@@ -226,53 +244,6 @@ FakeUnacceptedMask::unaccepted_key() const
 
 namespace paludis
 {
-    template <>
-    struct Implementation<FakeUnsupportedMask>
-    {
-        const char key;
-        const std::string description;
-        const std::string eapi_name;
-
-        Implementation(const char k, const std::string & d, const std::string & n) :
-            key(k),
-            description(d),
-            eapi_name(n)
-        {
-        }
-    };
-}
-
-FakeUnsupportedMask::FakeUnsupportedMask(const char c, const std::string & s, const std::string & n) :
-    PrivateImplementationPattern<FakeUnsupportedMask>(new Implementation<FakeUnsupportedMask>(c, s, n))
-{
-}
-
-FakeUnsupportedMask::~FakeUnsupportedMask()
-{
-}
-
-const char
-FakeUnsupportedMask::key() const
-{
-    return _imp->key;
-}
-
-const std::string
-FakeUnsupportedMask::description() const
-{
-    return _imp->description;
-}
-
-const std::string
-FakeUnsupportedMask::explanation() const
-{
-    if (_imp->eapi_name == "UNKNOWN")
-        return "Unsupported EAPI 'UNKNOWN' (likely a broken package or configuration error)";
-    return "Unsupported EAPI '" + _imp->eapi_name + "'";
-}
-
-namespace paludis
-{
     using namespace tr1::placeholders;
 
     template <>
@@ -285,7 +256,6 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         SlotName slot;
-        tr1::shared_ptr<const EAPI> eapi;
 
         tr1::shared_ptr<FakeMetadataPackageIDKey> package_id;
         tr1::shared_ptr<FakeMetadataPackageIDKey> virtual_for;
@@ -311,21 +281,26 @@ namespace paludis
             name(q),
             version(v),
             slot("0"),
-            eapi(EAPIData::get_instance()->eapi_from_string("0")),
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal)),
             iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal)),
             license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
-                        "", tr1::bind(&PortageDepParser::parse_license, _1, tr1::cref(*eapi)), mkt_normal)),
+                        "", tr1::bind(&erepository::DepParser::parse_license, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_normal)),
             provide(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provided packages",
-                        "", tr1::bind(&PortageDepParser::parse_provide, _1, tr1::cref(*eapi)), mkt_normal)),
+                        "", tr1::bind(&erepository::DepParser::parse_provide, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_normal)),
             build_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
+                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             run_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
+                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             post_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
+                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                        "", tr1::bind(&PortageDepParser::parse_depend, _1, tr1::cref(*eapi)), mkt_dependencies)),
+                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             has_masks(false)
         {
         }
@@ -394,12 +369,6 @@ const tr1::shared_ptr<const Repository>
 FakePackageID::repository() const
 {
     return _imp->repository;
-}
-
-const tr1::shared_ptr<const EAPI>
-FakePackageID::eapi() const
-{
-    return _imp->eapi;
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>
@@ -671,12 +640,6 @@ FakePackageID::need_masks_added() const
 
     Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
 
-    if (! eapi()->supported)
-    {
-        add_mask(make_shared_ptr(new FakeUnsupportedMask('E', "eapi", eapi()->name)));
-        return;
-    }
-
     if (keywords_key())
         if (! _imp->env->accept_keywords(keywords_key()->value(), *this))
             add_mask(make_shared_ptr(new FakeUnacceptedMask('K', "keywords", keywords_key())));
@@ -755,6 +718,12 @@ FakePackageID::perform_action(Action & a) const
 {
     PerformAction b(this);
     a.accept(b);
+}
+
+bool
+FakePackageID::breaks_portage() const
+{
+    return (version().has_try_part() || version().has_scm_part());
 }
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;

@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <sstream>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -33,6 +33,7 @@
  */
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 namespace paludis
 {
@@ -65,7 +66,7 @@ DepSpecPrettyPrinter::~DepSpecPrettyPrinter()
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
+paludis::erepository::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 {
     s << p._imp->s.str();
     return s;

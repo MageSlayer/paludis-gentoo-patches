@@ -11,7 +11,7 @@ paludis_repositories_libdir = $(libdir)/paludis/repositories
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_GEMS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/gems/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -30,6 +30,7 @@ EXTRA_DIST = \
 
 fake_repository_TEST_LDADD = \
 	libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -38,6 +39,7 @@ fake_repository_TEST_LDADD = \
 
 fake_installed_repository_TEST_LDADD = \
 	libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -50,15 +52,7 @@ fake_repository_TEST_SOURCES = \
 fake_installed_repository_TEST_SOURCES = \
 	fake_installed_repository_TEST.cc
 
-if MONOLITHIC
-
-noinst_LTLIBRARIES = libpaludisfakerepository.la
-
-else
-
 paludis_repositories_lib_LTLIBRARIES = libpaludisfakerepository.la
-
-endif
 
 libpaludisfakerepository_la_SOURCES = \
 	fake_repository_base.cc fake_repository_base.hh \
@@ -66,13 +60,10 @@ libpaludisfakerepository_la_SOURCES = \
 	fake_installed_repository.cc fake_installed_repository.hh \
 	fake_package_id.cc fake_package_id.hh
 
-if ! MONOLITHIC
-
 libpaludisfakerepository_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la
-
-endif
 
 libpaludisfakerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

@@ -26,91 +26,94 @@
 
 namespace paludis
 {
-    class ERepositoryEntries;
-
-    /**
-     * The traditional tree layout (as used by Gentoo) for a ERepository.
-     *
-     * \ingroup grperepository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE TraditionalLayout :
-        public Layout,
-        private PrivateImplementationPattern<TraditionalLayout>
+    namespace erepository
     {
-        private:
-            void need_category_names() const;
-            void need_category_names_collection() const;
-            void need_package_ids(const QualifiedPackageName &) const;
+        class ERepositoryEntries;
 
-        public:
-            ///\name Basic operations
-            ///\{
+        /**
+         * The traditional tree layout (as used by Gentoo) for a ERepository.
+         *
+         * \ingroup grperepository
+         * \nosubgrouping
+         */
+        class PALUDIS_VISIBLE TraditionalLayout :
+            public Layout,
+            private PrivateImplementationPattern<TraditionalLayout>
+        {
+            private:
+                void need_category_names() const;
+                void need_category_names_collection() const;
+                void need_package_ids(const QualifiedPackageName &) const;
 
-            TraditionalLayout(const ERepository * const, const FSEntry &,
-                    tr1::shared_ptr<const ERepositoryEntries>,
-                    tr1::shared_ptr<const FSEntry>);
+            public:
+                ///\name Basic operations
+                ///\{
 
-            virtual ~TraditionalLayout();
+                TraditionalLayout(const ERepository * const, const FSEntry &,
+                        tr1::shared_ptr<const ERepositoryEntries>,
+                        tr1::shared_ptr<const FSEntry>);
 
-            ///\}
+                virtual ~TraditionalLayout();
 
-            virtual bool has_category_named(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                ///\}
 
-            virtual bool has_package_named(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual bool has_category_named(const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual bool has_package_named(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
-                    const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
-                    const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                        const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry info_packages_file(const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                        const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry info_variables_file(const FSEntry &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual FSEntry info_packages_file(const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry package_directory(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual FSEntry info_variables_file(const FSEntry &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry category_directory(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual FSEntry package_directory(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry package_file(const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual FSEntry category_directory(const CategoryNamePart &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual FSEntry package_file(const PackageID &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const FSEntrySequence> arch_list_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const FSEntrySequence> repository_mask_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const FSEntrySequence> profiles_desc_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const FSEntrySequence> mirror_files() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool eapi_ebuild_suffix() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual tr1::shared_ptr<const FSEntrySequence> use_desc_dirs() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual FSEntry profiles_base_dir() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual bool eapi_ebuild_suffix() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
+                virtual FSEntry profiles_base_dir() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
 #endif

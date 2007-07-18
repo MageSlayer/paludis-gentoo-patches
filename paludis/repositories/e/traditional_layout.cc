@@ -46,6 +46,7 @@
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
 typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;

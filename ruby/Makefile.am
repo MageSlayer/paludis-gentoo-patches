@@ -19,12 +19,10 @@ MAINTAINERCLEANFILES = Makefile.in
 IF_RUBY_TESTS = \
 	query_TEST.rb \
 	find_unused_packages_task_TEST.rb \
-	eapi_TEST.rb \
 	package_database_TEST.rb \
 	log_TEST.rb \
 	version_spec_TEST.rb \
 	dep_spec_TEST.rb \
-	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb \
 	contents_TEST.rb \
 	dep_list_TEST.rb \
@@ -46,14 +44,12 @@ IF_RUBY_SOURCES = \
 	package_database.cc \
 	repository.cc \
 	package_id.cc \
-	portage_dep_parser.cc \
 	qualified_package_name.cc \
 	contents.cc \
 	dep_list.cc \
 	dep_tag.cc \
 	query.cc \
 	find_unused_packages_task.cc \
-	eapi.cc \
 	name.cc
 
 IF_RUBY_QA_SOURCES = \
@@ -77,7 +73,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_XTERM_TITLES="yes" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \

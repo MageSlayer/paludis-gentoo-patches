@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/eapi.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/hashed_containers.hh>
@@ -34,8 +34,9 @@
 #include <paludis/config_file.hh>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
-#include <paludis/eapi-sr.cc>
+#include <paludis/repositories/e/eapi-sr.cc>
 
 template class InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>;
 

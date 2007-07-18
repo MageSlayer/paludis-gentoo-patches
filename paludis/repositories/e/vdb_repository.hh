@@ -27,6 +27,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/map.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 
 /** \file
  * Declarations for VDBRepository.
@@ -72,11 +73,11 @@ namespace paludis
             void add_string_to_world(const std::string & n) const;
             void remove_string_from_world(const std::string &) const;
 
-            const tr1::shared_ptr<const PackageID> package_id_if_exists(const QualifiedPackageName &,
+            const tr1::shared_ptr<const erepository::ERepositoryID> package_id_if_exists(const QualifiedPackageName &,
                     const VersionSpec &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const tr1::shared_ptr<const PackageID> make_id(const QualifiedPackageName &, const VersionSpec &,
+            const tr1::shared_ptr<const erepository::ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
                     const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -226,10 +227,10 @@ namespace paludis
             ///\name For use by VDBID
             ///\{
 
-            void perform_uninstall(const tr1::shared_ptr<const PackageID> & id,
+            void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
                     const UninstallActionOptions & o, bool reinstalling) const;
 
-            void perform_config(const tr1::shared_ptr<const PackageID> & id) const;
+            void perform_config(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
 
             ///\}
 

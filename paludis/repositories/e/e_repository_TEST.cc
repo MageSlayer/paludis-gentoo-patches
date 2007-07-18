@@ -18,18 +18,19 @@
  */
 
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/make_ebuild_repository.hh>
+#include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
-#include <paludis/eapi.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
-#include <paludis/dep_spec_pretty_printer.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -512,15 +513,14 @@ namespace test_cases
                     tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                     PackageDepSpec("=cat-one/pkg-one-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
-                    TEST_CHECK_EQUAL(id1->eapi()->name, "0");
-                    TEST_CHECK(id1->eapi()->supported);
+                    TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
-                    DepSpecPrettyPrinter pd(0, false);
+                    erepository::DepSpecPrettyPrinter pd(0, false);
                     TEST_CHECK(id1->build_dependencies_key());
                     id1->build_dependencies_key()->value()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
-                    DepSpecPrettyPrinter pr(0, false);
+                    erepository::DepSpecPrettyPrinter pr(0, false);
                     TEST_CHECK(id1->run_dependencies_key());
                     id1->run_dependencies_key()->value()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
@@ -528,15 +528,14 @@ namespace test_cases
                     tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(query::Matches(
                                     PackageDepSpec("=cat-one/pkg-one-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
-                    TEST_CHECK_EQUAL(id2->eapi()->name, "0");
-                    TEST_CHECK(id2->eapi()->supported);
+                    TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(id2->short_description_key());
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
-                    DepSpecPrettyPrinter pd2(0, false);
+                    erepository::DepSpecPrettyPrinter pd2(0, false);
                     TEST_CHECK(id2->build_dependencies_key());
                     id2->build_dependencies_key()->value()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
-                    DepSpecPrettyPrinter pr2(0, false);
+                    erepository::DepSpecPrettyPrinter pr2(0, false);
                     TEST_CHECK(id2->run_dependencies_key());
                     id2->run_dependencies_key()->value()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
@@ -577,8 +576,8 @@ namespace test_cases
                 tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
                                 PackageDepSpec("=cat-one/pkg-two-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
 
-                TEST_CHECK_EQUAL(id1->eapi()->name, "UNKNOWN");
-                TEST_CHECK(! id1->eapi()->supported);
+                TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
+                TEST_CHECK_EQUAL(tr1::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi()->name, "UNKNOWN");
                 TEST_CHECK(! id1->short_description_key());
             }
         }

@@ -123,7 +123,7 @@ class TestCase_02_DepList(unittest.TestCase):
         dl = DepList(env, DepListOptions())
         dd = env.default_destinations
         pds = PackageDepSpec("foo/bar", PackageDepSpecParseMode.PERMISSIVE)
-        cds = PortageDepParser.parse_depend("foo/bar", EAPIData.instance.eapi_from_string("0"))
+        cds = env.set("bar")
 
     def test_01_create(self):
         pass
