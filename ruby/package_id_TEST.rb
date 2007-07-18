@@ -104,7 +104,7 @@ module Paludis
         end
 
         def test_members
-            [:name, :version, :slot, :repository, :==, :keywords_key,
+            [:name, :version, :slot, :repository_name, :==, :keywords_key,
                 :use_key, :iuse_key, :inherited_key, :short_description_key,
                 :long_description_key, :contents_key, :installed_time_key,
                 :source_origin_key, :binary_origin_key].each do |method|
@@ -136,9 +136,9 @@ module Paludis
             assert_equal VersionSpec.new('1.0'), pid_testrepo.version
         end
 
-        def test_repository
-            assert_kind_of Repository, pid_testrepo.repository
-            assert_equal 'testrepo', pid_testrepo.repository.name
+        def test_repository_name
+            assert_kind_of String, pid_testrepo.repository_name
+            assert_equal 'testrepo', pid_testrepo.repository_name
         end
 
         def test_slot
@@ -201,9 +201,7 @@ module Paludis
 
     class TestCase_VDBRepo < Test::Unit::TestCase
         include TestStuff
-        def test_name
-            pid_installed = env_vdb.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one").first
-        end
+
         def test_name
             assert_kind_of String, pid_installed.name
             assert_equal 'cat-one/pkg-one', pid_installed.name
@@ -215,8 +213,8 @@ module Paludis
         end
 
         def test_repository
-            assert_kind_of Repository, pid_installed.repository
-            assert_equal 'installed', pid_installed.repository.name
+            assert_kind_of String, pid_installed.repository_name
+            assert_equal 'installed', pid_installed.repository_name
         end
 
         def test_slot

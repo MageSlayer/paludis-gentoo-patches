@@ -1077,21 +1077,21 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 }
 
 VALUE
-paludis::ruby::repository_to_value(tr1::shared_ptr<const Repository> m)
+paludis::ruby::repository_to_value(tr1::shared_ptr<Repository> m)
 {
     if (0 == m)
         return Qnil;
     else
-        return repo_to_value<tr1::shared_ptr<const Repository> >(m, &c_repository);
+        return repo_to_value<tr1::shared_ptr<Repository> >(m, &c_repository);
 }
 
-tr1::shared_ptr<const Repository>
+tr1::shared_ptr<Repository>
 paludis::ruby::value_to_repository(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_repository))
     {
-        tr1::shared_ptr<const Repository> * v_ptr;
-        Data_Get_Struct(v, tr1::shared_ptr<const Repository>, v_ptr);
+        tr1::shared_ptr<Repository> * v_ptr;
+        Data_Get_Struct(v, tr1::shared_ptr<Repository>, v_ptr);
         return *v_ptr;
     }
     else

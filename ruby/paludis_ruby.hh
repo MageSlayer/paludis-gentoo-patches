@@ -74,7 +74,7 @@ namespace paludis
         /* constructors */
 
         VALUE package_database_to_value(tr1::shared_ptr<PackageDatabase>);
-        VALUE repository_to_value(tr1::shared_ptr<const Repository>);
+        VALUE repository_to_value(tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE package_id_to_value(tr1::shared_ptr<const PackageID>);
 #if CIARANM_REMOVED_THIS
@@ -93,7 +93,7 @@ namespace paludis
         tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         Query value_to_query(VALUE v);
-        tr1::shared_ptr<const Repository> value_to_repository(VALUE);
+        tr1::shared_ptr<Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
         QACheckProperties value_to_qa_check_properties(VALUE);

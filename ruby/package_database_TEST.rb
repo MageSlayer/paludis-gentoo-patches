@@ -116,7 +116,7 @@ module Paludis
             assert_kind_of PackageID, pid
             assert_equal 'foo/bar', pid.name
             assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository.name
+            assert_equal 'testrepo', pid.repository_name
 
             a = db.query(Query::Matches.new(pda) & Query::SupportsInstallAction.new,
                          QueryOrder::Whatever)
@@ -126,7 +126,7 @@ module Paludis
             assert_kind_of PackageID, pid
             assert_equal 'foo/bar', pid.name
             assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository.name
+            assert_equal 'testrepo', pid.repository_name
 
             a = db.query(pda, InstallState::Any, QueryOrder::Whatever)
             assert_kind_of Array, a
@@ -135,7 +135,7 @@ module Paludis
             assert_kind_of PackageID, pid
             assert_equal 'foo/bar', pid.name
             assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository.name
+            assert_equal 'testrepo', pid.repository_name
 
             a = db.query(pda2, InstallState::InstallableOnly, QueryOrder::OrderByVersion)
             assert_kind_of Array, a
@@ -144,12 +144,12 @@ module Paludis
             assert_kind_of PackageID, pid
             assert_equal 'foo/bar', pid.name
             assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository.name
+            assert_equal 'testrepo', pid.repository_name
             pid2 = a.shift
             assert_kind_of PackageID, pid2
             assert_equal pid.name, pid2.name
             assert_equal '2.0', pid2.version.to_s
-            assert_equal pid.repository.name, pid2.repository.name
+            assert_equal pid.repository_name, pid2.repository_name
 
 
             a = db.query(Query::Package.new('foo/bar'), QueryOrder::OrderByVersion)
@@ -159,12 +159,12 @@ module Paludis
             assert_kind_of PackageID, pid
             assert_equal 'foo/bar', pid.name
             assert_equal '1.0', pid.version.to_s
-            assert_equal 'testrepo', pid.repository.name
+            assert_equal 'testrepo', pid.repository_name
             pid2 = a.shift
             assert_kind_of PackageID, pid2
             assert_equal pid.name, pid2.name
             assert_equal '2.0', pid2.version.to_s
-            assert_equal pid.repository.name, pid2.repository.name
+            assert_equal pid.repository_name, pid2.repository_name
 
 
             a = db.query(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive), InstallState::InstallableOnly, QueryOrder::Whatever)

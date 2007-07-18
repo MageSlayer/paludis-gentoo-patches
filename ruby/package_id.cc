@@ -224,11 +224,11 @@ namespace
      * Our Repository.
      */
     VALUE
-    package_id_repository(VALUE self)
+    package_id_repository_name(VALUE self)
     {
         tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        return repository_to_value((*self_ptr)->repository());
+        return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
     }
 
     /*
@@ -415,7 +415,7 @@ namespace
         rb_define_method(c_package_id, "name", RUBY_FUNC_CAST((&BaseValue<QualifiedPackageName,PackageID,&PackageID::name>::fetch)), 0);
         rb_define_method(c_package_id, "version", RUBY_FUNC_CAST(&package_id_version), 0);
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
-        rb_define_method(c_package_id, "repository", RUBY_FUNC_CAST(&package_id_repository), 0);
+        rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<UseFlagNameSet>,&PackageID::use_key>::fetch)), 0);
