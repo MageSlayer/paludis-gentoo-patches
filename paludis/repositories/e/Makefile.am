@@ -33,6 +33,7 @@ paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/pal
 libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_e_include_HEADERS = \
+	aa_visitor.hh \
 	dep_lexer.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
@@ -79,6 +80,7 @@ paludis_repositories_e_include_HEADERS = \
 	vdb_unmerger.hh
 
 libpaludiserepository_la_SOURCES = \
+	aa_visitor.cc \
 	dep_lexer.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
@@ -193,7 +195,19 @@ dep_parser_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+aa_visitor_TEST_SOURCES = aa_visitor_TEST.cc
+
+aa_visitor_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 EXTRA_DIST = \
+	aa_visitor_TEST.cc \
 	dep_lexer_TEST.cc \
 	dep_parser.se \
 	dep_parser-se.hh \
@@ -377,7 +391,8 @@ TESTS = \
 	e_repository_TEST \
 	vdb_unmerger_TEST \
 	$(GLSA_TESTS) \
-	e_repository_sets_TEST
+	e_repository_sets_TEST \
+	aa_visitor_TEST
 
 check_PROGRAMS = $(TESTS)
 
