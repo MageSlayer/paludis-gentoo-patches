@@ -784,14 +784,14 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositoryManifestInterface
     {
-            public:
-                    /**
-                     * Makes the Manifest for a given package. Requires that all
-                     * the needed DIST files, etc, have already been fetched.
-                     */
-                    virtual void make_manifest(const QualifiedPackageName &) = 0;
+        public:
+            /**
+             * Makes the Manifest for a given package. Requires that all
+             * the needed DIST files, etc, have already been fetched.
+             */
+            virtual void make_manifest(const QualifiedPackageName &) = 0;
 
-                    virtual ~RepositoryManifestInterface();
+            virtual ~RepositoryManifestInterface();
     };
 
     /**
