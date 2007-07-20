@@ -36,6 +36,10 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+#include <set>
+#include <fstream>
+#include <string>
+
 using namespace test;
 using namespace paludis;
 
@@ -660,5 +664,42 @@ namespace test_cases
             }
         }
     } test_e_repository_query_profile_masks;
+
+    /**
+     * \test Test ERepository Manifest2 generation.
+     *
+     */
+    struct ERepositoryManifestTest : TestCase
+    {
+        ERepositoryManifestTest() : TestCase("manifest2") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo11");
+            keys->insert("profiles", "e_repository_TEST_dir/repo11/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(
+                        &env, keys));
+            repo->make_manifest(QualifiedPackageName("category/package"));
+
+            std::multiset<std::string> made_manifest, reference_manifest;
+            std::ifstream made_manifest_stream("e_repository_TEST_dir/repo11/category/package/Manifest"),
+                reference_manifest_stream("e_repository_TEST_dir/repo11/Manifest_correct");
+
+            std::string line;
+
+            while ( getline(made_manifest_stream, line) )
+                made_manifest.insert(line);
+            while ( getline(reference_manifest_stream, line) )
+                reference_manifest.insert(line);
+
+            TEST_CHECK(made_manifest == reference_manifest);
+        }
+    } test_e_repository_manifest;
+
 }
 

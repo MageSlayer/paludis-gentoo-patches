@@ -66,7 +66,8 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
-            .hook_interface(0),
+            .hook_interface(0)
+            .manifest_interface(0),
             "fake"),
             _imp(PrivateImplementationPattern<FakeRepository>::_imp.get())
 {

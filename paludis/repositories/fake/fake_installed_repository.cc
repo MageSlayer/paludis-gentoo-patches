@@ -51,7 +51,8 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
-            .hook_interface(0),
+            .hook_interface(0)
+            .manifest_interface(0),
             "fake_installed")
 {
 }

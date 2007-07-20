@@ -112,7 +112,8 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .e_interface(0)
             .pretend_interface(0)
             .qa_interface(0)
-            .hook_interface(0),
+            .hook_interface(0)
+            .manifest_interface(0),
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {

@@ -246,3 +246,52 @@ cat <<END > cat/was_masked/was_masked-0.ebuild
 END
 cd ..
 
+mkdir -p repo11/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo11/category/package/files || exit 1
+cd repo11 || exit 1
+echo "test-repo-11" >> profiles/repo_name || exit 1
+echo "category" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="foo"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package/package-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="bar"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package/ChangeLog || exit 1
+The times, they are-a changin'...
+END
+cat <<END > category/package/metadata.xml || exit
+This isn't valid xml & I don't care!
+END
+cat <<END > category/package/files/some.patch || exit 1
++ Manifest2
+END
+echo "something" > distfiles/foo || exit 1
+echo "for nothing" > distfiles/bar || exit 1
+cat <<END > Manifest_correct || exit 1
+AUX some.patch 12 RMD160 e7f53a2bea1265ef55ae5494ef6050ff7fd1a900 SHA256 26955b4e2d4f60561b8002b72c34ce266f534a4f32f13a29aa33875d39d31cc4
+DIST bar 12 RMD160 90bd2a71cf9d8cf744b0afc0e9a00b999bb59f72 SHA256 27cd06afc317a809116e7730736663b9f09dd863fcc37b69d32d4f5eb58708b2
+DIST foo 10 RMD160 9e19cc1527a061585aa02dae8b7f4047dcd16275 SHA256 4bc453b53cb3d914b45f4b250294236adba2c0e09ff6f03793949e7e39fd4cc1
+EBUILD package-1.ebuild 134 RMD160 0a59df8f246cd5d9f83b89b36026701f1bfe235b SHA256 4d58e5622889397ff6a257d87652a8220585c4d97efbf0a42bf59b3f75d19e03
+EBUILD package-2.ebuild 134 RMD160 d8149a3828ea05849c7033c431d3df5c6eaab67d SHA256 3fb00f77d96c3e6576c2d424d31023958b507bdf20eb6555e89a135b37a54c07
+MISC ChangeLog 34 RMD160 64ae4731e1de8dc8d81f0504c22e586358a5b6f0 SHA256 a8dfbbc187c93c0731fa9722aff87c437a4b9f59b1786d62651fb104b0c3ed97
+MISC metadata.xml 37 RMD160 52a6de8e54eeea3b5e3e8357a400fbc6d3f4062b SHA256 ba3b181b832c002612fba7768c95e526e188658d8fc85b92c153940ad43169de
+END
+cd ..

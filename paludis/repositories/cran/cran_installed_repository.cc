@@ -169,7 +169,8 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .qa_interface(0)
             .make_virtuals_interface(0)
             .pretend_interface(0)
-            .hook_interface(0),
+            .hook_interface(0)
+            .manifest_interface(0),
             "cran_installed"),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {

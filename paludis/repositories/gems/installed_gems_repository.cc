@@ -89,7 +89,8 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
-            .hook_interface(0),
+            .hook_interface(0)
+            .manifest_interface(0),
             "installed_gems"),
     PrivateImplementationPattern<InstalledGemsRepository>(new Implementation<InstalledGemsRepository>(params))
 {

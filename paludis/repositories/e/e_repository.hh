@@ -61,6 +61,7 @@ namespace paludis
         public RepositoryEInterface,
         public RepositoryHookInterface,
         public RepositoryQAInterface,
+        public RepositoryManifestInterface,
         public tr1::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
     {
@@ -189,6 +190,9 @@ namespace paludis
                     const QAMessageLevel,
                     const FSEntry &
                     ) const;
+
+            /* RepositoryManifestInterface */
+            virtual void make_manifest(const QualifiedPackageName & qpn);
 
             ///\name Information about ERepository
             ///\{

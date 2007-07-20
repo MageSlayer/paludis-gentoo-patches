@@ -47,6 +47,7 @@ namespace paludis
     class RepositoryEInterface;
     class RepositoryHookInterface;
     class RepositoryQAInterface;
+    class RepositoryManifestInterface;
 
     class MergeOptions;
 

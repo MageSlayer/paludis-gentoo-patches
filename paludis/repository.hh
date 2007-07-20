@@ -776,6 +776,25 @@ namespace paludis
     };
 
     /**
+     * Interface for making and verifying Manifest2-style manifests
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE RepositoryManifestInterface
+    {
+            public:
+                    /**
+                     * Makes the Manifest for a given package. Requires that all
+                     * the needed DIST files, etc, have already been fetched.
+                     */
+                    virtual void make_manifest(const QualifiedPackageName &) = 0;
+
+                    virtual ~RepositoryManifestInterface();
+    };
+
+    /**
      * Interface for handling hooks.
      *
      * \see Repository

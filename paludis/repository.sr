@@ -20,6 +20,7 @@ make_class_RepositoryCapabilities()
     key e_interface "RepositoryEInterface *"
     key hook_interface "RepositoryHookInterface *"
     key qa_interface "RepositoryQAInterface *"
+    key manifest_interface "RepositoryManifestInterface *"
 
     doxygen_comment << "END"
         /**
