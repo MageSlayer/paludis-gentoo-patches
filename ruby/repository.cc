@@ -423,7 +423,7 @@ namespace
 
     /*
      * call-seq:
-     *      repository_info(verbose) -> RepositoryInfo
+     *     info(verbose) -> RepositoryInfo
      *
      * Fetch our RepositoryInfo
      */
