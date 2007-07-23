@@ -109,6 +109,18 @@ GemsRepository::invalidate()
     _imp.reset(new Implementation<GemsRepository>(_imp->params));
 }
 
+void
+GemsRepository::invalidate_masks()
+{
+    Lock l(_imp->big_nasty_mutex);
+
+    for (MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
+         it_end != it; ++it)
+        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+             it2_end != it2; ++it2)
+            (*it2)->invalidate_masks();
+}
+
 bool
 GemsRepository::do_has_category_named(const CategoryNamePart & c) const
 {

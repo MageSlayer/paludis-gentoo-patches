@@ -231,6 +231,10 @@ void
 NoConfigEnvironment::set_accept_unstable(const bool value)
 {
     _imp->accept_unstable = value;
+    for (PackageDatabase::RepositoryIterator it(_imp->package_database->begin_repositories()),
+             it_end(_imp->package_database->end_repositories());
+         it_end != it; ++it)
+        (*it)->invalidate_masks();
 }
 
 tr1::shared_ptr<Repository>

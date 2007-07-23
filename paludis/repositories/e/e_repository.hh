@@ -157,6 +157,8 @@ namespace paludis
 
             virtual void invalidate();
 
+            virtual void invalidate_masks();
+
             /* RepositoryMirrorsInterface */
 
             virtual MirrorsIterator begin_mirrors(const std::string & s) const

@@ -221,6 +221,10 @@ cd ..
 mkdir -p repo10/{eclass,distfiles,profiles/profile/subprofile,cat/masked,cat/not_masked,cat/was_masked} || exit 1
 cd repo10 || exit 1
 echo "test-repo-10" > profiles/repo_name || exit 1
+cat <<END >profiles/profiles.desc || exit 1
+test profile stable
+test profile/subprofile stable
+END
 cat <<END >profiles/profile/make.defaults || exit 1
 ARCH=test
 USE="flag1 flag2 flag3 -flag4 -flag5"
@@ -239,10 +243,13 @@ cat <<END >profiles/profile/subprofile/parent
 ..
 END
 cat <<END > cat/masked/masked-0.ebuild
+KEYWORDS="test"
 END
 cat <<END > cat/not_masked/not_masked-0.ebuild
+KEYWORDS="test"
 END
 cat <<END > cat/was_masked/was_masked-0.ebuild
+KEYWORDS="test"
 END
 cd ..
 

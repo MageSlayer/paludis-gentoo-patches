@@ -627,6 +627,18 @@ GemSpecification::need_masks_added() const
         add_mask(breaks_mask);
 }
 
+void
+GemSpecification::invalidate_masks() const
+{
+    Lock l(_imp->mutex);
+
+    if (! _imp->has_masks)
+        return;
+
+    _imp->has_masks = false;
+    PackageID::invalidate_masks();
+}
+
 bool
 GemSpecification::breaks_portage() const
 {

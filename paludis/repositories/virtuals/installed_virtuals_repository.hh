@@ -88,6 +88,8 @@ namespace paludis
 
             virtual void invalidate();
 
+            virtual void invalidate_masks();
+
             virtual bool can_be_favourite_repository() const;
 
             virtual FSEntry root() const;

@@ -116,6 +116,8 @@ namespace paludis
             MasksIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual void invalidate_masks() const;
+
             /**
              * Do we break Portage?
              *

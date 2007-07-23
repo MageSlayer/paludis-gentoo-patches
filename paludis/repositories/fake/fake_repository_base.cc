@@ -189,6 +189,16 @@ FakeRepositoryBase::invalidate()
 {
 }
 
+void
+FakeRepositoryBase::invalidate_masks()
+{
+    for (std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
+         it_end != it; ++it)
+        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+             it2_end != it2; ++it2)
+            (*it2)->invalidate_masks();
+}
+
 tr1::shared_ptr<const UseFlagNameSet>
 FakeRepositoryBase::do_use_expand_flags() const
 {

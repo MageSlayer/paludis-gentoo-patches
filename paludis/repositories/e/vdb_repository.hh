@@ -222,6 +222,8 @@ namespace paludis
 
             virtual void invalidate();
 
+            virtual void invalidate_masks();
+
             virtual void regenerate_cache() const;
 
             ///\name For use by VDBID

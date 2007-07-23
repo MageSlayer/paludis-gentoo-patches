@@ -124,6 +124,8 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void invalidate_masks() const;
         };
     }
 }

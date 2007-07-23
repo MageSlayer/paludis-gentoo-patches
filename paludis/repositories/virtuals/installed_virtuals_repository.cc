@@ -243,6 +243,11 @@ InstalledVirtualsRepository::invalidate()
     _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root));
 }
 
+void
+InstalledVirtualsRepository::invalidate_masks()
+{
+}
+
 FSEntry
 InstalledVirtualsRepository::root() const
 {

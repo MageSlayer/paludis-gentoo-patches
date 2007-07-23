@@ -116,6 +116,12 @@ PackageID::masked() const
     return begin_masks() != end_masks();
 }
 
+void
+PackageID::invalidate_masks() const
+{
+    _imp->masks.clear();
+}
+
 PackageID::MetadataIterator
 PackageID::find_metadata(const std::string & s) const
 {

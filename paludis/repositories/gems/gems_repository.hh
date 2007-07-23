@@ -76,6 +76,8 @@ namespace paludis
             ~GemsRepository();
 
             virtual void invalidate();
+
+            virtual void invalidate_masks();
     };
 }
 

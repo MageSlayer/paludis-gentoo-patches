@@ -553,6 +553,11 @@ VDBRepository::invalidate()
 }
 
 void
+VDBRepository::invalidate_masks()
+{
+}
+
+void
 VDBRepository::add_string_to_world(const std::string & n) const
 {
     Lock l(_imp->big_nasty_mutex);

@@ -308,6 +308,17 @@ VirtualsRepository::invalidate()
     _imp.reset(new Implementation<VirtualsRepository>(_imp->env));
 }
 
+void
+VirtualsRepository::invalidate_masks()
+{
+    Lock l(_imp->big_nasty_mutex);
+
+    for (IDMap::iterator it(_imp->ids.begin()), it_end(_imp->ids.end()); it_end != it; ++it)
+        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+             it2_end != it2; ++it2)
+            (*it2)->invalidate_masks();
+}
+
 const tr1::shared_ptr<const PackageID>
 VirtualsRepository::make_virtual_package_id(
         const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const

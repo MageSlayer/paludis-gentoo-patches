@@ -605,6 +605,17 @@ ERepository::invalidate()
 }
 
 void
+ERepository::invalidate_masks()
+{
+    _imp->layout->invalidate_masks();
+
+    if (DistributionData::get_instance()->distribution_from_string(_imp->params.environment->default_distribution())->support_old_style_virtuals)
+        if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
+            _imp->params.environment->package_database()->fetch_repository(
+                    RepositoryName("virtuals"))->invalidate_masks();
+}
+
+void
 ERepository::update_news() const
 {
     Lock l(_imp->news_ptr_mutex);
@@ -882,6 +893,8 @@ ERepository::set_profile(const ProfilesIterator & iter)
         if (_imp->params.environment->package_database()->has_repository_named(RepositoryName("virtuals")))
             _imp->params.environment->package_database()->fetch_repository(
                     RepositoryName("virtuals"))->invalidate();
+
+    invalidate_masks();
 }
 
 void

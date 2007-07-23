@@ -114,6 +114,11 @@ InstalledGemsRepository::invalidate()
     _imp.reset(new Implementation<InstalledGemsRepository>(_imp->params));
 }
 
+void
+InstalledGemsRepository::invalidate_masks()
+{
+}
+
 bool
 InstalledGemsRepository::do_has_category_named(const CategoryNamePart & c) const
 {

@@ -471,6 +471,18 @@ VirtualsPackageID::need_masks_added() const
     _imp->has_masks = true;
 }
 
+void
+VirtualsPackageID::invalidate_masks() const
+{
+    Lock l(_imp->mutex);
+
+    if (! _imp->has_masks)
+        return;
+
+    _imp->has_masks = false;
+    PackageID::invalidate_masks();
+}
+
 bool
 VirtualsPackageID::breaks_portage() const
 {

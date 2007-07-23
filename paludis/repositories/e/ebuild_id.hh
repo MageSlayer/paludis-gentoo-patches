@@ -114,6 +114,8 @@ namespace paludis
                 virtual void perform_action(Action &) const;
 
                 virtual const tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void invalidate_masks() const;
         };
     }
 }

@@ -657,13 +657,44 @@ namespace test_cases
 
                 TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/masked-0", pds_pm_unspecific)),
                             qo_require_exactly_one)->begin())->masked());
-                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
-                            qo_require_exactly_one)->begin())->masked());
-                TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/not_masked-0", pds_pm_unspecific)),
-                            qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
+                              qo_require_exactly_one)->begin())->masked());
+                TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/not_masked-0", pds_pm_unspecific)),
+                              qo_require_exactly_one)->begin())->masked());
             }
         }
     } test_e_repository_query_profile_masks;
+
+    /**
+     * \test Test ERepository invalidate_masks functions.
+     *
+     */
+    struct ERepositoryInvalidateMasksTest : TestCase
+    {
+        ERepositoryInvalidateMasksTest() : TestCase("invalidate_masks") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo10");
+            keys->insert("profiles", "e_repository_TEST_dir/repo10/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
+                        qo_require_exactly_one)->begin())->masked());
+            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile/subprofile"));
+            TEST_CHECK(! (*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
+                          qo_require_exactly_one)->begin())->masked());
+            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile"));
+            TEST_CHECK((*env.package_database()->query(query::Matches(PackageDepSpec("=cat/was_masked-0", pds_pm_unspecific)),
+                        qo_require_exactly_one)->begin())->masked());
+        }
+    } test_e_repository_invalidate_masks;
 
     /**
      * \test Test ERepository Manifest2 generation.

@@ -83,6 +83,8 @@ namespace paludis
 
             virtual void invalidate();
 
+            virtual void invalidate_masks();
+
             /* RepositoryDestinationInterface */
 
             virtual bool is_suitable_destination_for(const PackageID &) const

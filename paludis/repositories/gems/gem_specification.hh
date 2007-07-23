@@ -120,6 +120,8 @@ namespace paludis
                 virtual std::size_t extra_hash_value() const;
 
                 virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void invalidate_masks() const;
         };
     }
 }

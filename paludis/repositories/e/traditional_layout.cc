@@ -535,3 +535,14 @@ TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
 
     return result;
 }
+
+void
+TraditionalLayout::invalidate_masks()
+{
+    Lock l(_imp->big_nasty_mutex);
+
+    for (IDMap::iterator it(_imp->ids.begin()), it_end(_imp->ids.end()); it_end != it; ++it)
+        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+             it2_end != it2; ++it2)
+            (*it2)->invalidate_masks();
+}
