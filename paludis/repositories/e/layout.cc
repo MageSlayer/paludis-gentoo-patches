@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/map-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -35,6 +36,8 @@ template class VirtualConstructor<std::string,
          virtual_constructor_not_found::ThrowException<NoSuchLayoutType> >;
 
 template class InstantiationPolicy<LayoutMaker, instantiation_method::SingletonTag>;
+
+template class Map<FSEntry, std::string>;
 
 Layout::Layout(tr1::shared_ptr<const FSEntry> l) :
     _master_repository_location(l)

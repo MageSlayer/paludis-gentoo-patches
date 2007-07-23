@@ -30,6 +30,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -461,3 +462,57 @@ ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
     return result;
 }
 
+namespace
+{
+    void aux_files_helper(const FSEntry & d,
+            tr1::shared_ptr<Map<FSEntry, std::string> > & m,
+            const QualifiedPackageName & qpn)
+    {
+        std::list<FSEntry> files((DirIterator(d)),
+                DirIterator());
+        for (std::list<FSEntry>::iterator f(files.begin()) ;
+                f != files.end() ; ++f)
+        {
+            if (f->is_directory())
+            {
+                aux_files_helper((*f), m, qpn);
+            }
+            else
+            {
+                if (! f->is_regular_file())
+                    continue;
+                if (is_file_with_prefix_extension((*f),
+                            ("digest-"+stringify(qpn.package)), "",
+                            IsFileWithOptions()))
+                    continue;
+                m->insert((*f), "AUX");
+            }
+        }        
+    }
+}
+
+tr1::shared_ptr<Map<FSEntry, std::string> >
+ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
+{
+    tr1::shared_ptr<Map<FSEntry, std::string> > result(new Map<FSEntry, std::string>);
+    FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
+
+    std::list<FSEntry> package_files((DirIterator(package_dir)),
+            DirIterator());
+    for (std::list<FSEntry>::iterator f(package_files.begin()) ;
+            f != package_files.end() ; ++f)
+    {
+        if (! (*f).is_regular_file() || ((*f).basename() == "Manifest") )
+            continue;
+
+        std::string file_type("MISC");
+        if (_imp->entries->is_package_file(qpn, (*f)))
+            file_type=_imp->entries->get_package_file_manifest_key((*f), qpn);
+
+        result->insert((*f), file_type);
+    }
+
+    aux_files_helper((package_dir / "files"), result, qpn);
+
+    return result;
+}

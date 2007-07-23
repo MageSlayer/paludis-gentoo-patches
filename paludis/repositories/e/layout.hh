@@ -29,6 +29,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/map-fwd.hh>
 
 namespace paludis
 {
@@ -129,6 +130,9 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual tr1::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+                virtual tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 ///\}

@@ -97,6 +97,12 @@ namespace paludis
                  * Handle a merge.
                  */
                 virtual void merge(const MergeOptions &) = 0;
+
+                /**
+                 * Gives the Manifest key for a given package file (for 
+                 * example, "EBUILD").
+                 */
+                virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const = 0;
         };
 
         /**

@@ -72,6 +72,8 @@ namespace paludis
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 
                 virtual void merge(const MergeOptions &);
+
+                virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
         };
     }
 }

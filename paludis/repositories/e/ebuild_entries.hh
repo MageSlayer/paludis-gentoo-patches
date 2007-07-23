@@ -84,6 +84,8 @@ namespace paludis
 
                 virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,
                         tr1::shared_ptr<const ERepositoryProfile>) const;
+
+                virtual std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
         };
     }
 }

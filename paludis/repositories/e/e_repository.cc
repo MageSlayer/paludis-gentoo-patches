@@ -58,6 +58,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -1049,120 +1050,84 @@ ERepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) 
 void
 ERepository::make_manifest(const QualifiedPackageName & qpn)
 {
-    if (_imp->params.layout == "traditional")
+    FSEntry package_dir = _imp->layout->package_directory(qpn);
+
+    FSEntry(package_dir / "Manifest").unlink();
+    std::ofstream manifest(stringify(FSEntry(package_dir 
+                    / "Manifest")).c_str());
+    if (! manifest)
+        throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
+
+    tr1::shared_ptr<Map<FSEntry, std::string> > files = _imp->layout->manifest_files(qpn);
+
+    for (Map<FSEntry, std::string>::Iterator f(files->begin()) ;
+            f != files->end() ; ++f)
     {
-        FSEntry package_dir = _imp->layout->package_directory(qpn);
+        FSEntry file(f->first);
+        std::string filename = file.basename();
+        std::string file_type(f->second);
 
-        FSEntry(package_dir / "Manifest").unlink();
-        std::ofstream manifest(stringify(FSEntry(package_dir 
-                        / "Manifest")).c_str());
-        if (! manifest)
-            throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
-
-        std::list<FSEntry> package_files((DirIterator(package_dir)),
-                DirIterator());
-        for (std::list<FSEntry>::iterator f(package_files.begin()) ;
-                f != package_files.end() ; ++f)
+        if ("AUX" == file_type)
         {
-            std::string filename(stringify(*f));
-            std::string file_type("MISC");
-
-            if (! (*f).is_regular_file() || ((*f).basename() == "Manifest") )
-                continue;
-            if (is_file_with_extension(*f, ".ebuild", IsFileWithOptions()))
-                file_type="EBUILD";
-
-            std::ifstream file_stream(filename.c_str());
-            if (! file_stream)
-                throw ERepositoryConfigurationError("Couldn't read "+filename);
-
-            RMD160 rmd160sum(file_stream);
-            manifest << file_type << " " << (*f).basename() << " "
-                << (*f).file_size()
-                << " RMD160 " << rmd160sum.hexsum();
-
-            file_stream.clear();
-            file_stream.seekg(0, std::ios::beg);
-            SHA256 sha256sum(file_stream);
-            manifest << " SHA256 " << sha256sum.hexsum()
-                << std::endl;
+            filename = stringify(file).substr(stringify(package_dir / "files").length()+1);
         }
 
-        std::list<FSEntry> files_files((DirIterator(package_dir / "files")),
-                DirIterator());
-        for (std::list<FSEntry>::iterator f(files_files.begin()) ;
-                f != files_files.end() ; ++f)
-        {
-            std::string filename(stringify(*f));
+        std::ifstream file_stream(stringify(file).c_str());
+        if (! file_stream)
+            throw ERepositoryConfigurationError("Couldn't read " 
+                    + stringify(file));
 
-            if (is_file_with_prefix_extension(*f,
-                        ("digest-"+stringify(qpn.package)), "",
-                         IsFileWithOptions()))
-                continue;
+        RMD160 rmd160sum(file_stream);
+        manifest << file_type << " " << filename << " "
+            << file.file_size() << " RMD160 " << rmd160sum.hexsum();
 
-            std::ifstream file_stream(filename.c_str());
-            if (! file_stream)
-                throw ERepositoryConfigurationError("Couldn't read "+filename);
-
-            RMD160 rmd160sum(file_stream);
-            manifest << "AUX " << (*f).basename() << " "
-                << (*f).file_size()
-                << " RMD160 " << rmd160sum.hexsum();
-
-            file_stream.clear();
-            file_stream.seekg(0, std::ios::beg);
-            SHA256 sha256sum(file_stream);
-            manifest << " SHA256 " << sha256sum.hexsum()
-                << std::endl;
-        }
-
-        tr1::shared_ptr<const PackageIDSequence> versions;
-        versions = package_ids(qpn);
-
-        std::set<std::string> done_files;
- 
-        for (PackageIDSequence::Iterator v(versions->begin()),
-                v_end(versions->end()) ;
-                v != v_end ; ++v)
-        {
-            tr1::shared_ptr<const PackageID> id = (*v);
-            if (! id->src_uri_key())
-                continue;
-            paludis::erepository::AAVisitor aa;
-            id->src_uri_key()->value()->accept(aa);
-
-            for (paludis::erepository::AAVisitor::Iterator d(aa.begin()) ;
-                    d != aa.end() ; ++d)
-            {
-                if (done_files.count(*d))
-                    continue;
-                done_files.insert(*d);
-
-                FSEntry f(params().distdir / *d);
-
-                std::ifstream file_stream(stringify(f).c_str());
-                if (! file_stream)
-                    throw ERepositoryConfigurationError("Couldn't read "
-                            +stringify(f));
-
-                RMD160 rmd160sum(file_stream);
-                manifest << "DIST " << f.basename() << " "
-                    << f.file_size()
-                    << " RMD160 " << rmd160sum.hexsum();
-
-                file_stream.clear();
-                file_stream.seekg(0, std::ios::beg);
-                SHA256 sha256sum(file_stream);
-                manifest << " SHA256 " << sha256sum.hexsum()
-                    << std::endl;
-            }
-        }
-
-        return;
+        file_stream.clear();
+        file_stream.seekg(0, std::ios::beg);
+        SHA256 sha256sum(file_stream);
+        manifest << " SHA256 " << sha256sum.hexsum() << std::endl;
     }
-    throw InternalError(PALUDIS_HERE,
-            "Manifest creation not supported for \""
-            +_imp->params.layout+"\" layout.");
+
+    tr1::shared_ptr<const PackageIDSequence> versions;
+    versions = package_ids(qpn);
+
+    std::set<std::string> done_files;
+
+    for (PackageIDSequence::Iterator v(versions->begin()),
+            v_end(versions->end()) ;
+            v != v_end ; ++v)
+    {
+        tr1::shared_ptr<const PackageID> id = (*v);
+        if (! id->src_uri_key())
+            continue;
+        paludis::erepository::AAVisitor aa;
+        id->src_uri_key()->value()->accept(aa);
+
+        for (paludis::erepository::AAVisitor::Iterator d(aa.begin()) ;
+                d != aa.end() ; ++d)
+        {
+            if (done_files.count(*d))
+                continue;
+            done_files.insert(*d);
+
+            FSEntry f(params().distdir / *d);
+
+            std::ifstream file_stream(stringify(f).c_str());
+            if (! file_stream)
+                throw ERepositoryConfigurationError("Couldn't read "
+                        + stringify(f));
+
+            RMD160 rmd160sum(file_stream);
+            manifest << "DIST " << f.basename() << " "
+                << f.file_size()
+                << " RMD160 " << rmd160sum.hexsum();
+
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+            SHA256 sha256sum(file_stream);
+            manifest << " SHA256 " << sha256sum.hexsum()
+                << std::endl;
+        }
+    }
 }
 
 std::string

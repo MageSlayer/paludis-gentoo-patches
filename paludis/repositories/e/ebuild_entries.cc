@@ -692,3 +692,14 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
     return true;
 }
 
+std::string
+EbuildEntries::get_package_file_manifest_key(const FSEntry & f, const QualifiedPackageName & q) const
+{
+    if (! is_package_file(q, f))
+        return "";
+    if (is_file_with_prefix_extension(f, stringify(q.package) + "-", ".ebuild", IsFileWithOptions()))
+        return "EBUILD";
+    else
+        return "EXHERES";
+}
+

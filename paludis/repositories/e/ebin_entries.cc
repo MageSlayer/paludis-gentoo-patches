@@ -467,5 +467,14 @@ EbinEntries::pretend(const QualifiedPackageName &, const VersionSpec &,
 {
     return true;
 }
+
+std::string
+EbinEntries::get_package_file_manifest_key(const FSEntry & f, const QualifiedPackageName & q) const
+{
+    if (is_package_file(q, f)
+        return "EBIN";
+    return "";
+}
+
 #endif
 
