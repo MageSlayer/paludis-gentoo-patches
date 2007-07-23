@@ -509,9 +509,6 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||
                     CommandLine::get_instance()->a_regenerate_installable_cache.specified())
             {
-                if (! CommandLine::get_instance()->empty())
-                    throw args::DoHelp("regenerate cache actions takes no parameters");
-
                 return do_regenerate_cache(env, CommandLine::get_instance()->a_regenerate_installed_cache.specified());
             }
 

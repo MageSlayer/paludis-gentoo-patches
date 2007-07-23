@@ -127,9 +127,10 @@ _paludis() {
         --category \
         --package \
         --set"
-    regen_opts=""
+    regen_news_opts=""
+    regen_repos_opts=""
         
-    all_opts="${action_opts} ${general_opts} ${query_opts} ${install_opts} ${uninstall_opts} ${sync_opts} ${report_opts} ${contents_opts} ${owner_opts} ${version_query_opts} ${variable_query_opts} ${list_opts} ${regen_opts}"
+    all_opts="${action_opts} ${general_opts} ${query_opts} ${install_opts} ${uninstall_opts} ${sync_opts} ${report_opts} ${contents_opts} ${owner_opts} ${version_query_opts} ${variable_query_opts} ${list_opts} ${regen_news_opts} ${regen_repos_opts}"
 
     local x
     for x in "${COMP_WORDS[@]}" ; do
@@ -186,8 +187,12 @@ _paludis() {
                 action="list"
                 break
                 ;;
-            --update-news|--regenerate-installed-cache|--regenerate-installable-cache)
-                action="regen"
+            --update-news)
+                action="regen_news"
+                break
+                ;;
+            --regenerate-installed-cache|--regenerate-installable-cache)
+                action="regen_repos"
                 break
                 ;;
         esac
@@ -303,11 +308,11 @@ _paludis() {
                 #    ;;
                 *)
                     case "${action}" in
-                        sync)
+                        sync|regen_repos)
                             COMPREPLY=($(compgen -W "$(_paludis_dolist repositories)" -- "${cur}"))
                             return 0
                             ;;
-                        report|info|list|regen)
+                        report|info|list|regen_news)
                             return 0
                             ;;
                         owner)

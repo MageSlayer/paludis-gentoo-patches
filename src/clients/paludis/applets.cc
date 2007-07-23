@@ -244,14 +244,30 @@ int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");
 
-    for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    if (! CommandLine::get_instance()->empty())
     {
-        if (installed != (0 != (*r)->installed_interface))
-            continue;
+        CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+            q_end(CommandLine::get_instance()->end_parameters());
+        for ( ; q != q_end ; ++q)
+        {
+            if (! env->package_database()->has_repository_named(RepositoryName(*q)))
+                throw NoSuchRepositoryError(*q);
 
-        std::cout << "Regenerating cache for " << (*r)->name() << "..." << std::endl;
-        (*r)->regenerate_cache();
+            std::cout << "Regenerating cache for " << (*q) << "..." << std::endl;
+            env->package_database()->fetch_repository(RepositoryName(*q))->regenerate_cache();
+        }
+    }
+    else
+    {
+        for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+        {
+            if (installed != (0 != (*r)->installed_interface))
+                continue;
+
+            std::cout << "Regenerating cache for " << (*r)->name() << "..." << std::endl;
+            (*r)->regenerate_cache();
+        }
     }
 
     return 0;
