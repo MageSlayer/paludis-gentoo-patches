@@ -21,7 +21,7 @@ source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 echo
 einfo_unhooked "Regenerating cache for installable repositories..."
-${PALUDIS_COMMAND} --regenerate-installable-cache
+${PALUDIS_COMMAND} --regenerate-installable-cache ${TARGETS}
 einfo_unhooked "Done regenerating cache for installable repositories"
 
 true
