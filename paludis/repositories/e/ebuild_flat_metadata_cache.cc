@@ -174,11 +174,12 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
     }
     catch (const FSError &)
     {
-        // let the 'if (cache)' handle the error
+        // let the 'if (cache_file)' handle the error
     }
-    std::ofstream cache(stringify(_filename).c_str());
 
-    if (cache)
+    std::ostringstream cache;
+
+    try
     {
         if (id->build_dependencies_key())
             cache << flatten(id->build_dependencies_key()->value()) << std::endl;
@@ -246,6 +247,17 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
 
         cache << normalise(id->eapi()->name) << std::endl;
     }
+    catch (const Exception & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context) << "Not writing cache file to '"
+            << _filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+        return;
+    }
+
+    std::ofstream cache_file(stringify(_filename).c_str());
+
+    if (cache_file)
+        cache_file << cache.str();
     else
     {
         Log::get_instance()->message(ll_warning, lc_no_context) << "Couldn't write cache file to '"
