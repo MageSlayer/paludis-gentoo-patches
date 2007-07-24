@@ -251,7 +251,7 @@ int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
         for ( ; q != q_end ; ++q)
         {
             if (! env->package_database()->has_repository_named(RepositoryName(*q)))
-                throw NoSuchRepositoryError(*q);
+                throw NoSuchRepositoryError(RepositoryName(*q));
 
             std::cout << "Regenerating cache for " << (*q) << "..." << std::endl;
             env->package_database()->fetch_repository(RepositoryName(*q))->regenerate_cache();
