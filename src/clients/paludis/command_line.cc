@@ -279,6 +279,7 @@ CommandLine::CommandLine() :
             "utilities.");
     add_environment_variable("PALUDIS_REPOSITORY_SO_DIR", "Where to look for repository .so "
             "files.");
+    add_environment_variable("PALUDIS_FETCHERS_DIR", "Where to look for fetcher scripts.");
     add_environment_variable("PALUDIS_OPTIONS", "Default command-line options.");
 }
 

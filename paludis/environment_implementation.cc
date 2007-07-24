@@ -26,6 +26,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/system.hh>
 #include <paludis/hook.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -58,8 +59,14 @@ tr1::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
-    result->push_back(FSEntry(DATADIR "/paludis/fetchers"));
-    result->push_back(FSEntry(LIBEXECDIR "/paludis/fetchers"));
+    std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
+    if (fetchers_dir.empty())
+    {
+        result->push_back(FSEntry(DATADIR "/paludis/fetchers"));
+        result->push_back(FSEntry(LIBEXECDIR "/paludis/fetchers"));
+    }
+    else
+        result->push_back(FSEntry(fetchers_dir));
     return result;
 }
 
