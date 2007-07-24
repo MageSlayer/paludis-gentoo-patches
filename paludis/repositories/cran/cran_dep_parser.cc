@@ -18,7 +18,6 @@
  */
 
 #include <paludis/dep_spec.hh>
-#include <paludis/eapi.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -34,12 +33,9 @@
 using namespace paludis;
 
 tr1::shared_ptr<DependencySpecTree::ConstItem>
-CRANDepParser::parse(const std::string & s, const EAPI & e)
+cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
-
-    if (! e.supported)
-        throw InternalError(PALUDIS_HERE, "Got bad EAPI '" + e.name + "' for a CRAN package");
 
     tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > result(
             new ConstTreeSequence<DependencySpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
@@ -84,7 +80,7 @@ CRANDepParser::parse(const std::string & s, const EAPI & e)
             spec_string = range + name + "-" + version;
         tr1::shared_ptr<TreeLeaf<DependencySpecTree, PackageDepSpec> > spec(
                 new TreeLeaf<DependencySpecTree, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                        new PackageDepSpec(spec_string, e.supported->package_dep_spec_parse_mode))));
+                        new PackageDepSpec(spec_string, pds_pm_permissive))));
         result->add(spec);
     }
 

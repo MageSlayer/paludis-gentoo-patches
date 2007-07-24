@@ -21,11 +21,12 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/eapi.hh>
 #include <paludis/repository_info.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/config_file.hh>
 #include <paludis/set_file.hh>
+#include <paludis/action.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
@@ -48,6 +49,7 @@
 
 #include <functional>
 #include <algorithm>
+#include <fstream>
 
 using namespace paludis;
 
@@ -150,25 +152,20 @@ Implementation<CRANInstalledRepository>::need_ids() const
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("cran_installed"),
             RepositoryCapabilities::create()
-            .mask_interface(0)
-            .installable_interface(0)
             .installed_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
-            .uninstallable_interface(this)
             .use_interface(0)
             .world_interface(this)
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
             .provides_interface(0)
-            .config_interface(0)
             .destination_interface(this)
             .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
-            .pretend_interface(0)
             .hook_interface(0)
             .manifest_interface(0),
             "cran_installed"),
@@ -495,80 +492,56 @@ CRANInstalledRepository::invalidate()
     _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
 }
 
-#if 0
 void
 CRANInstalledRepository::add_string_to_world(const std::string & n) const
 {
-    bool found(false);
+    Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
 
-    if (_imp->world_file.exists())
+    if (! _imp->params.world.exists())
     {
-        LineConfigFile world(_imp->world_file, LineConfigFileOptions());
-
-        for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
-                line != line_end ; ++line)
-            if (*line == n)
-            {
-                found = true;
-                break;
-            }
+        std::ofstream f(stringify(_imp->params.world).c_str());
+        if (! f)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot create world file '"
+                    + stringify(_imp->params.world) + "'");
+            return;
+        }
     }
 
-    if (! found)
-    {
-        std::ofstream world(stringify(_imp->world_file).c_str(), std::ios::out | std::ios::app);
-        if (! world)
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot append to world file '"
-                    + stringify(_imp->world_file) + "', skipping world update");
-        else
-            world << n << std::endl;
-    }
+    SetFile world(SetFileParams::create()
+            .file_name(_imp->params.world)
+            .type(sft_simple)
+            .parse_mode(pds_pm_unspecific)
+            .tag(tr1::shared_ptr<DepTag>())
+            .environment(_imp->params.environment));
+    world.add(n);
+    world.rewrite();
 }
 
 void
 CRANInstalledRepository::remove_string_from_world(const std::string & n) const
 {
-    std::list<std::string> world_lines;
+    Context context("When removing '" + n + "' from world file '" + stringify(_imp->params.world) + "':");
 
-    if (_imp->world_file.exists())
+    if (_imp->params.world.exists())
     {
-        std::ifstream world_file(stringify(_imp->world_file).c_str());
+        SetFile world(SetFileParams::create()
+                .file_name(_imp->params.world)
+                .type(sft_simple)
+                .parse_mode(pds_pm_unspecific)
+                .tag(tr1::shared_ptr<DepTag>())
+                .environment(_imp->params.environment));
 
-        if (! world_file)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot read world file '"
-                    + stringify(_imp->world_file) + "', skipping world update");
-            return;
-        }
-
-        std::string line;
-        while (std::getline(world_file, line))
-        {
-            if (strip_leading(strip_trailing(line, " \t"), "\t") != n)
-                world_lines.push_back(line);
-            else
-                Log::get_instance()->message(ll_debug, lc_context, "Removing line '"
-                            + line + "' from world file '" + stringify(_imp->world_file));
-        }
+        world.remove(n);
+        world.rewrite();
     }
-
-    std::ofstream world_file(stringify(_imp->world_file).c_str());
-
-    if (! world_file)
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "Cannot write world file '"
-                + stringify(_imp->world_file) + "', skipping world update");
-        return;
-    }
-
-    std::copy(world_lines.begin(), world_lines.end(),
-            std::ostream_iterator<std::string>(world_file, "\n"));
 }
 
 bool
-CRANInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
+CRANInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    return _imp->env->package_database()->fetch_repository(e.repository)->format() == "cran";
+    std::string f(e.repository()->format());
+    return f == "cran";
 }
 
 void
@@ -594,7 +567,6 @@ CRANInstalledRepository::remove_from_world(const SetName & n) const
 {
     remove_string_from_world(stringify(n));
 }
-#endif
 
 FSEntry
 CRANInstalledRepository::root() const
@@ -614,27 +586,14 @@ CRANInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
-#if 0
 void
 CRANInstalledRepository::merge(const MergeOptions & m)
 {
-    tr1::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+    Context context("When merging '" + stringify(*m.package_id) + "' at '" + stringify(m.image_dir)
+            + "' to repository '" + stringify(name()) + "':");
 
-    Command cmd = Command(LIBEXECDIR "/paludis/cran.bash merge")
-        .with_setenv("IMAGE", stringify(m.image_dir))
-        .with_setenv("PN", stringify(m.package.name.package))
-        .with_setenv("PV", stringify(m.package.version))
-        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
-        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-        .with_setenv("ROOT", stringify(root()))
-        .with_setenv("REPOSITORY", stringify(m.package.repository));
-
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't merge '" + stringify(m.package) + "' to '" +
-                stringify(name()) + "'");
+    if (! is_suitable_destination_for(*m.package_id))
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
 
 }
-#endif
 

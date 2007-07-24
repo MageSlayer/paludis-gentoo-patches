@@ -24,6 +24,8 @@
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/map-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <string>
 
 /** \file
@@ -46,7 +48,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANRepository :
         public Repository,
-        public RepositoryInstallableInterface,
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
         private PrivateImplementationPattern<CRANRepository>
@@ -59,10 +60,6 @@ namespace paludis
              * Try to get the repository name for a particular repository.
              */
             static RepositoryName fetch_repo_name(const std::string & location);
-
-            /* RepositoryInstallableInterface */
-
-            virtual void do_install(const tr1::shared_ptr<const PackageID> &, const InstallOptions &) const;
 
             /* RepositorySyncableInterface */
 
@@ -93,6 +90,8 @@ namespace paludis
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
+
         public:
             /**
              * Constructor.
@@ -112,6 +111,7 @@ namespace paludis
             virtual ~CRANRepository();
 
             virtual void invalidate();
+            virtual void invalidate_masks();
     };
 
     /**

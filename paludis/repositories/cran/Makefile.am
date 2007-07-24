@@ -41,17 +41,13 @@ libpaludiscranrepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
-if ! MONOLITHIC
-
 libpaludiscranrepository_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
-endif
-
-TESTS = cran_dep_parser_TEST cran_repository_TEST
+TESTS = cran_dep_parser_TEST cran_repository_TEST cran_installed_repository_TEST
 
 cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
 
@@ -59,6 +55,17 @@ cran_dep_parser_TEST_LDADD= \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludiscranrepository.la
+
+cran_installed_repository_TEST_SOURCES = cran_installed_repository_TEST.cc
+
+cran_installed_repository_TEST_LDADD = \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludiscranrepository.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(DYNAMIC_LD_LIBS)
 
 cran_repository_TEST_SOURCES = cran_repository_TEST.cc
 
@@ -71,8 +78,6 @@ cran_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(DYNAMIC_LD_LIBS)
 
-cran_repository_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
-
 EXTRA_DIST = \
 	cran_repository_TEST.cc \
 	cran_repository_TEST_setup.sh \
@@ -82,7 +87,10 @@ EXTRA_DIST = \
 	cran_repository-sr.cc \
 	cran_installed_repository.sr \
 	cran_installed_repository-sr.hh \
-	cran_installed_repository-sr.cc
+	cran_installed_repository-sr.cc \
+	cran_installed_repository_TEST.cc \
+	cran_installed_repository_TEST_setup.sh \
+	cran_installed_repository_TEST_cleanup.sh
 
 BUILT_SOURCES = \
 	cran_repository-sr.hh \
@@ -91,12 +99,13 @@ BUILT_SOURCES = \
 	cran_installed_repository-sr.cc
 
 check_PROGRAMS = $(TESTS)
-check_SCRIPTS = cran_repository_TEST_setup.sh cran_repository_TEST_cleanup.sh
+check_SCRIPTS = \
+	cran_repository_TEST_setup.sh cran_repository_TEST_cleanup.sh \
+	cran_installed_repository_TEST_setup.sh cran_installed_repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	CRAN_BASH_DIR="$(top_srcdir)/paludis/repositories/cran/cran/" \
 	PALUDIS_SKIP_CONFIG="yes" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \

@@ -47,7 +47,6 @@ namespace paludis
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositoryInstalledInterface,
-        public RepositoryUninstallableInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
         public RepositoryDestinationInterface,
@@ -55,6 +54,8 @@ namespace paludis
     {
         private:
             void need_ids() const;
+            void add_string_to_world(const std::string & n) const;
+            void remove_string_from_world(const std::string &) const;
 
         protected:
             /* Repository */
@@ -76,14 +77,7 @@ namespace paludis
             virtual bool do_has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /* RepositoryInstalledInterface */
-
-            virtual time_t do_installed_time(const PackageID &)
-                const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryUninstallableInterface */
-
-            virtual void do_uninstall(const tr1::shared_ptr<const PackageID> &, const UninstallOptions &) const;
+            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
             /* RepositorySetsInterface */
 
@@ -109,6 +103,7 @@ namespace paludis
             ~CRANInstalledRepository();
 
             virtual void invalidate();
+            virtual void invalidate_masks();
 
             /* RepositoryInstalledInterface */
 

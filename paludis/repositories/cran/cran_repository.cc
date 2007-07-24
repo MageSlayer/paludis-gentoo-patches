@@ -29,6 +29,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/options.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
@@ -93,12 +94,9 @@ Implementation<CRANRepository>::~Implementation()
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     Repository(CRANRepository::fetch_repo_name(stringify(p.location)),
             RepositoryCapabilities::create()
-            .mask_interface(0)
-            .installable_interface(this)
             .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
-            .uninstallable_interface(0)
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
@@ -107,10 +105,8 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .provides_interface(0)
             .destination_interface(0)
             .virtuals_interface(0)
-            .config_interface(0)
             .licenses_interface(0)
             .e_interface(0)
-            .pretend_interface(0)
             .qa_interface(0)
             .hook_interface(0)
             .manifest_interface(0),
@@ -219,6 +215,7 @@ CRANRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("cran-" + modified_location);
 }
 
+#if 0
 void
 CRANRepository::do_install(const tr1::shared_ptr<const PackageID> & id_uncasted, const InstallOptions & o) const
 {
@@ -305,6 +302,7 @@ CRANRepository::do_install(const tr1::shared_ptr<const PackageID> & id_uncasted,
 
     return;
 }
+#endif
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
 CRANRepository::do_package_set(const SetName & s) const
