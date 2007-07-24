@@ -10,7 +10,6 @@ make_class_EAPIEbuildPhases()
     key ebuild_uninstall          std::string
     key ebuild_pretend            std::string
     key ebuild_metadata           std::string
-    key ebuild_fetch              std::string
     key ebuild_nofetch            std::string
     key ebuild_variable           std::string
     key ebuild_config             std::string
@@ -161,6 +160,7 @@ make_class_SupportedEAPI()
     key ebuild_phases                 "tr1::shared_ptr<const EAPIEbuildPhases>"
     key ebuild_metadata_variables     "tr1::shared_ptr<const EAPIEbuildMetadataVariables>"
     key ebuild_environment_variables  "tr1::shared_ptr<const EAPIEbuildEnvironmentVariables>"
+    key uri_labels                    "tr1::shared_ptr<const EAPILabels>"
 
     doxygen_comment << "END"
         /**

@@ -22,6 +22,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <paludis/dep_label.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 
@@ -36,6 +37,7 @@ namespace paludis
     class UseDepSpec;
     class BlockDepSpec;
     class StringDepSpec;
+    template <typename T_> class LabelsDepSpec;
 
 #include <paludis/dep_spec-se.hh>
 
@@ -56,6 +58,13 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
 
     /**
+     * A LabelsDepSpec<URILabelVisitorTypes> can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const LabelsDepSpec<URILabelVisitorTypes> &) PALUDIS_VISIBLE;
+
+    /**
      * A generic DepSpec heirarchy.
      *
      * \ingroup grpdepspecs
@@ -68,6 +77,7 @@ namespace paludis
             TreeLeaf<GenericSpecTree, URIDepSpec>,
             TreeLeaf<GenericSpecTree, PackageDepSpec>,
             TreeLeaf<GenericSpecTree, BlockDepSpec>,
+            TreeLeaf<GenericSpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
             ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
@@ -102,6 +112,7 @@ namespace paludis
             URISpecTree,
             DepSpec,
             TreeLeaf<URISpecTree, URIDepSpec>,
+            TreeLeaf<URISpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
             ConstTreeSequence<URISpecTree, AllDepSpec>,
             ConstTreeSequence<URISpecTree, UseDepSpec>
         >

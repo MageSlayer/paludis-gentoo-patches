@@ -26,7 +26,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/sr.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/sequence-fwd.hh>
 
 namespace paludis
 {
@@ -38,6 +40,7 @@ namespace paludis
             ActionVisitorTypes,
             Action,
             InstallAction,
+            FetchAction,
             InstalledAction,
             UninstallAction,
             PretendAction,
@@ -51,6 +54,7 @@ namespace paludis
             SupportsActionTestVisitorTypes,
             SupportsActionTestBase,
             SupportsActionTest<InstallAction>,
+            SupportsActionTest<FetchAction>,
             SupportsActionTest<InstalledAction>,
             SupportsActionTest<UninstallAction>,
             SupportsActionTest<PretendAction>,
@@ -76,6 +80,18 @@ namespace paludis
             ~InstallAction();
 
             const InstallActionOptions & options;
+    };
+
+    class PALUDIS_VISIBLE FetchAction :
+        public Action,
+        private PrivateImplementationPattern<FetchAction>,
+        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
+    {
+        public:
+            FetchAction(const FetchActionOptions &);
+            ~FetchAction();
+
+            const FetchActionOptions & options;
     };
 
     class PALUDIS_VISIBLE UninstallAction :
@@ -129,14 +145,94 @@ namespace paludis
     {
     };
 
-    class PALUDIS_VISIBLE UnsupportedActionError :
+    std::ostream & operator<< (std::ostream &, const Action &) PALUDIS_VISIBLE;
+
+    /**
+     * Parent class for action errors.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE ActionError :
         public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            ActionError(const std::string & msg) throw ();
+    };
+
+    class PALUDIS_VISIBLE UnsupportedActionError :
+        public ActionError
     {
         public:
             UnsupportedActionError(const PackageID &, const Action &) throw ();
     };
 
-    std::ostream & operator<< (std::ostream &, const Action &) PALUDIS_VISIBLE;
+    /**
+     * Thrown if an install fails.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE InstallActionError : public ActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            InstallActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if a fetch fails.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE FetchActionError :
+        public ActionError
+    {
+        private:
+            const tr1::shared_ptr<const Sequence<FetchActionFailure> > _failures;
+
+        public:
+            FetchActionError(const std::string &) throw ();
+            FetchActionError(const std::string &, const tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
+
+            const tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * Thrown if an uninstall fails.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE UninstallActionError : public ActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            UninstallActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if a configure fails.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE ConfigActionError : public ActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            ConfigActionError(const std::string & msg) throw ();
+    };
 }
 
 #endif

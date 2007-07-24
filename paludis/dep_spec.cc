@@ -23,6 +23,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -760,6 +761,13 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
     return s;
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const LabelsDepSpec<URILabelVisitorTypes> & l)
+{
+    s << join(l.begin(), l.end(), "+") << ":";
+    return s;
+}
+
 PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
     Exception(msg)
 {
@@ -1032,4 +1040,55 @@ URIDepSpec::clone() const
 {
     return tr1::shared_ptr<URIDepSpec>(new URIDepSpec(text()));
 }
+
+namespace paludis
+{
+    template <>
+    template <typename T_>
+    struct Implementation<LabelsDepSpec<T_ > >
+    {
+        std::list<tr1::shared_ptr<const typename T_::BasicNode> > items;
+    };
+}
+
+template <typename T_>
+LabelsDepSpec<T_>::LabelsDepSpec() :
+    PrivateImplementationPattern<LabelsDepSpec<T_> >(new Implementation<LabelsDepSpec<T_> >)
+{
+}
+
+template <typename T_>
+LabelsDepSpec<T_>::~LabelsDepSpec()
+{
+}
+
+template <typename T_>
+tr1::shared_ptr<DepSpec>
+LabelsDepSpec<T_>::clone() const
+{
+    return tr1::shared_ptr<LabelsDepSpec<T_> >(new LabelsDepSpec<T_>);
+}
+
+template <typename T_>
+typename LabelsDepSpec<T_>::Iterator
+LabelsDepSpec<T_>::begin() const
+{
+    return Iterator(indirect_iterator(_imp->items.begin()));
+}
+
+template <typename T_>
+typename LabelsDepSpec<T_>::Iterator
+LabelsDepSpec<T_>::end() const
+{
+    return Iterator(indirect_iterator(_imp->items.end()));
+}
+
+template <typename T_>
+void
+LabelsDepSpec<T_>::add_label(const tr1::shared_ptr<const typename T_::BasicNode> & item)
+{
+    _imp->items.push_back(item);
+}
+
+template class LabelsDepSpec<URILabelVisitorTypes>;
 

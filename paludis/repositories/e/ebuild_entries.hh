@@ -79,6 +79,9 @@ namespace paludis
                 virtual std::string get_environment_variable(const tr1::shared_ptr<const ERepositoryID> &, const std::string & var,
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 
+                virtual void fetch(const tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const;
+
                 virtual void install(const tr1::shared_ptr<const ERepositoryID> &, const InstallActionOptions &,
                         tr1::shared_ptr<const ERepositoryProfile>) const;
 

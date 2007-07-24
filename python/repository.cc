@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/set.hh>
@@ -188,24 +189,21 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * Exceptions
      */
-    ExceptionRegister::get_instance()->add_exception<PackageActionError>
-        ("PackageActionError", "BaseException",
+    ExceptionRegister::get_instance()->add_exception<ActionError>
+        ("ActionError", "BaseException",
          "Parent class for install, uninstall errors.");
-    ExceptionRegister::get_instance()->add_exception<PackageInstallActionError>
-        ("PackageInstallActionError", "PackageActionError",
+    ExceptionRegister::get_instance()->add_exception<InstallActionError>
+        ("InstallActionError", "ActionError",
          "Thrown if an install fails.");
-    ExceptionRegister::get_instance()->add_exception<PackageFetchActionError>
-        ("PackageFetchActionError", "PackageActionError",
+    ExceptionRegister::get_instance()->add_exception<FetchActionError>
+        ("FetchActionError", "ActionError",
          "Thrown if a fetch fails.");
-    ExceptionRegister::get_instance()->add_exception<PackageUninstallActionError>
-        ("PackageUninstallActionError", "PackageActionError",
+    ExceptionRegister::get_instance()->add_exception<UninstallActionError>
+        ("UninstallActionError", "ActionError",
          "Thrown if an uninstall fails.");
-    ExceptionRegister::get_instance()->add_exception<PackageConfigActionError>
-        ("PackageConfigActionError", "PackageActionError",
+    ExceptionRegister::get_instance()->add_exception<ConfigActionError>
+        ("ConfigActionError", "ActionError",
          "Thrown if a configure fails.");
-    ExceptionRegister::get_instance()->add_exception<EnvironmentVariableActionError>
-        ("EnvironmentVariableActionError", "PackageActionError",
-         "Thrown if an environment variable query fails.");
 
     /**
      * DestinationIterable

@@ -22,6 +22,7 @@
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
+#include <paludis/dep_label-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
@@ -457,6 +458,44 @@ namespace paludis
 
             virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    /**
+     * A LabelsDepSpec represents a labels entry using a particular visitor
+     * types class.
+     *
+     * \ingroup grpdepspecs
+     * \nosubgrouping
+     */
+    template <typename SpecTree_>
+    class PALUDIS_VISIBLE LabelsDepSpec :
+        public DepSpec,
+        private PrivateImplementationPattern<LabelsDepSpec<SpecTree_> >
+    {
+        private:
+            using PrivateImplementationPattern<LabelsDepSpec<SpecTree_> >::_imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            LabelsDepSpec();
+            ~LabelsDepSpec();
+
+            ///\}
+
+            ///\name Contained labels
+            ///\{
+
+            void add_label(const tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
+            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>, const typename SpecTree_::BasicNode> Iterator;
+            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
 }
 
 #endif

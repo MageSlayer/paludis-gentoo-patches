@@ -81,6 +81,8 @@ namespace paludis
 
                 void visit_leaf(const URIDepSpec &);
 
+                void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
+
                 ///}
         };
 

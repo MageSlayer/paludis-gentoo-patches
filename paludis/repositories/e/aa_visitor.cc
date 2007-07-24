@@ -72,6 +72,11 @@ AAVisitor::visit_leaf(const URIDepSpec & p)
     _imp->aa.push_back(p.filename());
 }
 
+void
+AAVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+{
+}
+
 AAVisitor::Iterator
 AAVisitor::begin() const
 {

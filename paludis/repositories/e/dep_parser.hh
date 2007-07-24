@@ -29,7 +29,7 @@
 #include <string>
 
 /** \file
- * Declarations for the DepParser class.
+ * Declarations for the DepParser routines.
  *
  * \ingroup grpdepparser
  */
@@ -72,51 +72,40 @@ namespace paludis
         };
 
         /**
-         * The DepParser converts string representations of a dependency
-         * specification into a DepSpec instance. The DepLexer class is
-         * used as the first stage.
-         *
-         * \ingroup grpdepparser
+         * Parse a dependency heirarchy.
          */
-        class PALUDIS_VISIBLE DepParser :
-            private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
-        {
-            private:
-                template <typename H_, typename I_, bool any_, bool use_>
-                static tr1::shared_ptr<typename H_::ConstItem> _parse(const std::string &,
-                        bool disallow_any_use, const I_ &);
+        tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
 
-            public:
-                /**
-                 * Parse a dependency heirarchy.
-                 */
-                static tr1::shared_ptr<DependencySpecTree::ConstItem> parse_depend(const std::string & s,
-                        const EAPI &);
+        /**
+         * Parse a provide heirarchy.
+         */
+        tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
 
-                /**
-                 * Parse a provide heirarchy.
-                 */
-                static tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,
-                        const EAPI &);
+        /**
+         * Parse a restrict.
+         */
+        tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
 
-                /**
-                 * Parse a restrict.
-                 */
-                static tr1::shared_ptr<RestrictSpecTree::ConstItem> parse_restrict(const std::string & s,
-                        const EAPI &);
+        /**
+         * Parse a uri heirarchy.
+         */
+        tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
 
-                /**
-                 * Parse a uri heirarchy.
-                 */
-                static tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s,
-                        const EAPI &);
+        /**
+         * Parse a license heirarchy.
+         */
+        tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
 
-                /**
-                 * Parse a license heirarchy.
-                 */
-                static tr1::shared_ptr<LicenseSpecTree::ConstItem> parse_license(const std::string & s,
-                        const EAPI &);
-        };
+        /**
+         * Parse a URI label.
+         */
+        tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > parse_uri_label(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
     }
 }
 

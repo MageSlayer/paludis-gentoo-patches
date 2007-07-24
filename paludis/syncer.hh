@@ -105,7 +105,7 @@ namespace paludis
      * \ingroup grpexceptions
      */
     class PALUDIS_VISIBLE SyncFailedError :
-        public PackageActionError
+        public Exception
     {
         public:
             /**

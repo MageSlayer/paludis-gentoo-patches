@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
-SUBDIRS = . 0 exheres-0 digests utils
+SUBDIRS = . 0 exheres-0 utils
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
@@ -8,18 +8,14 @@ libexecprogdir = $(libexecdir)/paludis/
 
 libexecprog_SCRIPTS = \
 	build_functions.bash \
-	builtin_fetch.bash \
-	builtin_fetchbin.bash \
 	builtin_init.bash \
 	builtin_initbin.bash \
 	builtin_loadenv.bash \
-	builtin_merge.bash \
 	builtin_metadata.bash \
 	builtin_prepare.bash \
 	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
-	builtin_unmerge.bash \
 	builtin_unpackbin.bash \
 	builtin_variable.bash \
 	die_functions.bash \
@@ -58,31 +54,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/e/ebuild/run_test.bash
 
-TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash \
-	merge_TEST.bash unmerge_TEST.bash
-
-libexecprog_PROGRAMS = merge unmerge
-merge_SOURCES = merge.cc merge_common.cc merge_common.hh
-merge_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/digests/libpaludisdigests.la \
-	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
-	$(DYNAMIC_LD_LIBS) \
-	$(PTHREAD_LIBS)
-merge_LDFLAGS = $(PTHREAD_LIBS)
-
-unmerge_SOURCES = unmerge.cc merge_common.cc merge_common.hh
-unmerge_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/digests/libpaludisdigests.la \
-	$(DYNAMIC_LD_LIBS) \
-	$(PTHREAD_LIBS)
-unmerge_LDFLAGS = $(PTHREAD_LIBS)
-
-check_SCRIPTS = $(TESTS) \
-	merge_TEST_setup.sh merge_TEST_cleanup.sh \
-	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh \
-	run_test.bash $(TESTS)
+TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS) $(check_SCRIPTS)
 

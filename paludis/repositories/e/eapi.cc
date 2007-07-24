@@ -33,6 +33,9 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/config_file.hh>
 
+#include <map>
+#include <vector>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
@@ -109,7 +112,6 @@ namespace paludis
                                                             .ebuild_uninstall(k.get("ebuild_uninstall"))
                                                             .ebuild_pretend(k.get("ebuild_pretend"))
                                                             .ebuild_metadata(k.get("ebuild_metadata"))
-                                                            .ebuild_fetch(k.get("ebuild_fetch"))
                                                             .ebuild_nofetch(k.get("ebuild_nofetch"))
                                                             .ebuild_variable(k.get("ebuild_variable"))
                                                             .ebuild_config(k.get("ebuild_config")))))
@@ -161,6 +163,9 @@ namespace paludis
                                                             .env_accept_keywords(k.get("env_accept_keywords"))
                                                             .description_use(k.get("description_use"))
                                                             )))
+
+                                            .uri_labels(make_shared_ptr(new EAPILabels(k.get("uri_labels"))))
+
                                             ))))));
             }
 
@@ -169,38 +174,6 @@ namespace paludis
                 throw EAPIConfigurationError("No EAPI configuration found for EAPI 0");
             else
                 values.insert(std::make_pair("", i->second));
-
-            values.insert(std::make_pair("CRAN-1",
-                        make_shared_ptr(new EAPI("CRAN-1", make_shared_ptr(new SupportedEAPI(
-                                        SupportedEAPI::create()
-                                        .package_dep_spec_parse_mode(pds_pm_permissive)
-                                        .strict_package_dep_spec_parse_mode(pds_pm_permissive)
-                                        .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
-                                        .iuse_flag_parse_mode(iuse_pm_permissive)
-                                        .strict_iuse_flag_parse_mode(iuse_pm_permissive)
-                                        .breaks_portage(true)
-                                        .uri_supports_arrow(false)
-                                        .ebuild_options(tr1::shared_ptr<EAPIEbuildOptions>())
-                                        .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
-                                        .ebuild_environment_variables(tr1::shared_ptr<EAPIEbuildEnvironmentVariables>())
-                                        .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
-                                        ))))));
-
-            values.insert(std::make_pair("gems-1",
-                        make_shared_ptr(new EAPI("gems-1", make_shared_ptr(new SupportedEAPI(
-                                        SupportedEAPI::create()
-                                        .package_dep_spec_parse_mode(pds_pm_permissive)
-                                        .strict_package_dep_spec_parse_mode(pds_pm_permissive)
-                                        .dependency_spec_tree_parse_mode(dst_pm_eapi_0)
-                                        .iuse_flag_parse_mode(iuse_pm_permissive)
-                                        .strict_iuse_flag_parse_mode(iuse_pm_permissive)
-                                        .breaks_portage(true)
-                                        .uri_supports_arrow(false)
-                                        .ebuild_options(tr1::shared_ptr<EAPIEbuildOptions>())
-                                        .ebuild_metadata_variables(tr1::shared_ptr<EAPIEbuildMetadataVariables>())
-                                        .ebuild_environment_variables(tr1::shared_ptr<EAPIEbuildEnvironmentVariables>())
-                                        .ebuild_phases(tr1::shared_ptr<EAPIEbuildPhases>())
-                                        ))))));
         }
     };
 }
@@ -233,5 +206,49 @@ tr1::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
     return make_shared_ptr(new EAPI("UNKNOWN", tr1::shared_ptr<SupportedEAPI>()));
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<EAPILabels>
+    {
+        std::map<std::string, std::string> v;
+    };
+}
+
+EAPILabels::EAPILabels(const std::string & s) :
+    PrivateImplementationPattern<EAPILabels>(new Implementation<EAPILabels>)
+{
+    std::vector<std::string> tokens;
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tok(";");
+    tok.tokenise(s, std::back_inserter(tokens));
+
+    for (std::vector<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+            t != t_end ; ++t)
+    {
+        std::vector<std::string> values;
+        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> vtok("=");
+        vtok.tokenise(*t, std::back_inserter(values));
+
+        if (values.size() != 2)
+            throw EAPIConfigurationError("EAPI labels value '" + s + "' has bad values size '" + stringify(values.size()) + "'");
+
+        _imp->v.insert(std::make_pair(strip_leading(strip_trailing(values[0], " \t\r\n"), " \t\r\n"),
+                    strip_leading(strip_trailing(values[1], " \t\r\n"), " \t\r\n")));
+    }
+}
+
+EAPILabels::~EAPILabels()
+{
+}
+
+const std::string
+EAPILabels::class_for_label(const std::string & s) const
+{
+    std::map<std::string, std::string>::const_iterator i(_imp->v.find(s));
+    if (_imp->v.end() == i)
+        return "";
+    return i->second;
 }
 

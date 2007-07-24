@@ -47,12 +47,12 @@ NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
 }
 
 SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
-    PackageActionError("sync of '" + local + "' from '" + remote + "' failed")
+    Exception("sync of '" + local + "' from '" + remote + "' failed")
 {
 }
 
 SyncFailedError::SyncFailedError(const std::string & msg) throw () :
-    PackageActionError(msg)
+    Exception(msg)
 {
 }
 

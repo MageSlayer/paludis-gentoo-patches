@@ -86,7 +86,8 @@ namespace paludis
             dpl_double_bar,        ///< a double bar ('any' marker)
             dpl_open_paren,        ///< open paren
             dpl_close_paren,       ///< close paren
-            dpl_arrow              ///< arrow
+            dpl_arrow,             ///< arrow
+            dpl_label              ///< a label
         };
 
         /**

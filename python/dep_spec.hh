@@ -37,6 +37,7 @@ namespace paludis
         class PythonPackageDepSpec;
         class PythonURIDepSpec;
         class PythonBlockDepSpec;
+        class PythonURILabelsDepSpec;
 
         struct PythonDepSpecVisitorTypes :
             VisitorTypes<
@@ -48,7 +49,8 @@ namespace paludis
                 PythonBlockDepSpec,
                 PythonPlainTextDepSpec,
                 PythonPackageDepSpec,
-                PythonURIDepSpec
+                PythonURIDepSpec,
+                PythonURILabelsDepSpec
             >
         {
         };
@@ -209,6 +211,15 @@ namespace paludis
                 tr1::shared_ptr<const PythonPackageDepSpec> blocked_spec() const;
         };
 
+        class PALUDIS_VISIBLE PythonURILabelsDepSpec :
+            public PythonDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>
+        {
+            public:
+                PythonURILabelsDepSpec(const std::string &);
+                PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisitorTypes> &);
+        };
+
         /**
          * Used to convert one of the SpecTrees to PythonDepSpec.
          */
@@ -245,6 +256,8 @@ namespace paludis
                 void visit_leaf(const BlockDepSpec &);
 
                 void visit_leaf(const URIDepSpec &);
+
+                void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
         };
 
         /**
@@ -273,6 +286,7 @@ namespace paludis
                 void visit(const PythonPlainTextDepSpec &);
                 void visit(const PythonBlockDepSpec &);
                 void visit(const PythonURIDepSpec &);
+                void visit(const PythonURILabelsDepSpec &);
 
                 void real_visit(const PythonAllDepSpec &);
                 void real_visit(const PythonAnyDepSpec &);
@@ -281,6 +295,7 @@ namespace paludis
                 void real_visit(const PythonPlainTextDepSpec &);
                 void real_visit(const PythonBlockDepSpec &);
                 void real_visit(const PythonURIDepSpec &);
+                void real_visit(const PythonURILabelsDepSpec &);
         };
     }
 }

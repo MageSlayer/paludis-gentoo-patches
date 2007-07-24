@@ -360,8 +360,8 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|prepare|fetch|merge|unmerge|tidyup|\
-                    strip|loadenv|saveenv|fetchbin|initbin|unpackbin)
+            metadata|variable|init|prepare|merge|unmerge|tidyup|\
+                    strip|loadenv|saveenv|initbin|unpackbin)
                 ebuild_load_module builtin_${action}
             ;;
 

@@ -27,7 +27,6 @@ namespace paludis
 {
     namespace erepository
     {
-        class DepParser;
         class DepStringNestingError;
         class DepStringParseError;
 

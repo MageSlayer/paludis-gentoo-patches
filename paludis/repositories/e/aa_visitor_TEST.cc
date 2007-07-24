@@ -39,7 +39,7 @@ namespace test_cases
         void run()
         {
             AAVisitor p1;
-            DepParser::parse_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
+            parse_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_EQUAL(join(p1.begin(), p1.end(), " "), "b c d e");
         }
     } test_aa_visitor;

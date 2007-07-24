@@ -31,6 +31,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
+#include <paludis/action.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -732,5 +733,105 @@ namespace test_cases
         }
     } test_e_repository_manifest;
 
+    struct ERepositoryFetchTest : TestCase
+    {
+        ERepositoryFetchTest() : TestCase("fetch") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "exheres");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo12");
+            keys->insert("profiles", "e_repository_TEST_dir/repo12/profiles/profile");
+            keys->insert("layout", "exheres");
+            keys->insert("eapi_when_unknown", "exheres-0");
+            keys->insert("eapi_when_unspecified", "exheres-0");
+            keys->insert("profile_eapi", "exheres-0");
+            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            FetchAction action(FetchActionOptions::create()
+                    .fetch_unneeded(false)
+                    .safe_resume(true)
+                    );
+
+            {
+                TestMessageSuffix suffix("no files", true);
+                const tr1::shared_ptr<const PackageID> no_files_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/no-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(no_files_id);
+                TEST_CHECK(no_files_id->short_description_key());
+                TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Description");
+                no_files_id->perform_action(action);
+            }
+
+            {
+                TestMessageSuffix suffix("fetched files", true);
+                const tr1::shared_ptr<const PackageID> fetched_files_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/fetched-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(fetched_files_id);
+                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
+                fetched_files_id->perform_action(action);
+                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
+            }
+
+            {
+                TestMessageSuffix suffix("fetchable files", true);
+                TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
+                const tr1::shared_ptr<const PackageID> fetchable_files_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/fetchable-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(fetchable_files_id);
+                fetchable_files_id->perform_action(action);
+                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
+            }
+
+            {
+                TestMessageSuffix suffix("arrow files", true);
+                TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
+                const tr1::shared_ptr<const PackageID> arrow_files_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/arrow-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(arrow_files_id);
+                arrow_files_id->perform_action(action);
+                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
+            }
+
+            {
+                TestMessageSuffix suffix("unfetchable files", true);
+                const tr1::shared_ptr<const PackageID> unfetchable_files_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/unfetchable-files", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(unfetchable_files_id);
+                TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), FetchActionError);
+            }
+
+            {
+                const tr1::shared_ptr<const PackageID> no_files_restricted_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/no-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(no_files_restricted_id);
+                no_files_restricted_id->perform_action(action);
+            }
+
+            {
+                const tr1::shared_ptr<const PackageID> fetched_files_restricted_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/fetched-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(fetched_files_restricted_id);
+                fetched_files_restricted_id->perform_action(action);
+            }
+
+            {
+                const tr1::shared_ptr<const PackageID> fetchable_files_restricted_id(*env.package_database()->query(query::Matches(
+                                PackageDepSpec("cat/fetchable-files-restricted", pds_pm_unspecific)), qo_require_exactly_one)->last());
+                TEST_CHECK(fetchable_files_restricted_id);
+                TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), FetchActionError);
+            }
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+    } test_e_repository_fetch;
 }
 

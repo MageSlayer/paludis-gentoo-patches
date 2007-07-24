@@ -26,7 +26,7 @@ PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
 grep target install_TEST_dir/root/var/db/pkg/world >/dev/null && exit 10
 
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --query test-category/target || exit 11
+    -qMD test-category/target || exit 11
 
 true
 

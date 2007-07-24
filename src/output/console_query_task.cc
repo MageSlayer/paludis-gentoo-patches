@@ -215,10 +215,9 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name());
+                        task->output_left_column(k.raw_name() + ":");
                         task->output_right_column(k.pretty_print_flat());
                     }
                     else
@@ -235,16 +234,15 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name());
+                        task->output_left_column(k.raw_name() + ":");
                         task->output_right_column(k.pretty_print_flat());
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
-                        task->output_stream() << k.pretty_print();
+                        task->output_stream() << k.pretty_print_flat();
                         task->output_right_column("");
                     }
                 }
@@ -254,10 +252,9 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name());
+                        task->output_left_column(k.raw_name() + ":");
                         task->output_right_column(k.pretty_print_flat());
                     }
                     else
@@ -274,10 +271,9 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name());
+                        task->output_left_column(k.raw_name() + ":");
                         task->output_right_column(k.pretty_print_flat());
                     }
                     else
@@ -294,10 +290,9 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    task->output_left_column(task->want_raw() ? k.human_name() + ":" : k.raw_name());
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name());
+                        task->output_left_column(k.raw_name() + ":");
                         task->output_right_column(k.pretty_print_flat());
                     }
                     else
@@ -413,6 +408,10 @@ namespace
         void visit_leaf(const PlainTextDepSpec &)
         {
             empty = false;
+        }
+
+        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        {
         }
     };
 

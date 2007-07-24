@@ -34,6 +34,7 @@ libpaludiserepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_
 
 paludis_repositories_e_include_HEADERS = \
 	aa_visitor.hh \
+	check_fetched_files_visitor.hh \
 	dep_lexer.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
@@ -64,11 +65,13 @@ paludis_repositories_e_include_HEADERS = \
 	ebuild_id.hh \
 	eclass_mtimes.hh \
 	exheres_layout.hh \
+	fetch_visitor.hh \
 	glsa-sr.hh \
 	glsa.hh \
 	layout.hh \
 	make_ebin_repository.hh \
 	make_ebuild_repository.hh \
+	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
 	vdb_id.hh \
@@ -82,6 +85,7 @@ paludis_repositories_e_include_HEADERS = \
 libpaludiserepository_la_SOURCES = \
 	aa_visitor.cc \
 	dep_lexer.cc \
+	check_fetched_files_visitor.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	e_key.cc \
@@ -105,11 +109,13 @@ libpaludiserepository_la_SOURCES = \
 	ebuild_id.cc \
 	eclass_mtimes.cc \
 	exheres_layout.cc \
+	fetch_visitor.cc \
 	glsa.cc \
 	layout.cc \
 	make_ebin_repository.cc \
 	make_ebuild_repository.cc \
 	registration.cc \
+	source_uri_finder.cc \
 	traditional_layout.cc \
 	use_desc.cc \
 	vdb_id.cc \
@@ -173,6 +179,17 @@ e_repository_sets_TEST_LDADD = \
 
 e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
+dep_spec_pretty_printer_TEST_SOURCES = dep_spec_pretty_printer_TEST.cc
+
+dep_spec_pretty_printer_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 dep_lexer_TEST_SOURCES = dep_lexer_TEST.cc
 
 dep_lexer_TEST_LDADD = \
@@ -206,6 +223,30 @@ aa_visitor_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
+fetch_visitor_TEST_SOURCES = fetch_visitor_TEST.cc
+
+fetch_visitor_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+source_uri_finder_TEST_SOURCES = source_uri_finder_TEST.cc
+
+source_uri_finder_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 EXTRA_DIST = \
 	aa_visitor_TEST.cc \
 	dep_lexer_TEST.cc \
@@ -213,6 +254,7 @@ EXTRA_DIST = \
 	dep_parser-se.hh \
 	dep_parser-se.cc \
 	dep_parser_TEST.cc \
+	dep_spec_pretty_printer_TEST.cc \
 	eapi.sr \
 	eapi-sr.hh \
 	eapi-sr.cc \
@@ -237,6 +279,10 @@ EXTRA_DIST = \
 	e_repository_sets_TEST.cc \
 	e_repository_sets_TEST_setup.sh \
 	e_repository_sets_TEST_cleanup.sh \
+	fetch_visitor_TEST.cc \
+	fetch_visitor_TEST_setup.sh \
+	fetch_visitor_TEST_cleanup.sh \
+	source_uri_finder_TEST.cc \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
 	xml_things_TEST_cleanup.sh \
@@ -282,7 +328,8 @@ check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
 	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
-	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh
+	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh \
+	fetch_visitor_TEST_setup.sh fetch_visitor_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
@@ -388,11 +435,14 @@ endif
 TESTS = \
 	dep_lexer_TEST \
 	dep_parser_TEST \
+	dep_spec_pretty_printer_TEST \
 	e_repository_TEST \
 	vdb_unmerger_TEST \
 	$(GLSA_TESTS) \
 	e_repository_sets_TEST \
-	aa_visitor_TEST
+	aa_visitor_TEST \
+	fetch_visitor_TEST \
+	source_uri_finder_TEST
 
 check_PROGRAMS = $(TESTS)
 

@@ -25,6 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <stack>
@@ -53,6 +54,8 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 
 namespace
 {
+    struct LabelsAreURI;
+
     enum DepParserState
     {
         dps_initial,
@@ -63,7 +66,8 @@ namespace
         dps_had_use_flag_space,
         dps_had_text_arrow,
         dps_had_text_arrow_space,
-        dps_had_text_arrow_text
+        dps_had_text_arrow_text,
+        dps_had_label
     };
 
     using namespace tr1::placeholders;
@@ -231,6 +235,30 @@ namespace
         }
     };
 
+    template <typename H_, typename K_>
+    struct HandleLabel
+    {
+        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &,
+                const EAPI &)
+        {
+            throw DepStringParseError(s, "label is not allowed here");
+        }
+    };
+
+    template <typename H_>
+    struct HandleLabel<H_, LabelsAreURI>
+    {
+        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
+                const EAPI & e)
+        {
+            if (e.supported && e.supported->uri_labels)
+                p(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> > >(
+                            new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(parse_uri_label(s, e))));
+            else
+                throw DepStringParseError(s, "URI labels not allowed in this EAPI");
+        }
+    };
+
     bool disallow_any_use(const DependencySpecTreeParseMode tree_mode)
     {
         switch (tree_mode)
@@ -250,369 +278,440 @@ namespace
     }
 }
 
-template <typename H_, typename I_, bool any_, bool use_>
-tr1::shared_ptr<typename H_::ConstItem>
-DepParser::_parse(const std::string & s, bool disallow_any_use, const I_ & p)
+namespace
 {
-    Context context("When parsing dependency string '" + s + "':");
-
-    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
-        new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-    std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
-    stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-            tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result, _1)), false));
-
-    std::string arrow_lhs;
-    DepParserState state(dps_initial);
-    DepLexer lexer(s);
-    DepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
-
-    for ( ; i != i_end ; ++i)
+    template <typename H_, typename I_, bool any_, bool use_, typename Label_>
+    tr1::shared_ptr<typename H_::ConstItem>
+    parse(const std::string & s, bool disallow_any_use, const I_ & p, const EAPI & e)
     {
-        Context local_context("When handling lexer token '" + i->second +
-                "' (" + stringify(i->first) + "):");
-        do
+        Context context("When parsing dependency string '" + s + "':");
+
+        tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > result(
+            new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+        std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
+        stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result, _1)), false));
+
+        std::string arrow_lhs;
+        DepParserState state(dps_initial);
+        DepLexer lexer(s);
+        DepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
+
+        for ( ; i != i_end ; ++i)
         {
-            switch (state)
+            Context local_context("When handling lexer token '" + i->second +
+                    "' (" + stringify(i->first) + "):");
+            do
             {
-                case dps_initial:
-                    do
-                    {
-                        switch (i->first)
+                switch (state)
+                {
+                    case dps_initial:
+                        do
                         {
-                            case dpl_whitespace:
-                                 continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                     continue;
 
-                            case dpl_arrow:
-                                 throw DepStringParseError(s, "Arrow not allowed here");
+                                case dpl_arrow:
+                                     throw DepStringParseError(s, "Arrow not allowed here");
 
-                            case dpl_text:
-                                 {
-                                     if (i->second.empty())
-                                         throw DepStringParseError(i->second, "Empty text entry");
-
-                                     DepLexer::Iterator i_fwd(next(i));
-                                     if (i_fwd != i_end && i_fwd->first == dpl_whitespace && ++i_fwd != i_end
-                                             && i_fwd->first == dpl_arrow)
+                                case dpl_text:
                                      {
-                                         arrow_lhs = i->second;
-                                         i = i_fwd;
-                                         state = dps_had_text_arrow;
+                                         if (i->second.empty())
+                                             throw DepStringParseError(i->second, "Empty text entry");
+
+                                         DepLexer::Iterator i_fwd(next(i));
+                                         if (i_fwd != i_end && i_fwd->first == dpl_whitespace && ++i_fwd != i_end
+                                                 && i_fwd->first == dpl_arrow)
+                                         {
+                                             arrow_lhs = i->second;
+                                             i = i_fwd;
+                                             state = dps_had_text_arrow;
+                                         }
+                                         else
+                                             p.template add<H_>(i->second, stack.top().first);
                                      }
-                                     else
-                                         p.template add<H_>(i->second, stack.top().first);
-                                 }
-                                 continue;
+                                     continue;
 
-                            case dpl_open_paren:
-                                 {
-                                     tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
-                                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
-                                     stack.top().first(a);
-                                     stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                                                     tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
+                                case dpl_open_paren:
+                                     {
+                                         tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > a(new ConstTreeSequence<H_, AllDepSpec>(
+                                                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
+                                         stack.top().first(a);
+                                         stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
+                                                         tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
+                                         state = dps_had_paren;
+                                     }
+                                     continue;
+
+                                case dpl_close_paren:
+                                     if (stack.empty())
+                                         throw DepStringNestingError(s);
+                                     stack.pop();
+                                     if (stack.empty())
+                                         throw DepStringNestingError(s);
                                      state = dps_had_paren;
-                                 }
-                                 continue;
+                                     continue;
 
-                            case dpl_close_paren:
-                                 if (stack.empty())
-                                     throw DepStringNestingError(s);
-                                 stack.pop();
-                                 if (stack.empty())
-                                     throw DepStringNestingError(s);
-                                 state = dps_had_paren;
-                                 continue;
+                                case dpl_double_bar:
+                                     HandleAny<H_, any_>::handle(s, stack);
+                                     state = dps_had_double_bar;
+                                     continue;
 
-                            case dpl_double_bar:
-                                 HandleAny<H_, any_>::handle(s, stack);
-                                 state = dps_had_double_bar;
-                                 continue;
+                                case dpl_use_flag:
+                                     if (use_ && disallow_any_use && stack.top().second)
+                                         throw DepStringParseError(s, "use? group is not allowed immediately under a || ( )");
+                                     HandleUse<H_, use_>::handle(s, i->second, stack);
+                                     state = dps_had_use_flag;
+                                     continue;
 
-                            case dpl_use_flag:
-                                 if (use_ && disallow_any_use && stack.top().second)
-                                     throw DepStringParseError(s, "use? group is not allowed immediately under a || ( )");
-                                 HandleUse<H_, use_>::handle(s, i->second, stack);
-                                 state = dps_had_use_flag;
-                                 continue;
+                                case dpl_label:
+                                     HandleLabel<H_, Label_>::add(i->second, stack.top().first, e);
+                                     state = dps_had_label;
+                                     continue;
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_initial: i->first is " + stringify(i->first));
 
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_initial: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                    } while (0);
-                    continue;
-
-                case dps_had_double_bar:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_double_bar:
+                        do
                         {
-                            case dpl_whitespace:
-                                state = dps_had_double_bar_space;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_had_double_bar_space;
+                                    continue;
 
-                            case dpl_text:
-                            case dpl_arrow:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_open_paren:
-                            case dpl_close_paren:
-                                throw DepStringParseError(s, "Expected space after '||'");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_double_bar: i->first is " + stringify(i->first));
+                                case dpl_text:
+                                case dpl_arrow:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_open_paren:
+                                case dpl_close_paren:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected space after '||'");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_double_bar: i->first is " + stringify(i->first));
 
-                    } while (0);
-                    continue;
+                        } while (0);
+                        continue;
 
-                case dps_had_double_bar_space:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_double_bar_space:
+                        do
                         {
-                            case dpl_open_paren:
-                                state = dps_initial;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_open_paren:
+                                    state = dps_initial;
+                                    continue;
 
-                            case dpl_whitespace:
-                            case dpl_text:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected '(' after '|| '");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_double_bar_space: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
+                                case dpl_whitespace:
+                                case dpl_text:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected '(' after '|| '");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_double_bar_space: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                case dps_had_paren:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_paren:
+                        do
                         {
-                            case dpl_whitespace:
-                                state = dps_initial;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_initial;
+                                    continue;
 
-                            case dpl_text:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_open_paren:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected space after '(' or ')'");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_paren: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
+                                case dpl_text:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_open_paren:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected space after '(' or ')'");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_paren: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                case dps_had_use_flag:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_use_flag:
+                        do
                         {
-                            case dpl_whitespace:
-                                state = dps_had_use_flag_space;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_had_use_flag_space;
+                                    continue;
 
-                            case dpl_text:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_open_paren:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected space after use flag");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_use_flag: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
+                                case dpl_text:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_open_paren:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected space after use flag");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_use_flag: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                case dps_had_use_flag_space:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_use_flag_space:
+                        do
                         {
-                            case dpl_open_paren:
-                                state = dps_had_paren;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_open_paren:
+                                    state = dps_had_paren;
+                                    continue;
 
-                            case dpl_whitespace:
-                            case dpl_text:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected '(' after use flag");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_use_flag_space: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
+                                case dpl_whitespace:
+                                case dpl_text:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected '(' after use flag");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_use_flag_space: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                case dps_had_text_arrow:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_label:
+                        do
                         {
-                            case dpl_whitespace:
-                                state = dps_had_text_arrow_space;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_initial;
+                                    continue;
 
-                            case dpl_text:
-                            case dpl_open_paren:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected whitespace after arrow");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_text_arrow: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
+                                case dpl_text:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_open_paren:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected space after label");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_label: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                case dps_had_text_arrow_space:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_text_arrow:
+                        do
                         {
-                            case dpl_whitespace:
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_had_text_arrow_space;
+                                    continue;
 
-                            case dpl_text:
-                                state = dps_had_text_arrow_text;
-                                p.template add_arrow<H_>(arrow_lhs, i->second, stack.top().first);
-                                continue;
+                                case dpl_text:
+                                case dpl_open_paren:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected whitespace after arrow");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_text_arrow: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
 
-                            case dpl_open_paren:
-                            case dpl_use_flag:
-                            case dpl_double_bar:
-                            case dpl_close_paren:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected text after whitespace after arrow");
-                        }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_text_arrow_space: i->first is " + stringify(i->first));
-                    } while (0);
-                    continue;
-
-                case dps_had_text_arrow_text:
-                    do
-                    {
-                        switch (i->first)
+                    case dps_had_text_arrow_space:
+                        do
                         {
-                            case dpl_whitespace:
-                                state = dps_initial;
-                                continue;
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    continue;
 
-                            case dpl_text:
-                            case dpl_open_paren:
-                            case dpl_use_flag:
-                            case dpl_close_paren:
-                            case dpl_double_bar:
-                            case dpl_arrow:
-                                throw DepStringParseError(s, "Expected whitespace after text after whitespace after arrow");
+                                case dpl_text:
+                                    state = dps_had_text_arrow_text;
+                                    p.template add_arrow<H_>(arrow_lhs, i->second, stack.top().first);
+                                    continue;
+
+                                case dpl_open_paren:
+                                case dpl_use_flag:
+                                case dpl_double_bar:
+                                case dpl_close_paren:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected text after whitespace after arrow");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_text_arrow_space: i->first is " + stringify(i->first));
+                        } while (0);
+                        continue;
+
+                    case dps_had_text_arrow_text:
+                        do
+                        {
+                            switch (i->first)
+                            {
+                                case dpl_whitespace:
+                                    state = dps_initial;
+                                    continue;
+
+                                case dpl_text:
+                                case dpl_open_paren:
+                                case dpl_use_flag:
+                                case dpl_close_paren:
+                                case dpl_double_bar:
+                                case dpl_arrow:
+                                case dpl_label:
+                                    throw DepStringParseError(s, "Expected whitespace after text after whitespace after arrow");
+                            }
+                            throw InternalError(PALUDIS_HERE,
+                                    "dps_had_text_arrow_text: i->first is " + stringify(i->first));
                         }
-                        throw InternalError(PALUDIS_HERE,
-                                "dps_had_text_arrow_text: i->first is " + stringify(i->first));
-                    }
-                    while (0);
-                    continue;
-            }
-            throw InternalError(PALUDIS_HERE,
-                    "state is " + stringify(state));
+                        while (0);
+                        continue;
+                }
+                throw InternalError(PALUDIS_HERE,
+                        "state is " + stringify(state));
 
-        } while (0);
+            } while (0);
+        }
+
+        if (stack.empty())
+            throw DepStringNestingError(s);
+
+        switch (state)
+        {
+            case dps_initial:
+            case dps_had_paren:
+            case dps_had_text_arrow_text:
+            case dps_had_text_arrow_space:
+                break;
+
+            case dps_had_double_bar_space:
+            case dps_had_double_bar:
+            case dps_had_use_flag:
+            case dps_had_use_flag_space:
+            case dps_had_text_arrow:
+            case dps_had_label:
+                throw DepStringParseError(s, "Unexpected end of string");
+        }
+
+        stack.pop();
+        if (! stack.empty())
+            throw DepStringNestingError(s);
+        return result;
     }
-
-    if (stack.empty())
-        throw DepStringNestingError(s);
-
-    switch (state)
-    {
-        case dps_initial:
-        case dps_had_paren:
-        case dps_had_text_arrow_text:
-        case dps_had_text_arrow_space:
-            break;
-
-        case dps_had_double_bar_space:
-        case dps_had_double_bar:
-        case dps_had_use_flag:
-        case dps_had_use_flag_space:
-        case dps_had_text_arrow:
-            throw DepStringParseError(s, "Unexpected end of string");
-    }
-
-    stack.pop();
-    if (! stack.empty())
-        throw DepStringNestingError(s);
-    return result;
 }
 
 tr1::shared_ptr<DependencySpecTree::ConstItem>
-DepParser::parse_depend(const std::string & s, const EAPI & e)
+paludis::erepository::parse_depend(const std::string & s, const EAPI & e)
 {
     Context c("When parsing dependency string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' dependencies");
 
-    return _parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true>(s,
+    return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, void>(s,
             disallow_any_use(e.supported->dependency_spec_tree_parse_mode),
-            ParsePackageOrBlockDepSpec(e.supported->package_dep_spec_parse_mode));
+            ParsePackageOrBlockDepSpec(e.supported->package_dep_spec_parse_mode), e);
 }
 
 tr1::shared_ptr<ProvideSpecTree::ConstItem>
-DepParser::parse_provide(const std::string & s, const EAPI & e)
+paludis::erepository::parse_provide(const std::string & s, const EAPI & e)
 {
     Context c("When parsing provide string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' provides");
 
-    return _parse<ProvideSpecTree, ParsePackageDepSpec, false, true>(s, false,
-            ParsePackageDepSpec(pds_pm_eapi_0));
+    return parse<ProvideSpecTree, ParsePackageDepSpec, false, true, void>(s, false,
+            ParsePackageDepSpec(pds_pm_eapi_0), e);
 }
 
 tr1::shared_ptr<RestrictSpecTree::ConstItem>
-DepParser::parse_restrict(const std::string & s, const EAPI & e)
+paludis::erepository::parse_restrict(const std::string & s, const EAPI & e)
 {
     Context c("When parsing restrict string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' restrictions");
 
-    return _parse<RestrictSpecTree, ParseTextDepSpec, false, true>(s, false,
-            ParseTextDepSpec());
+    return parse<RestrictSpecTree, ParseTextDepSpec, false, true, void>(s, false,
+            ParseTextDepSpec(), e);
 }
 
 tr1::shared_ptr<URISpecTree::ConstItem>
-DepParser::parse_uri(const std::string & s, const EAPI & e)
+paludis::erepository::parse_uri(const std::string & s, const EAPI & e)
 {
     Context c("When parsing URI string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
-    return _parse<URISpecTree, ParseURIDepSpec, false, true>(s, false,
-            ParseURIDepSpec(e.supported->uri_supports_arrow));
+    return parse<URISpecTree, ParseURIDepSpec, false, true, LabelsAreURI>(s, false,
+            ParseURIDepSpec(e.supported->uri_supports_arrow), e);
 }
 
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
-DepParser::parse_license(const std::string & s, const EAPI & e)
+paludis::erepository::parse_license(const std::string & s, const EAPI & e)
 {
     Context c("When parsing license string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' licenses");
 
-    return _parse<LicenseSpecTree, ParseTextDepSpec, true, true>(s,
-            true, ParseTextDepSpec());
+    return parse<LicenseSpecTree, ParseTextDepSpec, true, true, void>(s,
+            true, ParseTextDepSpec(), e);
+}
+
+tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >
+paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
+{
+    Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
+
+    if (s.empty())
+        throw DepStringParseError(s, "Empty label");
+
+    std::string c(e.supported->uri_labels->class_for_label(s.substr(0, s.length() - 1)));
+    if (c.empty())
+        throw DepStringParseError(s, "Unknown label");
+
+    tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > l(new LabelsDepSpec<URILabelVisitorTypes>);
+
+    if (c == "URIMirrorsThenListedLabel")
+        l->add_label(make_shared_ptr(new URIMirrorsThenListedLabel(s.substr(0, s.length() - 1))));
+    else if (c == "URIMirrorsOnlyLabel")
+        l->add_label(make_shared_ptr(new URIMirrorsOnlyLabel(s.substr(0, s.length() - 1))));
+    else if (c == "URIListedOnlyLabel")
+        l->add_label(make_shared_ptr(new URIListedOnlyLabel(s.substr(0, s.length() - 1))));
+    else if (c == "URIListedThenMirrorsLabel")
+        l->add_label(make_shared_ptr(new URIListedThenMirrorsLabel(s.substr(0, s.length() - 1))));
+    else if (c == "URILocalMirrorsOnlyLabel")
+        l->add_label(make_shared_ptr(new URILocalMirrorsOnlyLabel(s.substr(0, s.length() - 1))));
+    else if (c == "URIManualOnlyLabel")
+        l->add_label(make_shared_ptr(new URIManualOnlyLabel(s.substr(0, s.length() - 1))));
+    else
+        throw DepStringParseError(s, "Label '" + s + "' maps to unknown class '" + c + "'");
+
+    return l;
 }
 

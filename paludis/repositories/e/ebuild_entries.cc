@@ -25,6 +25,8 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/fetch_visitor.hh>
+#include <paludis/repositories/e/check_fetched_files_visitor.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -128,6 +130,10 @@ namespace
                 _specs.push_back(&a);
             }
 
+            void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+            {
+            }
+
             typedef std::list<const URIDepSpec *>::const_iterator Iterator;
 
             Iterator begin()
@@ -141,6 +147,68 @@ namespace
             }
     };
 
+    class AFinder :
+        private InstantiationPolicy<AFinder, instantiation_method::NonCopyableTag>,
+        public ConstVisitor<URISpecTree>
+    {
+        private:
+            std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> > _specs;
+            std::list<const LabelsDepSpec<URILabelVisitorTypes> *> _labels;
+
+            const Environment * const env;
+            const tr1::shared_ptr<const PackageID> id;
+
+        public:
+            AFinder(const Environment * const e, const tr1::shared_ptr<const PackageID> & i) :
+                env(e),
+                id(i)
+            {
+                _labels.push_back(0);
+            }
+
+            void visit_leaf(const URIDepSpec & a)
+            {
+                _specs.push_back(std::make_pair(&a, *_labels.begin()));
+            }
+
+            void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+            {
+                *_labels.begin() = &l;
+            }
+
+            void visit_sequence(const AllDepSpec &,
+                    URISpecTree::ConstSequenceIterator cur,
+                    URISpecTree::ConstSequenceIterator e)
+            {
+                _labels.push_front(*_labels.begin());
+                std::for_each(cur, e, accept_visitor(*this));
+                _labels.pop_front();
+            }
+
+            void visit_sequence(const UseDepSpec & u,
+                    URISpecTree::ConstSequenceIterator cur,
+                    URISpecTree::ConstSequenceIterator e)
+            {
+                if (env->query_use(u.flag(), *id) ^ u.inverse())
+                {
+                    _labels.push_front(*_labels.begin());
+                    std::for_each(cur, e, accept_visitor(*this));
+                    _labels.pop_front();
+                }
+            }
+
+            typedef std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator Iterator;
+
+            Iterator begin()
+            {
+                return _specs.begin();
+            }
+
+            Iterator end() const
+            {
+                return _specs.end();
+            }
+    };
 }
 
 namespace
@@ -234,14 +302,14 @@ namespace
 }
 
 void
-EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
-        const InstallActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
+EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
+        const FetchActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
 {
     using namespace tr1::placeholders;
 
-    Context context("When installing '" + stringify(*id) + "':");
+    Context context("When fetching '" + stringify(*id) + "':");
 
-    bool fetch_restrict(false), no_mirror(false), userpriv_restrict;
+    bool fetch_restrict(false), no_mirror(false);
     {
         DepSpecFlattener restricts(_imp->params.environment, id);
         if (id->restrict_key())
@@ -253,12 +321,6 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nofetch"));
 
-        userpriv_restrict =
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
-
         no_mirror =
             restricts.end() != std::find_if(restricts.begin(), restricts.end(),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "mirror")) ||
@@ -266,88 +328,52 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nomirror"));
     }
 
-    std::string archives, all_archives, flat_src_uri;
+    bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
+    if (fetch_userpriv_ok)
+    {
+        FSEntry f(_imp->params.distdir);
+        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
+
+        if (f.exists())
+        {
+            if (f.group() != _imp->environment->reduced_gid())
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' owned by group '" +
+                        stringify(get_group_name(f.group())) + "', not '" +
+                        stringify(get_group_name(_imp->environment->reduced_gid())) +
+                        "', so cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
+            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(f) + "' does not group write permission," +
+                        "cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
+        }
+    }
+
+    std::string archives, all_archives;
     {
         std::set<std::string> already_in_archives;
 
-        /* make A and FLAT_SRC_URI */
-        DepSpecFlattener f(_imp->params.environment, id);
+        /* make A */
+        AFinder f(_imp->params.environment, id);
         if (id->src_uri_key())
             id->src_uri_key()->value()->accept(f);
 
-        for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        for (AFinder::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            const tr1::shared_ptr<const URIDepSpec> spec(tr1::static_pointer_cast<const URIDepSpec>(*i));
-            if (! spec->renamed_url_suffix().empty())
-                throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since it uses SRC_URI arrow components");
+            const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
 
-            std::string::size_type pos(spec->original_url().rfind('/'));
-            if (std::string::npos == pos)
+            if (already_in_archives.end() == already_in_archives.find(spec->filename()))
             {
-                if (already_in_archives.end() == already_in_archives.find(spec->original_url()))
-                {
-                    archives.append(spec->original_url());
-                    already_in_archives.insert(spec->original_url());
-                }
-            }
-            else
-            {
-                if (already_in_archives.end() == already_in_archives.find(spec->original_url().substr(pos + 1)))
-                {
-                    archives.append(spec->original_url().substr(pos + 1));
-                    already_in_archives.insert(spec->original_url().substr(pos + 1));
-                }
+                archives.append(spec->filename());
+                already_in_archives.insert(spec->filename());
             }
             archives.append(" ");
-
-            /* add * mirror entries */
-            tr1::shared_ptr<const MirrorsSequence> star_mirrors(_imp->params.environment->mirrors("*"));
-            for (MirrorsSequence::Iterator m(star_mirrors->begin()), m_end(star_mirrors->end()) ; m != m_end ; ++m)
-                flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
-
-            if (0 == spec->original_url().compare(0, 9, "mirror://"))
-            {
-                std::string mirror(spec->original_url().substr(9));
-                std::string::size_type spos(mirror.find('/'));
-
-                if (std::string::npos == spos)
-                    throw PackageInstallActionError("Can't install '" + stringify(*id) + "' since SRC_URI is broken");
-
-                tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->params.environment->mirrors(mirror.substr(0, spos)));
-                if (! _imp->e_repository->is_mirror(mirror.substr(0, spos)) &&
-                        mirrors->empty())
-                    throw PackageInstallActionError("Can't install '" + stringify(*id) +
-                            "' since SRC_URI references unknown mirror:// '" +
-                            mirror.substr(0, spos) + "'");
-
-                for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + mirror.substr(spos + 1) + " ");
-
-                for (RepositoryMirrorsInterface::MirrorsIterator
-                        m(_imp->e_repository->begin_mirrors(mirror.substr(0, spos))),
-                        m_end(_imp->e_repository->end_mirrors(mirror.substr(0, spos))) ;
-                        m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
-            }
-            else
-                flat_src_uri.append(spec->original_url());
-            flat_src_uri.append(" ");
-
-            /* add mirror://gentoo/ entries */
-            std::string master_mirror(strip_trailing_string(stringify(_imp->e_repository->name()), "x-"));
-            if (! no_mirror && _imp->e_repository->is_mirror(master_mirror))
-            {
-                tr1::shared_ptr<const MirrorsSequence> repo_mirrors(_imp->params.environment->mirrors(master_mirror));
-
-                for (MirrorsSequence::Iterator m(repo_mirrors->begin()), m_end(repo_mirrors->end()) ; m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + spec->original_url().substr(pos + 1) + " ");
-
-                for (RepositoryMirrorsInterface::MirrorsIterator
-                        m(_imp->e_repository->begin_mirrors(master_mirror)),
-                        m_end(_imp->e_repository->end_mirrors(master_mirror)) ;
-                        m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + spec->original_url().substr(pos + 1) + " ");
-            }
         }
 
         /* make AA */
@@ -360,22 +386,141 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
             for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
-                std::string::size_type pos((*gg)->text().rfind('/'));
-                if (std::string::npos == pos)
+                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
                 {
-                    if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text()))
-                    {
-                        all_archives.append((*gg)->text());
-                        already_in_all_archives.insert((*gg)->text());
-                    }
+                    all_archives.append((*gg)->filename());
+                    already_in_all_archives.insert((*gg)->filename());
                 }
-                else
+                all_archives.append(" ");
+            }
+        }
+        else
+            all_archives = "AA-not-set-for-this-EAPI";
+    }
+
+    /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
+     *     [[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
+     * Rather annoying.
+     */
+    archives = strip_trailing(archives, " ");
+    all_archives = strip_trailing(all_archives, " ");
+
+    if (id->src_uri_key())
+    {
+        std::string mirrors_name(_imp->e_repository->params().master_repository ?
+                stringify(_imp->e_repository->params().master_repository->name()) :
+                stringify(_imp->e_repository->name()));
+        FetchVisitor f(_imp->params.environment, id, *id->eapi(),
+                _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_userpriv_ok, mirrors_name, fetch_restrict);
+        id->src_uri_key()->value()->accept(f);
+        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_restrict);
+        id->src_uri_key()->value()->accept(c);
+
+        if (c.need_nofetch())
+        {
+            std::string use(make_use(_imp->params.environment, *id, p));
+            std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+            tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+                        _imp->params.environment, *id, p, use, expand_sep));
+
+            tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+
+            EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_nofetch);
+            for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                EbuildCommandParams command_params(EbuildCommandParams::create()
+                        .environment(_imp->params.environment)
+                        .package_id(id)
+                        .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
+                        .ebuild_file(_imp->e_repository->layout()->package_file(*id))
+                        .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
+                        .eclassdirs(_imp->params.eclassdirs)
+                        .exlibsdirs(exlibsdirs)
+                        .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                            _imp->params.location)
+                        .distdir(_imp->params.distdir)
+                        .userpriv(phase->option("userpriv"))
+                        .sandbox(phase->option("sandbox"))
+                        .commands(join(phase->begin_commands(), phase->end_commands(), " "))
+                        .buildroot(_imp->params.buildroot));
+
+                EbuildNoFetchCommand nofetch_cmd(command_params,
+                        EbuildNoFetchCommandParams::create()
+                        .a(archives)
+                        .aa(all_archives)
+                        .use(use)
+                        .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                        .expand_vars(expand_vars)
+                        .root("/")
+                        .profiles(_imp->params.profiles));
+
+                if (! nofetch_cmd())
+                    throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
+            }
+        }
+
+        if (! c.failures()->empty())
+            throw FetchActionError("Fetch of '" + stringify(*id) + "' failed", c.failures());
+    }
+}
+
+void
+EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
+        const InstallActionOptions & o, tr1::shared_ptr<const ERepositoryProfile> p) const
+{
+    using namespace tr1::placeholders;
+
+    Context context("When installing '" + stringify(*id) + "':");
+
+    bool userpriv_restrict;
+    {
+        DepSpecFlattener restricts(_imp->params.environment, id);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
+        userpriv_restrict =
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+    }
+
+    std::string archives, all_archives;
+    {
+        std::set<std::string> already_in_archives;
+
+        /* make A */
+        AFinder f(_imp->params.environment, id);
+        if (id->src_uri_key())
+            id->src_uri_key()->value()->accept(f);
+
+        for (AFinder::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        {
+            const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
+
+            if (already_in_archives.end() == already_in_archives.find(spec->filename()))
+            {
+                archives.append(spec->filename());
+                already_in_archives.insert(spec->filename());
+            }
+            archives.append(" ");
+        }
+
+        /* make AA */
+        if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
+        {
+            AAFinder g;
+            if (id->src_uri_key())
+                id->src_uri_key()->value()->accept(g);
+            std::set<std::string> already_in_all_archives;
+
+            for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+            {
+                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
                 {
-                    if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(pos + 1)))
-                    {
-                        all_archives.append((*gg)->text().substr(pos + 1));
-                        already_in_all_archives.insert((*gg)->text().substr(pos + 1));
-                    }
+                    all_archives.append((*gg)->filename());
+                    already_in_all_archives.insert((*gg)->filename());
                 }
                 all_archives.append(" ");
             }
@@ -401,77 +546,6 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                 _imp->params.environment, *id, p, use, expand_sep));
 
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
-
-    /* fetch */
-    {
-        bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
-        if (fetch_userpriv_ok)
-        {
-            FSEntry f(_imp->params.distdir);
-            Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
-
-            if (f.exists())
-            {
-                if (f.group() != _imp->environment->reduced_gid())
-                {
-                    Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                            stringify(f) + "' owned by group '" +
-                            stringify(get_group_name(f.group())) + "', not '" +
-                            stringify(get_group_name(_imp->environment->reduced_gid())) +
-                            "', so cannot enable userpriv");
-                    fetch_userpriv_ok = false;
-                }
-                else if (! f.has_permission(fs_ug_group, fs_perm_write))
-                {
-                    Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                            stringify(f) + "' does not group write permission," +
-                            "cannot enable userpriv");
-                    fetch_userpriv_ok = false;
-                }
-            }
-        }
-
-        EAPIPhases phases(fetch_restrict ?
-                id->eapi()->supported->ebuild_phases->ebuild_nofetch :
-                id->eapi()->supported->ebuild_phases->ebuild_fetch);
-
-        for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-                phase != phase_end ; ++phase)
-        {
-            EbuildCommandParams command_params(EbuildCommandParams::create()
-                    .environment(_imp->params.environment)
-                    .package_id(id)
-                    .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
-                    .ebuild_file(_imp->e_repository->layout()->package_file(*id))
-                    .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
-                    .eclassdirs(_imp->params.eclassdirs)
-                    .exlibsdirs(exlibsdirs)
-                    .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                        _imp->params.location)
-                    .distdir(_imp->params.distdir)
-                    .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                    .sandbox(phase->option("sandbox"))
-                    .userpriv(phase->option("userpriv") && fetch_userpriv_ok)
-                    .buildroot(_imp->params.buildroot));
-
-            EbuildFetchCommand fetch_cmd(command_params,
-                    EbuildFetchCommandParams::create()
-                    .a(archives)
-                    .aa(all_archives)
-                    .use(use)
-                    .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
-                    .expand_vars(expand_vars)
-                    .flat_src_uri(flat_src_uri)
-                    .root(o.destination->installed_interface ? stringify(o.destination->installed_interface->root()) : "/")
-                    .profiles(_imp->params.profiles)
-                    .safe_resume(o.safe_resume));
-
-            fetch_cmd();
-        }
-
-        if (o.fetch_only)
-            return;
-    }
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()));
     if (userpriv_ok)
@@ -506,7 +580,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         if (phase->option("merge"))
         {
             if (! o.destination->destination_interface)
-                throw PackageInstallActionError("Can't install '" + stringify(*id)
+                throw InstallActionError("Can't install '" + stringify(*id)
                         + "' to destination '" + stringify(o.destination->name())
                         + "' because destination does not provide destination_interface");
 
@@ -593,8 +667,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
             var);
 
     if (! cmd())
-        throw EnvironmentVariableActionError("Couldn't get environment variable '" +
-                stringify(var) + "' for package '" + stringify(*id) + "'");
+        throw ActionError("Couldn't get environment variable '" + stringify(var) + "' for package '" + stringify(*id) + "'");
 
     return cmd.result();
 }

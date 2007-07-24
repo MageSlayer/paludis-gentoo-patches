@@ -153,6 +153,10 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }

@@ -17,43 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_ACTION_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_DEP_LABEL_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_DEP_LABEL_FWD_HH 1
 
-#include <iosfwd>
 #include <paludis/util/attributes.hh>
+#include <iosfwd>
 
 namespace paludis
 {
-    class Action;
-    class InstallAction;
-    class InstalledAction;
-    class UninstallAction;
-    class PretendAction;
-    class ConfigAction;
-    class FetchAction;
+    struct URILabelVisitorTypes;
+    struct URILabel;
 
-    class SupportsActionTestBase;
-    template <typename A_> class SupportsActionTest;
+    template <typename T_> struct ConcreteURILabel;
+    typedef ConcreteURILabel<enum URIMirrorsThenListedLabelTag { }> URIMirrorsThenListedLabel;
+    typedef ConcreteURILabel<enum URIMirrorsOnlyLabelTag { }> URIMirrorsOnlyLabel;
+    typedef ConcreteURILabel<enum URIListedOnlyLabelTag { }> URIListedOnlyLabel;
+    typedef ConcreteURILabel<enum URIListedThenMirrorsLabelTag { }> URIListedThenMirrorsLabel;
+    typedef ConcreteURILabel<enum URILocalMirrorsOnlyLabelTag { }> URILocalMirrorsOnlyLabel;
+    typedef ConcreteURILabel<enum URIManualOnlyLabelTag { }> URIManualOnlyLabel;
 
-    class ActionVisitorTypes;
-    class SupportsActionTestVisitorTypes;
-
-    class ActionError;
-    class UnsupportedActionError;
-    class InstallActionError;
-    class FetchActionError;
-    class UninstallActionError;
-    class ConfigActionError;
-
-    class FetchActionFailure;
-
-    class InstallActionOptions;
-    class UninstallActionOptions;
-    class FetchActionOptions;
-
-#include <paludis/action-se.hh>
-
+    std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -284,22 +284,22 @@ namespace paludis
             keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal)),
             iuse(new FakeMetadataIUseSetKey("IUSE", "Used USE flags", "", iuse_pm_permissive, mkt_normal)),
             license(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "Licenses",
-                        "", tr1::bind(&erepository::DepParser::parse_license, _1,
+                        "", tr1::bind(&erepository::parse_license, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_normal)),
             provide(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provided packages",
-                        "", tr1::bind(&erepository::DepParser::parse_provide, _1,
+                        "", tr1::bind(&erepository::parse_provide, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_normal)),
             build_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                        "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             run_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                        "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             post_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                        "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                        "", tr1::bind(&erepository::DepParser::parse_depend, _1,
+                        "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             has_masks(false)
         {
@@ -705,6 +705,13 @@ namespace
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
+        void visit(const FetchAction & a)
+        {
+            SupportsActionTest<FetchAction> t;
             if (! id->repository()->some_ids_might_support_action(t))
                 throw UnsupportedActionError(*id, a);
         }

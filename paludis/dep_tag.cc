@@ -230,6 +230,10 @@ namespace
             s << "!" << *b.blocked_spec() << " ";
         }
 
+        void
+        visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        {
+        }
     };
 
     struct DepTagComparator :

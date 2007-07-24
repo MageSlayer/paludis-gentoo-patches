@@ -350,7 +350,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
     Context context("When uninstalling '" + stringify(*id) + (reinstalling ? "' for a reinstall:" : "':"));
 
     if (! _imp->params.root.is_directory())
-        throw PackageInstallActionError("Couldn't uninstall '" + stringify(*id) +
+        throw InstallActionError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
 
     std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
@@ -435,7 +435,7 @@ VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) c
     Context context("When configuring '" + stringify(*id) + "':");
 
     if (! _imp->params.root.is_directory())
-        throw PackageInstallActionError("Couldn't configure '" + stringify(*id) +
+        throw InstallActionError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
 
     tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
@@ -643,15 +643,13 @@ VDBRepository::get_environment_variable(
                 stringify(id->version())));
 
     if (! vdb_dir.is_directory_or_symlink_to_directory())
-        throw EnvironmentVariableActionError("Could not find VDB entry for '"
-                + stringify(*id) + "'");
+        throw ActionError("Could not find VDB entry for '" + stringify(*id) + "'");
 
     if ((vdb_dir / var).is_regular_file_or_symlink_to_regular_file())
     {
         std::ifstream f(stringify(vdb_dir / var).c_str());
         if (! f)
-            throw EnvironmentVariableActionError("Could not read '" +
-                    stringify(vdb_dir / var) + "'");
+            throw ActionError("Could not read '" + stringify(vdb_dir / var) + "'");
         return strip_trailing_string(
                 std::string((std::istreambuf_iterator<char>(f)),
                     std::istreambuf_iterator<char>()), "\n");
@@ -664,12 +662,11 @@ VDBRepository::get_environment_variable(
                         (std::istreambuf_iterator<char>(p)),
                         std::istreambuf_iterator<char>()), "\n"));
         if (0 != p.exit_status())
-            throw EnvironmentVariableActionError("Could not load environment.bz2");
+            throw ActionError("Could not load environment.bz2");
         return result;
     }
     else
-        throw EnvironmentVariableActionError("Could not get variable '" + var + "' for '"
-                + stringify(*id) + "'");
+        throw ActionError("Could not get variable '" + var + "' for '" + stringify(*id) + "'");
 }
 
 tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
@@ -771,7 +768,7 @@ VDBRepository::load_provided_using_cache() const
         }
 
         DepSpecFlattener f(_imp->params.environment, id);
-        tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(DepParser::parse_provide(
+        tr1::shared_ptr<ProvideSpecTree::ConstItem> pp(parse_provide(
                     join(next(next(tokens.begin())), tokens.end(), " "), *EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
@@ -968,7 +965,7 @@ VDBRepository::merge(const MergeOptions & m)
             + "' to VDB repository '" + stringify(name()) + "':");
 
     if (! is_suitable_destination_for(*m.package_id))
-        throw PackageInstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
+        throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
 
     bool is_replace(package_id_if_exists(m.package_id->name(), m.package_id->version()));
 
@@ -1019,13 +1016,13 @@ VDBRepository::merge(const MergeOptions & m)
         for (DirIterator d(tmp_vdb_dir, false), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         tmp_vdb_dir.rmdir();
-        throw PackageInstallActionError("Not proceeding with install due to merge sanity check failing");
+        throw InstallActionError("Not proceeding with install due to merge sanity check failing");
     }
 
     if (is_replace)
     {
         if ((vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename())).exists())
-            throw PackageInstallActionError("Directory '" + stringify(vdb_dir.dirname() /
+            throw InstallActionError("Directory '" + stringify(vdb_dir.dirname() /
                         ("-reinstalling-" + vdb_dir.basename())) + "' already exists, probably due to "
                     "a previous failed upgrade. If it is safe to do so, remove this directory and try "
                     "again.");
@@ -1180,6 +1177,10 @@ namespace
         }
 
         void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<FetchAction> &)
         {
         }
 

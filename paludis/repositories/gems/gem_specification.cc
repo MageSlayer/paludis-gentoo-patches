@@ -585,6 +585,13 @@ namespace
                 throw UnsupportedActionError(*id, a);
         }
 
+        void visit(const FetchAction & a)
+        {
+            SupportsActionTest<FetchAction> t;
+            if (! id->repository()->some_ids_might_support_action(t))
+                throw UnsupportedActionError(*id, a);
+        }
+
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;

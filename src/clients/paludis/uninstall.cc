@@ -25,6 +25,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/package_database.hh>
+#include <paludis/action.hh>
 
 #include <iostream>
 #include <limits>
@@ -256,7 +257,7 @@ namespace
             cerr << endl;
             return 1;
         }
-        catch (const PackageUninstallActionError & e)
+        catch (const UninstallActionError & e)
         {
             cout << endl;
             cerr << "Uninstall error:" << endl;

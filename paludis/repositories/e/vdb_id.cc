@@ -604,6 +604,10 @@ namespace
             result = true;
         }
 
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+        }
+
         void visit(const SupportsActionTest<PretendAction> &)
         {
         }
@@ -652,6 +656,7 @@ namespace
 
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
         void visit(const PretendAction & a) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const FetchAction & a) PALUDIS_ATTRIBUTE((noreturn));
     };
 
     void PerformAction::visit(const InstallAction & a)
@@ -660,6 +665,11 @@ namespace
     }
 
     void PerformAction::visit(const PretendAction & a)
+    {
+        throw UnsupportedActionError(*id, a);
+    }
+
+    void PerformAction::visit(const FetchAction & a)
     {
         throw UnsupportedActionError(*id, a);
     }

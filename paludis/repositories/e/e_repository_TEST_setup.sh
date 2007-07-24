@@ -4,6 +4,13 @@
 mkdir e_repository_TEST_dir || exit 1
 cd e_repository_TEST_dir || exit 1
 
+mkdir -p distdir
+echo "already fetched" > distdir/already-fetched.txt || exit 1
+
+mkdir -p fetchable
+echo "one" > fetchable/fetchable-1.txt || exit 1
+echo "two" > fetchable/fetchable-2.txt || exit 1
+
 mkdir -p repo1/{eclass,distfiles,profiles/profile} || exit 1
 cd repo1 || exit 1
 echo "test-repo-1" > profiles/repo_name || exit 1
@@ -302,3 +309,102 @@ MISC ChangeLog 34 RMD160 64ae4731e1de8dc8d81f0504c22e586358a5b6f0 SHA256 a8dfbbc
 MISC metadata.xml 37 RMD160 52a6de8e54eeea3b5e3e8357a400fbc6d3f4062b SHA256 ba3b181b832c002612fba7768c95e526e188658d8fc85b92c153940ad43169de
 END
 cd ..
+
+mkdir -p repo12/{profiles/profile,metadata} || exit 1
+cd repo12 || exit 1
+echo "test-repo-12" >> profiles/repo_name || exit 1
+echo "cat" >> metadata/categories.conf || exit 1
+cat <<END > profiles/profile/make.defaults
+END
+mkdir -p packages/cat/no-files
+cat <<END > packages/cat/no-files/no-files-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/fetched-files
+cat <<END > packages/cat/fetched-files/fetched-files-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file:///var/empty/already-fetched.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/fetchable-files
+cat <<END > packages/cat/fetchable-files/fetchable-files-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/arrow-files
+cat <<END > packages/cat/arrow-files/arrow-files-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file:///$(dirname $(pwd ) )/fetchable/fetchable-1.txt -> arrowed.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/unfetchable-files
+cat <<END > packages/cat/unfetchable-files/unfetchable-files-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file:///var/empty/unfetchable-file.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/no-files-restricted
+cat <<END > packages/cat/no-files-restricted/no-files-restricted-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/fetched-files-restricted
+cat <<END > packages/cat/fetched-files-restricted/fetched-files-restricted-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="manual: file:///var/empty/already-fetched.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+mkdir -p packages/cat/fetchable-files-restricted
+cat <<END > packages/cat/fetchable-files-restricted/fetchable-files-restricted-1.exheres-0 || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="manual: file:///$(dirname $(pwd ) )/fetchable/fetchable-2.txt"
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES=""
+END
+cd ..
+
+cd ..
+

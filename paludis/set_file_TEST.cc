@@ -30,37 +30,17 @@ using namespace paludis;
 
 namespace
 {
-    struct DepSpecStringifier :
-        ConstVisitor<DependencySpecTree>
+    struct SetSpecStringifier :
+        ConstVisitor<SetSpecTree>
     {
         std::ostringstream s;
 
         void
         visit_sequence(const AllDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
+                SetSpecTree::ConstSequenceIterator cur,
+                SetSpecTree::ConstSequenceIterator end)
         {
             s << "( ";
-            std::for_each(cur, end, accept_visitor(*this));
-            s << ") ";
-        }
-
-        void
-        visit_sequence(const AnyDepSpec &,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
-        {
-            s << "|| ( ";
-            std::for_each(cur, end, accept_visitor(*this));
-            s << ") ";
-        }
-
-        void
-        visit_sequence(const UseDepSpec & a,
-                DependencySpecTree::ConstSequenceIterator cur,
-                DependencySpecTree::ConstSequenceIterator end)
-        {
-            s << (a.inverse() ? "!" : "") << a.flag() << "? ( ";
             std::for_each(cur, end, accept_visitor(*this));
             s << ") ";
         }
@@ -69,12 +49,6 @@ namespace
         visit_leaf(const PackageDepSpec & p)
         {
             s << p << " ";
-        }
-
-        void
-        visit_leaf(const BlockDepSpec & b)
-        {
-            s << "!" << *b.blocked_spec() << " ";
         }
 
     };
@@ -96,7 +70,7 @@ namespace test_cases
                     .environment(0));
 
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 ) ");
             }
@@ -104,7 +78,7 @@ namespace test_cases
             f.add("foo/bar");
             f.add("moo/oink");
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 moo/oink ) ");
             }
@@ -122,7 +96,7 @@ namespace test_cases
             f.remove("bar/cow");
 
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar moo/oink ) ");
             }
@@ -157,7 +131,7 @@ namespace test_cases
                     .environment(0));
 
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 ) ");
             }
@@ -165,7 +139,7 @@ namespace test_cases
             f.add("foo/bar");
             f.add("moo/oink");
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 moo/oink ) ");
             }
@@ -183,7 +157,7 @@ namespace test_cases
             f.remove("bar/cow");
 
             {
-                DepSpecStringifier p;
+                SetSpecStringifier p;
                 f.contents()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink ) ");
             }

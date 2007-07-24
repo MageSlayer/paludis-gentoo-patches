@@ -88,6 +88,12 @@ namespace paludis
                         tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
+                 * Handle a fetch.
+                 */
+                virtual void fetch(const tr1::shared_ptr<const ERepositoryID> &, const FetchActionOptions &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+
+                /**
                  * Handle a pretend.
                  */
                 virtual bool pretend(const tr1::shared_ptr<const ERepositoryID> &,

@@ -741,6 +741,11 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<InstallAction> &)
         {
             result = true;
@@ -784,6 +789,14 @@ namespace
         void visit(const InstallAction & a)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->install(
+                    tr1::static_pointer_cast<const ERepositoryID>(id),
+                    a.options,
+                    tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+        }
+
+        void visit(const FetchAction & a)
+        {
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->fetch(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
                     a.options,
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());

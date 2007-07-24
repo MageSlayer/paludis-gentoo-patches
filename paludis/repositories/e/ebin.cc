@@ -27,6 +27,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/about.hh>
 #include <paludis/package_id.hh>
+#include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -146,7 +147,7 @@ EbinFetchCommand::commands() const
 bool
 EbinFetchCommand::failure()
 {
-    throw PackageFetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
+    throw FetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -208,7 +209,7 @@ EbinInstallCommand::commands() const
 bool
 EbinInstallCommand::failure()
 {
-    throw PackageInstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
+    throw InstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -275,7 +276,7 @@ EbinMergeCommand::operator() ()
             .with_echo_to_stderr());
 
     if (0 != run_command(build_tarball))
-        throw PackageInstallActionError("Error creating '" + stringify(tar) + "'");
+        throw InstallActionError("Error creating '" + stringify(tar) + "'");
 
     Command create_env(Command("cp -f '" + stringify(merge_params.environment_file) + "' '.paludis-binpkg-environment'")
             .with_chdir(merge_params.image)
@@ -287,7 +288,7 @@ EbinMergeCommand::operator() ()
             .with_echo_to_stderr());
 
     if (0 != run_command(create_env) || 0 != run_command(add_env_to_tarball))
-        throw PackageInstallActionError("Error adding environment to '" + tar + "'");
+        throw InstallActionError("Error adding environment to '" + tar + "'");
 
     Command clean_env(Command("rm -f '.paludis-binpkg-environment'")
             .with_chdir(merge_params.image)
@@ -300,6 +301,6 @@ EbinMergeCommand::operator() ()
             .with_echo_to_stderr());
 
     if (0 != run_command(compress_tarball))
-        throw PackageInstallActionError("Error compressing '" + tar + "'");
+        throw InstallActionError("Error compressing '" + tar + "'");
 }
 

@@ -32,6 +32,7 @@ namespace paludis
         class EAPIEbuildMetadataVariables;
         class EAPIEbuildEnvironmentVariables;
         class EAPIEbuildOptions;
+        class EAPILabels;
     }
 }
 

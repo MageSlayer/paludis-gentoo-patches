@@ -1219,7 +1219,6 @@ AC_OUTPUT(
 	paludis/repositories/e/eapis/Makefile
 	paludis/repositories/e/ebuild/0/Makefile
 	paludis/repositories/e/ebuild/Makefile
-	paludis/repositories/e/ebuild/digests/Makefile
 	paludis/repositories/e/ebuild/echo_functions.bash
 	paludis/repositories/e/ebuild/exheres-0/Makefile
 	paludis/repositories/e/ebuild/exheres-0/echo_functions.bash

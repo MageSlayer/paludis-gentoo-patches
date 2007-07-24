@@ -162,17 +162,17 @@ namespace paludis
         };
 
         /**
-         * An EbuildFetchCommand is used to download and verify the digests for a
+         * An EbuildNoFetchCommand is used to download and verify the digests for a
          * particular ebuild in a ERepository. On failure it throws.
          *
          * \ingroup grpebuildinterface
          */
-        class EbuildFetchCommand :
+        class EbuildNoFetchCommand :
             public EbuildCommand
         {
             protected:
                 /// Parameters for fetch.
-                const EbuildFetchCommandParams fetch_params;
+                const EbuildNoFetchCommandParams fetch_params;
 
                 virtual std::string commands() const;
 
@@ -184,7 +184,7 @@ namespace paludis
                 /**
                  * Constructor.
                  */
-                EbuildFetchCommand(const EbuildCommandParams &, const EbuildFetchCommandParams &);
+                EbuildNoFetchCommand(const EbuildCommandParams &, const EbuildNoFetchCommandParams &);
         };
 
         /**

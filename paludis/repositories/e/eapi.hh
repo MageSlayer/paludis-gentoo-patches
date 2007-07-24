@@ -35,6 +35,17 @@ namespace paludis
     {
 #include <paludis/repositories/e/eapi-sr.hh>
 
+        class PALUDIS_VISIBLE EAPILabels :
+            private InstantiationPolicy<EAPILabels, instantiation_method::NonCopyableTag>,
+            private PrivateImplementationPattern<EAPILabels>
+        {
+            public:
+                EAPILabels(const std::string &);
+                ~EAPILabels();
+
+                const std::string class_for_label(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         /**
          * Thrown if an EAPI configuration is broken.
          *

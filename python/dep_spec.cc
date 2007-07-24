@@ -46,6 +46,7 @@ template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonP
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>;
 
 template class Visits<const PythonAllDepSpec>;
 template class Visits<const PythonAnyDepSpec>;
@@ -54,7 +55,7 @@ template class Visits<const PythonPackageDepSpec>;
 template class Visits<const PythonBlockDepSpec>;
 template class Visits<const PythonPlainTextDepSpec>;
 template class Visits<const PythonURIDepSpec>;
-
+template class Visits<const PythonURILabelsDepSpec>;
 
 PythonDepSpec::PythonDepSpec()
 {
@@ -442,6 +443,14 @@ PythonURIDepSpec::renamed_url_suffix() const
         return text().substr(p + 4);
 }
 
+PythonURILabelsDepSpec::PythonURILabelsDepSpec(const std::string &)
+{
+}
+
+PythonURILabelsDepSpec::PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisitorTypes> &)
+{
+}
+
 SpecTreeToPython::SpecTreeToPython() :
     _current_parent(new PythonAllDepSpec())
 {
@@ -508,6 +517,12 @@ SpecTreeToPython::visit_leaf(const BlockDepSpec & d)
     _current_parent->add_child(tr1::shared_ptr<PythonBlockDepSpec>(new PythonBlockDepSpec(d)));
 }
 
+void
+SpecTreeToPython::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & d)
+{
+    _current_parent->add_child(tr1::shared_ptr<PythonURILabelsDepSpec>(new PythonURILabelsDepSpec(d)));
+}
+
 const tr1::shared_ptr<const PythonDepSpec>
 SpecTreeToPython::result() const
 {
@@ -554,6 +569,7 @@ struct AllowedTypes<URISpecTree>
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const UseDepSpec &) {};
     AllowedTypes(const URIDepSpec &) {};
+    AllowedTypes(const LabelsDepSpec<URILabelVisitorTypes> &) {};
 };
 
 template<>
@@ -648,6 +664,13 @@ struct NiceClassNames<URIDepSpec>
         static const char * name;
 };
 const char * NiceClassNames<URIDepSpec>::name = "URIDepSpec";
+
+template<>
+struct NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >
+{
+        static const char * name;
+};
+const char * NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >::name = "URILabelsDepSpec";
 
 template<>
 struct NiceClassNames<BlockDepSpec>
@@ -812,6 +835,13 @@ SpecTreeFromPython<H_>::visit(const PythonURIDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonURILabelsDepSpec & d)
+{
+    dispatch<H_, LabelsDepSpec<URILabelVisitorTypes> >(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonBlockDepSpec & d)
 {
     dispatch<H_, BlockDepSpec>(this, d);
@@ -891,6 +921,15 @@ SpecTreeFromPython<H_>::real_visit(const PythonURIDepSpec & d)
     _add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(
                 new TreeLeaf<H_, URIDepSpec>(tr1::shared_ptr<URIDepSpec>(
                         new URIDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> > >(
+                new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >(
+                        new LabelsDepSpec<URILabelVisitorTypes>))));
 }
 
 template <typename H_>
@@ -1310,6 +1349,17 @@ void PALUDIS_VISIBLE expose_dep_spec()
         ;
 
     /**
+     * URILabelsDepSpec
+     */
+    bp::class_<PythonURILabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
+        (
+         "URILabelsDepSpec",
+         "A URILabelsDepSpec represents a URI label.",
+         bp::init<const std::string &>("__init__(str)")
+        )
+        ;
+
+    /**
      * BlockDepSpec
      */
     bp::class_<PythonBlockDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable >
@@ -1331,3 +1381,4 @@ void PALUDIS_VISIBLE expose_dep_spec()
                 )
         ;
 }
+

@@ -111,7 +111,7 @@ EDependenciesKey::value() const
     IdleActionPool::get_instance()->increase_unprepared_stat();
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = DepParser::parse_depend(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -140,7 +140,7 @@ EDependenciesKey::idle_load() const
         try
         {
             Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            _imp->value = DepParser::parse_depend(_imp->string_value, *_imp->id->eapi());
+            _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
             _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
             return iar_success;
         }
@@ -202,7 +202,7 @@ ELicenseKey::value() const
     IdleActionPool::get_instance()->increase_unprepared_stat();
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = DepParser::parse_license(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_license(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -231,7 +231,7 @@ ELicenseKey::idle_load() const
         try
         {
             Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            _imp->value = DepParser::parse_license(_imp->string_value, *_imp->id->eapi());
+            _imp->value = parse_license(_imp->string_value, *_imp->id->eapi());
             _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
             return iar_success;
         }
@@ -284,7 +284,7 @@ EURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = DepParser::parse_uri(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_uri(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -343,7 +343,7 @@ ERestrictKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = DepParser::parse_restrict(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_restrict(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -402,7 +402,7 @@ EProvideKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = DepParser::parse_provide(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_provide(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 

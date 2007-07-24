@@ -54,6 +54,7 @@
 #include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
+#include <paludis/action.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -587,7 +588,7 @@ do_install(tr1::shared_ptr<Environment> env)
         cerr << endl;
         return 1;
     }
-    catch (const PackageInstallActionError & e)
+    catch (const InstallActionError & e)
     {
         cout << endl;
         cerr << "Install error:" << endl;
@@ -599,13 +600,48 @@ do_install(tr1::shared_ptr<Environment> env)
 
         return_code |= 1;
     }
-    catch (const PackageFetchActionError & e)
+    catch (const FetchActionError & e)
     {
         cout << endl;
         cerr << "Fetch error:" << endl;
         cerr << "  * " << e.backtrace("\n  * ");
         cerr << e.message() << endl;
         cerr << endl;
+
+        if (e.failures())
+        {
+            for (Sequence<FetchActionFailure>::Iterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+                    f != f_end ; ++f)
+            {
+                cerr << "  * File '" << f->target_file << "': ";
+
+                bool need_comma(false);
+                if (f->requires_manual_fetching)
+                {
+                    cerr << "requires manual fetching";
+                    need_comma = true;
+                }
+
+                if (f->failed_automatic_fetching)
+                {
+                    if (need_comma)
+                        cerr << ", ";
+                    cerr << "failed automatic fetching";
+                    need_comma = true;
+                }
+
+                if (! f->failed_integrity_checks.empty())
+                {
+                    if (need_comma)
+                        cerr << "failed automatic fetching";
+                    cerr << "failed integrity checks: " << f->failed_integrity_checks;
+                    need_comma = true;
+                }
+
+                cerr << endl;
+            }
+        }
+
         show_resume_command(env, task);
         cerr << endl;
 

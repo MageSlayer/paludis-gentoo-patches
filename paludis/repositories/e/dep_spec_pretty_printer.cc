@@ -24,6 +24,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
@@ -42,12 +43,14 @@ namespace paludis
     {
         std::stringstream s;
         unsigned indent;
+        bool extra_label_indent;
         bool use_newlines;
         bool outer_block;
         bool need_space;
 
         Implementation(unsigned i, bool b) :
             indent(i),
+            extra_label_indent(false),
             use_newlines(b),
             outer_block(true),
             need_space(false)
@@ -85,6 +88,7 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
 
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 4);
+        Save<bool> extra_label_indent(&_imp->extra_label_indent, _imp->outer_block ? _imp->extra_label_indent : false);
         std::for_each(cur, end, accept_visitor(*this));
     }
 
@@ -106,6 +110,7 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
     _imp->s << newline();
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
+        Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
         std::for_each(cur, end, accept_visitor(*this));
     }
     _imp->s << indent() << ")";
@@ -123,6 +128,7 @@ DepSpecPrettyPrinter::visit_sequence(const UseDepSpec & a,
     _imp->s << newline();
     {
         Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
+        Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
         std::for_each(cur, end, accept_visitor(*this));
     }
     _imp->s << indent() << ")";
@@ -160,6 +166,25 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 {
     _imp->s << indent() << "!" << *b.blocked_spec();
     _imp->s << newline();
+}
+
+void
+DepSpecPrettyPrinter::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+{
+    if (_imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = false;
+        _imp->indent -= 4;
+    }
+
+    _imp->s << indent() << stringify(l);
+    _imp->s << newline();
+
+    if (! _imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = true;
+        _imp->indent += 4;
+    }
 }
 
 std::string

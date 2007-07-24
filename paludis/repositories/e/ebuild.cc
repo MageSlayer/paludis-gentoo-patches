@@ -36,6 +36,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/action.hh>
 
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -421,25 +422,23 @@ EbuildVariableCommand::do_run_command(const Command & cmd)
 }
 
 std::string
-EbuildFetchCommand::commands() const
+EbuildNoFetchCommand::commands() const
 {
     return params.commands;
 }
 
 bool
-EbuildFetchCommand::failure()
+EbuildNoFetchCommand::failure()
 {
-    throw PackageFetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
+    throw FetchActionError("Fetch failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
-EbuildFetchCommand::extend_command(const Command & cmd)
+EbuildNoFetchCommand::extend_command(const Command & cmd)
 {
     Command result(Command(cmd)
             .with_setenv("A", fetch_params.a)
-            .with_setenv("FLAT_SRC_URI", fetch_params.flat_src_uri)
             .with_setenv("ROOT", fetch_params.root)
-            .with_setenv("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : "")
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles->begin(),
                     fetch_params.profiles->end(), " ")));
@@ -459,8 +458,8 @@ EbuildFetchCommand::extend_command(const Command & cmd)
     return result;
 }
 
-EbuildFetchCommand::EbuildFetchCommand(const EbuildCommandParams & p,
-        const EbuildFetchCommandParams & f) :
+EbuildNoFetchCommand::EbuildNoFetchCommand(const EbuildCommandParams & p,
+        const EbuildNoFetchCommandParams & f) :
     EbuildCommand(p),
     fetch_params(f)
 {
@@ -475,7 +474,7 @@ EbuildInstallCommand::commands() const
 bool
 EbuildInstallCommand::failure()
 {
-    throw PackageInstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
+    throw InstallActionError("Install failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -557,7 +556,7 @@ EbuildUninstallCommand::ebuild_file() const
 bool
 EbuildUninstallCommand::failure()
 {
-    throw PackageUninstallActionError("Uninstall failed for '" + stringify(*params.package_id) + "'");
+    throw UninstallActionError("Uninstall failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -593,8 +592,7 @@ EbuildConfigCommand::commands() const
 bool
 EbuildConfigCommand::failure()
 {
-    throw PackageConfigActionError("Configure failed for '" + stringify(
-                *params.package_id) + "'");
+    throw ConfigActionError("Configure failed for '" + stringify(*params.package_id) + "'");
 }
 
 Command
@@ -657,7 +655,7 @@ WriteVDBEntryCommand::operator() ()
             );
 
     if (0 != (run_command(cmd)))
-        throw PackageInstallActionError("Write VDB Entry command failed");
+        throw InstallActionError("Write VDB Entry command failed");
 }
 
 VDBPostMergeCommand::VDBPostMergeCommand(const VDBPostMergeCommandParams & p) :
@@ -679,7 +677,7 @@ VDBPostMergeCommand::operator() ()
 #endif
 
     if (0 != (run_command(ebuild_cmd)))
-        throw PackageInstallActionError("VDB Entry post merge commands failed");
+        throw InstallActionError("VDB Entry post merge commands failed");
 }
 
 std::string

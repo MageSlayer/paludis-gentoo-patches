@@ -91,6 +91,8 @@ DepLexer::DepLexer(const std::string & s) :
             throw DepStringLexError(s, "')' should be followed by whitespace");
         else if (std::string::npos == t->find_first_not_of(" \t\n"))
             _imp->tokens.push_back(std::make_pair(dpl_whitespace, *t));
+        else if (':' == (*t)[t->length() - 1])
+            _imp->tokens.push_back(std::make_pair(dpl_label, *t));
         else if ('?' == (*t)[t->length() - 1])
             _imp->tokens.push_back(std::make_pair(dpl_use_flag, *t));
         else

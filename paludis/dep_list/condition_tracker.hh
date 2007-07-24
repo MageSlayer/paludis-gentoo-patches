@@ -57,11 +57,11 @@ namespace paludis
 
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>::visit_sequence;
 
-            virtual void visit_sequence(const AnyDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
-            virtual void visit_sequence(const UseDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
+            void visit_sequence(const AnyDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
+            void visit_sequence(const UseDepSpec &, DependencySpecTree::ConstSequenceIterator, DependencySpecTree::ConstSequenceIterator);
 
-            virtual void visit_leaf(const PackageDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
-            virtual void visit_leaf(const BlockDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
+            void visit_leaf(const PackageDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
+            void visit_leaf(const BlockDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
     };
 }
 

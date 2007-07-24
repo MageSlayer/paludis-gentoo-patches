@@ -21,6 +21,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/sequence-impl.hh>
 
 using namespace paludis;
 
@@ -32,12 +33,16 @@ template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
+template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
 
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
+template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
+
+template class Sequence<FetchActionFailure>;
 
 Action::~Action()
 {
@@ -64,6 +69,30 @@ InstallAction::InstallAction(const InstallActionOptions & o) :
 }
 
 InstallAction::~InstallAction()
+{
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<FetchAction>
+    {
+        const FetchActionOptions options;
+
+        Implementation(const FetchActionOptions & o) :
+            options(o)
+        {
+        }
+    };
+}
+
+FetchAction::FetchAction(const FetchActionOptions & o) :
+    PrivateImplementationPattern<FetchAction>(new Implementation<FetchAction>(o)),
+    options(_imp->options)
+{
+}
+
+FetchAction::~FetchAction()
 {
 }
 
@@ -131,7 +160,7 @@ SupportsActionTestBase::~SupportsActionTestBase()
 }
 
 UnsupportedActionError::UnsupportedActionError(const PackageID & id, const Action & a) throw () :
-    Exception("Unsupported action '" + stringify(a) + "' on '" + stringify(id) + "'")
+    ActionError("Unsupported action '" + stringify(a) + "' on '" + stringify(id) + "'")
 {
 }
 
@@ -175,6 +204,11 @@ namespace
         {
             s << "config";
         }
+
+        void visit(const FetchAction &)
+        {
+            s << "fetch";
+        }
     };
 }
 
@@ -184,5 +218,43 @@ paludis::operator<< (std::ostream & s, const Action & a)
     ActionStringifier t(s);
     a.accept(t);
     return s;
+}
+
+ActionError::ActionError(const std::string & msg) throw () :
+    Exception(msg)
+{
+}
+
+InstallActionError::InstallActionError(const std::string & msg) throw () :
+    ActionError("Install error: " + msg)
+{
+}
+
+FetchActionError::FetchActionError(const std::string & msg,
+        const tr1::shared_ptr<const Sequence<FetchActionFailure> > & e) throw () :
+    ActionError("Fetch error: " + msg),
+    _failures(e)
+{
+}
+
+FetchActionError::FetchActionError(const std::string & msg) throw () :
+    ActionError("Fetch error: " + msg)
+{
+}
+
+const tr1::shared_ptr<const Sequence<FetchActionFailure> >
+FetchActionError::failures() const
+{
+    return _failures;
+}
+
+UninstallActionError::UninstallActionError(const std::string & msg) throw () :
+    ActionError("Uninstall error: " + msg)
+{
+}
+
+ConfigActionError::ConfigActionError(const std::string & msg) throw () :
+    ActionError("Configuration error: " + msg)
+{
 }
 

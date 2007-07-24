@@ -1046,6 +1046,11 @@ namespace
             result = true;
         }
 
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }

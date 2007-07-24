@@ -30,23 +30,21 @@ END
     allow_named_args
 }
 
-make_class_EbuildFetchCommandParams()
+make_class_EbuildNoFetchCommandParams()
 {
     key a std::string
     key aa std::string
     key use std::string
     key use_expand std::string
-    key flat_src_uri std::string
     key root std::string
     key profiles "tr1::shared_ptr<const FSEntrySequence>"
     key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
-    key safe_resume bool
 
     doxygen_comment << "END"
         /**
-         * Parameters for an EbuildFetchCommand.
+         * Parameters for an EbuildNoFetchCommand.
          *
-         * \see EbuildFetchCommand
+         * \see EbuildNoFetchCommand
          * \ingroup grpebuildinterface
          * \nosubgrouping
          */

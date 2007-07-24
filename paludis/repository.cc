@@ -102,36 +102,6 @@ Repository::name() const
     return _name;
 }
 
-PackageActionError::PackageActionError(const std::string & msg) throw () :
-    Exception(msg)
-{
-}
-
-PackageInstallActionError::PackageInstallActionError(const std::string & msg) throw () :
-    PackageActionError("Install error: " + msg)
-{
-}
-
-EnvironmentVariableActionError::EnvironmentVariableActionError(const std::string & msg) throw () :
-    PackageActionError("Environment variable query error: " + msg)
-{
-}
-
-PackageFetchActionError::PackageFetchActionError(const std::string & msg) throw () :
-    PackageActionError("Fetch error: " + msg)
-{
-}
-
-PackageUninstallActionError::PackageUninstallActionError(const std::string & msg) throw () :
-    PackageActionError("Uninstall error: " + msg)
-{
-}
-
-PackageConfigActionError::PackageConfigActionError(const std::string & msg) throw () :
-    PackageActionError("Configuration error: " + msg)
-{
-}
-
 tr1::shared_ptr<const RepositoryInfo>
 Repository::info(bool) const
 {
