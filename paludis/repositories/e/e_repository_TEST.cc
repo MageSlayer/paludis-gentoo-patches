@@ -489,11 +489,6 @@ namespace test_cases
     {
         ERepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
 
-        bool skip() const
-        {
-            return ! getenv_with_default("SANDBOX_ON", "").empty();
-        }
-
         void run()
         {
             for (int opass = 1 ; opass <= 3 ; ++opass)
@@ -548,6 +543,42 @@ namespace test_cases
             }
         }
     } test_e_repository_metadata_uncached;
+
+    struct ERepositoryMetadataStaleTest : TestCase
+    {
+        ERepositoryMetadataStaleTest() : TestCase("metadata stale") { }
+
+        void run()
+        {
+            for (int opass = 1 ; opass <= 3 ; ++opass)
+            {
+                TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
+
+                TestEnvironment env;
+                tr1::shared_ptr<Map<std::string, std::string> > keys(
+                        new Map<std::string, std::string>);
+                keys->insert("format", "ebuild");
+                keys->insert("names_cache", "/var/empty");
+                keys->insert("write_cache", "e_repository_TEST_dir/repo7/metadata/cache");
+                keys->insert("location", "e_repository_TEST_dir/repo7");
+                keys->insert("profiles", "e_repository_TEST_dir/repo7/profiles/profile");
+                tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+                env.package_database()->add_repository(1, repo);
+
+                for (int pass = 1 ; pass <= 3 ; ++pass)
+                {
+                    TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
+
+                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                                    PackageDepSpec("=cat-one/stale-pkg-1", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+
+                    TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
+                    TEST_CHECK(id1->short_description_key());
+                    TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description");
+                }
+            }
+        }
+    } test_e_repository_metadata_stale;
 
     /**
      * \test Test ERepository unparsable metadata.
