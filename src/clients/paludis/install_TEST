@@ -8,12 +8,12 @@ PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
 
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
     --has-version test-category/target && exit 1
-PALUDIS_INSTALL_TEST_DIE_PLEASE=yes \
-    PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
-    --install target --resume-command-template `pwd`/install_TEST_dir/resume && exit 2
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \
+    --install target --resume-command-template `pwd`/install_TEST_dir/resume \
+    --checks always && exit 2
 ( echo -n './paludis ' ; cut -d ' ' -f2- < install_TEST_dir/resume ) > install_TEST_dir/fixedresume
 cat install_TEST_dir/fixedresume
-PALUDIS_HOME=./install_TEST_dir/config/ bash `pwd`/install_TEST_dir/fixedresume || exit 3
+PALUDIS_HOME=./install_TEST_dir/config/ bash `pwd`/install_TEST_dir/fixedresume --checks none || exit 3
 ./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null || exit 4
 grep target install_TEST_dir/root/var/db/pkg/world >/dev/null || exit 5
 PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --environment :install-test \

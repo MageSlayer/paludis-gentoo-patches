@@ -16,3 +16,12 @@ make_enum_InstallActionDebugOption()
 END
 }
 
+make_enum_InstallActionChecksOption()
+{
+    prefix iaco
+
+    key iaco_none               "No checks"
+    key iaco_default            "Checks where they would usually be carried out"
+    key iaco_always             "Always use checks"
+}
+

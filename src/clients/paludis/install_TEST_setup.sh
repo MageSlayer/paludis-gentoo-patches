@@ -113,8 +113,6 @@ pkg_setup() {
     use userland_test || die "bad use for userland"
     use kernel_test || die "bad use for kernel"
     use test || die "bad use for arch"
-
-    [[ -n "${PALUDIS_INSTALL_TEST_DIE_PLEASE}" ]] && die "told to die"
 }
 
 src_unpack() {
@@ -127,10 +125,11 @@ src_unpack() {
 
 src_compile() {
     inherit_was_ok || die "inherit didn't work"
+    ./testbin | grep success || die "failure"
 }
 
 src_test() {
-    ./testbin | grep success || die "failure"
+    die "giant monkey detected"
 }
 
 src_install() {

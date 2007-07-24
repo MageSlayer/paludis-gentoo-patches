@@ -596,6 +596,30 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         else if ((! phase->option("prepost")) ||
                 (o.destination->destination_interface && o.destination->destination_interface->want_pre_post_phases()))
         {
+            if (phase->option("checkphase"))
+            {
+                switch (o.checks)
+                {
+                    case iaco_none:
+                        if (! phase->option("checks=none"))
+                            continue;
+                        break;
+
+                    case iaco_default:
+                        if (! phase->option("checks=default"))
+                            continue;
+                        break;
+
+                    case iaco_always:
+                        if (! phase->option("checks=always"))
+                            continue;
+                        break;
+
+                    case last_iaco:
+                        break;
+                }
+            }
+
             EbuildCommandParams command_params(EbuildCommandParams::create()
                     .environment(_imp->params.environment)
                     .package_id(id)

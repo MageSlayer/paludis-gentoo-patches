@@ -559,6 +559,9 @@ do_install(tr1::shared_ptr<Environment> env)
     if (CommandLine::get_instance()->a_debug_build.specified())
         task.set_debug_mode(CommandLine::get_instance()->a_debug_build.option());
 
+    if (CommandLine::get_instance()->a_checks.specified())
+        task.set_checks_mode(CommandLine::get_instance()->a_checks.option());
+
     InstallKilledCatcher install_killed_catcher(env, task);
 
     try

@@ -10,6 +10,7 @@ noinst_LIBRARIES = libcommonargs.a
 
 libcommonargs_a_SOURCES = \
 	do_help.hh \
+	checks_arg.hh      checks_arg.cc \
 	debug_build_arg.hh debug_build_arg.cc \
 	deps_option_arg.hh deps_option_arg.cc \
 	log_level_arg.hh   log_level_arg.cc

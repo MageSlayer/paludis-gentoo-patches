@@ -27,6 +27,7 @@ make_class_InstallActionOptions()
 
     key no_config_protect bool
     key debug_build InstallActionDebugOption
+    key checks InstallActionChecksOption
     key destination "tr1::shared_ptr<Repository>"
 
     doxygen_comment << "END"

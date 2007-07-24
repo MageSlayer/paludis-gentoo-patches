@@ -86,6 +86,7 @@ CommandLine::CommandLine() :
             "Use this spec, rather than all targets, for updating world (for resume commands)"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
     a_debug_build(&install_args, "debug-build", '\0'),
+    a_checks(&install_args, "checks", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
     a_no_safe_resume(&install_args, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed"),
     a_show_reasons(&install_args, "show-reasons", '\0', "Show why packages are being (un)installed",

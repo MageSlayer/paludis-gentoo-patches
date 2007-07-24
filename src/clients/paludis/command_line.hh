@@ -23,6 +23,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <src/common_args/debug_build_arg.hh>
+#include <src/common_args/checks_arg.hh>
 #include <src/common_args/log_level_arg.hh>
 #include <src/common_args/deps_option_arg.hh>
 
@@ -202,6 +203,9 @@ class CommandLine :
 
         /// --debug-build
         paludis::args::DebugBuildArg a_debug_build;
+
+        /// --checks
+        paludis::args::ChecksArg a_checks;
 
         /// --fetch
         paludis::args::SwitchArg a_fetch;

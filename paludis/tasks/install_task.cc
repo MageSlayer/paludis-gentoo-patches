@@ -77,6 +77,7 @@ namespace paludis
                     InstallActionOptions::create()
                     .no_config_protect(false)
                     .debug_build(iado_none)
+                    .checks(iaco_default)
                     .destination(tr1::shared_ptr<Repository>())
                     ),
             uninstall_options(false),
@@ -556,6 +557,12 @@ void
 InstallTask::set_debug_mode(const InstallActionDebugOption value)
 {
     _imp->install_options.debug_build = value;
+}
+
+void
+InstallTask::set_checks_mode(const InstallActionChecksOption value)
+{
+    _imp->install_options.checks = value;
 }
 
 void

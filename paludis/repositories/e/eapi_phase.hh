@@ -51,6 +51,7 @@ namespace paludis
                 ///\{
 
                 bool option(const std::string &) const;
+                bool option_contains(const std::string &, const std::string &) const;
 
                 typedef libwrapiter::ForwardIterator<EAPIPhase, const std::string> Iterator;
                 Iterator begin_commands() const;
