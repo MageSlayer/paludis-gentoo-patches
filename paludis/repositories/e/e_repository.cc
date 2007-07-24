@@ -108,42 +108,48 @@ namespace paludis
     template <>
     struct Implementation<ERepository>
     {
+        struct Mutexes
+        {
+            Mutex repo_mask_mutex;
+            Mutex arch_flags_mutex;
+            Mutex mirrors_mutex;
+            Mutex profiles_desc_mutex;
+            Mutex use_desc_mutex;
+            Mutex profile_ptr_mutex;
+            Mutex news_ptr_mutex;
+        };
+
         ERepository * const repo;
         const ERepositoryParams params;
 
+        const tr1::shared_ptr<Mutexes> mutexes;
+
         tr1::shared_ptr<RepositoryNameCache> names_cache;
 
-        mutable Mutex repo_mask_mutex;
         mutable RepositoryMaskMap repo_mask;
         mutable bool has_repo_mask;
 
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
-        mutable Mutex arch_flags_mutex;
         mutable tr1::shared_ptr<UseFlagNameSet> arch_flags;
 
-        mutable Mutex mirrors_mutex;
         mutable bool has_mirrors;
         mutable MirrorMap mirrors;
 
-        mutable Mutex profiles_desc_mutex;
         mutable bool has_profiles_desc;
         mutable ProfilesDesc profiles_desc;
 
-        mutable Mutex use_desc_mutex;
         mutable std::list<tr1::shared_ptr<UseDesc> > use_desc;
 
-        mutable Mutex profile_ptr_mutex;
         mutable tr1::shared_ptr<ERepositoryProfile> profile_ptr;
 
-        mutable Mutex news_ptr_mutex;
         mutable tr1::shared_ptr<ERepositoryNews> news_ptr;
 
         mutable tr1::shared_ptr<ERepositorySets> sets_ptr;
         mutable tr1::shared_ptr<erepository::ERepositoryEntries> entries_ptr;
         mutable tr1::shared_ptr<erepository::Layout> layout;
 
-        Implementation(ERepository * const, const ERepositoryParams &);
+        Implementation(ERepository * const, const ERepositoryParams &, tr1::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
         ~Implementation();
 
         void need_profiles() const;
@@ -151,9 +157,10 @@ namespace paludis
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
-            const ERepositoryParams & p) :
+            const ERepositoryParams & p, tr1::shared_ptr<Mutexes> m) :
         repo(r),
         params(p),
+        mutexes(m),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
         has_repo_mask(false),
         has_mirrors(false),
@@ -175,7 +182,7 @@ namespace paludis
     void
     Implementation<ERepository>::need_profiles() const
     {
-        Lock l(profile_ptr_mutex);
+        Lock l(mutexes->profile_ptr_mutex);
 
         if (profile_ptr)
             return;
@@ -189,7 +196,7 @@ namespace paludis
     void
     Implementation<ERepository>::need_profiles_desc() const
     {
-        Lock l(profiles_desc_mutex);
+        Lock l(mutexes->profiles_desc_mutex);
 
         if (has_profiles_desc)
             return;
@@ -369,7 +376,7 @@ ERepository::do_package_ids(const QualifiedPackageName & n) const
 bool
 ERepository::repository_masked(const PackageID & id) const
 {
-    Lock l(_imp->repo_mask_mutex);
+    Lock l(_imp->mutexes->repo_mask_mutex);
 
     if (! _imp->has_repo_mask)
     {
@@ -447,7 +454,7 @@ ERepository::do_query_use_force(const UseFlagName & u, const PackageID & e) cons
 tr1::shared_ptr<const UseFlagNameSet>
 ERepository::do_arch_flags() const
 {
-    Lock l(_imp->arch_flags_mutex);
+    Lock l(_imp->mutexes->arch_flags_mutex);
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
@@ -498,7 +505,7 @@ ERepository::do_license_exists(const std::string & license) const
 void
 ERepository::need_mirrors() const
 {
-    Lock l(_imp->mirrors_mutex);
+    Lock l(_imp->mutexes->mirrors_mutex);
 
     if (! _imp->has_mirrors)
     {
@@ -601,7 +608,7 @@ ERepository::do_sync() const
 void
 ERepository::invalidate()
 {
-    _imp.reset(new Implementation<ERepository>(this, _imp->params));
+    _imp.reset(new Implementation<ERepository>(this, _imp->params, _imp->mutexes));
 }
 
 void
@@ -618,7 +625,7 @@ ERepository::invalidate_masks()
 void
 ERepository::update_news() const
 {
-    Lock l(_imp->news_ptr_mutex);
+    Lock l(_imp->mutexes->news_ptr_mutex);
 
     if (! _imp->news_ptr)
         _imp->news_ptr.reset(new ERepositoryNews(_imp->params.environment, this, _imp->params));
@@ -923,7 +930,7 @@ std::string
 ERepository::do_describe_use_flag(const UseFlagName & f,
         const PackageID & e) const
 {
-    Lock l(_imp->use_desc_mutex);
+    Lock l(_imp->mutexes->use_desc_mutex);
 
     if (_imp->use_desc.empty())
     {

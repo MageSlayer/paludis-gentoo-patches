@@ -46,7 +46,7 @@ namespace paludis
     {
         const gems::RepositoryParams params;
 
-        mutable Mutex big_nasty_mutex;
+        const tr1::shared_ptr<Mutex> big_nasty_mutex;
 
         mutable tr1::shared_ptr<const CategoryNamePartSet> category_names;
         mutable MakeHashedMap<CategoryNamePart, tr1::shared_ptr<const QualifiedPackageNameSet> >::Type package_names;
@@ -55,8 +55,9 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        Implementation(const gems::RepositoryParams p) :
+        Implementation(const gems::RepositoryParams p, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             params(p),
+            big_nasty_mutex(m),
             has_category_names(false),
             has_ids(false)
         {
@@ -104,15 +105,15 @@ GemsRepository::~GemsRepository()
 void
 GemsRepository::invalidate()
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
-    _imp.reset(new Implementation<GemsRepository>(_imp->params));
+    _imp.reset(new Implementation<GemsRepository>(_imp->params, _imp->big_nasty_mutex));
 }
 
 void
 GemsRepository::invalidate_masks()
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     for (MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
          it_end != it; ++it)
@@ -124,7 +125,7 @@ GemsRepository::invalidate_masks()
 bool
 GemsRepository::do_has_category_named(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     need_category_names();
     return _imp->category_names->end() != _imp->category_names->find(c);
@@ -133,7 +134,7 @@ GemsRepository::do_has_category_named(const CategoryNamePart & c) const
 bool
 GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! do_has_category_named(q.category))
         return false;
@@ -145,7 +146,7 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
 tr1::shared_ptr<const CategoryNamePartSet>
 GemsRepository::do_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     need_category_names();
     return _imp->category_names;
@@ -154,7 +155,7 @@ GemsRepository::do_category_names() const
 tr1::shared_ptr<const QualifiedPackageNameSet>
 GemsRepository::do_package_names(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! has_category_named(c))
         return make_shared_ptr(new QualifiedPackageNameSet);
@@ -171,7 +172,7 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
 tr1::shared_ptr<const PackageIDSequence>
 GemsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q))
         return make_shared_ptr(new PackageIDSequence);
@@ -189,7 +190,7 @@ GemsRepository::do_package_ids(const QualifiedPackageName & q) const
 void
 GemsRepository::need_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_category_names)
         return;
@@ -204,7 +205,7 @@ GemsRepository::need_category_names() const
 void
 GemsRepository::need_ids() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_ids)
         return;

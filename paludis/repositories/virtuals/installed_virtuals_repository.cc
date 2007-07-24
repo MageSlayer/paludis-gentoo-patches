@@ -54,13 +54,14 @@ namespace paludis
         const Environment * const env;
         const FSEntry root;
 
-        mutable Mutex ids_mutex;
+        const tr1::shared_ptr<Mutex> ids_mutex;
         mutable IDMap ids;
         mutable bool has_ids;
 
-        Implementation(const Environment * const e, const FSEntry & r) :
+        Implementation(const Environment * const e, const FSEntry & r, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             root(r),
+            ids_mutex(m),
             has_ids(false)
         {
         }
@@ -134,7 +135,7 @@ InstalledVirtualsRepository::~InstalledVirtualsRepository()
 void
 InstalledVirtualsRepository::need_ids() const
 {
-    Lock l(_imp->ids_mutex);
+    Lock l(*_imp->ids_mutex);
 
     if (_imp->has_ids)
         return;
@@ -240,7 +241,7 @@ InstalledVirtualsRepository::do_has_category_named(const CategoryNamePart & c) c
 void
 InstalledVirtualsRepository::invalidate()
 {
-    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root));
+    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root, _imp->ids_mutex));
 }
 
 void

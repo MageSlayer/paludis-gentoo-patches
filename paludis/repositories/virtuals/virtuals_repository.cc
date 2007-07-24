@@ -56,7 +56,7 @@ namespace paludis
     {
         const Environment * const env;
 
-        mutable Mutex big_nasty_mutex;
+        const tr1::shared_ptr<Mutex> big_nasty_mutex;
 
         mutable std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > names;
         mutable bool has_names;
@@ -64,8 +64,9 @@ namespace paludis
         mutable IDMap ids;
         mutable bool has_ids;
 
-        Implementation(const Environment * const e) :
+        Implementation(const Environment * const e, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
+            big_nasty_mutex(m),
             has_names(false),
             has_ids(false)
         {
@@ -130,7 +131,7 @@ VirtualsRepository::~VirtualsRepository()
 void
 VirtualsRepository::need_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_names)
         return;
@@ -191,7 +192,7 @@ VirtualsRepository::need_names() const
 void
 VirtualsRepository::need_ids() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_ids)
         return;
@@ -305,13 +306,15 @@ VirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
 void
 VirtualsRepository::invalidate()
 {
-    _imp.reset(new Implementation<VirtualsRepository>(_imp->env));
+    Lock l(*_imp->big_nasty_mutex);
+
+    _imp.reset(new Implementation<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
 }
 
 void
 VirtualsRepository::invalidate_masks()
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     for (IDMap::iterator it(_imp->ids.begin()), it_end(_imp->ids.end()); it_end != it; ++it)
         for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());

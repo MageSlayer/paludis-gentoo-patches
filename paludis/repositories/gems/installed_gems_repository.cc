@@ -52,7 +52,7 @@ namespace paludis
     template <>
     struct Implementation<InstalledGemsRepository>
     {
-        mutable Mutex big_nasty_mutex;
+        const tr1::shared_ptr<Mutex> big_nasty_mutex;
 
         const gems::InstalledRepositoryParams params;
 
@@ -63,7 +63,9 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        Implementation(const gems::InstalledRepositoryParams p) :
+        Implementation(const gems::InstalledRepositoryParams p,
+                       tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+            big_nasty_mutex(m),
             params(p),
             has_category_names(false),
             has_ids(false)
@@ -109,9 +111,9 @@ InstalledGemsRepository::~InstalledGemsRepository()
 void
 InstalledGemsRepository::invalidate()
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
-    _imp.reset(new Implementation<InstalledGemsRepository>(_imp->params));
+    _imp.reset(new Implementation<InstalledGemsRepository>(_imp->params, _imp->big_nasty_mutex));
 }
 
 void
@@ -122,7 +124,7 @@ InstalledGemsRepository::invalidate_masks()
 bool
 InstalledGemsRepository::do_has_category_named(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     need_category_names();
     return _imp->category_names->end() != _imp->category_names->find(c);
@@ -131,7 +133,7 @@ InstalledGemsRepository::do_has_category_named(const CategoryNamePart & c) const
 bool
 InstalledGemsRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! do_has_category_named(q.category))
         return false;
@@ -143,7 +145,7 @@ InstalledGemsRepository::do_has_package_named(const QualifiedPackageName & q) co
 tr1::shared_ptr<const CategoryNamePartSet>
 InstalledGemsRepository::do_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     need_category_names();
     return _imp->category_names;
@@ -152,7 +154,7 @@ InstalledGemsRepository::do_category_names() const
 tr1::shared_ptr<const QualifiedPackageNameSet>
 InstalledGemsRepository::do_package_names(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! has_category_named(c))
         return make_shared_ptr(new QualifiedPackageNameSet);
@@ -169,7 +171,7 @@ InstalledGemsRepository::do_package_names(const CategoryNamePart & c) const
 tr1::shared_ptr<const PackageIDSequence>
 InstalledGemsRepository::do_package_ids(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q))
         return make_shared_ptr(new PackageIDSequence);
@@ -186,7 +188,7 @@ InstalledGemsRepository::do_package_ids(const QualifiedPackageName & q) const
 void
 InstalledGemsRepository::need_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_category_names)
         return;
@@ -201,7 +203,7 @@ InstalledGemsRepository::need_category_names() const
 void
 InstalledGemsRepository::need_ids() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     if (_imp->has_ids)
         return;
@@ -243,7 +245,7 @@ InstalledGemsRepository::need_ids() const
 bool
 InstalledGemsRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    Lock l(*_imp->big_nasty_mutex);
 
     std::string f(e.repository()->format());
     return f == "gems";
