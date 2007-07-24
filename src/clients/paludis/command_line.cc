@@ -203,8 +203,8 @@ CommandLine::CommandLine() :
             args::StringSetArg::StringSetArgOptions
             ("tilde-keyword",           "Keyword masks where accepting ~ would work")
             ("unkeyworded",             "Keyword masks where a package is unkeyworded")
-            ("profile",                 "Profile masks")
             ("repository",              "Repository masks")
+            ("profile",                 "Deprecated synonym for repository")
             ("license",                 "License masks")),
 
     dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",

@@ -454,6 +454,11 @@ do_install(tr1::shared_ptr<Environment> env)
                 options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
             else if (*a == "license")
                 options.override_masks->push_back(tr1::bind(&override_license, _2));
+            else if (*a == "profile")
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "--dl-override-masks profile is deprecated, use --dl-override-masks repository");
+                options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
+            }
             else
                 throw args::DoHelp("bad value for --dl-override-masks");
         }
