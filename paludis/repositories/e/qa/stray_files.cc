@@ -36,9 +36,10 @@ paludis::erepository::stray_files_check(
         const std::string & name
         )
 {
-    for (DirIterator d(dir), d_end ; d != d_end ; ++d)
-        if (stray(repo, *d))
-            reporter.message(qaml_normal, name, "Stray file '" + stringify(*d) + "'");
+    if (dir.exists())
+        for (DirIterator d(dir), d_end ; d != d_end ; ++d)
+            if (stray(repo, *d))
+                reporter.message(qaml_normal, name, "Stray file '" + stringify(*d) + "'");
 
     return true;
 }
