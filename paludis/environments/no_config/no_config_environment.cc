@@ -169,6 +169,9 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if (FSEntry("/var/empty") != params.master_repository_dir)
             keys->insert("master_repository", stringify(master_repo->name()));
 
+        if ((params.repository_dir / "metadata" / "profiles_desc.conf").exists())
+            keys->insert("layout", "exheres");
+
         package_database->add_repository(2, ((main_repo =
                         RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
 
