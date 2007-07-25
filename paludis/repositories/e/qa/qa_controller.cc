@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -94,12 +95,32 @@ QAController::run()
     tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());
     for (CategoryNamePartSet::Iterator c(categories->begin()), c_end(categories->end()) ;
             c != c_end ; ++c)
+    {
         std::find_if(
                 QAChecks::get_instance()->category_dir_checks_group()->begin(),
                 QAChecks::get_instance()->category_dir_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
                         _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(*c))));
+
+        tr1::shared_ptr<const QualifiedPackageNameSet> packages(_imp->repo->package_names(*c));
+        for (QualifiedPackageNameSet::Iterator p(packages->begin()), p_end(packages->end()) ;
+                p != p_end ; ++p)
+        {
+
+            tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(*p));
+            for (PackageIDSequence::Iterator i(ids->begin()), i_end(ids->end()) ;
+                    i != i_end ; ++i)
+            {
+                std::find_if(
+                        QAChecks::get_instance()->package_id_checks_group()->begin(),
+                        QAChecks::get_instance()->package_id_checks_group()->end(),
+                        tr1::bind(std::equal_to<bool>(), false,
+                            tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
+                                _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(*i))));
+            }
+        }
+    }
 
 }
 

@@ -14,17 +14,23 @@ if ENABLE_QA
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
+	eapi_supported.hh \
+	homepage_key.hh \
+	qa_checks.hh \
 	qa_checks_group.hh \
 	qa_controller.hh \
-	qa_checks.hh \
+	short_description_key.hh \
 	stray_files.hh
 
 noinst_LTLIBRARIES = libpaludiserepositoryqa.la
 
 libpaludiserepositoryqa_la_SOURCES = \
+	eapi_supported.cc \
+	homepage_key.cc \
+	qa_checks.cc \
 	qa_checks_group.cc \
 	qa_controller.cc \
-	qa_checks.cc \
+	short_description_key.cc \
 	stray_files.cc \
 	$(paludis_repositories_e_include_HEADERS)
 

@@ -22,6 +22,9 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 
 #include <paludis/repositories/e/qa/stray_files.hh>
+#include <paludis/repositories/e/qa/eapi_supported.hh>
+#include <paludis/repositories/e/qa/short_description_key.hh>
+#include <paludis/repositories/e/qa/homepage_key.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -35,10 +38,12 @@ namespace paludis
     {
         const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
         const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
+        const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
 
         Implementation() :
             tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
-            category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>)
+            category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>),
+            package_id_checks_group(new QAChecksGroup<PackageIDCheckFunction>)
         {
         }
     };
@@ -54,6 +59,15 @@ QAChecks::QAChecks() :
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
             tr1::bind(stray_files_check, _1, _3, _4, is_stray_at_category_dir, "stray_category_dir_files"));
+
+    _imp->package_id_checks_group->add_check("eapi_supported",
+            tr1::bind(eapi_supported_check, _1, _4, "eapi_supported"));
+    _imp->package_id_checks_group->add_check("short_description_key",
+            tr1::bind(short_description_key_check, _1, _4, "short_description_key"));
+    _imp->package_id_checks_group->add_prerequirement("short_description_key", "eapi_supported");
+    _imp->package_id_checks_group->add_check("homepage_key",
+            tr1::bind(homepage_key_check, _1, _4, "homepage_key"));
+    _imp->package_id_checks_group->add_prerequirement("homepage_key", "eapi_supported");
 }
 
 QAChecks::~QAChecks()
@@ -72,4 +86,9 @@ QAChecks::category_dir_checks_group()
     return _imp->category_dir_checks_group;
 }
 
+const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
+QAChecks::package_id_checks_group()
+{
+    return _imp->package_id_checks_group;
+}
 
