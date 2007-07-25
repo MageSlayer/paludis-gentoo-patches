@@ -460,7 +460,10 @@ TraditionalLayout::package_file(const PackageID & id) const
 FSEntry
 TraditionalLayout::profiles_base_dir() const
 {
-    return _imp->tree_root / "profiles";
+    if (master_repository_location())
+        return *master_repository_location() / "profiles";
+    else
+        return _imp->tree_root / "profiles";
 }
 
 tr1::shared_ptr<const FSEntrySequence>
