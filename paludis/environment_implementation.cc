@@ -167,7 +167,8 @@ EnvironmentImplementation::query_use(const UseFlagName & f, const PackageID & e)
 std::string
 EnvironmentImplementation::default_distribution() const
 {
-    return DEFAULT_DISTRIBUTION;
+    static const std::string result(getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION));
+    return result;
 }
 
 tr1::shared_ptr<const SetNameSet>
