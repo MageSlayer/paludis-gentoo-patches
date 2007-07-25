@@ -1129,6 +1129,26 @@ else
 fi
 dnl }}}
 
+dnl {{{ check for eselect
+AC_MSG_CHECKING([for eselect])
+if eselect version >/dev/null 2>/dev/null ; then
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([eselect is required])
+fi
+
+for m in env news ; do
+	AC_MSG_CHECKING([for eselect $m])
+	if eselect $m version >/dev/null 2>/dev/null ; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_RESULT([no])
+		AC_MSG_ERROR([eselect $m is required])
+	fi
+done
+dnl }}}
+
 dnl {{{ is ldconfig gnu ldconfig
 AC_MSG_CHECKING([if ldconfig is GNU])
 AC_ARG_ENABLE([gnu-ldconfig],
