@@ -41,6 +41,7 @@ export_exlib_phases()
 
 require()
 {
+    ebuild_notice "debug" "Command 'require ${@}', using EXLIBSDIRS '${EXLIBSDIRS}'"
     local e ee location= v
     for e in "$@" ; do
         for ee in ${EXLIBSDIRS} ; do

@@ -352,6 +352,8 @@ ebuild_main()
     local action ebuild="$1"
     shift
 
+    ebuild_notice "debug" "Using ebuild '${ebuild}', EAPI before source is '${EAPI}'"
+
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
     elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && [[ ${1} != pretend ]] ; then
