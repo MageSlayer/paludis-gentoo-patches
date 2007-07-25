@@ -22,6 +22,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/is_file_with_extension.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -48,15 +49,19 @@ paludis::erepository::is_stray_at_tree_dir(
         const FSEntry & d)
 {
     if (d.is_directory_or_symlink_to_directory())
-    {
         return false;
-    }
-    else if (d.is_regular_file_or_symlink_to_regular_file())
+
+    if (d.is_regular_file_or_symlink_to_regular_file())
     {
+        if (d.basename() == "header.txt")
+            return false;
+        if (is_file_with_prefix_extension(d, "skel.", "", IsFileWithOptions()))
+            return false;
+
         return true;
     }
-    else
-        return true;
+
+    return true;
 }
 
 bool
@@ -65,14 +70,16 @@ paludis::erepository::is_stray_at_category_dir(
         const FSEntry & d)
 {
     if (d.is_directory_or_symlink_to_directory())
-    {
         return false;
-    }
-    else if (d.is_regular_file_or_symlink_to_regular_file())
+
+    if (d.is_regular_file_or_symlink_to_regular_file())
     {
+        if (d.basename() == "metadata.xml")
+            return false;
+
         return true;
     }
-    else
-        return true;
+
+    return true;
 }
 

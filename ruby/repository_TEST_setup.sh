@@ -38,6 +38,8 @@ END
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 
+echo "stray" > stray
+
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
