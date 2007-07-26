@@ -706,7 +706,7 @@ PaludisConfig::distribution() const
     _imp->need_environment_conf();
 
     if (_imp->distribution.empty())
-        _imp->distribution = DEFAULT_DISTRIBUTION;
+        _imp->distribution = getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION);
 
     return _imp->distribution;
 }
