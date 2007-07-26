@@ -21,6 +21,13 @@
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/package_id.hh>
+#include <paludis/query.hh>
+#include <paludis/package_database.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/name.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -41,15 +48,13 @@ namespace
             }
     };
 
-#if 0
     bool accept_keyword(const TestPortageEnvironment & env,
-            const KeywordName & k, const PackageDatabaseEntry & e)
+            const KeywordName & k, const PackageID & e)
     {
-        tr1::shared_ptr<KeywordNameCollection> kk(new KeywordNameCollection::Concrete);
+        tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
         kk->insert(k);
         return env.accept_keywords(kk, e);
     }
-#endif
 }
 
 namespace test_cases
@@ -60,26 +65,25 @@ namespace test_cases
 
         void run()
         {
-#if 0
             PortageEnvironment env("portage_environment_TEST_dir/query_use");
 
-            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("repo"));
+            const tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-x-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            TEST_CHECK(env.query_use(UseFlagName("one"), x));
-            TEST_CHECK(env.query_use(UseFlagName("two"), x));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), x));
-            TEST_CHECK(! env.query_use(UseFlagName("four"), x));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), x));
+            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry d(QualifiedPackageName("app/one"), VersionSpec("1"),
-                    RepositoryName("repo"));
+            TEST_CHECK(env.query_use(UseFlagName("one"), *idx));
+            TEST_CHECK(env.query_use(UseFlagName("two"), *idx));
+            TEST_CHECK(! env.query_use(UseFlagName("three"), *idx));
+            TEST_CHECK(! env.query_use(UseFlagName("four"), *idx));
+            TEST_CHECK(! env.query_use(UseFlagName("five"), *idx));
 
-            TEST_CHECK(! env.query_use(UseFlagName("one"), d));
-            TEST_CHECK(env.query_use(UseFlagName("two"), d));
-            TEST_CHECK(! env.query_use(UseFlagName("three"), d));
-            TEST_CHECK(env.query_use(UseFlagName("four"), d));
-            TEST_CHECK(! env.query_use(UseFlagName("five"), d));
-#endif
+            TEST_CHECK(! env.query_use(UseFlagName("one"), *id1));
+            TEST_CHECK(env.query_use(UseFlagName("two"), *id1));
+            TEST_CHECK(! env.query_use(UseFlagName("three"), *id1));
+            TEST_CHECK(env.query_use(UseFlagName("four"), *id1));
+            TEST_CHECK(! env.query_use(UseFlagName("five"), *id1));
         }
     } test_query_use;
 
@@ -89,13 +93,12 @@ namespace test_cases
 
         void run()
         {
-#if 0
             PortageEnvironment env("portage_environment_TEST_dir/known_use_expand_names");
 
-            PackageDatabaseEntry pde1(QualifiedPackageName("app/one"), VersionSpec("1"), RepositoryName("foo"));
-            tr1::shared_ptr<const UseFlagNameCollection> k1(env.known_use_expand_names(UseFlagName("foo_cards"), pde1));
+            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            tr1::shared_ptr<const UseFlagNameSet> k1(env.known_use_expand_names(UseFlagName("foo_cards"), *id1));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three");
-#endif
         }
     } test_known_use_expand;
 
@@ -105,37 +108,39 @@ namespace test_cases
 
         void run()
         {
-#if 0
             TestPortageEnvironment env("portage_environment_TEST_dir/accept_keywords");
 
-            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("repo"));
+            const tr1::shared_ptr<const PackageID> idx(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-x-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), x));
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), x));
-            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), x));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *idx));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *idx));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *idx));
 
-            PackageDatabaseEntry d1(QualifiedPackageName("app/one"), VersionSpec("1"),
-                    RepositoryName("repo"));
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), d1));
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), d1));
-            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), d1));
+            const tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry d2(QualifiedPackageName("app/two"), VersionSpec("1"),
-                    RepositoryName("repo"));
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), d2));
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), d2));
-            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), d2));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id1));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id1));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id1));
 
-            PackageDatabaseEntry d3(QualifiedPackageName("app/three"), VersionSpec("1"),
-                    RepositoryName("repo"));
-            TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), d3));
-            TEST_CHECK(! accept_keyword(env, KeywordName("arch"), d3));
-            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), d3));
+            const tr1::shared_ptr<const PackageID> id2(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-two-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry d4(QualifiedPackageName("app/four"), VersionSpec("1"),
-                    RepositoryName("repo"));
-            TEST_CHECK(accept_keyword(env, KeywordName("fred"), d4));
-#endif
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id2));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id2));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id2));
+
+            const tr1::shared_ptr<const PackageID> id3(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-three-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+
+            TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), *id3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("arch"), *id3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *id3));
+
+            const tr1::shared_ptr<const PackageID> id4(*env.package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-four-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
         }
     } test_accept_keywords;
 }

@@ -4,7 +4,7 @@
 mkdir paludis_environment_TEST_dir || exit 2
 cd paludis_environment_TEST_dir || exit 3
 
-mkdir -p repo/{profile,profiles,cat-one/pkg-one}
+mkdir -p repo/{profile,profiles,cat-one/pkg-one,cat-one/pkg-two}
 cat <<END > repo/profiles/repo_name
 foo
 END
@@ -19,6 +19,8 @@ EXP="one"
 MORE_EXP="one"
 THIRD_EXP="one"
 END
+touch repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+touch repo/cat-one/pkg-two/pkg-two-3.ebuild || exit 4
 
 mkdir -p firstrepo/profiles
 cat <<END > firstrepo/profiles/repo_name
@@ -54,6 +56,7 @@ USE="foo_c"
 USE_EXPAND="FOO_CARDS"
 FOO_CARDS="four"
 END
+touch sixthrepo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
 
 mkdir -p home1/.paludis/repositories
 cat <<END > home1/.paludis/use.conf
@@ -172,7 +175,7 @@ END
 mkdir -p home5/.paludis/repositories
 cat <<END > home5/.paludis/use.conf
 */* foo FOO_CARDS: one
-cat/one FOO_CARDS: -two three
+cat-one/pkg-one FOO_CARDS: -two three
 END
 cat <<END > home5/.paludis/keywords.conf
 */* keyword

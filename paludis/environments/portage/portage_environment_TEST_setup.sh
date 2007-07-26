@@ -13,10 +13,16 @@ FOO_CARDS="four"
 USE="foo_c"
 END
 
-mkdir -p repo/profiles
+mkdir -p repo/{profiles,cat-one/pkg-{one,two,three,four,x}}
 cat <<"END" > repo/profiles/repo_name
 repo
 END
+echo cat-one > repo/profiles/categories
+touch repo/cat-one/pkg-one/pkg-one-1.ebuild || exit 4
+touch repo/cat-one/pkg-two/pkg-two-1.ebuild || exit 4
+touch repo/cat-one/pkg-three/pkg-three-1.ebuild || exit 4
+touch repo/cat-one/pkg-four/pkg-four-1.ebuild || exit 4
+touch repo/cat-one/pkg-x/pkg-x-1.ebuild || exit 4
 
 mkdir -p query_use/${SYSCONFDIR}/portage
 ln -s $(pwd )/profile query_use/${SYSCONFDIR}/make.profile
@@ -25,7 +31,7 @@ USE="one two -three"
 PORTDIR="`pwd`/repo"
 END
 cat <<"END" > query_use/${SYSCONFDIR}/portage/package.use
-app/one -one four
+cat-one/pkg-one -one four
 END
 
 mkdir -p accept_keywords/${SYSCONFDIR}/portage
@@ -36,10 +42,10 @@ PORTDIR="`pwd`/repo"
 ACCEPT_KEYWORDS="other_arch"
 END
 cat <<"END" > accept_keywords/${SYSCONFDIR}/portage/package.keywords
-app/one ~arch
-app/two
-app/three -*
-app/four **
+cat-one/pkg-one ~arch
+cat-one/pkg-two
+cat-one/pkg-three -*
+cat-one/pkg-four **
 END
 
 mkdir -p known_use_expand_names/${SYSCONFDIR}/portage
@@ -51,6 +57,6 @@ ACCEPT_KEYWORDS="other_arch"
 FOO_CARDS="one"
 END
 cat <<"END" > known_use_expand_names/${SYSCONFDIR}/portage/package.use
-app/one -foo_cards_two foo_cards_three
+cat-one/pkg-one -foo_cards_two foo_cards_three
 END
 

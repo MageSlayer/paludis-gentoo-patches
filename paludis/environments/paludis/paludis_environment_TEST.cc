@@ -20,6 +20,10 @@
 #include "paludis_environment.hh"
 #include "paludis_config.hh"
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
+#include <paludis/query.hh>
+#include <paludis/package_id.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -37,31 +41,27 @@ namespace test_cases
 
         void run()
         {
-#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), x));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), x));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("moo"), *one));
 
-            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), pde));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), pde));
-
-            PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), f));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
-#endif
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *three));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
         }
     } paludis_environment_use_test;
 
@@ -71,16 +71,15 @@ namespace test_cases
 
         void run()
         {
-#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            PackageDatabaseEntry pde1(QualifiedPackageName("cat/one"), VersionSpec("1"), RepositoryName("foo"));
-            tr1::shared_ptr<const UseFlagNameCollection> k1(env->known_use_expand_names(UseFlagName("foo_cards"), pde1));
+            const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            tr1::shared_ptr<const UseFlagNameSet> k1(env->known_use_expand_names(UseFlagName("foo_cards"), *one));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "foo_cards_one foo_cards_three foo_cards_two");
-#endif
         }
     } paludis_environment_use_test_known;
 
@@ -90,31 +89,28 @@ namespace test_cases
 
         void run()
         {
-#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), x));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), x));
+            const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("moo"), pde));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("moo"), *one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), pde));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
 
-            PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), f));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
-#endif
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), *three));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
         }
     } paludis_environment_use_test_minus_star;
 
@@ -124,31 +120,28 @@ namespace test_cases
 
         void run()
         {
-#if 0
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            PackageDatabaseEntry x(QualifiedPackageName("x/x"), VersionSpec("0"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), x));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), x));
+            const tr1::shared_ptr<const PackageID> one(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            const tr1::shared_ptr<const PackageID> three(*env->package_database()->query(
+                        query::Matches(PackageDepSpec("=cat-one/pkg-two-3", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), pde));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("moo"), *one));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), pde));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), pde));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), pde));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), *one));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), *one));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), *one));
 
-            PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), f));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), f));
-#endif
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), *three));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), *three));
         }
     } paludis_environment_use_test_minus_star_partial;
 
