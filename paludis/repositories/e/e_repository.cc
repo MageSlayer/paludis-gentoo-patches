@@ -67,7 +67,6 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 
-#include <paludis/digests/md5.hh>
 #include <paludis/digests/rmd160.hh>
 #include <paludis/digests/sha256.hh>
 
