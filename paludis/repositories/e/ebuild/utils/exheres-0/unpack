@@ -23,7 +23,9 @@
 
 die()
 {
-    echo "dounpack: error: $@" 1>&2
+    echo "unpack: error: $@" 1>&2
+    echo "unpack: making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
+    kill -s SIGUSR1 "${EBUILD_KILL_PID}"
     exit 123
 }
 
@@ -96,7 +98,7 @@ unpack_one()
 
 }
 
-export UNPACKFROMDIR="${DISTDIR}"
+export UNPACKFROMDIR="${FETCHEDDIR}"
 export UNPACKTODIR="${PWD}"
 
 if [[ "${1}" == "--binary" ]] ; then

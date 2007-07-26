@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,12 +17,13 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-COLOUR_RED=$'\e[31;01m'
-COLOUR_NORMAL=$'\e[0m'
+echo ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
+${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+ret=$?
+if [[ 0 != $ret ]] ; then
+    echo "emake returned error $ret" 1>&2
+    echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
+    kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+fi
 
-echo "${COLOUR_RED}!!! Ebuild bug: '$(basename ${0} )' banned in EAPI exheres-0${COLOUR_NORMAL}"
-echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
-kill -s SIGUSR1 "${EBUILD_KILL_PID}"
-
-exit 123
-
+exit $ret

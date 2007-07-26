@@ -20,12 +20,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-EBUILD_KILL_PID=$$
+export EBUILD_KILL_PID=$$
 declare -r EBUILD_KILL_PID
 
 alias die='diefunc "$FUNCNAME" "$LINENO"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' 15
+trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' SIGUSR1
 
 diefunc()
 {
@@ -51,7 +51,8 @@ diefunc()
         echo 1>&2
     fi
 
-    kill ${EBUILD_KILL_PID}
+    echo "diefunc: making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
+    kill -s SIGUSR1 "${EBUILD_KILL_PID}"
     exit 249
 }
 

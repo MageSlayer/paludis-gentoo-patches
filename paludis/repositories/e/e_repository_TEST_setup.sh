@@ -437,5 +437,171 @@ DEPENDENCIES=""
 END
 cd ..
 
+mkdir -p repo13/{profiles/profile,metadata,eclass} || exit 1
+cd repo13 || exit 1
+echo "test-repo-13" >> profiles/repo_name || exit 1
+echo "cat" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH="test"
+USERLAND="GNU"
+KERNEL="linux"
+LIBC="glibc"
+CHOST="i286-badger-linux-gnu"
+PALUDIS_COMMAND="/bin/false"
+END
+mkdir -p "cat/in-ebuild-die"
+cat <<END > cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    die "boom"
+}
+END
+mkdir -p "cat/in-subshell-die"
+cat <<END > cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    ( hasq test \$KEYWORDS && die "boom" )
+}
+END
+mkdir -p "cat/success"
+cat <<END > cat/success/success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    useq spork && die "boom"
+}
+END
+mkdir -p "cat/unpack-die"
+cat <<END > cat/unpack-die/unpack-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    echo "123" > f.bz2
+    unpack ./f.bz2
+}
+END
+mkdir -p "cat/emake-fail"
+cat <<END > cat/emake-fail/emake-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_compile() {
+    emake monkey
+}
+END
+cd ..
+
+mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
+cd repo14 || exit 1
+echo "test-repo-14" >> profiles/repo_name || exit 1
+echo "cat" >> metadata/categories.conf || exit 1
+cat <<END > profiles/profile/make.defaults
+CHOST="i286-badger-linux-gnu"
+PALUDIS_COMMAND="/bin/false"
+END
+mkdir -p "packages/cat/in-ebuild-die"
+cat <<END > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    die "boom"
+}
+END
+mkdir -p "packages/cat/in-subshell-die"
+cat <<END > packages/cat/in-subshell-die/in-subshell-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS=""
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    ( hasq test \$PLATFORMS && die "boom" )
+}
+END
+mkdir -p "packages/cat/success"
+cat <<END > packages/cat/success/success-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+pkg_setup() {
+    optionq spork && die "boom"
+}
+END
+mkdir -p "packages/cat/unpack-die"
+cat <<END > packages/cat/unpack-die/unpack-die-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_unpack() {
+    echo "123" > f.bz2
+    unpack ./f.bz2
+}
+END
+mkdir -p "packages/cat/emake-fail"
+cat <<END > packages/cat/emake-fail/emake-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENSE="GPL-2"
+PLATFORMS="test"
+
+src_compile() {
+    emake monkey
+}
+END
+cd ..
+
 cd ..
 

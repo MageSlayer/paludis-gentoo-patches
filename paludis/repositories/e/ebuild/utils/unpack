@@ -24,6 +24,7 @@
 die()
 {
     echo "dounpack: error: $@" 1>&2
+    kill -s SIGUSR1 "${EBUILD_KILL_PID}"
     exit 123
 }
 
@@ -96,7 +97,7 @@ unpack_one()
 
 }
 
-export UNPACKFROMDIR="${FETCHEDDIR}"
+export UNPACKFROMDIR="${DISTDIR}"
 export UNPACKTODIR="${PWD}"
 
 if [[ "${1}" == "--binary" ]] ; then

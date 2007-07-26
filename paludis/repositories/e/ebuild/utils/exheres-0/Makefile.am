@@ -4,6 +4,7 @@ SUBDIRS = .
 libexecprogdir = $(libexecdir)/paludis/utils/exheres-0
 
 libexecprog_SCRIPTS = \
+	dodoc \
 	dohard \
 	dosed \
 	donewins \
@@ -16,7 +17,8 @@ libexecprog_SCRIPTS = \
 	prepinfo \
 	prepdocs \
 	prepalldocs \
-	dounpack \
+	unpack \
+	emake \
 	banned_in_eapi_exheres-0
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@

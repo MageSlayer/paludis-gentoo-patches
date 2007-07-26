@@ -25,7 +25,6 @@ libexecprog_SCRIPTS = \
 	dosbin \
 	dosed \
 	dosym \
-	dounpack \
 	emake \
 	fowners \
 	fperms \
@@ -50,7 +49,8 @@ libexecprog_SCRIPTS = \
 	prepallinfo \
 	prepinfo \
 	prepdocs \
-	prepalldocs
+	prepalldocs \
+	unpack
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 

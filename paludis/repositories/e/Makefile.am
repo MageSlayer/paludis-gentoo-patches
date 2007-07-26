@@ -143,6 +143,7 @@ e_repository_TEST_SOURCES = e_repository_TEST.cc
 
 e_repository_TEST_LDADD = \
 	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
