@@ -97,6 +97,8 @@ namespace paludis
         mutable tr1::shared_ptr<const EKeywordsKey> keywords;
         mutable tr1::shared_ptr<const EIUseKey> iuse;
         mutable tr1::shared_ptr<const EInheritedKey> inherited;
+        mutable tr1::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
+        mutable tr1::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
@@ -259,6 +261,13 @@ EbuildID::need_keys_added() const
         if (_imp->license)
             IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&ELicenseKey::idle_load), _imp->license));
     }
+
+    _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
+        tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
+    add_metadata_key(_imp->repository_mask);
+    _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
+        tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
+    add_metadata_key(_imp->profile_mask);
 }
 
 namespace
@@ -354,12 +363,12 @@ EbuildID::need_masks_added() const
     if (! _imp->environment->unmasked_by_user(*this))
     {
         /* repo unless user */
-        if (tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this))
-            add_mask(make_shared_ptr(new ERepositoryMask('R', "repository")));
+        if (_imp->repository_mask->value())
+            add_mask(make_shared_ptr(new ERepositoryMask('R', "repository", _imp->repository_mask)));
 
         /* profile unless user */
-        if (tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this))
-            add_mask(make_shared_ptr(new ERepositoryMask('P', "profile")));
+        if (_imp->profile_mask->value())
+            add_mask(make_shared_ptr(new ERepositoryMask('P', "profile", _imp->profile_mask)));
 
         /* user */
         tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this));
@@ -383,6 +392,8 @@ EbuildID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
+    _imp->repository_mask->set_value(tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this));
+    _imp->profile_mask->set_value(tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this));
 }
 
 const std::string

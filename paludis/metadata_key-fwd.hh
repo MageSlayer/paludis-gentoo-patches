@@ -32,6 +32,7 @@ namespace paludis
     class MetadataStringKey;
     class MetadataContentsKey;
     class MetadataTimeKey;
+    class MetadataRepositoryMaskInfoKey;
     template <typename C_> class MetadataSetKey;
     template <typename C_> class MetadataSpecTreeKey;
 

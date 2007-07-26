@@ -45,6 +45,23 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
+        class EMutableRepositoryMaskInfoKey :
+            public MetadataRepositoryMaskInfoKey
+        {
+            private:
+                tr1::shared_ptr<const RepositoryMaskInfo> _value;
+
+            public:
+                EMutableRepositoryMaskInfoKey(const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, tr1::shared_ptr<const RepositoryMaskInfo>, const MetadataKeyType);
+                ~EMutableRepositoryMaskInfoKey();
+
+                virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                void set_value(tr1::shared_ptr<const RepositoryMaskInfo>);
+        };
+
         class EDependenciesKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
             private PrivateImplementationPattern<EDependenciesKey>

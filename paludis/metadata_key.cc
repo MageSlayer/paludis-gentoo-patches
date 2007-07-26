@@ -92,6 +92,11 @@ MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::str
 {
 }
 
+MetadataRepositoryMaskInfoKey::MetadataRepositoryMaskInfoKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
 template <typename C_>
 MetadataSetKey<C_>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)

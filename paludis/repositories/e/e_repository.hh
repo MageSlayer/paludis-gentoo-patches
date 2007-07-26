@@ -22,6 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
+#include <paludis/mask-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
@@ -231,7 +232,7 @@ namespace paludis
             const tr1::shared_ptr<const erepository::ERepositoryEntries> entries() const;
             const tr1::shared_ptr<const ERepositoryProfile> profile() const;
 
-            bool repository_masked(const PackageID &) const;
+            tr1::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
 
             void regenerate_cache() const;
     };

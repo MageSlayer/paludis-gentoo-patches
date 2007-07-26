@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/mask-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
@@ -54,7 +55,7 @@ namespace paludis
             ///\name Iterate over our profile lines.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<ProfileFile, const std::string> Iterator;
+            typedef libwrapiter::ForwardIterator<ProfileFile, const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > Iterator;
             Iterator begin() const;
             Iterator end() const;
 

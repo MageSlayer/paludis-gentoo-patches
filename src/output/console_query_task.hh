@@ -54,6 +54,7 @@ namespace paludis
                     const std::string &) const;
             virtual void display_metadata_pde(const std::string &, const std::string &, const PackageID &) const;
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
+            virtual void display_metadata_repository_mask_info(const std::string &, const std::string &, tr1::shared_ptr<const RepositoryMaskInfo>) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,
                     const tr1::shared_ptr<const PackageID> & id,
                     const tr1::shared_ptr<const IUseFlagSet> &) const;

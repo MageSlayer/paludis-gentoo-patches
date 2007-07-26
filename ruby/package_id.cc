@@ -80,6 +80,11 @@ namespace
                         new tr1::shared_ptr<const MetadataContentsKey>(tr1::static_pointer_cast<const MetadataContentsKey>(mm)));
             }
 
+            void visit(const MetadataRepositoryMaskInfoKey &)
+            {
+                value = Qnil;
+            }
+
             void visit(const MetadataSetKey<KeywordNameSet> &)
             {
                 value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > >::free,

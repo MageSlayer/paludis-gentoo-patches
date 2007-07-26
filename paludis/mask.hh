@@ -25,10 +25,14 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/fs_entry.hh>
 #include <string>
 
 namespace paludis
 {
+
+#include <paludis/mask-sr.hh>
+
     struct MaskVisitorTypes :
         VisitorTypes<
             MaskVisitorTypes,
@@ -70,6 +74,8 @@ namespace paludis
         public Mask,
         public ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, RepositoryMask>
     {
+        public:
+            virtual const tr1::shared_ptr<const MetadataKey> mask_key() const = 0;
     };
 
     class PALUDIS_VISIBLE UnsupportedMask :

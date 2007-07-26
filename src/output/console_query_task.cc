@@ -323,6 +323,12 @@ namespace
                     task->display_metadata_time(k.human_name(), k.raw_name(), k.value());
             }
 
+            void visit(const MetadataRepositoryMaskInfoKey & k)
+            {
+                if (k.type() == type)
+                    task->display_metadata_repository_mask_info(k.human_name(), k.raw_name(), k.value());
+            }
+
             void visit(const MetadataContentsKey &)
             {
             }
@@ -453,6 +459,24 @@ ConsoleQueryTask::display_metadata_time(const std::string & k, const std::string
             output_right_column(stringify(buf));
         }
     }
+}
+
+void
+ConsoleQueryTask::display_metadata_repository_mask_info(const std::string & k, const std::string & kk,
+        tr1::shared_ptr<const RepositoryMaskInfo> i) const
+{
+    if (! i)
+        return;
+
+    if (want_raw())
+    {
+        output_left_column(kk + ":");
+    }
+    else
+    {
+        output_left_column(k + ":");
+    }
+    output_right_column(stringify(i->mask_file));
 }
 
 void

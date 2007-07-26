@@ -91,6 +91,11 @@ struct MetadataKeyToPython :
         value = bp::object(bp::ptr(&k));
     }
 
+    void visit(const MetadataRepositoryMaskInfoKey & k)
+    {
+        value = bp::object();
+    }
+
     void visit(const MetadataSetKey<KeywordNameSet> & k)
     {
         value = bp::object(bp::ptr(&k));

@@ -61,6 +61,10 @@ namespace
         {
         }
 
+        void visit(const MetadataRepositoryMaskInfoKey &)
+        {
+        }
+
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
         {
         }
@@ -173,6 +177,10 @@ namespace
         }
 
         void visit(const MetadataStringKey &)
+        {
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey &)
         {
         }
 
@@ -313,6 +321,10 @@ namespace
         }
 
         void visit(const MetadataStringKey &)
+        {
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey &)
         {
         }
 

@@ -22,6 +22,8 @@
 
 using namespace paludis;
 
+#include <paludis/mask-sr.cc>
+
 template class ConstAcceptInterface<MaskVisitorTypes>;
 template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UserMask>;
 template class ConstAcceptInterfaceVisitsThis<MaskVisitorTypes, UnacceptedMask>;

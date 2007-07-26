@@ -24,6 +24,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/mask-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -103,7 +104,7 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            bool profile_masked(const PackageID &) const;
+            tr1::shared_ptr<const RepositoryMaskInfo> profile_masked(const PackageID &) const;
 
             ///\}
 

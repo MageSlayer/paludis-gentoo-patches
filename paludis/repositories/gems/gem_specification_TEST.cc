@@ -91,6 +91,10 @@ namespace
         void visit(const MetadataTimeKey &)
         {
         }
+
+        void visit(const MetadataRepositoryMaskInfoKey &)
+        {
+        }
     };
 }
 

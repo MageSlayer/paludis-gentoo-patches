@@ -63,6 +63,29 @@ EStringKey::value() const
     return _value;
 }
 
+EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const tr1::shared_ptr<const ERepositoryID> &,
+        const std::string & r, const std::string & h, tr1::shared_ptr<const RepositoryMaskInfo> v, const MetadataKeyType t) :
+    MetadataRepositoryMaskInfoKey(r, h, t),
+    _value(v)
+{
+}
+
+EMutableRepositoryMaskInfoKey::~EMutableRepositoryMaskInfoKey()
+{
+}
+
+const tr1::shared_ptr<const RepositoryMaskInfo>
+EMutableRepositoryMaskInfoKey::value() const
+{
+    return _value;
+}
+
+void
+EMutableRepositoryMaskInfoKey::set_value(tr1::shared_ptr<const RepositoryMaskInfo> v)
+{
+    _value = v;
+}
+
 namespace paludis
 {
     template <>

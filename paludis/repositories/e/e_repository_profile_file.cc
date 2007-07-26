@@ -23,9 +23,10 @@
 #include <paludis/config_file.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/mask.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
-#include <list>
+#include <map>
 #include <algorithm>
 
 using namespace paludis;
@@ -35,7 +36,7 @@ namespace paludis
     template <>
     struct Implementation<ProfileFile>
     {
-        std::list<std::string> lines;
+        std::multimap<std::string, tr1::shared_ptr<const RepositoryMaskInfo> > lines;
     };
 }
 
@@ -52,18 +53,12 @@ ProfileFile::add_file(const FSEntry & f)
     {
         if (0 == line->compare(0, 1, "-", 0, 1))
         {
-            std::list<std::string>::iterator i(std::find(_imp->lines.begin(), _imp->lines.end(), line->substr(1)));
-            if (_imp->lines.end() == i)
+            int erased(_imp->lines.erase(line->substr(1)));
+            if (0 == erased)
                 Log::get_instance()->message(ll_qa, lc_context, "No match for '" + *line + "'");
-            else
-                while (_imp->lines.end() != i)
-                {
-                    _imp->lines.erase(i++);
-                    i = std::find(i, _imp->lines.end(), line->substr(1));
-                }
         }
         else
-            _imp->lines.push_back(*line);
+            _imp->lines.insert(std::make_pair(*line, tr1::shared_ptr<const RepositoryMaskInfo>(new RepositoryMaskInfo(f))));
     }
 }
 

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_METADATA_KEY_HH 1
 
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/mask-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -50,7 +51,8 @@ namespace paludis
             MetadataSpecTreeKey<RestrictSpecTree>,
             MetadataStringKey,
             MetadataContentsKey,
-            MetadataTimeKey
+            MetadataTimeKey,
+            MetadataRepositoryMaskInfoKey
             >
     {
     };
@@ -116,6 +118,18 @@ namespace paludis
 
         public:
             virtual const tr1::shared_ptr<const Contents> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    class PALUDIS_VISIBLE MetadataRepositoryMaskInfoKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataRepositoryMaskInfoKey>
+    {
+        protected:
+            MetadataRepositoryMaskInfoKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

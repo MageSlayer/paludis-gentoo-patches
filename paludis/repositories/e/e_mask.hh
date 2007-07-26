@@ -58,11 +58,12 @@ namespace paludis
             private PrivateImplementationPattern<ERepositoryMask>
         {
             public:
-                ERepositoryMask(const char, const std::string &);
+                ERepositoryMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
                 ~ERepositoryMask();
 
                 const char key() const;
                 const std::string description() const;
+                const tr1::shared_ptr<const MetadataKey> mask_key() const;
         };
     }
 }

@@ -48,6 +48,7 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/action.hh>
+#include <paludis/mask.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
@@ -92,7 +93,7 @@
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName, std::list<tr1::shared_ptr<const PackageDepSpec> > >::Type RepositoryMaskMap;
+typedef MakeHashedMap<QualifiedPackageName, std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type RepositoryMaskMap;
 typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
@@ -372,7 +373,7 @@ ERepository::do_package_ids(const QualifiedPackageName & n) const
     return _imp->layout->package_ids(n);
 }
 
-bool
+tr1::shared_ptr<const RepositoryMaskInfo>
 ERepository::repository_masked(const PackageID & id) const
 {
     Lock l(_imp->mutexes->repo_mask_mutex);
@@ -397,7 +398,7 @@ ERepository::repository_masked(const PackageID & id) const
                     {
                         tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
                         if (a->package_ptr())
-                            _imp->repo_mask[*a->package_ptr()].push_back(a);
+                            _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, tr1::shared_ptr<const RepositoryMaskInfo>(new RepositoryMaskInfo(*p))));
                         else
                             Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
                                     + stringify(*line) + "' failed because specification does not restrict to a "
@@ -418,14 +419,14 @@ ERepository::repository_masked(const PackageID & id) const
 
     RepositoryMaskMap::iterator r(_imp->repo_mask.find(id.name()));
     if (_imp->repo_mask.end() == r)
-        return false;
+        return tr1::shared_ptr<const RepositoryMaskInfo>();
     else
-        for (IndirectIterator<std::list<tr1::shared_ptr<const PackageDepSpec> >::const_iterator, const PackageDepSpec>
+        for (std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment, *k, id))
-                return true;
+            if (match_package(*_imp->params.environment, *k->first, id))
+                return k->second;
 
-    return false;
+    return tr1::shared_ptr<const RepositoryMaskInfo>();
 }
 
 UseFlagState

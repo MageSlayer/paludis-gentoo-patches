@@ -122,17 +122,19 @@ namespace paludis
     {
         const char key;
         const std::string description;
+        const tr1::shared_ptr<const MetadataKey> mask_key;
 
-        Implementation(const char k, const std::string & d) :
+        Implementation(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & m) :
             key(k),
-            description(d)
+            description(d),
+            mask_key(m)
         {
         }
     };
 }
 
-ERepositoryMask::ERepositoryMask(const char k, const std::string & d) :
-    PrivateImplementationPattern<ERepositoryMask>(new Implementation<ERepositoryMask>(k, d))
+ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const tr1::shared_ptr<const MetadataKey> & m) :
+    PrivateImplementationPattern<ERepositoryMask>(new Implementation<ERepositoryMask>(k, d, m))
 {
 }
 
@@ -150,5 +152,11 @@ const std::string
 ERepositoryMask::description() const
 {
     return _imp->description;
+}
+
+const tr1::shared_ptr<const MetadataKey>
+ERepositoryMask::mask_key() const
+{
+    return _imp->mask_key;
 }
 
