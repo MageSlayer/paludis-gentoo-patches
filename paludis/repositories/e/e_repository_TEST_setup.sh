@@ -4,6 +4,8 @@
 mkdir e_repository_TEST_dir || exit 1
 cd e_repository_TEST_dir || exit 1
 
+mkdir -p build
+
 mkdir -p distdir
 echo "already fetched" > distdir/already-fetched.txt || exit 1
 
