@@ -490,6 +490,11 @@ namespace test_cases
     {
         ERepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
 
+        unsigned max_run_time() const
+        {
+            return 300;
+        }
+
         void run()
         {
             for (int opass = 1 ; opass <= 3 ; ++opass)
@@ -549,6 +554,11 @@ namespace test_cases
     {
         ERepositoryMetadataStaleTest() : TestCase("metadata stale") { }
 
+        unsigned max_run_time() const
+        {
+            return 300;
+        }
+
         void run()
         {
             for (int opass = 1 ; opass <= 3 ; ++opass)
@@ -592,6 +602,11 @@ namespace test_cases
         bool skip() const
         {
             return ! getenv_with_default("SANDBOX_ON", "").empty();
+        }
+
+        unsigned max_run_time() const
+        {
+            return 300;
         }
 
         void run()
@@ -769,6 +784,11 @@ namespace test_cases
     {
         ERepositoryFetchTest() : TestCase("fetch") { }
 
+        unsigned max_run_time() const
+        {
+            return 300;
+        }
+
         void run()
         {
             TestEnvironment env;
@@ -870,6 +890,11 @@ namespace test_cases
     {
         ERepositoryInstallEAPI0Test() : TestCase("install_eapi_0") { }
 
+        unsigned max_run_time() const
+        {
+            return 300;
+        }
+
         void run()
         {
             TestEnvironment env;
@@ -942,6 +967,11 @@ namespace test_cases
     struct ERepositoryInstallExheres0Test : TestCase
     {
         ERepositoryInstallExheres0Test() : TestCase("install_exheres_0") { }
+
+        unsigned max_run_time() const
+        {
+            return 300;
+        }
 
         void run()
         {
