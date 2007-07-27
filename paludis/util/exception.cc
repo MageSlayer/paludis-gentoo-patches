@@ -156,7 +156,7 @@ Exception::what() const throw ()
     {
         int status(0);
         char * const name(abi::__cxa_demangle(
-                    ("_Z" + stringify(std::exception::what())).c_str(), 0, 0, &status));
+                    (std::string("_Z") + typeid(*this).name()).c_str(), 0, 0, &status));
 
         if (0 == status)
         {
