@@ -23,6 +23,7 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <cstring>
+#include <iostream>
 #include <errno.h>
 #include <sys/utsname.h>
 #include <sys/types.h>
@@ -71,76 +72,87 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
 {
     Context context("When running command '" + stringify(cmd.command()) + "' asynchronously:");
 
+    std::string extras;
+
+    if (! cmd.chdir().empty())
+        extras.append(" [chdir " + cmd.chdir() + "]");
+
+    for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+        extras.append(" [setenv " + s->first + "=" + s->second + "]");
+
+    if (cmd.gid() && *cmd.gid() != getgid())
+        extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+
+    if (cmd.uid() && *cmd.uid() != getuid())
+        extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+
+    std::string c(cmd.command());
+
+    if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
+        c = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
+            + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
+            + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
+            + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
+            + " -- " + c;
+
+    cmd.echo_to_stderr();
+    Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c + " " + extras);
+
     if (0 == child)
     {
-        std::string extras;
-
-        if (! cmd.chdir().empty())
+        try
         {
-            if (-1 == chdir(cmd.chdir().c_str()))
-                throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
-            extras.append(" [chdir " + cmd.chdir() + "]");
-        }
+            if (! cmd.chdir().empty())
+                if (-1 == chdir(cmd.chdir().c_str()))
+                    throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
 
-        for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
-        {
-            setenv(s->first.c_str(), s->second.c_str(), 1);
-            extras.append(" [setenv " + s->first + "=" + s->second + "]");
-        }
+            for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+                setenv(s->first.c_str(), s->second.c_str(), 1);
 
-        if (-1 == dup2(stdout_pipe.write_fd(), 1))
-            throw PStreamError("dup2 failed");
-        close(stdout_pipe.read_fd());
-
-        if (-1 != PStream::stderr_fd)
-        {
-            Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
-                    stringify(PStream::stderr_fd) + " 2");
-
-            if (-1 == dup2(PStream::stderr_fd, 2))
+            if (-1 == dup2(stdout_pipe.write_fd(), 1))
                 throw PStreamError("dup2 failed");
+            close(stdout_pipe.read_fd());
 
-            if (-1 != PStream::stderr_close_fd)
+            if (-1 != PStream::stderr_fd)
+            {
+                if (-1 == dup2(PStream::stderr_fd, 2))
+                    throw PStreamError("dup2 failed");
+
+                if (-1 != PStream::stderr_close_fd)
                     close(PStream::stderr_close_fd);
-        }
+            }
 
-        if (cmd.gid() && *cmd.gid() != getgid())
+            if (cmd.gid() && *cmd.gid() != getgid())
+            {
+                gid_t g(*cmd.gid());
+
+                if (0 != ::setgid(*cmd.gid()))
+                    std::cerr << "setgid(" << *cmd.gid() << ") failed for exec of '" << c << "': "
+                        << strerror(errno) << std::endl;
+                else if (0 != ::setgroups(1, &g))
+                    std::cerr << "setgroups failed for exec of '" << c << "': " << strerror(errno) << std::endl;
+            }
+
+            if (cmd.uid() && *cmd.uid() != getuid())
+                if (0 != ::setuid(*cmd.uid()))
+                    std::cerr << "setuid(" << *cmd.uid() << ") failed for exec of '" << c << "': "
+                        << strerror(errno) << std::endl;
+
+            execl("/bin/sh", "sh", "-c", c.c_str(), static_cast<char *>(0));
+            throw PStreamError("execl /bin/sh -c '" + c + "' failed:"
+                    + stringify(strerror(errno)));
+        }
+        catch (const Exception & e)
         {
-            gid_t g(*cmd.gid());
-
-            if (0 != ::setgid(*cmd.gid()))
-                Log::get_instance()->message(ll_warning, lc_context, "setgid("
-                        + stringify(*cmd.gid()) + ") failed: " + stringify(strerror(errno)));
-            else if (0 != ::setgroups(1, &g))
-                Log::get_instance()->message(ll_warning, lc_context, "setgroups failed: "
-                        + stringify(strerror(errno)));
-
-            extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+            std::cerr << "exec of '" << c << "' failed due to exception '" << e.message()
+                << "' (" << e.what() << ")" << std::endl;
+            exit(123);
         }
-
-        if (cmd.uid() && *cmd.uid() != getuid())
+        catch (...)
         {
-            if (0 != ::setuid(*cmd.uid()))
-                Log::get_instance()->message(ll_warning, lc_context, "setuid("
-                        + stringify(*cmd.uid()) + ") failed: " + stringify(strerror(errno)));
-            extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+            std::cerr << "exec of '" << c << "' failed due to unknown exception" << std::endl;
+            exit(124);
         }
-
-        std::string c(cmd.command());
-
-        if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
-            c = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
-                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
-                + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
-                + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
-                + " -- " + c;
-
-        cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c
-                + " " + extras);
-        execl("/bin/sh", "sh", "-c", c.c_str(), static_cast<char *>(0));
-        throw PStreamError("execl /bin/sh -c '" + c + "' failed:"
-                + stringify(strerror(errno)));
     }
     else if (-1 == child)
         throw PStreamError("fork failed: " + stringify(strerror(errno)));

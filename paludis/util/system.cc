@@ -272,79 +272,94 @@ paludis::run_command(const Command & cmd)
 {
     Context context("When running command '" + stringify(cmd.command()) + "':");
 
+    std::string extras;
+
+    if (! cmd.chdir().empty())
+        extras.append(" [chdir " + cmd.chdir() + "]");
+
+    for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+        extras.append(" [setenv " + s->first + "=" + s->second + "]");
+
+    if (cmd.gid() && *cmd.gid() != getgid())
+        extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+
+    if (cmd.uid() && *cmd.uid() != getuid())
+        extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+
+    std::string command(cmd.command());
+
+    if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
+        command = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
+            + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
+            + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
+            + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
+            + " -- " + command;
+
+    cmd.echo_to_stderr();
+    Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + command
+            + " " + extras);
+
     pid_t child(fork());
     if (0 == child)
     {
-        std::string extras;
-
-        if (! cmd.chdir().empty())
+        try
         {
-            if (-1 == chdir(stringify(cmd.chdir()).c_str()))
-                throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
-            extras.append(" [chdir " + cmd.chdir() + "]");
-        }
+            if (! cmd.chdir().empty())
+                if (-1 == chdir(stringify(cmd.chdir()).c_str()))
+                    throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
 
-        for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+                setenv(s->first.c_str(), s->second.c_str(), 1);
+
+            if (-1 != stdout_write_fd)
+            {
+                if (-1 == dup2(stdout_write_fd, 1))
+                    throw RunCommandError("dup2 failed");
+
+                if (-1 != stdout_close_fd)
+                    close(stdout_close_fd);
+            }
+
+            if (-1 != stderr_write_fd)
+            {
+                if (-1 == dup2(stderr_write_fd, 2))
+                    throw RunCommandError("dup2 failed");
+
+                if (-1 != stderr_close_fd)
+                    close(stderr_close_fd);
+            }
+
+            if (cmd.gid() && *cmd.gid() != getgid())
+            {
+                gid_t g(*cmd.gid());
+
+                if (0 != ::setgid(*cmd.gid()))
+                    std::cerr << "setgid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
+                        << strerror(errno) << std::endl;
+                else if (0 != ::setgroups(1, &g))
+                    std::cerr << "setgroups failed for exec of '" << command << "': " << strerror(errno) << std::endl;
+            }
+
+            if (cmd.uid() && *cmd.uid() != getuid())
+                if (0 != ::setuid(*cmd.uid()))
+                    std::cerr << "setuid(" << *cmd.uid() << ") failed for exec of '" << command << "': "
+                        << strerror(errno) << std::endl;
+
+            execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char *>(0));
+            throw RunCommandError("execl /bin/sh -c '" + command + "' failed:"
+                    + stringify(strerror(errno)));
+        }
+        catch (const Exception & e)
         {
-            setenv(s->first.c_str(), s->second.c_str(), 1);
-            extras.append(" [setenv " + s->first + "=" + s->second + "]");
+            std::cerr << "exec of '" << command << "' failed due to exception '" << e.message()
+                << "' (" << e.what() << ")" << std::endl;
+            exit(123);
         }
-
-        if (-1 != stdout_write_fd)
+        catch (...)
         {
-            if (-1 == dup2(stdout_write_fd, 1))
-                throw RunCommandError("dup2 failed");
-
-            if (-1 != stdout_close_fd)
-                close(stdout_close_fd);
+            std::cerr << "exec of '" << command << "' failed due to unknown exception" << std::endl;
+            exit(124);
         }
-
-        if (-1 != stderr_write_fd)
-        {
-            if (-1 == dup2(stderr_write_fd, 2))
-                throw RunCommandError("dup2 failed");
-
-            if (-1 != stderr_close_fd)
-                close(stderr_close_fd);
-        }
-
-        if (cmd.gid() && *cmd.gid() != getgid())
-        {
-            gid_t g(*cmd.gid());
-
-            if (0 != ::setgid(*cmd.gid()))
-                Log::get_instance()->message(ll_warning, lc_context, "setgid("
-                        + stringify(*cmd.gid()) + ") failed: " + stringify(strerror(errno)));
-            else if (0 != ::setgroups(1, &g))
-                Log::get_instance()->message(ll_warning, lc_context, "setgroups failed: "
-                        + stringify(strerror(errno)));
-
-            extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
-        }
-
-        if (cmd.uid() && *cmd.uid() != getuid())
-        {
-            if (0 != ::setuid(*cmd.uid()))
-                Log::get_instance()->message(ll_warning, lc_context, "setuid("
-                        + stringify(*cmd.uid()) + ") failed: " + stringify(strerror(errno)));
-            extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
-        }
-
-        std::string command(cmd.command());
-
-        if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
-            command = getenv_with_default("PALUDIS_OUTPUTWRAPPER_DIR", LIBEXECDIR "/paludis/utils") + "/outputwrapper --stdout-prefix '"
-                + cmd.stdout_prefix() + "' --stderr-prefix '" + cmd.stderr_prefix() + "' "
-                + (cmd.prefix_discard_blank_output() ? " --discard-blank-output " : "")
-                + (cmd.prefix_blank_lines() ? " --wrap-blanks " : "")
-                + " -- " + command;
-
-        cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + command
-                + " " + extras);
-        execl("/bin/sh", "sh", "-c", command.c_str(), static_cast<char *>(0));
-        throw RunCommandError("execl /bin/sh -c '" + command + "' failed:"
-                + stringify(strerror(errno)));
     }
     else if (-1 == child)
         throw RunCommandError("fork failed: " + stringify(strerror(errno)));

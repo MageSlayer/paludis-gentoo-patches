@@ -20,8 +20,15 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+
+#ifdef PALUDIS_ENABLE_THREADS
+#  include <sched.h>
+#endif
 
 /** \file
  * Test cases for system.hh .
@@ -30,6 +37,32 @@
 
 using namespace test;
 using namespace paludis;
+
+namespace
+{
+    void repeatedly_log(bool & b)
+    {
+#ifdef PALUDIS_ENABLE_THREADS
+        while (! b)
+            sched_yield();
+#endif
+
+        for (int i(0) ; i < 1000 ; ++i)
+            Log::get_instance()->message(ll_debug, lc_context) << "logging stuff";
+    }
+
+    void repeatedly_run_command(bool & b)
+    {
+#ifdef PALUDIS_ENABLE_THREADS
+        while (! b)
+            sched_yield();
+#endif
+
+        for (int i(0) ; i < 100 ; ++i)
+            if (0 != run_command("/bin/true"))
+                throw InternalError(PALUDIS_HERE, "true isn't");
+    }
+}
 
 namespace test_cases
 {
@@ -103,6 +136,20 @@ namespace test_cases
             TEST_CHECK_EQUAL(77, run_command("exit 77"));
         }
     } test_run_command;
+
+    struct RunCommandMutexTest : TestCase
+    {
+        RunCommandMutexTest() : TestCase("run_command mutex") { }
+
+        void run()
+        {
+            ThreadPool pool;
+            bool b(false);
+            pool.create_thread(tr1::bind(&repeatedly_run_command, tr1::ref(b)));
+            pool.create_thread(tr1::bind(&repeatedly_log, tr1::ref(b)));
+            b = true;
+        }
+    } test_run_command_mutex;
 
     /**
      * \test Test run_command_in_directory.
