@@ -119,15 +119,8 @@ struct RepositoryWrapper :
     }
 };
 
-struct FakeRepositoryWrapper :
-    FakeRepository,
-    bp::wrapper<FakeRepository>
+struct FakeRepositoryWrapper
 {
-    FakeRepositoryWrapper(const Environment * const env, const RepositoryName & name) :
-        FakeRepository(env, name)
-    {
-    }
-
     static tr1::shared_ptr<PackageID>
     add_version(FakeRepository & self, const QualifiedPackageName & qpn, const VersionSpec & vs)
     {
@@ -186,25 +179,6 @@ struct RepositoryEInterfaceWrapper
 
 void PALUDIS_VISIBLE expose_repository()
 {
-    /**
-     * Exceptions
-     */
-    ExceptionRegister::get_instance()->add_exception<ActionError>
-        ("ActionError", "BaseException",
-         "Parent class for install, uninstall errors.");
-    ExceptionRegister::get_instance()->add_exception<InstallActionError>
-        ("InstallActionError", "ActionError",
-         "Thrown if an install fails.");
-    ExceptionRegister::get_instance()->add_exception<FetchActionError>
-        ("FetchActionError", "ActionError",
-         "Thrown if a fetch fails.");
-    ExceptionRegister::get_instance()->add_exception<UninstallActionError>
-        ("UninstallActionError", "ActionError",
-         "Thrown if an uninstall fails.");
-    ExceptionRegister::get_instance()->add_exception<ConfigActionError>
-        ("ConfigActionError", "ActionError",
-         "Thrown if a configure fails.");
-
     /**
      * DestinationIterable
      */
@@ -554,11 +528,9 @@ void PALUDIS_VISIBLE expose_repository()
     /**
      * FakeRepository
      */
-    tr1::shared_ptr<FakePackageID>
-        (FakeRepository:: *add_version_ptr)(const QualifiedPackageName &, const VersionSpec &) =
-        &FakeRepository::add_version;
+    bp::implicitly_convertible<tr1::shared_ptr<FakeRepository>, tr1::shared_ptr<Repository> >();
 
-    bp::class_<FakeRepositoryWrapper, tr1::shared_ptr<FakeRepository>, bp::bases<Repository>, boost::noncopyable>
+    bp::class_<FakeRepository, tr1::shared_ptr<FakeRepository>, bp::bases<Repository>, boost::noncopyable>
         (
          "FakeRepository",
          "Fake repository for use in test cases.",

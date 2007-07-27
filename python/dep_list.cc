@@ -223,7 +223,7 @@ void PALUDIS_VISIBLE expose_dep_list()
 
         .add_property("destination", bp::make_getter(&DepListEntry::destination,
                     bp::return_value_policy<bp::return_by_value>()),
-                "[ro] tr1::shared_ptr<Repository>"
+                "[ro] Repository"
                 )
 
         .def_readonly("state", &DepListEntry::state,

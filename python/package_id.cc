@@ -24,6 +24,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/action.hh>
 #include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -80,6 +81,16 @@ void PALUDIS_VISIBLE expose_package_id()
         .add_property("repository", &PackageID::repository,
                 "[ro] Repository\n"
                 )
+
+        .def("supports_action", &PackageID::supports_action,
+                "supports_action(SupportsActionTestBase) -> bool\n"
+                "NEED_DOC"
+            )
+
+        .def("perform_action", &PackageID::perform_action,
+                "perform_action(Action)\n"
+                "NEED_DOC"
+            )
 
         .def("__iter__", bp::range(&PackageID::begin_metadata, &PackageID::end_metadata))
 

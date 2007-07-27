@@ -21,6 +21,7 @@
 
 #include <boost/version.hpp>
 
+void expose_action();
 void expose_contents();
 void expose_dep_list();
 void expose_dep_spec();
@@ -60,6 +61,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_environment();
     expose_metadata_key();
     expose_package_id();
+    expose_action();
     expose_package_database();
     expose_repository();
 }

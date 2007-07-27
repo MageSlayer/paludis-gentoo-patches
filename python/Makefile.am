@@ -33,6 +33,7 @@ IF_PYTHON_TESTS = \
 	environment_TEST.py \
 	package_database_TEST.py \
 	repository_TEST.py \
+	action_TEST.py \
 	package_id_TEST.py \
 	metadata_key_TEST.py \
 	dep_list_TEST.py
@@ -40,6 +41,7 @@ IF_PYTHON_TESTS = \
 IF_PYTHON_QA_TESTS =
 
 IF_PYTHON_SOURCES = \
+	action.cc \
 	contents.cc \
 	dep_list.cc \
 	dep_spec.hh dep_spec.cc \

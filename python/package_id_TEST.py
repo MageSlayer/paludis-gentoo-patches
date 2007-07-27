@@ -67,5 +67,27 @@ class TestCase_01_PackageID(unittest.TestCase):
     def test_08_find_metadata(self):
         self.assert_(isinstance(pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
 
+    def test_09_perform_action(self):
+        pid.perform_action(PretendAction())
+        self.assertRaises(UnsupportedActionError, pid.perform_action, ConfigAction())
+        self.assertRaises(UnsupportedActionError, ipid.perform_action, PretendAction())
+
+    def test_10_supports_action(self):
+        self.assert_(pid.supports_action(SupportsFetchActionTest()))
+        self.assert_(pid.supports_action(SupportsInstallActionTest()))
+        self.assert_(pid.supports_action(SupportsFetchActionTest()))
+        self.assert_(not pid.supports_action(SupportsUninstallActionTest()))
+        self.assert_(not pid.supports_action(SupportsInstalledActionTest()))
+        self.assert_(pid.supports_action(SupportsPretendActionTest()))
+        self.assert_(not pid.supports_action(SupportsConfigActionTest()))
+
+        self.assert_(not ipid.supports_action(SupportsFetchActionTest()))
+        self.assert_(not ipid.supports_action(SupportsInstallActionTest()))
+        self.assert_(not ipid.supports_action(SupportsFetchActionTest()))
+        self.assert_(ipid.supports_action(SupportsUninstallActionTest()))
+        self.assert_(ipid.supports_action(SupportsInstalledActionTest()))
+        self.assert_(not ipid.supports_action(SupportsPretendActionTest()))
+        self.assert_(ipid.supports_action(SupportsConfigActionTest()))
+
 if __name__ == "__main__":
     unittest.main()
