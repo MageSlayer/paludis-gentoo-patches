@@ -89,17 +89,17 @@ namespace test_cases
             // test R dependency
             std::string dep1("R (>= 2.0.0)");
             cranrepository::parse_depends(dep1)->accept(d1);
-            TEST_CHECK_EQUAL(d1.s.str(), ">=dev-lang/R-2.0.0 ");
+            TEST_CHECK_EQUAL(d1.s.str(), "ALL(>=dev-lang/R-2.0.0 )");
 
             // test varying whitespaces
             std::string dep2("testpackage1   \t(<1.9)");
             cranrepository::parse_depends(dep2)->accept(d2);
-            TEST_CHECK_EQUAL(d2.s.str(), "<cran/testpackage1-1.9 ");
+            TEST_CHECK_EQUAL(d2.s.str(), "ALL(<cran/testpackage1-1.9 )");
 
             // test for package-name and version normalisation
             std::string dep3("R.matlab (>= 2.3-1)");
             cranrepository::parse_depends(dep3)->accept(d3);
-            TEST_CHECK_EQUAL(d3.s.str(), ">=cran/R-matlab-2.3.1 ");
+            TEST_CHECK_EQUAL(d3.s.str(), "ALL(>=cran/R-matlab-2.3.1 )");
         }
     } test_cran_dep_parser;
 }

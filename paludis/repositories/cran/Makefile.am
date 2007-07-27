@@ -31,7 +31,8 @@ paludis_repositories_cran_include_HEADERS = \
 	cran_repository.hh \
 	cran_repository-sr.hh \
 	cran_installed_repository.hh \
-	cran_installed_repository-sr.hh
+	cran_installed_repository-sr.hh \
+	normalise.hh
 
 libpaludiscranrepository_la_SOURCES = \
 	cran_package_id.cc \
@@ -39,6 +40,7 @@ libpaludiscranrepository_la_SOURCES = \
 	cran_repository.cc \
 	cran_installed_repository.cc \
 	registration.cc \
+	normalise.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
 libpaludiscranrepository_la_LIBADD = \

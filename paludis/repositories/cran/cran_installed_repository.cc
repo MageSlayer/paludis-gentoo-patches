@@ -43,6 +43,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -493,6 +494,12 @@ CRANInstalledRepository::invalidate()
 }
 
 void
+CRANInstalledRepository::invalidate_masks()
+{
+    _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
+}
+
+void
 CRANInstalledRepository::add_string_to_world(const std::string & n) const
 {
     Context context("When adding '" + n + "' to world file '" + stringify(_imp->params.world) + "':");
@@ -595,5 +602,58 @@ CRANInstalledRepository::merge(const MergeOptions & m)
     if (! is_suitable_destination_for(*m.package_id))
         throw InstallActionError("Not a suitable destination for '" + stringify(*m.package_id) + "'");
 
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+            result = true;
+        }
+    };
+}
+
+bool
+CRANInstalledRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
+}
+
+void
+CRANInstalledRepository::need_ids() const
+{
 }
 

@@ -22,6 +22,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
+#include <paludis/action.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/repository_maker.hh>
@@ -41,6 +42,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -404,5 +406,59 @@ void
 CRANRepository::invalidate()
 {
     _imp.reset(new Implementation<CRANRepository>(_imp->params));
+}
+
+void
+CRANRepository::invalidate_masks()
+{
+    _imp.reset(new Implementation<CRANRepository>(_imp->params));
+}
+
+namespace
+{
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+
+        SupportsActionQuery() :
+            result(false)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+            result = true;
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+CRANRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+{
+    SupportsActionQuery q;
+    a.accept(q);
+    return q.result;
 }
 
