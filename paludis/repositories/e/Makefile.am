@@ -53,6 +53,7 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_sets.hh \
 	eapi.hh \
 	eapi-sr.hh \
+	eapi-fwd.hh \
 	eapi_phase.hh \
 	ebin-se.hh \
 	ebin-sr.hh \
