@@ -38,6 +38,7 @@ paludis_repositories_e_include_HEADERS = \
 	dep_lexer.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
+	dep_parser-fwd.hh \
 	dep_spec_pretty_printer.hh \
 	e_key.hh \
 	e_mask.hh \
