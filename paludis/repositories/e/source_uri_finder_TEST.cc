@@ -41,14 +41,14 @@ namespace test_cases
             const tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(1, repo);
 
-            SourceURIFinder f(&env, repo.get(), "http://example.com/input", "output", "monkey");
+            SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey");
             URIMirrorsThenListedLabel label("mirrors-then-listed");
             label.accept(f);
 
             SourceURIFinder::Iterator i(f.begin());
 
             TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://example.com/input");
+            TEST_CHECK_EQUAL(i->first, "http://example.com/path/input");
             TEST_CHECK_EQUAL(i->second, "output");
 
             ++i;
@@ -56,5 +56,49 @@ namespace test_cases
             TEST_CHECK(i == f.end());
         }
     } test_source_uri_finder;
+
+    struct SourceURIMirrorFinderTest : TestCase
+    {
+        SourceURIMirrorFinderTest() : TestCase("source uri mirror finder") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            const tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+
+            SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo");
+            URIMirrorsThenListedLabel label("mirrors-then-listed");
+            label.accept(f);
+
+            SourceURIFinder::Iterator i(f.begin());
+
+            TEST_CHECK(i != f.end());
+            TEST_CHECK_EQUAL(i->first, "http://fake-repo/fake-repo/output");
+            TEST_CHECK_EQUAL(i->second, "output");
+
+            ++i;
+
+            TEST_CHECK(i != f.end());
+            TEST_CHECK_EQUAL(i->first, "http://example-mirror-1/example-mirror-1/path/input");
+            TEST_CHECK_EQUAL(i->second, "output");
+
+            ++i;
+
+            TEST_CHECK(i != f.end());
+            TEST_CHECK_EQUAL(i->first, "http://example-mirror-2/example-mirror-2/path/input");
+            TEST_CHECK_EQUAL(i->second, "output");
+
+            ++i;
+
+            TEST_CHECK(i != f.end());
+            TEST_CHECK_EQUAL(i->first, "http://fake-example/fake-example/path/input");
+            TEST_CHECK_EQUAL(i->second, "output");
+
+            ++i;
+
+            TEST_CHECK(i == f.end());
+        }
+    } test_source_uri_mirror_finder;
 }
 

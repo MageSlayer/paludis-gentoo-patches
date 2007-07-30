@@ -138,9 +138,17 @@ TestEnvironment::root() const
 }
 
 tr1::shared_ptr<const MirrorsSequence>
-TestEnvironment::mirrors(const std::string &) const
+TestEnvironment::mirrors(const std::string & s) const
 {
-    return make_shared_ptr(new MirrorsSequence);
+    tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+
+    if (s == "example")
+    {
+        result->push_back("http://example-mirror-1/example-mirror-1/");
+        result->push_back("http://example-mirror-2/example-mirror-2/");
+    }
+
+    return result;
 }
 
 HookResult

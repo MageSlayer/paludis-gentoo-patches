@@ -21,6 +21,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
@@ -133,8 +134,8 @@ SourceURIFinder::add_local_mirrors()
 
     for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << *m << "/" << _imp->filename;
-        _imp->items.push_back(std::make_pair(*m + "/" + _imp->filename, _imp->filename));
+        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
+        _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
     }
 }
 
@@ -149,8 +150,8 @@ SourceURIFinder::add_mirrors()
 
     for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
-        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << *m << "/" << _imp->filename;
-        _imp->items.push_back(std::make_pair(*m + "/" + _imp->filename, _imp->filename));
+        Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
+        _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
     }
 
     {
@@ -160,8 +161,8 @@ SourceURIFinder::add_mirrors()
                     m_end(_imp->repo->mirrors_interface->end_mirrors(_imp->mirrors_name)) ;
                     m != m_end ; ++m)
             {
-                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << m->second << "/" << _imp->filename;
-                _imp->items.push_back(std::make_pair(m->second + "/" + _imp->filename, _imp->filename));
+                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/") << "/" << _imp->filename;
+                _imp->items.push_back(std::make_pair(strip_trailing(m->second, "/") + "/" + _imp->filename, _imp->filename));
             }
     }
 }
@@ -177,9 +178,8 @@ SourceURIFinder::add_listed()
         std::string::size_type p(mirror.find("/"));
         if (std::string::npos == p)
             throw FetchActionError("Broken URI component '" + _imp->url + "'");
+        std::string original_name(mirror.substr(p + 1));
         mirror.erase(p);
-
-        std::string original_name(_imp->url.substr(_imp->url.rfind("/")));
 
         {
             Context local_context("When adding from environment for listed mirror '" + mirror + "':");
@@ -188,8 +188,8 @@ SourceURIFinder::add_listed()
                 Log::get_instance()->message(ll_debug, lc_context) << "Mirrors set is empty";
             for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
             {
-                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << *m << "/" << original_name;
-                _imp->items.push_back(std::make_pair(*m + "/" + original_name, _imp->filename));
+                Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << original_name;
+                _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + original_name, _imp->filename));
             }
         }
 
@@ -200,8 +200,9 @@ SourceURIFinder::add_listed()
                         m_end(_imp->repo->mirrors_interface->end_mirrors(mirror)) ;
                         m != m_end ; ++m)
                 {
-                    Log::get_instance()->message(ll_debug, lc_context) << "Adding " << m->second << "/" << original_name;
-                    _imp->items.push_back(std::make_pair(m->second + "/" + original_name, _imp->filename));
+                    Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(m->second, "/")
+                        << "/" << original_name;
+                    _imp->items.push_back(std::make_pair(strip_trailing(m->second, "/") + "/" + original_name, _imp->filename));
                 }
         }
     }
