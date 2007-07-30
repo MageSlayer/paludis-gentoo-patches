@@ -32,6 +32,8 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
+#include <map>
+
 using namespace paludis;
 
 namespace paludis
@@ -40,10 +42,13 @@ namespace paludis
     struct Implementation<FakeRepository>
     {
         tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
+        std::map<std::string, std::string> mirrors;
 
         Implementation() :
             virtual_packages(new FakeRepository::VirtualsSequence)
         {
+            mirrors.insert(std::make_pair("example", "http://fake-example/fake-example/"));
+            mirrors.insert(std::make_pair("repo", "http://fake-repo/fake-repo/"));
         }
     };
 }
@@ -56,7 +61,7 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .syncable_interface(0)
             .use_interface(this)
             .world_interface(0)
-            .mirrors_interface(0)
+            .mirrors_interface(this)
             .environment_variable_interface(0)
             .provides_interface(0)
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
@@ -148,5 +153,17 @@ FakeRepository::do_some_ids_might_support_action(const SupportsActionTestBase & 
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+FakeRepository::MirrorsIterator
+FakeRepository::begin_mirrors(const std::string & s) const
+{
+    return MirrorsIterator(_imp->mirrors.equal_range(s).first);
+}
+
+FakeRepository::MirrorsIterator
+FakeRepository::end_mirrors(const std::string & s) const
+{
+    return MirrorsIterator(_imp->mirrors.equal_range(s).second);
 }
 

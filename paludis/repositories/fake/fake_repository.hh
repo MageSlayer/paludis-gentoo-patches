@@ -32,7 +32,8 @@ namespace paludis
     class PALUDIS_VISIBLE FakeRepository :
         private PrivateImplementationPattern<FakeRepository>,
         public FakeRepositoryBase,
-        public RepositoryVirtualsInterface
+        public RepositoryVirtualsInterface,
+        public RepositoryMirrorsInterface
     {
         private:
             Implementation<FakeRepository> * const _imp;
@@ -57,6 +58,13 @@ namespace paludis
             /* RepositoryVirtualsInterface */
 
             virtual tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryMirrorsInterface */
+
+            virtual MirrorsIterator begin_mirrors(const std::string & s) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MirrorsIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
