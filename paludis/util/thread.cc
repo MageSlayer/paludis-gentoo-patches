@@ -63,7 +63,8 @@ void
 Thread::idle_adapter(const tr1::function<void () throw ()> & f)
 {
 #ifdef __linux__
-    setpriority(PRIO_PROCESS, syscall(SYS_gettid), 10);
+    if (-1 == setpriority(PRIO_PROCESS, syscall(SYS_gettid), std::max(19, getpriority(PRIO_PROCESS, 0) + 10)))
+        Log::get_instance()->message(ll_warning, lc_context) << "Failed to setpriority: " << strerror(errno);
 #else
 #  warning "Don't know how to set thread priorities on your platform"
 #endif
