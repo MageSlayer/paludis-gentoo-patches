@@ -135,7 +135,7 @@ namespace paludis
             /**
              * Constructor.
              *
-             * \param where Should be set to the PALUDIS_HERE macro.
+             * \param location Should be set to the PALUDIS_HERE macro.
              *
              * \param message A short message.
              */
@@ -144,7 +144,7 @@ namespace paludis
             /**
              * Constructor, with no message (deprecated).
              *
-             * \param where Should be set to the PALUDIS_HERE macro.
+             * \param location Should be set to the PALUDIS_HERE macro.
              *
              * \deprecated Use paludis::InternalError::InternalError(const char * const,
              * const std::string &) instead.
