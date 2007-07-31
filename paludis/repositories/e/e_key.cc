@@ -141,7 +141,7 @@ EDependenciesKey::value() const
 std::string
 EDependenciesKey::pretty_print() const
 {
-    DepSpecPrettyPrinter p(4, true);
+    DepSpecPrettyPrinter p(12, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -232,7 +232,7 @@ ELicenseKey::value() const
 std::string
 ELicenseKey::pretty_print() const
 {
-    DepSpecPrettyPrinter p(4, true);
+    DepSpecPrettyPrinter p(12, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -314,7 +314,7 @@ EURIKey::value() const
 std::string
 EURIKey::pretty_print() const
 {
-    DepSpecPrettyPrinter p(4, true);
+    DepSpecPrettyPrinter p(12, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -373,7 +373,7 @@ ERestrictKey::value() const
 std::string
 ERestrictKey::pretty_print() const
 {
-    DepSpecPrettyPrinter p(4, true);
+    DepSpecPrettyPrinter p(12, true);
     value()->accept(p);
     return stringify(p);
 }
