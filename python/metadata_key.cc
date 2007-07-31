@@ -140,6 +140,11 @@ struct MetadataKeyToPython :
     {
         value = bp::object(bp::ptr(&k));
     }
+
+    void visit(const MetadataSetKey<PackageIDSequence> & k)
+    {
+        value = bp::object(bp::ptr(&k));
+    }
 };
 
 struct metadata_key_to_python

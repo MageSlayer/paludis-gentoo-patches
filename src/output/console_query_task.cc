@@ -305,6 +305,33 @@ namespace
                 }
             }
 
+            void visit(const MetadataSetKey<PackageIDSequence> & k)
+            {
+                if (k.type() == type)
+                {
+                    if (k.value()->empty() || next(k.value()->begin()) == k.value()->end())
+                        task->display_metadata_pde(k.human_name(), k.raw_name(), **k.value()->begin());
+                    else if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), ", "));
+                    }
+                    else
+                    {
+                        for (PackageIDSequence::Iterator i(k.value()->begin()), i_end(k.value()->end()) ;
+                                i != i_end ; ++i)
+                        {
+                            if (i == k.value()->begin())
+                                task->output_left_column(k.human_name() + ":");
+                            else
+                                task->output_left_column("");
+
+                            task->output_right_column(task->render_as_package_name(stringify(**i)));
+                        }
+                    }
+                }
+            }
+
             void visit(const MetadataPackageIDKey & k)
             {
                 if (k.type() == type)

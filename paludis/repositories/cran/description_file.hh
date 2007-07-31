@@ -17,18 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_NORMALISE_HH
-#define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_NORMALISE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DESCRIPTION_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DESCRIPTION_FILE_HH 1
 
-#include <string>
+#include <paludis/config_file.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
 {
     namespace cranrepository
     {
-        std::string cran_name_to_internal(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
-        std::string cran_version_to_internal(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+        class PALUDIS_VISIBLE DescriptionFile :
+            public ConfigFile,
+            private PrivateImplementationPattern<DescriptionFile>
+        {
+            private:
+                void _line(const std::string &);
+
+            public:
+                DescriptionFile(const Source &);
+                ~DescriptionFile();
+
+                /**
+                 * Fetch the value for a particular key, or an empty string.
+                 */
+                std::string get(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
     }
 }
 

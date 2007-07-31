@@ -107,6 +107,8 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
+                virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
 
                 virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const;
                 virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;

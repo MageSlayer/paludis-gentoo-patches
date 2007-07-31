@@ -43,6 +43,7 @@ namespace
     static VALUE c_metadata_use_flag_name_set_key;
     static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_inherited_set_key;
+    static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_key_type;
 
     struct V :
@@ -107,6 +108,12 @@ namespace
             {
                 value = Data_Wrap_Struct(c_metadata_inherited_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<InheritedSet> > >::free,
                         new tr1::shared_ptr<const MetadataSetKey<InheritedSet> >(tr1::static_pointer_cast<const MetadataSetKey<InheritedSet> >(mm)));
+            }
+
+            void visit(const MetadataSetKey<PackageIDSequence> &)
+            {
+                value = Data_Wrap_Struct(c_metadata_package_id_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > >::free,
+                        new tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >(tr1::static_pointer_cast<const MetadataSetKey<PackageIDSequence> >(mm)));
             }
 
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
@@ -407,6 +414,22 @@ namespace
         }
     };
 
+    template <>
+    struct SetValue<PackageIDSequence>
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >, self_ptr);
+            tr1::shared_ptr<const PackageIDSequence> c = (*self_ptr)->value();
+            VALUE result (rb_ary_new());
+            for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, package_id_to_value(*i));
+            return result;
+        }
+    };
+
     void do_register_package_id()
     {
         /*
@@ -503,6 +526,14 @@ namespace
          */
         c_metadata_use_flag_name_set_key = rb_define_class_under(paludis_module(), "MetadataUseFlagNameSetKey", c_metadata_key);
         rb_define_method(c_metadata_use_flag_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<UseFlagNameSet>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataPackageIDSequenceKey
+         *
+         * Metadata class for Use flag names
+         */
+        c_metadata_package_id_sequence_key = rb_define_class_under(paludis_module(), "MetadataPackageIDSequenceKey", c_metadata_key);
+        rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataIUseFlagSetKey

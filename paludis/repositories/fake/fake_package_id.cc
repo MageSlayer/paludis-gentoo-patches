@@ -745,6 +745,18 @@ FakePackageID::breaks_portage() const
     return (version().has_try_part() || version().has_scm_part());
 }
 
+const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+FakePackageID::contains_key() const
+{
+    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+FakePackageID::contained_in_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<DependencySpecTree>;

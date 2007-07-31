@@ -113,6 +113,7 @@ template class MetadataSetKey<KeywordNameSet>;
 template class MetadataSetKey<IUseFlagSet>;
 template class MetadataSetKey<InheritedSet>;
 template class MetadataSetKey<UseFlagNameSet>;
+template class MetadataSetKey<PackageIDSequence>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;

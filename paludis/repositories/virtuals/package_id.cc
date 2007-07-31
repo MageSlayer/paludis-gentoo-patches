@@ -496,4 +496,15 @@ VirtualsPackageID::breaks_portage() const
     return (version().has_try_part() || version().has_scm_part());
 }
 
+const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+VirtualsPackageID::contains_key() const
+{
+    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+VirtualsPackageID::contained_in_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
 

@@ -65,8 +65,8 @@ cranrepository::parse_depends(const std::string & s)
         else
             name = strip_leading(strip_trailing(aa, " \t"), " \t");
 
-        cranrepository::normalise_name(name);
-        cranrepository::normalise_version(version);
+        name = cran_name_to_internal(name);
+        version = cran_version_to_internal(version);
 
         if ("R" == name)
             name = "dev-lang/R";

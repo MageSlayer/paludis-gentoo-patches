@@ -64,6 +64,10 @@ namespace
         {
         }
 
+        void visit(const MetadataSetKey<PackageIDSequence> &)
+        {
+        }
+
         void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
         {
         }

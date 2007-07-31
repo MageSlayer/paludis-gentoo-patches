@@ -34,19 +34,8 @@
 using namespace test;
 using namespace paludis;
 
-/** \file
- * Test cases for CRANRepository.
- *
- * \ingroup grptestcases
- */
-
 namespace test_cases
 {
-    /**
-     * \test Test CRANRepository to parse a well formed PACKAGES file.
-     *
-     * \ingroup grptestcases
-     */
     struct CRANRepositoryPackagesTest : TestCase
     {
         CRANRepositoryPackagesTest() : TestCase("PACKAGES") { }
@@ -62,18 +51,11 @@ namespace test_cases
             tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(
                         &env, keys));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
-#if 0
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage2")));
-#endif
         }
     } test_cran_repository_packages;
 
-    /**
-     * \test Test CRANRepository to handly 'Bundle:'s correctly.
-     *
-     * \ingroup grptestcases
-     */
     struct CRANRepositoryBundleTest: TestCase
     {
         CRANRepositoryBundleTest() : TestCase("Bundle") { }
@@ -88,15 +70,10 @@ namespace test_cases
             keys->insert("buildroot", "cran_repository_TEST_dir/tmp");
             tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(
                         &env, keys));
-#if 0
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg2")));
-#endif
         }
     } test_cran_repository_bundle;
-
-    /** \todo in repo1
-     * \todo test case for DESCRIPTION files
-     */
 }
+

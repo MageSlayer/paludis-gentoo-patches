@@ -486,6 +486,18 @@ GemSpecification::binary_origin_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
+const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+GemSpecification::contains_key() const
+{
+    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+GemSpecification::contained_in_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+
 bool
 GemSpecification::arbitrary_less_than_comparison(const PackageID &) const
 {

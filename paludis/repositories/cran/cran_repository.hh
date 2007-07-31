@@ -25,6 +25,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
 
@@ -50,7 +51,8 @@ namespace paludis
         public Repository,
         public RepositorySyncableInterface,
         public RepositorySetsInterface,
-        private PrivateImplementationPattern<CRANRepository>
+        private PrivateImplementationPattern<CRANRepository>,
+        public tr1::enable_shared_from_this<CRANRepository>
     {
         private:
             void need_ids() const;

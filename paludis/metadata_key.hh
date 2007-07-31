@@ -44,6 +44,7 @@ namespace paludis
             MetadataSetKey<IUseFlagSet>,
             MetadataSetKey<KeywordNameSet>,
             MetadataSetKey<InheritedSet>,
+            MetadataSetKey<PackageIDSequence>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,
             MetadataSpecTreeKey<URISpecTree>,

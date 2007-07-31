@@ -23,6 +23,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/repository_maker.hh>
@@ -42,6 +43,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -60,7 +62,7 @@ using namespace paludis;
 
 #include <paludis/repositories/cran/cran_repository-sr.cc>
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::Type IDMap;
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::Type IDMap;
 
 namespace paludis
 {
@@ -173,7 +175,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
     need_ids();
 
     std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::first)));
+                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first)));
 
     return result;
 }
@@ -204,7 +206,21 @@ CRANRepository::need_ids() const
 
     Context context("When loading IDs for " + stringify(name()) + ":");
 
-    LineConfigFile packages(FSEntry(_imp->params.location / "PACKAGES"), LineConfigFileOptions());
+    for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
+        if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
+        {
+            tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(shared_from_this(), *d));
+            if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
+                Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << *id << "' due to name collision";
+
+            if (id->contains_key())
+                for (PackageIDSequence::Iterator i(id->contains_key()->value()->begin()),
+                        i_end(id->contains_key()->value()->end()) ; i != i_end ; ++i)
+                    if (! _imp->ids.insert(std::make_pair((*i)->name(),
+                                    tr1::static_pointer_cast<const cranrepository::CRANPackageID>(*i))).second)
+                        Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << **i
+                            << "', which is contained in '" << *id << "', due to name collision";
+        }
 
     _imp->has_ids = true;
 }
@@ -411,7 +427,6 @@ CRANRepository::invalidate()
 void
 CRANRepository::invalidate_masks()
 {
-    _imp.reset(new Implementation<CRANRepository>(_imp->params));
 }
 
 namespace

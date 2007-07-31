@@ -17,24 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "normalise.hh"
-#include <algorithm>
+#include <paludis/repositories/cran/description_file.hh>
+#include <test/test_runner.hh>
+#include <test/test_framework.hh>
+#include <sstream>
 
 using namespace paludis;
+using namespace paludis::cranrepository;
+using namespace test;
 
-std::string
-paludis::cranrepository::cran_name_to_internal(const std::string & s)
+namespace test_cases
 {
-    std::string result(s);
-    std::replace(result.begin(),result.end(), '.', '-');
-    return result;
-}
+    struct DescriptionTest : TestCase
+    {
+        DescriptionTest() : TestCase("description test") { }
 
-std::string
-paludis::cranrepository::cran_version_to_internal(const std::string & s)
-{
-    std::string result(s);
-    std::replace(result.begin(), result.end(), '-', '.');
-    return result;
+        void run()
+        {
+            std::stringstream s;
+            s << "Foo: bar bar" << std::endl;
+            s << "  black sheep" << std::endl;
+            s << "Moo: cow" << std::endl;
+
+            DescriptionFile f(s);
+            TEST_CHECK_EQUAL(f.get("Foo"), "bar bar black sheep");
+            TEST_CHECK_EQUAL(f.get("Moo"), "cow");
+            TEST_CHECK_EQUAL(f.get("Oink"), "");
+        }
+    } test_description;
 }
 

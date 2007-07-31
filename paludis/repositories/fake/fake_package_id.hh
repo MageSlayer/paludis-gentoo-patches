@@ -163,6 +163,8 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
+            virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
+            virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
 
             const tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
             const tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();

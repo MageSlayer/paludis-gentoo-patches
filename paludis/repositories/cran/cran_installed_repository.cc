@@ -56,7 +56,7 @@ using namespace paludis;
 
 #include <paludis/repositories/cran/cran_installed_repository-sr.cc>
 
-typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::Type IDMap;
+typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::Type IDMap;
 
 namespace paludis
 {
@@ -225,7 +225,7 @@ CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
     need_ids();
 
     std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const CRANPackageID> >::first)));
+                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first)));
 
     return result;
 }
@@ -496,7 +496,6 @@ CRANInstalledRepository::invalidate()
 void
 CRANInstalledRepository::invalidate_masks()
 {
-    _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
 }
 
 void

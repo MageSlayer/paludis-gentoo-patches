@@ -17,24 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "normalise.hh"
-#include <algorithm>
+#ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_MASKS_HH
+#define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_MASKS_HH 1
 
-using namespace paludis;
+#include <paludis/mask.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
-std::string
-paludis::cranrepository::cran_name_to_internal(const std::string & s)
+namespace paludis
 {
-    std::string result(s);
-    std::replace(result.begin(),result.end(), '.', '-');
-    return result;
+    namespace cranrepository
+    {
+        class BrokenMask :
+            public UnsupportedMask,
+            private PrivateImplementationPattern<BrokenMask>
+        {
+            public:
+                BrokenMask(const char, const std::string &, const std::string &);
+                ~BrokenMask();
+
+                virtual const char key() const;
+                virtual const std::string description() const;
+                virtual const std::string explanation() const;
+        };
+    }
 }
 
-std::string
-paludis::cranrepository::cran_version_to_internal(const std::string & s)
-{
-    std::string result(s);
-    std::replace(result.begin(), result.end(), '-', '.');
-    return result;
-}
-
+#endif

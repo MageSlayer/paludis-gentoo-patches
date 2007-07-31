@@ -32,6 +32,9 @@ paludis_repositories_cran_include_HEADERS = \
 	cran_repository-sr.hh \
 	cran_installed_repository.hh \
 	cran_installed_repository-sr.hh \
+	description_file.hh \
+	masks.hh \
+	keys.hh \
 	normalise.hh
 
 libpaludiscranrepository_la_SOURCES = \
@@ -39,8 +42,11 @@ libpaludiscranrepository_la_SOURCES = \
 	cran_dep_parser.cc \
 	cran_repository.cc \
 	cran_installed_repository.cc \
+	description_file.cc \
 	registration.cc \
 	normalise.cc \
+	masks.cc \
+	keys.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
 libpaludiscranrepository_la_LIBADD = \
@@ -49,7 +55,11 @@ libpaludiscranrepository_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
-TESTS = cran_dep_parser_TEST cran_repository_TEST cran_installed_repository_TEST
+TESTS = \
+	cran_dep_parser_TEST \
+	cran_repository_TEST \
+	cran_installed_repository_TEST \
+	description_file_TEST
 
 cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
 
@@ -72,6 +82,17 @@ cran_installed_repository_TEST_LDADD = \
 cran_repository_TEST_SOURCES = cran_repository_TEST.cc
 
 cran_repository_TEST_LDADD = \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludiscranrepository.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(DYNAMIC_LD_LIBS)
+
+description_file_TEST_SOURCES = description_file_TEST.cc
+
+description_file_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludiscranrepository.la \

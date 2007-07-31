@@ -848,3 +848,15 @@ EbuildID::perform_action(Action & a) const
     a.accept(b);
 }
 
+const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+EbuildID::contains_key() const
+{
+    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+EbuildID::contained_in_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+

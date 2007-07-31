@@ -26,19 +26,68 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE CRANPackageID :
-        public PackageID
+    namespace cranrepository
     {
-        public:
-            static void normalise_name(std::string & s);
-            static void denormalise_name(std::string & s);
-            static void normalise_version(std::string & s);
+        class PALUDIS_VISIBLE CRANPackageID :
+            public PackageID,
+            private PrivateImplementationPattern<CRANPackageID>,
+            public tr1::enable_shared_from_this<CRANPackageID>
+        {
+            private:
+                Implementation<CRANPackageID> * const _imp;
 
-            const std::string native_package() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const std::string native_version() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const tr1::shared_ptr<const MetadataPackageIDKey> bundle_key() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const tr1::shared_ptr<const MetadataPackageIDKey> bundle_member_key() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
+            protected:
+                virtual void need_keys_added() const;
+                virtual void need_masks_added() const;
+
+            public:
+                CRANPackageID(const tr1::shared_ptr<const Repository> & r, const FSEntry &);
+                CRANPackageID(const CRANPackageID * const, const std::string &);
+                ~CRANPackageID();
+
+                virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
+
+                virtual const QualifiedPackageName name() const;
+                virtual const VersionSpec version() const;
+                virtual const SlotName slot() const;
+                virtual const tr1::shared_ptr<const Repository> repository() const;
+
+                virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
+                virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const;
+                virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
+                virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
+                virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
+                virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
+
+                virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void perform_action(Action &) const;
+
+                virtual bool breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual bool arbitrary_less_than_comparison(const PackageID &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::size_t extra_hash_value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
 }
 
 #endif

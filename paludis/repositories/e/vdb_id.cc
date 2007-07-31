@@ -682,3 +682,15 @@ VDBID::perform_action(Action & a) const
     a.accept(b);
 }
 
+const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+VDBID::contains_key() const
+{
+    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+}
+
+const tr1::shared_ptr<const MetadataPackageIDKey>
+VDBID::contained_in_key() const
+{
+    return tr1::shared_ptr<const MetadataPackageIDKey>();
+}
+

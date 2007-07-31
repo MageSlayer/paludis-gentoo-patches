@@ -89,6 +89,10 @@ namespace
         {
         }
 
+        void visit(const MetadataSetKey<PackageIDSequence> &)
+        {
+        }
+
         void visit(const MetadataSetKey<KeywordNameSet> & k)
         {
             tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
@@ -226,6 +230,10 @@ namespace
         void visit(const MetadataSetKey<UseFlagNameSet> &)
         {
         }
+
+        void visit(const MetadataSetKey<PackageIDSequence> &)
+        {
+        }
     };
 
     struct OverrideUnkeywordedMaskVisitor :
@@ -358,6 +366,10 @@ namespace
         }
 
         void visit(const MetadataSetKey<IUseFlagSet> &)
+        {
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> &)
         {
         }
 
