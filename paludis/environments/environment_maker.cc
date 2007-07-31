@@ -160,7 +160,8 @@ EnvironmentMaker::make_from_spec(const std::string & s) const
     }
     catch (const FallBackToAnotherMakerError &)
     {
-        std::string f(DistributionData::get_instance()->distribution_from_string(DEFAULT_DISTRIBUTION)->fallback_environment);
+        std::string f(DistributionData::get_instance()->distribution_from_string(
+                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))->fallback_environment);
         if (s.empty() && ! f.empty())
         {
             std::set<std::string> keys;
