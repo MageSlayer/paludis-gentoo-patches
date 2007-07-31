@@ -432,7 +432,7 @@ EProvideKey::value() const
 std::string
 EProvideKey::pretty_print() const
 {
-    DepSpecPrettyPrinter p(4, true);
+    DepSpecPrettyPrinter p(12, true);
     value()->accept(p);
     return stringify(p);
 }
