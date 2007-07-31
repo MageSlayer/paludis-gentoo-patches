@@ -240,7 +240,10 @@ CRANRepository::fetch_repo_name(const std::string & location)
 {
     std::string modified_location(FSEntry(location).basename());
     std::replace(modified_location.begin(), modified_location.end(), '/', '-');
-    return RepositoryName("cran-" + modified_location);
+    if (modified_location == "cran")
+        return RepositoryName("cran");
+    else
+        return RepositoryName("cran-" + modified_location);
 }
 
 #if 0
