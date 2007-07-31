@@ -60,6 +60,8 @@ namespace paludis
         tr1::shared_ptr<StringKey> long_description_key;
         tr1::shared_ptr<PackageIDKey> contained_in_key;
         tr1::shared_ptr<PackageIDSequenceKey> contains_key;
+        tr1::shared_ptr<DepKey> depends_key;
+        tr1::shared_ptr<DepKey> suggests_key;
 
         Implementation(const tr1::shared_ptr<const Repository> & r, const FSEntry & f) :
             repository(r),
@@ -72,7 +74,7 @@ namespace paludis
             repository(r->repository()),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
-            contained_in_key(new PackageIDKey("Contained", "Contained in", mkt_normal, r))
+            contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal))
         {
         }
     };
@@ -188,6 +190,22 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const Repository> & r, const 
                 }
             }
         }
+
+        if (! file.get("Suggests").empty())
+        {
+            Context local_context("When handling Suggests: key:");
+            _imp->suggests_key.reset(new DepKey("Suggests", "Suggests", file.get("Suggests"), mkt_dependencies));
+            add_metadata_key(_imp->suggests_key);
+        }
+
+        if (! file.get("Depends").empty())
+        {
+            Context local_context("When handling Depends: key:");
+            _imp->depends_key.reset(new DepKey("Depends", "Depends", file.get("Depends") + ", R", mkt_dependencies));
+        }
+        else
+            _imp->depends_key.reset(new DepKey("Depends", "Depends", "R", mkt_dependencies));
+        add_metadata_key(_imp->depends_key);
     }
     catch (const Exception & e)
     {

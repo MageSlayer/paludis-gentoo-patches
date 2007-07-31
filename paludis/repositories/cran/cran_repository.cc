@@ -37,6 +37,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
@@ -76,16 +78,18 @@ namespace paludis
     {
         CRANRepositoryParams params;
 
+        mutable tr1::shared_ptr<Mutex> big_nasty_mutex;
         mutable bool has_ids;
         mutable IDMap ids;
 
-        Implementation(const CRANRepositoryParams &);
+        Implementation(const CRANRepositoryParams &, const tr1::shared_ptr<Mutex> &);
         ~Implementation();
     };
 }
 
-Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
+Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, const tr1::shared_ptr<Mutex> & m) :
     params(p),
+    big_nasty_mutex(m),
     has_ids(false)
 {
 }
@@ -115,7 +119,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .hook_interface(0)
             .manifest_interface(0),
             "cran"),
-    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
+    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex)))
 {
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
@@ -143,6 +147,7 @@ bool
 CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
+    Lock l(*_imp->big_nasty_mutex);
 
     if (! do_has_category_named(q.category))
         return false;
@@ -155,6 +160,7 @@ tr1::shared_ptr<const CategoryNamePartSet>
 CRANRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
+    Lock l(*_imp->big_nasty_mutex);
 
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
@@ -167,6 +173,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
+    Lock l(*_imp->big_nasty_mutex);
 
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! do_has_category_named(c))
@@ -185,6 +192,7 @@ CRANRepository::do_package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
+    Lock l(*_imp->big_nasty_mutex);
 
     tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     if (! do_has_package_named(n))
@@ -201,6 +209,8 @@ CRANRepository::do_package_ids(const QualifiedPackageName & n) const
 void
 CRANRepository::need_ids() const
 {
+    Lock l(*_imp->big_nasty_mutex);
+
     if (_imp->has_ids)
         return;
 
@@ -352,6 +362,7 @@ bool
 CRANRepository::do_sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
+    Lock l(*_imp->big_nasty_mutex);
 
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
                     _imp->params.sync + "/src/contrib/Descriptions/' ./");
@@ -421,7 +432,7 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 void
 CRANRepository::invalidate()
 {
-    _imp.reset(new Implementation<CRANRepository>(_imp->params));
+    _imp.reset(new Implementation<CRANRepository>(_imp->params, _imp->big_nasty_mutex));
 }
 
 void

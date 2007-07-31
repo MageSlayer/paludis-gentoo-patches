@@ -19,8 +19,11 @@
 
 #include <paludis/repositories/cran/keys.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
+#include <paludis/repositories/cran/cran_dep_parser.hh>
+#include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/dep_spec.hh>
 
 using namespace paludis;
@@ -80,8 +83,8 @@ PackageIDSequenceKey::push_back(const tr1::shared_ptr<const PackageID> & i)
     _v->push_back(i);
 }
 
-PackageIDKey::PackageIDKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-        const CRANPackageID * const v) :
+PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
+        const CRANPackageID * const v, const MetadataKeyType t) :
     MetadataPackageIDKey(r, h, t),
     _v(v)
 {
@@ -91,5 +94,40 @@ const tr1::shared_ptr<const PackageID>
 PackageIDKey::value() const
 {
     return _v->shared_from_this();
+}
+
+DepKey::DepKey(const std::string & r, const std::string & h, const std::string & v,
+        const MetadataKeyType t) :
+    MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
+    _v(v)
+{
+}
+
+const tr1::shared_ptr<const DependencySpecTree::ConstItem>
+DepKey::value() const
+{
+    Lock l(_m);
+    if (_c)
+        return _c;
+
+    Context context("When parsing CRAN dependency string:");
+    _c = parse_depends(_v);
+    return _c;
+}
+
+std::string
+DepKey::pretty_print() const
+{
+    DepSpecPrettyPrinter p(12, true);
+    value()->accept(p);
+    return stringify(p);
+}
+
+std::string
+DepKey::pretty_print_flat() const
+{
+    DepSpecPrettyPrinter p(0, false);
+    value()->accept(p);
+    return stringify(p);
 }
 
