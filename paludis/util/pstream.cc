@@ -67,8 +67,7 @@ PStreamInBuf::underflow()
 }
 
 PStreamInBuf::PStreamInBuf(const Command & cmd) :
-    _command(cmd),
-    child(fork())
+    _command(cmd)
 {
     Context context("When running command '" + stringify(cmd.command()) + "' asynchronously:");
 
@@ -97,6 +96,8 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
 
     cmd.echo_to_stderr();
     Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c + " " + extras);
+
+    child = fork();
 
     if (0 == child)
     {
