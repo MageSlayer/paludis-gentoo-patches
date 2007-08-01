@@ -39,6 +39,7 @@ libpaludisargs_la_LIBADD = \
 TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_DISTRIBUTION="gentoo" \
 	bash $(top_srcdir)/test/run_test.sh
 
 lib_LTLIBRARIES = libpaludisargs.la

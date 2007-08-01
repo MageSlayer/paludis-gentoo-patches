@@ -15,6 +15,7 @@ libexecprog_SCRIPTS = \
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_DISTRIBUTION="gentoo" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 

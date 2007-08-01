@@ -13,6 +13,7 @@ TESTS =
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_DISTRIBUTION="gentoo" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 
