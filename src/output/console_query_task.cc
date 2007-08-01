@@ -27,6 +27,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
+#include <paludis/util/join.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/query.hh>
@@ -498,12 +499,19 @@ ConsoleQueryTask::display_metadata_repository_mask_info(const std::string & k, c
     if (want_raw())
     {
         output_left_column(kk + ":");
+        output_right_column(stringify(i->mask_file) + ": " + join(i->comment->begin(), i->comment->end(), " "));
     }
     else
     {
         output_left_column(k + ":");
+        output_right_column(stringify(i->mask_file) + ":");
+        for (Sequence<std::string>::Iterator it(i->comment->begin()),
+                 it_end(i->comment->end()); it_end != it; ++it)
+        {
+            output_left_column("");
+            output_right_column(*it);
+        }
     }
-    output_right_column(stringify(i->mask_file));
 }
 
 void

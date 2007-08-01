@@ -18,6 +18,8 @@
  */
 
 #include "e_repository_profile_file.hh"
+#include "e_repository_mask_file.hh"
+#include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>
@@ -27,59 +29,93 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
+#include <set>
 #include <algorithm>
 
 using namespace paludis;
+using namespace paludis::erepository;
 
-namespace paludis
+namespace
 {
-    template <>
-    struct Implementation<ProfileFile>
+    template <typename T_>
+    struct FileEntryTraits
     {
-        std::multimap<std::string, tr1::shared_ptr<const RepositoryMaskInfo> > lines;
+        typedef std::multiset<typename tr1::remove_const<T_>::type> Storage;
+        static T_ & extract_key(const T_ & k)
+        {
+            return k;
+        }
+    };
+
+    template <typename F_, typename S_>
+    struct FileEntryTraits<const std::pair<F_, S_> >
+    {
+        typedef std::multimap<F_, S_> Storage;
+        static const F_ & extract_key(const std::pair<F_, S_> & p)
+        {
+            return p.first;
+        }
     };
 }
 
+namespace paludis
+{
+    template <typename F_>
+    struct Implementation<ProfileFile<F_> >
+    {
+        typename FileEntryTraits<typename F_::Iterator::value_type>::Storage lines;
+    };
+}
+
+template <typename F_>
 void
-ProfileFile::add_file(const FSEntry & f)
+ProfileFile<F_>::add_file(const FSEntry & f)
 {
     Context context("When adding profile configuration file '" + stringify(f) + "':");
 
     if (! f.exists())
         return;
 
-    LineConfigFile file(f, LineConfigFileOptions());
-    for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
+    F_ file(f, LineConfigFileOptions());
+    for (typename F_::Iterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        if (0 == line->compare(0, 1, "-", 0, 1))
+        const std::string & key(FileEntryTraits<typename F_::Iterator::value_type>::extract_key(*line));
+        if (0 == key.compare(0, 1, "-", 0, 1))
         {
-            int erased(_imp->lines.erase(line->substr(1)));
+            int erased(this->_imp->lines.erase(key.substr(1)));
             if (0 == erased)
-                Log::get_instance()->message(ll_qa, lc_context, "No match for '" + *line + "'");
+                Log::get_instance()->message(ll_qa, lc_context, "No match for '" + key + "'");
         }
         else
-            _imp->lines.insert(std::make_pair(*line, tr1::shared_ptr<const RepositoryMaskInfo>(new RepositoryMaskInfo(f))));
+            this->_imp->lines.insert(*line);
     }
 }
 
-ProfileFile::ProfileFile() :
-    PrivateImplementationPattern<ProfileFile>(new Implementation<ProfileFile>)
+template <typename F_>
+ProfileFile<F_>::ProfileFile() :
+    PrivateImplementationPattern<ProfileFile>(new Implementation<ProfileFile<F_> >)
 {
 }
 
-ProfileFile::~ProfileFile()
+template <typename F_>
+ProfileFile<F_>::~ProfileFile()
 {
 }
 
-ProfileFile::Iterator
-ProfileFile::begin() const
+template <typename F_>
+typename ProfileFile<F_>::Iterator
+ProfileFile<F_>::begin() const
 {
-    return Iterator(_imp->lines.begin());
+    return Iterator(this->_imp->lines.begin());
 }
 
-ProfileFile::Iterator
-ProfileFile::end() const
+template <typename F_>
+typename ProfileFile<F_>::Iterator
+ProfileFile<F_>::end() const
 {
-    return Iterator(_imp->lines.end());
+    return Iterator(this->_imp->lines.end());
 }
+
+template class ProfileFile<LineConfigFile>;
+template class ProfileFile<MaskFile>;
 

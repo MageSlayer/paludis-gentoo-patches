@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_profile_file.hh>
+#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
@@ -108,9 +109,9 @@ namespace paludis
             void handle_profile_arch_var(const std::string &);
             void load_special_make_defaults_vars();
 
-            ProfileFile packages_file;
-            ProfileFile virtuals_file;
-            ProfileFile package_mask_file;
+            erepository::ProfileFile<LineConfigFile> packages_file;
+            erepository::ProfileFile<LineConfigFile> virtuals_file;
+            erepository::ProfileFile<erepository::MaskFile> package_mask_file;
 
             bool is_incremental(const std::string & s) const;
 
@@ -425,13 +426,13 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
-        for (ProfileFile::Iterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
+        for (erepository::ProfileFile<LineConfigFile>::Iterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
         {
-            if (0 != i->first.compare(0, 1, "*", 0, 1))
+            if (0 != i->compare(0, 1, "*", 0, 1))
                 continue;
 
-            Context context_spec("When parsing '" + i->first + "':");
-            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->first.substr(1), pds_pm_eapi_0));
+            Context context_spec("When parsing '" + *i + "':");
+            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
             spec->set_tag(system_tag);
             system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
         }
@@ -446,11 +447,11 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 env->default_distribution())->support_old_style_virtuals)
         try
         {
-            for (ProfileFile::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
+            for (erepository::ProfileFile<LineConfigFile>::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(line->first, std::back_inserter(tokens));
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
 
@@ -466,7 +467,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                     " failed due to exception: " + e.message() + " (" + e.what() + ")");
         }
 
-    for (ProfileFile::Iterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
+    for (erepository::ProfileFile<erepository::MaskFile>::Iterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
             line != line_end ; ++line)
     {
         if (line->first.empty())

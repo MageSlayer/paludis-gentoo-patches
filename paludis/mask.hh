@@ -26,6 +26,7 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <string>
 
 namespace paludis

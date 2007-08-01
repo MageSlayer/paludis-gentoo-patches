@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_profile.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/e_repository_sets.hh>
@@ -390,24 +391,24 @@ ERepository::repository_masked(const PackageID & id) const
 
             if (p->exists())
             {
-                LineConfigFile ff(*p, LineConfigFileOptions());
-                for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+                erepository::MaskFile ff(*p, LineConfigFileOptions());
+                for (erepository::MaskFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
                     try
                     {
-                        tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
+                        tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(line->first, pds_pm_eapi_0));
                         if (a->package_ptr())
-                            _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, tr1::shared_ptr<const RepositoryMaskInfo>(new RepositoryMaskInfo(*p))));
+                            _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second));
                         else
                             Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                                    + stringify(*line) + "' failed because specification does not restrict to a "
+                                    + stringify(line->first) + "' failed because specification does not restrict to a "
                                     "unique package");
                     }
                     catch (const Exception & e)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Loading package mask spec '"
-                                + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
+                                + stringify(line->first) + "' failed due to exception '" + e.message() + "' ("
                                 + e.what() + ")");
                     }
                 }

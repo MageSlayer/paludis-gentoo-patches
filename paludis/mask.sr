@@ -6,6 +6,7 @@ make_class_RepositoryMaskInfo()
     visible
 
     key mask_file "FSEntry"
+    key comment "tr1::shared_ptr<const Sequence<std::string> >"
 
     doxygen_comment << "END"
         /**

@@ -46,6 +46,7 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_entries.hh \
 	e_repository_exceptions.hh \
 	e_repository_id.hh \
+	e_repository_mask_file.hh \
 	e_repository_news.hh \
 	e_repository_params-sr.hh \
 	e_repository_params.hh \
@@ -96,6 +97,7 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_entries.cc \
 	e_repository_exceptions.cc \
 	e_repository_id.cc \
+	e_repository_mask_file.cc \
 	e_repository_news.cc \
 	e_repository_params.cc \
 	e_repository_profile.cc \

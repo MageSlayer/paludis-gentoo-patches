@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,13 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_FILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/config_file.hh>
 #include <paludis/mask-fwd.hh>
+
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
@@ -31,34 +33,28 @@ namespace paludis
     namespace erepository
     {
         /**
-         * A file in a ERepository profile.
+         * A file listing masks in an ERepository.
          *
-         * Handles -lines, comments, inherits automatically.
+         * Handles parsing mask reasons from the comments.
          *
          * \ingroup grperepository
          */
-        template <typename F_>
-        class PALUDIS_VISIBLE ProfileFile :
-            private PrivateImplementationPattern<ProfileFile<F_> >
+        class PALUDIS_VISIBLE MaskFile :
+            private PrivateImplementationPattern<MaskFile>
         {
             public:
                 ///\name Basic operations
                 ///\{
 
-                ProfileFile();
-                ~ProfileFile();
+                MaskFile(const FSEntry &, const LineConfigFileOptions &);
+                ~MaskFile();
 
                 ///\}
 
-                /**
-                 * Add a file.
-                 */
-                void add_file(const FSEntry &);
-
-                ///\name Iterate over our profile lines.
+                ///\name Iterate over our mask lines.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ProfileFile, typename F_::Iterator::value_type> Iterator;
+                typedef libwrapiter::ForwardIterator<MaskFile, const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > Iterator;
                 Iterator begin() const;
                 Iterator end() const;
 
@@ -68,3 +64,4 @@ namespace paludis
 }
 
 #endif
+
