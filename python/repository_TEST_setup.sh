@@ -38,6 +38,8 @@ END
 mkdir -p testrepo/{eclass,licenses,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 
+echo "stray" > stray
+
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
@@ -112,6 +114,8 @@ KEYWORDS="test"
 END
 
 done
+
+touch foo/metadata.xml
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"

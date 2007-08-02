@@ -119,6 +119,21 @@ namespace paludis
                                 new RegisteredException<Ex_>(name, doc, get_py_exception(base))));
                 }
         };
+
+        class PALUDIS_VISIBLE PythonError :
+            public Exception
+        {
+            public:
+                PythonError(const std::string & message) throw ();
+        };
+
+        class PALUDIS_VISIBLE PythonMethodNotImplemented :
+            public PythonError
+        {
+            public:
+                PythonMethodNotImplemented(const std::string & class_name,
+                        const std::string & function_name) throw ();
+        };
     }
 }
 

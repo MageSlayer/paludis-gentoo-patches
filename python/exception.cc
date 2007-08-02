@@ -67,6 +67,17 @@ ExceptionRegister::get_py_exception(const std::string & name)
         return NULL;
 }
 
+PythonError::PythonError(const std::string & message) throw () :
+    Exception(message)
+{
+}
+
+PythonMethodNotImplemented::PythonMethodNotImplemented(const std::string & class_name,
+        const std::string & method_name) throw () :
+    PythonError("Python subclasses of '" + class_name + "' have to implement '" + method_name + "' method")
+{
+}
+
 void PALUDIS_VISIBLE expose_exception()
 {
     /**
@@ -85,4 +96,10 @@ void PALUDIS_VISIBLE expose_exception()
             "A NameError is an Exception that is thrown when some kind of invalid name is encountered.");
     ExceptionRegister::get_instance()->add_exception<ConfigurationError>("ConfigurationError", "BaseException",
             "A ConfigurationError is thrown when an invalid configuration occurs.");
+    ExceptionRegister::get_instance()->add_exception<PythonError>("PythonError", "BaseException",
+            "Base exception class for Python specific stuff.");
+    ExceptionRegister::get_instance()->add_exception<PythonMethodNotImplemented>("PythonMethodNotImplemented",
+            "PythonError",
+            "Thrown if a not implemented virtual function was called from C++.");
+
 }

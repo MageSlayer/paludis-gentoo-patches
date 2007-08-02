@@ -24,6 +24,10 @@ repo_path = os.path.join(os.getcwd(), "repository_TEST_dir/testrepo")
 os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "repository_TEST_dir/home")
 
 from paludis import *
+
+# To check for QA easily
+import paludis
+
 import unittest
 
 Log.instance.log_level = LogLevel.WARNING
@@ -180,7 +184,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         self.assertEquals(li.license_exists("bad"), None)
 
     def test_12_e_interface(self):
-        ei = nce.main_repository
         ei = nce.main_repository.e_interface
 
         self.assert_(isinstance(ei, RepositoryEInterface))
@@ -200,6 +203,24 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         ei.profile = profile
 
         self.assertEquals(ei.profile_variable("ARCH"), "test")
+
+    def test_12_qa_interface(self):
+        if hasattr(paludis, "QAReporter"):
+            class PyQAR(QAReporter):
+                def __init__(self):
+                    QAReporter.__init__(self)
+                    self.messages = 0
+
+                def message(self, l, s, m):
+                    self.messages += 1
+
+            qi = repo.qa_interface
+            self.assert_(isinstance(qi, RepositoryQAInterface))
+
+            qr = PyQAR()
+
+            qi.check_qa(qr, QACheckProperties(), QACheckProperties(), QAMessageLevel.DEBUG, "")
+            self.assertEquals(qr.messages, 1)
 
 class TestCase_03_FakeRepository(unittest.TestCase):
     def setUp(self):

@@ -34,6 +34,7 @@ void expose_metadata_key();
 void expose_name();
 void expose_package_database();
 void expose_package_id();
+void expose_qa();
 void expose_query();
 void expose_repository();
 void expose_version_operator();
@@ -64,4 +65,5 @@ BOOST_PYTHON_MODULE(paludis)
     expose_action();
     expose_package_database();
     expose_repository();
+    expose_qa();
 }

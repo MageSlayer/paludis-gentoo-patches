@@ -38,7 +38,8 @@ IF_PYTHON_TESTS = \
 	metadata_key_TEST.py \
 	dep_list_TEST.py
 
-IF_PYTHON_QA_TESTS =
+IF_PYTHON_QA_TESTS = \
+	qa_TEST.py
 
 IF_PYTHON_SOURCES = \
 	action.cc \
@@ -60,7 +61,8 @@ IF_PYTHON_SOURCES = \
 	version_requirements.cc \
 	version_spec.cc
 
-IF_PYTHON_QA_SOURCES =
+IF_PYTHON_QA_SOURCES = \
+	qa.cc
 
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
@@ -117,26 +119,15 @@ paludis_python_so.o : paludis_python_so.cc
 if ENABLE_QA
 
 libpaludispython_la_SOURCES = $(IF_PYTHON_SOURCES) $(IF_PYTHON_QA_SOURCES)
-libpaludispython_la_LIBADD = \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-	$(top_builddir)/paludis/tasks/libpaludistasks.la \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
-	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
-	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la
-#	$(top_builddir)/paludis/qa/libpaludisqa.la
-
-TESTS = $(IF_PYTHON_QA_TESTS) $(IF_PYTHON_TESTS)
+TESTS = $(IF_PYTHON_TESTS) $(IF_PYTHON_QA_TESTS)
 
 else
 
 libpaludispython_la_SOURCES = $(IF_PYTHON_SOURCES)
+TESTS = $(IF_PYTHON_TESTS)
+
+endif
+
 libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -150,10 +141,6 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
-
-TESTS = $(IF_PYTHON_TESTS)
-
-endif
 
 check_DATA = .libs/paludis.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
