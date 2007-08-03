@@ -80,14 +80,14 @@ PackageID::MetadataIterator
 PackageID::begin_metadata() const
 {
     need_keys_added();
-    return MetadataIterator(indirect_iterator(_imp->keys.begin()));
+    return MetadataIterator(_imp->keys.begin());
 }
 
 PackageID::MetadataIterator
 PackageID::end_metadata() const
 {
     need_keys_added();
-    return MetadataIterator(indirect_iterator(_imp->keys.end()));
+    return MetadataIterator(_imp->keys.end());
 }
 
 void

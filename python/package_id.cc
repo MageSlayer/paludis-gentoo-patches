@@ -39,7 +39,7 @@ struct PackageIDWrapper
     {
         PackageID::MetadataIterator i(self.find_metadata(key));
         if (i != self.end_metadata())
-            return bp::incref(bp::object(*i).ptr());
+            return bp::incref(bp::object(**i).ptr());
         else
             return Py_None;
     }

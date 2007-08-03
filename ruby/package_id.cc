@@ -22,6 +22,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/mask.hh>
 #include <paludis/util/set.hh>
 #include <ruby.h>
 
@@ -39,12 +40,14 @@ namespace
     static VALUE c_metadata_string_key;
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
+    static VALUE c_metadata_repository_mask_info_key;
     static VALUE c_metadata_keyword_name_set_key;
     static VALUE c_metadata_use_flag_name_set_key;
     static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_inherited_set_key;
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_key_type;
+    static VALUE c_repository_mask_info;
 
     struct V :
         ConstVisitor<MetadataKeyVisitorTypes>
@@ -83,7 +86,8 @@ namespace
 
             void visit(const MetadataRepositoryMaskInfoKey &)
             {
-                value = Qnil;
+                value = Data_Wrap_Struct(c_metadata_repository_mask_info_key, 0, &Common<tr1::shared_ptr<const MetadataContentsKey> >::free,
+                        new tr1::shared_ptr<const MetadataRepositoryMaskInfoKey>(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(mm)));
             }
 
             void visit(const MetadataSetKey<KeywordNameSet> &)
@@ -203,6 +207,14 @@ namespace
      *
      * Our human name
      */
+    /*
+     * Document-method: mask_file
+     *
+     * call-seq:
+     *     mask_file -> String
+     *
+     * The file that specifies this mask
+     */
     template <typename T_, typename S_, const T_ (S_::* m_) () const>
     struct BaseValue
     {
@@ -241,6 +253,44 @@ namespace
         tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
         return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     [String] -> MetadataKey or Nil
+     *
+     * The named metadata key.
+     */
+    VALUE
+    package_id_subscript(VALUE self, VALUE raw_name)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        PackageID::MetadataIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
+        if ((*self_ptr)->end_metadata() == it)
+            return Qnil;
+        return metadata_key_to_value(*it);
+    }
+
+    /*
+     * call-seq:
+     *     each_metadata {|key| block } -> Nil
+     *
+     * Our metadata.
+     */
+    VALUE
+    package_id_each_metadata(VALUE self)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        for (PackageID::MetadataIterator it((*self_ptr)->begin_metadata()),
+                 it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+        {
+            VALUE val(metadata_key_to_value(*it));
+            if (Qnil != val)
+                rb_yield(val);
+        }
+        return Qnil;
     }
 
     /*
@@ -398,6 +448,15 @@ namespace
         return Qnil;
     }
 
+    VALUE
+    metadata_repository_mask_info_key_value(VALUE self) {
+        tr1::shared_ptr<const MetadataRepositoryMaskInfoKey> * self_ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const MetadataRepositoryMaskInfoKey>, self_ptr);
+        if ((*self_ptr)->value())
+            return repository_mask_info_to_value((*self_ptr)->value());
+        return Qnil;
+    }
+
     template <typename T_>
     struct SetValue
     {
@@ -430,6 +489,26 @@ namespace
         }
     };
 
+    VALUE
+    repository_mask_info_mask_file(VALUE self)
+    {
+        tr1::shared_ptr<const RepositoryMaskInfo> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const RepositoryMaskInfo>, ptr);
+        return rb_str_new2(stringify((*ptr)->mask_file).c_str());
+    }
+
+    VALUE
+    repository_mask_info_comment(VALUE self)
+    {
+        tr1::shared_ptr<const RepositoryMaskInfo> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const RepositoryMaskInfo>, ptr);
+        VALUE result(rb_ary_new());
+        for (Sequence<std::string>::Iterator it((*ptr)->comment->begin()),
+                 it_end((*ptr)->comment->end()); it_end != it; ++it)
+            rb_ary_push(result, rb_str_new2(it->c_str()));
+        return result;
+    }
+
     void do_register_package_id()
     {
         /*
@@ -445,6 +524,8 @@ namespace
         rb_define_method(c_package_id, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName,PackageID,&PackageID::slot>::fetch)), 0);
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
+        rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
+        rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<UseFlagNameSet>,&PackageID::use_key>::fetch)), 0);
         rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
@@ -512,6 +593,14 @@ namespace
         rb_define_method(c_metadata_contents_key, "value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
 
         /*
+         * Document-class: Paludis::MetadataRepositoryMaskInfoKey
+         *
+         * Metadata class for RepositoryMaskInfo
+         */
+        c_metadata_repository_mask_info_key = rb_define_class_under(paludis_module(), "MetadataRepositoryMaskInfoKey", c_metadata_key);
+        rb_define_method(c_metadata_repository_mask_info_key, "value", RUBY_FUNC_CAST(&metadata_repository_mask_info_key_value), 0);
+
+        /*
          * Document-class: Paludis::MetadataKeywordNameSetKey
          *
          * Metadata class for Use flag names
@@ -562,6 +651,16 @@ namespace
             rb_define_const(c_metadata_key_type, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
         // cc_enum_special<paludis/metadata_key-se.hh, MetadataKeyType, c_metadata_key_type>
+
+        /*
+         * Document-class: Paludis::RepositoryMaskInfo
+         *
+         * Information about a RepositoryMask.
+         */
+        c_repository_mask_info = rb_define_class_under(paludis_module(), "RepositoryMaskInfo", rb_cObject);
+        rb_funcall(c_repository_mask_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_repository_mask_info, "mask_file", RUBY_FUNC_CAST(&repository_mask_info_mask_file), 0);
+        rb_define_method(c_repository_mask_info, "comment", RUBY_FUNC_CAST(&repository_mask_info_comment), 0);
     }
 }
 
@@ -593,6 +692,22 @@ paludis::ruby::value_to_package_id(VALUE v)
     else
     {
         rb_raise(rb_eTypeError, "Can't convert %s into PackageID", rb_obj_classname(v));
+    }
+}
+
+VALUE
+paludis::ruby::repository_mask_info_to_value(tr1::shared_ptr<const RepositoryMaskInfo> m)
+{
+    tr1::shared_ptr<const RepositoryMaskInfo> * m_ptr(0);
+    try
+    {
+        m_ptr = new tr1::shared_ptr<const RepositoryMaskInfo>(m);
+        return Data_Wrap_Struct(c_repository_mask_info, 0, &Common<tr1::shared_ptr<const RepositoryMaskInfo> >::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
     }
 }
 

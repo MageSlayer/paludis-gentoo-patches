@@ -95,7 +95,7 @@ namespace paludis
             ///\name Finding and iterating over metadata keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, const MetadataKey> MetadataIterator;
+            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const MetadataKey> > MetadataIterator;
             MetadataIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));

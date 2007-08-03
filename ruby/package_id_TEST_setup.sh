@@ -18,6 +18,11 @@ ARCH=test
 USERLAND=test
 KERNEL=test
 END
+cat <<END > profiles/package.mask
+# this is
+# a test
+foo/bar
+END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"

@@ -140,7 +140,7 @@ namespace test_cases
 
             TEST_CHECK(spec.find_metadata("authors") != spec.end_metadata());
             ExtractValueVisitor v;
-            spec.find_metadata("authors")->accept(v);
+            (*spec.find_metadata("authors"))->accept(v);
             TEST_CHECK_EQUAL(v.s, "Fred, Barney");
 
 #if 0

@@ -367,21 +367,21 @@ void
 ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
 {
     Displayer ds(this, _imp->env, id, mkt_significant);
-    std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(ds));
+    std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(ds));
 
     Displayer dn(this, _imp->env, id, mkt_normal);
-    std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dn));
+    std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dn));
 
     if (want_deps() || want_raw())
     {
         Displayer dd(this, _imp->env, id, mkt_dependencies);
-        std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dd));
+        std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dd));
     }
 
     if (want_raw())
     {
         Displayer dr(this, _imp->env, id, mkt_internal);
-        std::for_each(id->begin_metadata(), id->end_metadata(), accept_visitor(dr));
+        std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dr));
     }
 }
 

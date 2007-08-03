@@ -122,6 +122,20 @@ module Paludis
         def test_=
             assert_equal pid_testrepo, pid_testrepo
         end
+
+        def test_subscript
+            assert_equal pid_testrepo["DESCRIPTION"].value, "Test package"
+            assert_nil pid_testrepo["PRESCRIPTION"]
+        end
+
+        def test_each_metadata
+            keys = { "DESCRIPTION"=>1, "IUSE"=>1, "INHERITED"=>1, "KEYWORDS"=>1, "EAPI"=>1, "repository_mask"=>1, "profile_mask"=>1 }
+            pid_testrepo.each_metadata do | key |
+                assert keys.has_key?(key.raw_name)
+                keys.delete key.raw_name
+            end
+            assert keys.empty?
+        end
     end
 
     class TestCase_ERepo < Test::Unit::TestCase
@@ -196,6 +210,14 @@ module Paludis
             #assert_kind_of MetadataInheritSetKey, pid_testrepo.inherited_key
             #assert_kind_of Array, pid_testrepo.iuse_key.value
             #assert_equal ['testflag'], pid_testrepo.iuse_key.value
+        end
+
+        def test_repository_mask_info_keys
+            assert_kind_of MetadataRepositoryMaskInfoKey, pid_testrepo["repository_mask"]
+            assert_kind_of RepositoryMaskInfo, pid_testrepo["repository_mask"].value
+            assert_equal "package_id_TEST_dir/testrepo/profiles/package.mask", pid_testrepo["repository_mask"].value.mask_file
+            assert_equal ["this is", "a test"], pid_testrepo["repository_mask"].value.comment
+            assert_nil pid_testrepo["profile_mask"].value
         end
     end
 
