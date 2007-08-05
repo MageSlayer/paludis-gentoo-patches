@@ -424,7 +424,7 @@ dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then
 	AC_MSG_CHECKING([for go faster stripes])
-	for x in "enforce-eh" "fast-math" "rtti"
+	for x in "enforce-eh" "fast-math" "rtti" "visibility"
 	do
 		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "$x" >/dev/null ; then
 			AC_MSG_RESULT([$x])
