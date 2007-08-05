@@ -32,21 +32,22 @@ installhookinstallpost_SCRIPTS = \
 installvarlibpaludisnews_DATA = \
 	.keep
 
-TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
-	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/ebuild/run_test.bash
+TESTS = \
+	eselect_env_update_TEST \
+	news_TEST
 
-TESTS =
+check_SCRIPTS = $(TESTS) run_test.bash \
+	eselect_env_update_TEST_setup.sh eselect_env_update_TEST_cleanup.sh \
+	news_TEST_setup.sh news_TEST_cleanup.sh
+
+check_PROGRAMS =
+
 EXTRA_DIST = \
 	Makefile.am.m4 \
 	$(installhookcommonprog_SCRIPTS) \
 	$(installhookinstallallpost_SCRIPTS) \
 	$(installhookinstallpost_SCRIPTS) \
-	$(TESTS)
-
-check_SCRIPTS = $(TESTS)
-check_PROGRAMS =
+	$(check_SCRIPTS)
 
 .keep :
 	touch $@
@@ -269,4 +270,18 @@ changequote(`<', `>')
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+TESTS_ENVIRONMENT = env \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PATH="${PATH}:/sbin:/usr/sbin" \
+	PALUDIS_COMMAND="$(top_builddir)/src/clients/paludis/paludis" \
+	PALUDIS_HOOKER_DIR="$(top_srcdir)/paludis/" \
+	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
+	PALUDIS_DISTRIBUTION="gentoo" \
+	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_ENVIRONMENT_SO_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments`" \
+	bash $(top_srcdir)/hooks/run_test.bash
 
