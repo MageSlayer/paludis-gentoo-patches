@@ -74,13 +74,14 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                 {
                     const EAPIEbuildMetadataVariables & m(*id->eapi()->supported->ebuild_metadata_variables);
 
-                    if (! lines[9].empty())
                     {
                         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
                         std::set<std::string> tokens;
                         WhitespaceTokeniser::get_instance()->tokenise(lines[9], std::inserter(tokens, tokens.begin()));
-                        ok = _ebuild.mtime() <= cache_time &&
-                            tokens.end() == std::find_if(tokens.begin(), tokens.end(),
+                        ok = _ebuild.mtime() <= cache_time;
+
+                        if (ok && ! tokens.empty())
+                            ok = tokens.end() == std::find_if(tokens.begin(), tokens.end(),
                                     tr1::bind(std::greater<time_t>(), tr1::bind(
                                             tr1::mem_fn(&EclassMtimes::mtime), _eclass_mtimes.get(), _1), cache_time));
                     }

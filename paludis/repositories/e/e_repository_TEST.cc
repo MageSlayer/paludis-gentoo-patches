@@ -587,6 +587,18 @@ namespace test_cases
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description");
                 }
+
+                for (int pass = 1 ; pass <= 3 ; ++pass)
+                {
+                    TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
+
+                    tr1::shared_ptr<const PackageID> id1(*env.package_database()->query(query::Matches(
+                                    PackageDepSpec("=cat-one/stale-pkg-2", pds_pm_unspecific)), qo_require_exactly_one)->begin());
+
+                    TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
+                    TEST_CHECK(id1->short_description_key());
+                    TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description");
+                }
             }
         }
     } test_e_repository_metadata_stale;
