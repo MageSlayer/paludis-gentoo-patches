@@ -26,6 +26,9 @@
 
 namespace paludis
 {
+    class CRANRepository;
+    class CRANInstalledRepository;
+
     namespace cranrepository
     {
         class PALUDIS_VISIBLE CRANPackageID :
@@ -41,8 +44,8 @@ namespace paludis
                 virtual void need_masks_added() const;
 
             public:
-                CRANPackageID(const tr1::shared_ptr<const Repository> & r, const FSEntry &);
-                CRANPackageID(const CRANPackageID * const, const std::string &);
+                CRANPackageID(const tr1::shared_ptr<const CRANRepository> &, const FSEntry &);
+                CRANPackageID(const tr1::shared_ptr<const CRANRepository> &, const CRANPackageID * const, const std::string &);
                 ~CRANPackageID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;

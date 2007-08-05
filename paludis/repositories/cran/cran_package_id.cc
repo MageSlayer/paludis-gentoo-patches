@@ -24,6 +24,8 @@
 #include <paludis/repositories/cran/masks.hh>
 #include <paludis/repositories/cran/keys.hh>
 #include <paludis/repositories/cran/normalise.hh>
+#include <paludis/repositories/cran/cran_repository.hh>
+#include <paludis/repositories/cran/cran_installed_repository.hh>
 #include <paludis/config_file.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/log.hh>
@@ -35,6 +37,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <string>
 #include <algorithm>
 #include <list>
@@ -52,6 +55,9 @@ namespace paludis
     struct Implementation<CRANPackageID>
     {
         const tr1::shared_ptr<const Repository> repository;
+        const tr1::shared_ptr<const CRANRepository> cran_repository;
+        const tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
+
         QualifiedPackageName name;
         VersionSpec version;
 
@@ -63,15 +69,17 @@ namespace paludis
         tr1::shared_ptr<DepKey> depends_key;
         tr1::shared_ptr<DepKey> suggests_key;
 
-        Implementation(const tr1::shared_ptr<const Repository> & r, const FSEntry & f) :
+        Implementation(const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
             repository(r),
+            cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
             version("0")
         {
         }
 
-        Implementation(const CRANPackageID * const r, const std::string & t) :
-            repository(r->repository()),
+        Implementation(const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+            repository(c),
+            cran_repository(c),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
             contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal))
@@ -80,7 +88,7 @@ namespace paludis
     };
 }
 
-CRANPackageID::CRANPackageID(const tr1::shared_ptr<const Repository> & r, const FSEntry & f) :
+CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
     PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(r, f)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
 {
@@ -181,7 +189,7 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const Repository> & r, const 
                     t != t_end ; ++t)
             {
                 if (*t != stringify(name().package))
-                    _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(this, *t)));
+                    _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(_imp->cran_repository, this, *t)));
                 else
                 {
                     /* yay CRAN... */
@@ -246,8 +254,8 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const Repository> & r, const 
 #endif
 }
 
-CRANPackageID::CRANPackageID(const CRANPackageID * const r, const std::string & t) :
-    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(r, t)),
+CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(c, r, t)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");
@@ -459,10 +467,56 @@ CRANPackageID::canonical_form(const PackageIDCanonicalForm f) const
     throw InternalError(PALUDIS_HERE, "Bad PackageIDCanonicalForm");
 }
 
-bool
-CRANPackageID::supports_action(const SupportsActionTestBase &) const
+namespace
 {
-    return false;
+    struct SupportsActionQuery :
+        ConstVisitor<SupportsActionTestVisitorTypes>
+    {
+        bool result;
+        const tr1::shared_ptr<const CRANRepository> cran_repository;
+        const tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
+
+        SupportsActionQuery(const tr1::shared_ptr<const CRANRepository> & c, const tr1::shared_ptr<const CRANInstalledRepository> & r) :
+            result(false),
+            cran_repository(c),
+            cran_installed_repository(r)
+        {
+        }
+
+        void visit(const SupportsActionTest<InstalledAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<FetchAction> &)
+        {
+            result = cran_repository;
+        }
+
+        void visit(const SupportsActionTest<InstallAction> &)
+        {
+            result = cran_repository;
+        }
+
+        void visit(const SupportsActionTest<ConfigAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<PretendAction> &)
+        {
+        }
+
+        void visit(const SupportsActionTest<UninstallAction> &)
+        {
+        }
+    };
+}
+
+bool
+CRANPackageID::supports_action(const SupportsActionTestBase & b) const
+{
+    SupportsActionQuery q(_imp->cran_repository, _imp->cran_installed_repository);
+    b.accept(q);
+    return q.result;
 }
 
 void
