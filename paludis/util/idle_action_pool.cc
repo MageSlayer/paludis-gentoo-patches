@@ -75,7 +75,7 @@ namespace paludis
         ActionQueue pool;
 
         Implementation() :
-            pool(destringify<int>(getenv_with_default("PALUDIS_IDLE_THREAD_COUNT", "5")), true)
+            pool(destringify<int>(getenv_with_default("PALUDIS_IDLE_THREAD_COUNT", "2")), true)
         {
         }
 

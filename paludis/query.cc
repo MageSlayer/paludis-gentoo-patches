@@ -23,6 +23,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/future-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -337,75 +338,83 @@ namespace
         tr1::shared_ptr<RepositoryNameSequence>
         repositories(const Environment & e) const
         {
-            tr1::shared_ptr<RepositoryNameSequence> r1(q1->repositories(e)), r2(q2->repositories(e));
+            Future<tr1::shared_ptr<RepositoryNameSequence> >
+                r1(tr1::bind(&QueryDelegate::repositories, q1, tr1::cref(e))),
+                r2(tr1::bind(&QueryDelegate::repositories, q2, tr1::cref(e)));
 
-            if (r1 && r2)
+            if (r1() && r2())
             {
-                std::set<RepositoryName, RepositoryNameComparator> s1(r1->begin(), r1->end()), s2(r2->begin(), r2->end());
+                std::set<RepositoryName, RepositoryNameComparator> s1(r1()->begin(), r1()->end()), s2(r2()->begin(), r2()->end());
                 tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
                 std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->back_inserter(),
                         RepositoryNameComparator());
                 return result;
             }
-            else if (r1)
-                return r1;
+            else if (r1())
+                return r1();
             else
-                return r2;
+                return r2();
         }
 
         tr1::shared_ptr<CategoryNamePartSet>
         categories(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r) const
         {
-            tr1::shared_ptr<CategoryNamePartSet> r1(q1->categories(e, r)), r2(q2->categories(e, r));
+            Future<tr1::shared_ptr<CategoryNamePartSet> >
+                r1(tr1::bind(&QueryDelegate::categories, q1, tr1::cref(e), tr1::cref(r))),
+                r2(tr1::bind(&QueryDelegate::categories, q2, tr1::cref(e), tr1::cref(r)));
 
-            if (r1 && r2)
+            if (r1() && r2())
             {
                 tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
-                std::set_intersection(r1->begin(), r1->end(), r2->begin(), r2->end(), result->inserter());
+                std::set_intersection(r1()->begin(), r1()->end(), r2()->begin(), r2()->end(), result->inserter());
                 return result;
             }
-            else if (r1)
-                return r1;
+            else if (r1())
+                return r1();
             else
-                return r2;
+                return r2();
         }
 
         tr1::shared_ptr<QualifiedPackageNameSet>
         packages(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r,
                 tr1::shared_ptr<const CategoryNamePartSet> c) const
         {
-            tr1::shared_ptr<QualifiedPackageNameSet> r1(q1->packages(e, r, c)), r2(q2->packages(e, r, c));
+            Future<tr1::shared_ptr<QualifiedPackageNameSet> >
+                r1(tr1::bind(&QueryDelegate::packages, q1, tr1::cref(e), tr1::cref(r), tr1::cref(c))),
+                r2(tr1::bind(&QueryDelegate::packages, q2, tr1::cref(e), tr1::cref(r), tr1::cref(c)));
 
-            if (r1 && r2)
+            if (r1() && r2())
             {
                 tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
-                std::set_intersection(r1->begin(), r1->end(), r2->begin(), r2->end(), result->inserter());
+                std::set_intersection(r1()->begin(), r1()->end(), r2()->begin(), r2()->end(), result->inserter());
                 return result;
             }
-            else if (r1)
-                return r1;
+            else if (r1())
+                return r1();
             else
-                return r2;
+                return r2();
         }
 
         tr1::shared_ptr<PackageIDSequence>
         ids(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r,
                 tr1::shared_ptr<const QualifiedPackageNameSet> q) const
         {
-            tr1::shared_ptr<PackageIDSequence> r1(q1->ids(e, r, q)), r2(q2->ids(e, r, q));
+            Future<tr1::shared_ptr<PackageIDSequence> >
+                r1(tr1::bind(&QueryDelegate::ids, q1, tr1::cref(e), tr1::cref(r), tr1::cref(q))),
+                r2(tr1::bind(&QueryDelegate::ids, q2, tr1::cref(e), tr1::cref(r), tr1::cref(q)));
 
-            if (r1 && r2)
+            if (r1() && r2())
             {
                 std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>
-                    s1(r1->begin(), r1->end()), s2(r2->begin(), r2->end());
+                    s1(r1()->begin(), r1()->end()), s2(r2()->begin(), r2()->end());
                 tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
                 std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), result->back_inserter(), PackageIDSetComparator());
                 return result;
             }
-            else if (r1)
-                return r1;
+            else if (r1())
+                return r1();
             else
-                return r2;
+                return r2();
         }
     };
 }
