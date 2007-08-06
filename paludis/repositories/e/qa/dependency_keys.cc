@@ -24,20 +24,94 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/save.hh>
+#include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 namespace
 {
+    struct Checker :
+        ConstVisitor<DependencySpecTree>
+    {
+        QAReporter & reporter;
+        const tr1::shared_ptr<const PackageID> & id;
+        const MetadataSpecTreeKey<DependencySpecTree> & key;
+        const std::string name;
+        unsigned level;
+
+        Checker(QAReporter & r,
+                const tr1::shared_ptr<const PackageID> & i,
+                const MetadataSpecTreeKey<DependencySpecTree> & k,
+                const std::string & n) :
+            reporter(r),
+            id(i),
+            key(k),
+            name(n),
+            level(0)
+        {
+        }
+
+        void visit_leaf(const PackageDepSpec &)
+        {
+        }
+
+        void visit_leaf(const BlockDepSpec &)
+        {
+        }
+
+        void visit_sequence(const UseDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            Save<unsigned> save_level(&level, level + 1);
+            if (cur == end)
+                reporter.message(qaml_normal, name, "Empty 'use? ( )' block in dependency key '" + stringify(key.raw_name())
+                        + "' for ID '" + stringify(*id) + "'");
+            else
+                std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit_sequence(const AllDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            Save<unsigned> save_level(&level, level + 1);
+            if (cur == end)
+            {
+                if (level > 1)
+                    reporter.message(qaml_normal, name, "Empty '( )' block in dependency key '" + stringify(key.raw_name())
+                            + "' for ID '" + stringify(*id) + "'");
+            }
+            else
+                std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            Save<unsigned> save_level(&level, level + 1);
+            if (cur == end)
+                reporter.message(qaml_normal, name, "Empty '|| ( )' block in dependency key '" + stringify(key.raw_name())
+                        + "' for ID '" + stringify(*id) + "'");
+            else
+                std::for_each(cur, end, accept_visitor(*this));
+        }
+    };
+
     bool dependency_key_check(
             QAReporter & reporter,
-            const tr1::shared_ptr<const ERepositoryID> & id,
+            const tr1::shared_ptr<const PackageID> & id,
             const std::string & name,
             const MetadataSpecTreeKey<DependencySpecTree> & key)
     {
         Context context("When checking dependency key '" + key.raw_name() + "' for check '" + name +
                 "' using dependency_keys_check on ID '" + stringify(*id) + "':");
+
+        Checker c(reporter, id, key, name);
+        key.value()->accept(c);
 
         return true;
     }
@@ -46,7 +120,7 @@ namespace
 bool
 paludis::erepository::dependency_keys_check(
         QAReporter & reporter,
-        const tr1::shared_ptr<const ERepositoryID> & id,
+        const tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using dependency_keys_check on ID '" + stringify(*id) + "':");

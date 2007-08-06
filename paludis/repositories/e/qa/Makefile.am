@@ -47,7 +47,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
-	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/eapis/" \
+	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_SKIP_CONFIG="yes" \
@@ -61,9 +61,21 @@ TESTS_ENVIRONMENT = env \
 if ENABLE_QA
 
 TESTS = \
+	dependency_keys_TEST \
 	stray_files_TEST
 
 check_PROGRAMS = $(TESTS)
+
+dependency_keys_TEST_SOURCES = dependency_keys_TEST.cc
+dependency_keys_TEST_LDFLAGS = \
+	libpaludiserepositoryqa.la \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
 
 stray_files_TEST_SOURCES = stray_files_TEST.cc
 stray_files_TEST_LDFLAGS = \

@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_DEPENDENCIES_HH 1
 
 #include <paludis/qa-fwd.hh>
-#include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
@@ -29,8 +30,8 @@ namespace paludis
     {
         bool dependency_keys_check(
                 QAReporter &,
-                const tr1::shared_ptr<const ERepositoryID> &,
-                const std::string &);
+                const tr1::shared_ptr<const PackageID> &,
+                const std::string &) PALUDIS_VISIBLE;
     }
 }
 
