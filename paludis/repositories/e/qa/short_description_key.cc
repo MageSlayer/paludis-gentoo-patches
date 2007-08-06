@@ -29,6 +29,8 @@ paludis::erepository::short_description_key_check(
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
+    Context context("When performing check '" + name + "' using short_description_key_check on ID '" + stringify(*id) + "':");
+
     if (! id->short_description_key())
         reporter.message(qaml_normal, name, "No description available for '" + stringify(*id) + "'");
     else if (id->short_description_key()->value() == stringify(id->name()))

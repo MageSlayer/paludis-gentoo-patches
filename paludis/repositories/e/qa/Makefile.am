@@ -14,6 +14,7 @@ if ENABLE_QA
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
+	dependency_keys.hh \
 	eapi_supported.hh \
 	homepage_key.hh \
 	qa_checks.hh \
@@ -25,6 +26,7 @@ paludis_repositories_e_include_HEADERS = \
 noinst_LTLIBRARIES = libpaludiserepositoryqa.la
 
 libpaludiserepositoryqa_la_SOURCES = \
+	dependency_keys.cc \
 	eapi_supported.cc \
 	homepage_key.cc \
 	qa_checks.cc \

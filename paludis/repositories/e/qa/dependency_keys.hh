@@ -17,28 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "eapi_supported.hh"
-#include <paludis/package_id.hh>
-#include <paludis/qa.hh>
-#include <paludis/repositories/e/eapi.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_DEPENDENCIES_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_DEPENDENCIES_HH 1
+
+#include <paludis/qa-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
-#include <paludis/util/stringify.hh>
 
-bool
-paludis::erepository::eapi_supported_check(
-        QAReporter & reporter,
-        const tr1::shared_ptr<const ERepositoryID> & id,
-        const std::string & name)
+namespace paludis
 {
-    Context context("When performing check '" + name + "' using eapi_supported_check on ID '" + stringify(*id) + "':");
-
-    if (! id->eapi()->supported)
+    namespace erepository
     {
-        reporter.message(qaml_severe, name, "EAPI '" + stringify(id->eapi()->name) + "' not supported");
-        return false;
+        bool dependency_keys_check(
+                QAReporter &,
+                const tr1::shared_ptr<const ERepositoryID> &,
+                const std::string &);
     }
-
-    return true;
 }
 
-
+#endif

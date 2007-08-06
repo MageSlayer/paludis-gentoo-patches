@@ -36,6 +36,8 @@ paludis::erepository::stray_files_check(
         const std::string & name
         )
 {
+    Context context("When performing check '" + name + "' using stray_files_check on directory '" + stringify(dir) + "':");
+
     if (dir.exists())
         for (DirIterator d(dir), d_end ; d != d_end ; ++d)
             if (stray(repo, *d))

@@ -87,6 +87,8 @@ paludis::erepository::homepage_key_check(
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
 {
+    Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");
+
     if (! id->homepage_key())
         reporter.message(qaml_normal, name, "No homepage available for '" + stringify(*id) + "'");
     else
