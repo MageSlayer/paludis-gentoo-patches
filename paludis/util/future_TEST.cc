@@ -36,6 +36,11 @@ namespace
         Future<int> r1(&f), r2(&f), r3(&f), r4(&f);
         return r1() + r2() + r3() - r4();
     }
+
+    void h(int & i)
+    {
+        i = 42;
+    }
 }
 
 namespace test_cases
@@ -63,6 +68,22 @@ namespace test_cases
             TEST_CHECK_EQUAL(f2(), 84);
         }
     } test_future_future;
+
+    struct VoidFutureTest : TestCase
+    {
+        VoidFutureTest() : TestCase("void future") { }
+
+        void run()
+        {
+            int x(17), y(23);
+            {
+                Future<void> f1(tr1::bind(&h, tr1::ref(x))), f2(tr1::bind(&h, tr1::ref(y)));
+                f1();
+                TEST_CHECK_EQUAL(x, 42);
+            }
+            TEST_CHECK_EQUAL(y, 42);
+        }
+    } test_void_future;
 }
 
 

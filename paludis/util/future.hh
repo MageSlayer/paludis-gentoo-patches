@@ -52,6 +52,20 @@ namespace paludis
 
             T_ operator() () const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    template <>
+    class PALUDIS_VISIBLE Future<void> :
+        private PrivateImplementationPattern<Future<void> >
+    {
+        private:
+            using PrivateImplementationPattern<Future<void> >::_imp;
+
+        public:
+            Future(const tr1::function<void () throw ()> &);
+            ~Future();
+
+            void operator() () const;
+    };
 }
 
 #endif

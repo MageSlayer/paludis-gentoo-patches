@@ -27,6 +27,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/qa-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
@@ -39,6 +41,11 @@ namespace paludis
         class QAController :
             private PrivateImplementationPattern<QAController>
         {
+            private:
+                void _run_category(const CategoryNamePart &);
+                void _run_package(const QualifiedPackageName &);
+                void _run_id(const tr1::shared_ptr<const PackageID> &);
+
             public:
                 QAController(
                         const Environment * const,

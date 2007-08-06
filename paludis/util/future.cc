@@ -27,11 +27,73 @@ using namespace paludis;
 template class InstantiationPolicy<FutureActionQueue, instantiation_method::SingletonTag>;
 
 FutureActionQueue::FutureActionQueue() :
-    ActionQueue(destringify<int>(getenv_with_default("PALUDIS_FUTURE_THREAD_COUNT", "2")), true)
+    ActionQueue(destringify<int>(getenv_with_default("PALUDIS_FUTURE_THREAD_COUNT", "5")), true)
 {
 }
 
 FutureActionQueue::~FutureActionQueue()
 {
+}
+
+namespace
+{
+    unsigned make_non_void(const tr1::function<void () throw ()> & f)
+    {
+        f();
+        return 0;
+    }
+}
+
+namespace paludis
+{
+    template <>
+    template <>
+    struct Implementation<Future<void> >
+    {
+        const tr1::function<void () throw ()> f;
+        const tr1::function<unsigned () throw ()> adapted_f;
+        mutable tr1::shared_ptr<tr1::shared_ptr<unsigned > > result;
+        mutable tr1::shared_ptr<Mutex> mutex;
+        mutable tr1::shared_ptr<ConditionVariable> condition;
+
+        Implementation(const tr1::function<void () throw ()> & fn) :
+            f(fn),
+            adapted_f(tr1::bind(&make_non_void, fn)),
+            result(new tr1::shared_ptr<unsigned >),
+            mutex(new Mutex),
+            condition(new ConditionVariable)
+        {
+            FutureActionQueue::get_instance()->enqueue(
+                    tr1::bind(&adapt_for_future<unsigned>, adapted_f, result, mutex, condition));
+        }
+    };
+}
+
+Future<void>::Future(const tr1::function<void () throw ()> & f) :
+    PrivateImplementationPattern<Future<void> >(new Implementation<Future<void> >(f))
+{
+}
+
+Future<void>::~Future()
+{
+    Lock l(*_imp->mutex);
+    if (! *_imp->result)
+    {
+        _imp->f();
+        _imp->result->reset(new unsigned(0));
+        _imp->condition->broadcast();
+    }
+}
+
+void
+Future<void>::operator() () const
+{
+    Lock l(*_imp->mutex);
+    if (! *_imp->result)
+    {
+        _imp->f();
+        _imp->result->reset(new unsigned(0));
+        _imp->condition->broadcast();
+    }
 }
 
