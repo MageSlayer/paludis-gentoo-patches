@@ -26,6 +26,7 @@
 
 bool
 paludis::erepository::eapi_supported_check(
+        const FSEntry & entry,
         QAReporter & reporter,
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
@@ -34,7 +35,7 @@ paludis::erepository::eapi_supported_check(
 
     if (! id->eapi()->supported)
     {
-        reporter.message(qaml_severe, name, "EAPI '" + stringify(id->eapi()->name) + "' not supported");
+        reporter.message(entry, qaml_severe, name, "EAPI '" + stringify(id->eapi()->name) + "' not supported");
         return false;
     }
 

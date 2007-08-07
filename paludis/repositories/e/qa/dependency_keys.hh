@@ -23,12 +23,14 @@
 #include <paludis/qa-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         bool dependency_keys_check(
+                const FSEntry &,
                 QAReporter &,
                 const tr1::shared_ptr<const PackageID> &,
                 const std::string &) PALUDIS_VISIBLE;

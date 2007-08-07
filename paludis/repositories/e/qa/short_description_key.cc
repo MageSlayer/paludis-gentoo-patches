@@ -25,6 +25,7 @@
 
 bool
 paludis::erepository::short_description_key_check(
+        const FSEntry & entry,
         QAReporter & reporter,
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
@@ -32,18 +33,18 @@ paludis::erepository::short_description_key_check(
     Context context("When performing check '" + name + "' using short_description_key_check on ID '" + stringify(*id) + "':");
 
     if (! id->short_description_key())
-        reporter.message(qaml_normal, name, "No description available for '" + stringify(*id) + "'");
+        reporter.message(entry, qaml_normal, name, "No description available for '" + stringify(*id) + "'");
     else if (id->short_description_key()->value() == stringify(id->name()))
-        reporter.message(qaml_normal, name, "Description for '" + stringify(*id) + "' is equal to PN");
+        reporter.message(entry, qaml_normal, name, "Description for '" + stringify(*id) + "' is equal to PN");
     else if (std::string::npos != id->short_description_key()->value().find("Based on the")
             && std::string::npos != id->short_description_key()->value().find("eclass"))
-        reporter.message(qaml_normal, name, "Description for '" + stringify(*id) + "' is about as useful as a chocolate teapot");
+        reporter.message(entry, qaml_normal, name, "Description for '" + stringify(*id) + "' is about as useful as a chocolate teapot");
     else if (id->short_description_key()->value().length() < 10)
-        reporter.message(qaml_normal, name, "Description for '" + stringify(*id) + "' is suspiciously short");
+        reporter.message(entry, qaml_normal, name, "Description for '" + stringify(*id) + "' is suspiciously short");
     else if (id->short_description_key()->value().length() > 300)
-        reporter.message(qaml_normal, name, "Description for '" + stringify(*id) + "' written by Duncan?");
+        reporter.message(entry, qaml_normal, name, "Description for '" + stringify(*id) + "' written by Duncan?");
     else if (id->short_description_key()->value().length() > 120)
-        reporter.message(qaml_normal, name, "Description for '" + stringify(*id) + "' is too long");
+        reporter.message(entry, qaml_normal, name, "Description for '" + stringify(*id) + "' is too long");
 
     return true;
 }

@@ -25,6 +25,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
+#include <paludis/util/fs_entry.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -39,15 +40,18 @@ namespace
         using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>::visit_sequence;
         using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
 
+        const FSEntry entry;
         QAReporter & reporter;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string name;
         bool found_one;
 
         HomepageChecker(
+                const FSEntry & f,
                 QAReporter & r,
                 const tr1::shared_ptr<const ERepositoryID> & i,
                 const std::string & n) :
+            entry(f),
             reporter(r),
             id(i),
             name(n),
@@ -58,7 +62,7 @@ namespace
         ~HomepageChecker()
         {
             if (! found_one)
-                reporter.message(qaml_normal, name, "Homepage '" + stringify(*id) + "' specifies no URIs");
+                reporter.message(entry, qaml_normal, name, "Homepage '" + stringify(*id) + "' specifies no URIs");
         }
 
         void visit_leaf(const URIDepSpec & u)
@@ -66,23 +70,25 @@ namespace
             found_one = true;
 
             if (! u.renamed_url_suffix().empty())
-                reporter.message(qaml_normal, name, "Homepage for '" + stringify(*id) + "' uses -> in part '" + u.text() + "'");
+                reporter.message(entry, qaml_normal, name, "Homepage for '" + stringify(*id) + "' uses -> in part '" + u.text() + "'");
 
             if (0 == u.original_url().compare(0, 7, "http://") &&
                     0 == u.original_url().compare(0, 8, "https://") &&
                     0 == u.original_url().compare(0, 6, "ftp://"))
-                reporter.message(qaml_normal, name, "Homepage for '" + stringify(*id) + "' uses no or unknown protocol in part '" + u.text() + "'");
+                reporter.message(entry, qaml_normal, name, "Homepage for '" + stringify(*id) +
+                        "' uses no or unknown protocol in part '" + u.text() + "'");
         }
 
         void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
         {
-            reporter.message(qaml_normal, name, "Homepage '" + stringify(*id) + "' uses labels");
+            reporter.message(entry, qaml_normal, name, "Homepage '" + stringify(*id) + "' uses labels");
         }
     };
 }
 
 bool
 paludis::erepository::homepage_key_check(
+        const FSEntry & entry,
         QAReporter & reporter,
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & name)
@@ -90,10 +96,10 @@ paludis::erepository::homepage_key_check(
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");
 
     if (! id->homepage_key())
-        reporter.message(qaml_normal, name, "No homepage available for '" + stringify(*id) + "'");
+        reporter.message(entry, qaml_normal, name, "No homepage available for '" + stringify(*id) + "'");
     else
     {
-        HomepageChecker h(reporter, id, name);
+        HomepageChecker h(entry, reporter, id, name);
         id->homepage_key()->value()->accept(h);
     }
 

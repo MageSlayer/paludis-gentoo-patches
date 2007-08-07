@@ -56,24 +56,24 @@ QAChecks::QAChecks() :
     using namespace tr1::placeholders;
 
     _imp->tree_checks_group->add_check("stray_tree_files",
-            tr1::bind(stray_files_check, _1, _3, _4, is_stray_at_tree_dir, "stray_tree_files"));
+            tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_tree_dir, "stray_tree_files"));
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
-            tr1::bind(stray_files_check, _1, _3, _4, is_stray_at_category_dir, "stray_category_dir_files"));
+            tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_category_dir, "stray_category_dir_files"));
 
     _imp->package_id_checks_group->add_check("eapi_supported",
-            tr1::bind(eapi_supported_check, _1, _4, "eapi_supported"));
+            tr1::bind(eapi_supported_check, _1, _2, _5, "eapi_supported"));
 
     _imp->package_id_checks_group->add_check("short_description_key",
-            tr1::bind(short_description_key_check, _1, _4, "short_description_key"));
+            tr1::bind(short_description_key_check, _1, _2, _5, "short_description_key"));
     _imp->package_id_checks_group->add_prerequirement("short_description_key", "eapi_supported");
 
     _imp->package_id_checks_group->add_check("homepage_key",
-            tr1::bind(homepage_key_check, _1, _4, "homepage_key"));
+            tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
     _imp->package_id_checks_group->add_prerequirement("homepage_key", "eapi_supported");
 
     _imp->package_id_checks_group->add_check("dependency_keys",
-            tr1::bind(dependency_keys_check, _1, _4, "dependency_keys"));
+            tr1::bind(dependency_keys_check, _1, _2, _5, "dependency_keys"));
     _imp->package_id_checks_group->add_prerequirement("dependency_keys", "eapi_supported");
 }
 

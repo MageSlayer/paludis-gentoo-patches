@@ -41,6 +41,7 @@ namespace paludis
     namespace erepository
     {
         typedef tr1::function<bool (
+                const FSEntry &,
                 QAReporter &,
                 const Environment * const,
                 const tr1::shared_ptr<const ERepository> &,
@@ -48,6 +49,7 @@ namespace paludis
                 )> TreeCheckFunction;
 
         typedef tr1::function<bool (
+                const FSEntry &,
                 QAReporter &,
                 const Environment * const,
                 const tr1::shared_ptr<const ERepository> &,
@@ -55,6 +57,7 @@ namespace paludis
                 )> CategoryDirCheckFunction;
 
         typedef tr1::function<bool (
+                const FSEntry &,
                 QAReporter &,
                 const Environment * const,
                 const tr1::shared_ptr<const ERepository> &,

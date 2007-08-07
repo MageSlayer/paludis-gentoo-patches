@@ -118,7 +118,7 @@ namespace
 
     /*
      * call-seq:
-     *     message(qa_message_level, source, message)
+     *     message(fs_entry, qa_message_level, source, message)
      *
      * Process a qa error message
      */
@@ -136,7 +136,7 @@ namespace
          * Base class for QAReporter, create a new sublclass that implements a message function.
          */
         c_qa_reporter = rb_define_class_under(paludis_module(), "QAReporter", rb_cObject);
-        rb_define_method(c_qa_reporter, "message", RUBY_FUNC_CAST(&ruby_qa_reporter_message), 3);
+        rb_define_method(c_qa_reporter, "message", RUBY_FUNC_CAST(&ruby_qa_reporter_message), 4);
 
         /*
          * Document-class: Paludis::QACheckProperties

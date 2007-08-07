@@ -201,7 +201,7 @@ module Paludis
             class TestQAReporter < QAReporter
                 @messages
 
-                def message(l, s, m)
+                def message(f, l, s, m)
                     @messages+=1
                 end
 

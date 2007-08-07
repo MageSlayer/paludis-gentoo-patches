@@ -27,6 +27,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/fs_entry.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -36,6 +37,7 @@ namespace
     struct Checker :
         ConstVisitor<DependencySpecTree>
     {
+        const FSEntry entry;
         QAReporter & reporter;
         const tr1::shared_ptr<const PackageID> & id;
         const MetadataSpecTreeKey<DependencySpecTree> & key;
@@ -43,10 +45,13 @@ namespace
         unsigned level;
         bool child_of_any;
 
-        Checker(QAReporter & r,
+        Checker(
+                const FSEntry & f,
+                QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
                 const MetadataSpecTreeKey<DependencySpecTree> & k,
                 const std::string & n) :
+            entry(f),
             reporter(r),
             id(i),
             key(k),
@@ -63,7 +68,7 @@ namespace
         void visit_leaf(const BlockDepSpec & b)
         {
             if (child_of_any)
-                reporter.message(qaml_normal, name, "'|| ( )' block with block child '!"
+                reporter.message(entry, qaml_normal, name, "'|| ( )' block with block child '!"
                         + stringify(*b.blocked_spec()) + "' in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
         }
@@ -73,13 +78,13 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             if (child_of_any)
-                reporter.message(qaml_normal, name, "'|| ( )' block with use? ( ) child in dependency key '" + stringify(key.raw_name())
+                reporter.message(entry, qaml_normal, name, "'|| ( )' block with use? ( ) child in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
 
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
             if (cur == end)
-                reporter.message(qaml_normal, name, "Empty 'use? ( )' block in dependency key '" + stringify(key.raw_name())
+                reporter.message(entry, qaml_normal, name, "Empty 'use? ( )' block in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -94,7 +99,7 @@ namespace
             if (cur == end)
             {
                 if (level > 1)
-                    reporter.message(qaml_normal, name, "Empty '( )' block in dependency key '" + stringify(key.raw_name())
+                    reporter.message(entry, qaml_normal, name, "Empty '( )' block in dependency key '" + stringify(key.raw_name())
                             + "' for ID '" + stringify(*id) + "'");
             }
             else
@@ -108,12 +113,12 @@ namespace
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, true);
             if (cur == end)
-                reporter.message(qaml_normal, name, "Empty '|| ( )' block in dependency key '" + stringify(key.raw_name())
+                reporter.message(entry, qaml_normal, name, "Empty '|| ( )' block in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
             else if (next(cur) == end)
             {
                 cur->accept(*this);
-                reporter.message(qaml_normal, name, "'|| ( )' block with only one child in dependency key '" + stringify(key.raw_name())
+                reporter.message(entry, qaml_normal, name, "'|| ( )' block with only one child in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
             }
             else
@@ -122,6 +127,7 @@ namespace
     };
 
     bool dependency_key_check(
+            const FSEntry & entry,
             QAReporter & reporter,
             const tr1::shared_ptr<const PackageID> & id,
             const std::string & name,
@@ -130,7 +136,7 @@ namespace
         Context context("When checking dependency key '" + key.raw_name() + "' for check '" + name +
                 "' using dependency_keys_check on ID '" + stringify(*id) + "':");
 
-        Checker c(reporter, id, key, name);
+        Checker c(entry, reporter, id, key, name);
         key.value()->accept(c);
 
         return true;
@@ -139,6 +145,7 @@ namespace
 
 bool
 paludis::erepository::dependency_keys_check(
+        const FSEntry & entry,
         QAReporter & reporter,
         const tr1::shared_ptr<const PackageID> & id,
         const std::string & name)
@@ -148,16 +155,16 @@ paludis::erepository::dependency_keys_check(
     bool result(true);
 
     if (id->build_dependencies_key())
-        result &= dependency_key_check(reporter, id, name, *id->build_dependencies_key());
+        result &= dependency_key_check(entry, reporter, id, name, *id->build_dependencies_key());
 
     if (id->run_dependencies_key())
-        result &= dependency_key_check(reporter, id, name, *id->run_dependencies_key());
+        result &= dependency_key_check(entry, reporter, id, name, *id->run_dependencies_key());
 
     if (id->post_dependencies_key())
-        result &= dependency_key_check(reporter, id, name, *id->post_dependencies_key());
+        result &= dependency_key_check(entry, reporter, id, name, *id->post_dependencies_key());
 
     if (id->suggested_dependencies_key())
-        result &= dependency_key_check(reporter, id, name, *id->suggested_dependencies_key());
+        result &= dependency_key_check(entry, reporter, id, name, *id->suggested_dependencies_key());
 
     return result;
 }

@@ -42,7 +42,7 @@ namespace
         {
         }
 
-        void message(QAMessageLevel, const std::string &, const std::string &)
+        void message(const FSEntry &, QAMessageLevel, const std::string &, const std::string &)
         {
             ++count;
         }
@@ -64,7 +64,7 @@ namespace test_cases
             id->build_dependencies_key()->set_from_string("cat/other");
 
             TestReporter r;
-            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r, id, "dependency keys"));
             TEST_CHECK_EQUAL(r.count, 0u);
         }
     } test_good;
@@ -82,25 +82,25 @@ namespace test_cases
             tr1::shared_ptr<FakePackageID> id1(repo->add_version("cat", "pkg", "1"));
             id1->build_dependencies_key()->set_from_string("( ( ) )");
             TestReporter r1;
-            TEST_CHECK(dependency_keys_check(r1, id1, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r1, id1, "dependency keys"));
             TEST_CHECK_EQUAL(r1.count, 1u);
 
             tr1::shared_ptr<FakePackageID> id2(repo->add_version("cat", "pkg", "2"));
             id2->build_dependencies_key()->set_from_string("|| ( )");
             TestReporter r2;
-            TEST_CHECK(dependency_keys_check(r2, id2, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r2, id2, "dependency keys"));
             TEST_CHECK_EQUAL(r2.count, 1u);
 
             tr1::shared_ptr<FakePackageID> id3(repo->add_version("cat", "pkg", "3"));
             id3->build_dependencies_key()->set_from_string("x? ( )");
             TestReporter r3;
-            TEST_CHECK(dependency_keys_check(r3, id3, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r3, id3, "dependency keys"));
             TEST_CHECK_EQUAL(r3.count, 1u);
 
             tr1::shared_ptr<FakePackageID> id4(repo->add_version("cat", "pkg", "4"));
             id4->build_dependencies_key()->set_from_string("x? ( ) ( y? ( || ( ) ) )");
             TestReporter r4;
-            TEST_CHECK(dependency_keys_check(r4, id4, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r4, id4, "dependency keys"));
             TEST_CHECK_EQUAL(r4.count, 2u);
         }
     } test_empty_block;
@@ -118,7 +118,7 @@ namespace test_cases
             id->build_dependencies_key()->set_from_string("|| ( v/w x? ( x/y ) )");
 
             TestReporter r;
-            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r, id, "dependency keys"));
             TEST_CHECK_EQUAL(r.count, 1u);
         }
     } test_any_use;
@@ -136,7 +136,7 @@ namespace test_cases
             id->build_dependencies_key()->set_from_string("|| ( x/x )");
 
             TestReporter r;
-            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r, id, "dependency keys"));
             TEST_CHECK_EQUAL(r.count, 1u);
         }
     } test_any_one;
@@ -154,7 +154,7 @@ namespace test_cases
             id->build_dependencies_key()->set_from_string("|| ( x/x !y/y z/z )");
 
             TestReporter r;
-            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK(dependency_keys_check(FSEntry("/var/empty"), r, id, "dependency keys"));
             TEST_CHECK_EQUAL(r.count, 1u);
         }
     } test_any_block;

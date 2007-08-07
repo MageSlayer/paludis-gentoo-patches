@@ -316,15 +316,16 @@ paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter) {
 }
 
 void
-paludis::ruby::RubyQAReporter::message(const QAMessageLevel l, const std::string & s, const std::string & m)
+paludis::ruby::RubyQAReporter::message(const FSEntry & f, const QAMessageLevel l, const std::string & s, const std::string & m)
 {
     try
     {
         ID message_id = rb_intern("message");
+        VALUE f_val = rb_str_new2(stringify(f).c_str());
         VALUE l_val = INT2FIX(l);
         VALUE s_val = rb_str_new2(s.c_str());
         VALUE m_val = rb_str_new2(m.c_str());
-        rb_funcall(*(this->reporter), message_id, 3, l_val, s_val, m_val);
+        rb_funcall(*(this->reporter), message_id, 4, f_val, l_val, s_val, m_val);
     }
     catch (const std::exception & e)
     {

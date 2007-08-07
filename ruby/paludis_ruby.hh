@@ -56,7 +56,7 @@ namespace paludis
 
             public:
                 RubyQAReporter(VALUE*);
-                void message(const QAMessageLevel, const std::string &, const std::string &);
+                void message(const FSEntry &, const QAMessageLevel, const std::string &, const std::string &);
         };
 #endif
 

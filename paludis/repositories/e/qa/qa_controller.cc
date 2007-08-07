@@ -26,6 +26,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/parallel_for_each.hh>
+#include <paludis/util/options.hh>
 #include <paludis/qa.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -49,10 +50,10 @@ namespace
         {
         }
 
-        void message(QAMessageLevel l, const std::string & s, const std::string & t)
+        void message(const FSEntry & f, QAMessageLevel l, const std::string & s, const std::string & t)
         {
             Lock lock(mutex);
-            base.message(l, s, t);
+            base.message(f, l, s, t);
         }
     };
 }
@@ -63,9 +64,9 @@ namespace paludis
     struct Implementation<QAController>
     {
         const Environment * const env;
-        const tr1::shared_ptr<const ERepository> & repo;
-        const QACheckProperties & ignore_if;
-        const QACheckProperties & ignore_unless;
+        const tr1::shared_ptr<const ERepository> repo;
+        const QACheckProperties ignore_if;
+        const QACheckProperties ignore_unless;
         const QAMessageLevel minimum_level;
         ThreadSafeQAReporter reporter;
 
@@ -117,11 +118,13 @@ QAController::_run_category(const CategoryNamePart & c)
                 QAChecks::get_instance()->category_dir_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+                        _1, _imp->repo->layout()->category_directory(c),
+                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(qaml_severe, "category_dir_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(_imp->repo->layout()->category_directory(c), qaml_severe, "category_dir_checks_group",
+                "Caught exception '" + e.message() + "' (" + e.what() + ")");
     }
 
     tr1::shared_ptr<const QualifiedPackageNameSet> packages(_imp->repo->package_names(c));
@@ -147,11 +150,13 @@ QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
                 QAChecks::get_instance()->package_id_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
-                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+                        _1, _imp->repo->layout()->package_file(*i),
+                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(qaml_severe, "package_id_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(_imp->repo->layout()->package_file(*i), qaml_severe, "package_id_checks_group",
+                "Caught exception '" + e.message() + "' (" + e.what() + ")");
     }
 }
 
@@ -167,11 +172,13 @@ QAController::run()
                 QAChecks::get_instance()->tree_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
-                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
+                        _1, _imp->repo->params().location,
+                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(qaml_severe, "tree_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(_imp->repo->params().location, qaml_severe, "tree_checks_group",
+                "Caught exception '" + e.message() + "' (" + e.what() + ")");
     }
 
     tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());

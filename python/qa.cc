@@ -21,6 +21,7 @@
 
 #include <paludis/qa.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/fs_entry.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -30,10 +31,10 @@ struct QAReporterWrapper :
     QAReporter,
     bp::wrapper<QAReporter>
 {
-    void message(QAMessageLevel qml, const std::string & s, const std::string & m)
+    void message(const FSEntry & f, QAMessageLevel qml, const std::string & s, const std::string & m)
     {
         if (get_override("message"))
-            get_override("message")(qml, s, m);
+            get_override("message")(f, qml, s, m);
         else
             throw PythonMethodNotImplemented("QAReporter", "message");
     }

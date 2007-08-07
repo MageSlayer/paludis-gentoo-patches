@@ -22,12 +22,14 @@
 
 #include <paludis/qa-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         bool short_description_key_check(
+                const FSEntry &,
                 QAReporter & reporter,
                 const tr1::shared_ptr<const ERepositoryID> &,
                 const std::string & name);

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_QA_HH 1
 
 #include <paludis/qa-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {
@@ -29,7 +30,11 @@ namespace paludis
         public:
             virtual ~QAReporter() = 0;
 
-            virtual void message(const QAMessageLevel, const std::string &, const std::string &) = 0;
+            virtual void message(
+                    const FSEntry & what,
+                    const QAMessageLevel,
+                    const std::string & name,
+                    const std::string & message) = 0;
     };
 }
 
