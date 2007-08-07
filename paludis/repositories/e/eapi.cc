@@ -99,6 +99,7 @@ namespace paludis
                                                         .must_not_change_variables(k.get("must_not_change_variables"))
                                                         .save_variables(k.get("save_variables"))
                                                         .save_base_variables(k.get("save_base_variables"))
+                                                        .save_unmodifiable_variables(k.get("save_unmodifiable_variables"))
                                                         .support_eclasses(destringify<bool>(k.get("support_eclasses")))
                                                         .support_exlibs(destringify<bool>(k.get("support_exlibs")))
                                                         .utility_path_suffixes(k.get("utility_path_suffixes"))

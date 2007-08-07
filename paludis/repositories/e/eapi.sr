@@ -127,6 +127,7 @@ make_class_EAPIEbuildOptions()
     key must_not_change_variables std::string
     key save_variables std::string
     key save_base_variables std::string
+    key save_unmodifiable_variables std::string
     key vdb_from_env_variables std::string
     key vdb_from_env_unless_empty_variables std::string
 

@@ -145,6 +145,8 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->save_variables)
             .with_setenv("PALUDIS_SAVE_BASE_VARIABLES",
                     params.package_id->eapi()->supported->ebuild_options->save_base_variables)
+            .with_setenv("PALUDIS_SAVE_UNMODIFIABLE_VARIABLES",
+                    params.package_id->eapi()->supported->ebuild_options->save_unmodifiable_variables)
             .with_setenv("PALUDIS_DIRECTORY_IF_EXISTS_VARIABLES",
                     params.package_id->eapi()->supported->ebuild_options->directory_if_exists_variables)
             .with_setenv("PALUDIS_SOURCE_MERGED_VARIABLES",
