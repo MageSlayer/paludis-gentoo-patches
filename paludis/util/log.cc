@@ -24,6 +24,16 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/action_queue.hh>
+#include "config.h"
+
+#ifdef PALUDIS_ENABLE_THREADS
+#  ifdef __linux__
+#    include <sys/time.h>
+#    include <sys/resource.h>
+#    include <unistd.h>
+#    include <sys/syscall.h>
+#  endif
+#endif
 
 /** \file
  * Implementation for Log.
@@ -156,7 +166,15 @@ void
 Log::_message(const LogLevel l, const LogContext c, const std::string & s)
 {
     if (lc_context == c)
-        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, Context::backtrace("\n  ... "), s));
+        _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c,
+#ifdef PALUDIS_ENABLE_THREADS
+#  ifdef __linux__
+                    "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
+#  else
+#    warning "Don't know how to get a thread ID on your platform"
+#  endif
+#endif
+                    Context::backtrace("\n  ... "), s));
     else
         _imp->action_queue.enqueue(tr1::bind(tr1::mem_fn(&Implementation<Log>::message), _imp.get(), l, c, "", s));
 }
