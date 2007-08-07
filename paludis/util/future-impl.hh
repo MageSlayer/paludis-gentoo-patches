@@ -95,12 +95,19 @@ void paludis::adapt_for_future(
         tr1::shared_ptr<Mutex> mutex,
         tr1::shared_ptr<ConditionVariable> condition)
 {
-    TryLock l(*mutex);
-    if (l())
+    try
     {
-        if (! *result)
-            result->reset(new T_(f()));
-        condition->broadcast();
+        TryLock l(*mutex);
+        if (l())
+        {
+            if (! *result)
+                result->reset(new T_(f()));
+            condition->broadcast();
+        }
+    }
+    catch (...)
+    {
+        // exception will be raised when operator() is called
     }
 }
 
