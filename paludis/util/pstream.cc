@@ -85,6 +85,8 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
     if (cmd.uid() && *cmd.uid() != getuid())
         extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
 
+    extras.append(" [stdout_pipe " + stringify(stdout_pipe.read_fd()) + ", " + stringify(stdout_pipe.write_fd()) + "]");
+
     std::string c(cmd.command());
 
     if ((! cmd.stdout_prefix().empty()) || (! cmd.stderr_prefix().empty()))
@@ -172,8 +174,7 @@ PStreamInBuf::~PStreamInBuf()
     {
         int fdn(fd), x;
         waitpid(child, &x, 0);
-        Log::get_instance()->message(ll_debug, lc_no_context,
-                "pclose " + stringify(fdn) + " -> " + stringify(x));
+        Log::get_instance()->message(ll_debug, lc_no_context, "close " + stringify(fdn) + " -> " + stringify(x));
     }
 }
 
@@ -185,8 +186,8 @@ PStreamInBuf::exit_status()
         int fdn(fd);
         waitpid(child, &_exit_status, 0);
         fd = 0;
-        Log::get_instance()->message(ll_debug, lc_no_context,
-                "manual pclose " + stringify(fdn) + " -> " + stringify(_exit_status));
+        Log::get_instance()->message(ll_debug, lc_no_context, "close " + stringify(fdn) +
+                " for exit status -> " + stringify(_exit_status));
     }
     return WIFSIGNALED(_exit_status) ? WTERMSIG(_exit_status) + 128 : WEXITSTATUS(_exit_status);
 }
