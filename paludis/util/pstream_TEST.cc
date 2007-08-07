@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -102,5 +102,21 @@ namespace test_cases
             delete p;
         }
     } test_pstream_fail;
+
+    struct PStreamParallelTest : TestCase
+    {
+        PStreamParallelTest() : TestCase("pstream parallel") { }
+
+        void run()
+        {
+            PStream one("echo one ; sleep 3 ; echo one"),
+                    two("echo two ; sleep 2 ; echo two "),
+                    three("echo three ; sleep 1 ; echo three");
+
+            TEST_CHECK_EQUAL(std::string((std::istreambuf_iterator<char>(three)), std::istreambuf_iterator<char>()), "three\nthree\n");
+            TEST_CHECK_EQUAL(std::string((std::istreambuf_iterator<char>(one)), std::istreambuf_iterator<char>()), "one\none\n");
+            TEST_CHECK_EQUAL(std::string((std::istreambuf_iterator<char>(two)), std::istreambuf_iterator<char>()), "two\ntwo\n");
+        }
+    } test_pstream_parallel;
 }
 
