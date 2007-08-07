@@ -21,6 +21,7 @@
 #include <paludis/util/future-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/destringify.hh>
 
 using namespace paludis;
 
