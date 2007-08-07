@@ -104,5 +104,59 @@ namespace test_cases
             TEST_CHECK_EQUAL(r4.count, 2u);
         }
     } test_empty_block;
+
+    struct AnyUseTest : TestCase
+    {
+        AnyUseTest() : TestCase("|| ( use? ( ) )") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            id->build_dependencies_key()->set_from_string("|| ( v/w x? ( x/y ) )");
+
+            TestReporter r;
+            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK_EQUAL(r.count, 1u);
+        }
+    } test_any_use;
+
+    struct AnyOneTest : TestCase
+    {
+        AnyOneTest() : TestCase("|| ( one )") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            id->build_dependencies_key()->set_from_string("|| ( x/x )");
+
+            TestReporter r;
+            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK_EQUAL(r.count, 1u);
+        }
+    } test_any_one;
+
+    struct AnyBlockTest : TestCase
+    {
+        AnyBlockTest() : TestCase("|| ( !block )") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            id->build_dependencies_key()->set_from_string("|| ( x/x !y/y z/z )");
+
+            TestReporter r;
+            TEST_CHECK(dependency_keys_check(r, id, "dependency keys"));
+            TEST_CHECK_EQUAL(r.count, 1u);
+        }
+    } test_any_block;
 }
 

@@ -21,6 +21,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/qa.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/stringify.hh>
@@ -40,6 +41,7 @@ namespace
         const MetadataSpecTreeKey<DependencySpecTree> & key;
         const std::string name;
         unsigned level;
+        bool child_of_any;
 
         Checker(QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
@@ -49,7 +51,8 @@ namespace
             id(i),
             key(k),
             name(n),
-            level(0)
+            level(0),
+            child_of_any(false)
         {
         }
 
@@ -57,15 +60,24 @@ namespace
         {
         }
 
-        void visit_leaf(const BlockDepSpec &)
+        void visit_leaf(const BlockDepSpec & b)
         {
+            if (child_of_any)
+                reporter.message(qaml_normal, name, "'|| ( )' block with block child '!"
+                        + stringify(*b.blocked_spec()) + "' in dependency key '" + stringify(key.raw_name())
+                        + "' for ID '" + stringify(*id) + "'");
         }
 
         void visit_sequence(const UseDepSpec &,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
         {
+            if (child_of_any)
+                reporter.message(qaml_normal, name, "'|| ( )' block with use? ( ) child in dependency key '" + stringify(key.raw_name())
+                        + "' for ID '" + stringify(*id) + "'");
+
             Save<unsigned> save_level(&level, level + 1);
+            Save<bool> save_child_of_any(&child_of_any, false);
             if (cur == end)
                 reporter.message(qaml_normal, name, "Empty 'use? ( )' block in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
@@ -78,6 +90,7 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             Save<unsigned> save_level(&level, level + 1);
+            Save<bool> save_child_of_any(&child_of_any, false);
             if (cur == end)
             {
                 if (level > 1)
@@ -93,9 +106,16 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             Save<unsigned> save_level(&level, level + 1);
+            Save<bool> save_child_of_any(&child_of_any, true);
             if (cur == end)
                 reporter.message(qaml_normal, name, "Empty '|| ( )' block in dependency key '" + stringify(key.raw_name())
                         + "' for ID '" + stringify(*id) + "'");
+            else if (next(cur) == end)
+            {
+                cur->accept(*this);
+                reporter.message(qaml_normal, name, "'|| ( )' block with only one child in dependency key '" + stringify(key.raw_name())
+                        + "' for ID '" + stringify(*id) + "'");
+            }
             else
                 std::for_each(cur, end, accept_visitor(*this));
         }
