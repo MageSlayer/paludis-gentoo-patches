@@ -635,5 +635,29 @@ src_compile() {
 END
 cd ..
 
+mkdir -p repo15/{eclass,distfiles,profiles/profile/subprofile} || exit 1
+cd repo15 || exit 1
+echo "test-repo-15" >> profiles/repo_name || exit 1
+cat <<END >profiles/profiles.desc || exit 1
+test profile stable
+test profile/subprofile stable
+END
+cat <<END > profiles/profile/make.defaults || exit 1
+ARCH=test
+END
+cat <<END > profiles/profile/virtuals || exit 1
+virtual/one	cat-one/pkg-one
+virtual/two	cat-two/pkg-two
+END
+cat <<END >profiles/profile/subprofile/parent || exit 1
+..
+END
+cat <<END > profiles/profile/subprofile/virtuals || exit 1
+virtual/one	cat-two/pkg-two
+virtual/two	cat-one/pkg-one
+virtual/three	cat-three/pkg-three
+END
+cd ..
+
 cd ..
 

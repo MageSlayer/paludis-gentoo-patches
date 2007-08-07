@@ -28,8 +28,7 @@
 #include <paludis/mask.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
-#include <map>
-#include <set>
+#include <list>
 #include <algorithm>
 
 using namespace paludis;
@@ -40,8 +39,7 @@ namespace
     template <typename T_>
     struct FileEntryTraits
     {
-        typedef std::multiset<typename tr1::remove_const<T_>::type> Storage;
-        static T_ & extract_key(const T_ & k)
+        static const T_ & extract_key(const T_ & k)
         {
             return k;
         }
@@ -50,10 +48,26 @@ namespace
     template <typename F_, typename S_>
     struct FileEntryTraits<const std::pair<F_, S_> >
     {
-        typedef std::multimap<F_, S_> Storage;
         static const F_ & extract_key(const std::pair<F_, S_> & p)
         {
             return p.first;
+        }
+    };
+
+    template <typename T_>
+    struct MatchesKey
+    {
+        const T_ & _x;
+
+        explicit MatchesKey(const T_ & x) :
+            _x(x)
+        {
+        }
+
+        template <typename U_>
+        bool operator() (const U_ & y)
+        {
+            return FileEntryTraits<const U_>::extract_key(y) == _x;
         }
     };
 }
@@ -63,7 +77,8 @@ namespace paludis
     template <typename F_>
     struct Implementation<ProfileFile<F_> >
     {
-        typename FileEntryTraits<typename F_::Iterator::value_type>::Storage lines;
+        typedef std::list<typename tr1::remove_const<typename F_::Iterator::value_type>::type> Lines;
+        Lines lines;
     };
 }
 
@@ -82,12 +97,21 @@ ProfileFile<F_>::add_file(const FSEntry & f)
         const std::string & key(FileEntryTraits<typename F_::Iterator::value_type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
-            int erased(this->_imp->lines.erase(key.substr(1)));
-            if (0 == erased)
+            typename Implementation<ProfileFile>::Lines::iterator i(
+                std::find_if(this->_imp->lines.begin(), this->_imp->lines.end(),
+                             MatchesKey<std::string>(key.substr(1))));
+            if (this->_imp->lines.end() == i)
                 Log::get_instance()->message(ll_qa, lc_context, "No match for '" + key + "'");
+            else
+                while (this->_imp->lines.end() != i)
+                {
+                    this->_imp->lines.erase(i++);
+                    i = std::find_if(i, this->_imp->lines.end(),
+                                     MatchesKey<std::string>(key.substr(1)));
+                }
         }
         else
-            this->_imp->lines.insert(*line);
+            this->_imp->lines.push_back(*line);
     }
 }
 

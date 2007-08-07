@@ -757,6 +757,64 @@ namespace test_cases
     } test_e_repository_invalidate_masks;
 
     /**
+     * \test Test ERepository virtuals.
+     *
+     */
+    struct ERepositoryVirtualsTest : TestCase
+    {
+        ERepositoryVirtualsTest() : TestCase("virtuals") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
+            keys->insert("format", "ebuild");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", "e_repository_TEST_dir/repo15");
+            keys->insert("profiles", "e_repository_TEST_dir/repo15/profiles/profile");
+            tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
+            RepositoryVirtualsInterface::VirtualsSequence::Iterator it(seq->begin());
+
+            TEST_CHECK(seq->end() != it);
+            TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name, "virtual/one");
+            TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec, "cat-one/pkg-one");
+            ++it;
+
+            TEST_CHECK(seq->end() != it);
+            TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name, "virtual/two");
+            TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec, "cat-two/pkg-two");
+            ++it;
+
+            TEST_CHECK(seq->end() == it);
+
+            repo->set_profile(repo->find_profile(repo->params().location / "profiles/profile/subprofile"));
+            seq = repo->virtual_packages();
+            it = seq->begin();
+
+            TEST_CHECK(seq->end() != it);
+            TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name, "virtual/one");
+            TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec, "cat-two/pkg-two");
+            ++it;
+
+            TEST_CHECK(seq->end() != it);
+            TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name, "virtual/three");
+            TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec, "cat-three/pkg-three");
+            ++it;
+
+            TEST_CHECK(seq->end() != it);
+            TEST_CHECK_STRINGIFY_EQUAL(it->virtual_name, "virtual/two");
+            TEST_CHECK_STRINGIFY_EQUAL(*it->provided_by_spec, "cat-one/pkg-one");
+            ++it;
+
+            TEST_CHECK(seq->end() == it);
+        }
+    } test_e_repository_virtuals;
+
+    /**
      * \test Test ERepository Manifest2 generation.
      *
      */
