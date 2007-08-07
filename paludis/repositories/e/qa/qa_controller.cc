@@ -110,12 +110,19 @@ QAController::_run_category(const CategoryNamePart & c)
 {
     using namespace tr1::placeholders;
 
-    std::find_if(
-            QAChecks::get_instance()->category_dir_checks_group()->begin(),
-            QAChecks::get_instance()->category_dir_checks_group()->end(),
-            tr1::bind(std::equal_to<bool>(), false,
-                tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                    _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+    try
+    {
+        std::find_if(
+                QAChecks::get_instance()->category_dir_checks_group()->begin(),
+                QAChecks::get_instance()->category_dir_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+    }
+    catch (const Exception & e)
+    {
+        _imp->reporter.message(qaml_severe, "category_dir_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+    }
 
     tr1::shared_ptr<const QualifiedPackageNameSet> packages(_imp->repo->package_names(c));
     parallel_for_each(packages->begin(), packages->end(), tr1::bind(&QAController::_run_package, this, _1));
@@ -133,12 +140,19 @@ void
 QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
 {
     using namespace tr1::placeholders;
-    std::find_if(
-            QAChecks::get_instance()->package_id_checks_group()->begin(),
-            QAChecks::get_instance()->package_id_checks_group()->end(),
-            tr1::bind(std::equal_to<bool>(), false,
-                tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
-                    _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+    try
+    {
+        std::find_if(
+                QAChecks::get_instance()->package_id_checks_group()->begin(),
+                QAChecks::get_instance()->package_id_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
+                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+    }
+    catch (const Exception & e)
+    {
+        _imp->reporter.message(qaml_severe, "package_id_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+    }
 }
 
 void
@@ -146,12 +160,19 @@ QAController::run()
 {
     using namespace tr1::placeholders;
 
-    std::find_if(
-            QAChecks::get_instance()->tree_checks_group()->begin(),
-            QAChecks::get_instance()->tree_checks_group()->end(),
-            tr1::bind(std::equal_to<bool>(), false,
-                tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
-                    _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
+    try
+    {
+        std::find_if(
+                QAChecks::get_instance()->tree_checks_group()->begin(),
+                QAChecks::get_instance()->tree_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
+                        _1, tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
+    }
+    catch (const Exception & e)
+    {
+        _imp->reporter.message(qaml_severe, "tree_checks_group", "Caught exception '" + e.message() + "' (" + e.what() + ")");
+    }
 
     tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());
     parallel_for_each(categories->begin(), categories->end(), tr1::bind(&QAController::_run_category, this, _1));
