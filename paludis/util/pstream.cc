@@ -60,10 +60,9 @@ PStreamInBuf::underflow()
     if (n == 0)
         return EOF;
     else if (n < 0)
-        throw PStreamError("read returned error " + stringify(strerror(errno)));
+        throw PStreamError("read returned error " + stringify(strerror(errno)) + ", fd is " + stringify(fd));
 
-    setg(buffer + putback_size - num_putback, buffer + putback_size,
-            buffer + putback_size + n);
+    setg(buffer + putback_size - num_putback, buffer + putback_size, buffer + putback_size + n);
 
     return *gptr();
 }
@@ -99,7 +98,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
             + " -- " + c;
 
     cmd.echo_to_stderr();
-    Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + c + " " + extras);
+    Log::get_instance()->message(ll_debug, lc_context, "execl /bin/sh -c " + c + " " + extras);
 
     child = fork();
 
@@ -164,6 +163,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
     else
     {
         close(stdout_pipe.write_fd());
+        stdout_pipe.clear_write_fd();
         fd = stdout_pipe.read_fd();
     }
 
@@ -172,24 +172,30 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
 
 PStreamInBuf::~PStreamInBuf()
 {
+    Context context("When destroying PStream process with fd '" + stringify(fd) + "':");
+
     if (0 != fd)
     {
         int fdn(fd), x;
-        waitpid(child, &x, 0);
-        Log::get_instance()->message(ll_debug, lc_no_context, "close " + stringify(fdn) + " -> " + stringify(x));
+        if (-1 == waitpid(child, &x, 0))
+            throw PStreamError("waitpid returned error " + stringify(strerror(errno)) + ", fd is " + stringify(fd));
+        Log::get_instance()->message(ll_debug, lc_context) << "waitpid " << fdn << " for destructor -> " <<
+            (WIFSIGNALED(x) ? "signal " + stringify(WTERMSIG(x) + 128) : "exit status " + stringify(WEXITSTATUS(x)));
     }
 }
 
 int
 PStreamInBuf::exit_status()
 {
+    Context context("When requesting exit status for PStream process with fd '" + stringify(fd) + "':");
     if (0 != fd)
     {
         int fdn(fd);
-        waitpid(child, &_exit_status, 0);
+        if (-1 == waitpid(child, &_exit_status, 0))
+            throw PStreamError("waitpid returned error " + stringify(strerror(errno)) + ", fd is " + stringify(fd));
         fd = 0;
-        Log::get_instance()->message(ll_debug, lc_no_context, "close " + stringify(fdn) +
-                " for exit status -> " + stringify(_exit_status));
+        Log::get_instance()->message(ll_debug, lc_context) << "waitpid " << fdn << " for exit_status() -> " <<
+            (WIFSIGNALED(_exit_status) ? "signal " + stringify(WTERMSIG(_exit_status) + 128) : "exit status " + stringify(WEXITSTATUS(_exit_status)));
     }
     return WIFSIGNALED(_exit_status) ? WTERMSIG(_exit_status) + 128 : WEXITSTATUS(_exit_status);
 }
