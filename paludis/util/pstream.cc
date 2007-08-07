@@ -57,8 +57,10 @@ PStreamInBuf::underflow()
             gptr() - num_putback, num_putback);
 
     ssize_t n = read(fd, buffer + putback_size, buffer_size - putback_size);
-    if (n <= 0)
+    if (n == 0)
         return EOF;
+    else if (n < 0)
+        throw PStreamError("read returned error " + stringify(strerror(errno)));
 
     setg(buffer + putback_size - num_putback, buffer + putback_size,
             buffer + putback_size + n);
