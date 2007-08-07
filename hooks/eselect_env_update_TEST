@@ -23,7 +23,7 @@ eselect_env_update_TEST()
     mkdir -p eselect_env_update_TEST_dir/{etc,lib,var/run}
     touch eselect_env_update_TEST_dir/etc/ld.so.conf
 
-    ./eselect_env_update.bash >/dev/null ; test_return_code
+    ${TOP_SRCDIR}/hooks/eselect_env_update.bash >/dev/null ; test_return_code
 
     [[ -f eselect_env_update_TEST_dir/etc/ld.so.cache ]] \
         || [[ -f eselect_env_update_TEST/var/run/ld-elf.so.hints ]] ; test_return_code
