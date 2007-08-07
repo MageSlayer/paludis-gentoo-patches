@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # ebuild.bash doesn't allow USE etc to be set in user settings. But we need
-# to source make.conf to pick up things like CFLAGS. So... After sourcing
-# make.conf, unset things that ebuild.bash disallows.
-unset ${save_vars}
+# to source make.conf to pick up things like CFLAGS.
+unset check_save_vars check_unmodifiable_vars
 

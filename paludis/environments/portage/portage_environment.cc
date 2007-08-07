@@ -627,9 +627,9 @@ tr1::shared_ptr<const FSEntrySequence>
 PortageEnvironment::bashrc_files() const
 {
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
-    result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     return result;
 }
 

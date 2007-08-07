@@ -132,6 +132,9 @@ export CONFIG_PROTECT_MASK="${PALUDIS_CONFIG_PROTECT_MASK}"
 save_vars="$(eval echo ${PALUDIS_SAVE_VARIABLES} )"
 save_base_vars="$(eval echo ${PALUDIS_SAVE_BASE_VARIABLES} )"
 save_unmodifiable_vars="$(eval echo ${PALUDIS_SAVE_UNMODIFIABLE_VARIABLES} )"
+check_save_vars="${save_vars}"
+check_base_vars="${save_base_vars}"
+check_unmodifiable_vars="${save_unmodifiable_vars}"
 
 for var in ${save_vars} ${default_save_vars} ${save_base_vars} ${save_unmodifiable_vars} ; do
     ebuild_notice "debug" "Saving ${var}=${!var}"
@@ -159,13 +162,13 @@ for f in ${PALUDIS_BASHRC_FILES} ; do
         ebuild_notice "debug" "Skipping bashrc file ${f}"
     fi
 
-    for var in ${save_vars} ; do
+    for var in ${check_save_vars} ; do
         if [[ -n ${!var} ]] ; then
             die "${f} attempted to set \$${var}, which must not be set in bashrc."
         fi
     done
 
-    for var in ${save_unmodifiable_vars} ; do
+    for var in ${check_save_unmodifiable_vars} ; do
         s_var=save_var_${var}
         if [[ "${!s_var}" != "${!var}" ]] ; then
             die "${f} attempted to modify \$${var}, which must not be modified in bashrc."
