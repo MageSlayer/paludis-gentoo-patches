@@ -30,6 +30,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/tokeniser.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -44,6 +46,8 @@
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+
+#include <list>
 
 #include "config.h"
 
@@ -241,18 +245,31 @@ EbuildMetadataCommand::extend_command(const Command & cmd)
                 stringify(params.package_id->version()) + "> ");
 }
 
+namespace
+{
+    std::string purdy(const std::string & s)
+    {
+        std::list<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(tokens));
+        return join(tokens.begin(), tokens.end(), " \\n ");
+    }
+}
+
 bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     bool ok(false);
     keys.reset(new Map<std::string, std::string>);
 
+    std::string input;
     try
     {
         Context context("When generating metadata for '" + stringify(*params.package_id) + "':");
 
         PStream prog(cmd);
-        KeyValueConfigFile f(prog, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
+        input.assign((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>());
+        std::stringstream input_stream(input);
+        KeyValueConfigFile f(input_stream, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
                 + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
                 + kvcfo_disallow_variables + kvcfo_preserve_whitespace);
 
@@ -264,7 +281,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
                 stringify(e.message()) + "' (" + stringify(e.what()) +
-                ") when generating cache for '" + stringify(*params.package_id) + "'");
+                ") when generating cache for '" + stringify(*params.package_id) + "', input is '" + purdy(input) + "'");
     }
 
     if (ok)
