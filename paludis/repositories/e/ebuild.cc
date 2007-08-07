@@ -264,7 +264,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     std::string input;
     try
     {
-        Context context("When generating metadata for '" + stringify(*params.package_id) + "':");
+        Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id) + "':");
 
         PStream prog(cmd);
         input.assign((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>());
