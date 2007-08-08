@@ -86,6 +86,14 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
             continue;
         type = (*t);
 
+        if ("EBUILD" != type
+                && "EBIN" != type
+                && "EXHERES" != type
+                && "MISC" != type
+                && "AUX" != type
+                && "DIST" != type)
+            continue;
+
         ++t;
         if (t_end == t)
             throw Manifest2Error("no file name found");

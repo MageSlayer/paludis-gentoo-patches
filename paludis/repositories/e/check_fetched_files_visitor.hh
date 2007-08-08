@@ -46,7 +46,8 @@ namespace paludis
                         const tr1::shared_ptr<const PackageID> &,
                         const FSEntry & distdir,
                         const bool check_unneeded,
-                        const bool fetch_restrict);
+                        const bool fetch_restrict,
+                        const FSEntry & m2);
 
                 ~CheckFetchedFilesVisitor();
 

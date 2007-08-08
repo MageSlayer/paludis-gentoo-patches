@@ -71,7 +71,8 @@ namespace paludis
                 const tr1::shared_ptr<const PackageID> & i,
                 const FSEntry & d,
                 const bool c,
-                const bool n) :
+                const bool n,
+                const FSEntry & m2) :
             env(e),
             id(i),
             distdir(d),
@@ -79,7 +80,7 @@ namespace paludis
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
             in_nofetch(n),
-            m2r(new Manifest2Reader(d / "Manifest"))
+            m2r(new Manifest2Reader(m2))
         {
         }
     };
@@ -90,8 +91,9 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const tr1::shared_ptr<const PackageID> & i,
         const FSEntry & d,
         const bool c,
-        const bool n) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n))
+        const bool n,
+        const FSEntry & m2) :
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2))
 {
 }
 
@@ -169,12 +171,25 @@ CheckFetchedFilesVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &
 bool
 CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 {
+    if (_imp->m2r->begin() == _imp->m2r->end())
+    {
+        Log::get_instance()->message(ll_debug, lc_context)
+            << "Empty or non-existent Manifest file";
+        return true;
+    }
+
+    bool found(false);
+
     for (Manifest2Reader::Iterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
         m != m_end ; ++m)
     {
         if (distfile.basename() != m->name)
             continue;
+        found = true;
 
+        Log::get_instance()->message(ll_debug, lc_context)
+            << "Actual size = " << distfile.file_size()
+            << "; Manifest file size = " << m->size;
         if (distfile.file_size() != m->size)
         {
             Log::get_instance()->message(ll_debug, lc_context)
@@ -218,6 +233,8 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
+            Log::get_instance()->message(ll_debug, lc_context)
+                << "Actual RMD160 = " << rmd160sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
         }
@@ -238,6 +255,8 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
+            Log::get_instance()->message(ll_debug, lc_context)
+                << "Actual SHA256 = " << sha256sum.hexsum();
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
         }
@@ -258,8 +277,23 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                         );
                 return false;
             }
+            Log::get_instance()->message(ll_debug, lc_context)
+                << "Actual MD5 = " << md5sum.hexsum();
         }
     }
+    
+    if (! found)
+    {
+        std::cout << "not in Manifest";
+        _imp->failures->push_back(FetchActionFailure::create()
+                .target_file(stringify(distfile.basename()))
+                .requires_manual_fetching(false)
+                .failed_integrity_checks("Not in Manifest")
+                .failed_automatic_fetching(false)
+                );
+        return false;
+    }
+
     return true;
 }
 
@@ -275,7 +309,7 @@ CheckFetchedFilesVisitor::visit_leaf(const URIDepSpec & u)
     }
     _imp->done.insert(u.filename());
 
-    std::cout << "Checking '" << u.filename() << "'... ";
+    std::cout << "Checking '" << u.filename() << "'... " << std::flush;
 
     if (! (_imp->distdir / u.filename()).is_regular_file())
     {

@@ -413,7 +413,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         FetchVisitor f(_imp->params.environment, id, *id->eapi(),
                 _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_userpriv_ok, mirrors_name, fetch_restrict);
         id->src_uri_key()->value()->accept(f);
-        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_restrict);
+        CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_restrict, ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"));
         id->src_uri_key()->value()->accept(c);
 
         if (c.need_nofetch())
