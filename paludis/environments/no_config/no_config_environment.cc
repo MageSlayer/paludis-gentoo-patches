@@ -153,6 +153,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             keys->insert("profiles", "/var/empty");
             keys->insert("write_cache", stringify(params.write_cache));
             keys->insert("names_cache", "/var/empty");
+            if (params.disable_metadata_cache)
+                keys->insert("cache", "/var/empty");
 
             package_database->add_repository(1, ((master_repo =
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
@@ -166,6 +168,10 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("profiles", "/var/empty");
         keys->insert("write_cache", stringify(params.write_cache));
         keys->insert("names_cache", "/var/empty");
+
+        if (params.disable_metadata_cache)
+            keys->insert("cache", "/var/empty");
+
         if (FSEntry("/var/empty") != params.master_repository_dir)
             keys->insert("master_repository", stringify(master_repo->name()));
 

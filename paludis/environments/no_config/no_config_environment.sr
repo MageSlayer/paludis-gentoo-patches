@@ -7,6 +7,7 @@ make_class_Params()
 
     key repository_dir "FSEntry"
     key write_cache "FSEntry"
+    key disable_metadata_cache bool
     key accept_unstable bool
     key repository_type no_config_environment::RepositoryType
     key master_repository_dir "FSEntry"

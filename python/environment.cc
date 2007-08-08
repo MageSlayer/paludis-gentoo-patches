@@ -37,7 +37,7 @@ struct NoConfigEnvironmentWrapper :
 {
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
             const FSEntry & master_repo_dir) :
-        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false,
+        NoConfigEnvironment(no_config_environment::Params(env_dir, cache_dir, false, false,
                     no_config_environment::ncer_auto, master_repo_dir)
                 )
     {

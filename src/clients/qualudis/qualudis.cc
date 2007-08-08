@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
+                    .disable_metadata_cache(true)
                     ));
 
         if (! env->main_repository()->qa_interface)

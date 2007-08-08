@@ -152,6 +152,7 @@ main(int argc, char *argv[])
                 .repository_type(
                     (CommandLine::get_instance()->a_reverse_deps.specified()) ? no_config_environment::ncer_auto :
                     no_config_environment::ncer_ebuild)
+                .disable_metadata_cache(false)
                 .master_repository_dir(FSEntry("/var/empty")));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())

@@ -37,6 +37,7 @@ namespace test_cases
                     .write_cache(FSEntry("/var/empty"))
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_auto)
+                    .disable_metadata_cache(false)
                     .master_repository_dir(FSEntry("/var/empty")));
 
             TEST_CHECK(e.package_database());
