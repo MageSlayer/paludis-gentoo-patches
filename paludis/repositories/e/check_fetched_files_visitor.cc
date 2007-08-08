@@ -191,8 +191,16 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 
         std::ifstream file_stream(stringify(distfile).c_str());
         if (! file_stream)
-            throw InternalError("Couldn't read distfile: '"+stringify(distfile)
-                    +"'");
+        {
+            std::cout << "unreadable file";
+            _imp->failures->push_back(FetchActionFailure::create()
+                    .target_file(stringify(distfile.basename()))
+                    .requires_manual_fetching(false)
+                    .failed_integrity_checks("Unreadable file")
+                    .failed_automatic_fetching(false)
+                    );
+            return false;
+        }
 
         if (! m->rmd160.empty())
         {
@@ -233,7 +241,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             file_stream.clear();
             file_stream.seekg(0, std::ios::beg);
         }
-        
+
         if (! m->md5.empty())
         {
             MD5 md5sum(file_stream);
