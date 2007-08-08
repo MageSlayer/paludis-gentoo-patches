@@ -1309,6 +1309,8 @@ namespace paludis
             Visitor_ & _v;
 
         public:
+            typedef void result_type;
+
             ///\name Visitor operations
             ///\{
 
