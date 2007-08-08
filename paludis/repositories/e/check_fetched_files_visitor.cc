@@ -34,7 +34,15 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
+
+#include <paludis/digests/rmd160.hh>
+#include <paludis/digests/sha256.hh>
+#include <paludis/digests/md5.hh>
+
+#include <paludis/repositories/e/manifest2_reader.hh>
+
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <set>
 
@@ -56,6 +64,8 @@ namespace paludis
         bool need_nofetch;
         bool in_nofetch;
 
+        const tr1::shared_ptr<Manifest2Reader> m2r;
+
         Implementation(
                 const Environment * const e,
                 const tr1::shared_ptr<const PackageID> & i,
@@ -68,7 +78,8 @@ namespace paludis
             check_unneeded(c),
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
-            in_nofetch(n)
+            in_nofetch(n),
+            m2r(new Manifest2Reader(d / "Manifest"))
         {
         }
     };
@@ -155,6 +166,95 @@ CheckFetchedFilesVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &
     _imp->in_nofetch = v.result;
 }
 
+bool
+CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
+{
+    for (Manifest2Reader::Iterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
+        m != m_end ; ++m)
+    {
+        if (distfile.basename() != m->name)
+            continue;
+
+        if (distfile.file_size() != m->size)
+        {
+            Log::get_instance()->message(ll_debug, lc_context)
+                << "Malformed Manifest: no file size found";
+            std::cout << "incorrect size";
+            _imp->failures->push_back(FetchActionFailure::create()
+                    .target_file(stringify(distfile.basename()))
+                    .requires_manual_fetching(false)
+                    .failed_integrity_checks("Incorrect file size")
+                    .failed_automatic_fetching(false)
+                    );
+            return false;
+        }
+
+        std::ifstream file_stream(stringify(distfile).c_str());
+        if (! file_stream)
+            throw InternalError("Couldn't read distfile: '"+stringify(distfile)
+                    +"'");
+
+        if (! m->rmd160.empty())
+        {
+            RMD160 rmd160sum(file_stream);
+            if (rmd160sum.hexsum() != m->rmd160)
+            {
+                Log::get_instance()->message(ll_debug, lc_context)
+                    << "Malformed Manifest: failed RMD160 checksum";
+                std::cout << "failed RMD160";
+                _imp->failures->push_back(FetchActionFailure::create()
+                        .target_file(stringify(distfile.basename()))
+                        .requires_manual_fetching(false)
+                        .failed_integrity_checks("Failed RMD160 checksum")
+                        .failed_automatic_fetching(false)
+                        );
+                return false;
+            }
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+        }
+
+        if (! m->sha256.empty())
+        {
+            SHA256 sha256sum(file_stream);
+            if (sha256sum.hexsum() != m->sha256)
+            {
+                Log::get_instance()->message(ll_debug, lc_context)
+                    << "Malformed Manifest: failed SHA256 checksum";
+                std::cout << "failed SHA256";
+                _imp->failures->push_back(FetchActionFailure::create()
+                        .target_file(stringify(distfile.basename()))
+                        .requires_manual_fetching(false)
+                        .failed_integrity_checks("Failed SHA256 checksum")
+                        .failed_automatic_fetching(false)
+                        );
+                return false;
+            }
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+        }
+        
+        if (! m->md5.empty())
+        {
+            MD5 md5sum(file_stream);
+            if (md5sum.hexsum() != m->md5)
+            {
+                Log::get_instance()->message(ll_debug, lc_context)
+                    << "Malformed Manifest: failed MD5 checksum";
+                std::cout << "failed MD5";
+                _imp->failures->push_back(FetchActionFailure::create()
+                        .target_file(stringify(distfile.basename()))
+                        .requires_manual_fetching(false)
+                        .failed_integrity_checks("Failed MD5 checksum")
+                        .failed_automatic_fetching(false)
+                        );
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 void
 CheckFetchedFilesVisitor::visit_leaf(const URIDepSpec & u)
 {
@@ -205,6 +305,11 @@ CheckFetchedFilesVisitor::visit_leaf(const URIDepSpec & u)
                 .failed_integrity_checks("SIZE (empty file)")
                 .failed_automatic_fetching(false)
                 );
+    }
+    else if (! check_distfile_manifest(_imp->distdir / u.filename()))
+    {
+        Log::get_instance()->message(ll_debug, lc_context)
+            << "Manifest check failed for '" << u.filename() << "'";
     }
     else
     {

@@ -38,6 +38,8 @@ namespace paludis
             private PrivateImplementationPattern<CheckFetchedFilesVisitor>,
             public ConstVisitor<URISpecTree>
         {
+            private:
+                bool check_distfile_manifest(const FSEntry & distfile);
             public:
                 CheckFetchedFilesVisitor(
                         const Environment * const,

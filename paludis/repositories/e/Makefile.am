@@ -9,7 +9,8 @@ DISTCLEANFILES = \
 	vdb_merger-sr.hh vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh vdb_unmerger-sr.cc \
 	eapi-sr.hh eapi-sr.cc \
-	dep_parser-se.hh dep_parser-se.cc
+	dep_parser-se.hh dep_parser-se.cc \
+	manifest2_entry-sr.hh manifest2_entry-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -74,6 +75,8 @@ paludis_repositories_e_include_HEADERS = \
 	layout.hh \
 	make_ebin_repository.hh \
 	make_ebuild_repository.hh \
+	manifest2_entry-sr.hh \
+	manifest2_reader.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	use_desc.hh \
@@ -118,6 +121,7 @@ libpaludiserepository_la_SOURCES = \
 	layout.cc \
 	make_ebin_repository.cc \
 	make_ebuild_repository.cc \
+	manifest2_reader.cc \
 	registration.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \
@@ -287,6 +291,9 @@ EXTRA_DIST = \
 	fetch_visitor_TEST.cc \
 	fetch_visitor_TEST_setup.sh \
 	fetch_visitor_TEST_cleanup.sh \
+	manifest2_entry.sr \
+	manifest2_entry-sr.hh \
+	manifest2_entry-sr.cc \
 	source_uri_finder_TEST.cc \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
@@ -327,7 +334,9 @@ BUILT_SOURCES = \
 	vdb_unmerger-sr.hh \
 	vdb_unmerger-sr.cc \
 	eapi-sr.hh \
-	eapi-sr.cc
+	eapi-sr.cc \
+	manifest2_entry-sr.hh \
+	manifest2_entry-sr.cc
 
 check_SCRIPTS = \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
@@ -357,6 +366,12 @@ e_repository_params-sr.hh : e_repository_params.sr $(top_srcdir)/misc/make_sr.ba
 
 e_repository_params-sr.cc : e_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/e_repository_params.sr > $@
+
+manifest2_entry-sr.hh : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/manifest2_entry.sr > $@
+
+manifest2_entry-sr.cc : manifest2_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/manifest2_entry.sr > $@
 
 vdb_merger-sr.hh : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_merger.sr > $@
