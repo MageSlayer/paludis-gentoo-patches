@@ -25,7 +25,7 @@
 #include <paludis/repositories/e/qa/eapi_supported.hh>
 #include <paludis/repositories/e/qa/short_description_key.hh>
 #include <paludis/repositories/e/qa/homepage_key.hh>
-#include <paludis/repositories/e/qa/dependency_keys.hh>
+#include <paludis/repositories/e/qa/spec_keys.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -72,9 +72,9 @@ QAChecks::QAChecks() :
             tr1::bind(homepage_key_check, _1, _2, _5, "homepage_key"));
     _imp->package_id_checks_group->add_prerequirement("homepage_key", "eapi_supported");
 
-    _imp->package_id_checks_group->add_check("dependency_keys",
-            tr1::bind(dependency_keys_check, _1, _2, _5, "dependency_keys"));
-    _imp->package_id_checks_group->add_prerequirement("dependency_keys", "eapi_supported");
+    _imp->package_id_checks_group->add_check("spec_keys",
+            tr1::bind(spec_keys_check, _1, _2, _5, "spec_keys"));
+    _imp->package_id_checks_group->add_prerequirement("spec_keys", "eapi_supported");
 }
 
 QAChecks::~QAChecks()

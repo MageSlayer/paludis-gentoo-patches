@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_DEPENDENCIES_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_DEPENDENCIES_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_SPEC_KEYS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_SPEC_KEYS_HH 1
 
 #include <paludis/qa-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -29,7 +29,7 @@ namespace paludis
 {
     namespace erepository
     {
-        bool dependency_keys_check(
+        bool spec_keys_check(
                 const FSEntry &,
                 QAReporter &,
                 const tr1::shared_ptr<const PackageID> &,

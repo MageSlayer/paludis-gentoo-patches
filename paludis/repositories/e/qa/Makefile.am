@@ -14,9 +14,9 @@ if ENABLE_QA
 
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
-	dependency_keys.hh \
 	eapi_supported.hh \
 	homepage_key.hh \
+	spec_keys.hh \
 	qa_checks.hh \
 	qa_checks_group.hh \
 	qa_controller.hh \
@@ -26,13 +26,13 @@ paludis_repositories_e_include_HEADERS = \
 noinst_LTLIBRARIES = libpaludiserepositoryqa.la
 
 libpaludiserepositoryqa_la_SOURCES = \
-	dependency_keys.cc \
 	eapi_supported.cc \
 	homepage_key.cc \
 	qa_checks.cc \
 	qa_checks_group.cc \
 	qa_controller.cc \
 	short_description_key.cc \
+	spec_keys.cc \
 	stray_files.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
@@ -61,13 +61,13 @@ TESTS_ENVIRONMENT = env \
 if ENABLE_QA
 
 TESTS = \
-	dependency_keys_TEST \
+	spec_keys_TEST \
 	stray_files_TEST
 
 check_PROGRAMS = $(TESTS)
 
-dependency_keys_TEST_SOURCES = dependency_keys_TEST.cc
-dependency_keys_TEST_LDFLAGS = \
+spec_keys_TEST_SOURCES = spec_keys_TEST.cc
+spec_keys_TEST_LDFLAGS = \
 	libpaludiserepositoryqa.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
