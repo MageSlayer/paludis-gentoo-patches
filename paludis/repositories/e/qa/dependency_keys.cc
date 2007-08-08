@@ -137,7 +137,15 @@ namespace
                 "' using dependency_keys_check on ID '" + stringify(*id) + "':");
 
         Checker c(entry, reporter, id, key, name);
-        key.value()->accept(c);
+        try
+        {
+            key.value()->accept(c);
+        }
+        catch (const Exception & e)
+        {
+            reporter.message(entry, qaml_severe, name, "Caught exception '" + stringify(e.message())
+                    + "' (" + e.what() + "') when handling key '" + key.raw_name() + "'");
+        }
 
         return true;
     }
