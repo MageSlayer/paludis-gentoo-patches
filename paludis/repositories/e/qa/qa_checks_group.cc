@@ -25,6 +25,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/hashed_containers.hh>
 
 #include <list>
@@ -38,6 +39,7 @@ namespace paludis
     template <typename T_>
     struct Implementation<QAChecksGroup<T_> >
     {
+        mutable Mutex mutex;
         DirectedGraph<std::string, int> deps;
         mutable typename MakeHashedMap<std::string, T_>::Type unordered;
         mutable tr1::shared_ptr<std::list<T_> > ordered;
@@ -76,6 +78,8 @@ template <typename T_>
 void
 QAChecksGroup<T_>::add_check(const std::string & s, const T_ & f)
 {
+    Lock l(_imp->mutex);
+
     _imp->deps.add_node(s);
     _imp->ordered.reset();
     _imp->unordered.insert(std::make_pair(s, f));
@@ -85,13 +89,18 @@ template <typename T_>
 void
 QAChecksGroup<T_>::add_prerequirement(const std::string & f, const std::string & t)
 {
+    Lock l(_imp->mutex);
+
     _imp->deps.add_edge(f, t, 0);
+    _imp->ordered.reset();
 }
 
 template <typename T_>
 void
 QAChecksGroup<T_>::need_ordering() const
 {
+    Lock l(_imp->mutex);
+
     using namespace tr1::placeholders;
 
     if (_imp->ordered)
