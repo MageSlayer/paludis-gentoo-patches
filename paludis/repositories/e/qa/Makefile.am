@@ -24,7 +24,6 @@ paludis_repositories_e_include_HEADERS = \
 	stray_files.hh
 
 noinst_LTLIBRARIES = libpaludiserepositoryqa.la
-libpaludiserepositoryqa_la_LDFLAGS = -rpath /nowhere
 
 libpaludiserepositoryqa_la_SOURCES = \
 	eapi_supported.cc \
@@ -68,7 +67,7 @@ TESTS = \
 check_PROGRAMS = $(TESTS)
 
 spec_keys_TEST_SOURCES = spec_keys_TEST.cc
-spec_keys_TEST_LDADD = \
+spec_keys_TEST_LDFLAGS = \
 	libpaludiserepositoryqa.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
@@ -79,7 +78,7 @@ spec_keys_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a
 
 stray_files_TEST_SOURCES = stray_files_TEST.cc
-stray_files_TEST_LDADD = \
+stray_files_TEST_LDFLAGS = \
 	libpaludiserepositoryqa.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
