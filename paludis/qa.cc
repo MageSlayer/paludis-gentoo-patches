@@ -25,6 +25,7 @@
 using namespace paludis;
 
 #include <paludis/qa-se.cc>
+#include <paludis/qa-sr.cc>
 
 QAReporter::~QAReporter()
 {

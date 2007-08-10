@@ -33,6 +33,7 @@
 
 #include <algorithm>
 #include <list>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -45,15 +46,45 @@ namespace
         QAReporter & base;
         Mutex mutex;
 
+        std::multimap<const FSEntry, const QAMessage> message_buf;
+        typedef std::multimap<const FSEntry, const QAMessage>::iterator MessageIterator;
+
         ThreadSafeQAReporter(QAReporter & b) :
             base(b)
         {
         }
 
-        void message(const FSEntry & f, QAMessageLevel l, const std::string & s, const std::string & t)
+        ~ThreadSafeQAReporter()
+        {
+            if (! std::uncaught_exception())
+            {
+                using namespace tr1::placeholders;
+                std::for_each(message_buf.begin(), message_buf.end(),
+                        tr1::bind(&QAReporter::message, tr1::ref(base),
+                            tr1::bind<const QAMessage>(&std::pair<const FSEntry, const QAMessage>::second, _1)));
+            }
+        }
+
+        void flush(const FSEntry & f)
         {
             Lock lock(mutex);
-            base.message(f, l, s, t);
+
+            std::string root(stringify(f));
+
+            for (MessageIterator i(message_buf.lower_bound(f)), i_end(message_buf.end()) ; i != i_end ; )
+            {
+                if (0 != stringify(i->first).compare(0, root.length(), root))
+                    break;
+
+                base.message(i->second);
+                message_buf.erase(i++);
+            }
+        }
+
+        void message(const QAMessage & msg)
+        {
+            Lock lock(mutex);
+            message_buf.insert(std::make_pair(msg.entry, msg));
         }
     };
 }
@@ -123,9 +154,12 @@ QAController::_run_category(const CategoryNamePart & c)
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(_imp->repo->layout()->category_directory(c), qaml_severe, "category_dir_checks_group",
-                "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(
+                QAMessage(_imp->repo->layout()->category_directory(c), qaml_severe, "category_dir_checks_group",
+                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
+
+    _imp->reporter.flush(_imp->repo->layout()->category_directory(c));
 
     tr1::shared_ptr<const QualifiedPackageNameSet> packages(_imp->repo->package_names(c));
     parallel_for_each(packages->begin(), packages->end(), tr1::bind(&QAController::_run_package, this, _1));
@@ -137,6 +171,8 @@ QAController::_run_package(const QualifiedPackageName & p)
     using namespace tr1::placeholders;
     tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
     parallel_for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_run_id, this, _1));
+
+    _imp->reporter.flush(_imp->repo->layout()->package_directory(p));
 }
 
 void
@@ -155,8 +191,9 @@ QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(_imp->repo->layout()->package_file(*i), qaml_severe, "package_id_checks_group",
-                "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(
+                QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "package_id_checks_group",
+                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
 }
 
@@ -177,9 +214,12 @@ QAController::run()
     }
     catch (const Exception & e)
     {
-        _imp->reporter.message(_imp->repo->params().location, qaml_severe, "tree_checks_group",
-                "Caught exception '" + e.message() + "' (" + e.what() + ")");
+        _imp->reporter.message(
+                QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
+                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
+
+    _imp->reporter.flush(_imp->repo->params().location);
 
     tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());
     parallel_for_each(categories->begin(), categories->end(), tr1::bind(&QAController::_run_category, this, _1));

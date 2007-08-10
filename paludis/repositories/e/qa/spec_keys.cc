@@ -71,8 +71,8 @@ namespace
         void visit_leaf(const BlockDepSpec & b)
         {
             if (child_of_any)
-                reporter.message(entry, qaml_normal, name, "'|| ( )' block with block child '!"
-                        + stringify(*b.blocked_spec()) + "' in spec key '" + stringify(key.raw_name()) + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' block with block child '!"
+                            + stringify(*b.blocked_spec()) + "' in spec key '" + stringify(key.raw_name()) + "'"));
         }
 
         void visit_leaf(const URIDepSpec &)
@@ -92,12 +92,15 @@ namespace
                 GenericSpecTree::ConstSequenceIterator end)
         {
             if (child_of_any)
-                reporter.message(entry, qaml_normal, name, "'|| ( )' block with 'use? ( )' child in spec key '" + stringify(key.raw_name()) + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                            "'|| ( )' block with 'use? ( )' child in spec key '"
+                            + stringify(key.raw_name()) + "'"));
 
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
             if (cur == end)
-                reporter.message(entry, qaml_normal, name, "Empty 'use? ( )' block in spec key '" + stringify(key.raw_name()) + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                            "Empty 'use? ( )' block in spec key '" + stringify(key.raw_name()) + "'"));
             else
                 std::for_each(cur, end, accept_visitor(*this));
         }
@@ -111,7 +114,8 @@ namespace
             if (cur == end)
             {
                 if (level > 1)
-                    reporter.message(entry, qaml_normal, name, "Empty '( )' block in spec key '" + stringify(key.raw_name()) + "'");
+                    reporter.message(QAMessage(entry, qaml_normal, name,
+                                "Empty '( )' block in spec key '" + stringify(key.raw_name()) + "'"));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -124,11 +128,13 @@ namespace
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, true);
             if (cur == end)
-                reporter.message(entry, qaml_normal, name, "Empty '|| ( )' block in spec key '" + stringify(key.raw_name()) + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                            "Empty '|| ( )' block in spec key '" + stringify(key.raw_name()) + "'"));
             else if (next(cur) == end)
             {
                 cur->accept(*this);
-                reporter.message(entry, qaml_normal, name, "'|| ( )' block with only one child in spec key '" + stringify(key.raw_name()) + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                        "'|| ( )' block with only one child in spec key '" + stringify(key.raw_name()) + "'"));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));

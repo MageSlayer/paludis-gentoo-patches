@@ -32,6 +32,7 @@ namespace
     static VALUE c_qa_message_level;
     static VALUE c_qa_check_property;
     static VALUE c_qa_check_properties;
+    static VALUE c_qa_message;
     static VALUE c_qa_reporter;
 
     VALUE
@@ -118,15 +119,126 @@ namespace
 
     /*
      * call-seq:
-     *     message(fs_entry, qa_message_level, source, message)
+     *     message(qa_message)
      *
      * Process a qa error message
      */
     VALUE
-    ruby_qa_reporter_message(VALUE, VALUE, VALUE, VALUE)
+    ruby_qa_reporter_message(VALUE)
     {
         return Qnil;
     }
+
+    VALUE
+    qa_message_init(int, VALUE *, VALUE self)
+    {
+        return self;
+    }
+
+    /*
+     * call-seq:
+     *     QAMessage.new(fs_entry_string, qa_message_level, name_string, message_string) -> QAMessage
+     *
+     * Creates a new QAMessage.
+     */
+    VALUE
+    qa_message_new(int argc, VALUE *argv, VALUE self)
+    {
+        QAMessage * ptr(0);
+        try
+        {
+            if (4 == argc)
+            {
+                int ml = NUM2INT(argv[1]);
+                if (ml < 0 || ml >= last_qaml)
+                    rb_raise(rb_eArgError, "QAMessageLevel out of range");
+
+                ptr = new QAMessage(FSEntry(StringValuePtr(argv[0])), static_cast<QAMessageLevel>(ml),
+                        StringValuePtr(argv[2]), StringValuePtr(argv[3]));
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "QAMessage expects four arguments, but got %d", argc);
+            }
+
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<QAMessage>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+
+    /*
+     * call-seq:
+     *     level -> QAMessageLevel
+     *
+     * Fetch QAMessage level.
+     */
+    VALUE
+    qa_message_level(VALUE self)
+    {
+        QAMessage * m_ptr;
+        Data_Get_Struct(self, QAMessage, m_ptr);
+        return INT2FIX(m_ptr->level);
+    }
+
+    /*
+     * call-seq:
+     *     level=
+     *
+     * Set QAMessage level.
+     */
+    VALUE
+    qa_message_level_set(VALUE self, VALUE qa_message_level)
+    {
+        QAMessage * m_ptr;
+        Data_Get_Struct(self, QAMessage, m_ptr);
+        try
+        {
+            int ml = NUM2INT(qa_message_level);
+            if (ml < 0 || ml >= last_qaml)
+                rb_raise(rb_eArgError, "QAMessageLevel out of range");
+            m_ptr->level = static_cast<QAMessageLevel>(ml);
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    template <typename T_, typename M_, M_ T_::*m_>
+    struct FetchSetString
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            T_ * p;
+            Data_Get_Struct(self, T_, p);
+            return rb_str_new2(stringify(p->*m_).c_str());
+        }
+
+        static VALUE
+        set(VALUE self, VALUE str)
+        {
+            try
+            {
+                T_ * p;
+                Data_Get_Struct(self, T_, p);
+                p->*m_ = M_ ((StringValuePtr(str)));
+                return Qnil;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+        }
+    };
 
     void do_register_qa()
     {
@@ -136,7 +248,7 @@ namespace
          * Base class for QAReporter, create a new sublclass that implements a message function.
          */
         c_qa_reporter = rb_define_class_under(paludis_module(), "QAReporter", rb_cObject);
-        rb_define_method(c_qa_reporter, "message", RUBY_FUNC_CAST(&ruby_qa_reporter_message), 4);
+        rb_define_method(c_qa_reporter, "message", RUBY_FUNC_CAST(&ruby_qa_reporter_message), 1);
 
         /*
          * Document-class: Paludis::QACheckProperties
@@ -176,7 +288,29 @@ namespace
                 l = static_cast<QACheckProperty>(static_cast<int>(l) + 1))
             rb_define_const(c_qa_check_property, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-
+        /*
+         * Document-class: Paludis::QAMessage
+         *
+         * QA message.
+         *
+         */
+        c_qa_message = rb_define_class_under(paludis_module(), "QAMessage", rb_cObject);
+        rb_define_singleton_method(c_qa_message, "new", RUBY_FUNC_CAST(&qa_message_new), -1);
+        rb_define_method(c_qa_message, "initialize", RUBY_FUNC_CAST(&qa_message_init), -1);
+        rb_define_method(c_qa_message, "entry",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, FSEntry, &QAMessage::entry>::fetch)), 0);
+        rb_define_method(c_qa_message, "entry=",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, FSEntry, &QAMessage::entry>::set)), 1);
+        rb_define_method(c_qa_message, "level", RUBY_FUNC_CAST(&qa_message_level), 0);
+        rb_define_method(c_qa_message, "level=", RUBY_FUNC_CAST(&qa_message_level_set), 1);
+        rb_define_method(c_qa_message, "name",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::name>::fetch)), 0);
+        rb_define_method(c_qa_message, "name=",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::name>::set)), 1);
+        rb_define_method(c_qa_message, "message",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::message>::fetch)), 0);
+        rb_define_method(c_qa_message, "message=",
+                RUBY_FUNC_CAST((&FetchSetString<QAMessage, std::string, &QAMessage::message>::set)), 1);
     }
 }
 
@@ -196,4 +330,11 @@ paludis::ruby::value_to_qa_check_properties(VALUE v)
     {
         rb_raise(rb_eTypeError, "Can't convert %s into QACheckProperties", rb_obj_classname(v));
     }
+}
+
+VALUE
+paludis::ruby::qa_message_to_value(const QAMessage & qamsg)
+{
+    QAMessage * qamsg2(new QAMessage(qamsg));
+    return Data_Wrap_Struct(c_qa_message, 0, &Common<QAMessage>::free, qamsg2);
 }

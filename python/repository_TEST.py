@@ -211,7 +211,7 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
                     QAReporter.__init__(self)
                     self.messages = 0
 
-                def message(self, f, l, s, m):
+                def message(self, msg):
                     self.messages += 1
 
             qi = repo.qa_interface

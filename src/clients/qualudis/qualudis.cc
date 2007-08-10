@@ -57,11 +57,11 @@ namespace
     struct QualudisReporter :
         QAReporter
     {
-        void message(const FSEntry & f, const QAMessageLevel l, const std::string & s, const std::string & m)
+        void message(const QAMessage & msg)
         {
-            std::cout << colour(cl_package_name, strip_leading_string(stringify(f.strip_leading(FSEntry::cwd())), "/"))
-                << ": " << s << " [" << colour(cl_error, l) << "] "
-                << std::endl << "    " << m << std::endl;
+            std::cout << colour(cl_package_name, strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"))
+                << ": " << msg.name << " [" << colour(cl_error, msg.level) << "] "
+                << std::endl << "    " << msg.message << std::endl;
         }
     };
 }

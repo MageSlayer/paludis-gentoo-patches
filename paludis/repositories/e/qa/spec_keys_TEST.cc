@@ -42,7 +42,7 @@ namespace
         {
         }
 
-        void message(const FSEntry &, QAMessageLevel, const std::string &, const std::string &)
+        void message(const QAMessage &)
         {
             ++count;
         }

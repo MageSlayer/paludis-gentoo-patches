@@ -21,20 +21,19 @@
 #define PALUDIS_GUARD_PALUDIS_QA_HH 1
 
 #include <paludis/qa-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/sr.hh>
 
 namespace paludis
 {
+#include <paludis/qa-sr.hh>
+
     class PALUDIS_VISIBLE QAReporter
     {
         public:
             virtual ~QAReporter() = 0;
 
-            virtual void message(
-                    const FSEntry & what,
-                    const QAMessageLevel,
-                    const std::string & name,
-                    const std::string & message) = 0;
+            virtual void message(const QAMessage &) = 0;
     };
 }
 

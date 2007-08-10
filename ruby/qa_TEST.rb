@@ -55,5 +55,48 @@ module Paludis
             assert_respond_to QAReporter.new, :message
         end
     end
+
+    class TestCase_QAMessage < Test::Unit::TestCase
+        def qm
+            unless @qm
+                @qm = QAMessage.new('/entry', QAMessageLevel::Debug, 'name', 'message')
+            end
+            @qm
+        end
+
+        def test_create
+            qm
+        end
+
+        def test_respond
+            assert_respond_to qm, :entry
+            assert_respond_to qm, :entry=
+            assert_respond_to qm, :level
+            assert_respond_to qm, :level=
+            assert_respond_to qm, :name
+            assert_respond_to qm, :name=
+            assert_respond_to qm, :message
+            assert_respond_to qm, :message=
+        end
+
+        def test_data_members
+            assert_equal '/entry', qm.entry
+            qm.entry = '/new_entry'
+            assert_equal '/new_entry', qm.entry
+
+            assert_equal QAMessageLevel::Debug, qm.level
+            qm.level = QAMessageLevel::Maybe
+            assert_equal QAMessageLevel::Maybe, qm.level
+
+            assert_equal 'name', qm.name
+            qm.name = 'new_name'
+            assert_equal 'new_name', qm.name
+
+            assert_equal 'message', qm.message
+            qm.message = 'new_message'
+            assert_equal 'new_message', qm.message
+        end
+
+    end
 end
 

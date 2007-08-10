@@ -31,10 +31,10 @@ struct QAReporterWrapper :
     QAReporter,
     bp::wrapper<QAReporter>
 {
-    void message(const FSEntry & f, QAMessageLevel qml, const std::string & s, const std::string & m)
+    void message(const QAMessage & msg)
     {
         if (get_override("message"))
-            get_override("message")(f, qml, s, m);
+            get_override("message")(msg);
         else
             throw PythonMethodNotImplemented("QAReporter", "message");
     }
@@ -57,6 +57,24 @@ void PALUDIS_VISIBLE expose_qa()
             "NEED_DOC");
 
     /**
+     * QAMessage
+     */
+    bp::class_<QAMessage>
+        (
+         "QAMessage",
+         "NEED_DOC",
+         bp::init<const FSEntry &, const QAMessageLevel, const std::string &, const std::string &>()
+        )
+        .add_property("entry", bp::make_getter(&QAMessage::entry, bp::return_value_policy<bp::return_by_value>()))
+
+        .def_readonly("level", &QAMessage::level)
+
+        .def_readonly("name", &QAMessage::name)
+
+        .def_readonly("message", &QAMessage::message)
+        ;
+
+    /**
      * QAReporter
      */
     bp::class_<QAReporterWrapper, boost::noncopyable>
@@ -66,7 +84,7 @@ void PALUDIS_VISIBLE expose_qa()
          bp::init<>()
         )
         .def("message", bp::pure_virtual(&QAReporter::message),
-                "message(QAMessageLevel, str, str)\n"
+                "message(QAMessage)\n"
                 "NEED_DOC"
             )
         ;

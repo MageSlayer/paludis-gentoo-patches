@@ -56,7 +56,7 @@ namespace paludis
 
             public:
                 RubyQAReporter(VALUE*);
-                void message(const FSEntry &, const QAMessageLevel, const std::string &, const std::string &);
+                void message(const QAMessage &);
         };
 #endif
 
@@ -85,6 +85,9 @@ namespace paludis
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(tr1::shared_ptr<const Contents>);
         VALUE repository_mask_info_to_value(tr1::shared_ptr<const RepositoryMaskInfo>);
+#ifdef ENABLE_RUBY_QA
+        VALUE qa_message_to_value(const QAMessage &);
+#endif
 
         VersionSpec value_to_version_spec(VALUE v);
         tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);

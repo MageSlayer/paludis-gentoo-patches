@@ -21,7 +21,7 @@
 from paludis import *
 import unittest
 
-class TestCase_QACheckProperties(unittest.TestCase):
+class TestCase_01_QACheckProperties(unittest.TestCase):
     def test_01_create(self):
         QACheckProperties()
 
@@ -35,14 +35,26 @@ class TestCase_QACheckProperties(unittest.TestCase):
         qcp += QACheckProperty.NEEDS_NETWORK
         self.assert_(qcp[QACheckProperty.NEEDS_NETWORK])
 
-class TestCase_QAReporter(unittest.TestCase):
+class TestCase_02_QAMessage(unittest.TestCase):
+    def test_01_create(self):
+        qm = QAMessage("entry", QAMessageLevel.DEBUG, "name", "message")
+
+    def test_02_data_members(self):
+        qm = QAMessage("entry", QAMessageLevel.DEBUG, "name", "message")
+
+        self.assertEquals(qm.entry, "entry")
+        self.assertEquals(qm.level, QAMessageLevel.DEBUG)
+        self.assertEquals(qm.name, "name")
+        self.assertEquals(qm.message, "message")
+
+class TestCase_03_QAReporter(unittest.TestCase):
     import paludis
     if hasattr(paludis, "QAReporter"):
         class PyQAR(QAReporter):
             def __init__(self):
                 QAReporter.__init__(self)
 
-            def message(self, l, s, m):
+            def message(self, msg):
                 return 1
 
     def test_01_create(self):
@@ -55,7 +67,7 @@ class TestCase_QAReporter(unittest.TestCase):
         self.assert_(isinstance(self.PyQAR(), QAReporter))
 
     def test_04_subclass_message(self):
-        self.assertEquals(self.PyQAR().message(QAMessageLevel.DEBUG, "foo", "foo"), 1)
+        self.assertEquals(self.PyQAR().message(QAMessage("foo", QAMessageLevel.DEBUG, "foo", "foo")), 1)
 
 
 if __name__ == "__main__":

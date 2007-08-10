@@ -62,7 +62,7 @@ namespace
         ~HomepageChecker()
         {
             if (! found_one)
-                reporter.message(entry, qaml_normal, name, "Homepage specifies no URIs");
+                reporter.message(QAMessage(entry, qaml_normal, name, "Homepage specifies no URIs"));
         }
 
         void visit_leaf(const URIDepSpec & u)
@@ -70,17 +70,18 @@ namespace
             found_one = true;
 
             if (! u.renamed_url_suffix().empty())
-                reporter.message(entry, qaml_normal, name, "Homepage uses -> in part '" + u.text() + "'");
+                reporter.message(
+                        QAMessage(entry, qaml_normal, name, "Homepage uses -> in part '" + u.text() + "'"));
 
             if (0 == u.original_url().compare(0, 7, "http://") &&
                     0 == u.original_url().compare(0, 8, "https://") &&
                     0 == u.original_url().compare(0, 6, "ftp://"))
-                reporter.message(entry, qaml_normal, name, "Homepage uses no or unknown protocol in part '" + u.text() + "'");
+                reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses no or unknown protocol in part '" + u.text() + "'"));
         }
 
         void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
         {
-            reporter.message(entry, qaml_normal, name, "Homepage uses labels");
+            reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses labels"));
         }
     };
 }
@@ -95,7 +96,7 @@ paludis::erepository::homepage_key_check(
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");
 
     if (! id->homepage_key())
-        reporter.message(entry, qaml_normal, name, "No homepage available");
+        reporter.message(QAMessage(entry, qaml_normal, name, "No homepage available"));
     else
     {
         HomepageChecker h(entry, reporter, id, name);
