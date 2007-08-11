@@ -34,8 +34,9 @@ IF_PYTHON_TESTS = \
 	package_database_TEST.py \
 	repository_TEST.py \
 	action_TEST.py \
-	package_id_TEST.py \
 	metadata_key_TEST.py \
+	mask_TEST.py \
+	package_id_TEST.py \
 	dep_list_TEST.py
 
 IF_PYTHON_QA_TESTS = \
@@ -71,6 +72,7 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	paludis_python_so.cc \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
+	mask_TEST_setup.sh mask_TEST_cleanup.sh \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
