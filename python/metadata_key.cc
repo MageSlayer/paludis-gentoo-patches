@@ -17,15 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "metadata_key.hh"
 #include <paludis_python.hh>
 
-#include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/util/visitor-impl.hh>
 
 #include <datetime.h>
-
-#include <iostream>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -66,86 +64,95 @@ struct class_spec_tree_key :
     }
 };
 
-struct MetadataKeyToPython :
-    ConstVisitor<MetadataKeyVisitorTypes>
+void
+MetadataKeyToPython::visit(const MetadataPackageIDKey & k)
 {
-    bp::object value;
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataPackageIDKey & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataStringKey & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataStringKey & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataTimeKey & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataTimeKey & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataContentsKey & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataContentsKey & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataRepositoryMaskInfoKey & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataRepositoryMaskInfoKey & k)
-    {
-        value = bp::object();
-    }
+void
+MetadataKeyToPython::visit(const MetadataSetKey<KeywordNameSet> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSetKey<KeywordNameSet> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSetKey<UseFlagNameSet> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSetKey<UseFlagNameSet> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSetKey<IUseFlagSet> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSetKey<IUseFlagSet> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSetKey<InheritedSet> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSetKey<InheritedSet> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
+void
+MetadataKeyToPython::visit(const MetadataSpecTreeKey<URISpecTree> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
-    void visit(const MetadataSpecTreeKey<URISpecTree> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
-
-    void visit(const MetadataSetKey<PackageIDSequence> & k)
-    {
-        value = bp::object(bp::ptr(&k));
-    }
-};
+void
+MetadataKeyToPython::visit(const MetadataSetKey<PackageIDSequence> & k)
+{
+    value = bp::object(bp::ptr(&k));
+}
 
 struct metadata_key_to_python
 {
@@ -250,6 +257,19 @@ void PALUDIS_VISIBLE expose_metadata_key()
         //Work around epydoc bug
         .add_property("human_name", &MetadataContentsKey::human_name,
                 "[ro] string\n"
+                )
+        ;
+
+    /**
+     * MetadataRepositoryMaskInfoKey
+     */
+    bp::class_<MetadataRepositoryMaskInfoKey, bp::bases<MetadataKey>, boost::noncopyable>
+        (
+         "MetadataRepositoryMaskInfoKey",
+         bp::no_init
+        )
+        .add_property("value", &MetadataRepositoryMaskInfoKey::value,
+                "[ro] RepositoryMaskInfo\n"
                 )
         ;
 

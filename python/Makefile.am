@@ -50,7 +50,8 @@ IF_PYTHON_SOURCES = \
 	environment.cc \
 	exception.hh exception.cc \
 	fs_entry.cc \
-	metadata_key.cc \
+	mask.cc \
+	metadata_key.hh metadata_key.cc \
 	name.cc \
 	log.cc \
 	package_database.cc \

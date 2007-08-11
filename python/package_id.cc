@@ -26,6 +26,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/iterator.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
@@ -42,6 +43,18 @@ struct PackageIDWrapper
             return bp::incref(bp::object(**i).ptr());
         else
             return Py_None;
+    }
+
+    static IndirectIterator<PackageID::MetadataIterator>
+    begin_metadata(const PackageID & self)
+    {
+        return indirect_iterator(self.begin_metadata());
+    }
+
+    static IndirectIterator<PackageID::MetadataIterator>
+    end_metadata(const PackageID & self)
+    {
+        return indirect_iterator(self.end_metadata());
     }
 };
 
@@ -92,11 +105,25 @@ void PALUDIS_VISIBLE expose_package_id()
                 "NEED_DOC"
             )
 
-        .def("__iter__", bp::range(&PackageID::begin_metadata, &PackageID::end_metadata))
+        .add_property("metadata", bp::range(&PackageIDWrapper::begin_metadata, &PackageIDWrapper::end_metadata),
+                "[ro] Iterable of MetadataKey\n"
+                "NEED_DOC"
+                )
 
         .def("find_metadata", &PackageIDWrapper::find_metadata,
                 "find_metadata(string) -> MetadataKey\n"
+                "NEED_DOC"
             )
+
+        .add_property("masked", &PackageID::masked,
+                "[ro] bool\n"
+                "NEED_DOC"
+                )
+
+        .add_property("masks", bp::range(&PackageID::begin_masks, &PackageID::end_masks),
+                "[ro] Iterable of Mask\n"
+                "NEED_DOC"
+                )
 
         .def("__eq__", &py_eq<PackageID>)
 
