@@ -38,7 +38,7 @@ namespace paludis
 
     namespace erepository
     {
-        class QAController :
+        class PALUDIS_VISIBLE QAController :
             private PrivateImplementationPattern<QAController>
         {
             private:

@@ -22,21 +22,64 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/qa.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/config_file.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/parallel_for_each.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/instantiation_policy-impl.hh>
 #include <algorithm>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 namespace
 {
+    struct SpecKeysBlacklist :
+        InstantiationPolicy<SpecKeysBlacklist, instantiation_method::SingletonTag>
+    {
+        Mutex mutex;
+        std::map<std::string, const tr1::shared_ptr<const QualifiedPackageNameSet> > map;
+
+        const tr1::shared_ptr<const QualifiedPackageNameSet> blacklist(const std::string & s)
+        {
+            Lock lock(mutex);
+            std::map<std::string, const tr1::shared_ptr<const QualifiedPackageNameSet> >::const_iterator i(map.find(s));
+            if (map.end() != i)
+                return i->second;
+            else
+            {
+                Context context("When loading spec_keys PackageDepSpec blacklist '" + s + "':");
+
+                tr1::shared_ptr<QualifiedPackageNameSet> r(new QualifiedPackageNameSet);
+                FSEntry f(FSEntry(getenv_with_default("PALUDIS_QA_DATA_DIR",
+                                stringify(FSEntry(DATADIR) / "paludis" / "qa")))
+                        / ("spec_keys_pds_blacklist." + s + ".conf"));
+
+                if (f.exists())
+                {
+                    LineConfigFile ff(f, LineConfigFileOptions());
+                    std::copy(ff.begin(), ff.end(), create_inserter<QualifiedPackageName>(r->inserter()));
+                }
+                else
+                    Log::get_instance()->message(ll_warning, lc_context) << "Blacklist data file '" << f << "' does not exist";
+
+                map.insert(std::make_pair(s, r));
+                return r;
+            }
+        }
+    };
+
     struct Checker :
         ConstVisitor<GenericSpecTree>
     {
@@ -45,6 +88,8 @@ namespace
         const tr1::shared_ptr<const PackageID> & id;
         const MetadataKey & key;
         const std::string name;
+        const tr1::shared_ptr<const QualifiedPackageNameSet> pds_blacklist;
+
         unsigned level;
         bool child_of_any;
 
@@ -53,19 +98,27 @@ namespace
                 QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
                 const MetadataKey & k,
-                const std::string & n) :
+                const std::string & n,
+                const tr1::shared_ptr<const QualifiedPackageNameSet> p) :
             entry(f),
             reporter(r),
             id(i),
             key(k),
             name(n),
+            pds_blacklist(p),
             level(0),
             child_of_any(false)
         {
         }
 
-        void visit_leaf(const PackageDepSpec &)
+        void visit_leaf(const PackageDepSpec & p)
         {
+            if (pds_blacklist && p.package_ptr())
+            {
+                if (pds_blacklist->end() != pds_blacklist->find(*p.package_ptr()))
+                    reporter.message(QAMessage(entry, qaml_normal, name, "Package specification '" + stringify(*p.package_ptr())
+                                + "' blacklisted in spec key '" + stringify(key.raw_name()) + "'"));
+            }
         }
 
         void visit_leaf(const BlockDepSpec & b)
@@ -203,37 +256,77 @@ namespace
 
         void visit(const MetadataSpecTreeKey<URISpecTree> & k)
         {
-            Context context("When visiting metadata key '" + k.raw_name() + "':");
-            Checker c(entry, reporter, id, k, name);
-            k.value()->accept(c);
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+            }
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            Context context("When visiting metadata key '" + k.raw_name() + "':");
-            Checker c(entry, reporter, id, k, name);
-            k.value()->accept(c);
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+            }
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            Context context("When visiting metadata key '" + k.raw_name() + "':");
-            Checker c(entry, reporter, id, k, name);
-            k.value()->accept(c);
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, k, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+            }
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            Context context("When visiting metadata key '" + k.raw_name() + "':");
-            Checker c(entry, reporter, id, k, name);
-            k.value()->accept(c);
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, k, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+            }
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            Context context("When visiting metadata key '" + k.raw_name() + "':");
-            Checker c(entry, reporter, id, k, name);
-            k.value()->accept(c);
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+            }
         }
     };
 }

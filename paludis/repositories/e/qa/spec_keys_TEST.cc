@@ -158,5 +158,25 @@ namespace test_cases
             TEST_CHECK_EQUAL(r.count, 1u);
         }
     } test_any_block;
+
+    struct DeprecatedTest : TestCase
+    {
+        DeprecatedTest() : TestCase("deprecated") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+            repo->add_version("virtual", "libc", "1");
+
+            tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
+            id->build_dependencies_key()->set_from_string("virtual/libc");
+
+            TestReporter r;
+            TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r, id, "spec keys"));
+            TEST_CHECK_EQUAL(r.count, 1u);
+        }
+    } test_deprecated;
 }
 

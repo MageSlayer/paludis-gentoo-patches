@@ -12,6 +12,15 @@ DEFS = \
 
 if ENABLE_QA
 
+paludis_qa_datadir = $(datadir)/paludis/qa/
+
+paludis_qa_data_DATA = \
+	spec_keys_pds_blacklist.DEPEND.conf \
+	spec_keys_pds_blacklist.RDEPEND.conf \
+	spec_keys_pds_blacklist.PDEPEND.conf \
+	spec_keys_pds_blacklist.SDEPEND.conf \
+	spec_keys_pds_blacklist.PROVIDE.conf
+
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
 	eapi_supported.hh \
@@ -23,9 +32,10 @@ paludis_repositories_e_include_HEADERS = \
 	short_description_key.hh \
 	stray_files.hh
 
-noinst_LTLIBRARIES = libpaludiserepositoryqa.la
+lib_LTLIBRARIES = libpaludiserepositoryqa.la
 
 libpaludiserepositoryqa_la_SOURCES = \
+	qa.cc \
 	eapi_supported.cc \
 	homepage_key.cc \
 	qa_checks.cc \
@@ -36,9 +46,15 @@ libpaludiserepositoryqa_la_SOURCES = \
 	stray_files.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
+libpaludiserepositoryqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludiserepositoryqa_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
+
 endif
 
-EXTRA_DIST =
+EXTRA_DIST = $(paludis_qa_data_DATA) test_extras.cc
 BUILT_SOURCES =
 
 check_SCRIPTS =
@@ -48,6 +64,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/repositories/e/ebuild/`" \
 	PALUDIS_EAPIS_DIR="$(top_srcdir)/paludis/repositories/e/eapis/" \
+	PALUDIS_QA_DATA_DIR="$(top_srcdir)/paludis/repositories/e/qa/" \
 	PALUDIS_DISTRIBUTIONS_DIR="$(top_srcdir)/paludis/distributions/" \
 	PALUDIS_DISTRIBUTION="gentoo" \
 	PALUDIS_SKIP_CONFIG="yes" \
@@ -67,8 +84,9 @@ TESTS = \
 check_PROGRAMS = $(TESTS)
 
 spec_keys_TEST_SOURCES = spec_keys_TEST.cc
-spec_keys_TEST_LDFLAGS = \
+spec_keys_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
+	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -78,9 +96,11 @@ spec_keys_TEST_LDFLAGS = \
 	$(top_builddir)/test/libtest.a
 
 stray_files_TEST_SOURCES = stray_files_TEST.cc
-stray_files_TEST_LDFLAGS = \
+stray_files_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
+	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \

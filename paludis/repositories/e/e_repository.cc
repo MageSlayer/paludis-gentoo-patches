@@ -50,6 +50,7 @@
 #include <paludis/syncer.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
+#include <paludis/qa.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
@@ -85,6 +86,11 @@
 
 #include <strings.h>
 #include <ctype.h>
+
+#include <dlfcn.h>
+#include <stdint.h>
+
+#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
 /** \file
  * Implementation of ERepository.
@@ -999,6 +1005,38 @@ ERepository::perform_hook(const Hook & hook) const
     return HookResult(0, "");
 }
 
+#ifdef ENABLE_QA
+namespace
+{
+    struct LibQAHandle
+    {
+        Mutex mutex;
+        void * handle;
+        void (* qa_checks_handle)(
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
+                const QACheckProperties & ignore_if,
+                const QACheckProperties & ignore_unless,
+                const QAMessageLevel minimum_level,
+                QAReporter & reporter,
+                const FSEntry & dir);
+
+        LibQAHandle() :
+            handle(0),
+            qa_checks_handle(0)
+        {
+        }
+
+        ~LibQAHandle()
+        {
+            if (0 != handle)
+                dlclose(handle);
+        }
+
+    } libqahandle;
+}
+#endif
+
 void
 ERepository::check_qa(
         QAReporter & reporter,
@@ -1011,16 +1049,38 @@ ERepository::check_qa(
 #ifdef ENABLE_QA
     Context c("When performing QA checks for '" + stringify(dir) + "':");
 
-    erepository::QAController controller(
-            _imp->params.environment,
-            shared_from_this(),
-            ignore_if,
-            ignore_unless,
-            minimum_level,
-            reporter);
+    {
+        Lock lock(libqahandle.mutex);
 
-    controller.run();
+        if (0 == libqahandle.handle)
+            libqahandle.handle = dlopen("libpaludiserepositoryqa.so", RTLD_NOW | RTLD_GLOBAL);
+        if (0 == libqahandle.handle)
+        {
+            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror) +
+                        "' when dlopen(libpaludisqa.so)"));
+            return;
+        }
 
+        if (0 == libqahandle.qa_checks_handle)
+            libqahandle.qa_checks_handle = STUPID_CAST(void (*)(
+                        const Environment * const,
+                        const tr1::shared_ptr<const ERepository> &,
+                        const QACheckProperties &,
+                        const QACheckProperties &,
+                        const QAMessageLevel,
+                        QAReporter &,
+                        const FSEntry &),
+                    dlsym(libqahandle.handle, "check_qa"));
+        if (0 == libqahandle.qa_checks_handle)
+        {
+            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror) +
+                        "' when dlsym(libpaludisqa.so, \"check_qa\")"));
+            return;
+        }
+    }
+
+    (*libqahandle.qa_checks_handle)(_imp->params.environment, shared_from_this(), ignore_if, ignore_unless,
+            minimum_level, reporter, dir);
 #endif
 }
 
