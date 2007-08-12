@@ -189,6 +189,7 @@ namespace
 {
     struct LibXMLHandle
     {
+        Mutex mutex;
         void * handle;
         tr1::shared_ptr<GLSA> (* create_glsa_from_xml_file_handle)(const std::string &);
 
@@ -216,19 +217,23 @@ GLSA::create_from_xml_file(const std::string & filename)
 #  ifdef MONOLITHIC
 
 #  else
-    if (0 == libxmlhandle.handle)
-        libxmlhandle.handle = dlopen("libpaludiserepositoryxmlthings.so",
-                RTLD_NOW | RTLD_GLOBAL);
-    if (0 == libxmlhandle.handle)
-        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                + stringify(dlerror()) + "' when dlopen(libpaludiserepositoryxmlthings.so)");
+    {
+        Lock lock(libxmlhandle.mutex);
 
-    if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
-        libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(tr1::shared_ptr<GLSA> (*)(const std::string &),
-                dlsym(libxmlhandle.handle, "create_glsa_from_xml_file"));
-    if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
-        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                + stringify(dlerror()) + "' when dlsym(libpaludisgentoorepositoryxmlthings.so, create_glsa_from_xml_file)");
+        if (0 == libxmlhandle.handle)
+            libxmlhandle.handle = dlopen("libpaludiserepositoryxmlthings.so",
+                    RTLD_NOW | RTLD_GLOBAL);
+        if (0 == libxmlhandle.handle)
+            throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
+                    + stringify(dlerror()) + "' when dlopen(libpaludiserepositoryxmlthings.so)");
+
+        if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
+            libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(tr1::shared_ptr<GLSA> (*)(const std::string &),
+                    dlsym(libxmlhandle.handle, "create_glsa_from_xml_file"));
+        if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
+            throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
+                    + stringify(dlerror()) + "' when dlsym(libpaludisgentoorepositoryxmlthings.so, create_glsa_from_xml_file)");
+    }
 
 #  endif
 #else
