@@ -70,8 +70,8 @@ namespace
                         .environment(&env)
                         .root(root_dir)
                         .contents_file("vdb_unmerger_TEST_dir/CONTENTS/" + what)
-                        .config_protect("")
-                        .config_protect_mask("")
+                        .config_protect("/protected_file /protected_dir")
+                        .config_protect_mask("/protected_dir/unprotected_file /protected_dir/unprotected_dir")
                         .package_id(tr1::shared_ptr<PackageID>()))
             {
             }
@@ -347,5 +347,43 @@ namespace test_cases
             TEST_CHECK((root_dir / target).is_regular_file());
         }
     } test_vdb_unmerger_fifo_bad_type;
+
+    struct VDBUnmergerTestConfigProtect : VDBUnmergerTest
+    {
+        VDBUnmergerTestConfigProtect() : VDBUnmergerTest("config_protect") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / "protected_file").is_regular_file());
+            TEST_CHECK((root_dir / "unprotected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_file_not_really").is_regular_file());
+
+            TEST_CHECK((root_dir / "protected_dir/protected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").is_regular_file());
+
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir/unprotected_file").is_regular_file());
+
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").is_regular_file());
+
+            TEST_CHECK((root_dir / "protected_dir_not_really/unprotected_file").is_regular_file());
+
+            unmerger.unmerge();
+
+            TEST_CHECK((root_dir / "protected_file").exists());
+            TEST_CHECK(! (root_dir / "unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_file_not_really").exists());
+
+            TEST_CHECK((root_dir / "protected_dir/protected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_file").exists());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").exists());
+
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/unprotected_file").exists());
+
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").exists());
+
+            TEST_CHECK(! (root_dir / "protected_dir_not_really/unprotected_file").exists());
+        }
+    } test_vdb_unmerger_config_protect;
 }
 

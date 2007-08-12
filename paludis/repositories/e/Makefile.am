@@ -161,6 +161,19 @@ e_repository_TEST_LDADD = \
 
 e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
+vdb_merger_TEST_SOURCES = vdb_merger_TEST.cc
+
+vdb_merger_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+vdb_merger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
 vdb_unmerger_TEST_SOURCES = vdb_unmerger_TEST.cc
 
 vdb_unmerger_TEST_LDADD = \
@@ -310,6 +323,9 @@ EXTRA_DIST = \
 	vdb_unmerger.sr \
 	vdb_unmerger-sr.hh \
 	vdb_unmerger-sr.cc \
+	vdb_merger_TEST.cc \
+	vdb_merger_TEST_setup.sh \
+	vdb_merger_TEST_cleanup.sh \
 	vdb_unmerger_TEST.cc \
 	vdb_unmerger_TEST_setup.sh \
 	vdb_unmerger_TEST_cleanup.sh
@@ -356,6 +372,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
+	PALUDIS_NO_CHOWN="yes" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/`:` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
@@ -459,6 +476,7 @@ TESTS = \
 	dep_parser_TEST \
 	dep_spec_pretty_printer_TEST \
 	e_repository_TEST \
+	vdb_merger_TEST \
 	vdb_unmerger_TEST \
 	$(GLSA_TESTS) \
 	e_repository_sets_TEST \

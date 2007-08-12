@@ -35,6 +35,7 @@ using namespace paludis;
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/strip.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -170,13 +171,19 @@ VDBUnmerger::config_protected(const FSEntry & f) const
     bool result(false);
     for (std::list<std::string>::const_iterator c(_imp->config_protect.begin()),
             c_end(_imp->config_protect.end()) ; c != c_end && ! result ; ++c)
-        if (0 == tidy.compare(0, c->length(), *c))
+    {
+        std::string cc(strip_trailing(*c, "/") + "/");
+        if (tidy == *c || 0 == tidy.compare(0, cc.length(), cc))
             result = true;
+    }
     if (result)
         for (std::list<std::string>::const_iterator c(_imp->config_protect_mask.begin()),
                 c_end(_imp->config_protect_mask.end()) ; c != c_end && result ; ++c)
-            if (0 == tidy.compare(0, c->length(), *c))
+        {
+            std::string cc(strip_trailing(*c, "/") + "/");
+            if (tidy == *c || 0 == tidy.compare(0, cc.length(), cc))
                 result = false;
+        }
 
     return result;
 }

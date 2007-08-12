@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/digests/md5.hh>
@@ -123,10 +124,10 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 
     MD5 md5(infile);
 
-    std::cout << ">>> [obj] " << tidy_real;
+    std::string line(">>> [obj] " + tidy_real);
     if (tidy_real != tidy)
-        std::cout << " (" << FSEntry(tidy).basename() << ")";
-    std::cout << std::endl;
+        line.append(" (" + FSEntry(tidy).basename() + ")");
+    display_override(line);
 
     *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp << std::endl;
 }
@@ -135,7 +136,7 @@ void
 VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
-    std::cout << ">>> [dir] " << tidy << std::endl;
+    display_override(">>> [dir] " + tidy);
 
     *_imp->contents_file << "dir " << tidy << std::endl;
 }
@@ -147,7 +148,7 @@ VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir)
     std::string target((dst_dir / src.basename()).readlink());
     time_t timestamp((dst_dir / src.basename()).mtime());
 
-    std::cout << ">>> [sym] " << tidy << std::endl;
+    display_override(">>> [sym] " + tidy);
 
     *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp << std::endl;
 }
@@ -178,13 +179,19 @@ VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
     bool result(false);
     for (std::list<std::string>::const_iterator c(_imp->config_protect.begin()),
             c_end(_imp->config_protect.end()) ; c != c_end && ! result ; ++c)
-        if (0 == tidy.compare(0, c->length(), *c))
+    {
+        std::string cc(strip_trailing(*c, "/") + "/");
+        if (tidy == *c || 0 == tidy.compare(0, cc.length(), cc))
             result = true;
+    }
     if (result)
         for (std::list<std::string>::const_iterator c(_imp->config_protect_mask.begin()),
                 c_end(_imp->config_protect_mask.end()) ; c != c_end && result ; ++c)
-            if (0 == tidy.compare(0, c->length(), *c))
+        {
+            std::string cc(strip_trailing(*c, "/") + "/");
+            if (tidy == *c || 0 == tidy.compare(0, cc.length(), cc))
                 result = false;
+        }
 
     return result;
 }
@@ -197,17 +204,17 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     std::ifstream our_md5_file(stringify(src).c_str());
     if (! our_md5_file)
-        throw MergerError("Could not get md5 for '" + stringify(dst / src.basename()) + "'");
+        throw MergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->options.root)) + "'");
     MD5 our_md5(our_md5_file);
 
     while (true)
     {
-        if (! (_imp->options.root / dst / result_name).exists())
+        if (! (dst / result_name).exists())
             break;
 
-        if ((_imp->options.root / dst / result_name).is_regular_file_or_symlink_to_regular_file())
+        if ((dst / result_name).is_regular_file_or_symlink_to_regular_file())
         {
-            std::ifstream other_md5_file(stringify(_imp->options.root / dst / result_name).c_str());
+            std::ifstream other_md5_file(stringify(dst / result_name).c_str());
             if (other_md5_file)
             {
                 MD5 other_md5(other_md5_file);
@@ -227,7 +234,7 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 void
 VDBMerger::merge()
 {
-    std::cout << ">>> Merging to " << _imp->options.root << std::endl;
+    display_override(">>> Merging to " + stringify(_imp->options.root));
     _imp->contents_file.reset(new std::ofstream(stringify(_imp->options.contents_file).c_str()));
     Merger::merge();
 }

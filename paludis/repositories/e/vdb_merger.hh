@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup grpvdbrepository
      * \nosubgrouping
      */
-    class VDBMerger :
+    class PALUDIS_VISIBLE VDBMerger :
         public Merger,
         private PrivateImplementationPattern<VDBMerger>
     {

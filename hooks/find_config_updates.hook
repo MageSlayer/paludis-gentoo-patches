@@ -31,21 +31,27 @@ check_for_config_updates()
     echo
     einfo_unhooked "Searching for configuration files requiring action..."
 
-    dir_count=0
-    for dir in /etc ${CONFIG_PROTECT} ; do
-        [[ -d "${ROOT%/}/${dir}" ]] || continue
-        c=$(find "${ROOT%/}/${dir}" -iname '._cfg????_*' | wc -l )
+    local c dir dirs=""
+    for prot in /etc ${CONFIG_PROTECT} ; do
+        if [[ -d "${ROOT%/}/${prot}" ]]; then
+            dir="${prot}"
+            c=$(find "${ROOT%/}/${dir}" -iname '._cfg????_*' | wc -l )
+        else
+            dir="${prot%/*}"
+            [[ -d "${ROOT%/}/${dir}" ]] || continue
+            c=$(find "${ROOT%/}/${dir}" -maxdepth 1 -iname "._cfg????_${prot##*/}" | wc -l )
+        fi
         if [[ ${c} -gt 0 ]] ; then
-            einfo_unhooked "Found ${c} files in ${ROOT%%+(/)}/${dir}"
-            dir_count=$((dir_count + 1))
+            einfo_unhooked "Found ${c} files in ${ROOT%%+(/)}/${dir##+(/)}"
+            dirs="${dirs:+${dirs}$'\n'}${dir}"
         fi
     done
 
-    if [[ 0 -eq "${dir_count}" ]] ; then
+    if [[ -z "${dirs}" ]] ; then
         einfo_unhooked "No configuration file updates required"
         exit 0
     else
-        ewarn "Found files in ${dir_count} directories"
+        ewarn "Found files in $(sort -u <<<"${dirs}" | wc -l ) directories"
         ewarn "Your action is required"
         exit 0
     fi

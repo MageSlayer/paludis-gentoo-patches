@@ -76,3 +76,25 @@ echo "fif /fifo_ with spaces" > "../CONTENTS/fifo_ with spaces"
 > fifo_bad_type
 echo "fif /fifo_bad_type" > "../CONTENTS/fifo_bad_type"
 
+touch protected_file
+touch unprotected_file
+touch protected_file_not_really
+
+mkdir protected_dir
+touch protected_dir/protected_file
+touch protected_dir/unprotected_file
+touch protected_dir/unprotected_file_not_really
+
+mkdir protected_dir/unprotected_dir
+touch protected_dir/unprotected_dir/unprotected_file
+
+mkdir protected_dir/unprotected_dir_not_really
+touch protected_dir/unprotected_dir_not_really/protected_file
+
+mkdir protected_dir_not_really
+touch protected_dir_not_really/unprotected_file
+
+find . -name '*protected*' -type f -print | while read file; do
+    echo obj "${file#.}" "$(md5sum "${file}" | cut -f1 -d' ')" "$(${PALUDIS_EBUILD_DIR}/utils/getmtime "${file}")"
+done >../CONTENTS/config_protect
+
