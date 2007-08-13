@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
- * Copyright (c) 2007 Alexander Færøy <eroyf@gentoo.org>
+ * Copyright (c) 2007 Alexander Færøy <eroyf@eroyf.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
