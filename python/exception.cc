@@ -78,6 +78,13 @@ PythonMethodNotImplemented::PythonMethodNotImplemented(const std::string & class
 {
 }
 
+PythonContainerConversionError::PythonContainerConversionError(const std::string & class_name,
+        const std::string & container_name, const std::string & o_type) throw () :
+    PythonError("Cannot add object of type '" + o_type + "' to a '"
+            + class_name + "' " + container_name + " container.")
+{
+}
+
 void PALUDIS_VISIBLE expose_exception()
 {
     /**
@@ -101,5 +108,9 @@ void PALUDIS_VISIBLE expose_exception()
     ExceptionRegister::get_instance()->add_exception<PythonMethodNotImplemented>("PythonMethodNotImplemented",
             "PythonError",
             "Thrown if a not implemented virtual function was called from C++.");
+    ExceptionRegister::get_instance()->add_exception<PythonContainerConversionError>(
+            "PythonContainerConversionError",
+            "PythonError",
+            "Thrown if an error occurs during container conversion from python.");
 
 }

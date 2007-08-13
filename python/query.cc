@@ -18,14 +18,171 @@
  */
 
 #include <python/paludis_python.hh>
+#include <python/exception.hh>
 
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+class PythonQueryDelegate;
+
+class PythonQuery :
+    public Query
+{
+    public:
+        PythonQuery();
+
+        virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const
+        {
+            return tr1::shared_ptr<RepositoryNameSequence>();
+        }
+
+        virtual tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
+                tr1::shared_ptr<const RepositoryNameSequence>) const
+        {
+            return tr1::shared_ptr<CategoryNamePartSet>();
+        }
+
+        virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
+                tr1::shared_ptr<const RepositoryNameSequence>,
+                tr1::shared_ptr<const CategoryNamePartSet>) const
+        {
+            return tr1::shared_ptr<QualifiedPackageNameSet>();
+        }
+
+        virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
+                tr1::shared_ptr<const RepositoryNameSequence>,
+                tr1::shared_ptr<const QualifiedPackageNameSet>) const
+        {
+            return tr1::shared_ptr<PackageIDSequence>();
+        }
+
+        virtual std::string as_human_readable_string() const = 0;
+};
+
+class PythonQueryDelegate :
+    public QueryDelegate
+{
+    private:
+        PythonQuery * _q;
+
+    public:
+        PythonQueryDelegate(PythonQuery * pq) :
+            _q(pq)
+        {
+        }
+
+        tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
+        {
+            return _q->repositories(e);
+        }
+
+        tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+                tr1::shared_ptr<const RepositoryNameSequence> r) const
+        {
+            return _q->categories(e, r);
+        }
+
+        tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+                tr1::shared_ptr<const RepositoryNameSequence> r,
+                tr1::shared_ptr<const CategoryNamePartSet> c) const
+        {
+            return _q->packages(e, r, c);
+        }
+
+        tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
+                tr1::shared_ptr<const RepositoryNameSequence> r,
+                tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+        {
+            return _q->ids(e, r, q);
+        }
+
+        std::string as_human_readable_string() const
+        {
+            return _q->as_human_readable_string();
+        }
+};
+
+PythonQuery::PythonQuery() :
+    Query(tr1::shared_ptr<const PythonQueryDelegate>(new PythonQueryDelegate(this)))
+{
+}
+
+struct PythonQueryWrapper :
+    PythonQuery,
+    bp::wrapper<PythonQuery>
+{
+    tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
+    {
+        if (bp::override f = get_override("repositories"))
+            return f(boost::cref(e));
+        return PythonQuery::repositories(e);
+    }
+
+    tr1::shared_ptr<RepositoryNameSequence> default_repositories(const Environment & e) const
+    {
+        return PythonQuery::repositories(e);
+    }
+
+    tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r) const
+    {
+        if (bp::override f = get_override("categories"))
+            return f(boost::cref(e), r);
+        return PythonQuery::categories(e, r);
+    }
+
+    tr1::shared_ptr<CategoryNamePartSet> default_categories(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r) const
+    {
+        return PythonQuery::categories(e, r);
+    }
+
+    tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r,
+            tr1::shared_ptr<const CategoryNamePartSet> c) const
+    {
+        if (bp::override f = get_override("packages"))
+            return f(boost::cref(e), r, c);
+        return PythonQuery::packages(e, r, c);
+    }
+
+    tr1::shared_ptr<QualifiedPackageNameSet> default_packages(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r,
+            tr1::shared_ptr<const CategoryNamePartSet> c) const
+    {
+        return PythonQuery::packages(e, r, c);
+    }
+
+    tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r,
+            tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+    {
+        if (bp::override f = get_override("ids"))
+            return f(boost::cref(e), r, q);
+        return PythonQuery::ids(e, r, q);
+    }
+
+    tr1::shared_ptr<PackageIDSequence> default_ids(const Environment & e,
+            tr1::shared_ptr<const RepositoryNameSequence> r,
+            tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+    {
+        return PythonQuery::ids(e, r, q);
+    }
+
+    std::string as_human_readable_string() const
+    {
+        if (bp::override f = get_override("as_human_readable_string"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("Query", "as_human_readable_string");
+    }
+};
 
 template <typename A_>
 class class_supports_action :
@@ -55,6 +212,21 @@ void PALUDIS_VISIBLE expose_query()
          bp::no_init
         );
         q.def("__and__", operator&);
+
+    bp::class_<PythonQueryWrapper, bp::bases<Query>, boost::noncopyable>
+        (
+         "QueryBase",
+         "Parameter for a PackageDatabase query.",
+         bp::init<>()
+        )
+        .def("repositories", &PythonQuery::repositories, &PythonQueryWrapper::default_repositories)
+
+        .def("categories", &PythonQuery::categories, &PythonQueryWrapper::default_categories)
+
+        .def("packages", &PythonQuery::packages, &PythonQueryWrapper::default_packages)
+
+        .def("ids", &PythonQuery::ids, &PythonQueryWrapper::default_ids)
+        ;
 
     /* I need to think about it yet... */
     bp::scope query = q;

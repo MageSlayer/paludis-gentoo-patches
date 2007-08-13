@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PYTHON_PALUDIS_EXCEPTION_HH
-#define PALUDIS_GUARD_PYTHON_PALUDIS_EXCEPTION_HH 1
+#ifndef PALUDIS_GUARD_PYTHON_EXCEPTION_HH
+#define PALUDIS_GUARD_PYTHON_EXCEPTION_HH 1
 
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -134,8 +134,15 @@ namespace paludis
                 PythonMethodNotImplemented(const std::string & class_name,
                         const std::string & function_name) throw ();
         };
+
+        class PALUDIS_VISIBLE PythonContainerConversionError :
+            public PythonError
+        {
+            public:
+                PythonContainerConversionError(const std::string & class_name,
+                        const std::string & container_name, const std::string & o_type) throw ();
+        };
     }
 }
 
 #endif
-

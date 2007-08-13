@@ -79,6 +79,7 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
+	query_TEST_setup.sh query_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \

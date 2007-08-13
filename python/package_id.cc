@@ -136,6 +136,7 @@ void PALUDIS_VISIBLE expose_package_id()
     class_iterable<PackageIDSequence>
         (
          "PackageIDIterable",
-         "Iterable of PackageID"
+         "Iterable of PackageID",
+         true
         );
 }

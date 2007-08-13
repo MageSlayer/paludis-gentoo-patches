@@ -18,10 +18,14 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+import os
+
+repo_path = os.path.join(os.getcwd(), "query_TEST_dir/testrepo")
+
 from paludis import *
 import unittest
 
-class TestCase_Queries(unittest.TestCase):
+class TestCase_01_Queries(unittest.TestCase):
     def test_1_create(self):
         self.queries = []
         self.queries.append(Query.SupportsInstallAction())
@@ -51,6 +55,32 @@ class TestCase_Queries(unittest.TestCase):
         for i in xrange(length):
             for j in xrange(length):
                 self.assert_(isinstance(self.queries[i] & self.queries[j], Query))
+
+class TestCase_02_QueryBase(unittest.TestCase):
+    class TestQuery(QueryBase):
+        def __init__(self):
+            QueryBase.__init__(self)
+
+        def as_human_readable_string(self):
+            return "TestQuery"
+
+        def categories(self, e, repos):
+            return None
+
+        def packages(self, e, repos, cats):
+            return QueryBase.packages(self, e, repos, cats)
+
+        def ids(self, e, repos, pkgs):
+            r = e.package_database.fetch_repository("testrepo")
+            return list(r.package_ids(iter(pkgs).next()))
+
+    def test_1_create(self):
+        e = NoConfigEnvironment(repo_path, "/var/empty")
+        db = e.package_database
+        q = self.TestQuery()
+        pid = iter(db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
+
+        self.assertEquals(pid.name, "cat/package")
 
 if __name__ == "__main__":
     unittest.main()

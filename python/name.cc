@@ -109,7 +109,8 @@ void PALUDIS_VISIBLE expose_name()
     class_iterable<CategoryNamePartSet>
         (
          "CategoryNamePartIterable",
-         "Iterable of CategoryNamePart"
+         "Iterable of CategoryNamePart",
+         true
         );
 
     /**
@@ -156,7 +157,8 @@ void PALUDIS_VISIBLE expose_name()
     class_iterable<RepositoryNameSequence>
         (
          "RepositoryNameIterable",
-         "Iterable of RepositoryName"
+         "Iterable of RepositoryName",
+         true
         );
 
     /**
@@ -232,7 +234,8 @@ void PALUDIS_VISIBLE expose_name()
     class_iterable<QualifiedPackageNameSet>
         (
          "QualifiedPackageNameIterable",
-         "Iterable of QualifiedPackageName"
+         "Iterable of QualifiedPackageName",
+         true
         );
 
     /**
