@@ -15,6 +15,7 @@ if ENABLE_QA
 paludis_qa_datadir = $(datadir)/paludis/qa/
 
 paludis_qa_data_DATA = \
+	extractors.conf \
 	spec_keys_pds_blacklist.DEPEND.conf \
 	spec_keys_pds_blacklist.RDEPEND.conf \
 	spec_keys_pds_blacklist.PDEPEND.conf \
@@ -24,6 +25,7 @@ paludis_qa_data_DATA = \
 paludis_repositories_e_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/repositories/e/
 paludis_repositories_e_include_HEADERS = \
 	eapi_supported.hh \
+	extractors.hh \
 	homepage_key.hh \
 	spec_keys.hh \
 	qa_checks.hh \
@@ -37,6 +39,7 @@ lib_LTLIBRARIES = libpaludiserepositoryqa.la
 libpaludiserepositoryqa_la_SOURCES = \
 	qa.cc \
 	eapi_supported.cc \
+	extractors.cc \
 	homepage_key.cc \
 	qa_checks.cc \
 	qa_checks_group.cc \
@@ -78,6 +81,7 @@ TESTS_ENVIRONMENT = env \
 if ENABLE_QA
 
 TESTS = \
+	extractors_TEST \
 	spec_keys_TEST \
 	stray_files_TEST
 
@@ -97,6 +101,18 @@ spec_keys_TEST_LDADD = \
 
 stray_files_TEST_SOURCES = stray_files_TEST.cc
 stray_files_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+extractors_TEST_SOURCES = extractors_TEST.cc
+extractors_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \

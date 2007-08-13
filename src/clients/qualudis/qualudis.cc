@@ -57,11 +57,40 @@ namespace
     struct QualudisReporter :
         QAReporter
     {
+        FSEntry previous_entry;
+
+        QualudisReporter() :
+            previous_entry("/NONE")
+        {
+        }
+
         void message(const QAMessage & msg)
         {
-            std::cout << colour(cl_package_name, strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"))
-                << ": " << msg.name << " [" << colour(cl_error, msg.level) << "] "
-                << std::endl << "    " << msg.message << std::endl;
+            if (previous_entry != msg.entry)
+            {
+                std::cout << colour(cl_package_name, strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"))
+                    << ":" << std::endl;
+                previous_entry = msg.entry;
+            }
+
+            std::cout << "    " << msg.name << " [";
+            switch (msg.level)
+            {
+                case qaml_maybe:
+                case qaml_debug:
+                    std::cout << msg.level;
+                    break;
+
+                case qaml_minor:
+                case qaml_normal:
+                case qaml_severe:
+                case last_qaml:
+                    std::cout << colour(cl_error, stringify(msg.level));
+                    break;
+            }
+
+            std::cout << "]:" << std::endl;
+            std::cout << "    " << msg.message << std::endl;
         }
     };
 }
@@ -113,7 +142,7 @@ int main(int argc, char *argv[])
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
-                    .disable_metadata_cache(true)
+                    .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
                     ));
 
         if (! env->main_repository()->qa_interface)

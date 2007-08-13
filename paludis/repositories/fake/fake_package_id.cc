@@ -301,6 +301,9 @@ namespace paludis
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
                         "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
+            src_uri(new FakeMetadataSpecTreeKey<URISpecTree>("SRC_URI", "Source URIs",
+                        "", tr1::bind(&erepository::parse_uri, _1,
+                            *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             has_masks(false)
         {
         }
@@ -487,6 +490,12 @@ FakePackageID::suggested_dependencies_key()
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
 FakePackageID::src_uri_key() const
+{
+    return _imp->src_uri;
+}
+
+const tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> >
+FakePackageID::src_uri_key()
 {
     return _imp->src_uri;
 }

@@ -178,5 +178,31 @@ namespace test_cases
             TEST_CHECK_EQUAL(r.count, 1u);
         }
     } test_deprecated;
+
+    struct RecursiveUseTest : TestCase
+    {
+        RecursiveUseTest() : TestCase("recursive use") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<FakePackageID> id1(repo->add_version("cat", "pkg", "1"));
+            id1->build_dependencies_key()->set_from_string("x? ( x? ( cat/pkg ) )");
+
+            TestReporter r1;
+            TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r1, id1, "spec keys"));
+            TEST_CHECK_EQUAL(r1.count, 1u);
+
+            tr1::shared_ptr<FakePackageID> id2(repo->add_version("cat", "pkg", "2"));
+            id2->build_dependencies_key()->set_from_string("x? ( !x? ( cat/pkg ) )");
+
+            TestReporter r2;
+            TEST_CHECK(spec_keys_check(FSEntry("/var/empty"), r2, id2, "spec keys"));
+            TEST_CHECK_EQUAL(r2.count, 1u);
+        }
+    } test_recursive_use;
 }
 

@@ -39,6 +39,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <algorithm>
 #include <map>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -92,6 +93,7 @@ namespace
 
         unsigned level;
         bool child_of_any;
+        std::set<UseFlagName> uses;
 
         Checker(
                 const FSEntry & f,
@@ -140,7 +142,7 @@ namespace
         {
         }
 
-        void visit_sequence(const UseDepSpec &,
+        void visit_sequence(const UseDepSpec & u,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)
         {
@@ -149,8 +151,15 @@ namespace
                             "'|| ( )' block with 'use? ( )' child in spec key '"
                             + stringify(key.raw_name()) + "'"));
 
+            if (uses.count(u.flag()))
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                            "Recursive use of flag '" + stringify(u.flag()) + "' in spec key '"
+                            + stringify(key.raw_name()) + "'"));
+
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
+            Save<std::set<UseFlagName> > save_uses(&uses, uses);
+            uses.insert(u.flag());
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Empty 'use? ( )' block in spec key '" + stringify(key.raw_name()) + "'"));

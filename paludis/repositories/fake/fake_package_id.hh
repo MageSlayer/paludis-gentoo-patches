@@ -174,6 +174,7 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
+            const tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > src_uri_key();
 
             void set_slot(const SlotName &);
 

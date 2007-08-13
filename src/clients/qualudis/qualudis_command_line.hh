@@ -37,9 +37,6 @@ class QualudisCommandLine :
         /// Action arguments.
         paludis::args::ArgsGroup action_args;
 
-        /// --describe
-        paludis::args::SwitchArg a_describe;
-
         /// --version
         paludis::args::SwitchArg a_version;
 
@@ -71,6 +68,7 @@ class QualudisCommandLine :
 
         paludis::args::StringArg a_write_cache_dir;
         paludis::args::StringArg a_master_repository_dir;
+        paludis::args::SwitchArg a_use_repository_cache;
 
         ///\}
 };
