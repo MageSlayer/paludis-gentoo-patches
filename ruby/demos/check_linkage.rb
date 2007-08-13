@@ -149,11 +149,10 @@ if File.directory? '/etc/revdep-rebuild' then
         prelim_search_dirs      += (vars["SEARCH_DIRS"]      || "").split
         prelim_search_dirs_mask += (vars["SEARCH_DIRS_MASK"] || "").split
     end
-else
-    prelim_ld_library_mask  += %w(libodbcinst.so libodbc.so libjava.so libjvm.so)
-    prelim_search_dirs      += %w(/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*)
-    prelim_search_dirs_mask += %w(/opt/OpenOffice /usr/lib/openoffice)
 end
+prelim_ld_library_mask  += %w(libodbcinst.so libodbc.so libjava.so libjvm.so)
+prelim_search_dirs      += %w(/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*)
+prelim_search_dirs_mask += %w(/opt/OpenOffice /usr/lib/openoffice)
 
 vars = read_shell_vars "/etc/profile.env"
 prelim_search_dirs += (vars["PATH"]     || "").split(/:/)
