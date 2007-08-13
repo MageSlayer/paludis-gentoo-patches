@@ -43,6 +43,10 @@ IF_PYTHON_QA_TESTS = \
 	qa_TEST.py
 
 IF_PYTHON_SOURCES = \
+	paludis_python.hh \
+	options.hh \
+	iterable.hh \
+	validated.hh \
 	action.cc \
 	contents.cc \
 	dep_list.cc \
@@ -68,7 +72,6 @@ IF_PYTHON_QA_SOURCES = \
 
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
-	paludis_python.hh \
 	paludis_python_so.cc \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
