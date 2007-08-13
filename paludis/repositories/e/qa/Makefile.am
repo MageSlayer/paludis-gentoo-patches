@@ -14,7 +14,7 @@ if ENABLE_QA
 
 paludis_qa_datadir = $(datadir)/paludis/qa/
 
-paludis_qa_data_DATA = \
+dist_paludis_qa_data_DATA = \
 	extractors.conf \
 	spec_keys_pds_blacklist.DEPEND.conf \
 	spec_keys_pds_blacklist.RDEPEND.conf \
@@ -57,7 +57,7 @@ libpaludiserepositoryqa_la_LIBADD = \
 
 endif
 
-EXTRA_DIST = $(paludis_qa_data_DATA) test_extras.cc
+EXTRA_DIST = test_extras.cc
 BUILT_SOURCES =
 
 check_SCRIPTS =
