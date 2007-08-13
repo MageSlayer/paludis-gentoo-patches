@@ -212,7 +212,6 @@ void
 Implementation<ERepositoryProfile>::load_profile_directory_recursively(const FSEntry & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
-    Log::get_instance()->message(ll_debug, lc_context, "Loading profile directory '" + stringify(dir) + "'");
 
     if (! dir.is_directory_or_symlink_to_directory())
     {
@@ -320,9 +319,6 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
         }
         else
             environment_variables[k->first] = k->second;
-
-        Log::get_instance()->message(ll_debug, lc_context, "Profile environment variable '" +
-                stringify(k->first) + "' is now '" + stringify(environment_variables[k->first]) + "'");
     }
 
     std::string use_expand_var(erepository::EAPIData::get_instance()->eapi_from_string(
