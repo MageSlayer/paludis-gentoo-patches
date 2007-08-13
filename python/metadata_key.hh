@@ -20,7 +20,7 @@
 #ifndef PYTHON_GUARD_PYTHON_METADATA_KEY_HH
 #define PYTHON_GUARD_PYTHON_METADATA_KEY_HH 1
 
-#include <paludis_python.hh>
+#include <python/paludis_python.hh>
 
 #include <paludis/metadata_key.hh>
 

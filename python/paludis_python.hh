@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH
 #define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
 
-#include <exception.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/stringify.hh>
 
@@ -131,92 +130,6 @@ namespace paludis
         {
             return ! (a == b);
         }
-
-        // expose Validated classes
-        template <typename V_, typename Data_=std::string>
-        class class_validated :
-            public boost::python::class_<V_>
-        {
-            public:
-                class_validated(const std::string & name,
-                        const std::string & class_doc, const std::string & init_arg="string") :
-                    boost::python::class_<V_>(name.c_str(), class_doc.c_str(),
-                            boost::python::init<const Data_ &>(("__init__("+init_arg+")").c_str())
-                            )
-                {
-                    this->def(boost::python::self_ns::str(boost::python::self));
-                    boost::python::implicitly_convertible<Data_, V_>();
-                }
-        };
-
-        // expose iterable classes
-        template <typename C_>
-        class class_iterable :
-            public boost::python::class_<C_, boost::noncopyable>
-        {
-            public:
-                class_iterable(const std::string & name, const std::string & class_doc) :
-                    boost::python::class_<C_, boost::noncopyable>(name.c_str(), class_doc.c_str(),
-                            boost::python::no_init)
-                {
-                    this->def("__iter__", boost::python::range(&C_::begin, &C_::end));
-                    register_shared_ptrs_to_python<C_>();
-                }
-        };
-
-        // expose Options classes
-        template <typename O_>
-        class class_options :
-            public boost::python::class_<O_>
-        {
-            public:
-                class_options(const std::string & set_name, const std::string & bit_name,
-                        const std::string & class_doc) :
-                    boost::python::class_<O_>(set_name.c_str(), class_doc.c_str(),
-                            boost::python::init<>("__init__()"))
-                {
-                    this->add_property("any", &O_::any,
-                            "[ro] bool\n"
-                            "Is any bit enabled."
-                            );
-                    this->add_property("none", &O_::none,
-                            "[ro] bool\n"
-                            "Are all bits disabled."
-                            );
-                    this->def("__add__", &O_::operator+,
-                            ("__add__("+bit_name+") -> "+set_name+"\n"
-                             "Return a copy of ourself with the specified bit enabled.").c_str()
-                            );
-                    this->def("__iadd__", &O_::operator+=, boost::python::return_self<>(),
-                            ("__iadd__("+bit_name+") -> "+set_name+"\n"
-                             "Enable the specified bit.").c_str()
-                            );
-                    this->def("__sub__", &O_::operator-,
-                            ("__sub__("+bit_name+") -> "+set_name+"\n"
-                             "Return a copy of ourself with the specified bit disabled.").c_str()
-                            );
-                    this->def("__isub__", &O_::operator-=, boost::python::return_self<>(),
-                            ("__isub__("+bit_name+") -> "+set_name+"\n"
-                             "Disable the specified bit.").c_str()
-                            );
-                    this->def("__or__", &O_::operator|,
-                            ("__or__("+set_name+") -> "+set_name+"\n"
-                             "Return a copy of ourself, bitwise 'or'ed with another Options set.").c_str()
-                            );
-                    this->def("__ior__", &O_::operator|=, boost::python::return_self<>(),
-                            ("__ior__("+set_name+") -> "+set_name+"\n"
-                             "Enable any bits that are enabled in the parameter.").c_str()
-                            );
-                    this->def("__getitem__", &O_::operator[],
-                            ("__getitem__("+bit_name+") -> bool\n"
-                             "Returns whether the specified bit is enabled.").c_str()
-                            );
-                    this->def("subtract", &O_::subtract,  boost::python::return_self<>(),
-                            ("subtract("+set_name+") -> "+set_name+"\n"
-                             "Disable any bits that are enabled in the parameter.").c_str()
-                            );
-                }
-        };
 
         // Convert to string
         template <typename T_>

@@ -18,7 +18,7 @@
  */
 
 #include "metadata_key.hh"
-#include <paludis_python.hh>
+#include <python/paludis_python.hh>
 
 #include <paludis/name.hh>
 #include <paludis/util/visitor-impl.hh>

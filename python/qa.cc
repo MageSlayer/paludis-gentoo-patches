@@ -17,10 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis_python.hh>
+#include <python/paludis_python.hh>
+#include <python/exception.hh>
+#include <python/options.hh>
 
 #include <paludis/qa.hh>
-#include <paludis/util/options.hh>
 #include <paludis/util/fs_entry.hh>
 
 using namespace paludis;
@@ -33,8 +34,8 @@ struct QAReporterWrapper :
 {
     void message(const QAMessage & msg)
     {
-        if (get_override("message"))
-            get_override("message")(msg);
+        if (bp::override f = get_override("message"))
+            f(msg);
         else
             throw PythonMethodNotImplemented("QAReporter", "message");
     }

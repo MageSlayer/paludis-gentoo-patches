@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis_python.hh>
+#include <python/paludis_python.hh>
+#include <python/iterable.hh>
 
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
@@ -28,7 +29,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa.hh>
-#include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 

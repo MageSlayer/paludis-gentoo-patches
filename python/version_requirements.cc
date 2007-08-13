@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis_python.hh>
+#include <python/paludis_python.hh>
+#include <python/iterable.hh>
 
 #include <paludis/version_requirements.hh>
-#include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;

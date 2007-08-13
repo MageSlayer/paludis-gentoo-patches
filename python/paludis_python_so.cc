@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis_python.hh>
-
+#include <boost/python.hpp>
 #include <boost/version.hpp>
 
 void expose_action();

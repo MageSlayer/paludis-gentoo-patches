@@ -17,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <dep_spec.hh>
-#include <paludis_python.hh>
+#include "dep_spec.hh"
+#include <python/paludis_python.hh>
+#include <python/exception.hh>
 
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
