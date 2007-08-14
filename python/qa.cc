@@ -34,6 +34,8 @@ struct QAReporterWrapper :
 {
     void message(const QAMessage & msg)
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("message"))
             f(msg);
         else
