@@ -210,7 +210,7 @@ class class_supports_action :
 };
 
 
-void expose_query() PALUDIS_VISIBLE
+void expose_query()
 {
     /**
      * Query

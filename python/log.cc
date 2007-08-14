@@ -25,7 +25,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_log() PALUDIS_VISIBLE
+void expose_log()
 {
     /**
      * Enums

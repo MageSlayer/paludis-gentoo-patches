@@ -1107,7 +1107,7 @@ struct RegisterPackageDepSpecSPTRFromPython
     }
 };
 
-void expose_dep_spec() PALUDIS_VISIBLE
+void expose_dep_spec()
 {
     /**
      * Exceptions

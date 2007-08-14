@@ -27,7 +27,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_version_spec() PALUDIS_VISIBLE
+void expose_version_spec()
 {
     /**
      * Exceptions

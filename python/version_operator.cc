@@ -37,7 +37,7 @@ struct VersionOperatorWrapper
     }
 };
 
-void expose_version_operator() PALUDIS_VISIBLE
+void expose_version_operator()
 {
     /**
      * Exceptions

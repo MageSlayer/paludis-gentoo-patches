@@ -58,7 +58,7 @@ struct PackageIDWrapper
     }
 };
 
-void expose_package_id() PALUDIS_VISIBLE
+void expose_package_id()
 {
     /**
      * Enums

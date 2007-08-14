@@ -43,7 +43,7 @@ struct QAReporterWrapper :
     }
 };
 
-void expose_qa() PALUDIS_VISIBLE
+void expose_qa()
 {
     /**
      * Enums

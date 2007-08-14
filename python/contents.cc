@@ -42,7 +42,7 @@ class class_contents:
         }
 };
 
-void expose_contents() PALUDIS_VISIBLE
+void expose_contents()
 {
     /**
      * ContentsEntry

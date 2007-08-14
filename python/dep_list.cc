@@ -46,7 +46,7 @@ struct DepListWrapper
     }
 };
 
-void expose_dep_list() PALUDIS_VISIBLE
+void expose_dep_list()
 {
     /**
      * Exceptions

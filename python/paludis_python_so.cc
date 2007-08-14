@@ -20,26 +20,26 @@
 #include <boost/python.hpp>
 #include <boost/version.hpp>
 
-void expose_action();
-void expose_contents();
-void expose_dep_list();
-void expose_dep_spec();
-void expose_dep_tag();
-void expose_environment();
-void expose_exception();
-void expose_fs_entry();
-void expose_log();
-void expose_mask();
-void expose_metadata_key();
-void expose_name();
-void expose_package_database();
-void expose_package_id();
-void expose_qa();
-void expose_query();
-void expose_repository();
-void expose_version_operator();
-void expose_version_requirements();
-void expose_version_spec();
+void expose_action() PALUDIS_VISIBLE;
+void expose_contents() PALUDIS_VISIBLE;
+void expose_dep_list() PALUDIS_VISIBLE;
+void expose_dep_spec() PALUDIS_VISIBLE;
+void expose_dep_tag() PALUDIS_VISIBLE;
+void expose_environment() PALUDIS_VISIBLE;
+void expose_exception() PALUDIS_VISIBLE;
+void expose_fs_entry() PALUDIS_VISIBLE;
+void expose_log() PALUDIS_VISIBLE;
+void expose_mask() PALUDIS_VISIBLE;
+void expose_metadata_key() PALUDIS_VISIBLE;
+void expose_name() PALUDIS_VISIBLE;
+void expose_package_database() PALUDIS_VISIBLE;
+void expose_package_id() PALUDIS_VISIBLE;
+void expose_qa() PALUDIS_VISIBLE;
+void expose_query() PALUDIS_VISIBLE;
+void expose_repository() PALUDIS_VISIBLE;
+void expose_version_operator() PALUDIS_VISIBLE;
+void expose_version_requirements() PALUDIS_VISIBLE;
+void expose_version_spec() PALUDIS_VISIBLE;
 
 BOOST_PYTHON_MODULE(paludis)
 {

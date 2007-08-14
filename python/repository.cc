@@ -185,7 +185,7 @@ struct RepositoryEInterfaceWrapper
 //    bp::to_python_converter<I_, repository_interface_to_python<I_> >();
 //}
 
-void expose_repository() PALUDIS_VISIBLE
+void expose_repository()
 {
     /**
      * DestinationIterable
