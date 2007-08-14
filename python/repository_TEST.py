@@ -220,7 +220,7 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
             qr = PyQAR()
 
             qi.check_qa(qr, QACheckProperties(), QACheckProperties(), QAMessageLevel.DEBUG, "")
-            self.assertEquals(qr.messages, 1)
+            self.assertEquals(qr.messages > 0, True)
 
 class TestCase_03_FakeRepository(unittest.TestCase):
     def setUp(self):

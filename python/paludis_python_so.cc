@@ -19,28 +19,7 @@
 
 #include <boost/python.hpp>
 #include <boost/version.hpp>
-#include <paludis/util/attributes.hh>
-
-void expose_action() PALUDIS_VISIBLE;
-void expose_contents() PALUDIS_VISIBLE;
-void expose_dep_list() PALUDIS_VISIBLE;
-void expose_dep_spec() PALUDIS_VISIBLE;
-void expose_dep_tag() PALUDIS_VISIBLE;
-void expose_environment() PALUDIS_VISIBLE;
-void expose_exception() PALUDIS_VISIBLE;
-void expose_fs_entry() PALUDIS_VISIBLE;
-void expose_log() PALUDIS_VISIBLE;
-void expose_mask() PALUDIS_VISIBLE;
-void expose_metadata_key() PALUDIS_VISIBLE;
-void expose_name() PALUDIS_VISIBLE;
-void expose_package_database() PALUDIS_VISIBLE;
-void expose_package_id() PALUDIS_VISIBLE;
-void expose_qa() PALUDIS_VISIBLE;
-void expose_query() PALUDIS_VISIBLE;
-void expose_repository() PALUDIS_VISIBLE;
-void expose_version_operator() PALUDIS_VISIBLE;
-void expose_version_requirements() PALUDIS_VISIBLE;
-void expose_version_spec() PALUDIS_VISIBLE;
+#include <python/paludis_python.hh>
 
 BOOST_PYTHON_MODULE(paludis)
 {
@@ -69,3 +48,4 @@ BOOST_PYTHON_MODULE(paludis)
     expose_repository();
     expose_qa();
 }
+
