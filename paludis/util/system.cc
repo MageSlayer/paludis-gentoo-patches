@@ -314,7 +314,7 @@ paludis::run_command(const Command & cmd)
             if (-1 != stdout_write_fd)
             {
                 if (-1 == dup2(stdout_write_fd, 1))
-                    throw RunCommandError("dup2 failed");
+                    throw RunCommandError("dup2 failed: " + stringify(strerror(errno)));
 
                 if (-1 != stdout_close_fd)
                     close(stdout_close_fd);
@@ -323,7 +323,7 @@ paludis::run_command(const Command & cmd)
             if (-1 != stderr_write_fd)
             {
                 if (-1 == dup2(stderr_write_fd, 2))
-                    throw RunCommandError("dup2 failed");
+                    throw RunCommandError("dup2 failed: " + stringify(strerror(errno)));
 
                 if (-1 != stderr_close_fd)
                     close(stderr_close_fd);
@@ -366,6 +366,12 @@ paludis::run_command(const Command & cmd)
     else
     {
         int status(-1);
+
+        stdout_write_fd = -1;
+        stdout_close_fd = -1;
+        stderr_write_fd = -1;
+        stderr_close_fd = -1;
+
         if (-1 == wait(&status))
             throw RunCommandError("wait failed: " + stringify(strerror(errno)));
         return WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status);
