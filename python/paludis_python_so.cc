@@ -19,6 +19,7 @@
 
 #include <boost/python.hpp>
 #include <boost/version.hpp>
+#include <paludis/util/attributes.hh>
 
 void expose_action() PALUDIS_VISIBLE;
 void expose_contents() PALUDIS_VISIBLE;
