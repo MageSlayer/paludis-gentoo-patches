@@ -77,7 +77,7 @@ namespace paludis
 
                 boost::python::list l = boost::python::extract<boost::python::list>(obj_ptr);
 
-                while (boost::python::len(l))
+                while (PyList_Size(obj_ptr))
                 {
                     boost::python::object o(l.pop());
                     if (boost::python::extract<V_ *>(o).check())
@@ -142,7 +142,7 @@ namespace paludis
 
                 boost::python::list l = boost::python::extract<boost::python::list>(obj_ptr);
 
-                while (boost::python::len(l))
+                while (PyList_Size(obj_ptr))
                 {
                     boost::python::object o(l.pop());
                     if (boost::python::extract<V_ *>(o).check())
