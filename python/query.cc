@@ -226,16 +226,41 @@ void PALUDIS_VISIBLE expose_query()
     bp::class_<PythonQueryWrapper, bp::bases<Query>, boost::noncopyable>
         (
          "QueryBase",
-         "Parameter for a PackageDatabase query.",
+         "Parameter for a PackageDatabase query.\n"
+         "This class can be subclassed in Python",
          bp::init<>()
         )
-        .def("repositories", &PythonQuery::repositories, &PythonQueryWrapper::default_repositories)
+        .def("repositories", &PythonQuery::repositories, &PythonQueryWrapper::default_repositories,
+                "repositories(Environment) -> list of RepositoryName\n"
+                "Fetch the names of repositories potentially containing matches.\n"
+                "All returned repositories must exist.\n\n"
+                "Default behaviour: return all repositories."
+            )
 
-        .def("categories", &PythonQuery::categories, &PythonQueryWrapper::default_categories)
+        .def("categories", &PythonQuery::categories, &PythonQueryWrapper::default_categories,
+                "categories(Environment, RepositoryNameIterable) -> list of CategoryNamePart\n"
+                "Fetch the names of categories potentially containing matches.\n\n"
+                "Default behaviour: return all categories in the provided\n"
+                "repository collection."
+            )
 
-        .def("packages", &PythonQuery::packages, &PythonQueryWrapper::default_packages)
+        .def("packages", &PythonQuery::packages, &PythonQueryWrapper::default_packages,
+                "packages(Environment, RepositoryNameIterable, CategoryNamePartIterable) "
+                    "-> list of QualifiedPackageName\n"
+                "Fetch the names of packages potentially containing matches.\n\n"
+                "Default behaviour: return all packages in the provided repository\n"
+                "in the provided categories.\n\n"
+                "Note that some entries in the categories collection (but not in\n"
+                "the repositories collection) may not exist."
+            )
 
-        .def("ids", &PythonQuery::ids, &PythonQueryWrapper::default_ids)
+        .def("ids", &PythonQuery::ids, &PythonQueryWrapper::default_ids,
+                "ids(Environment, RepositoryNameIterable, QualifiedPackageNameIterable)\n"
+                "Fetch the IDs of matching packages.\n\n"
+                "Default behaviour: return all IDs in the provided packages.\n\n"
+                "Note that some entries in the qualified package name collection\n"
+                "(but not in the repositories collection) may not exist."
+            )
         ;
 
     /* I need to think about it yet... */

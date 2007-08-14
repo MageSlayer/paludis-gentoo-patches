@@ -218,6 +218,18 @@ void PALUDIS_VISIBLE expose_mask()
                 "[ro] PackageID\n"
                 "NEED_DOC"
                 )
+
+        //Work around epydoc bug
+        .add_property("key", &Mask::key,
+                "[ro] str\n"
+                "NEED_DOC"
+                )
+
+        //Work around epydoc bug
+        .add_property("description", &Mask::description,
+                "[ro] str\n"
+                "NEED_DOC"
+                )
         ;
 }
 
