@@ -427,8 +427,9 @@ then
 	for x in "enforce-eh" "fast-math" "rtti" "visibility"
 	do
 		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "$x" >/dev/null ; then
-			AC_MSG_RESULT([$x])
-			AC_MSG_ERROR([Bad ricer. No bagel.])
+			flag=`echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | tr ' ' '\n' | grep $x | tr '\n' ' '`
+			AC_MSG_RESULT([$flag])
+			AC_MSG_ERROR([Bad ricer. No bagel. Try again with non-broken compiler flags.])
 		fi
 	done
 	AC_MSG_RESULT([no])
