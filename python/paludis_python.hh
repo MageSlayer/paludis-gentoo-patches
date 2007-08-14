@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH
 #define PALUDIS_GUARD_PYTHON_PALUDIS_PYTHON_HH 1
 
+#include <python/mutex.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/stringify.hh>
 

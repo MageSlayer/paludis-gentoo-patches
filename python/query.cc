@@ -119,6 +119,8 @@ struct PythonQueryWrapper :
 {
     tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("repositories"))
             return f(boost::cref(e));
         return PythonQuery::repositories(e);
@@ -132,6 +134,8 @@ struct PythonQueryWrapper :
     tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
             tr1::shared_ptr<const RepositoryNameSequence> r) const
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("categories"))
             return f(boost::cref(e), r);
         return PythonQuery::categories(e, r);
@@ -147,6 +151,8 @@ struct PythonQueryWrapper :
             tr1::shared_ptr<const RepositoryNameSequence> r,
             tr1::shared_ptr<const CategoryNamePartSet> c) const
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("packages"))
             return f(boost::cref(e), r, c);
         return PythonQuery::packages(e, r, c);
@@ -163,6 +169,8 @@ struct PythonQueryWrapper :
             tr1::shared_ptr<const RepositoryNameSequence> r,
             tr1::shared_ptr<const QualifiedPackageNameSet> q) const
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("ids"))
             return f(boost::cref(e), r, q);
         return PythonQuery::ids(e, r, q);
@@ -177,6 +185,8 @@ struct PythonQueryWrapper :
 
     std::string as_human_readable_string() const
     {
+        Lock l(get_mutex());
+
         if (bp::override f = get_override("as_human_readable_string"))
             return f();
         else
