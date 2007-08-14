@@ -148,7 +148,7 @@ namespace test_cases
 
         virtual unsigned max_run_time() const
         {
-            return 300;
+            return 3000;
         }
 
         void run()
