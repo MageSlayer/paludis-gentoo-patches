@@ -171,7 +171,7 @@ void register_metadata_key_to_python()
 }
 
 
-void PALUDIS_VISIBLE expose_metadata_key()
+void expose_metadata_key() PALUDIS_VISIBLE
 {
     /**
      * Enums

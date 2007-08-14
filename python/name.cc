@@ -29,7 +29,7 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void PALUDIS_VISIBLE expose_name()
+void expose_name() PALUDIS_VISIBLE
 {
     /**
      * Exceptions

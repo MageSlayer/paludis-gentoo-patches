@@ -99,7 +99,7 @@ struct RepositoryMaskWrapper
 };
 
 
-void PALUDIS_VISIBLE expose_mask()
+void expose_mask() PALUDIS_VISIBLE
 {
     /**
      * RepositoryMaskInfo

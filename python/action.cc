@@ -43,7 +43,7 @@ class class_supports_action_test :
         }
 };
 
-void PALUDIS_VISIBLE expose_action()
+void expose_action() PALUDIS_VISIBLE
 {
     /**
      * Exceptions

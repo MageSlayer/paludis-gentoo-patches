@@ -45,7 +45,7 @@ struct NoConfigEnvironmentWrapper :
     }
 };
 
-void PALUDIS_VISIBLE expose_environment()
+void expose_environment() PALUDIS_VISIBLE
 {
     /**
      * Exceptions

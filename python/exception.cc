@@ -85,7 +85,7 @@ PythonContainerConversionError::PythonContainerConversionError(const std::string
 {
 }
 
-void PALUDIS_VISIBLE expose_exception()
+void expose_exception() PALUDIS_VISIBLE
 {
     /**
      * Exceptions

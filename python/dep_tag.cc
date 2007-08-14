@@ -39,7 +39,7 @@ struct DepTagCategoryMakerWrapper
     }
 };
 
-void PALUDIS_VISIBLE expose_dep_tag()
+void expose_dep_tag() PALUDIS_VISIBLE
 {
     /**
      * Exceptions

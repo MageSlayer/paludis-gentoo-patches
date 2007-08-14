@@ -27,7 +27,7 @@ namespace paludis
     namespace python
     {
         //global mutex for thread safety.
-        Mutex & PALUDIS_VISIBLE get_mutex();
+        Mutex & get_mutex() PALUDIS_VISIBLE;
     } // namespace paludis::python
 } // namespace paludis
 
