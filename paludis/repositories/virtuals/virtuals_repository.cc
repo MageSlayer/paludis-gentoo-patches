@@ -225,7 +225,7 @@ VirtualsRepository::need_ids() const
 
             tr1::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
             if (stringify(id->name().category) != "virtual")
-                throw InternalError("PALUDIS_HERE", "Got bad id '" + stringify(*id) + "'");
+                throw InternalError(PALUDIS_HERE, "Got bad id '" + stringify(*id) + "'");
             i->second->push_back(id);
         }
     }
