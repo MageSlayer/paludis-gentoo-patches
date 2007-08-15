@@ -300,6 +300,36 @@ namespace test_cases
     } test_key_value_config_file_source;
 
     /**
+     * \test Test KeyValueConfigFile ignore export.
+     *
+     */
+    struct KeyValueConfigFileIgnoreExportTest : TestCase
+    {
+        KeyValueConfigFileIgnoreExportTest() : TestCase("key value config file ignore export") { }
+
+        void run()
+        {
+            std::stringstream d_s;
+            d_s << "export  \t foo = \"xyzzy\"" << std::endl;
+            d_s << "export bar='plugh'" << std::endl;
+            d_s << "baz = \"plover\"" << std::endl;
+            d_s << "exportfoo = \"exportxyzzy\"" << std::endl;
+            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() += kvcfo_ignore_export);
+
+            TEST_CHECK_EQUAL(ff.get("foo"), "xyzzy");
+            TEST_CHECK_EQUAL(ff.get("bar"), "plugh");
+            TEST_CHECK_EQUAL(ff.get("baz"), "plover");
+            TEST_CHECK_EQUAL(ff.get("exportfoo"), "exportxyzzy");
+
+            std::stringstream d_s2;
+            d_s2 << "export = 42" << std::endl;
+            KeyValueConfigFile ff2(d_s2, KeyValueConfigFileOptions());
+
+            TEST_CHECK_EQUAL(ff2.get("export"), "42");
+        }
+    } test_key_value_config_file_ignore_export;
+
+    /**
      * \test Test KeyValueConfigFile errors.
      *
      */
@@ -344,6 +374,18 @@ namespace test_cases
             std::stringstream s9;
             s9 << "x='blah" << std::endl << "blah" << std::endl;
             TEST_CHECK_THROWS(KeyValueConfigFile ff(s9, KeyValueConfigFileOptions()), ConfigurationError);
+
+            std::stringstream s10;
+            s10 << "export x=blah" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s10, KeyValueConfigFileOptions()), ConfigurationError);
+
+            std::stringstream s11;
+            s11 << "export x = blah" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s11, (KeyValueConfigFileOptions() += kvcfo_ignore_export) += kvcfo_disallow_space_around_equals), ConfigurationError);
+
+            std::stringstream s12;
+            s12 << "export=blah" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s12, KeyValueConfigFileOptions() += kvcfo_ignore_export), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }

@@ -35,6 +35,7 @@ make_enum_KeyValueConfigFileOption()
     key kvcfo_disallow_variables                     "Do not allow variable expansions"
     key kvcfo_disallow_source                        "Do not allow the source command"
     key kvcfo_preserve_whitespace                    "Do not strip trailing whitespace from values"
+    key kvcfo_ignore_export                          "Accept and ignore the word export at the beginning of a line"
 
     doxygen_comment << "END"
         /**

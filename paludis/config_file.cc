@@ -649,6 +649,19 @@ KeyValueConfigFile::_parse(const Source & ss, const KeyValueConfigFileOptions & 
         else
         {
             std::string key(grab_key(c, c_end));
+
+            if (key == "export" && opts[kvcfo_ignore_export])
+            {
+                if (c == c_end)
+                    throw ConfigFileError(s.filename(), "Syntax error: trailing token '" + key + "' at end of input");
+                while (*c == '\t' || *c == ' ')
+                    if (++c == c_end)
+                        throw ConfigFileError(s.filename(), "Unknown command of broken variable '" +
+                                key + "' at end of input");
+
+                key = grab_key(c, c_end);
+            }
+
             if (key.empty())
                 throw ConfigFileError(s.filename(), "Syntax error: invalid identifier");
 
