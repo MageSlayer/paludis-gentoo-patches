@@ -28,7 +28,7 @@ using namespace paludis;
 template class InstantiationPolicy<FutureActionQueue, instantiation_method::SingletonTag>;
 
 FutureActionQueue::FutureActionQueue() :
-    ActionQueue(destringify<int>(getenv_with_default("PALUDIS_FUTURE_THREAD_COUNT", "5")), true)
+    ActionQueue(destringify<int>(getenv_with_default("PALUDIS_FUTURE_THREAD_COUNT", "5")), false)
 {
 }
 

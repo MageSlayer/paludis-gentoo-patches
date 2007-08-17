@@ -25,7 +25,7 @@
 #  include <paludis/util/condition_variable.hh>
 #  include <paludis/util/thread_pool.hh>
 #  include <paludis/util/thread.hh>
-#  include <list>
+#  include <deque>
 #endif
 
 using namespace paludis;
@@ -39,7 +39,7 @@ namespace paludis
         Mutex mutex;
         ConditionVariable condition;
         bool should_finish;
-        std::list<tr1::function<void () throw ()> > queue;
+        std::deque<tr1::function<void () throw ()> > queue;
         ThreadPool threads;
 
         void finish()
@@ -110,8 +110,13 @@ ActionQueue::enqueue(const tr1::function<void () throw ()> & f)
 {
 #ifdef PALUDIS_ENABLE_THREADS
     Lock l(_imp->mutex);
-    _imp->queue.push_back(f);
-    _imp->condition.signal();
+    if (_imp->queue.size() < 1000)
+    {
+        _imp->queue.push_back(f);
+        _imp->condition.signal();
+    }
+    else
+        f();
 #else
     f();
 #endif
