@@ -65,6 +65,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -1056,11 +1057,13 @@ ERepository::check_qa(
         Lock lock(libqahandle.mutex);
 
         if (0 == libqahandle.handle)
-            libqahandle.handle = dlopen("libpaludiserepositoryqa.so", RTLD_NOW | RTLD_GLOBAL);
+            libqahandle.handle = dlopen(getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
+                        "libpaludiserepositoryqa.so").c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (0 == libqahandle.handle)
         {
             reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror) +
-                        "' when dlopen(libpaludisqa.so)"));
+                        "' when dlopen(" + getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
+                                "libpaludiserepositoryqa.so") + ")"));
             return;
         }
 
