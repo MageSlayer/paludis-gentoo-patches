@@ -18,11 +18,13 @@
  */
 
 #include <paludis/repositories/e/qa/stray_files.hh>
+#include <paludis/repositories/e/e_repository.hh>
 #include <paludis/qa.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/log.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -37,6 +39,8 @@ paludis::erepository::stray_files_check(
         )
 {
     Context context("When performing check '" + name + "' using stray_files_check on directory '" + stringify(dir) + "':");
+    Log::get_instance()->message(ll_debug, lc_context) << "stray_files_check '"
+        << repo->name() << "', '" << dir << "', " << name << "'";
 
     if (dir.exists())
         for (DirIterator d(dir), d_end ; d != d_end ; ++d)

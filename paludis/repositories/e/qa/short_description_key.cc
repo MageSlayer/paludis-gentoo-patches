@@ -21,6 +21,7 @@
 #include <paludis/qa.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/log.hh>
 #include <paludis/name.hh>
 
 bool
@@ -31,6 +32,8 @@ paludis::erepository::short_description_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using short_description_key_check on ID '" + stringify(*id) + "':");
+    Log::get_instance()->message(ll_debug, lc_context) << "short_description_key_check '"
+        << entry << "', " << *id << "', " << name << "'";
 
     if (! id->short_description_key())
         reporter.message(QAMessage(entry, qaml_normal, name, "No description available"));

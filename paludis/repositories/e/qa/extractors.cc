@@ -219,6 +219,8 @@ paludis::erepository::extractors_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' on ID '" + stringify(*id) + "':");
+    Log::get_instance()->message(ll_debug, lc_context) << "extractors_check '"
+        << entry << "', " << *id << "', " << name << "'";
 
     if (id->src_uri_key())
     {

@@ -149,8 +149,8 @@ QAController::_run_category(const CategoryNamePart & c)
                 QAChecks::get_instance()->category_dir_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
                     tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                        _1, _imp->repo->layout()->category_directory(c),
-                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+                        _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
+                        _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
     }
     catch (const Exception & e)
     {
@@ -181,13 +181,27 @@ QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
     using namespace tr1::placeholders;
     try
     {
-        std::find_if(
-                QAChecks::get_instance()->package_id_checks_group()->begin(),
-                QAChecks::get_instance()->package_id_checks_group()->end(),
-                tr1::bind(std::equal_to<bool>(), false,
-                    tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
-                        _1, _imp->repo->layout()->package_file(*i),
-                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+        if (QAChecks::get_instance()->package_id_checks_group()->end() ==
+                std::find_if(
+                    QAChecks::get_instance()->package_id_checks_group()->begin(),
+                    QAChecks::get_instance()->package_id_checks_group()->end(),
+                    tr1::bind(std::equal_to<bool>(), false,
+                        tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
+                            _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
+                            _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i)))))
+        {
+            for (ERepository::ProfilesIterator p(_imp->repo->begin_profiles()), p_end(_imp->repo->end_profiles()) ;
+                    p != p_end ; ++p)
+            {
+                std::find_if(
+                        QAChecks::get_instance()->per_profile_package_id_checks_group()->begin(),
+                        QAChecks::get_instance()->per_profile_package_id_checks_group()->end(),
+                        tr1::bind(std::equal_to<bool>(), false,
+                            tr1::bind<bool>(tr1::mem_fn(&PerProfilePackageIDCheckFunction::operator() ),
+                                _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
+                                _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i), p)));
+            }
+        }
     }
     catch (const Exception & e)
     {
@@ -208,9 +222,9 @@ QAController::run()
                 QAChecks::get_instance()->tree_checks_group()->begin(),
                 QAChecks::get_instance()->tree_checks_group()->end(),
                 tr1::bind(std::equal_to<bool>(), false,
-                    tr1::bind<bool>(tr1::mem_fn(&TreeCheckFunction::operator() ),
-                        _1, _imp->repo->params().location,
-                        tr1::ref(_imp->reporter), _imp->env, _imp->repo, _imp->repo->params().location)));
+                    tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                        _1, _imp->repo->params().location, tr1::ref(_imp->reporter),
+                        _imp->env, _imp->repo, _imp->repo->params().location)));
     }
     catch (const Exception & e)
     {

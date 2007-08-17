@@ -118,16 +118,16 @@ namespace
             if (pds_blacklist && p.package_ptr())
             {
                 if (pds_blacklist->end() != pds_blacklist->find(*p.package_ptr()))
-                    reporter.message(QAMessage(entry, qaml_normal, name, "Package specification '" + stringify(p)
-                                + "' blacklisted in spec key '" + stringify(key.raw_name()) + "'"));
+                    reporter.message(QAMessage(entry, qaml_normal, name, "Package '" + stringify(p)
+                                + "' blacklisted in '" + stringify(key.raw_name()) + "'"));
             }
         }
 
         void visit_leaf(const BlockDepSpec & b)
         {
             if (child_of_any)
-                reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' block with block child '!"
-                            + stringify(*b.blocked_spec()) + "' in spec key '" + stringify(key.raw_name()) + "'"));
+                reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '!"
+                            + stringify(*b.blocked_spec()) + "' in '" + stringify(key.raw_name()) + "'"));
         }
 
         void visit_leaf(const URIDepSpec &)
@@ -148,12 +148,12 @@ namespace
         {
             if (child_of_any)
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "'|| ( )' block with 'use? ( )' child in spec key '"
+                            "'|| ( )' with 'use? ( )' child in '"
                             + stringify(key.raw_name()) + "'"));
 
             if (uses.count(u.flag()))
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Recursive use of flag '" + stringify(u.flag()) + "' in spec key '"
+                            "Recursive use of flag '" + stringify(u.flag()) + "' in '"
                             + stringify(key.raw_name()) + "'"));
 
             Save<unsigned> save_level(&level, level + 1);
@@ -162,7 +162,7 @@ namespace
             uses.insert(u.flag());
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Empty 'use? ( )' block in spec key '" + stringify(key.raw_name()) + "'"));
+                            "Empty 'use? ( )' in '" + stringify(key.raw_name()) + "'"));
             else
                 std::for_each(cur, end, accept_visitor(*this));
         }
@@ -177,7 +177,7 @@ namespace
             {
                 if (level > 1)
                     reporter.message(QAMessage(entry, qaml_normal, name,
-                                "Empty '( )' block in spec key '" + stringify(key.raw_name()) + "'"));
+                                "Empty '( )' in '" + stringify(key.raw_name()) + "'"));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -191,12 +191,12 @@ namespace
             Save<bool> save_child_of_any(&child_of_any, true);
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Empty '|| ( )' block in spec key '" + stringify(key.raw_name()) + "'"));
+                            "Empty '|| ( )' in '" + stringify(key.raw_name()) + "'"));
             else if (next(cur) == end)
             {
                 cur->accept(*this);
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                        "'|| ( )' block with only one child in spec key '" + stringify(key.raw_name()) + "'"));
+                        "'|| ( )' with only one child in '" + stringify(key.raw_name()) + "'"));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -348,6 +348,8 @@ paludis::erepository::spec_keys_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using spec_keys_check on ID '" + stringify(*id) + "':");
+    Log::get_instance()->message(ll_debug, lc_context) << "spec_keys_check '"
+        << entry << "', " << *id << "', " << name << "'";
 
     CheckForwarder f(entry, reporter, id, name);
     parallel_for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(f));

@@ -203,6 +203,9 @@ namespace paludis
     void
     Implementation<ERepository>::need_profiles_desc() const
     {
+        if (has_profiles_desc)
+            return;
+
         Lock l(mutexes->profiles_desc_mutex);
 
         if (has_profiles_desc)

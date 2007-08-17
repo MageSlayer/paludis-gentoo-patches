@@ -123,7 +123,7 @@ namespace paludis
 
             VirtualsIterator begin_virtuals() const;
             VirtualsIterator end_virtuals() const;
-            VirtualsIterator find_virtual() const;
+            VirtualsIterator find_virtual(const QualifiedPackageName &) const;
 
             ///\}
     };

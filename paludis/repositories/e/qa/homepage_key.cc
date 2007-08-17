@@ -22,6 +22,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/log.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -94,6 +95,8 @@ paludis::erepository::homepage_key_check(
         const std::string & name)
 {
     Context context("When performing check '" + name + "' using homepage_key_check on ID '" + stringify(*id) + "':");
+    Log::get_instance()->message(ll_debug, lc_context) << "homepage_key_check '"
+        << entry << "', " << *id << "', " << name << "'";
 
     if (! id->homepage_key())
         reporter.message(QAMessage(entry, qaml_normal, name, "No homepage available"));

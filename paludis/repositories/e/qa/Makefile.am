@@ -32,7 +32,8 @@ paludis_repositories_e_include_HEADERS = \
 	qa_checks_group.hh \
 	qa_controller.hh \
 	short_description_key.hh \
-	stray_files.hh
+	stray_files.hh \
+	visibility.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
 
@@ -47,6 +48,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	short_description_key.cc \
 	spec_keys.cc \
 	stray_files.cc \
+	visibility.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
 libpaludiserepositoryqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
@@ -55,12 +57,14 @@ libpaludiserepositoryqa_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la
 
+dist_check_SCRIPTS = \
+	visibility_TEST_setup.sh \
+	visibility_TEST_cleanup.sh
+
 endif
 
-EXTRA_DIST = test_extras.cc
+EXTRA_DIST = test_extras.cc $(check_SCRIPTS)
 BUILT_SOURCES =
-
-check_SCRIPTS =
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
@@ -83,7 +87,8 @@ if ENABLE_QA
 TESTS = \
 	extractors_TEST \
 	spec_keys_TEST \
-	stray_files_TEST
+	stray_files_TEST \
+	visibility_TEST
 
 check_PROGRAMS = $(TESTS)
 
@@ -113,6 +118,18 @@ stray_files_TEST_LDADD = \
 
 extractors_TEST_SOURCES = extractors_TEST.cc
 extractors_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
+visibility_TEST_SOURCES = visibility_TEST.cc
+visibility_TEST_LDADD = \
 	libpaludiserepositoryqa.la \
 	test_extras.o \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \

@@ -58,9 +58,11 @@ namespace
         QAReporter
     {
         FSEntry previous_entry;
+        std::string previous_name;
 
         QualudisReporter() :
-            previous_entry("/NONE")
+            previous_entry("/NONE"),
+            previous_name("NONE")
         {
         }
 
@@ -71,26 +73,43 @@ namespace
                 std::cout << colour(cl_package_name, strip_leading_string(stringify(msg.entry.strip_leading(FSEntry::cwd())), "/"))
                     << ":" << std::endl;
                 previous_entry = msg.entry;
+                previous_name = "NONE";
             }
 
-            std::cout << "    " << msg.name << " [";
+            if (previous_name != msg.name)
+            {
+                std::cout << "  " << msg.name << ":" << std::endl;
+                previous_name = msg.name;
+            }
+
+            std::cout << "    [";
             switch (msg.level)
             {
                 case qaml_maybe:
+                    std::cout << "?";
+                    break;
+
                 case qaml_debug:
-                    std::cout << msg.level;
+                    std::cout << "-";
                     break;
 
                 case qaml_minor:
+                    std::cout << "*";
+                    break;
+
                 case qaml_normal:
+                    std::cout << colour(cl_error, "*");
+                    break;
+
                 case qaml_severe:
+                    std::cout << colour(cl_error, "!");
+                    break;
+
                 case last_qaml:
-                    std::cout << colour(cl_error, stringify(msg.level));
                     break;
             }
 
-            std::cout << "]:" << std::endl;
-            std::cout << "    " << msg.message << std::endl;
+            std::cout << "]: " << msg.message << std::endl;
         }
     };
 }

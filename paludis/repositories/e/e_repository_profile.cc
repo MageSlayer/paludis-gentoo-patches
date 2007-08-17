@@ -770,6 +770,12 @@ ERepositoryProfile::begin_virtuals() const
 }
 
 ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::find_virtual(const QualifiedPackageName & n) const
+{
+    return VirtualsIterator(_imp->virtuals.find(n));
+}
+
+ERepositoryProfile::VirtualsIterator
 ERepositoryProfile::end_virtuals() const
 {
     return VirtualsIterator(_imp->virtuals.end());

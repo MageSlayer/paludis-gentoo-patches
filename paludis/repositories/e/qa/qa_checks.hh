@@ -33,11 +33,10 @@
 
 #include <paludis/repositories/e/qa/qa_checks_group.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/e_repository.hh>
 
 namespace paludis
 {
-    class ERepository;
-
     namespace erepository
     {
         typedef tr1::function<bool (
@@ -64,6 +63,15 @@ namespace paludis
                 const tr1::shared_ptr<const ERepositoryID> &
                 )> PackageIDCheckFunction;
 
+        typedef tr1::function<bool (
+                const FSEntry &,
+                QAReporter &,
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
+                const tr1::shared_ptr<const ERepositoryID> &,
+                const ERepository::ProfilesIterator &
+                )> PerProfilePackageIDCheckFunction;
+
         class QAChecks :
             private PrivateImplementationPattern<QAChecks>,
             public InstantiationPolicy<QAChecks, instantiation_method::SingletonTag>
@@ -75,9 +83,17 @@ namespace paludis
                 ~QAChecks();
 
             public:
-                const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
-                const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
-                const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+                const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> >
+                    tree_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> >
+                    category_dir_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
+                    package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<PerProfilePackageIDCheckFunction> >
+                    per_profile_package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
