@@ -32,8 +32,6 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
     def test_02_create_error(self):
         self.assertRaises(Exception, DepSpec)
-        self.assertRaises(Exception, AllDepSpec)
-        self.assertRaises(Exception, AnyDepSpec)
         self.assertRaises(Exception, StringDepSpec)
         self.assertRaises(BadVersionOperatorError, PackageDepSpec, "<>foo/bar", PackageDepSpecParseMode.PERMISSIVE)
         self.assertRaises(PackageDepSpecError, PackageDepSpec, "=foo/bar", PackageDepSpecParseMode.PERMISSIVE)

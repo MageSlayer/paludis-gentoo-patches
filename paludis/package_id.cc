@@ -100,14 +100,14 @@ PackageID::MasksIterator
 PackageID::begin_masks() const
 {
     need_masks_added();
-    return MasksIterator(indirect_iterator(_imp->masks.begin()));
+    return MasksIterator(_imp->masks.begin());
 }
 
 PackageID::MasksIterator
 PackageID::end_masks() const
 {
     need_masks_added();
-    return MasksIterator(indirect_iterator(_imp->masks.end()));
+    return MasksIterator(_imp->masks.end());
 }
 
 bool

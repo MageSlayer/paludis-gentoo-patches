@@ -411,7 +411,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                     bool local_success(false);
                     for (DepListOverrideMasksFunctions::Iterator o(d->_imp->opts->override_masks->begin()),
                             o_end(next(of)) ; o != o_end ; ++o)
-                        if ((*o)(**p, *m))
+                        if ((*o)(**p, **m))
                             local_success = true;
 
                     success &= local_success;

@@ -134,8 +134,8 @@ void expose_contents()
     /**
      * Contents
      */
-    register_shared_ptrs_to_python<Contents>();
-    bp::class_<Contents, boost::noncopyable>
+    register_shared_ptrs_to_python<Contents>(rsp_const);
+    bp::class_<Contents, tr1::shared_ptr<Contents>, boost::noncopyable>
         (
          "Contents",
          "Iterable of ContentsEntry.\n"

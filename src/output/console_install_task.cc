@@ -1181,7 +1181,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
         if (need_comma)
             output_no_endl(", ");
         MaskDisplayer d;
-        m->accept(d);
+        (*m)->accept(d);
         output_no_endl(d.s.str());
     }
 

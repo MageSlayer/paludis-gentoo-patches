@@ -37,6 +37,10 @@ class PythonQuery :
     public:
         PythonQuery();
 
+        virtual ~PythonQuery()
+        {
+        }
+
         virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const
         {
             return tr1::shared_ptr<RepositoryNameSequence>();
@@ -223,6 +227,9 @@ void expose_query()
         );
         q.def("__and__", operator&);
 
+    /**
+     * QueryBase
+     */
     bp::class_<PythonQueryWrapper, bp::bases<Query>, boost::noncopyable>
         (
          "QueryBase",

@@ -124,7 +124,7 @@ VersionsListModel::populate_in_paludis_thread()
             if (! mr_string.empty())
                 mr_string.append(", ");
 
-            mr_string.append(m->description());
+            mr_string.append((*m)->description());
         }
 
         data->items.push_back(PopulateDataItem(*p, mr_string, prefer_default));

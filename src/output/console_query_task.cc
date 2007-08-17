@@ -147,8 +147,8 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                     for (PackageID::MasksIterator m((*e)->begin_masks()), m_end((*e)->end_masks()) ;
                             m != m_end ; ++m)
                     {
-                        reasons.append(stringify(m->key()));
-                        _imp->masks_to_explain->insert(m->key(), m->description());
+                        reasons.append(stringify((*m)->key()));
+                        _imp->masks_to_explain->insert((*m)->key(), (*m)->description());
                     }
                     right_column.append(render_as_masked("(" + (*e)->canonical_form(idcf_version) + ")" + reasons));
                 }

@@ -102,7 +102,7 @@ namespace
         {
             if (comma)
                 cout << ", ";
-            cout << colour(cl_masked, m->description());
+            cout << colour(cl_masked, (*m)->description());
             comma = true;
         }
         ++_n_errors;

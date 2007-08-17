@@ -113,7 +113,7 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, const Mask> MasksIterator;
+            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const Mask> > MasksIterator;
             MasksIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));

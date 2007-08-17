@@ -19,6 +19,7 @@
 
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
+#include <python/iterable.hh>
 
 #include <paludis/util/fs_entry.hh>
 
@@ -40,4 +41,14 @@ void expose_fs_entry()
      */
     bp::implicitly_convertible<std::string, FSEntry>();
     bp::to_python_converter<FSEntry, to_string<FSEntry> >();
+
+    /**
+     * FSEntryIterable
+     */
+    class_iterable<FSEntrySequence>
+        (
+         "FSEntryIterable",
+         "Iterable of FSEntry",
+         true
+        );
 }

@@ -357,7 +357,7 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
                     {
                         if (need_comma)
                             cerr << ", ";
-                        cerr << m->description();
+                        cerr << (*m)->description();
                         need_comma = true;
                     }
                     cerr << endl;

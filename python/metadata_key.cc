@@ -17,159 +17,345 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "metadata_key.hh"
 #include <python/paludis_python.hh>
+#include <python/exception.hh>
 
+#include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <datetime.h>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-struct MetadataTimeKeyWrapper
+class MetadataKeySptrToPythonVisitor :
+    public ConstVisitor<MetadataKeyVisitorTypes>
 {
-    static PyObject *
-    value(const MetadataTimeKey & self)
-    {
-        PyDateTime_IMPORT;
-        return PyDateTime_FromTimestamp(bp::make_tuple(self.value()).ptr());
-    }
+    private:
+        const tr1::shared_ptr<const MetadataKey> & _m_ptr;
 
+    public:
+        boost::python::object obj;
+
+        MetadataKeySptrToPythonVisitor(const tr1::shared_ptr<const MetadataKey> & m_ptr) :
+            _m_ptr(m_ptr)
+        {
+        }
+
+        void visit(const MetadataPackageIDKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataPackageIDKey>(_m_ptr));
+        }
+
+        void visit(const MetadataStringKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataStringKey>(_m_ptr));
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
+        }
+
+        void visit(const MetadataContentsKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataContentsKey>(_m_ptr));
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(_m_ptr));
+        }
+
+        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<KeywordNameSet> >(_m_ptr));
+        }
+
+        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<UseFlagNameSet> >(_m_ptr));
+        }
+
+        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(_m_ptr));
+        }
+
+        void visit(const MetadataSetKey<InheritedSet> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<InheritedSet> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<ProvideSpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<URISpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<PackageIDSequence> >(_m_ptr));
+        }
 };
 
-template <typename K_>
+struct MetadataKeySptrToPython
+{
+    MetadataKeySptrToPython()
+    {
+        bp::to_python_converter<tr1::shared_ptr<const MetadataKey>, MetadataKeySptrToPython>();
+    }
+
+    static PyObject *
+    convert(const tr1::shared_ptr<const MetadataKey> & m)
+    {
+        MetadataKeySptrToPythonVisitor v(m);
+        m->accept(v);
+        return bp::incref(v.obj.ptr());
+    }
+};
+
+struct MetadataPackageIDKeyWrapper :
+    MetadataPackageIDKey,
+    bp::wrapper<MetadataPackageIDKey>
+{
+    MetadataPackageIDKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataPackageIDKey(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const PackageID> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "value");
+    }
+};
+
+struct MetadataStringKeyWrapper :
+    MetadataStringKey,
+    bp::wrapper<MetadataStringKey>
+{
+    MetadataStringKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataStringKey(r, h, t)
+    {
+    }
+
+    virtual const std::string value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataStringKey", "value");
+    }
+};
+
+struct MetadataTimeKeyWrapper :
+    MetadataTimeKey,
+    bp::wrapper<MetadataTimeKey>
+{
+    MetadataTimeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataTimeKey(r, h, t)
+    {
+    }
+
+    virtual const time_t value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataTimeKey", "value");
+    }
+};
+
+struct MetadataContentsKeyWrapper :
+    MetadataContentsKey,
+    bp::wrapper<MetadataContentsKey>
+{
+    MetadataContentsKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataContentsKey(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const Contents> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataContentsKey", "value");
+    }
+};
+
+struct MetadataRepositoryMaskInfoKeyWrapper :
+    MetadataRepositoryMaskInfoKey,
+    bp::wrapper<MetadataRepositoryMaskInfoKey>
+{
+    MetadataRepositoryMaskInfoKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataRepositoryMaskInfoKey(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "value");
+    }
+};
+
+template <typename C_>
+struct MetadataSetKeyWrapper :
+    MetadataSetKey<C_>,
+    bp::wrapper<MetadataSetKey<C_> >
+{
+    MetadataSetKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSetKey<C_>(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const C_> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSetKey", "value");
+    }
+};
+
+template <typename C_>
+struct MetadataSpecTreeKeyWrapper :
+    MetadataSpecTreeKey<C_>,
+    bp::wrapper<MetadataSpecTreeKey<C_> >
+{
+    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSpecTreeKey<C_>(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+    }
+
+    virtual std::string pretty_print() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("pretty_print"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
+    }
+
+    virtual std::string pretty_print_flat() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("pretty_print_flat"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
+    }
+};
+
+template <typename C_>
 struct class_set_key :
-    bp::class_<K_, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
+        bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<K_, bp::bases<MetadataKey>, boost::noncopyable>(("Metadata" + set + "Key").c_str(), bp::no_init)
+        bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
+            bp::bases<MetadataKey>, boost::noncopyable>(
+                    ("Metadata" + set + "Key").c_str(),
+                    "NEED_DOC\n"
+                    "This class can be subclassed in Python.",
+                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
+                        "__init__(raw_name, human_name, MetadataKeyType)"
+                        )
+                    )
     {
-        add_property("value", &K_::value,
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSetKey<C_> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
+                tr1::shared_ptr<const MetadataKey> >();
+
+        def("value", bp::pure_virtual(&MetadataSetKey<C_>::value),
                 ("[ro] " + set + "\n").c_str());
     }
 };
 
-template <typename K_>
+template <typename C_>
 struct class_spec_tree_key :
-    bp::class_<K_, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
+        bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_spec_tree_key(const std::string & spec_tree) :
-        bp::class_<K_, bp::bases<MetadataKey>, boost::noncopyable>(("Metadata" + spec_tree + "Key").c_str(), bp::no_init)
+        bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
+            bp::bases<MetadataKey>, boost::noncopyable>(
+                    ("Metadata" + spec_tree + "Key").c_str(),
+                    "NEED_DOC\n"
+                    "This class can be subclassed in Python.",
+                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
+                        "__init__(raw_name, human_name, MetadataKeyType)"
+                        )
+                    )
     {
-        add_property("value", &K_::value,
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<C_> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
+                tr1::shared_ptr<const MetadataKey> >();
+
+        def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
                 ("[ro] " + spec_tree + "\n").c_str());
+        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print));
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print_flat));
     }
 };
-
-void
-MetadataKeyToPython::visit(const MetadataPackageIDKey & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataStringKey & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataTimeKey & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataContentsKey & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataRepositoryMaskInfoKey & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSetKey<KeywordNameSet> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSetKey<UseFlagNameSet> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSetKey<IUseFlagSet> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSetKey<InheritedSet> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSpecTreeKey<URISpecTree> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-void
-MetadataKeyToPython::visit(const MetadataSetKey<PackageIDSequence> & k)
-{
-    value = bp::object(bp::ptr(&k));
-}
-
-struct metadata_key_to_python
-{
-    static PyObject *
-    convert(const MetadataKey & k)
-    {
-        MetadataKeyToPython v;
-        k.accept(v);
-        return bp::incref(v.value.ptr());
-    }
-};
-
-void register_metadata_key_to_python()
-{
-    bp::to_python_converter<MetadataKey, metadata_key_to_python>();
-}
-
 
 void expose_metadata_key()
 {
@@ -182,111 +368,157 @@ void expose_metadata_key()
     /**
      * MetadataKey
      */
-    register_shared_ptrs_to_python<MetadataKey>();
+    MetadataKeySptrToPython();
     bp::class_<MetadataKey, boost::noncopyable>
         (
          "MetadataKey",
          bp::no_init
         )
-        .add_property("raw_name", &MetadataKey::raw_name,
-                "[ro] string\n"
+        .def("raw_name", &MetadataKey::raw_name,
+                "raw_name() -> string\n"
+                "NEED_DOC"
                 )
 
-        .add_property("human_name", &MetadataKey::human_name,
-                "[ro] string\n"
+        .def("human_name", &MetadataKey::human_name,
+                "human_name() -> string\n"
+                "NEED_DOC"
                 )
         ;
-    register_metadata_key_to_python();
 
     /**
      * MetadataPackageIDKey
      */
-    bp::class_<MetadataPackageIDKey, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataPackageIDKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<const MetadataPackageIDKeyWrapper>,
+            tr1::shared_ptr<const MetadataKey> >();
+    bp::class_<MetadataPackageIDKeyWrapper, tr1::shared_ptr<const MetadataPackageIDKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataPackageIDKey",
-         bp::no_init
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
         )
-        .add_property("value", &MetadataPackageIDKey::value,
-                "[ro] PackageID\n"
+        .def("value", bp::pure_virtual(&MetadataPackageIDKey::value),
+                "value() -> PackageID\n"
+                "NEED_DOC"
                 )
         ;
 
     /**
      * MetadataStringKey
      */
-    bp::class_<MetadataStringKey, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataStringKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<const MetadataStringKeyWrapper>,
+            tr1::shared_ptr<const MetadataKey> >();
+    bp::class_<MetadataStringKeyWrapper, tr1::shared_ptr<const MetadataStringKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataStringKey",
-         bp::no_init
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
         )
-        .add_property("value", &MetadataStringKey::value,
-                "[ro] string\n"
+        .def("value", &MetadataStringKey::value,
+                "value() -> string\n"
+                "NEED_DOC"
                 )
         ;
 
     /**
      * MetadataTimeKey
      */
-    bp::class_<MetadataTimeKey, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataTimeKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<const MetadataTimeKeyWrapper>,
+            tr1::shared_ptr<const MetadataKey> >();
+    bp::class_<MetadataTimeKeyWrapper, tr1::shared_ptr<const MetadataTimeKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataTimeKey",
-         bp::no_init
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
         )
-        .add_property("value", &MetadataTimeKeyWrapper::value,
-                "[ro] datetime\n"
+        .def("value", bp::pure_virtual(&MetadataTimeKey::value),
+                "value() -> int\n"
                 )
         ;
 
     /**
      * MetadataContentsKey
      */
-    bp::class_<MetadataContentsKey, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataContentsKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<const MetadataContentsKeyWrapper>,
+            tr1::shared_ptr<const MetadataKey> >();
+    bp::class_<MetadataContentsKeyWrapper, tr1::shared_ptr<const MetadataContentsKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataContentsKey",
-         bp::no_init
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
         )
-        .add_property("value", &MetadataContentsKey::value,
-                "[ro] Contents\n"
+        .def("value", bp::pure_virtual(&MetadataContentsKey::value),
+                "value() -> Contents\n"
+                "NEED_DOC"
                 )
 
         //Work around epydoc bug
-        .add_property("raw_name", &MetadataContentsKey::raw_name,
-                "[ro] string\n"
+        .def("raw_name", &MetadataKey::raw_name,
+                "raw_name() -> string\n"
+                "NEED_DOC"
                 )
 
         //Work around epydoc bug
-        .add_property("human_name", &MetadataContentsKey::human_name,
-                "[ro] string\n"
+        .def("human_name", &MetadataKey::human_name,
+                "human_name() -> string\n"
+                "NEED_DOC"
                 )
         ;
 
     /**
      * MetadataRepositoryMaskInfoKey
      */
-    bp::class_<MetadataRepositoryMaskInfoKey, bp::bases<MetadataKey>, boost::noncopyable>
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataRepositoryMaskInfoKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<const MetadataRepositoryMaskInfoKeyWrapper>,
+            tr1::shared_ptr<const MetadataKey> >();
+    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, tr1::shared_ptr<const MetadataRepositoryMaskInfoKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataRepositoryMaskInfoKey",
-         bp::no_init
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
         )
-        .add_property("value", &MetadataRepositoryMaskInfoKey::value,
-                "[ro] RepositoryMaskInfo\n"
+        .def("value", bp::pure_virtual(&MetadataRepositoryMaskInfoKey::value),
+                "value() -> RepositoryMaskInfo\n"
                 )
         ;
 
     /**
      * MetadataSetKeys
      */
-    class_set_key<MetadataSetKey<KeywordNameSet> >("KeywordNameIterable");
-    class_set_key<MetadataSetKey<UseFlagNameSet> >("UseFlagNameIterable");
-    class_set_key<MetadataSetKey<IUseFlagSet> >("IUseFlagIterable");
-    class_set_key<MetadataSetKey<InheritedSet> >("InheritedIterable");
+    class_set_key<KeywordNameSet>("KeywordNameIterable");
+    class_set_key<UseFlagNameSet>("UseFlagNameIterable");
+    class_set_key<IUseFlagSet>("IUseFlagIterable");
+    class_set_key<InheritedSet>("InheritedIterable");
 
     /**
      * MetadataSpecTreeKeys
      */
-    class_spec_tree_key<MetadataSpecTreeKey<LicenseSpecTree> >("LicenseSpecTree");
-    class_spec_tree_key<MetadataSpecTreeKey<ProvideSpecTree> >("ProvideSpecTree");
-    class_spec_tree_key<MetadataSpecTreeKey<DependencySpecTree> >("DependencySpecTree");
-    class_spec_tree_key<MetadataSpecTreeKey<RestrictSpecTree> >("RestrictSpecTree");
-    class_spec_tree_key<MetadataSpecTreeKey<URISpecTree> >("URISpecTree");
+    class_spec_tree_key<LicenseSpecTree>("LicenseSpecTree");
+    class_spec_tree_key<ProvideSpecTree>("ProvideSpecTree");
+    class_spec_tree_key<DependencySpecTree>("DependencySpecTree");
+    class_spec_tree_key<RestrictSpecTree>("RestrictSpecTree");
+    class_spec_tree_key<URISpecTree>("URISpecTree");
 }

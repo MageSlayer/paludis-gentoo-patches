@@ -40,21 +40,9 @@ struct PackageIDWrapper
     {
         PackageID::MetadataIterator i(self.find_metadata(key));
         if (i != self.end_metadata())
-            return bp::incref(bp::object(**i).ptr());
+            return bp::incref(bp::object(*i).ptr());
         else
             return Py_None;
-    }
-
-    static IndirectIterator<PackageID::MetadataIterator>
-    begin_metadata(const PackageID & self)
-    {
-        return indirect_iterator(self.begin_metadata());
-    }
-
-    static IndirectIterator<PackageID::MetadataIterator>
-    end_metadata(const PackageID & self)
-    {
-        return indirect_iterator(self.end_metadata());
     }
 };
 
@@ -105,7 +93,7 @@ void expose_package_id()
                 "NEED_DOC"
             )
 
-        .add_property("metadata", bp::range(&PackageIDWrapper::begin_metadata, &PackageIDWrapper::end_metadata),
+        .add_property("metadata", bp::range(&PackageID::begin_metadata, &PackageID::end_metadata),
                 "[ro] Iterable of MetadataKey\n"
                 "NEED_DOC"
                 )

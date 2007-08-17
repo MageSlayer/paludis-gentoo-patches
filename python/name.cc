@@ -128,7 +128,8 @@ void expose_name()
     class_iterable<UseFlagNameSet>
         (
          "UseFlagNameIterable",
-         "Iterable of UseFlagName"
+         "Iterable of UseFlagName",
+         true
         );
 
     /**
@@ -176,7 +177,8 @@ void expose_name()
     class_iterable<KeywordNameSet>
         (
          "KeywordNameIterable",
-         "Iterable of KeywordName"
+         "Iterable of KeywordName",
+         true
         );
 
     /**
@@ -194,7 +196,8 @@ void expose_name()
     class_iterable<SetNameSet>
         (
          "SetNameIterable",
-         "Iterable of SetName"
+         "Iterable of SetName",
+         true
         );
 
     /**
@@ -203,7 +206,8 @@ void expose_name()
     class_iterable<InheritedSet>
         (
          "InheritedIterable",
-         "Iterable of string"
+         "Iterable of string",
+         true
         );
 
     /**
@@ -269,6 +273,7 @@ void expose_name()
     class_iterable<IUseFlagSet>
         (
          "IUseFlagIterable",
-         "Iterable of IUseFlag"
+         "Iterable of IUseFlag",
+         true
         );
 }

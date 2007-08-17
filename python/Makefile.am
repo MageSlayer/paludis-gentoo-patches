@@ -56,7 +56,7 @@ IF_PYTHON_SOURCES = \
 	exception.hh exception.cc \
 	fs_entry.cc \
 	mask.cc \
-	metadata_key.hh metadata_key.cc \
+	metadata_key.cc \
 	mutex.hh mutex.cc \
 	name.cc \
 	log.cc \
@@ -119,6 +119,11 @@ lib_LTLIBRARIES = libpaludispython.la
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
 libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
 
+noinst_LTLIBRARIES = libsubclassingtest.la
+
+libsubclassingtest_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
+libsubclassingtest_la_LDFLAGS = @BOOST_PYTHON_LIB@ -rpath /nowhere
+
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(PYTHON_INCLUDE_DIR) -c \
@@ -150,7 +155,10 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
-check_DATA = .libs/paludis.so
+libsubclassingtest_la_SOURCES = subclassing_test.cc
+libsubclassingtest_la_LIBADD = $(libpaludispython_la_LIBADD)
+
+check_DATA = .libs/paludis.so subclassing_test.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
 pythonlib_DATA = paludis.so
 
@@ -172,6 +180,14 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	    -o $@ \
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
+
+subclassing_test.so : libsubclassingtest.la
+	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
+	    -o $@ \
+	    -L$(top_builddir)/python/.libs -lsubclassingtest
 
 endif
 

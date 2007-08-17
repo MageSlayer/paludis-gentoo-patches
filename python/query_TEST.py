@@ -78,7 +78,8 @@ class TestCase_02_QueryBase(unittest.TestCase):
         e = NoConfigEnvironment(repo_path, "/var/empty")
         db = e.package_database
         q = self.TestQuery()
-        pid = iter(db.query(q, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
+        q1 = q & Query.Repository("testrepo")
+        pid = iter(db.query(q1, QueryOrder.REQUIRE_EXACTLY_ONE)).next()
 
         self.assertEquals(pid.name, "cat/package")
 

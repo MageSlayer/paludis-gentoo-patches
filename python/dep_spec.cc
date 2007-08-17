@@ -1173,6 +1173,8 @@ void expose_dep_spec()
          "Iterable class for dependency specs that have a number of child dependency specs.",
          bp::no_init
         )
+        .def("add_child", &PythonCompositeDepSpec::add_child)
+
         .def("__iter__", bp::range(&PythonCompositeDepSpec::begin, &PythonCompositeDepSpec::end))
         ;
 
@@ -1183,7 +1185,7 @@ void expose_dep_spec()
         (
          "AnyDepSpec",
          "Represents a \"|| ( )\" dependency block.",
-         bp::no_init
+         bp::init<>("__init__()")
         );
 
     /**
@@ -1193,7 +1195,7 @@ void expose_dep_spec()
         (
          "AllDepSpec",
          "Represents a ( first second third ) or top level group of dependency specs.",
-         bp::no_init
+         bp::init<>("__init__()")
         );
 
     /**
@@ -1203,7 +1205,7 @@ void expose_dep_spec()
         (
          "UseDepSpec",
          "Represents a use? ( ) dependency spec.",
-         bp::no_init
+         bp::init<const UseFlagName &, bool>("__init__(UseFlagName, inverse_bool)")
         )
         .add_property("flag", &UseDepSpec::flag,
                 "[ro] UseFlagName\n"

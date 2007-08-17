@@ -19,6 +19,7 @@
 
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
+#include <python/iterable.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/environments/environment_maker.hh>
@@ -27,11 +28,322 @@
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+class EnvironmentImplementationWrapper :
+    public EnvironmentImplementation,
+    public bp::wrapper<EnvironmentImplementation>
+{
+    private:
+        tr1::shared_ptr<PackageDatabase> _db;
+
+    protected:
+        virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName & s) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return tr1::shared_ptr<SetSpecTree::ConstItem>();
+        }
+
+    public:
+        EnvironmentImplementationWrapper() :
+            _db(new PackageDatabase(this))
+        {
+        }
+
+        virtual bool query_use(const UseFlagName & u, const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("query_use"))
+                return f(boost::cref(u), boost::cref(p));
+            return EnvironmentImplementation::query_use(u, p);
+        }
+
+        bool default_query_use(const UseFlagName & u, const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::query_use(u, p);
+        }
+
+        virtual tr1::shared_ptr<const UseFlagNameSet> known_use_expand_names(
+                const UseFlagName & u, const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("known_use_expand_names"))
+                return f(boost::cref(u), boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "known_use_expand_names");
+        }
+
+        virtual bool accept_license(const std::string & s, const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("accept_license"))
+                return f(s, boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_license");
+        }
+
+        virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("accept_keywords"))
+                return f(k, boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_keywords");
+        }
+
+        virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("mask_for_breakage"))
+                return f(boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_breakage");
+        }
+
+        virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("mask_for_user"))
+                return f(boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_user");
+        }
+
+        virtual bool unmasked_by_user(const PackageID & p) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("unmasked_by_user"))
+                return f(boost::cref(p));
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
+        }
+
+        virtual tr1::shared_ptr<PackageDatabase> package_database()
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return _db;
+        }
+
+        virtual tr1::shared_ptr<const PackageDatabase> package_database() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return _db;
+        }
+
+        virtual tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("bashrc_files"))
+                return f();
+            return EnvironmentImplementation::bashrc_files();
+        }
+
+        tr1::shared_ptr<const FSEntrySequence> default_bashrc_files() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::bashrc_files();
+        }
+
+        virtual tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("syncers_dirs"))
+                return f();
+            return EnvironmentImplementation::syncers_dirs();
+        }
+
+        tr1::shared_ptr<const FSEntrySequence> default_syncers_dirs() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::syncers_dirs();
+        }
+
+        virtual tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("fetchers_dirs"))
+                return f();
+            return EnvironmentImplementation::fetchers_dirs();
+        }
+
+        tr1::shared_ptr<const FSEntrySequence> default_fetchers_dirs() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::fetchers_dirs();
+        }
+
+        virtual tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("hook_dirs"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "hook_dirs");
+        }
+
+        virtual std::string paludis_command() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("paludis_command"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "paludis_command");
+        }
+
+        virtual void set_paludis_command(const std::string & s)
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("set_paludis_command"))
+                f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "set_paludis_command");
+        }
+
+        virtual const FSEntry root() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("root"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "root");
+        }
+
+        virtual uid_t reduced_uid() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("reduced_uid"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_uid");
+        }
+
+        virtual gid_t reduced_gid() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("reduced_gid"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_gid");
+        }
+
+
+        virtual tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("mirrors"))
+                return f(s);
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "mirrors");
+        }
+
+        virtual tr1::shared_ptr<const SetNameSet> set_names() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("set_names"))
+                return f();
+            return EnvironmentImplementation::set_names();
+        }
+
+        tr1::shared_ptr<const SetNameSet> default_set_names() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::set_names();
+        }
+
+        virtual tr1::shared_ptr<SetSpecTree::ConstItem> set(const SetName & s) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("set"))
+                return f(boost::cref(s));
+            return EnvironmentImplementation::set(s);
+        }
+
+        tr1::shared_ptr<SetSpecTree::ConstItem> default_set(const SetName & s) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::set(s);
+        }
+
+        virtual tr1::shared_ptr<const DestinationsSet> default_destinations() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("default_destinations"))
+                return f();
+            return EnvironmentImplementation::default_destinations();
+        }
+
+        tr1::shared_ptr<const DestinationsSet> default_default_destinations() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::default_destinations();
+        }
+
+        // FIXME - Hooks are not exposed
+        virtual HookResult perform_hook(const Hook & h) const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return HookResult(0, "");
+        }
+
+        virtual std::string default_distribution() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("default_distribution"))
+                return f();
+            return EnvironmentImplementation::default_distribution();
+        }
+
+        std::string default_default_distribution() const
+            PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return EnvironmentImplementation::default_distribution();
+        }
+
+};
 
 struct NoConfigEnvironmentWrapper :
     NoConfigEnvironment
@@ -65,6 +377,16 @@ void expose_environment()
     ExceptionRegister::get_instance()->add_exception<paludis_environment::PaludisConfigNoDirectoryError>
         ("PaludisConfigNoDirectoryError", "PaludisConfigError",
          "Thrown if the config directory cannot be found by PaludisConfig.");
+
+    /**
+     * StringIterable
+     */
+    class_iterable<Sequence<std::string> >
+        (
+         "StringIterable",
+         "Iterable of string",
+         true
+        );
 
     /**
      * EnvironmentMaker
@@ -127,6 +449,140 @@ void expose_environment()
         .add_property("set_names", &Environment::set_names,
                 "[ro] SetNamesIterable\n"
                 "All known named sets."
+            )
+        ;
+
+    /**
+     * EnvironmentImplementation
+     */
+    typedef EnvironmentImplementation EnvImp;
+    typedef EnvironmentImplementationWrapper EnvImpW;
+    bp::class_<EnvironmentImplementationWrapper, tr1::shared_ptr<EnvironmentImplementationWrapper>,
+            bp::bases<Environment>, boost::noncopyable>
+        (
+         "EnvironmentImplementation",
+         "Represents a working environment, which contains an available packages database\n"
+         "and provides various methods for querying package visibility and options.\n"
+         "This class can be subclassed in Python.",
+         bp::init<>()
+        )
+        //FIXME - local_set is protected
+        //.def("local_set", bp::pure_virtual(&EnvImp::local_set))
+
+        .def("query_use", &EnvImp::query_use, &EnvImpW::default_query_use,
+                "query_use(UseFlagName, PackageID) -> bool\n"
+                "Is a particular use flag enabled for a particular package?"
+            )
+
+        .def("known_use_expand_names", bp::pure_virtual(&EnvImp::known_use_expand_names),
+                "known_use_expand_names(UseFlagName, PackageID) -> UseFlagNameIterable\n"
+                "Return a collection of known use flag names for a particular package that start\n"
+                "with a particular use expand prefix.\n\n"
+                "It is up to subclasses to decide whether to return all known use flags with\n"
+                "the specified prefix or merely all enabled use flags. It is not safe to assume\n"
+                "that all flags in the returned value will be enabled for the specified package."
+            )
+
+        .def("accept_license", bp::pure_virtual(&EnvImp::accept_license),
+                "accept_license(str, PackageID) -> bool\n"
+                "Do we accept a particular license for a particular package?"
+            )
+
+        .def("accept_keywords", bp::pure_virtual(&EnvImp::accept_keywords),
+                "accept_keywords(KeywordsNameIterable, PackageID)\n"
+                "Do we accept any of the specified keywords for a particular package?\n\n"
+                "If the collection includes \"*\", should return true."
+            )
+
+        .def("mask_for_breakage", bp::pure_virtual(&EnvImp::mask_for_breakage),
+                "mask_for_breakage(PackageID) -> Mask\n"
+                "Do we have a 'breaks' mask for a particular package?\n\n"
+                "Returns None if no."
+            )
+
+        .def("mask_for_user", bp::pure_virtual(&EnvImp::mask_for_user),
+                "mask_for_user(PackageID) -> Mask\n"
+                "Do we have a 'user' mask for a particular package?\n\n"
+                "Returns None if no."
+            )
+
+        .def("unmasked_by_user", bp::pure_virtual(&EnvImp::unmasked_by_user),
+                "unmasked_by_user(PackageID) -> bool\n"
+                "Do we have a user unmask for a particular package?\n\n"
+                "This is only applied to repository and profile style masks, not\n"
+                "keywords, licences etc. If true, user_mask shouldn't be used."
+            )
+
+        .def("bashrc_files", &EnvImp::bashrc_files, &EnvImpW::default_bashrc_files,
+                "bashrc_files() -> list of paths\n"
+                "Return a collection of bashrc files to be used by the various components\n"
+                "that are implemented in bash."
+            )
+
+        .def("syncers_dirs", &EnvImp::syncers_dirs, &EnvImpW::default_syncers_dirs,
+                "syncers_dirs() -> list of paths\n"
+                "Return directories to search for syncer scripts."
+            )
+
+        .def("fetchers_dirs", &EnvImp::fetchers_dirs, &EnvImpW::default_fetchers_dirs,
+                "fetchers_dirs() -> list of paths\n"
+                "Return directories to search for fetcher scripts."
+            )
+
+        .def("hook_dirs", bp::pure_virtual(&EnvImp::hook_dirs),
+                "hook_dirs() -> list of paths\n"
+                "Return directories to search for hooks."
+            )
+
+        .def("paludis_command", bp::pure_virtual(&EnvImp::paludis_command),
+                "paludis_command() -> str\n"
+                "Return the command used to launch paludis (the client)."
+            )
+
+        .def("set_paludis_command", bp::pure_virtual(&EnvImp::set_paludis_command),
+                "set_paludis_command(str)\n"
+                "Change the command used to launch paludis (the client)."
+            )
+
+        .def("root", bp::pure_virtual(&EnvImp::root),
+                "root() -> path\n"
+                "Our root location for installs."
+            )
+
+        .def("reduced_uid", bp::pure_virtual(&EnvImp::reduced_uid),
+                "reduced_uid() -> int\n"
+                "User id to use when reduced privs are permissible."
+            )
+
+        .def("reduced_gid", bp::pure_virtual(&EnvImp::reduced_gid),
+                "reduced_gid() -> int\n"
+                "Group id to use when reduced privs are permissible."
+            )
+
+        .def("mirrors", bp::pure_virtual(&EnvImp::mirrors),
+                "mirrors(str) -> list of str\n"
+                "Return the mirror URI prefixes for a named mirror."
+            )
+
+        .def("set_names", &EnvImp::set_names, &EnvImpW::default_set_names,
+                "set_names() -> list of SetName\n"
+                "Return all known named sets."
+            )
+
+        .def("set", &EnvImp::set, &EnvImpW::default_set,
+                "set(SetName) -> CompositeDepSpec\n"
+                "Return a named set.\n\n"
+                "If the named set is not known, returns None."
+            )
+
+        .def("default_destinations", &EnvImp::default_destinations, &EnvImpW::default_default_destinations,
+                "default_destinations() -> list of Repository\n"
+                "Default destination candidates for installing packages."
+            )
+
+        .def("default_distribution", &EnvImp::default_distribution, &EnvImpW::default_default_distribution,
+                "default_distribution() -> str\n"
+                "NEED_DOC"
             )
         ;
 
@@ -210,5 +666,4 @@ void expose_environment()
          "control all the options rather than reading them from configuration files.",
          bp::init<>("__init__()")
         );
-
 }

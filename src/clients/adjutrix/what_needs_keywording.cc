@@ -125,7 +125,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             for (PackageID::MasksIterator m(p->package_id->begin_masks()), m_end(p->package_id->end_masks()) ;
                     m != m_end ; ++m)
-                masks.append(stringify(m->key()));
+                masks.append(stringify((*m)->key()));
 
             cout << std::setw(10) << std::left << masks;
 

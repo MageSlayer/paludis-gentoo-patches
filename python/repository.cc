@@ -193,7 +193,8 @@ void expose_repository()
     class_iterable<DestinationsSet>
         (
          "DestinationsIterable",
-         "Iterable of Repository."
+         "Iterable of Repository.",
+         true
         );
 
     /**
@@ -380,25 +381,25 @@ void expose_repository()
          bp::no_init
         )
         .def("query_use", &RepositoryUseInterface::query_use,
-                ("ufn", bp::arg("pde")),
+                ("ufn", bp::arg("pid")),
                 "query_use(UseFlagName, PackageID) -> UseFlagState\n"
                 "Query the state of the specified use flag."
             )
 
         .def("query_use_mask", &RepositoryUseInterface::query_use_mask,
-                ("ufn", bp::arg("pde")),
+                ("ufn", bp::arg("pid")),
                 "query_use_mask(UseFlagName, PackageID) -> bool\n"
                 "Query whether the specified use flag is masked."
             )
 
         .def("query_use_force", &RepositoryUseInterface::query_use_force,
-                ("ufn", bp::arg("pde")),
+                ("ufn", bp::arg("pid")),
                 "query_use_force(UseFlagName, PackageID) -> bool\n"
                 "Query whether the specified use flag is forceed."
             )
 
         .def("describe_use_flag", &RepositoryUseInterface::describe_use_flag,
-                ("ufn", bp::arg("pde")),
+                ("ufn", bp::arg("pid")),
                 "describe_use_flag(UseFlagName, PackageID) -> string\n"
                 "Describe a use flag."
             )
