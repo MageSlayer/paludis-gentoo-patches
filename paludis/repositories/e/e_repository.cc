@@ -1061,7 +1061,7 @@ ERepository::check_qa(
                         "libpaludiserepositoryqa.so").c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (0 == libqahandle.handle)
         {
-            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror) +
+            reporter.message(QAMessage(dir, qaml_severe, "check_qa", "Got error '" + stringify(dlerror()) +
                         "' when dlopen(" + getenv_with_default("PALUDIS_E_REPOSITORY_QA_SO",
                                 "libpaludiserepositoryqa.so") + ")"));
             return;
