@@ -26,24 +26,64 @@
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-
-#include <iostream>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/validated.hh>
 
 namespace paludis
 {
     namespace python
     {
+        template <typename From_, typename To_>
+        struct IsConvertible
+        {
+            static const bool value = tr1::is_convertible<From_, To_>::value;
+        };
+
+        template <typename From_, typename ValidatedDataType_, typename Validator_, bool full_comparison_>
+        struct IsConvertible<From_, Validated<ValidatedDataType_, Validator_, full_comparison_> >
+        {
+            static const bool value = tr1::is_convertible<From_, ValidatedDataType_>::value;
+        };
+
+        template <typename To_, typename From_, typename C_, bool>
+        struct ConditionalAdd
+        {
+            static void add(C_ &, PyObject * ptr)
+            {
+            }
+        };
+
+        template <typename To_>
+        struct ConditionalAdd<To_, std::string, Set<To_>, true>
+        {
+            static void add(Set<To_> & c, PyObject * ptr)
+            {
+                const char * str = PyString_AsString(ptr);
+                c.insert(To_(std::string(str)));
+            }
+        };
+
+        template <typename To_>
+        struct ConditionalAdd<To_, std::string, Sequence<To_>, true>
+        {
+            static void add(Sequence<To_> & c, PyObject * ptr)
+            {
+                const char * str = PyString_AsString(ptr);
+                c.push_back(To_(std::string(str)));
+            }
+        };
+
         template <typename V_>
         struct RegisterSequenceSPTRFromPython
         {
-            static std::string class_name;
+            static std::string _name;
 
             RegisterSequenceSPTRFromPython(const std::string & name)
             {
                 boost::python::converter::registry::push_back(&convertible, &construct,
                         boost::python::type_id<tr1::shared_ptr<Sequence<V_> > >());
 
-                class_name = name;
+                _name = name;
             }
 
             static void *
@@ -85,30 +125,35 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->push_back(*ptr);
                     }
+                    else if (IsConvertible<std::string, V_>::value && PyString_Check(o.ptr()))
+                    {
+                        ConditionalAdd<V_, std::string, Sequence<V_>,
+                            IsConvertible<std::string, V_>::value>::add(*s, o.ptr());
+                    }
                     else
                     {
                         typedef tr1::shared_ptr<Sequence<V_> > sptr;
                         reinterpret_cast<sptr *>(storage)->sptr::~shared_ptr();
 
-                        throw PythonContainerConversionError(class_name, "sequence", o.ptr()->ob_type->tp_name);
+                        throw PythonContainerConversionError(_name, "sequence", o.ptr()->ob_type->tp_name);
                     }
                 }
             }
         };
         template <typename V_>
-        std::string RegisterSequenceSPTRFromPython<V_>::class_name("unknown");
+        std::string RegisterSequenceSPTRFromPython<V_>::_name("unknown");
 
         template <typename V_>
         struct RegisterSetSPTRFromPython
         {
-            static std::string class_name;
+            static std::string _name;
 
             RegisterSetSPTRFromPython(const std::string & name)
             {
                 boost::python::converter::registry::push_back(&convertible, &construct,
                         boost::python::type_id<tr1::shared_ptr<Set<V_> > >());
 
-                class_name = name;
+                _name = name;
             }
 
             static void *
@@ -150,18 +195,23 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->insert(*ptr);
                     }
+                    else if (IsConvertible<std::string, V_>::value && PyString_Check(o.ptr()))
+                    {
+                        ConditionalAdd<V_, std::string, Set<V_>,
+                                IsConvertible<std::string, V_>::value>::add(*s, o.ptr());
+                    }
                     else
                     {
                         typedef tr1::shared_ptr<Set<V_> > sptr;
                         reinterpret_cast<sptr *>(storage)->sptr::~shared_ptr();
 
-                        throw PythonContainerConversionError(class_name, "set", o.ptr()->ob_type->tp_name);
+                        throw PythonContainerConversionError(_name, "set", o.ptr()->ob_type->tp_name);
                     }
                 }
             }
         };
         template <typename V_>
-        std::string RegisterSetSPTRFromPython<V_>::class_name("unknown");
+        std::string RegisterSetSPTRFromPython<V_>::_name("unknown");
 
         // expose iterable classes
         template <typename C_>
