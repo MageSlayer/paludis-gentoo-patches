@@ -17,7 +17,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o paludis.so .libs/paludis.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o subclassing_test.so paludis.so .libs/paludis.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_PYTHON_TESTS = \
