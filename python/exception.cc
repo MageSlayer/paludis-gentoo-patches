@@ -23,6 +23,8 @@
 #include <python/paludis_python.hh>
 #include <map>
 
+#include <iostream>
+
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
@@ -65,7 +67,10 @@ ExceptionRegister::get_py_exception(const std::string & name)
     if (i != _imp->exceptions.end())
         return i->second->get_py_exception();
     else
-        return NULL;
+    {
+        std::cerr << "Exception '" << name << "' not found." << std::endl;
+        throw PythonError("Exception '" + name + "' not found.");
+    }
 }
 
 PythonError::PythonError(const std::string & message) throw () :
