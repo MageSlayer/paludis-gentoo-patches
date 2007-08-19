@@ -158,7 +158,7 @@ libpaludispython_la_LIBADD = \
 libsubclassingtest_la_SOURCES = subclassing_test.cc
 libsubclassingtest_la_LIBADD = $(libpaludispython_la_LIBADD)
 
-check_DATA = .libs/paludis.so subclassing_test.so
+check_DATA = .libs/paludis.so .libs/subclassing_test.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
 pythonlib_DATA = paludis.so
 
@@ -181,7 +181,7 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
 
-subclassing_test.so : libsubclassingtest.la
+.libs/subclassing_test.so : libsubclassingtest.la
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
