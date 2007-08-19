@@ -307,11 +307,11 @@ struct MetadataSpecTreeKeyWrapper :
 
 template <typename C_>
 struct class_set_key :
-    bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
+    bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
+        bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
                     "NEED_DOC\n"
@@ -322,8 +322,8 @@ struct class_set_key :
                     )
     {
         bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSetKey<C_> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<const MetadataSetKeyWrapper<C_> >,
-                tr1::shared_ptr<const MetadataKey> >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
+                tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSetKey<C_>::value),
                 ("[ro] " + set + "\n").c_str());
@@ -332,11 +332,11 @@ struct class_set_key :
 
 template <typename C_>
 struct class_spec_tree_key :
-    bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
+    bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_spec_tree_key(const std::string & spec_tree) :
-        bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
+        bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + spec_tree + "Key").c_str(),
                     "NEED_DOC\n"
@@ -347,8 +347,8 @@ struct class_spec_tree_key :
                     )
     {
         bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<C_> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<const MetadataSpecTreeKeyWrapper<C_> >,
-                tr1::shared_ptr<const MetadataKey> >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
+                tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
                 ("[ro] " + spec_tree + "\n").c_str());
@@ -369,6 +369,7 @@ void expose_metadata_key()
      * MetadataKey
      */
     MetadataKeySptrToPython();
+    register_shared_ptrs_to_python<MetadataKey>(rsp_non_const);
     bp::class_<MetadataKey, boost::noncopyable>
         (
          "MetadataKey",
@@ -389,9 +390,9 @@ void expose_metadata_key()
      * MetadataPackageIDKey
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const MetadataPackageIDKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const MetadataPackageIDKeyWrapper>,
-            tr1::shared_ptr<const MetadataKey> >();
-    bp::class_<MetadataPackageIDKeyWrapper, tr1::shared_ptr<const MetadataPackageIDKeyWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataPackageIDKeyWrapper, tr1::shared_ptr<MetadataPackageIDKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataPackageIDKey",
@@ -411,9 +412,9 @@ void expose_metadata_key()
      * MetadataStringKey
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const MetadataStringKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const MetadataStringKeyWrapper>,
-            tr1::shared_ptr<const MetadataKey> >();
-    bp::class_<MetadataStringKeyWrapper, tr1::shared_ptr<const MetadataStringKeyWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataStringKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataStringKeyWrapper, tr1::shared_ptr<MetadataStringKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataStringKey",
@@ -433,9 +434,9 @@ void expose_metadata_key()
      * MetadataTimeKey
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const MetadataTimeKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const MetadataTimeKeyWrapper>,
-            tr1::shared_ptr<const MetadataKey> >();
-    bp::class_<MetadataTimeKeyWrapper, tr1::shared_ptr<const MetadataTimeKeyWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataTimeKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataTimeKeyWrapper, tr1::shared_ptr<MetadataTimeKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataTimeKey",
@@ -454,9 +455,9 @@ void expose_metadata_key()
      * MetadataContentsKey
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const MetadataContentsKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const MetadataContentsKeyWrapper>,
-            tr1::shared_ptr<const MetadataKey> >();
-    bp::class_<MetadataContentsKeyWrapper, tr1::shared_ptr<const MetadataContentsKeyWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataContentsKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataContentsKeyWrapper, tr1::shared_ptr<MetadataContentsKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataContentsKey",
@@ -488,9 +489,9 @@ void expose_metadata_key()
      * MetadataRepositoryMaskInfoKey
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const MetadataRepositoryMaskInfoKey> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const MetadataRepositoryMaskInfoKeyWrapper>,
-            tr1::shared_ptr<const MetadataKey> >();
-    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, tr1::shared_ptr<const MetadataRepositoryMaskInfoKeyWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, tr1::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataRepositoryMaskInfoKey",

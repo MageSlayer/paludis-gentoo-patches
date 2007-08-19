@@ -304,6 +304,7 @@ void expose_mask()
      * Mask
      */
     MaskSptrToPython();
+    register_shared_ptrs_to_python<Mask>(rsp_non_const);
     bp::class_<MaskWrapper, boost::noncopyable>
         (
          "Mask",
@@ -325,8 +326,8 @@ void expose_mask()
      * UserMask
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const UserMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const UserMaskWrapper>, tr1::shared_ptr<const Mask> >();
-    bp::class_<UserMaskWrapper, tr1::shared_ptr<const UserMaskWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<UserMaskWrapper>, tr1::shared_ptr<Mask> >();
+    bp::class_<UserMaskWrapper, tr1::shared_ptr<UserMaskWrapper>,
                 bp::bases<Mask>, boost::noncopyable>
         (
          "UserMask",
@@ -348,8 +349,8 @@ void expose_mask()
      * UnacceptedMask
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const UnacceptedMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const UnacceptedMaskWrapper>, tr1::shared_ptr<const Mask> >();
-    bp::class_<UnacceptedMaskWrapper, tr1::shared_ptr<const UnacceptedMaskWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<UnacceptedMaskWrapper>, tr1::shared_ptr<Mask> >();
+    bp::class_<UnacceptedMaskWrapper, tr1::shared_ptr<UnacceptedMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnacceptedMask",
@@ -376,8 +377,8 @@ void expose_mask()
      * RepositoryMask
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const RepositoryMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const RepositoryMaskWrapper>, tr1::shared_ptr<const Mask> >();
-    bp::class_<RepositoryMaskWrapper, tr1::shared_ptr<const RepositoryMaskWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<RepositoryMaskWrapper>, tr1::shared_ptr<Mask> >();
+    bp::class_<RepositoryMaskWrapper, tr1::shared_ptr<RepositoryMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "RepositoryMask",
@@ -404,8 +405,8 @@ void expose_mask()
      * UnsupportedMask
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const UnsupportedMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const UnsupportedMaskWrapper>, tr1::shared_ptr<const Mask> >();
-    bp::class_<UnsupportedMaskWrapper, tr1::shared_ptr<const UnsupportedMaskWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<UnsupportedMaskWrapper>, tr1::shared_ptr<Mask> >();
+    bp::class_<UnsupportedMaskWrapper, tr1::shared_ptr<UnsupportedMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnsupportedMask",
@@ -432,8 +433,8 @@ void expose_mask()
      * AssociationMask
      */
     bp::register_ptr_to_python<tr1::shared_ptr<const AssociationMask> >();
-    bp::implicitly_convertible<tr1::shared_ptr<const AssociationMaskWrapper>, tr1::shared_ptr<const Mask> >();
-    bp::class_<AssociationMaskWrapper, tr1::shared_ptr<const AssociationMaskWrapper>,
+    bp::implicitly_convertible<tr1::shared_ptr<AssociationMaskWrapper>, tr1::shared_ptr<Mask> >();
+    bp::class_<AssociationMaskWrapper, tr1::shared_ptr<AssociationMaskWrapper>,
             bp::bases<Mask>, boost::noncopyable>
         (
          "AssociationMask",
