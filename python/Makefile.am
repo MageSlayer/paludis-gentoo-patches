@@ -18,7 +18,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o subclassing_test.so paludis.so .libs/paludis.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o paludis.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_PYTHON_TESTS = \
@@ -120,15 +120,20 @@ lib_LTLIBRARIES = libpaludispython.la
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
 libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
 
-noinst_LTLIBRARIES = libsubclassingtest.la
+check_LTLIBRARIES = libadditionaltests.la
 
-libsubclassingtest_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libsubclassingtest_la_LDFLAGS = @BOOST_PYTHON_LIB@ -rpath /nowhere
+libadditionaltests_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
+libadditionaltests_la_LDFLAGS = @BOOST_PYTHON_LIB@ -rpath /nowhere
 
 paludis_python_so.o : paludis_python_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(PYTHON_INCLUDE_DIR) -c \
 	    -o $@ $(srcdir)/paludis_python_so.cc ; then ln -fs .libs/paludis_python_so.o $@ ; else rm -f $@ ; exit 1 ; fi
+
+additional_tests_so.o : additional_tests_so.cc
+	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
+	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) -I$(PYTHON_INCLUDE_DIR) -c \
+	    -o $@ $(srcdir)/additional_tests_so.cc ; then ln -fs .libs/addtional_tests_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
 if ENABLE_QA
 
@@ -156,10 +161,10 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
-libsubclassingtest_la_SOURCES = subclassing_test.cc
-libsubclassingtest_la_LIBADD = $(libpaludispython_la_LIBADD)
+libadditionaltests_la_SOURCES = additional_tests.cc
+libadditionaltests_la_LIBADD = $(libpaludispython_la_LIBADD)
 
-check_DATA = .libs/paludis.so .libs/subclassing_test.so
+check_DATA = .libs/paludis.so .libs/additional_tests.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
 pythonlib_DATA = paludis.so
 
@@ -182,13 +187,14 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	    .libs/paludis_python_so.o \
 	    -L$(top_builddir)/python/.libs -lpaludispython
 
-.libs/subclassing_test.so : libsubclassingtest.la
+.libs/additional_tests.so : libadditionaltests.la additional_tests_so.o
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
 	    -I@PYTHON_INCLUDE_DIR@ @BOOST_PYTHON_LIB@  $(PTHREAD_LIBS) \
 	    -o $@ \
-	    -L$(top_builddir)/python/.libs -lsubclassingtest
+	    .libs/additional_tests_so.o \
+	    -L$(top_builddir)/python/.libs -ladditionaltests
 
 endif
 

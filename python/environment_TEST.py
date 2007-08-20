@@ -26,7 +26,7 @@ slaverepo = os.path.join(os.getcwd(), "environment_TEST_dir/slaverepo")
 os.environ["PALUDIS_HOME"] = ph
 
 from paludis import *
-from subclassing_test import *
+from additional_tests import *
 
 import unittest
 

@@ -23,7 +23,7 @@ import os
 os.environ["PALUDIS_HOME"] = os.path.join(os.getcwd(), "mask_TEST_dir/home")
 
 from paludis import *
-from subclassing_test import *
+from additional_tests import *
 
 import unittest
 

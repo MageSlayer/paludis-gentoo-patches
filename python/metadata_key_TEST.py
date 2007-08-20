@@ -24,7 +24,7 @@ repo_path = os.path.join(os.getcwd(), "metadata_key_TEST_dir/testrepo")
 irepo_path = os.path.join(os.getcwd(), "metadata_key_TEST_dir/installed")
 
 from paludis import *
-from subclassing_test import *
+from additional_tests import *
 
 import unittest
 

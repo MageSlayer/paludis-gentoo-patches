@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "additional_tests.hh"
+
 #include <python/paludis_python.hh>
 
 #include <paludis/util/tr1_memory.hh>
@@ -184,7 +186,7 @@ namespace metadata_key
 }
 
 
-BOOST_PYTHON_MODULE(subclassing_test)
+void expose_additional_tests()
 {
     /**
      * Environemnt tests
