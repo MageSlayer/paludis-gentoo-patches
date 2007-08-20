@@ -320,7 +320,7 @@ ebuild_load_ebuild()
         s_v="saved_${v}"
         if [[ -n "${!s_v}" ]] && [[ "${!v}" != "${!s_v}" ]] ; then
             ebuild_notice "qa" \
-                "Ebuild ${1} illegally tried to change SLOT from '${!s_v}' to '${!v}'"
+                "Ebuild ${1} illegally tried to change ${v} from '${!s_v}' to '${!v}'"
             export ${v}="${!s_v}"
         fi
     done

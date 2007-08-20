@@ -114,7 +114,6 @@ EbuildCommand::operator() ()
             .with_setenv("REPOSITORY", stringify(params.package_id->repository()->name()))
             .with_setenv("FILESDIR", stringify(params.files_dir))
             .with_setenv("EAPI", stringify(params.package_id->eapi()->name))
-            .with_setenv("SLOT", "")
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
                 stringify(PALUDIS_VERSION_MICRO) +
@@ -155,7 +154,10 @@ EbuildCommand::operator() ()
                     params.package_id->eapi()->supported->ebuild_options->must_not_change_variables)
             .with_setenv("PALUDIS_RDEPEND_DEFAULTS_TO_DEPEND",
                     params.package_id->eapi()->supported->ebuild_options->rdepend_defaults_to_depend ? "yes" : "")
-            );
+            )
+        .with_setenv("SLOT", "")
+        .with_setenv("PALUDIS_PROFILE_DIR", "")
+        .with_setenv("PALUDIS_PROFILE_DIRS", "");
 
     if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_kv.empty())
         cmd.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_kv, kernel_version());
