@@ -25,14 +25,42 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_memory.hh>
 
+#ifndef PALUDIS_ENABLE_THREADS
+#  include <algorithm>
+#endif
+
 namespace paludis
 {
     template <typename I_, typename P_>
-    void parallel_for_each(I_ cur, const I_ & end, const P_ & op)
+    void parallel_for_each_worker(I_ cur, const I_ & end, const unsigned partition_size, const P_ & op)
     {
+        while (cur != end)
+        {
+            op(*cur);
+
+            for (unsigned x(0) ; x < partition_size ; ++x, ++cur)
+                if (cur == end)
+                    break;
+        }
+    }
+
+    template <typename I_, typename P_>
+    void parallel_for_each(I_ cur, const I_ & end, const P_ & op,
+            const unsigned partition_size = FutureActionQueue::get_instance()->number_of_threads())
+    {
+#ifdef PALUDIS_ENABLE_THREADS
         Sequence<tr1::shared_ptr<Future<void> > > futures;
-        for ( ; cur != end ; ++cur)
-            futures.push_back(make_shared_ptr(new Future<void>(tr1::bind(op, tr1::ref(*cur)))));
+        for (unsigned x(0) ; x < partition_size ; ++x, ++cur)
+        {
+            if (cur == end)
+                break;
+
+            futures.push_back(make_shared_ptr(new Future<void>(
+                            tr1::bind(parallel_for_each_worker<I_, P_>, I_(cur), tr1::cref(end), partition_size, tr1::cref(op)))));
+        }
+#else
+        std::for_each(cur, end, op);
+#endif
     }
 }
 

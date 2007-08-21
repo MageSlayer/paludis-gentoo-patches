@@ -35,6 +35,8 @@ namespace paludis
             void enqueue(const tr1::function<void () throw ()> &);
             void complete_pending();
             void forget_pending();
+
+            unsigned number_of_threads() const;
     };
 }
 

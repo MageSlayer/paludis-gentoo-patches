@@ -34,6 +34,7 @@ namespace paludis
             ~ThreadPool();
 
             void create_thread(const tr1::function<void () throw ()> &);
+            unsigned number_of_threads() const;
     };
 }
 

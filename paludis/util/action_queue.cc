@@ -144,3 +144,13 @@ ActionQueue::forget_pending()
 #endif
 }
 
+unsigned
+ActionQueue::number_of_threads() const
+{
+#ifdef PALUDIS_ENABLE_THREADS
+    return _imp->threads.number_of_threads();
+#else
+    return 0;
+#endif
+}
+
