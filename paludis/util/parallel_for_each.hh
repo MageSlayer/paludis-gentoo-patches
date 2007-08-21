@@ -24,6 +24,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/tr1_type_traits.hh>
 
 #ifndef PALUDIS_ENABLE_THREADS
 #  include <algorithm>
@@ -31,16 +32,39 @@
 
 namespace paludis
 {
+    template <typename I_, bool is_random_access_>
+    struct CappedAdvance
+    {
+        typedef typename std::iterator_traits<I_>::difference_type Distance;
+        static void advance(I_ & cur, const I_ & end, Distance d)
+        {
+            for (Distance x(0) ; x < d ; ++x, ++cur)
+                if (cur == end)
+                    break;
+        }
+    };
+
+    template <typename I_>
+    struct CappedAdvance<I_, true>
+    {
+        typedef typename std::iterator_traits<I_>::difference_type Distance;
+        static void advance(I_ & cur, const I_ & end, Distance d)
+        {
+            if (end - cur > d)
+                cur += d;
+            else
+                cur = end;
+        }
+    };
+
     template <typename I_, typename P_>
     void parallel_for_each_worker(I_ cur, const I_ & end, const unsigned partition_size, const P_ & op)
     {
         while (cur != end)
         {
             op(*cur);
-
-            for (unsigned x(0) ; x < partition_size ; ++x, ++cur)
-                if (cur == end)
-                    break;
+            CappedAdvance<I_, tr1::is_same<typename std::iterator_traits<I_>::iterator_category,
+                std::random_access_iterator_tag>::value>::advance(cur, end, partition_size);
         }
     }
 
