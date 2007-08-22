@@ -75,6 +75,7 @@ IF_PYTHON_QA_SOURCES = \
 EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	$(IF_PYTHON_QA_TESTS) $(IF_PYTHON_QA_SOURCES) \
 	paludis_python_so.cc \
+	additional_tests_so.cc \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	mask_TEST_setup.sh mask_TEST_cleanup.sh \
@@ -161,7 +162,7 @@ libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
-libadditionaltests_la_SOURCES = additional_tests.cc
+libadditionaltests_la_SOURCES = additional_tests.hh additional_tests.cc
 libadditionaltests_la_LIBADD = $(libpaludispython_la_LIBADD)
 
 check_DATA = .libs/paludis.so .libs/additional_tests.so
