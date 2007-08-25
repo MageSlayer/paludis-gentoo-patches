@@ -263,10 +263,10 @@ EbuildID::need_keys_added() const
     }
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
-        tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
+        tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_normal));
     add_metadata_key(_imp->repository_mask);
     _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
-        tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
+        tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_normal));
     add_metadata_key(_imp->profile_mask);
 }
 
