@@ -181,27 +181,13 @@ QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
     using namespace tr1::placeholders;
     try
     {
-        if (QAChecks::get_instance()->package_id_checks_group()->end() ==
-                std::find_if(
-                    QAChecks::get_instance()->package_id_checks_group()->begin(),
-                    QAChecks::get_instance()->package_id_checks_group()->end(),
-                    tr1::bind(std::equal_to<bool>(), false,
-                        tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
-                            _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
-                            _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i)))))
-        {
-            for (ERepository::ProfilesIterator p(_imp->repo->begin_profiles()), p_end(_imp->repo->end_profiles()) ;
-                    p != p_end ; ++p)
-            {
-                std::find_if(
-                        QAChecks::get_instance()->per_profile_package_id_checks_group()->begin(),
-                        QAChecks::get_instance()->per_profile_package_id_checks_group()->end(),
-                        tr1::bind(std::equal_to<bool>(), false,
-                            tr1::bind<bool>(tr1::mem_fn(&PerProfilePackageIDCheckFunction::operator() ),
-                                _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
-                                _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i), p)));
-            }
-        }
+        std::find_if(
+                QAChecks::get_instance()->package_id_checks_group()->begin(),
+                QAChecks::get_instance()->package_id_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
+                        _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
+                        _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
     }
     catch (const Exception & e)
     {

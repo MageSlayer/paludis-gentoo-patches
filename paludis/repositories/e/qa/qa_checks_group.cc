@@ -115,5 +115,4 @@ QAChecksGroup<T_>::need_ordering() const
 
 template class QAChecksGroup<TreeCheckFunction>;
 template class QAChecksGroup<PackageIDCheckFunction>;
-template class QAChecksGroup<PerProfilePackageIDCheckFunction>;
 

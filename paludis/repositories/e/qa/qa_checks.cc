@@ -42,13 +42,11 @@ namespace paludis
         const tr1::shared_ptr<QAChecksGroup<TreeCheckFunction> > tree_checks_group;
         const tr1::shared_ptr<QAChecksGroup<CategoryDirCheckFunction> > category_dir_checks_group;
         const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> > package_id_checks_group;
-        const tr1::shared_ptr<QAChecksGroup<PerProfilePackageIDCheckFunction> > per_profile_package_id_checks_group;
 
         Implementation() :
             tree_checks_group(new QAChecksGroup<TreeCheckFunction>),
             category_dir_checks_group(new QAChecksGroup<CategoryDirCheckFunction>),
-            package_id_checks_group(new QAChecksGroup<PackageIDCheckFunction>),
-            per_profile_package_id_checks_group(new QAChecksGroup<PerProfilePackageIDCheckFunction>)
+            package_id_checks_group(new QAChecksGroup<PackageIDCheckFunction>)
         {
         }
     };
@@ -84,8 +82,8 @@ QAChecks::QAChecks() :
             tr1::bind(extractors_check, _1, _2, _5, "extractors"));
     _imp->package_id_checks_group->add_prerequirement("extractors", "eapi_supported");
 
-    _imp->per_profile_package_id_checks_group->add_check("visibility",
-            tr1::bind(visibility_check, _1, _2, _3, _4, _5, _6, "visibility"));
+    _imp->package_id_checks_group->add_check("visibility",
+            tr1::bind(visibility_check, _1, _2, _3, _4, _5, "visibility"));
 }
 
 QAChecks::~QAChecks()
@@ -108,11 +106,5 @@ const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
 QAChecks::package_id_checks_group()
 {
     return _imp->package_id_checks_group;
-}
-
-const tr1::shared_ptr<QAChecksGroup<PerProfilePackageIDCheckFunction> >
-QAChecks::per_profile_package_id_checks_group()
-{
-    return _imp->per_profile_package_id_checks_group;
 }
 

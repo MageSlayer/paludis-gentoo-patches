@@ -256,57 +256,25 @@ paludis::erepository::visibility_check(
         const Environment * const env,
         const tr1::shared_ptr<const ERepository> & repo,
         const tr1::shared_ptr<const PackageID> & id,
-        const ERepository::ProfilesIterator & profile,
         const std::string & name)
 {
-    Context context("When performing check '" + name + "' using visibility_check on ID '" + stringify(*id) +
-            "' with profile '" + stringify(profile->path) + "':");
-    Log::get_instance()->message(ll_debug, lc_context) << "visibility_check '"
-        << entry << "', '" << *id << "', '" << profile->path << "', '" << name << "'";
+    Context context("When performing check '" + name + "' using visibility_check on ID '" + stringify(*id) + "':");
 
-    if (repo->repository_masked(*id) || profile->profile->profile_masked(*id) || ! id->keywords_key())
+    Log::get_instance()->message(ll_debug, lc_context) << "visibility_check '"
+        << entry << "', '" << *id << "', '" << name << "'";
+
+    if (repo->repository_masked(*id) || ! id->keywords_key())
         return true;
 
-    std::set<KeywordName> accepted_keywords, overlap;
-    WhitespaceTokeniser::get_instance()->tokenise(profile->profile->environment_variable(
-                repo->accept_keywords_variable()), create_inserter<KeywordName>(std::inserter(accepted_keywords, accepted_keywords.begin())));
-
-    std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),
-            id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(),
-            std::inserter(overlap, overlap.begin()));
-
-    if (! overlap.empty())
+    for (ERepository::ProfilesIterator p(repo->begin_profiles()), p_end(repo->end_profiles()) ;
+            p != p_end ; ++p)
     {
-        if (id->build_dependencies_key())
-        {
-            Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, false, *id->build_dependencies_key());
-            id->build_dependencies_key()->value()->accept(c);
-        }
+        if (p->profile->profile_masked(*id))
+            continue;
 
-        if (id->run_dependencies_key())
-        {
-            Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, false, *id->run_dependencies_key());
-            id->run_dependencies_key()->value()->accept(c);
-        }
-
-        if (id->post_dependencies_key())
-        {
-            Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, false, *id->post_dependencies_key());
-            id->post_dependencies_key()->value()->accept(c);
-        }
-
-        if (id->suggested_dependencies_key())
-        {
-            Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, false, *id->suggested_dependencies_key());
-            id->post_dependencies_key()->value()->accept(c);
-        }
-    }
-    else
-    {
-        for (std::set<KeywordName>::iterator i(accepted_keywords.begin()), i_end(accepted_keywords.end()) ;
-                i != i_end ; ++i)
-            if ('~' != stringify(*i).at(0))
-                accepted_keywords.insert(KeywordName("~" + stringify(*i)));
+        std::set<KeywordName> accepted_keywords, overlap;
+        WhitespaceTokeniser::get_instance()->tokenise(p->profile->environment_variable(
+                    repo->accept_keywords_variable()), create_inserter<KeywordName>(std::inserter(accepted_keywords, accepted_keywords.begin())));
 
         std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),
                 id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(),
@@ -316,26 +284,64 @@ paludis::erepository::visibility_check(
         {
             if (id->build_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, true, *id->build_dependencies_key());
+                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->build_dependencies_key());
                 id->build_dependencies_key()->value()->accept(c);
             }
 
             if (id->run_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, true, *id->run_dependencies_key());
+                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->run_dependencies_key());
                 id->run_dependencies_key()->value()->accept(c);
             }
 
             if (id->post_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, true, *id->post_dependencies_key());
+                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->post_dependencies_key());
                 id->post_dependencies_key()->value()->accept(c);
             }
 
             if (id->suggested_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, profile, name, true, *id->suggested_dependencies_key());
+                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->suggested_dependencies_key());
                 id->post_dependencies_key()->value()->accept(c);
+            }
+        }
+        else
+        {
+            for (std::set<KeywordName>::iterator i(accepted_keywords.begin()), i_end(accepted_keywords.end()) ;
+                    i != i_end ; ++i)
+                if ('~' != stringify(*i).at(0))
+                    accepted_keywords.insert(KeywordName("~" + stringify(*i)));
+
+            std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),
+                    id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(),
+                    std::inserter(overlap, overlap.begin()));
+
+            if (! overlap.empty())
+            {
+                if (id->build_dependencies_key())
+                {
+                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->build_dependencies_key());
+                    id->build_dependencies_key()->value()->accept(c);
+                }
+
+                if (id->run_dependencies_key())
+                {
+                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->run_dependencies_key());
+                    id->run_dependencies_key()->value()->accept(c);
+                }
+
+                if (id->post_dependencies_key())
+                {
+                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->post_dependencies_key());
+                    id->post_dependencies_key()->value()->accept(c);
+                }
+
+                if (id->suggested_dependencies_key())
+                {
+                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->suggested_dependencies_key());
+                    id->post_dependencies_key()->value()->accept(c);
+                }
             }
         }
     }

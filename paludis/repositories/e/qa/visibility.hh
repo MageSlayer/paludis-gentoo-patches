@@ -37,7 +37,6 @@ namespace paludis
                 const Environment * const env,
                 const tr1::shared_ptr<const ERepository> &,
                 const tr1::shared_ptr<const PackageID> &,
-                const ERepository::ProfilesIterator &,
                 const std::string &) PALUDIS_VISIBLE;
     }
 }
