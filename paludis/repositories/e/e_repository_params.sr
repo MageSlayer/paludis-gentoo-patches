@@ -27,6 +27,7 @@ make_class_ERepositoryParams()
     key eapi_when_unknown std::string
     key eapi_when_unspecified std::string
     key profile_eapi std::string
+    key use_manifest "erepository::UseManifest"
 
     doxygen_comment << "END"
         /**

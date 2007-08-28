@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
 #include <paludis/repositories/e/source_uri_finder.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -65,6 +66,7 @@ namespace paludis
         bool in_nofetch;
 
         const tr1::shared_ptr<Manifest2Reader> m2r;
+        const UseManifest use_manifest;
 
         Implementation(
                 const Environment * const e,
@@ -72,7 +74,8 @@ namespace paludis
                 const FSEntry & d,
                 const bool c,
                 const bool n,
-                const FSEntry & m2) :
+                const FSEntry & m2,
+                const UseManifest um) :
             env(e),
             id(i),
             distdir(d),
@@ -80,7 +83,8 @@ namespace paludis
             failures(new Sequence<FetchActionFailure>),
             need_nofetch(false),
             in_nofetch(n),
-            m2r(new Manifest2Reader(m2))
+            m2r(new Manifest2Reader(m2)),
+            use_manifest(um)
         {
         }
     };
@@ -92,8 +96,9 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const FSEntry & d,
         const bool c,
         const bool n,
-        const FSEntry & m2) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2))
+        const FSEntry & m2,
+        const UseManifest um) :
+    PrivateImplementationPattern<CheckFetchedFilesVisitor>(new Implementation<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um))
 {
 }
 
@@ -173,10 +178,28 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 {
     if (_imp->m2r->begin() == _imp->m2r->end())
     {
-        Log::get_instance()->message(ll_debug, lc_context)
-            << "Empty or non-existent Manifest file";
-        return true;
+        switch (_imp->use_manifest)
+        {
+            case manifest_use:
+            case manifest_ignore:
+                Log::get_instance()->message(ll_debug, lc_context) << "Empty or non-existent Manifest file";
+                return true;
+
+            case manifest_require:
+            case last_manifest:
+                _imp->failures->push_back(FetchActionFailure::create()
+                        .target_file(stringify(distfile.basename()))
+                        .failed_integrity_checks("No Manifest available")
+                        .requires_manual_fetching(false)
+                        .failed_automatic_fetching(false)
+                        );
+                return false;
+
+        }
     }
+
+    if (manifest_ignore == _imp->use_manifest)
+        return true;
 
     bool found(false);
 
@@ -281,7 +304,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
                 << "Actual MD5 = " << md5sum.hexsum();
         }
     }
-    
+
     if (! found)
     {
         std::cout << "not in Manifest";

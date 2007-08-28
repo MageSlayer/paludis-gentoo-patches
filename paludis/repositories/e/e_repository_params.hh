@@ -35,6 +35,11 @@ namespace paludis
     class PackageDatabase;
     class ERepository;
 
+    namespace erepository
+    {
+#include <paludis/repositories/e/e_repository_params-se.hh>
+    }
+
 #include <paludis/repositories/e/e_repository_params-sr.hh>
 
 }

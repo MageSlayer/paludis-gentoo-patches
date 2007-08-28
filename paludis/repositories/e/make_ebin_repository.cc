@@ -22,6 +22,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
@@ -167,6 +168,13 @@ paludis::make_ebin_repository(
         buildroot = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_build_root;
 
+    erepository::UseManifest use_manifest(erepository::manifest_use);
+    if (m->end() != m->find("use_manifest") && ! m->find("use_manifest")->second.empty())
+    {
+        Context item_context("When handling use_manifest key:");
+        use_manifest = destringify<erepository::UseManifest>(m->find("use_manifest")->second);
+    }
+
     return tr1::shared_ptr<ERepository>(new ERepository(ERepositoryParams::create()
                 .entry_format("ebin")
                 .layout(layout)
@@ -189,6 +197,7 @@ paludis::make_ebin_repository(
                 .eapi_when_unspecified(eapi_when_unspecified)
                 .eapi_when_unknown(eapi_when_unknown)
                 .profile_eapi(profile_eapi)
+                .use_manifest(use_manifest)
                 .buildroot(buildroot)));
 }
 

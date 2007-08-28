@@ -3,6 +3,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
 	e_repository_params-sr.hh e_repository_params-sr.cc \
+	e_repository_params-se.hh e_repository_params-se.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	ebuild-sr.hh ebuild-sr.cc \
 	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
@@ -50,6 +51,7 @@ paludis_repositories_e_include_HEADERS = \
 	e_repository_mask_file.hh \
 	e_repository_news.hh \
 	e_repository_params-sr.hh \
+	e_repository_params-se.hh \
 	e_repository_params.hh \
 	e_repository_profile.hh \
 	e_repository_profile_file.hh \
@@ -291,6 +293,9 @@ EXTRA_DIST = \
 	e_repository_params-sr.hh \
 	e_repository_params-sr.cc \
 	e_repository_params.sr \
+	e_repository_params-se.hh \
+	e_repository_params-se.cc \
+	e_repository_params.se \
 	e_repository_sets_TEST.cc \
 	e_repository_sets_TEST_setup.sh \
 	e_repository_sets_TEST_cleanup.sh \
@@ -328,6 +333,8 @@ BUILT_SOURCES = \
 	dep_parser-se.cc \
 	e_repository_params-sr.hh \
 	e_repository_params-sr.cc \
+	e_repository_params-se.hh \
+	e_repository_params-se.cc \
 	glsa-sr.hh \
 	glsa-sr.cc \
 	vdb_repository-sr.hh \
@@ -436,6 +443,12 @@ dep_parser-se.hh : dep_parser.se $(top_srcdir)/misc/make_se.bash
 
 dep_parser-se.cc : dep_parser.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/dep_parser.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+e_repository_params-se.hh : e_repository_params.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/e_repository_params.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+e_repository_params-se.cc : e_repository_params.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/e_repository_params.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 
 libpaludiserepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh

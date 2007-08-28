@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_UseManifest()
+{
+    prefix manifest
+    want_destringify
+    namespace paludis::erepository
+
+    key manifest_use     "Use"
+    key manifest_require "Require"
+    key manifest_ignore  "Ignore"
+
+    doxygen_comment << "END"
+        /**
+         * Whether to use, require or ignore Manifest.
+         *
+         * \ingroup grperepository
+         */
+END
+}
+
+

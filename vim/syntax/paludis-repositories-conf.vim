@@ -25,7 +25,8 @@ syn match PaludisRepositoriesConfEquals /=/ skipwhite
 
 syn region PaludisRepositoriesConfValue contained start=// end=/$/
 	    \ contains=PaludisRepositoriesConfString,PaludisRepositoriesConfUnquoted,
-	    \    PaludisRepositoriesConfContinuation,PaludisRepositoriesConfVariable
+	    \    PaludisRepositoriesConfContinuation,PaludisRepositoriesConfVariable,
+	    \    PaludisRepositoriesConfKnownValue
 	    \ skipwhite
 
 syn match PaludisRepositoriesConfContinuation contained /\\$/
@@ -41,11 +42,15 @@ syn keyword PaludisRepositoriesConfKnownKey contained
 	    \ location distdir format buildroot library sync root yaml_uri
 	    \ master_repository profiles pkgdir setsdir securitydir newsdir
 	    \ names_cache sync sync_options eclassdirs cache write_cache
-	    \ world provides_cache importance layout
+	    \ world provides_cache importance layout use_manifest
+
+syn keyword PaludisRepositoriesConfKnownValue contained
+	    \ use require ignore
 
 syn match PaludisRepositoriesConfVariable contained /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
 
 hi def link PaludisRepositoriesConfKnownKey         Keyword
+hi def link PaludisRepositoriesConfKnownValue       Keyword
 hi def link PaludisRepositoriesConfString           String
 hi def link PaludisRepositoriesConfUnquoted         Constant
 hi def link PaludisRepositoriesConfVariable         Identifier

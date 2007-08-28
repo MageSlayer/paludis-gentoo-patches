@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_CHECK_FETCHED_FILES_VISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_CHECK_FETCHED_FILES_VISITOR_HH 1
 
+#include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor-fwd.hh>
@@ -47,7 +48,8 @@ namespace paludis
                         const FSEntry & distdir,
                         const bool check_unneeded,
                         const bool fetch_restrict,
-                        const FSEntry & m2);
+                        const FSEntry & m2,
+                        const UseManifest um);
 
                 ~CheckFetchedFilesVisitor();
 
