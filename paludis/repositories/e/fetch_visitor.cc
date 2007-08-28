@@ -55,6 +55,7 @@ namespace paludis
         const bool userpriv;
         const std::string mirrors_name;
         const bool fetch_restrict;
+        const bool no_mirror;
 
         tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > default_label;
         std::list<const LabelsDepSpec<URILabelVisitorTypes> *> labels;
@@ -67,7 +68,8 @@ namespace paludis
                 const bool f,
                 const bool u,
                 const std::string & m,
-                const bool n) :
+                const bool n,
+                const bool nm) :
             env(e),
             id(i),
             eapi(p),
@@ -75,12 +77,18 @@ namespace paludis
             fetch_unneeded(f),
             userpriv(u),
             mirrors_name(m),
-            fetch_restrict(n)
+            fetch_restrict(n),
+            no_mirror(nm)
         {
             if (fetch_restrict)
             {
                 default_label.reset(new LabelsDepSpec<URILabelVisitorTypes>);
                 default_label->add_label(make_shared_ptr(new URIManualOnlyLabel("fetch-restrict")));
+            }
+            else if (no_mirror)
+            {
+                default_label.reset(new LabelsDepSpec<URILabelVisitorTypes>);
+                default_label->add_label(make_shared_ptr(new URIListedOnlyLabel("mirror-restrict")));
             }
             else
                 default_label = parse_uri_label("default:", eapi);
@@ -98,8 +106,9 @@ FetchVisitor::FetchVisitor(
         const bool f,
         const bool u,
         const std::string & m,
-        const bool n) :
-    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n))
+        const bool n,
+        const bool nm) :
+    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, nm))
 {
 }
 
