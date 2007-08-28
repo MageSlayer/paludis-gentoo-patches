@@ -70,7 +70,12 @@ namespace paludis
 
     template <typename I_, typename P_>
     void parallel_for_each(I_ cur, const I_ & end, const P_ & op,
-            const unsigned partition_size = FutureActionQueue::get_instance()->number_of_threads())
+#ifdef PALUDIS_ENABLE_THREADS
+            const unsigned partition_size = FutureActionQueue::get_instance()->number_of_threads()
+#else
+            const unsigned = 0
+#endif
+            )
     {
 #ifdef PALUDIS_ENABLE_THREADS
         Sequence<tr1::shared_ptr<Future<void> > > futures;

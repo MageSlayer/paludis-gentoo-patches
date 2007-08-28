@@ -122,7 +122,11 @@ IdleActionPool::optional_idle_action(
 }
 
 void
+#ifdef PALUDIS_ENABLE_THREADS
 IdleActionPool::_count_result(const tr1::function<IdleActionResult () throw ()> & f)
+#else
+IdleActionPool::_count_result(const tr1::function<IdleActionResult () throw ()> &)
+#endif
 {
 #ifdef PALUDIS_ENABLE_THREADS
     {

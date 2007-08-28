@@ -40,7 +40,11 @@ using namespace paludis;
 
 namespace
 {
+#ifdef PALUDIS_ENABLE_THREADS
     void repeatedly_log(bool & b)
+#else
+    void repeatedly_log(bool &)
+#endif
     {
 #ifdef PALUDIS_ENABLE_THREADS
         while (! b)
@@ -51,7 +55,11 @@ namespace
             Log::get_instance()->message(ll_debug, lc_context) << "logging stuff";
     }
 
+#ifdef PALUDIS_ENABLE_THREADS
     void repeatedly_run_command(bool & b)
+#else
+    void repeatedly_run_command(bool &)
+#endif
     {
 #ifdef PALUDIS_ENABLE_THREADS
         while (! b)

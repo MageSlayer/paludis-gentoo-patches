@@ -89,14 +89,17 @@ namespace paludis
     };
 }
 
-ActionQueue::ActionQueue(const unsigned n_threads, const bool nice) :
 #ifdef PALUDIS_ENABLE_THREADS
+ActionQueue::ActionQueue(const unsigned n_threads, const bool nice) :
     PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads, nice))
-#else
-    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
-#endif
 {
 }
+#else
+ActionQueue::ActionQueue(const unsigned, const bool) :
+    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
+{
+}
+#endif
 
 ActionQueue::~ActionQueue()
 {
