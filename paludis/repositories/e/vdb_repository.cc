@@ -31,6 +31,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
@@ -303,19 +304,29 @@ VDBRepository::make_vdb_repository(
     std::string provides_cache;
     if (m->end() == m->find("provides_cache") || ((provides_cache = m->find("provides_cache")->second)).empty())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
-                + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
-                "appropriate value.");
-        provides_cache = "/var/empty";
+        provides_cache = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_vdb_provides_cache;
+        if (provides_cache.empty())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
+                    + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
+                    "appropriate value.");
+            provides_cache = "/var/empty";
+        }
     }
 
     std::string names_cache;
     if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
-                + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
-                "appropriate value.");
-        names_cache = "/var/empty";
+        names_cache = DistributionData::get_instance()->distribution_from_string(
+                env->default_distribution())->default_vdb_names_cache;
+        if (names_cache.empty())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
+                    + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
+                    "appropriate value.");
+            names_cache = "/var/empty";
+        }
     }
 
     std::string buildroot;

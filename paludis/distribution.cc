@@ -75,6 +75,8 @@ namespace paludis
                                     .default_ebuild_eapi_when_unknown(k.get("default_ebuild_eapi_when_unknown"))
                                     .default_ebuild_eapi_when_unspecified(k.get("default_ebuild_eapi_when_unspecified"))
                                     .default_ebuild_profile_eapi(k.get("default_ebuild_profile_eapi"))
+                                    .default_vdb_provides_cache(k.get("default_vdb_provides_cache"))
+                                    .default_vdb_names_cache(k.get("default_vdb_names_cache"))
                                     .paludis_environment_use_conf_filename(k.get("paludis_environment_use_conf_filename"))
                                     .paludis_environment_keywords_conf_filename(k.get("paludis_environment_keywords_conf_filename"))
                                     .concept_use(k.get("concept_use"))

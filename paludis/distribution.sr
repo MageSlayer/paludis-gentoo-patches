@@ -16,6 +16,9 @@ make_class_Distribution()
     key default_ebuild_eapi_when_unspecified std::string
     key default_ebuild_profile_eapi std::string
 
+    key default_vdb_provides_cache std::string
+    key default_vdb_names_cache std::string
+
     key paludis_environment_use_conf_filename std::string
     key paludis_environment_keywords_conf_filename std::string
 
