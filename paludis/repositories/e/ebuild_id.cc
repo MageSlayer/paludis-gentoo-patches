@@ -780,6 +780,9 @@ namespace
 bool
 EbuildID::supports_action(const SupportsActionTestBase & b) const
 {
+    if (! eapi()->supported)
+        return false;
+
     SupportsActionQuery q;
     b.accept(q);
     return q.result;
@@ -844,6 +847,9 @@ namespace
 void
 EbuildID::perform_action(Action & a) const
 {
+    if (! eapi()->supported)
+        throw UnsupportedActionError(*this, a);
+
     PerformAction b(shared_from_this());
     a.accept(b);
 }
