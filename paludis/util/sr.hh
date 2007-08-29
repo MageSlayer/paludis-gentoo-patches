@@ -61,6 +61,29 @@ namespace paludis
         /// Our value.
         typedef IfFalse_ Type;
     };
+
+    template <bool value_>
+    struct SelectValue;
+
+    template <>
+    struct SelectValue<true>
+    {
+        template <typename IfTrue_, typename IfFalse_>
+        static const IfTrue_ & get(const IfTrue_ & v, const IfFalse_ &)
+        {
+            return v;
+        }
+    };
+
+    template <>
+    struct SelectValue<false>
+    {
+        template <typename IfTrue_, typename IfFalse_>
+        static const IfFalse_ & get(const IfTrue_ &, const IfFalse_ & v)
+        {
+            return v;
+        }
+    };
 }
 
 #endif

@@ -40,10 +40,12 @@ while read a ; do
     want_visible=
     want_keys=( )
     want_key_types=( )
+    want_key_defaults=( )
     want_cache_func=( )
     want_inherit=( )
     want_comparison_operators=
     want_comparison_fields=( )
+    want_typedefs=( )
 
     extra_constructors()
     {
@@ -79,6 +81,7 @@ while read a ; do
     {
         want_keys=( "${want_keys[@]}" "$1" )
         want_key_types=( "${want_key_types[@]}" "$2" )
+        want_key_defaults=( "${want_key_defaults[@]}" "$3" )
         want_cache_func=( "${want_cache_func[@]}" "__unset_function__" )
     }
 
@@ -94,6 +97,11 @@ while read a ; do
         want_comparison_operators=$1
         shift
         want_comparison_fields=( $@ )
+    }
+
+    typedef()
+    {
+        want_typedefs=( "${want_typedefs[@]}" "$1" )
     }
 
     make_class_${a}
@@ -132,6 +140,10 @@ while read a ; do
         :
     }
 
+    typedef()
+    {
+        :
+    }
 
     make_class_${a}
 
@@ -194,6 +206,20 @@ while read a ; do
         fi
 
         echo "{"
+        echo "        ///\\name Typedefs"
+        echo "        ///\\{"
+        echo
+
+        for (( k = 0 ; k < ${#want_typedefs[@]} ; k++ )) ; do
+            echo "    public:"
+            echo "        typedef ${want_typedefs[${k}]};"
+            echo
+        done
+
+        echo
+        echo "        ///\\}"
+        echo
+
         echo "        ///\\name Data members"
         echo "        ///\\{"
         echo
@@ -265,6 +291,9 @@ while read a ; do
         echo "        explicit ${a}("
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
             echo -n "                $(make_const_ref "${want_key_types[${k}]% ->*}") value_for_${want_keys[${k}]}"
+            if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                echo -n "=${want_key_defaults[${k}]}"
+            fi
             if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                 echo ","
             else
@@ -416,9 +445,28 @@ while read a ; do
             echo "        /**"
             echo "         * Create using named arguments."
             echo "         */"
+            if [[ -n ${want_key_defaults[@]} ]] ; then
+                echo -n "        template <"
+                first="true"
+                for (( k = 0 ; k < ${#want_key_defaults[@]} ; k++ )) ; do
+                    if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                        if [[ -z $first ]] ; then
+                            echo -n ", "
+                        fi
+                        first=""
+                        echo -n "bool b${k}_"
+                    fi
+                done
+                echo ">"
+            fi
+
             echo "        ${current_class}(const NamedArguments<"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            true"
+                if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                    echo -n "            b${k}_"
+                else
+                    echo -n "            true"
+                fi
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
@@ -606,9 +654,28 @@ while read a ; do
         done
 
         if [[ -n "${want_named_args}" ]] ; then
+            if [[ -n ${want_key_defaults[@]} ]] ; then
+                echo -n "template <"
+                first="true"
+                for (( k = 0 ; k < ${#want_key_defaults[@]} ; k++ )) ; do
+                    if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                        if [[ -z $first ]] ; then
+                            echo -n ", "
+                        fi
+                        first=""
+                        echo -n "bool b${k}_"
+                    fi
+                done
+                echo ">"
+            fi
+
             echo "${a}::${a}(const NamedArguments<"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            true"
+                if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                    echo -n "            b${k}_"
+                else
+                    echo -n "            true"
+                fi
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
@@ -617,7 +684,11 @@ while read a ; do
             done
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 if [[ ${want_key_types[${k}]/->} == ${want_key_types[${k}]} ]] ; then
-                    echo -n "            ${want_keys[${k}]}(va._v${k})"
+                    if [[ -n ${want_key_defaults[${k}]} ]] ; then
+                        echo -n "            ${want_keys[${k}]}(SelectValue<b${k}_>::get(va._v${k}, ${want_key_defaults[${k}]}))"
+                    else
+                        echo -n "            ${want_keys[${k}]}(va._v${k})"
+                    fi
                 else
                     echo "            raw_${want_keys[${k}]}(va._v${k}),"
                     echo -n "            cached_${want_keys[${k}]}()"
