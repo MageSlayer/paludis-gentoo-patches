@@ -38,6 +38,7 @@ namespace test_cases
                     .accept_unstable(false)
                     .repository_type(no_config_environment::ncer_auto)
                     .disable_metadata_cache(false)
+                    .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                     .master_repository_dir(FSEntry("/var/empty")));
 
             TEST_CHECK(e.package_database());

@@ -145,8 +145,10 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         if (FSEntry("/var/empty") != params.master_repository_dir)
         {
-            tr1::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+
+            if (params.extra_params)
+                std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
 
             keys->insert("format", "ebuild");
             keys->insert("location", stringify(params.master_repository_dir));
@@ -160,8 +162,10 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         }
 
-        tr1::shared_ptr<Map<std::string, std::string> > keys(
-                new Map<std::string, std::string>);
+        tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
+
+        if (params.extra_params)
+            std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
 
         keys->insert("format", "ebuild");
         keys->insert("location", stringify(params.repository_dir));
@@ -189,8 +193,9 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         Log::get_instance()->message(ll_debug, lc_context, "VDB, using vdb_db");
 
-        tr1::shared_ptr<Map<std::string, std::string> > keys(
-                new Map<std::string, std::string>);
+        tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        if (params.extra_params)
+            std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
 
         keys->insert("format", "vdb");
         keys->insert("names_cache", "/var/empty");

@@ -54,6 +54,7 @@
 
         <li>Manual pages:
         <ul>
+            <li><a href="man-accerso.html">accerso</a></li>
             <li><a href="man-adjutrix.html">adjutrix</a></li>
             <li><a href="man-contrarius.html">contrarius</a></li>
             <li><a href="man-inquisitio.html">inquisitio</a></li>

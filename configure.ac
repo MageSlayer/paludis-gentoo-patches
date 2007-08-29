@@ -983,7 +983,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
+ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -996,6 +996,7 @@ AC_ARG_WITH([clients],
 			  default         Equivalent to adjutrix,paludis
 			                  Also includes qualudis if --enable-qa
 
+			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
 			  gtkpaludis      GUI client (experimental)
@@ -1270,6 +1271,7 @@ AC_OUTPUT(
 	ruby/demos/Makefile
 	src/Makefile
 	src/clients/Makefile
+	src/clients/accerso/Makefile
 	src/clients/adjutrix/Makefile
 	src/clients/contrarius/Makefile
 	src/clients/gtkpaludis/Makefile

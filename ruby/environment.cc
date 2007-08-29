@@ -312,6 +312,7 @@ namespace
                         .accept_unstable(false)
                         .disable_metadata_cache(false)
                         .repository_type(no_config_environment::ncer_auto)
+                        .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                         .master_repository_dir(FSEntry(master_repository_dir))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<NoConfigEnvironment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);

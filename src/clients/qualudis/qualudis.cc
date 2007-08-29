@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
+                    .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                     ));
 
         if (! env->main_repository()->qa_interface)
