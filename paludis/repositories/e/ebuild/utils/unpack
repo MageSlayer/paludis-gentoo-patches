@@ -103,7 +103,10 @@ export UNPACKTODIR="${PWD}"
 if [[ "${1}" == "--binary" ]] ; then
     export UNPACKFROMDIR="${PKGDIR}"
     export UNPACKTODIR="${IMAGE}"
+    IS_BINARY=yes
     shift
+else
+    IS_BINARY=
 fi
 
 unset UNPACKONLY
@@ -130,4 +133,5 @@ for x in "$@" ; do
     unpack_one "${x}"
 done
 
+[[ -z ${IS_BINARY} ]] && find ${UNPACKTODIR} -mindepth 1 ! -type l -print0 | xargs -0 chmod a+rX,u+w,go-w
 
