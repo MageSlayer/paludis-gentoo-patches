@@ -20,9 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_MAP_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAP_FWD_HH 1
 
+
 namespace paludis
 {
-    template <typename K_, typename V_>
+    template <typename T_>
+    struct DefaultMapComparator;
+
+    template <typename K_, typename V_, typename C_ = DefaultMapComparator<K_> >
     struct Map;
 }
 

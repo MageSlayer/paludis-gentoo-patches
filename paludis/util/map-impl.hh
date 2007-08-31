@@ -26,87 +26,94 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <map>
 #include <iterator>
+#include <functional>
 
 namespace paludis
 {
-    template <>
-    template <typename K_, typename V_>
-    struct Implementation<Map<K_, V_> >
+    template <typename T_>
+    struct PALUDIS_VISIBLE DefaultMapComparator :
+        std::less<T_>
     {
-        std::map<K_, V_> map;
+    };
+
+    template <>
+    template <typename K_, typename V_, typename C_>
+    struct Implementation<Map<K_, V_, C_> >
+    {
+        std::map<K_, V_, C_> map;
     };
 }
 
-template <typename K_, typename V_>
-paludis::Map<K_, V_>::Map() :
-    paludis::PrivateImplementationPattern<paludis::Map<K_, V_> >(new paludis::Implementation<paludis::Map<K_, V_> >)
+template <typename K_, typename V_, typename C_>
+paludis::Map<K_, V_, C_>::Map() :
+    paludis::PrivateImplementationPattern<paludis::Map<K_, V_, C_> >(new paludis::Implementation<paludis::Map<K_, V_, C_> >)
 {
 }
 
-template <typename K_, typename V_>
-paludis::Map<K_, V_>::~Map()
+template <typename K_, typename V_, typename C_>
+paludis::Map<K_, V_, C_>::~Map()
 {
 }
 
-template <typename K_, typename V_>
-typename paludis::Map<K_, V_>::Iterator
-paludis::Map<K_, V_>::begin() const
+template <typename K_, typename V_, typename C_>
+typename paludis::Map<K_, V_, C_>::Iterator
+paludis::Map<K_, V_, C_>::begin() const
 {
     return Iterator(_imp->map.begin());
 }
 
-template <typename K_, typename V_>
-typename paludis::Map<K_, V_>::Iterator
-paludis::Map<K_, V_>::end() const
+template <typename K_, typename V_, typename C_>
+typename paludis::Map<K_, V_, C_>::Iterator
+paludis::Map<K_, V_, C_>::end() const
 {
     return Iterator(_imp->map.end());
 }
 
-template <typename K_, typename V_>
-typename paludis::Map<K_, V_>::Iterator
-paludis::Map<K_, V_>::find(const K_ & k) const
+template <typename K_, typename V_, typename C_>
+typename paludis::Map<K_, V_, C_>::Iterator
+paludis::Map<K_, V_, C_>::find(const K_ & k) const
 {
     return Iterator(_imp->map.find(k));
 }
 
-template <typename K_, typename V_>
-typename paludis::Map<K_, V_>::Inserter
-paludis::Map<K_, V_>::inserter()
+template <typename K_, typename V_, typename C_>
+typename paludis::Map<K_, V_, C_>::Inserter
+paludis::Map<K_, V_, C_>::inserter()
 {
     return Inserter(std::inserter(_imp->map, _imp->map.begin()));
 }
 
-template <typename K_, typename V_>
+template <typename K_, typename V_, typename C_>
 bool
-paludis::Map<K_, V_>::empty() const
+paludis::Map<K_, V_, C_>::empty() const
 {
     return _imp->map.empty();
 }
 
-template <typename K_, typename V_>
+template <typename K_, typename V_, typename C_>
 unsigned
-paludis::Map<K_, V_>::size() const
+paludis::Map<K_, V_, C_>::size() const
 {
     return _imp->map.size();
 }
 
-template <typename K_, typename V_>
+template <typename K_, typename V_, typename C_>
 void
-paludis::Map<K_, V_>::insert(const K_ & k, const V_ & v)
+paludis::Map<K_, V_, C_>::insert(const K_ & k, const V_ & v)
 {
     _imp->map.insert(std::make_pair(k, v));
 }
 
-template <typename K_, typename V_>
+template <typename K_, typename V_, typename C_>
 void
-paludis::Map<K_, V_>::erase(const typename paludis::Map<K_, V_>::Iterator & i)
+paludis::Map<K_, V_, C_>::erase(const typename paludis::Map<K_, V_, C_>::Iterator & i)
 {
     _imp->map.erase(i->first);
 }
 
-template <typename K_, typename V_>
+template <typename K_, typename V_, typename C_>
 void
-paludis::Map<K_, V_>::erase(const K_ & i)
+paludis::Map<K_, V_, C_>::erase(const K_ & i)
 {
     _imp->map.erase(i);
 }

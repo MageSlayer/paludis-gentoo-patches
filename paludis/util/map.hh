@@ -32,24 +32,24 @@
 
 namespace paludis
 {
-    template <typename K_, typename V_>
+    template <typename K_, typename V_, typename C_>
     class PALUDIS_VISIBLE Map :
-        private PrivateImplementationPattern<Map<K_, V_> >,
-        private InstantiationPolicy<Map<K_, V_>, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<Map<K_, V_, C_> >,
+        private InstantiationPolicy<Map<K_, V_, C_>, instantiation_method::NonCopyableTag>
     {
         private:
-            using PrivateImplementationPattern<Map<K_, V_> >::_imp;
+            using PrivateImplementationPattern<Map<K_, V_, C_> >::_imp;
 
         public:
             Map();
             ~Map();
 
-            typedef libwrapiter::ForwardIterator<Map<K_, V_>, const std::pair<const K_, V_> > Iterator;
+            typedef libwrapiter::ForwardIterator<Map<K_, V_, C_>, const std::pair<const K_, V_> > Iterator;
             Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             Iterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef libwrapiter::OutputIterator<Map<K_, V_>, std::pair<const K_, V_> > Inserter;
+            typedef libwrapiter::OutputIterator<Map<K_, V_, C_>, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
