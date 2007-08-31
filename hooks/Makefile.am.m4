@@ -54,7 +54,9 @@ EXTRA_DIST = \
 
 define(`userhook', `
 installuserhooks$1dir = $(datadir)/paludis/hooks/$1
-installuserhooks$1_DATA = .keep')
+installuserhooks$1_DATA = .keep
+installuserhooksplat$1dir = $(libdir)/paludis/hooks/$1
+installuserhooksplat$1_DATA = .keep')
 
 userhook(`install_pre')
 userhook(`install_fail')

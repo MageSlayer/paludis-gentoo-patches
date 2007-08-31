@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_HH 1
 
+#include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/exception.hh>

@@ -22,7 +22,9 @@
 #define PALUDIS_GUARD_PALUDIS_HOOK_HH 1
 
 #include <paludis/hook-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/operators.hh>
 
@@ -105,5 +107,10 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
+
+extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run(
+    const paludis::Environment *, const paludis::Hook &);
+extern "C" void PALUDIS_VISIBLE paludis_hook_add_dependencies(
+    const paludis::Environment *, const paludis::Hook &, paludis::DirectedGraph<std::string, int> &);
 
 #endif

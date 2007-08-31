@@ -113,6 +113,7 @@ namespace paludis
                 {
                     add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks", false);
                     add_one_hook(FSEntry(DATADIR) / "paludis" / "hooks", true);
+                    add_one_hook(FSEntry(LIBDIR) / "paludis" / "hooks", true);
                 }
                 done_hooks = true;
             }

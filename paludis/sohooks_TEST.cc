@@ -57,7 +57,7 @@ namespace
     }
 }
 
-extern "C" HookResult PALUDIS_VISIBLE
+HookResult
 paludis_hook_run(const Environment * env, const Hook & hook)
 {
     if ("so_hook" == hook.name())
@@ -70,7 +70,7 @@ paludis_hook_run(const Environment * env, const Hook & hook)
     return HookResult(0, "");
 }
 
-extern "C" void PALUDIS_VISIBLE
+void
 paludis_hook_add_dependencies(const Environment * env, const Hook & hook,
                               DirectedGraph<std::string, int> & graph)
 {

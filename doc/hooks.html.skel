@@ -39,7 +39,7 @@ that is executed when a particular well defined action occurs.</p>
     See <a href="#merger-hooks">Merger / Unmerger Hooks</a>.</li>
 </ul>
 
-<p>There are currently three categories of hook execution code:</p>
+<p>There are currently four categories of hook execution code:</p>
 
 <ul>
     <li><code>.bash</code> hooks. These are simple <code>.bash</code> files that
@@ -50,6 +50,10 @@ that is executed when a particular well defined action occurs.</p>
     than containing the relevant code in global scope, they make use of functions
     to perform hook actions. They also support specifying execution order dependencies
     upon other <code>.hook</code> files. See <a href="#hook-hooks">Hook Hooks</a>
+    for details.</li>
+
+    <li><code>.so</code> hooks.  These are written in C++ and compiled into shared
+    libraries, and run inside the Paludis process. See <a href="#so-hooks">So Hooks</a>
     for details.</li>
 
     <li>Repository hooks. These are implemented internally by <code>Repository</code>
@@ -64,10 +68,12 @@ following table indicates availability:</p>
         <td></td>
         <th><code>.bash</code></th>
         <th><code>.hook</code></th>
+        <th><code>.so</code></th>
         <th>Repository</th>
     </tr>
     <tr>
         <th>General</th>
+        <td>yes</td>
         <td>yes</td>
         <td>yes</td>
         <td>yes</td>
@@ -77,15 +83,18 @@ following table indicates availability:</p>
         <td>yes</td>
         <td></td>
         <td></td>
+        <td></td>
     </tr>
     <tr>
         <th>Ebuild Message</th>
         <td>yes</td>
         <td></td>
         <td></td>
+        <td></td>
     </tr>
     <tr>
         <th>Merger</th>
+        <td>yes</td>
         <td>yes</td>
         <td>yes</td>
         <td>yes</td>
@@ -301,6 +310,9 @@ be symlinked there, to allow a single script to be shared between hooks):</p>
 
     <li><code><em>DATADIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
     systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+
+    <li><code><em>LIBDIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
+    systems, <code><em>LIBDIR</em></code> is <code>/usr/lib</code> or <code>/usr/lib64</code>.</li>
 </ul>
 
 <h4 id="bash-hooks">Bash Hooks</h4>
@@ -356,6 +368,40 @@ hook_after_install_all_post()
 <p>Note that the <code>hook_depend_</code> and <code>hook_after_</code> functions
 are cached, and are generally only called once per session, so the output should
 not vary based upon outside parameters.</p>
+
+<h4 id="so-hooks">So Hooks</h4>
+
+<p>A <code>.so</code> hook is written in C++ and has full access to the Paludis public API.
+The hook takes the form of a shared library with a filename ending in <code>.so.<i>N</i></code>,
+where <i>N</i> is the first component of the Paludis version number multiplied by 100,
+plus the second component of the version number (for example, 26 for Paludis 0.26.x,
+or 102 for Paludis 1.2.y).  The library must export a function with prototype
+<code>paludis::HookResult paludis_hook_run(const paludis::Environment *, const paludis::Hook &amp;)</code>
+that performs the action, and optionally one with prototype
+<code>void paludis_hook_add_dependencies(const paludis::Environment *, const paludis::Hook &amp;, paludis::DirectedGraph&lt;std::string, int&gt; &amp;)</code>
+if it needs to define ordering dependencies with other hooks.  Both functions are
+declared in the header <code>&lt;paludis/hook.hh&gt;</code>, including any necessary
+<code>extern</code> or visibility declarations.</p>
+
+<p>The parameters and return values have the following meanings:</p>
+<dl>
+<dt><code>const paludis::Environment *</code></dt>
+<dd>The usual <code>Environment</code>, as used by all Paludis clients.</dd>
+<dt><code>const paludis::Hook &amp;</code></dt>
+<dd>Contains information about the hook being called.  In <code>paludis_hook_add_dependencies</code>,
+the only useful member is <code>name()</code>.
+<dt><code>paludis::DirectedGraph&lt;std::string, int&gt; &amp;</code></dt>
+<dd>A graph containing, as nodes, all named hooks that will be executed along with
+this one.  The <code>paludis_hook_add_dependencies</code> function should add any
+edges required to indicate its desired execution order relative to the other hooks,
+as follows: <code>g.add_edge("after", "before", 0);</code> (the 0 is not significant,
+but required by the <code>DirectedGraph</code> API).</dd>
+<dt><code>paludis::HookResult</code></dt>
+<dd>The <code>HookResult</code> constructor takes two arguments: an <code>int</code>,
+which should be zero if the hook is successful, or positive if not, and a <code>std::string</code>
+containing any information that should be passed back to the hook's caller (only
+used if the <code>Hook</code>'s <code>output_dest</code> member is <code>hod_grab</code>).</dd>
+</dl>
 
 <h3>Package Manager Defined Hooks</h3>
 
