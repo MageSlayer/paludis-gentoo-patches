@@ -144,6 +144,8 @@ main(int argc, char *argv[])
 
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
+        if (! CommandLine::get_instance()->a_master_repository_dir.specified())
+            CommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
         NoConfigEnvironment env(no_config_environment::Params::create()
                 .repository_dir(get_location_and_add_filters())
@@ -153,8 +155,8 @@ main(int argc, char *argv[])
                     (CommandLine::get_instance()->a_reverse_deps.specified()) ? no_config_environment::ncer_auto :
                     no_config_environment::ncer_ebuild)
                 .disable_metadata_cache(false)
-                .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
-                .master_repository_dir(FSEntry("/var/empty")));
+                .master_repository_dir(CommandLine::get_instance()->a_master_repository_dir.argument())
+                .extra_params(tr1::shared_ptr<Map<std::string, std::string> >()));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

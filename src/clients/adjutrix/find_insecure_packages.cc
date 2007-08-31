@@ -119,7 +119,7 @@ namespace
     }
 }
 
-void do_find_insecure_packages(const Environment & env)
+void do_find_insecure_packages(const NoConfigEnvironment & env)
 {
     Context context("When performing find-insecure-packages action:");
 
@@ -128,6 +128,8 @@ void do_find_insecure_packages(const Environment & env)
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (r->name() == RepositoryName("virtuals"))
+            continue;
+        if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
         if (! r->sets_interface)

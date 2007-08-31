@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_SRC_ARCHTOOL_FIND_DROPPED_KEYWORDS_HH
 #define PALUDIS_GUARD_SRC_ARCHTOOL_FIND_DROPPED_KEYWORDS_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
-void do_find_dropped_keywords(const paludis::Environment & env);
+void do_find_dropped_keywords(const paludis::NoConfigEnvironment & env);
 
 #endif
 

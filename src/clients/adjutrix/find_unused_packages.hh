@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_SRC_ADJUTRIX_FIND_UNUSED_PACKAGES_HH
 #define PALUDIS_GUARD_SRC_ADJUTRIX_FIND_UNUSED_PACKAGES_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
-void do_find_unused_packages(const paludis::Environment & env);
+void do_find_unused_packages(const paludis::NoConfigEnvironment & env);
 
 #endif

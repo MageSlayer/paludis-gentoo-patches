@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_SRC_ARCHTOOL_FIND_STABLE_CANDIDATES_HH
 #define PALUDIS_GUARD_SRC_ARCHTOOL_FIND_STABLE_CANDIDATES_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
-void do_find_stable_candidates(const paludis::Environment & env);
+void do_find_stable_candidates(const paludis::NoConfigEnvironment & env);
 
 #endif

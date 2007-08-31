@@ -268,6 +268,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     {
         if (r->name() == RepositoryName("virtuals") || r->name() == RepositoryName("installed_virtuals"))
             continue;
+        if (env.master_repository() && r->name() == env.master_repository()->name())
+            continue;
 
         write_repository_header(stringify(*spec), stringify(r->name()));
 

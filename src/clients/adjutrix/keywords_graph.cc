@@ -183,7 +183,7 @@ namespace
     }
 }
 
-void do_keywords_graph(const Environment & env)
+void do_keywords_graph(const NoConfigEnvironment & env)
 {
     Context context("When performing keywords-graph action:");
 
@@ -192,6 +192,8 @@ void do_keywords_graph(const Environment & env)
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (r->name() == RepositoryName("virtuals"))
+            continue;
+        if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
