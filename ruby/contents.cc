@@ -322,7 +322,7 @@ namespace
          *
          *  A device ContentsEntry
          */
-        c_contents_misc_entry = rb_define_class_under(paludis_module(), "ContentsDevEntry", c_contents_entry);
+        c_contents_dev_entry = rb_define_class_under(paludis_module(), "ContentsDevEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_dev_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsDevEntry>::contents_entry_new)), -1);
 
         /*
