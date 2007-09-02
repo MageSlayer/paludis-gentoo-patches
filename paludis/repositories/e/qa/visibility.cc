@@ -49,13 +49,13 @@ namespace
         const FSEntry entry;
         QAReporter * const reporter;
         const Environment * const env;
-        const PackageID & id;
+        const tr1::shared_ptr<const PackageID> & id;
         const tr1::shared_ptr<const ERepository> repo;
         const std::set<KeywordName> & accepted_keywords;
         const ERepository::ProfilesIterator profile;
         const std::string name;
         const bool unstable;
-        const MetadataKey & key;
+        const tr1::shared_ptr<const MetadataKey> & key;
 
         bool success;
         bool viable;
@@ -64,13 +64,13 @@ namespace
                 const FSEntry & e,
                 QAReporter * const r,
                 const Environment * const v,
-                const PackageID & i,
+                const tr1::shared_ptr<const PackageID> & i,
                 const tr1::shared_ptr<const ERepository> o,
                 const std::set<KeywordName> & a,
                 const ERepository::ProfilesIterator & p,
                 const std::string & n,
                 const bool u,
-                const MetadataKey & k) :
+                const tr1::shared_ptr<const MetadataKey> & k) :
             entry(e),
             reporter(r),
             env(v),
@@ -144,9 +144,11 @@ namespace
             {
                 if (reporter)
                     reporter->message(QAMessage(entry, qaml_normal, name, "No packages matching '"
-                                + stringify(orig_p) + "' in dependencies key '" + stringify(key.raw_name()) + "' for profile '"
+                                + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
                                 + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
-                                + (unstable ? ".unstable" : ".stable") + ")"));
+                                + (unstable ? ".unstable" : ".stable") + ")")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
             else
             {
@@ -188,9 +190,11 @@ namespace
                 if (! success)
                     if (reporter)
                         reporter->message(QAMessage(entry, qaml_normal, name, "No visible packages matching '"
-                                    + stringify(orig_p) + "' in dependencies key '" + stringify(key.raw_name()) + "' for profile '"
+                                    + stringify(orig_p) + "' in dependencies key '" + stringify(key->raw_name()) + "' for profile '"
                                     + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
-                                    + (unstable ? ".unstable" : ".stable") + ")"));
+                                    + (unstable ? ".unstable" : ".stable") + ")")
+                                .with_associated_id(id)
+                                .with_associated_key(key));
             }
         }
 
@@ -199,8 +203,8 @@ namespace
                 DependencySpecTree::ConstSequenceIterator end)
         {
             viable =
-                ((! u.inverse()) && (! repo->query_use_mask(u.flag(), id))) ||
-                ((u.inverse()) && (! repo->query_use_force(u.flag(), id)));
+                ((! u.inverse()) && (! repo->query_use_mask(u.flag(), *id))) ||
+                ((u.inverse()) && (! repo->query_use_force(u.flag(), *id)));
 
             if (viable)
                 std::for_each(cur, end, accept_visitor(*this));
@@ -234,7 +238,9 @@ namespace
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"
                                 + stringify(profile->path) + "' (" + stringify(profile->arch) + "." + stringify(profile->status)
-                                + (unstable ? ".unstable" : ".stable") + ")"));
+                                + (unstable ? ".unstable" : ".stable") + ")")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
                 }
             }
         }
@@ -284,25 +290,25 @@ paludis::erepository::visibility_check(
         {
             if (id->build_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->build_dependencies_key());
+                Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->build_dependencies_key());
                 id->build_dependencies_key()->value()->accept(c);
             }
 
             if (id->run_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->run_dependencies_key());
+                Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->run_dependencies_key());
                 id->run_dependencies_key()->value()->accept(c);
             }
 
             if (id->post_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->post_dependencies_key());
+                Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->post_dependencies_key());
                 id->post_dependencies_key()->value()->accept(c);
             }
 
             if (id->suggested_dependencies_key())
             {
-                Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, false, *id->suggested_dependencies_key());
+                Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, false, id->suggested_dependencies_key());
                 id->post_dependencies_key()->value()->accept(c);
             }
         }
@@ -321,25 +327,25 @@ paludis::erepository::visibility_check(
             {
                 if (id->build_dependencies_key())
                 {
-                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->build_dependencies_key());
+                    Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->build_dependencies_key());
                     id->build_dependencies_key()->value()->accept(c);
                 }
 
                 if (id->run_dependencies_key())
                 {
-                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->run_dependencies_key());
+                    Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->run_dependencies_key());
                     id->run_dependencies_key()->value()->accept(c);
                 }
 
                 if (id->post_dependencies_key())
                 {
-                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->post_dependencies_key());
+                    Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->post_dependencies_key());
                     id->post_dependencies_key()->value()->accept(c);
                 }
 
                 if (id->suggested_dependencies_key())
                 {
-                    Checker c(entry, &reporter, env, *id, repo, accepted_keywords, p, name, true, *id->suggested_dependencies_key());
+                    Checker c(entry, &reporter, env, id, repo, accepted_keywords, p, name, true, id->suggested_dependencies_key());
                     id->post_dependencies_key()->value()->accept(c);
                 }
             }

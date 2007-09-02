@@ -832,7 +832,12 @@ namespace paludis
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem12>,
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem13>,
             public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem14>,
-            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem15>
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem15>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem16>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem17>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem18>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem19>,
+            public ProxyVisits<H_, LargerH_, const typename H_::ContainedItem20>
         {
             private:
                 ConstVisitor<LargerH_> * const _larger_h;
@@ -876,7 +881,12 @@ namespace paludis
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem12>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem13>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem14>,
-            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem15>
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem15>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem16>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem17>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem18>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem19>,
+            public ProxyVisits<H_, LargerH_, typename H_::ContainedItem20>
         {
             private:
                 MutableVisitor<LargerH_> * const _larger_h;
@@ -1004,7 +1014,12 @@ namespace paludis
             typename ContainedItem12_,
             typename ContainedItem13_,
             typename ContainedItem14_,
-            typename ContainedItem15_>
+            typename ContainedItem15_,
+            typename ContainedItem16_,
+            typename ContainedItem17_,
+            typename ContainedItem18_,
+            typename ContainedItem19_,
+            typename ContainedItem20_>
         class VisitorTypes
         {
             public:
@@ -1029,6 +1044,11 @@ namespace paludis
                 typedef ContainedItem13_ ContainedItem13;
                 typedef ContainedItem14_ ContainedItem14;
                 typedef ContainedItem15_ ContainedItem15;
+                typedef ContainedItem16_ ContainedItem16;
+                typedef ContainedItem17_ ContainedItem17;
+                typedef ContainedItem18_ ContainedItem18;
+                typedef ContainedItem19_ ContainedItem19;
+                typedef ContainedItem20_ ContainedItem20;
 
                 typedef MutableAcceptInterface<Heirarchy_> Item;
                 typedef const ConstAcceptInterface<Heirarchy_> ConstItem;
@@ -1061,7 +1081,12 @@ namespace paludis
             public virtual Visits<const typename H_::ContainedItem12>,
             public virtual Visits<const typename H_::ContainedItem13>,
             public virtual Visits<const typename H_::ContainedItem14>,
-            public virtual Visits<const typename H_::ContainedItem15>
+            public virtual Visits<const typename H_::ContainedItem15>,
+            public virtual Visits<const typename H_::ContainedItem16>,
+            public virtual Visits<const typename H_::ContainedItem17>,
+            public virtual Visits<const typename H_::ContainedItem18>,
+            public virtual Visits<const typename H_::ContainedItem19>,
+            public virtual Visits<const typename H_::ContainedItem20>
         {
             public:
                 ///\name Visitor type definitions
@@ -1138,7 +1163,12 @@ namespace paludis
             public virtual Visits<typename H_::ContainedItem12>,
             public virtual Visits<typename H_::ContainedItem13>,
             public virtual Visits<typename H_::ContainedItem14>,
-            public virtual Visits<typename H_::ContainedItem15>
+            public virtual Visits<typename H_::ContainedItem15>,
+            public virtual Visits<typename H_::ContainedItem16>,
+            public virtual Visits<typename H_::ContainedItem17>,
+            public virtual Visits<typename H_::ContainedItem18>,
+            public virtual Visits<typename H_::ContainedItem19>,
+            public virtual Visits<typename H_::ContainedItem20>
         {
             public:
                 ///\name Visitor type definitions
@@ -1273,7 +1303,12 @@ namespace paludis
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem12>,
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem13>,
             GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem14>,
-            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem15>
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem15>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem16>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem17>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem18>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem19>,
+            GetConstItemVisits<GetConstItemVisitor<I_>, typename I_::Heirarchy, const typename I_::Heirarchy::ContainedItem20>
         {
             ///\name Visitor operations
             ///\{

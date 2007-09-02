@@ -85,6 +85,7 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
+        mutable tr1::shared_ptr<const EFSLocationKey> fs_location;
         mutable tr1::shared_ptr<const EStringKey> short_description;
         mutable tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> run_dependencies;
@@ -144,6 +145,14 @@ EbuildID::need_keys_added() const
         return;
 
     _imp->has_keys = true;
+
+    // fs_location key could have been loaded by the ::fs_location_key() already.
+    if (! _imp->fs_location)
+    {
+        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "EBUILD", "Ebuild Location",
+                    _imp->ebuild, mkt_internal));
+        add_metadata_key(_imp->fs_location);
+    }
 
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
@@ -607,6 +616,22 @@ const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
 EbuildID::inherited_key() const
 {
     return _imp->inherited;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+EbuildID::fs_location_key() const
+{
+    // Avoid loading whole metadata
+    if (! _imp->fs_location)
+    {
+        Lock l(_imp->mutex);
+
+        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "EBUILD", "Ebuild Location",
+                    _imp->ebuild, mkt_internal));
+        add_metadata_key(_imp->fs_location);
+    }
+
+    return _imp->fs_location;
 }
 
 bool

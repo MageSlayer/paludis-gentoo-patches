@@ -357,6 +357,12 @@ namespace
                     task->display_metadata_repository_mask_info(k.human_name(), k.raw_name(), k.value());
             }
 
+            void visit(const MetadataFSEntryKey & k)
+            {
+                if (k.type() == type)
+                    task->display_metadata_key(k.human_name(), k.raw_name(), stringify(k.value()));
+            }
+
             void visit(const MetadataContentsKey &)
             {
             }

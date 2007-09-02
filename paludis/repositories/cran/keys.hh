@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_KEYS_HH 1
 
 #include <paludis/metadata_key.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 
 namespace paludis
@@ -58,6 +59,19 @@ namespace paludis
                 StringKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
 
                 virtual const std::string value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class FSLocationKey :
+            public MetadataFSEntryKey
+        {
+            private:
+                const FSEntry _v;
+
+            public:
+                FSLocationKey(const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+
+                virtual const FSEntry value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

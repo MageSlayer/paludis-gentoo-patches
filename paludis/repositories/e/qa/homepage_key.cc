@@ -41,6 +41,7 @@ namespace
         using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>::visit_sequence;
         using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
 
+        const tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
         QAReporter & reporter;
         const tr1::shared_ptr<const ERepositoryID> id;
@@ -48,10 +49,12 @@ namespace
         bool found_one;
 
         HomepageChecker(
+                const tr1::shared_ptr<const MetadataKey> & k,
                 const FSEntry & f,
                 QAReporter & r,
                 const tr1::shared_ptr<const ERepositoryID> & i,
                 const std::string & n) :
+            key(k),
             entry(f),
             reporter(r),
             id(i),
@@ -77,12 +80,17 @@ namespace
             if (0 == u.original_url().compare(0, 7, "http://") &&
                     0 == u.original_url().compare(0, 8, "https://") &&
                     0 == u.original_url().compare(0, 6, "ftp://"))
-                reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses no or unknown protocol in part '" + u.text() + "'"));
+                reporter.message(QAMessage(entry, qaml_normal, name,
+                            "Homepage uses no or unknown protocol in part '" + u.text() + "'")
+                        .with_associated_id(id)
+                        .with_associated_key(key));
         }
 
         void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
         {
-            reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses labels"));
+            reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses labels")
+                        .with_associated_id(id)
+                        .with_associated_key(key));
         }
     };
 }
@@ -99,10 +107,11 @@ paludis::erepository::homepage_key_check(
         << entry << "', " << *id << "', " << name << "'";
 
     if (! id->homepage_key())
-        reporter.message(QAMessage(entry, qaml_normal, name, "No homepage available"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "No homepage available")
+                        .with_associated_id(id));
     else
     {
-        HomepageChecker h(entry, reporter, id, name);
+        HomepageChecker h(id->homepage_key(), entry, reporter, id, name);
         id->homepage_key()->value()->accept(h);
     }
 

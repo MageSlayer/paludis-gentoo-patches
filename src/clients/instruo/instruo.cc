@@ -73,6 +73,10 @@ namespace
         {
         }
 
+        void visit(const MetadataFSEntryKey &)
+        {
+        }
+
         void visit(const MetadataRepositoryMaskInfoKey &)
         {
         }

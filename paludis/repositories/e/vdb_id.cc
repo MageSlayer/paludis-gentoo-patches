@@ -71,6 +71,7 @@ namespace paludis
         tr1::shared_ptr<const SlotName> slot;
         tr1::shared_ptr<const EAPI> eapi;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> fs_location;
         tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use;
         tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited;
         tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse;
@@ -133,6 +134,15 @@ VDBID::need_keys_added() const
     if (_imp->has_keys)
         return;
     _imp->has_keys = true;
+
+
+    // fs_location key could have been loaded by the ::fs_location_key() already.
+    if (! _imp->fs_location)
+    {
+        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "VDBDIR", "VDB Location",
+                    _imp->dir, mkt_internal));
+        add_metadata_key(_imp->fs_location);
+    }
 
     Context context("When loading VDB ID keys from '" + stringify(_imp->dir) + "':");
 
@@ -565,6 +575,23 @@ VDBID::binary_origin_key() const
     need_keys_added();
     return _imp->binary_origin;
 }
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+VDBID::fs_location_key() const
+{
+    // Avoid loading whole metadata
+    if (! _imp->fs_location)
+    {
+        Lock l(_imp->mutex);
+
+        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "VDBDIR", "VDB Location",
+                    _imp->dir, mkt_internal));
+        add_metadata_key(_imp->fs_location);
+    }
+
+    return _imp->fs_location;
+}
+
 
 bool
 VDBID::arbitrary_less_than_comparison(const PackageID &) const

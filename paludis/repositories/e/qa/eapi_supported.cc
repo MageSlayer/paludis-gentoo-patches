@@ -35,7 +35,9 @@ paludis::erepository::eapi_supported_check(
 
     if (! id->eapi()->supported)
     {
-        reporter.message(QAMessage(entry, qaml_severe, name, "EAPI '" + stringify(id->eapi()->name) + "' not supported"));
+        reporter.message(QAMessage(entry, qaml_severe, name,
+                    "EAPI '" + stringify(id->eapi()->name) + "' not supported")
+                .with_associated_id(id));
         return false;
     }
 

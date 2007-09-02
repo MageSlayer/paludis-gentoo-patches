@@ -61,6 +61,7 @@ namespace paludis
         QualifiedPackageName name;
         VersionSpec version;
 
+        tr1::shared_ptr<FSLocationKey> fs_location_key;
         tr1::shared_ptr<URIKey> homepage_key;
         tr1::shared_ptr<StringKey> short_description_key;
         tr1::shared_ptr<StringKey> long_description_key;
@@ -100,6 +101,10 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, co
         Log::get_instance()->message(ll_warning, lc_context) << "Unexpected irregular file: '" << stringify(f) << "'";
         return;
     }
+
+    _imp->fs_location_key.reset(new FSLocationKey("DescriptionFileLocation", "Description File Location",
+                f, mkt_internal));
+    add_metadata_key(_imp->fs_location_key);
 
     try
     {
@@ -535,5 +540,11 @@ const tr1::shared_ptr<const MetadataPackageIDKey>
 CRANPackageID::contained_in_key() const
 {
     return _imp->contained_in_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+CRANPackageID::fs_location_key() const
+{
+    return _imp->fs_location_key;
 }
 

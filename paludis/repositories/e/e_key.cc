@@ -855,3 +855,20 @@ ECTimeKey::value() const
     return *_imp->value;
 }
 
+EFSLocationKey::EFSLocationKey(const tr1::shared_ptr<const ERepositoryID> &,
+        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
+    MetadataFSEntryKey(r, h, t),
+    _value(v)
+{
+}
+
+EFSLocationKey::~EFSLocationKey()
+{
+}
+
+const FSEntry
+EFSLocationKey::value() const
+{
+    return _value;
+}
+

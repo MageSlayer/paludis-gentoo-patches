@@ -27,6 +27,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -53,7 +54,8 @@ namespace paludis
             MetadataStringKey,
             MetadataContentsKey,
             MetadataTimeKey,
-            MetadataRepositoryMaskInfoKey
+            MetadataRepositoryMaskInfoKey,
+            MetadataFSEntryKey
             >
     {
     };
@@ -95,6 +97,18 @@ namespace paludis
 
         public:
             virtual const std::string value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    class PALUDIS_VISIBLE MetadataFSEntryKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataFSEntryKey>
+    {
+        protected:
+            MetadataFSEntryKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const FSEntry value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

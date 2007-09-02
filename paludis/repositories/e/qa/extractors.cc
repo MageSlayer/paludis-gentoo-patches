@@ -241,7 +241,9 @@ paludis::erepository::extractors_check(
                 if (r->second.size() > 10)
                 {
                     reporter.message(QAMessage(entry, qaml_maybe, name, "Too many flags to determine whether "
-                                "extractor dependency requirement '" + stringify(r->first) + "' is met"));
+                                "extractor dependency requirement '" + stringify(r->first) + "' is met")
+                            .with_associated_id(id)
+                            .with_associated_key(id->src_uri_key()));
                     continue;
                 }
 
@@ -352,14 +354,19 @@ paludis::erepository::extractors_check(
                     }
 
                     reporter.message(QAMessage(entry, qaml_maybe, name, "Extractor '" + stringify(r->first)
-                                + "' may be required as a build dependency" + cond));
+                                + "' may be required as a build dependency" + cond)
+                            .with_associated_id(id)
+                            .with_associated_key(id->src_uri_key()));
                 }
             }
         }
         catch (const Exception & e)
         {
-            reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                        + stringify(e.what()) + ") when handling key '" + id->src_uri_key()->raw_name() + "'"));
+            reporter.message(QAMessage(entry, qaml_severe, name,
+                        "Caught exception '" + stringify(e.message()) + "' ("
+                        + stringify(e.what()) + ") when handling key '" + id->src_uri_key()->raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(id->src_uri_key()));
         }
     }
 

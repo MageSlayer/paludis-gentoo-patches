@@ -36,19 +36,30 @@ paludis::erepository::short_description_key_check(
         << entry << "', " << *id << "', " << name << "'";
 
     if (! id->short_description_key())
-        reporter.message(QAMessage(entry, qaml_normal, name, "No description available"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "No description available")
+                .with_associated_id(id));
     else if (id->short_description_key()->value() == stringify(id->name()))
-        reporter.message(QAMessage(entry, qaml_normal, name, "Description is equal to PN"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "Description is equal to PN")
+                .with_associated_id(id)
+                .with_associated_key(id->short_description_key()));
     else if (std::string::npos != id->short_description_key()->value().find("Based on the")
             && std::string::npos != id->short_description_key()->value().find("eclass"))
         reporter.message(
-                QAMessage(entry, qaml_normal, name, "Description is about as useful as a chocolate teapot"));
+                QAMessage(entry, qaml_normal, name, "Description is about as useful as a chocolate teapot")
+                    .with_associated_id(id)
+                    .with_associated_key(id->short_description_key()));
     else if (id->short_description_key()->value().length() < 10)
-        reporter.message(QAMessage(entry, qaml_normal, name, "Description is suspiciously short"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "Description is suspiciously short")
+                .with_associated_id(id)
+                .with_associated_key(id->short_description_key()));
     else if (id->short_description_key()->value().length() > 300)
-        reporter.message(QAMessage(entry, qaml_normal, name, "Description written by Duncan?"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "Description written by Duncan?")
+                .with_associated_id(id)
+                .with_associated_key(id->short_description_key()));
     else if (id->short_description_key()->value().length() > 120)
-        reporter.message(QAMessage(entry, qaml_normal, name, "Description is too long"));
+        reporter.message(QAMessage(entry, qaml_normal, name, "Description is too long")
+                .with_associated_id(id)
+                .with_associated_key(id->short_description_key()));
 
     return true;
 }

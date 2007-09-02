@@ -27,6 +27,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 
 #include <cstdlib>
@@ -52,6 +53,93 @@ namespace
 {
     struct DoVersion
     {
+    };
+
+    struct MetadataKeyPrettyPrinter :
+        ConstVisitor<MetadataKeyVisitorTypes>
+    {
+        std::ostringstream stream;
+
+        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
+        void visit(const MetadataSetKey<InheritedSet> & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
+        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
+        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat();
+        }
+
+        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat();
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat();
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat();
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat();
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        {
+            stream << k.raw_name() << ": "
+                << join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), " ") << "\n";
+        }
+
+        void visit(const MetadataPackageIDKey & k)
+        {
+            stream << k.raw_name() << ": " << stringify(*k.value()) << "\n";
+        }
+
+        void visit(const MetadataStringKey & k)
+        {
+            stream << k.raw_name() << ": " << k.value() << "\n";
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            stream << k.raw_name() << ": " << k.value() << "\n";
+        }
+
+        void visit(const MetadataFSEntryKey & k)
+        {
+            stream << k.raw_name() << ": " << k.value() << "\n";
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey & k)
+        {
+            stream << k.raw_name() << ": " << k.value()->mask_file << ": "
+                << join(k.value()->comment->begin(), k.value()->comment->end(), " ");
+        }
+
+        void visit(const MetadataContentsKey &)
+        {
+        }
     };
 
     struct QualudisReporter :
@@ -110,6 +198,25 @@ namespace
             }
 
             std::cout << "]: " << msg.message << std::endl;
+
+            if (! msg.associated_ids->empty())
+            {
+                for (PackageIDSet::Iterator i(msg.associated_ids->begin()),
+                        i_end(msg.associated_ids->end()) ; i != i_end ; ++i)
+                    if (! (*i)->fs_location_key() || (*i)->fs_location_key()->value() != msg.entry)
+                        std::cout << "      " << stringify(**i) << std::endl;
+            }
+
+            if (! msg.associated_keys->empty())
+            {
+                for (QAMessage::KeysSequence::Iterator i(msg.associated_keys->begin()),
+                        i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
+                {
+                    MetadataKeyPrettyPrinter pp;
+                    (*i)->accept(pp);
+                    std::cout << "      " << pp.stream.str() << std::endl;
+                }
+            }
         }
     };
 }

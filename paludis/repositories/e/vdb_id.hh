@@ -81,6 +81,7 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
+                virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

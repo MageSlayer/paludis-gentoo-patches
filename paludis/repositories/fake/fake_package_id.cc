@@ -766,6 +766,12 @@ FakePackageID::contained_in_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
+const tr1::shared_ptr<const MetadataFSEntryKey>
+FakePackageID::fs_location_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
+}
+
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<DependencySpecTree>;

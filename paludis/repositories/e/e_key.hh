@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_E_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/idle_action_pool-fwd.hh>
+#include <paludis/util/fs_entry.hh>
 
 namespace paludis
 {
@@ -273,6 +273,21 @@ namespace paludis
                 ~ECTimeKey();
 
                 const time_t value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class EFSLocationKey :
+            public MetadataFSEntryKey
+        {
+            private:
+                const FSEntry _value;
+
+            public:
+                EFSLocationKey(const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+                ~EFSLocationKey();
+
+                const FSEntry value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

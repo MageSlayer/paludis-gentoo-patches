@@ -18,16 +18,45 @@
  */
 
 #include <paludis/qa.hh>
-#include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <ostream>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 
 using namespace paludis;
 
 #include <paludis/qa-se.cc>
 #include <paludis/qa-sr.cc>
 
+template class Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
+template class Sequence<tr1::shared_ptr<const MetadataKey> >;
+
 QAReporter::~QAReporter()
 {
+}
+
+tr1::shared_ptr<PackageIDSet>
+QAMessage::default_associated_ids()
+{
+    return tr1::shared_ptr<PackageIDSet>(new PackageIDSet);
+}
+
+tr1::shared_ptr<QAMessage::KeysSequence>
+QAMessage::default_associated_keys()
+{
+    return tr1::shared_ptr<KeysSequence>(new KeysSequence);
+}
+
+QAMessage &
+QAMessage::with_associated_id(const tr1::shared_ptr<const PackageID> & id)
+{
+    associated_ids->insert(id);
+    return *this;
+}
+
+QAMessage &
+QAMessage::with_associated_key(const tr1::shared_ptr<const MetadataKey> & k)
+{
+    associated_keys->push_back(k);
+    return *this;
 }
 

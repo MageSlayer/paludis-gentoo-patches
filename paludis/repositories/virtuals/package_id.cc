@@ -508,3 +508,9 @@ VirtualsPackageID::contained_in_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
+const tr1::shared_ptr<const MetadataFSEntryKey>
+VirtualsPackageID::fs_location_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
+}
+

@@ -87,7 +87,7 @@ namespace
         const FSEntry entry;
         QAReporter & reporter;
         const tr1::shared_ptr<const PackageID> & id;
-        const MetadataKey & key;
+        const tr1::shared_ptr<const MetadataKey> & key;
         const std::string name;
         const tr1::shared_ptr<const QualifiedPackageNameSet> pds_blacklist;
 
@@ -99,7 +99,7 @@ namespace
                 const FSEntry & f,
                 QAReporter & r,
                 const tr1::shared_ptr<const PackageID> & i,
-                const MetadataKey & k,
+                const tr1::shared_ptr<const MetadataKey> & k,
                 const std::string & n,
                 const tr1::shared_ptr<const QualifiedPackageNameSet> p) :
             entry(f),
@@ -119,7 +119,9 @@ namespace
             {
                 if (pds_blacklist->end() != pds_blacklist->find(*p.package_ptr()))
                     reporter.message(QAMessage(entry, qaml_normal, name, "Package '" + stringify(p)
-                                + "' blacklisted in '" + stringify(key.raw_name()) + "'"));
+                                + "' blacklisted in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
 
@@ -127,7 +129,9 @@ namespace
         {
             if (child_of_any)
                 reporter.message(QAMessage(entry, qaml_normal, name, "'|| ( )' with block child '!"
-                            + stringify(*b.blocked_spec()) + "' in '" + stringify(key.raw_name()) + "'"));
+                            + stringify(*b.blocked_spec()) + "' in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
         }
 
         void visit_leaf(const URIDepSpec &)
@@ -149,12 +153,16 @@ namespace
             if (child_of_any)
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "'|| ( )' with 'use? ( )' child in '"
-                            + stringify(key.raw_name()) + "'"));
+                            + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
 
             if (uses.count(u.flag()))
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Recursive use of flag '" + stringify(u.flag()) + "' in '"
-                            + stringify(key.raw_name()) + "'"));
+                            + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
 
             Save<unsigned> save_level(&level, level + 1);
             Save<bool> save_child_of_any(&child_of_any, false);
@@ -162,7 +170,9 @@ namespace
             uses.insert(u.flag());
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Empty 'use? ( )' in '" + stringify(key.raw_name()) + "'"));
+                            "Empty 'use? ( )' in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             else
                 std::for_each(cur, end, accept_visitor(*this));
         }
@@ -177,7 +187,9 @@ namespace
             {
                 if (level > 1)
                     reporter.message(QAMessage(entry, qaml_normal, name,
-                                "Empty '( )' in '" + stringify(key.raw_name()) + "'"));
+                                "Empty '( )' in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -191,12 +203,16 @@ namespace
             Save<bool> save_child_of_any(&child_of_any, true);
             if (cur == end)
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                            "Empty '|| ( )' in '" + stringify(key.raw_name()) + "'"));
+                            "Empty '|| ( )' in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             else if (next(cur) == end)
             {
                 cur->accept(*this);
                 reporter.message(QAMessage(entry, qaml_normal, name,
-                        "'|| ( )' with only one child in '" + stringify(key.raw_name()) + "'"));
+                        "'|| ( )' with only one child in '" + stringify(key->raw_name()) + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
             else
                 std::for_each(cur, end, accept_visitor(*this));
@@ -208,6 +224,7 @@ namespace
     {
         const FSEntry entry;
         QAReporter & reporter;
+        tr1::shared_ptr<const MetadataKey> key;
         const tr1::shared_ptr<const PackageID> & id;
         const std::string name;
 
@@ -221,6 +238,12 @@ namespace
             id(i),
             name(n)
         {
+        }
+
+        void visit_sptr(const tr1::shared_ptr<const MetadataKey> & k)
+        {
+            key = k;
+            k->accept(*this);
         }
 
         void visit(const MetadataStringKey &)
@@ -263,18 +286,24 @@ namespace
         {
         }
 
+        void visit(const MetadataFSEntryKey &)
+        {
+        }
+
         void visit(const MetadataSpecTreeKey<URISpecTree> & k)
         {
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
                 k.value()->accept(c);
             }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
 
@@ -283,13 +312,15 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
                 k.value()->accept(c);
             }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
 
@@ -298,13 +329,15 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, k, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
                 k.value()->accept(c);
             }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
 
@@ -313,13 +346,15 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, k, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
+                Checker c(entry, reporter, id, key, name, SpecKeysBlacklist::get_instance()->blacklist(k.raw_name()));
                 k.value()->accept(c);
             }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
 
@@ -328,13 +363,15 @@ namespace
             try
             {
                 Context context("When visiting metadata key '" + k.raw_name() + "':");
-                Checker c(entry, reporter, id, k, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
                 k.value()->accept(c);
             }
             catch (const Exception & e)
             {
                 reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
-                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'"));
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
             }
         }
     };
@@ -351,8 +388,10 @@ paludis::erepository::spec_keys_check(
     Log::get_instance()->message(ll_debug, lc_context) << "spec_keys_check '"
         << entry << "', " << *id << "', " << name << "'";
 
+    using namespace tr1::placeholders;
+
     CheckForwarder f(entry, reporter, id, name);
-    parallel_for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(f));
+    parallel_for_each(id->begin_metadata(), id->end_metadata(), tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
 
     return true;
 }

@@ -21,7 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_QA_HH 1
 
 #include <paludis/qa-fwd.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key-fwd.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/set-fwd.hh>
 #include <paludis/util/sr.hh>
 
 namespace paludis

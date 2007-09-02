@@ -77,6 +77,11 @@ MetadataStringKey::MetadataStringKey(const std::string & r, const std::string & 
 {
 }
 
+MetadataFSEntryKey::MetadataFSEntryKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
 MetadataTimeKey::MetadataTimeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {

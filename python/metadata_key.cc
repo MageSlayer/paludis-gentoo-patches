@@ -22,6 +22,7 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
 
 using namespace paludis;
@@ -65,6 +66,11 @@ class MetadataKeySptrToPythonVisitor :
         void visit(const MetadataRepositoryMaskInfoKey & k)
         {
             obj = bp::object(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(_m_ptr));
+        }
+
+        void visit(const MetadataFSEntryKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataFSEntryKey>(_m_ptr));
         }
 
         void visit(const MetadataSetKey<KeywordNameSet> & k)
@@ -215,6 +221,27 @@ struct MetadataContentsKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataContentsKey", "value");
+    }
+};
+
+struct MetadataFSEntryKeyWrapper :
+    MetadataFSEntryKey,
+    bp::wrapper<MetadataFSEntryKey>
+{
+    MetadataFSEntryKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataFSEntryKey(r, h, t)
+    {
+    }
+
+    virtual const FSEntry value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataFSEntryKey", "value");
     }
 };
 
@@ -448,6 +475,27 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataTimeKey::value),
                 "value() -> int\n"
+                )
+        ;
+
+    /**
+     * MetadataFSEntryKey
+     */
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataFSEntryKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataFSEntryKeyWrapper, tr1::shared_ptr<MetadataFSEntryKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
+        (
+         "MetadataFSEntryKey",
+         "NEED_DOC\n"
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
+        )
+        .def("value", bp::pure_virtual(&MetadataFSEntryKey::value),
+                "value() -> FSEntry\n"
                 )
         ;
 

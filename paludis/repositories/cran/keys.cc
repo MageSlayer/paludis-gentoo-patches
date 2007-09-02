@@ -65,6 +65,19 @@ StringKey::value() const
     return _v;
 }
 
+FSLocationKey::FSLocationKey(const std::string & r, const std::string & h,
+        const FSEntry & v, const MetadataKeyType t) :
+    MetadataFSEntryKey(r, h, t),
+    _v(v)
+{
+}
+
+const FSEntry
+FSLocationKey::value() const
+{
+    return _v;
+}
+
 PackageIDSequenceKey::PackageIDSequenceKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataSetKey<PackageIDSequence>(r, h, t),
     _v(new PackageIDSequence)

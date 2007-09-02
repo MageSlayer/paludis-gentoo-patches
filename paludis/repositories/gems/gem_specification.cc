@@ -66,6 +66,34 @@ namespace
     {
         return _value;
     }
+
+    class GemMetadataFSEntryKey :
+        public MetadataFSEntryKey
+    {
+        private:
+            const FSEntry _value;
+
+        public:
+            GemMetadataFSEntryKey(const std::string &, const std::string &, const FSEntry &,
+                    const MetadataKeyType);
+
+            virtual const FSEntry value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+
+    GemMetadataFSEntryKey::GemMetadataFSEntryKey(const std::string & r, const std::string & h,
+            const FSEntry & v, const MetadataKeyType t) :
+        MetadataFSEntryKey(r, h, t),
+        _value(v)
+    {
+    }
+
+    const FSEntry
+    GemMetadataFSEntryKey::value() const
+    {
+        return _value;
+    }
 }
 
 namespace paludis
@@ -85,6 +113,7 @@ namespace paludis
         tr1::shared_ptr<GemMetadataStringKey> summary_key;
         tr1::shared_ptr<GemMetadataStringKey> authors_key;
         tr1::shared_ptr<GemMetadataStringKey> rubyforge_project_key;
+        tr1::shared_ptr<GemMetadataFSEntryKey> fs_location_key;
 
         tr1::shared_ptr<const FSEntry> load_from_file;
 
@@ -304,6 +333,8 @@ GemSpecification::GemSpecification(const Environment * const e, const tr1::share
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);
     _imp->load_from_file.reset(new FSEntry(f));
+    _imp->fs_location_key.reset(new GemMetadataFSEntryKey("GEM", "Gem Location", f, mkt_internal));
+    add_metadata_key(_imp->fs_location_key);
 }
 
 GemSpecification::~GemSpecification()
@@ -460,6 +491,12 @@ const tr1::shared_ptr<const MetadataStringKey>
 GemSpecification::long_description_key() const
 {
     return _imp->description_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+GemSpecification::fs_location_key() const
+{
+    return _imp->fs_location_key;
 }
 
 const tr1::shared_ptr<const MetadataContentsKey>

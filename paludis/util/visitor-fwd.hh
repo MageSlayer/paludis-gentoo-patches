@@ -134,7 +134,12 @@ namespace paludis
             typename ContainedItem12_ = visitor_internals::NoType<12>,
             typename ContainedItem13_ = visitor_internals::NoType<13>,
             typename ContainedItem14_ = visitor_internals::NoType<14>,
-            typename ContainedItem15_ = visitor_internals::NoType<15> >
+            typename ContainedItem15_ = visitor_internals::NoType<15>,
+            typename ContainedItem16_ = visitor_internals::NoType<16>,
+            typename ContainedItem17_ = visitor_internals::NoType<17>,
+            typename ContainedItem18_ = visitor_internals::NoType<18>,
+            typename ContainedItem19_ = visitor_internals::NoType<19>,
+            typename ContainedItem20_ = visitor_internals::NoType<20> >
         class VisitorTypes;
 
         template <typename I_>

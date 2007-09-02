@@ -193,7 +193,8 @@ QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
     {
         _imp->reporter.message(
                 QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "package_id_checks_group",
-                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
+                    "Caught exception '" + e.message() + "' (" + e.what() + ")")
+                .with_associated_id(i));
     }
 }
 
