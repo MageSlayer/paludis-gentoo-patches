@@ -145,6 +145,11 @@ namespace
             const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
+        void visit(const MetadataFSEntryKey & k)
+        {
+            const FSEntry & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+        }
+
         void visit(const MetadataRepositoryMaskInfoKey & k)
         {
             const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
