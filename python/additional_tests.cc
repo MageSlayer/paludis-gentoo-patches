@@ -42,21 +42,21 @@ namespace environment
         e.package_database()->add_repository(0, repo);
 
         UseFlagName u("use");
-        e.query_use(u, *pid);
+        bool PALUDIS_ATTRIBUTE((unused)) b1(e.query_use(u, *pid));
 
         e.known_use_expand_names(u, *pid);
 
-        e.accept_license("l", *pid);
+        bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
 
         tr1::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
         kns->insert(KeywordName("keyword"));
-        e.accept_keywords(kns, *pid);
+        bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, *pid));
 
         e.mask_for_breakage(*pid);
 
         e.mask_for_user(*pid);
 
-        e.unmasked_by_user(*pid);
+        bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(*pid));
 
         e.package_database();
 
@@ -153,7 +153,7 @@ namespace metadata_key
     void test_metadata_time_key(MetadataTimeKey & m)
     {
         test_metadata_key(m);
-        m.value();
+        time_t PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
     void test_metadata_contents_key(MetadataContentsKey & m)
