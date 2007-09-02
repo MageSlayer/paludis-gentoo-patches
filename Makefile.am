@@ -10,7 +10,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa --enable-vim
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
 	--with-repositories=default \
 	--with-environments=default,portage \
-	--with-clients=default,accerso,contrarius,inquisitio \
+	--with-clients=default,accerso,contrarius,inquisitio,instruo \
 	--with-default-distribution=giant-space-monkey
 
 automake-deps-built-hack.tmp : built-sources-subdirs
@@ -30,6 +30,7 @@ automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C src/clients/adjutrix adjutrix.1 adjutrix.html
 	$(MAKE) -C src/clients/inquisitio inquisitio.1 inquisitio.html
 	$(MAKE) -C src/clients/accerso accerso.1 accerso.html
+	$(MAKE) -C src/clients/instruo instruo.1 instruo.html
 	touch $@
 
 dist-hook :

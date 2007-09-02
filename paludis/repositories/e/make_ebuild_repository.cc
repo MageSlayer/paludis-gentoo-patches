@@ -139,6 +139,13 @@ paludis::make_ebuild_repository(
         write_cache = DistributionData::get_instance()->distribution_from_string(
                 env->default_distribution())->default_ebuild_write_cache;
 
+    bool append_repository_name_to_write_cache(true);
+    if (m->end() != m->find("append_repository_name_to_write_cache") && ! m->find("append_repository_name_to_write_cache")->second.empty())
+    {
+        Context item_context("When handling append_repository_name_to_write_cache key:");
+        append_repository_name_to_write_cache = destringify<bool>(m->find("append_repository_name_to_write_cache")->second);
+    }
+
     std::string eapi_when_unknown;
     if (m->end() == m->find("eapi_when_unknown") || ((eapi_when_unknown = m->find("eapi_when_unknown")->second)).empty())
         eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
@@ -225,6 +232,7 @@ paludis::make_ebuild_repository(
                 .eapi_when_unspecified(eapi_when_unspecified)
                 .profile_eapi(profile_eapi)
                 .use_manifest(use_manifest)
+                .append_repository_name_to_write_cache(append_repository_name_to_write_cache)
                 .buildroot(buildroot)));
 }
 

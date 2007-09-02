@@ -34,6 +34,7 @@ htmlfiles = \
 	man-contrarius.html \
 	man-adjutrix.html \
 	man-accerso.html \
+	man-instruo.html \
 	man-inquisitio.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css epydoc.css \
@@ -46,7 +47,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css epydoc.css \
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
 	sets.html hooks.html man-paludis.html man-qualudis.html man-contrarius.html man-adjutrix.html man-inquisitio.html \
-	man-accerso.html \
+	man-accerso.html man-instruo.html \
 	cleannews cleanrecentnews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
@@ -279,6 +280,15 @@ man-accerso.html : $(top_builddir)/src/clients/accerso/accerso.html man.html.ske
 	    -e '/@MAN@/r $(top_builddir)/src/clients/accerso/accerso.html' \
 	    -e '/@MAN@/d' \
 	    < $(srcdir)/man.html.skel > man-accerso.html
+
+man-instruo.html : $(top_builddir)/src/clients/instruo/instruo.html man.html.skel
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    -e '/@MAN@/r $(top_builddir)/src/clients/instruo/instruo.html' \
+	    -e '/@MAN@/d' \
+	    < $(srcdir)/man.html.skel > man-instruo.html
 
 man-inquisitio.html : $(top_builddir)/src/clients/inquisitio/inquisitio.html man.html.skel
 	sed -e '/@HEADER@/r htmlheader.html' \

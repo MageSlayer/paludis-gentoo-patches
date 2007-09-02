@@ -152,7 +152,8 @@ EbuildID::need_keys_added() const
     cache_file /= stringify(name().package) + "-" + stringify(version());
 
     FSEntry write_cache_file(_imp->repository->params().write_cache);
-    write_cache_file /= stringify(repository()->name());
+    if (_imp->repository->params().append_repository_name_to_write_cache)
+        write_cache_file /= stringify(repository()->name());
     write_cache_file /= stringify(name().category);
     write_cache_file /= stringify(name().package) + "-" + stringify(version());
 

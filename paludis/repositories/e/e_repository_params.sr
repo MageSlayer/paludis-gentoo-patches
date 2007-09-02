@@ -12,6 +12,7 @@ make_class_ERepositoryParams()
     key profiles "tr1::shared_ptr<const FSEntrySequence>"
     key cache FSEntry
     key write_cache FSEntry
+    key append_repository_name_to_write_cache bool
     key names_cache FSEntry
     key distdir FSEntry
     key eclassdirs "tr1::shared_ptr<const FSEntrySequence>"

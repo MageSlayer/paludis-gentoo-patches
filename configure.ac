@@ -983,7 +983,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
+ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio instruo paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -1001,6 +1001,7 @@ AC_ARG_WITH([clients],
 			  contrarius      The cross toolchain creator
 			  gtkpaludis      GUI client (experimental)
 			  inquisitio      A search client
+			  instruo         A metadata generation client
 			  paludis         The Paludis console client
 			  qualudis        The QA console client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
@@ -1280,6 +1281,7 @@ AC_OUTPUT(
 	src/clients/gtkpaludis/vtemm/converts/Makefile
 	src/clients/gtkpaludis/vtemm/defs/Makefile
 	src/clients/inquisitio/Makefile
+	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
 	src/clients/qualudis/Makefile
 	src/common_args/Makefile

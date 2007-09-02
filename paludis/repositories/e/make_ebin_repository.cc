@@ -198,6 +198,7 @@ paludis::make_ebin_repository(
                 .eapi_when_unknown(eapi_when_unknown)
                 .profile_eapi(profile_eapi)
                 .use_manifest(use_manifest)
+                .append_repository_name_to_write_cache(true)
                 .buildroot(buildroot)));
 }
 
