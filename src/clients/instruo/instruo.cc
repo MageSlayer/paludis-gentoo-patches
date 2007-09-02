@@ -117,6 +117,85 @@ namespace
         {
         }
     };
+
+    struct KeyValidator :
+        ConstVisitor<MetadataKeyVisitorTypes>
+    {
+        void visit(const MetadataStringKey & k)
+        {
+            const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataPackageIDKey & k)
+        {
+            const tr1::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            time_t PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataContentsKey & k)
+        {
+            const tr1::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey & k)
+        {
+            const tr1::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        {
+            const tr1::shared_ptr<RestrictSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            const tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        {
+            const tr1::shared_ptr<URISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            const tr1::shared_ptr<LicenseSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            const tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        {
+            const tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataSetKey<InheritedSet> & k)
+        {
+            const tr1::shared_ptr<const InheritedSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        {
+            const tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        {
+            const tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        {
+            const tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+    };
 }
 
 int
@@ -254,7 +333,24 @@ main(int argc, char *argv[])
                     continue;
                 }
 
-                ++success;
+                bool metadata_errors(false);
+                KeyValidator v;
+                for (PackageID::MetadataIterator m((*i)->begin_metadata()),
+                         m_end((*i)->end_metadata()); m_end != m; ++m)
+                {
+                    try
+                    {
+                        (*m)->accept(v);
+                    }
+                    catch (const Exception & e)
+                    {
+                        results.insert(std::make_pair(*i, "Exception in metadata key '" + (*m)->raw_name() + "': '" + e.message() + "' (" + e.what() + ")"));
+                        metadata_errors = true;
+                    }
+                }
+
+                if (! metadata_errors)
+                    ++success;
             }
             catch (const Exception & e)
             {
