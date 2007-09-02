@@ -183,6 +183,11 @@ namespace paludis
                         d != d_end ; ++d)
                 {
                     Context subcontext("When using directory '" + stringify(*d) + "':");
+
+                    if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
+                        Log::get_instance()->message(ll_warning, lc_context) << "Profile directory '" << *d
+                            << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
+
                     load_profile_directory_recursively(*d);
                 }
 
