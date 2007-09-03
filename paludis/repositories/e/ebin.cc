@@ -99,7 +99,7 @@ EbinCommand::operator() ()
                 stringify(PALUDIS_VERSION_MICRO) +
                 (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
                  std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
-            .with_setenv("PALUDIS_TMPDIR", stringify(params.buildroot))
+            .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir))
             .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
             .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
@@ -123,7 +123,7 @@ EbinCommand::add_portage_vars(const Command & cmd) const
 {
     return Command(cmd)
         .with_setenv("PORTAGE_BASHRC", "/dev/null")
-        .with_setenv("PORTAGE_BUILDDIR", stringify(params.buildroot) + "/" +
+        .with_setenv("PORTAGE_BUILDDIR", stringify(params.builddir) + "/" +
              stringify(params.package_id->name().category) + "/" +
              stringify(params.package_id->name().package) + "-" +
              stringify(params.package_id->version()))
@@ -133,7 +133,7 @@ EbinCommand::add_portage_vars(const Command & cmd) const
         .with_setenv("PORTAGE_INST_UID", "0")
         .with_setenv("PORTAGE_MASTER_PID", stringify(::getpid()))
         .with_setenv("PORTAGE_NICENCESS", stringify(::getpriority(PRIO_PROCESS, 0)))
-        .with_setenv("PORTAGE_TMPDIR", stringify(params.buildroot))
+        .with_setenv("PORTAGE_TMPDIR", stringify(params.builddir))
         .with_setenv("PORTAGE_TMPFS", "/dev/shm")
         .with_setenv("PORTAGE_WORKDIR_MODE", "0700");
 }

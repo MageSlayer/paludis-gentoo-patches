@@ -99,7 +99,7 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("install_dir", stringify(_imp->params.install_dir));
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("builddir", stringify(_imp->params.builddir));
 
     _info->add_section(config_info);
 }

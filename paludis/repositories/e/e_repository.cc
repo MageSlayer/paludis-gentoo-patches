@@ -339,7 +339,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("builddir", stringify(_imp->params.builddir));
     if (_imp->params.master_repository)
         config_info->add_kv("master_repository", stringify(_imp->params.master_repository->name()));
     config_info->add_kv("format", _imp->params.entry_format);

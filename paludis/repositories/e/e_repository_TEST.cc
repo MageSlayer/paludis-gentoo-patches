@@ -1023,7 +1023,7 @@ namespace test_cases
             keys->insert("eapi_when_unspecified", "0");
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
-            keys->insert("buildroot", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 
@@ -1101,7 +1101,7 @@ namespace test_cases
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("profile_eapi", "exheres-0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
-            keys->insert("buildroot", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
             tr1::shared_ptr<ERepository> repo(make_ebuild_repository(&env, keys));
             env.package_database()->add_repository(1, repo);
 

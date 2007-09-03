@@ -294,7 +294,7 @@ does, Paludis executes the latter and pretends that its stdout is the content of
     <li><code>profiles</code> (mandatory), which should be a space separated list of
     directories used for profile data. Later directories have priority. Inherited from
     <code>master_repository</code> if unset.</li>
-    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+    <li><code>builddir</code> (default: <code>/var/tmp/paludis</code>), which controls
     the temporary directory used by Paludis for compiling software.</li>
     <li><code>cache</code> (default: <code>${location}/metadata/cache</code>), which
   controls the location of the metadata cache for a repository. It should be set
@@ -359,7 +359,7 @@ been installed from a <code>ebuild</code> format repository.</p>
 <ul>
     <li><code>location</code> (mandatory), which <strong>must</strong> be set to
     <code>${ROOT}/var/db/pkg</code>.</li>
-    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which is
+    <li><code>builddir</code> (default: <code>/var/tmp/paludis</code>), which is
     used as a temporary directory when carrying out uninstall operations,</li>
     <li><code>provides_cache</code>, which should be either <code>/var/empty</code> or
     <code>${location}/.cache/provides</code>. See <a href="cachefiles.html">the
@@ -373,7 +373,7 @@ been installed from a <code>ebuild</code> format repository.</p>
 <p>The following keys are available for <code>format = cran</code>:</p>
 
 <ul>
-    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+    <li><code>builddir</code> (default: <code>/var/tmp/paludis</code>), which controls
     the temporary directory used by Paludis for compiling software.</li>
     <li><code>distdir</code> (default: <code>${location}/distfiles</code>), which
     controls where downloaded files are saved.</li>

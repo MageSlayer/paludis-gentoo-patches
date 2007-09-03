@@ -39,7 +39,7 @@ syn region PaludisRepositoriesConfString contained start=/"/ end=/"/
 	    \ skipwhite
 
 syn keyword PaludisRepositoriesConfKnownKey contained
-	    \ location distdir format buildroot library sync root yaml_uri
+	    \ location distdir format builddir library sync root yaml_uri
 	    \ master_repository profiles pkgdir setsdir securitydir newsdir
 	    \ names_cache sync sync_options eclassdirs cache write_cache
 	    \ world provides_cache importance layout use_manifest

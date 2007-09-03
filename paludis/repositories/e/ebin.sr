@@ -7,7 +7,7 @@ make_class_EbinCommandParams()
     key package_id "tr1::shared_ptr<const PackageID>"
     key portdir FSEntry
     key distdir FSEntry
-    key buildroot FSEntry
+    key builddir FSEntry
 
     doxygen_comment << "END"
         /**

@@ -388,10 +388,10 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
     keys->insert("master_repository", master);
     keys->insert("sync", sync);
     keys->insert("distdir", stringify(_imp->vars->get("DISTDIR")));
-    std::string buildroot(_imp->vars->get("PORTAGE_TMPDIR"));
-    if (! buildroot.empty())
-        buildroot.append("/portage");
-    keys->insert("buildroot", buildroot);
+    std::string builddir(_imp->vars->get("PORTAGE_TMPDIR"));
+    if (! builddir.empty())
+        builddir.append("/portage");
+    keys->insert("builddir", builddir);
 
     package_database()->add_repository(importance,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
@@ -417,10 +417,10 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
     keys->insert("world", "/var/lib/portage/world");
-    std::string buildroot(_imp->vars->get("PORTAGE_TMPDIR"));
-    if (! buildroot.empty())
-        buildroot.append("/portage");
-    keys->insert("buildroot", buildroot);
+    std::string builddir(_imp->vars->get("PORTAGE_TMPDIR"));
+    if (! builddir.empty())
+        builddir.append("/portage");
+    keys->insert("builddir", builddir);
     package_database()->add_repository(1,
             RepositoryMaker::get_instance()->find_maker("vdb")(this, keys));
 }

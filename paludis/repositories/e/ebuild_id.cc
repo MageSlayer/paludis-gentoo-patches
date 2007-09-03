@@ -226,7 +226,7 @@ EbuildID::need_keys_added() const
                     .portdir(_imp->repository->params().master_repository ? _imp->repository->params().master_repository->params().location :
                         _imp->repository->params().location)
                     .distdir(_imp->repository->params().distdir)
-                    .buildroot(_imp->repository->params().buildroot)
+                    .builddir(_imp->repository->params().builddir)
                     .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
                     .sandbox(phases.begin_phases()->option("sandbox"))
                     .userpriv(phases.begin_phases()->option("userpriv")));

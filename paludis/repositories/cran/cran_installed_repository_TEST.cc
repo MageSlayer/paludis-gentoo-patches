@@ -46,7 +46,7 @@ namespace test_cases
             keys->insert("format", "cran_installed");
             keys->insert("library", "cran_installed_repository_TEST_dir/library");
             keys->insert("location", "cran_installed_repository_TEST_dir/repo1");
-            keys->insert("buildroot", "cran_installed_repository_TEST_dir/tmp");
+            keys->insert("builddir", "cran_installed_repository_TEST_dir/tmp");
             tr1::shared_ptr<Repository> repo(CRANInstalledRepository::make_cran_installed_repository(&env, keys));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
         }

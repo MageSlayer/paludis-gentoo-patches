@@ -21,7 +21,7 @@ make_class_ERepositoryParams()
     key newsdir FSEntry
     key sync std::string
     key sync_options std::string
-    key buildroot FSEntry
+    key builddir FSEntry
     key master_repository "tr1::shared_ptr<const ERepository>"
     key enable_destinations bool
     key write_bin_uri_prefix std::string

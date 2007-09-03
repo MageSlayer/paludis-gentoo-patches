@@ -44,7 +44,7 @@ namespace test_cases
                             .sync("")
                             .sync_options("")
                             .environment(&env)
-                            .buildroot(FSEntry("gems_repository_TEST_dir/build"))
+                            .builddir(FSEntry("gems_repository_TEST_dir/build"))
                             )));
         }
     } test_creation;

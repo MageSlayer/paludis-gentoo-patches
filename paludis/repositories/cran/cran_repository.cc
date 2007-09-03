@@ -126,7 +126,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     config_info->add_kv("location", stringify(_imp->params.location));
     config_info->add_kv("distdir", stringify(_imp->params.distdir));
     config_info->add_kv("format", "cran");
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("builddir", stringify(_imp->params.builddir));
     config_info->add_kv("library", stringify(_imp->params.library));
     config_info->add_kv("sync", _imp->params.sync);
 
@@ -411,16 +411,21 @@ CRANRepository::make_cran_repository(
     if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
         sync = "rsync://cran.r-project.org/CRAN";
 
-    std::string buildroot;
-    if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = "/var/tmp/paludis";
+    std::string builddir;
+    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    {
+        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+            builddir = "/var/tmp/paludis";
+        else
+            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+    }
 
     return tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .distdir(distdir)
                 .sync(sync)
-                .buildroot(buildroot)
+                .builddir(builddir)
                 .library(library)
                 .mirror(mirror)));
 }

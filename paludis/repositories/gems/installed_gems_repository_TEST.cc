@@ -41,7 +41,7 @@ namespace test_cases
                             gems::InstalledRepositoryParams::create()
                             .location(FSEntry("gems_repository_TEST_dir/installed-repo"))
                             .environment(&env)
-                            .buildroot(FSEntry("gems_repository_TEST_dir/build"))
+                            .builddir(FSEntry("gems_repository_TEST_dir/build"))
                             .install_dir(FSEntry("gems_repository_TEST_dir/install_dir"))
                             )));
         }

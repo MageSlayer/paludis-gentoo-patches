@@ -446,7 +446,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                         .userpriv(phase->option("userpriv"))
                         .sandbox(phase->option("sandbox"))
                         .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                        .buildroot(_imp->params.buildroot));
+                        .builddir(_imp->params.builddir));
 
                 EbuildNoFetchCommand nofetch_cmd(command_params,
                         EbuildNoFetchCommandParams::create()
@@ -553,7 +553,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()));
     if (userpriv_ok)
     {
-        FSEntry f(_imp->params.buildroot);
+        FSEntry f(_imp->params.builddir);
         Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
         if (f.exists())
@@ -590,9 +590,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                 o.destination->destination_interface->merge(
                         MergeOptions::create()
                         .package_id(id)
-                        .image_dir(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        .image_dir(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "image")
-                        .environment_file(_imp->params.buildroot / stringify(id->name().category) / (stringify(id->name().package) + "-"
+                        .environment_file(_imp->params.builddir / stringify(id->name().category) / (stringify(id->name().package) + "-"
                                 + stringify(id->version())) / "temp" / "loadsaveenv")
                         );
         }
@@ -637,7 +637,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                     .commands(join(phase->begin_commands(), phase->end_commands(), " "))
                     .sandbox(phase->option("sandbox"))
                     .userpriv(phase->option("userpriv") && userpriv_ok)
-                    .buildroot(_imp->params.buildroot));
+                    .builddir(_imp->params.builddir));
 
             EbuildInstallCommandParams install_params(
                     EbuildInstallCommandParams::create()
@@ -652,7 +652,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                             .debug_build(o.debug_build)
                             .config_protect(_imp->e_repository->profile_variable("CONFIG_PROTECT"))
                             .config_protect_mask(_imp->e_repository->profile_variable("CONFIG_PROTECT_MASK"))
-                            .loadsaveenv_dir(_imp->params.buildroot / stringify(id->name().category) / (
+                            .loadsaveenv_dir(_imp->params.builddir / stringify(id->name().category) / (
                                     stringify(id->name().package) + "-" + stringify(id->version())) / "temp")
                             .slot(SlotName(id->slot())));
 
@@ -689,7 +689,7 @@ EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryI
             .sandbox(phases.begin_phases()->option("sandbox"))
             .userpriv(phases.begin_phases()->option("userpriv"))
             .commands(join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "))
-            .buildroot(_imp->params.buildroot),
+            .builddir(_imp->params.builddir),
 
             var);
 
@@ -775,7 +775,7 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
                 .userpriv(phase->option("userpriv"))
                 .sandbox(phase->option("sandbox"))
                 .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .buildroot(_imp->params.buildroot));
+                .builddir(_imp->params.builddir));
 
         EbuildPretendCommand pretend_cmd(command_params,
                 EbuildPretendCommandParams::create()

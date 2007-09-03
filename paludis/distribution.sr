@@ -10,7 +10,7 @@ make_class_Distribution()
     key default_ebuild_distdir std::string
     key default_ebuild_write_cache std::string
     key default_ebuild_names_cache std::string
-    key default_ebuild_build_root std::string
+    key default_ebuild_builddir std::string
     key default_ebuild_layout std::string
     key default_ebuild_eapi_when_unknown std::string
     key default_ebuild_eapi_when_unspecified std::string

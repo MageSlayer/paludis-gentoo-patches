@@ -192,10 +192,15 @@ paludis::make_ebuild_repository(
         sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
     }
 
-    std::string buildroot;
-    if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = DistributionData::get_instance()->distribution_from_string(
-                env->default_distribution())->default_ebuild_build_root;
+    std::string builddir;
+    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    {
+        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+            builddir = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_builddir;
+        else
+            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+    }
 
     std::string layout;
     if (m->end() == m->find("layout") || ((layout = m->find("layout")->second)).empty())
@@ -233,7 +238,7 @@ paludis::make_ebuild_repository(
                 .profile_eapi(profile_eapi)
                 .use_manifest(use_manifest)
                 .append_repository_name_to_write_cache(append_repository_name_to_write_cache)
-                .buildroot(buildroot)));
+                .builddir(builddir)));
 }
 
 tr1::shared_ptr<Repository>

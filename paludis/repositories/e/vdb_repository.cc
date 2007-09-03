@@ -158,7 +158,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     config_info->add_kv("world", stringify(_imp->params.world));
     config_info->add_kv("provides_cache", stringify(_imp->params.provides_cache));
     config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("builddir", stringify(_imp->params.builddir));
 
     _info->add_section(config_info);
 }
@@ -329,16 +329,22 @@ VDBRepository::make_vdb_repository(
         }
     }
 
-    std::string buildroot;
-    if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
-        buildroot = "/var/tmp/paludis";
+    std::string builddir;
+    if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
+    {
+        if (m->end() == m->find("buildroot") || ((builddir = m->find("buildroot")->second)).empty())
+            builddir = DistributionData::get_instance()->distribution_from_string(
+                    env->default_distribution())->default_ebuild_builddir;
+        else
+            Log::get_instance()->message(ll_warning, lc_context) << "Key 'buildroot' is deprecated, use 'builddir' instead";
+    }
 
     return tr1::shared_ptr<Repository>(new VDBRepository(VDBRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .root(root)
                 .world(world)
-                .buildroot(buildroot)
+                .builddir(builddir)
                 .provides_cache(provides_cache)
                 .names_cache(names_cache)));
 }
@@ -421,7 +427,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
                     .sandbox(phase->option("sandbox"))
                     .userpriv(phase->option("userpriv"))
                     .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                    .buildroot(_imp->params.buildroot));
+                    .builddir(_imp->params.builddir));
 
             EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
                     .root(stringify(_imp->params.root) + "/")
@@ -476,7 +482,7 @@ VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) c
                 .sandbox(phase->option("sandbox"))
                 .userpriv(phase->option("userpriv"))
                 .commands(join(phase->begin_commands(), phase->end_commands(), " "))
-                .buildroot(_imp->params.buildroot),
+                .builddir(_imp->params.builddir),
 
                 EbuildConfigCommandParams::create()
                 .root(stringify(_imp->params.root) + "/")

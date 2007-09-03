@@ -70,7 +70,7 @@ namespace paludis
                                     .default_ebuild_distdir(k.get("default_ebuild_distdir"))
                                     .default_ebuild_write_cache(k.get("default_ebuild_write_cache"))
                                     .default_ebuild_names_cache(k.get("default_ebuild_names_cache"))
-                                    .default_ebuild_build_root(k.get("default_ebuild_build_root"))
+                                    .default_ebuild_builddir(k.get("default_ebuild_builddir"))
                                     .default_ebuild_layout(k.get("default_ebuild_layout"))
                                     .default_ebuild_eapi_when_unknown(k.get("default_ebuild_eapi_when_unknown"))
                                     .default_ebuild_eapi_when_unspecified(k.get("default_ebuild_eapi_when_unspecified"))

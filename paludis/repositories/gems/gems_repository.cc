@@ -91,7 +91,7 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
 
     config_info->add_kv("location", stringify(_imp->params.location));
     config_info->add_kv("install_dir", stringify(_imp->params.install_dir));
-    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("builddir", stringify(_imp->params.builddir));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
 
