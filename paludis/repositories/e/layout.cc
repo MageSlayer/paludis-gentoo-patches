@@ -54,6 +54,12 @@ Layout::master_repository_location() const
     return _master_repository_location;
 }
 
+FSEntry
+Layout::sync_filter_file() const
+{
+    return FSEntry("/dev/null");
+}
+
 namespace
 {
     template <typename T_>

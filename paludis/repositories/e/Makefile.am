@@ -478,6 +478,10 @@ xml_things_TEST_LDADD = \
 
 endif
 
+paludis_datadir = $(datadir)/paludis
+
+paludis_data_DATA = traditional.exclude
+
 TESTS = \
 	dep_lexer_TEST \
 	dep_parser_TEST \

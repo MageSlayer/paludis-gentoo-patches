@@ -13,14 +13,14 @@ LOCAL=
 REMOTE=
 
 FETCHER_OPTIONS=( )
-DOUNPACK_OPTIONS=( )
+UNPACK_OPTIONS=( )
 RSYNC_OPTIONS=( )
 
 while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --strip-components=*)
-            DOUNPACK_OPTIONS[${#DOUNPACK_OPTIONS[@]}]=--tar-option="${1}"
+            UNPACK_OPTIONS[${#UNPACK_OPTIONS[@]}]=--tar-option="${1}"
             ;;
 
         --exclude-from=*)
@@ -33,7 +33,7 @@ while [[ $# -gt 0 ]]; do
             ;;
 
         --tar-option=*)
-            DOUNPACK_OPTIONS[${#DOUNPACK_OPTIONS[@]}]="${1}"
+            UNPACK_OPTIONS[${#UNPACK_OPTIONS[@]}]="${1}"
             ;;
 
         --rsync-option=*)
@@ -129,8 +129,8 @@ TARFILE="${URL##*/}"
 
 UNPACKDIR="${TEMP}/repository"
 mkdir "${UNPACKDIR}"
-( cd "${UNPACKDIR}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" \
-    "${DOUNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
+( cd "${UNPACKDIR}" && "${PALUDIS_EBUILD_DIR}/utils/unpack" \
+    "${UNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
 
 rm "${TEMP}/${TARFILE}"
 
@@ -142,8 +142,8 @@ fi
 
 [[ -d "${LOCAL}" ]] || mkdir -p "${LOCAL}"
 ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
-    --compress --force --whole-file --delete --delete-after --stats \
-    --timeout=180 --exclude=/distfiles --exclude=/packages --exclude=/local \
+    --compress --force --whole-file --delete --delete-after --stats --timeout=180 \
+    ${PALUDIS_SYNC_FILTER_FILE:+--filter "merge ${PALUDIS_SYNC_FILTER_FILE}"} \
     --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/" || exit $?
 
 rm -rf "${TEMP}"

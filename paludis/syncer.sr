@@ -6,6 +6,7 @@ make_class_SyncOptions()
     visible
 
     key options std::string
+    key filter_file FSEntry
 
     doxygen_comment << "END"
         /**

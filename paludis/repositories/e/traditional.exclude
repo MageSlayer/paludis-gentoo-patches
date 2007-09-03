@@ -1,0 +1,4 @@
+exclude /distfiles
+exclude /packages
+exclude /local
+hide **/files/digest-*

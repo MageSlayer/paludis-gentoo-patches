@@ -539,6 +539,12 @@ TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
     return result;
 }
 
+FSEntry
+TraditionalLayout::sync_filter_file() const
+{
+    return FSEntry(DATADIR "/paludis/traditional.exclude");
+}
+
 void
 TraditionalLayout::invalidate_masks()
 {

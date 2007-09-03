@@ -597,7 +597,7 @@ ERepository::do_sync() const
                                 .environment(_imp->params.environment)
                                 .local(stringify(_imp->params.location))
                                 .remote(*s));
-        SyncOptions opts(_imp->params.sync_options);
+        SyncOptions opts(_imp->params.sync_options, _imp->layout->sync_filter_file());
         try
         {
             syncer.sync(opts);

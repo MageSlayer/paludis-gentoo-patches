@@ -135,6 +135,8 @@ namespace paludis
                 virtual tr1::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+                virtual FSEntry sync_filter_file() const;
+
                 virtual void invalidate_masks() = 0;
 
                 ///\}
