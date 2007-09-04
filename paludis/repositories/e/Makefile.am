@@ -480,7 +480,7 @@ endif
 
 paludis_datadir = $(datadir)/paludis
 
-paludis_data_DATA = traditional.exclude
+dist_paludis_data_DATA = traditional.exclude
 
 TESTS = \
 	dep_lexer_TEST \
