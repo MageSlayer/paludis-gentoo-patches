@@ -41,6 +41,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/action.hh>
+#include <paludis/package_id.hh>
 
 /** \file
  * Handle the --install action for the contrarius program.
@@ -98,49 +99,49 @@ namespace
             {
                 return false;
             }
-    };
 
-    void show_resume_command(tr1::shared_ptr<Environment> env, const InstallTask & task)
-    {
-        if (CommandLine::get_instance()->a_fetch.specified() ||
-                CommandLine::get_instance()->a_pretend.specified())
-            return;
-
-        if (task.current_dep_list_entry() != task.dep_list().end())
-        {
-            std::string resume_command = env->paludis_command() + " "
-                "--dl-installed-deps-pre discard "
-                "--dl-installed-deps-runtime discard "
-                "--dl-installed-deps-post discard "
-                "--dl-uninstalled-deps-pre discard "
-                "--dl-uninstalled-deps-runtime discard "
-                "--dl-uninstalled-deps-post discard "
-                "--install --preserve-world";
-            for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
-                    i != i_end ; ++i)
-                if (dlk_package == i->kind)
-                    resume_command = resume_command + " '=" + stringify(*i->package_id) + "'";
-
-            if (CommandLine::get_instance()->a_resume_command_template.specified())
+            virtual void show_resume_command() const
             {
-                std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
-                char* resume_template = strdup(file_name.c_str());
-                FDOutputStream resume_command_file(mkstemp(resume_template));
-                cerr << endl;
-                cerr << "Resume command saved to file: " << resume_template;
-                cerr << endl;
-                resume_command_file << resume_command << endl;
-                std::free(resume_template);
+                if (CommandLine::get_instance()->a_fetch.specified() ||
+                        CommandLine::get_instance()->a_pretend.specified())
+                    return;
+
+                if (current_dep_list_entry() != dep_list().end())
+                {
+                    std::string resume_command = environment()->paludis_command() + " "
+                        "--dl-installed-deps-pre discard "
+                        "--dl-installed-deps-runtime discard "
+                        "--dl-installed-deps-post discard "
+                        "--dl-uninstalled-deps-pre discard "
+                        "--dl-uninstalled-deps-runtime discard "
+                        "--dl-uninstalled-deps-post discard "
+                        "--install --preserve-world";
+                    for (DepList::Iterator i(current_dep_list_entry()), i_end(dep_list().end()) ;
+                            i != i_end ; ++i)
+                        if (dlk_package == i->kind)
+                            resume_command = resume_command + " '=" + stringify(*i->package_id) + "'";
+
+                    if (CommandLine::get_instance()->a_resume_command_template.specified())
+                    {
+                        std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
+                        char* resume_template = strdup(file_name.c_str());
+                        FDOutputStream resume_command_file(mkstemp(resume_template));
+                        cerr << endl;
+                        cerr << "Resume command saved to file: " << resume_template;
+                        cerr << endl;
+                        resume_command_file << resume_command << endl;
+                        std::free(resume_template);
+                    }
+                    else
+                        cerr << "Resume command: " << resume_command << endl;
+                }
             }
-            else
-                cerr << "Resume command: " << resume_command << endl;
-        }
-    }
+    };
 
     class InstallKilledCatcher
     {
         private:
-            static const InstallTask * _task;
+            static const ConsoleInstallTask * _task;
 
             static tr1::shared_ptr<Environment> _env;
 
@@ -149,7 +150,7 @@ namespace
             sig_t _old;
 
         public:
-            InstallKilledCatcher(tr1::shared_ptr<Environment> env, const InstallTask & task) :
+            InstallKilledCatcher(tr1::shared_ptr<Environment> env, const ConsoleInstallTask & task) :
                 _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
             {
                 _task = &task;
@@ -163,7 +164,7 @@ namespace
             }
     };
 
-    const InstallTask * InstallKilledCatcher::_task(0);
+    const ConsoleInstallTask * InstallKilledCatcher::_task(0);
     tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
 
     void
@@ -195,7 +196,7 @@ namespace
                 ;
             cerr << endl;
             if (_task)
-                show_resume_command(_env, *_task);
+                _task->show_resume_command();
             cerr << endl;
             cerr << "Exiting with failure" << endl;
             exit(EXIT_FAILURE);
@@ -239,162 +240,20 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
             throw DoHelp("bad value for --debug-build");
     }
 
-    try
-    {
-        task.add_target(spec_str);
+    task.add_target(spec_str);
 
-        task.execute();
+    task.execute();
 
-        cout << endl;
+    cout << endl;
 
-        if (task.dep_list().has_errors())
-            return_code |= 1;
-    }
-    catch (const AmbiguousPackageNameError & e)
-    {
-        cout << endl;
-        cerr << "Query error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-        for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
-                o_end(e.end_options()) ; o != o_end ; ++o)
-            cerr << "    * " << colour(cl_package_name, *o) << endl;
-        cerr << endl;
-        return 1;
-    }
-    catch (const InstallActionError & e)
-    {
-        cout << endl;
-        cerr << "Install error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << e.message() << endl;
-        cerr << endl;
-
+    if (task.dep_list().has_errors())
         return_code |= 1;
-    }
-    catch (const FetchActionError & e)
-    {
-        cout << endl;
-        cerr << "Fetch error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << e.message() << endl;
-        cerr << endl;
-        if (e.failures())
-        {
-            for (Sequence<FetchActionFailure>::Iterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
-                    f != f_end ; ++f)
-            {
-                cerr << "  * File '" << f->target_file << "': ";
 
-                bool need_comma(false);
-                if (f->requires_manual_fetching)
-                {
-                    cerr << "requires manual fetching";
-                    need_comma = true;
-                }
+    if (task.had_resolution_failures())
+        return_code |= 3;
 
-                if (f->failed_automatic_fetching)
-                {
-                    if (need_comma)
-                        cerr << ", ";
-                    cerr << "failed automatic fetching";
-                    need_comma = true;
-                }
-
-                if (! f->failed_integrity_checks.empty())
-                {
-                    if (need_comma)
-                        cerr << "failed automatic fetching";
-                    cerr << "failed integrity checks: " << f->failed_integrity_checks;
-                    need_comma = true;
-                }
-
-                cerr << endl;
-            }
-        }
-
-        return_code |= 1;
-    }
-    catch (const NoSuchPackageError & e)
-    {
-        cout << endl;
-        cerr << "Query error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << "No such package '" << e.name() << "'" << endl;
-        return 1;
-    }
-    catch (const AllMaskedError & e)
-    {
-        try
-        {
-            tr1::shared_ptr<const PackageIDSequence> p(
-                    env->package_database()->query(
-                        query::Matches(e.query()) &
-                        query::SupportsAction<InstallAction>(),
-                        qo_order_by_version));
-
-            if (p->empty())
-            {
-                cout << endl;
-                cerr << "Query error:" << endl;
-                cerr << "  * " << e.backtrace("\n  * ");
-                cerr << "All versions of '" << e.query() << "' are masked" << endl;
-            }
-            else
-            {
-                cout << endl;
-                cerr << "Query error:" << endl;
-                cerr << "  * " << e.backtrace("\n  * ");
-                cerr << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
-                for (PackageIDSequence::Iterator pp(p->begin()), pp_end(p->end()) ;
-                        pp != pp_end ; ++pp)
-                {
-                    cerr << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
-
-                    bool need_comma(false);
-                    for (PackageID::MasksIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
-                            m != m_end ; ++m)
-                    {
-                        if (need_comma)
-                            cerr << ", ";
-                        cerr << (*m)->description();
-                        need_comma = true;
-                    }
-                    cerr << endl;
-                }
-            }
-        }
-        catch (...)
-        {
-            throw e;
-        }
-
-        return 1;
-    }
-    catch (const UseRequirementsNotMetError & e)
-    {
-        cout << endl;
-        cerr << "DepList USE requirements not met error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
-        cerr << endl;
-        cerr << "This error usually indicates that one of the packages you are trying to" << endl;
-        cerr << "install requires that another package be built with particular USE flags" << endl;
-        cerr << "enabled or disabled. You may be able to work around this restriction by" << endl;
-        cerr << "adjusting your use.conf." << endl;
-        cerr << endl;
-
-        return_code |= 1;
-    }
-    catch (const DepListError & e)
-    {
-        cout << endl;
-        cerr << "Dependency error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ") << e.message() << " ("
-            << e.what() << ")" << endl;
-        cerr << endl;
-
-        return_code |= 1;
-    }
+    if (task.had_action_failures())
+        return_code |= 7;
 
     return return_code;
 }

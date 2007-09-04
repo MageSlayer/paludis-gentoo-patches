@@ -24,6 +24,7 @@
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>

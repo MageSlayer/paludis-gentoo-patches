@@ -7,6 +7,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>

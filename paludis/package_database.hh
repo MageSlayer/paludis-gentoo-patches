@@ -20,9 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH 1
 
+#include <paludis/package_database-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
+#include <paludis/query-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -43,10 +45,6 @@
 
 namespace paludis
 {
-    class PackageDepSpec;
-    class Query;
-    class Environment;
-
     /**
      * A PackageDatabaseError is an error that occurs when performing some
      * operation upon a PackageDatabase.
@@ -230,21 +228,6 @@ namespace paludis
     };
 
     /**
-     * Do we want installed, installable or either when querying?
-     *
-     * \ingroup grppackagedatabase
-     */
-    enum InstallState
-    {
-        is_installed_only,    ///< Installed only
-        is_installable_only,  ///< Installable only
-        is_any,               ///< Either
-        last_is
-    } PALUDIS_ATTRIBUTE((deprecated));
-
-#include <paludis/package_database-se.hh>
-
-    /**
      * A PackageDatabase can be queried for Package instances.
      *
      * \ingroup grppackagedatabase
@@ -335,14 +318,6 @@ namespace paludis
 
             ///\}
     };
-
-    /**
-     * Write an InstallState to a stream.
-     *
-     * \ingroup grppackagedatabase
-     */
-    std::ostream &
-    operator<< (std::ostream &, const InstallState &) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -24,6 +24,7 @@
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
 

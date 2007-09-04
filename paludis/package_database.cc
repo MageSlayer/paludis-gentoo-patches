@@ -20,6 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -496,34 +497,5 @@ PackageDatabase::RepositoryIterator
 PackageDatabase::end_repositories() const
 {
     return RepositoryIterator(_imp->repositories.end());
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & o, const InstallState & s)
-{
-    do
-    {
-        switch (s)
-        {
-            case is_installed_only:
-                o << "installed_only";
-                continue;
-
-            case is_installable_only:
-                o << "installable_only";
-                continue;
-
-            case is_any:
-                o << "any";
-                continue;
-
-            case last_is:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Bad InstallState");
-    } while (false);
-
-    return o;
 }
 

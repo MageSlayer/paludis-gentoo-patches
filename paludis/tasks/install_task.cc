@@ -27,6 +27,7 @@
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -63,6 +64,9 @@ namespace paludis
         bool had_package_targets;
         bool override_target_type;
 
+        bool had_action_failures;
+        bool had_resolution_failures;
+
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
                 tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
@@ -88,7 +92,9 @@ namespace paludis
             preserve_world(false),
             had_set_targets(false),
             had_package_targets(false),
-            override_target_type(false)
+            override_target_type(false),
+            had_action_failures(false),
+            had_resolution_failures(false)
         {
         }
     };
@@ -112,6 +118,8 @@ InstallTask::clear()
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
     _imp->raw_targets.clear();
+    _imp->had_action_failures = false;
+    _imp->had_package_targets = false;
 }
 
 void
@@ -128,10 +136,16 @@ InstallTask::add_target(const std::string & target)
         if ((target != "insecurity") && ((s = ((_imp->env->set(SetName(target)))))))
         {
             if (_imp->had_set_targets)
+            {
+                _imp->had_resolution_failures = true;
                 throw MultipleSetTargetsSpecified();
+            }
 
             if (_imp->had_package_targets)
+            {
+                _imp->had_resolution_failures = true;
                 throw HadBothPackageAndSetTargets();
+            }
 
             _imp->had_set_targets = true;
             if (! _imp->override_target_type)
@@ -149,7 +163,10 @@ InstallTask::add_target(const std::string & target)
         Log::get_instance()->message(ll_debug, lc_context) << "target '" << target << "' is a package";
 
         if (_imp->had_set_targets)
+        {
+            _imp->had_resolution_failures = true;
             throw HadBothPackageAndSetTargets();
+        }
 
         _imp->had_package_targets = true;
         if (! _imp->override_target_type)
@@ -179,7 +196,7 @@ InstallTask::add_target(const std::string & target)
 }
 
 void
-InstallTask::execute()
+InstallTask::_execute()
 {
     Context context("When executing install task:");
 
@@ -516,6 +533,60 @@ InstallTask::execute()
     }
 }
 
+void
+InstallTask::execute()
+{
+    try
+    {
+        _execute();
+    }
+    catch (const AmbiguousPackageNameError & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_ambiguous_package_name_error(e);
+    }
+    catch (const InstallActionError & e)
+    {
+        _imp->had_action_failures = true;
+        on_install_action_error(e);
+    }
+    catch (const FetchActionError & e)
+    {
+        _imp->had_action_failures = true;
+        on_fetch_action_error(e);
+    }
+    catch (const NoSuchPackageError & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_no_such_package_error(e);
+    }
+    catch (const AllMaskedError & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_all_masked_error(e);
+    }
+    catch (const UseRequirementsNotMetError & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_use_requirements_not_met_error(e);
+    }
+    catch (const DepListError & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_dep_list_error(e);
+    }
+    catch (const HadBothPackageAndSetTargets & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_had_both_package_and_set_targets_error(e);
+    }
+    catch (const MultipleSetTargetsSpecified & e)
+    {
+        _imp->had_resolution_failures = true;
+        on_multiple_set_targets_specified(e);
+    }
+}
+
 const DepList &
 InstallTask::dep_list() const
 {
@@ -703,5 +774,17 @@ InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>
             if ((*r)->world_interface && (*i)->package_ptr())
                 (*r)->world_interface->add_to_world(*(*i)->package_ptr());
     }
+}
+
+bool
+InstallTask::had_action_failures() const
+{
+    return _imp->had_action_failures;
+}
+
+bool
+InstallTask::had_resolution_failures() const
+{
+    return _imp->had_resolution_failures;
 }
 

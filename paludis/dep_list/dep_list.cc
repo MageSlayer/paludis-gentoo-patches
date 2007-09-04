@@ -31,6 +31,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/query.hh>
+#include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
 
 #include <paludis/util/iterator.hh>

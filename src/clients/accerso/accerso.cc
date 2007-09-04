@@ -22,6 +22,7 @@
 #include "command_line.hh"
 #include <paludis/about.hh>
 #include <paludis/action.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>

@@ -24,6 +24,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/package_id.hh>
 #include <fstream>
 #include <iostream>
 #include <vector>

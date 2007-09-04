@@ -22,6 +22,7 @@
 
 #include <paludis/query.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/action.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 

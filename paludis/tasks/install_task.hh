@@ -23,8 +23,11 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/exceptions.hh>
+#include <paludis/tasks/exceptions.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/action-fwd.hh>
+#include <paludis/package_database-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
@@ -41,6 +44,9 @@ namespace paludis
         PrivateImplementationPattern<InstallTask>,
         InstantiationPolicy<InstallTask, instantiation_method::NonCopyableTag>
     {
+        private:
+            void _execute();
+
         protected:
             ///\name Basic operations
             ///\{
@@ -77,13 +83,13 @@ namespace paludis
 
             void add_target(const std::string &);
             void clear();
-            bool had_set_targets() const;
-            bool had_package_targets() const;
+            bool had_set_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             void override_target_type(const DepListTargetType);
 
             typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsIterator;
-            TargetsIterator begin_targets() const;
-            TargetsIterator end_targets() const;
+            TargetsIterator begin_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            TargetsIterator end_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
@@ -135,6 +141,17 @@ namespace paludis
 
             virtual void on_installed_paludis();
 
+            virtual void on_ambiguous_package_name_error(const AmbiguousPackageNameError &) = 0;
+            virtual void on_no_such_package_error(const NoSuchPackageError &) = 0;
+            virtual void on_all_masked_error(const AllMaskedError &) = 0;
+            virtual void on_use_requirements_not_met_error(const UseRequirementsNotMetError &) = 0;
+            virtual void on_dep_list_error(const DepListError &) = 0;
+            virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &) = 0;
+            virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &) = 0;
+
+            virtual void on_install_action_error(const InstallActionError &) = 0;
+            virtual void on_fetch_action_error(const FetchActionError &) = 0;
+
             ///\}
 
             ///\name Logic
@@ -153,28 +170,38 @@ namespace paludis
             /**
              * Fetch our deplist.
              */
-            const DepList & dep_list() const;
+            const DepList & dep_list() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our current deplist entry.
              */
-            DepList::Iterator current_dep_list_entry() const;
+            DepList::Iterator current_dep_list_entry() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our environment.
              */
-            Environment * environment();
+            Environment * environment() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our environment.
              */
-            const Environment * environment() const;
+            const Environment * environment() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Perform a hook. By default, delegates to environment.
              */
             virtual HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Have we had any resolution failures?
+             */
+            virtual bool had_resolution_failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Have we had any action failures?
+             */
+            virtual bool had_action_failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

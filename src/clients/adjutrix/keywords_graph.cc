@@ -30,6 +30,7 @@
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_id.hh>
 
 #include <set>
 #include <map>

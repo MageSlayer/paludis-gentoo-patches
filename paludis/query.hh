@@ -20,8 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QUERY_HH
 #define PALUDIS_GUARD_PALUDIS_QUERY_HH 1
 
-#include <paludis/name.hh>
-#include <paludis/package_id.hh>
+#include <paludis/name-fwd.hh>
+#include <paludis/query-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 #include <iosfwd>
 
 /** \file
@@ -32,10 +36,6 @@
 
 namespace paludis
 {
-    class Environment;
-    class PackageDepSpec;
-    class FSEntry;
-
     /**
      * A QueryDelegate subclass is used by Query to provide the information
      * needed by PackageDatabase::query.
@@ -330,24 +330,6 @@ namespace paludis
                 ///}
         };
     }
-
-    /**
-     * Create a Query that returns packages for which both Query parameters
-     * hold.
-     *
-     * \see Query
-     * \see PackageDatabase::query
-     * \ingroup grpquery
-     */
-    Query operator& (const Query &, const Query &) PALUDIS_VISIBLE;
-
-    /**
-     * Output a human-readable description of a Query.
-     *
-     * \see Query
-     * \ingroup grpquery
-     */
-    std::ostream & operator<< (std::ostream &, const Query &) PALUDIS_VISIBLE;
 }
 
 #endif

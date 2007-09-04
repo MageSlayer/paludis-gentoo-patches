@@ -90,15 +90,6 @@ module Paludis
                 db.query(1);
             end
 
-            #outputs a deprecation warning
-            assert_nothing_raised do
-                db.query(pda, InstallState::Any)
-            end
-
-            assert_nothing_raised do
-                db.query(pda, InstallState::Any, QueryOrder::Whatever)
-            end
-
             assert_nothing_raised do
                 db.query(Query::Matches.new(pda), QueryOrder::Whatever)
             end
@@ -109,7 +100,7 @@ module Paludis
         end
 
         def test_package_database_query
-            a = db.query(pda, InstallState::InstallableOnly, QueryOrder::Whatever)
+            a = db.query(Query::Matches.new(pda), QueryOrder::Whatever)
             assert_kind_of Array, a
             assert_equal 1, a.length
             pid = a.first
@@ -128,7 +119,7 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository_name
 
-            a = db.query(pda, InstallState::Any, QueryOrder::Whatever)
+            a = db.query(Query::Matches.new(pda), QueryOrder::Whatever)
             assert_kind_of Array, a
             assert_equal 1, a.length
             pid = a.first
@@ -137,7 +128,7 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository_name
 
-            a = db.query(pda2, InstallState::InstallableOnly, QueryOrder::OrderByVersion)
+            a = db.query(Query::Matches.new(pda2) & Query::SupportsInstallAction.new, QueryOrder::OrderByVersion)
             assert_kind_of Array, a
             assert_equal 2, a.length
             pid = a.shift
@@ -167,16 +158,17 @@ module Paludis
             assert_equal pid.repository_name, pid2.repository_name
 
 
-            a = db.query(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive), InstallState::InstallableOnly, QueryOrder::Whatever)
+            a = db.query(Query::Matches.new(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive)),
+                         QueryOrder::Whatever)
             assert a.empty?
 
-            a = db.query(pda2, InstallState::InstalledOnly, QueryOrder::Whatever)
+            a = db.query(Query::Matches.new(pda2) & Query::SupportsInstalledAction.new, QueryOrder::Whatever)
             assert a.empty?
         end
 
         def test_package_database_query_bad
             assert_raise TypeError do
-                db.query(123, InstallState::Any)
+                db.query(123, QueryOrder::Whatever)
             end
             assert_raise TypeError do
                 db.query(pda2, "Either")

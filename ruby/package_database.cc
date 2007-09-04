@@ -33,7 +33,6 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_package_database;
-    static VALUE c_package_database_install_state;
     static VALUE c_package_database_query_order;
 
     /*
@@ -94,7 +93,7 @@ namespace
         tr1::shared_ptr<const PackageIDSequence> items;
         try
         {
-            if (2 == argc && is_kind_of_query(argv[0]))
+            if (2 == argc)
             {
                 Query q = value_to_query(argv[0]);
                 QueryOrder qo = static_cast<QueryOrder>(NUM2INT(argv[1]));
@@ -104,48 +103,8 @@ namespace
 
                 items = ((*self_ptr)->query(q, qo));
             }
-            else if (2 == argc || 3 == argc)
-            {
-                QueryOrder qo;
-                Query q  = query::Matches(*value_to_package_dep_spec(argv[0]));
-                InstallState is = static_cast<InstallState>(NUM2INT(argv[1]));
-
-                switch (is)
-                {
-                    case is_installed_only:
-                        q = q & query::SupportsAction<InstalledAction>();
-                        break;
-
-                    case is_installable_only:
-                        q = q & query::SupportsAction<InstallAction>();
-                        break;
-
-                    case is_any:
-                    case last_is:
-                        ;
-
-                }
-                if (2 ==argc)
-                {
-                    qo = qo_order_by_version;
-                    rb_warn("Calling query with (PackageDepSpec, InstallState) has been deprecated");
-                }
-                else
-                {
-                    qo = static_cast<QueryOrder>(NUM2INT(argv[2]));
-                    rb_warn("Calling query with (PackageDepSpec, InstallState, QueryOrder) has been deprecated");
-                }
-
-                tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, tr1::shared_ptr<PackageDatabase>, self_ptr);
-
-                items = ((*self_ptr)->query(q, qo));
-
-            }
             else
-            {
-                rb_raise(rb_eArgError, "query expects two or three arguments, but got %d",argc);
-            }
+                rb_raise(rb_eArgError, "query expects two arguments, but got %d",argc);
         }
         catch (const std::exception & e)
         {
@@ -259,18 +218,6 @@ namespace
                 RUBY_FUNC_CAST(&package_database_fetch_repository), 1);
         rb_define_method(c_package_database, "more_important_than",
                 RUBY_FUNC_CAST(&package_database_more_important_than), 2);
-
-        /*
-         * Document-module: Paludis::InstallState
-         *
-         * Do we want only installed packages, only installable packages, or any package when querying?
-         */
-        c_package_database_install_state = rb_define_module_under(paludis_module(), "InstallState");
-        for (InstallState l(static_cast<InstallState>(0)), l_end(last_is) ; l != l_end ;
-                l = static_cast<InstallState>(static_cast<int>(l) + 1))
-            rb_define_const(c_package_database_install_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/package_database.hh, InstallState, c_package_database_install_state>
 
         /*
          * Document-module: Paludis::QueryOrder

@@ -8,6 +8,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>

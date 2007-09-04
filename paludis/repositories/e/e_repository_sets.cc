@@ -28,6 +28,7 @@
 #include <paludis/query.hh>
 #include <paludis/set_file.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/package_id.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/util/dir_iterator.hh>

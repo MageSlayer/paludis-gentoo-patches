@@ -32,6 +32,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
+#include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -48,6 +49,7 @@
 #include <limits>
 
 using namespace paludis;
+using std::endl;
 
 #include <src/output/console_install_task-sr.cc>
 
@@ -1186,5 +1188,177 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
     }
 
     output_endl();
+}
+
+void
+ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameError & e)
+{
+    output_stream() << endl;
+    output_stream() << "Query error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ");
+    output_stream() << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
+    for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            o_end(e.end_options()) ; o != o_end ; ++o)
+        output_stream() << "    * " << colour(cl_package_name, *o) << endl;
+    output_stream() << endl;
+}
+
+void
+ConsoleInstallTask::on_install_action_error(const InstallActionError & e)
+{
+    output_stream() << endl;
+    output_stream() << "Install error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ");
+    output_stream() << e.message() << endl;
+    output_stream() << endl;
+    show_resume_command();
+    output_stream() << endl;
+}
+
+void
+ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
+{
+    output_stream() << endl;
+    output_stream() << "Fetch error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ");
+    output_stream() << e.message() << endl;
+    output_stream() << endl;
+
+    if (e.failures())
+    {
+        for (Sequence<FetchActionFailure>::Iterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+                f != f_end ; ++f)
+        {
+            output_stream() << "  * File '" << f->target_file << "': ";
+
+            bool need_comma(false);
+            if (f->requires_manual_fetching)
+            {
+                output_stream() << "requires manual fetching";
+                need_comma = true;
+            }
+
+            if (f->failed_automatic_fetching)
+            {
+                if (need_comma)
+                    output_stream() << ", ";
+                output_stream() << "failed automatic fetching";
+                need_comma = true;
+            }
+
+            if (! f->failed_integrity_checks.empty())
+            {
+                if (need_comma)
+                    output_stream() << "failed automatic fetching";
+                output_stream() << "failed integrity checks: " << f->failed_integrity_checks;
+                need_comma = true;
+            }
+
+            output_stream() << endl;
+        }
+    }
+
+    show_resume_command();
+    output_stream() << endl;
+}
+
+void
+ConsoleInstallTask::on_no_such_package_error(const NoSuchPackageError & e)
+{
+    output_stream() << endl;
+    output_stream() << "Query error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ");
+    output_stream() << "No such package '" << e.name() << "'" << endl;
+}
+
+void
+ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
+{
+    try
+    {
+        tr1::shared_ptr<const PackageIDSequence> p(
+                environment()->package_database()->query(
+                    query::Matches(e.query()) & query::SupportsAction<InstallAction>(), qo_order_by_version));
+        if (p->empty())
+        {
+            output_stream() << endl;
+            output_stream() << "Query error:" << endl;
+            output_stream() << "  * " << e.backtrace("\n  * ");
+            output_stream() << "No versions of '" << e.query() << "' are available" << endl;
+        }
+        else
+        {
+            output_stream() << endl;
+            output_stream() << "Query error:" << endl;
+            output_stream() << "  * " << e.backtrace("\n  * ");
+            output_stream() << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
+            for (PackageIDSequence::Iterator pp(p->begin()), pp_end(p->end()) ;
+                    pp != pp_end ; ++pp)
+            {
+                output_stream() << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
+
+                bool need_comma(false);
+                for (PackageID::MasksIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
+                        m != m_end ; ++m)
+                {
+                    if (need_comma)
+                        output_stream() << ", ";
+                    output_stream() << (*m)->description();
+
+                    need_comma = true;
+                }
+                output_stream() << endl;
+            }
+        }
+    }
+    catch (...)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Couldn't work out a friendly error message for mask reasons");
+        throw e;
+    }
+}
+
+void
+ConsoleInstallTask::on_use_requirements_not_met_error(const UseRequirementsNotMetError & e)
+{
+    output_stream() << endl;
+    output_stream() << "DepList USE requirements not met error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+    output_stream() << endl;
+    output_stream() << "This error usually indicates that one of the packages you are trying to" << endl;
+    output_stream() << "install requires that another package be built with particular USE flags" << endl;
+    output_stream() << "enabled or disabled. You may be able to work around this restriction by" << endl;
+    output_stream() << "adjusting your use.conf." << endl;
+    output_stream() << endl;
+}
+
+void
+ConsoleInstallTask::on_dep_list_error(const DepListError & e)
+{
+    output_stream() << endl;
+    output_stream() << "Dependency error:" << endl;
+    output_stream() << "  * " << e.backtrace("\n  * ") << e.message() << " ("
+        << e.what() << ")" << endl;
+    output_stream() << endl;
+}
+
+void
+ConsoleInstallTask::on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &)
+{
+    output_stream() << endl;
+    output_stream() << "Error: both package sets and packages were specified." << endl;
+    output_stream() << endl;
+    output_stream() << "Package sets (like 'system' and 'world') cannot be installed at the same time" << endl;
+    output_stream() << "as ordinary packages." << endl;
+}
+
+void
+ConsoleInstallTask::on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &)
+{
+    output_stream() << endl;
+    output_stream() << "Error: multiple package sets were specified." << endl;
+    output_stream() << endl;
+    output_stream() << "Package sets (like 'system' and 'world') must be installed individually," << endl;
+    output_stream() << "without any other sets or packages." << endl;
 }
 

@@ -21,6 +21,7 @@
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/condition_tracker.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
