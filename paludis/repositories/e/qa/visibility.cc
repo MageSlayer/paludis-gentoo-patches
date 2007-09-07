@@ -91,6 +91,10 @@ namespace
             viable = true;
         }
 
+        void visit_leaf(const DependencyLabelDepSpec &)
+        {
+        }
+
         void visit_leaf(const PackageDepSpec & orig_p)
         {
             success = false;

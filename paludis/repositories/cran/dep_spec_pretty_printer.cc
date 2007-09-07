@@ -76,6 +76,11 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec &)
 {
 }
 
+void
+DepSpecPrettyPrinter::visit_leaf(const DependencyLabelDepSpec &)
+{
+}
+
 std::ostream &
 paludis::cranrepository::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 {

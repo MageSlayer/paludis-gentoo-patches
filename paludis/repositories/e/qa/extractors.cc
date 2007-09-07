@@ -96,7 +96,11 @@ namespace
         {
         }
 
-        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        void visit_leaf(const URILabelDepSpec &)
+        {
+        }
+
+        void visit_leaf(const DependencyLabelDepSpec &)
         {
         }
 
@@ -179,7 +183,11 @@ namespace
             add_requirements();
         }
 
-        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        void visit_leaf(const URILabelDepSpec &)
+        {
+        }
+
+        void visit_leaf(const DependencyLabelDepSpec &)
         {
         }
 

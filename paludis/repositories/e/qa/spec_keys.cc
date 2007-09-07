@@ -142,7 +142,11 @@ namespace
         {
         }
 
-        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        void visit_leaf(const URILabelDepSpec &)
+        {
+        }
+
+        void visit_leaf(const DependencyLabelDepSpec &)
         {
         }
 

@@ -44,6 +44,8 @@ namespace paludis
                 void visit_leaf(const PackageDepSpec &);
 
                 void visit_leaf(const BlockDepSpec &);
+
+                void visit_leaf(const DependencyLabelDepSpec &);
         };
 
         std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p);
