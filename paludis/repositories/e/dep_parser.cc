@@ -23,12 +23,14 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <stack>
+#include <set>
 
 /** \file
  * Implementation for dep_parser.hh things.
@@ -55,6 +57,7 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 namespace
 {
     struct LabelsAreURI;
+    struct LabelsAreDependency;
 
     enum DepParserState
     {
@@ -256,6 +259,20 @@ namespace
                             new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(parse_uri_label(s, e))));
             else
                 throw DepStringParseError(s, "URI labels not allowed in this EAPI");
+        }
+    };
+
+    template <typename H_>
+    struct HandleLabel<H_, LabelsAreDependency>
+    {
+        static void add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p,
+                const EAPI & e)
+        {
+            if (e.supported && e.supported->dependency_labels)
+                p(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelDepSpec> >(
+                            new TreeLeaf<H_, DependencyLabelDepSpec>(parse_dependency_label(s, e))));
+            else
+                throw DepStringParseError(s, "Dependency labels not allowed in this EAPI");
         }
     };
 
@@ -630,7 +647,7 @@ paludis::erepository::parse_depend(const std::string & s, const EAPI & e)
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' dependencies");
 
-    return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, void>(s,
+    return parse<DependencySpecTree, ParsePackageOrBlockDepSpec, true, true, LabelsAreDependency>(s,
             disallow_any_use(e.supported->dependency_spec_tree_parse_mode),
             ParsePackageOrBlockDepSpec(e.supported->package_dep_spec_parse_mode), e);
 }
@@ -711,6 +728,59 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
         l->add_label(make_shared_ptr(new URIManualOnlyLabel(s.substr(0, s.length() - 1))));
     else
         throw DepStringParseError(s, "Label '" + s + "' maps to unknown class '" + c + "'");
+
+    return l;
+}
+
+tr1::shared_ptr<DependencyLabelDepSpec>
+paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
+{
+    Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
+
+    if (s.empty())
+        throw DepStringParseError(s, "Empty label");
+
+    std::set<std::string> labels;
+    std::string label(s.substr(0, s.length() - 1));
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(",+").tokenise(label, std::inserter(labels, labels.end()));
+
+    tr1::shared_ptr<DependencyLabelDepSpec> l(new DependencyLabelDepSpec);
+
+    for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
+    {
+        std::string c(e.supported->dependency_labels->class_for_label(*it));
+        if (c.empty())
+            throw DepStringParseError(s, "Unknown label '" + *it + "'");
+
+        if (c == "DependencyHostLabel")
+            l->add_label(make_shared_ptr(new DependencyHostLabel(*it)));
+        else if (c == "DependencyTargetLabel")
+            l->add_label(make_shared_ptr(new DependencyTargetLabel(*it)));
+        else if (c == "DependencyBuildLabel")
+            l->add_label(make_shared_ptr(new DependencyBuildLabel(*it)));
+        else if (c == "DependencyRunLabel")
+            l->add_label(make_shared_ptr(new DependencyRunLabel(*it)));
+        else if (c == "DependencyInstallLabel")
+            l->add_label(make_shared_ptr(new DependencyInstallLabel(*it)));
+        else if (c == "DependencyCompileLabel")
+            l->add_label(make_shared_ptr(new DependencyCompileLabel(*it)));
+        else if (c == "DependencySuggestedLabel")
+            l->add_label(make_shared_ptr(new DependencySuggestedLabel(*it)));
+        else if (c == "DependencyRecommendedLabel")
+            l->add_label(make_shared_ptr(new DependencyRecommendedLabel(*it)));
+        else if (c == "DependencyRequiredLabel")
+            l->add_label(make_shared_ptr(new DependencyRequiredLabel(*it)));
+        else if (c == "DependencyAnyLabel")
+            l->add_label(make_shared_ptr(new DependencyAnyLabel(*it)));
+        else if (c == "DependencyMineLabel")
+            l->add_label(make_shared_ptr(new DependencyMineLabel(*it)));
+        else if (c == "DependencyPrimaryLabel")
+            l->add_label(make_shared_ptr(new DependencyPrimaryLabel(*it)));
+        else if (c == "DependencyABILabel")
+            l->add_label(make_shared_ptr(new DependencyABILabel(*it)));
+        else
+            throw DepStringParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
+    }
 
     return l;
 }

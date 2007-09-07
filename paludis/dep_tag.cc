@@ -231,8 +231,15 @@ namespace
         }
 
         void
-        visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        visit_leaf(const URILabelDepSpec &)
         {
+        }
+
+        void
+        visit_leaf(const DependencyLabelDepSpec & l)
+        {
+            std::copy(l.begin(), l.end(), std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));
+            s << ":";
         }
     };
 

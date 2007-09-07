@@ -103,3 +103,8 @@ RangeRewriter::visit_leaf(const BlockDepSpec &)
     _invalid = true;
 }
 
+void
+RangeRewriter::visit_leaf(const DependencyLabelDepSpec &)
+{
+    _invalid = true;
+}

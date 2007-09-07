@@ -38,6 +38,8 @@ namespace paludis
     class BlockDepSpec;
     class StringDepSpec;
     template <typename T_> class LabelsDepSpec;
+    typedef LabelsDepSpec<URILabelVisitorTypes> URILabelDepSpec;
+    typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelDepSpec;
 
 #include <paludis/dep_spec-se.hh>
 
@@ -65,6 +67,13 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const LabelsDepSpec<URILabelVisitorTypes> &) PALUDIS_VISIBLE;
 
     /**
+     * A LabelsDepSpec<DependencyLabelVisitorTypes> can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const LabelsDepSpec<DependencyLabelVisitorTypes> &) PALUDIS_VISIBLE;
+
+    /**
      * A generic DepSpec heirarchy.
      *
      * \ingroup grpdepspecs
@@ -78,6 +87,7 @@ namespace paludis
             TreeLeaf<GenericSpecTree, PackageDepSpec>,
             TreeLeaf<GenericSpecTree, BlockDepSpec>,
             TreeLeaf<GenericSpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
+            TreeLeaf<GenericSpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
             ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
@@ -181,6 +191,7 @@ namespace paludis
             DepSpec,
             TreeLeaf<DependencySpecTree, PackageDepSpec>,
             TreeLeaf<DependencySpecTree, BlockDepSpec>,
+            TreeLeaf<DependencySpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
             ConstTreeSequence<DependencySpecTree, AllDepSpec>,
             ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
             ConstTreeSequence<DependencySpecTree, UseDepSpec>

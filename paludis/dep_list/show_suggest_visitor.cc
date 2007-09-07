@@ -131,3 +131,9 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
     Log::get_instance()->message(ll_warning, lc_context, "Nothing visible found for '" + stringify(a) + "'");
 }
 
+void
+ShowSuggestVisitor::visit_leaf(const DependencyLabelDepSpec &)
+{
+    // XXX implement
+}
+

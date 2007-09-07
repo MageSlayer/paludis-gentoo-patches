@@ -42,6 +42,27 @@ namespace paludis
     {
     };
 
+    struct DependencyLabelVisitorTypes :
+        VisitorTypes<
+            DependencyLabelVisitorTypes,
+            DependencyLabel,
+            DependencyHostLabel,
+            DependencyTargetLabel,
+            DependencyBuildLabel,
+            DependencyRunLabel,
+            DependencyInstallLabel,
+            DependencyCompileLabel,
+            DependencySuggestedLabel,
+            DependencyRecommendedLabel,
+            DependencyRequiredLabel,
+            DependencyAnyLabel,
+            DependencyMineLabel,
+            DependencyPrimaryLabel,
+            DependencyABILabel
+        >
+    {
+    };
+
     class PALUDIS_VISIBLE URILabel :
         private InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>,
         public virtual ConstAcceptInterface<URILabelVisitorTypes>
@@ -64,6 +85,34 @@ namespace paludis
         public:
             ConcreteURILabel(const std::string &);
             ~ConcreteURILabel();
+
+            virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            typedef T_ Tag;
+    };
+
+    class PALUDIS_VISIBLE DependencyLabel :
+        private InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>,
+        public virtual ConstAcceptInterface<DependencyLabelVisitorTypes>
+    {
+        public:
+            virtual ~DependencyLabel() = 0;
+
+            virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    template <typename T_>
+    class PALUDIS_VISIBLE ConcreteDependencyLabel :
+        public DependencyLabel,
+        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, ConcreteDependencyLabel<T_> >,
+        private PrivateImplementationPattern<ConcreteDependencyLabel<T_> >
+    {
+        private:
+            using PrivateImplementationPattern<ConcreteDependencyLabel<T_> >::_imp;
+
+        public:
+            ConcreteDependencyLabel(const std::string &);
+            ~ConcreteDependencyLabel();
 
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

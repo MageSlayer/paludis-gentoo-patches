@@ -37,6 +37,26 @@ namespace paludis
     typedef ConcreteURILabel<enum URIManualOnlyLabelTag { }> URIManualOnlyLabel;
 
     std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
+
+    struct DependencyLabelVisitorTypes;
+    struct DependencyLabel;
+
+    template <typename T_> struct ConcreteDependencyLabel;
+    typedef ConcreteDependencyLabel<enum DependencyHostLabelTag { }> DependencyHostLabel;
+    typedef ConcreteDependencyLabel<enum DependencyTargetLabelTag { }> DependencyTargetLabel;
+    typedef ConcreteDependencyLabel<enum DependencyBuildLabelTag { }> DependencyBuildLabel;
+    typedef ConcreteDependencyLabel<enum DependencyRunLabelTag { }> DependencyRunLabel;
+    typedef ConcreteDependencyLabel<enum DependencyInstallLabelTag { }> DependencyInstallLabel;
+    typedef ConcreteDependencyLabel<enum DependencyCompileLabelTag { }> DependencyCompileLabel;
+    typedef ConcreteDependencyLabel<enum DependencySuggestedLabelTag { }> DependencySuggestedLabel;
+    typedef ConcreteDependencyLabel<enum DependencyRecommendedLabelTag { }> DependencyRecommendedLabel;
+    typedef ConcreteDependencyLabel<enum DependencyRequiredLabelTag { }> DependencyRequiredLabel;
+    typedef ConcreteDependencyLabel<enum DependencyAnyLabelTag { }> DependencyAnyLabel;
+    typedef ConcreteDependencyLabel<enum DependencyMineLabelTag { }> DependencyMineLabel;
+    typedef ConcreteDependencyLabel<enum DependencyPrimaryLabelTag { }> DependencyPrimaryLabel;
+    typedef ConcreteDependencyLabel<enum DependencyABILabelTag { }> DependencyABILabel;
+
+    std::ostream & operator<< (std::ostream &, const DependencyLabel &) PALUDIS_VISIBLE;
 }
 
 #endif

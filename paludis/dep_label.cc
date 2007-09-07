@@ -30,6 +30,13 @@ paludis::operator<< (std::ostream & s, const URILabel & l)
     return s;
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const DependencyLabel & l)
+{
+    s << l.text();
+    return s;
+}
+
 URILabel::~URILabel()
 {
 }
@@ -74,3 +81,59 @@ template class ConcreteURILabel<URIListedThenMirrorsLabel::Tag>;
 template class ConcreteURILabel<URILocalMirrorsOnlyLabel::Tag>;
 template class ConcreteURILabel<URIManualOnlyLabel::Tag>;
 
+std::ostream & operator<<(std::ostream & s, const DependencyLabel & l)
+{
+    s << l.text();
+    return s;
+}
+
+DependencyLabel::~DependencyLabel()
+{
+}
+
+namespace paludis
+{
+    template <>
+    template <typename T_>
+    struct Implementation<ConcreteDependencyLabel<T_> >
+    {
+        const std::string text;
+
+        Implementation(const std::string & t) :
+            text(t)
+        {
+        }
+    };
+}
+
+template <typename T_>
+ConcreteDependencyLabel<T_>::ConcreteDependencyLabel(const std::string & t) :
+    PrivateImplementationPattern<ConcreteDependencyLabel<T_> >(new Implementation<ConcreteDependencyLabel<T_> >(t))
+{
+}
+
+template <typename T_>
+ConcreteDependencyLabel<T_>::~ConcreteDependencyLabel()
+{
+}
+
+template <typename T_>
+const std::string
+ConcreteDependencyLabel<T_>::text() const
+{
+    return _imp->text;
+}
+
+template class ConcreteDependencyLabel<DependencyHostLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyTargetLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyBuildLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyRunLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyInstallLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyCompileLabel::Tag>;
+template class ConcreteDependencyLabel<DependencySuggestedLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyRecommendedLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyRequiredLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyAnyLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyMineLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyPrimaryLabel::Tag>;
+template class ConcreteDependencyLabel<DependencyABILabel::Tag>;

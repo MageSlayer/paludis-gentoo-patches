@@ -78,6 +78,12 @@ namespace paludis
                 const EAPI &) PALUDIS_VISIBLE;
 
         /**
+         * Parse a dep spec label.
+         */
+        tr1::shared_ptr<DependencyLabelDepSpec> parse_dependency_label(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
+
+        /**
          * Parse a provide heirarchy.
          */
         tr1::shared_ptr<ProvideSpecTree::ConstItem> parse_provide(const std::string & s,

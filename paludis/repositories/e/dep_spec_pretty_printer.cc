@@ -187,6 +187,25 @@ DepSpecPrettyPrinter::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
     }
 }
 
+void
+DepSpecPrettyPrinter::visit_leaf(const DependencyLabelDepSpec & l)
+{
+    if (_imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = false;
+        _imp->indent -= 4;
+    }
+
+    _imp->s << indent() << stringify(l);
+    _imp->s << newline();
+
+    if (!_imp->extra_label_indent)
+    {
+        _imp->extra_label_indent = true;
+        _imp->indent += 4;
+    }
+}
+
 std::string
 DepSpecPrettyPrinter::newline()
 {

@@ -304,6 +304,10 @@ namespace
         void visit_leaf(const BlockDepSpec &)
         {
         }
+
+        void visit_leaf(const DependencyLabelDepSpec &)
+        {
+        }
     };
 }
 

@@ -21,6 +21,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_label.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -129,5 +130,11 @@ void
 ConditionTracker::visit_leaf(const BlockDepSpec &)
 {
     throw InternalError(PALUDIS_HERE, "ConditionTracker saw a BlockDepSpec");
+}
+
+void
+ConditionTracker::visit_leaf(const DependencyLabelDepSpec &)
+{
+    throw InternalError(PALUDIS_HERE, "ConditionTracker saw a DependencyLabelDepSpec");
 }
 

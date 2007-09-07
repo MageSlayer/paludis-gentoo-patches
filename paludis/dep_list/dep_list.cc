@@ -309,6 +309,8 @@ struct DepList::AddVisitor :
     void visit_leaf(const PackageDepSpec &);
 
     void visit_leaf(const BlockDepSpec &);
+
+    void visit_leaf(const DependencyLabelDepSpec &);
 };
 
 void
@@ -873,6 +875,12 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
             throw BlockError(stringify(*a.blocked_spec()));
         }
     }
+}
+
+void
+DepList::AddVisitor::visit_leaf(const DependencyLabelDepSpec &)
+{
+    // XXX implement
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :

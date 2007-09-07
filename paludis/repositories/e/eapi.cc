@@ -167,6 +167,8 @@ namespace paludis
 
                                             .uri_labels(make_shared_ptr(new EAPILabels(k.get("uri_labels"))))
 
+                                            .dependency_labels(make_shared_ptr(new EAPILabels(k.get("dependency_labels"))))
+
                                             ))))));
             }
 
@@ -245,8 +247,11 @@ EAPILabels::~EAPILabels()
 }
 
 const std::string
-EAPILabels::class_for_label(const std::string & s) const
+EAPILabels::class_for_label(const std::string & l) const
 {
+    // XXX This could (should) be cleaner.
+    std::string s(l);
+    if (s[0] == '@') s.erase(1);
     std::map<std::string, std::string>::const_iterator i(_imp->v.find(s));
     if (_imp->v.end() == i)
         return "";

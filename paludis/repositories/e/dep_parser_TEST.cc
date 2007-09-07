@@ -304,5 +304,22 @@ namespace test_cases
                         *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(d), DepStringError);
         }
     } test_dep_spec_parser_bad_values;
-}
 
+    /**
+     * \test Test DepParser label handling
+     */
+    struct DepParserLabelsTest : TestCase
+    {
+        DepParserLabelsTest() : TestCase("label handling") { }
+
+        void run()
+        {
+            DepSpecPrettyPrinter d(0, false);
+            parse_depend("build: one/one",
+                    *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(d);
+            TEST_CHECK_EQUAL(stringify(d), "build: one/one");
+            TEST_CHECK_THROWS(parse_depend("build: one/one",
+                        *EAPIData::get_instance()->eapi_from_string("0"))->accept(d), DepStringParseError);
+        }
+    } test_dep_spec_parser_labels;
+}

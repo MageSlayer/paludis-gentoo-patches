@@ -162,6 +162,7 @@ make_class_SupportedEAPI()
     key ebuild_metadata_variables     "tr1::shared_ptr<const EAPIEbuildMetadataVariables>"
     key ebuild_environment_variables  "tr1::shared_ptr<const EAPIEbuildEnvironmentVariables>"
     key uri_labels                    "tr1::shared_ptr<const EAPILabels>"
+    key dependency_labels             "tr1::shared_ptr<const EAPILabels>"
 
     doxygen_comment << "END"
         /**

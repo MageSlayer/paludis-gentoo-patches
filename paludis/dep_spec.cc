@@ -768,6 +768,13 @@ paludis::operator<< (std::ostream & s, const LabelsDepSpec<URILabelVisitorTypes>
     return s;
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const LabelsDepSpec<DependencyLabelVisitorTypes> & l)
+{
+    s << join(l.begin(), l.end(), ",") << ":";
+    return s;
+}
+
 PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
     Exception(msg)
 {
@@ -1091,4 +1098,5 @@ LabelsDepSpec<T_>::add_label(const tr1::shared_ptr<const typename T_::BasicNode>
 }
 
 template class LabelsDepSpec<URILabelVisitorTypes>;
+template class LabelsDepSpec<DependencyLabelVisitorTypes>;
 
