@@ -38,6 +38,7 @@ namespace paludis
         class PythonURIDepSpec;
         class PythonBlockDepSpec;
         class PythonURILabelsDepSpec;
+        class PythonDependencyLabelsDepSpec;
 
         struct PythonDepSpecVisitorTypes :
             VisitorTypes<
@@ -50,7 +51,8 @@ namespace paludis
                 PythonPlainTextDepSpec,
                 PythonPackageDepSpec,
                 PythonURIDepSpec,
-                PythonURILabelsDepSpec
+                PythonURILabelsDepSpec,
+                PythonDependencyLabelsDepSpec
             >
         {
         };
@@ -220,6 +222,15 @@ namespace paludis
                 PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisitorTypes> &);
         };
 
+        class PALUDIS_VISIBLE PythonDependencyLabelsDepSpec :
+            public PythonDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>
+        {
+            public:
+                PythonDependencyLabelsDepSpec(const std::string &);
+                PythonDependencyLabelsDepSpec(const LabelsDepSpec<DependencyLabelVisitorTypes> &);
+        };
+
         /**
          * Used to convert one of the SpecTrees to PythonDepSpec.
          */
@@ -258,6 +269,8 @@ namespace paludis
                 void visit_leaf(const URIDepSpec &);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
+
+                void visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> &);
         };
 
         /**
@@ -287,6 +300,7 @@ namespace paludis
                 void visit(const PythonBlockDepSpec &);
                 void visit(const PythonURIDepSpec &);
                 void visit(const PythonURILabelsDepSpec &);
+                void visit(const PythonDependencyLabelsDepSpec &);
 
                 void real_visit(const PythonAllDepSpec &);
                 void real_visit(const PythonAnyDepSpec &);
@@ -296,6 +310,7 @@ namespace paludis
                 void real_visit(const PythonBlockDepSpec &);
                 void real_visit(const PythonURIDepSpec &);
                 void real_visit(const PythonURILabelsDepSpec &);
+                void real_visit(const PythonDependencyLabelsDepSpec &);
         };
     }
 }

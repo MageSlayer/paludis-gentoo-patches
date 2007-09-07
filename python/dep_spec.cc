@@ -48,6 +48,7 @@ template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonB
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>;
 
 template class Visits<const PythonAllDepSpec>;
 template class Visits<const PythonAnyDepSpec>;
@@ -57,6 +58,7 @@ template class Visits<const PythonBlockDepSpec>;
 template class Visits<const PythonPlainTextDepSpec>;
 template class Visits<const PythonURIDepSpec>;
 template class Visits<const PythonURILabelsDepSpec>;
+template class Visits<const PythonDependencyLabelsDepSpec>;
 
 PythonDepSpec::PythonDepSpec()
 {
@@ -452,6 +454,14 @@ PythonURILabelsDepSpec::PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisit
 {
 }
 
+PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const std::string &)
+{
+}
+
+PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const LabelsDepSpec<DependencyLabelVisitorTypes> &)
+{
+}
+
 SpecTreeToPython::SpecTreeToPython() :
     _current_parent(new PythonAllDepSpec())
 {
@@ -522,6 +532,12 @@ void
 SpecTreeToPython::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonURILabelsDepSpec>(new PythonURILabelsDepSpec(d)));
+}
+
+void
+SpecTreeToPython::visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> & d)
+{
+    _current_parent->add_child(tr1::shared_ptr<PythonDependencyLabelsDepSpec>(new PythonDependencyLabelsDepSpec(d)));
 }
 
 const tr1::shared_ptr<const PythonDepSpec>
@@ -597,6 +613,7 @@ struct AllowedTypes<DependencySpecTree>
     AllowedTypes(const UseDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
+    AllowedTypes(const LabelsDepSpec<DependencyLabelVisitorTypes> &) {};
 };
 
 template<>
@@ -672,6 +689,13 @@ struct NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >
         static const char * name;
 };
 const char * NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >::name = "URILabelsDepSpec";
+
+template<>
+struct NiceClassNames<LabelsDepSpec<DependencyLabelVisitorTypes> >
+{
+        static const char * name;
+};
+const char * NiceClassNames<LabelsDepSpec<DependencyLabelVisitorTypes> >::name = "DependencyLabelsDepSpec";
 
 template<>
 struct NiceClassNames<BlockDepSpec>
@@ -843,6 +867,13 @@ SpecTreeFromPython<H_>::visit(const PythonURILabelsDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonDependencyLabelsDepSpec & d)
+{
+    dispatch<H_, LabelsDepSpec<DependencyLabelVisitorTypes> >(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonBlockDepSpec & d)
 {
     dispatch<H_, BlockDepSpec>(this, d);
@@ -931,6 +962,15 @@ SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
     _add(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> > >(
                 new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >(
                         new LabelsDepSpec<URILabelVisitorTypes>))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonDependencyLabelsDepSpec &)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<DependencyLabelVisitorTypes> > >(
+                new TreeLeaf<H_, LabelsDepSpec<DependencyLabelVisitorTypes> >(tr1::shared_ptr<LabelsDepSpec<DependencyLabelVisitorTypes> >(
+                        new LabelsDepSpec<DependencyLabelVisitorTypes>))));
 }
 
 template <typename H_>
@@ -1358,6 +1398,17 @@ void expose_dep_spec()
         (
          "URILabelsDepSpec",
          "A URILabelsDepSpec represents a URI label.",
+         bp::init<const std::string &>("__init__(str)")
+        )
+        ;
+
+    /**
+     * DependencyLabelsDepSpec
+     */
+    bp::class_<PythonDependencyLabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
+        (
+         "DependencyLabelsDepSpec",
+         "A DependencyLabelsDepSpec represents a dependency label.",
          bp::init<const std::string &>("__init__(str)")
         )
         ;

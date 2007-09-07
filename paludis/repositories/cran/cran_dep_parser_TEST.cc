@@ -47,6 +47,11 @@ namespace
             s << "!!!BLOCK!!!";
         }
 
+        void visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> &)
+        {
+            s << "!!!LABEL!!!";
+        }
+
         void visit_sequence(const AllDepSpec &,
                 DependencySpecTree::ConstSequenceIterator cur,
                 DependencySpecTree::ConstSequenceIterator end)
