@@ -94,8 +94,8 @@ DependencyLabel::~DependencyLabel()
 namespace paludis
 {
     template <>
-    template <typename T_>
-    struct Implementation<ConcreteDependencyLabel<T_> >
+    template <typename T_, typename C_>
+    struct Implementation<ConcreteDependencyLabel<T_, C_> >
     {
         const std::string text;
 
@@ -106,34 +106,34 @@ namespace paludis
     };
 }
 
-template <typename T_>
-ConcreteDependencyLabel<T_>::ConcreteDependencyLabel(const std::string & t) :
-    PrivateImplementationPattern<ConcreteDependencyLabel<T_> >(new Implementation<ConcreteDependencyLabel<T_> >(t))
+template <typename T_, typename C_>
+ConcreteDependencyLabel<T_, C_>::ConcreteDependencyLabel(const std::string & t) :
+    PrivateImplementationPattern<ConcreteDependencyLabel<T_, C_> >(new Implementation<ConcreteDependencyLabel<T_, C_> >(t))
 {
 }
 
-template <typename T_>
-ConcreteDependencyLabel<T_>::~ConcreteDependencyLabel()
+template <typename T_, typename C_>
+ConcreteDependencyLabel<T_, C_>::~ConcreteDependencyLabel()
 {
 }
 
-template <typename T_>
+template <typename T_, typename C_>
 const std::string
-ConcreteDependencyLabel<T_>::text() const
+ConcreteDependencyLabel<T_, C_>::text() const
 {
     return _imp->text;
 }
 
-template class ConcreteDependencyLabel<DependencyHostLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyTargetLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyBuildLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyRunLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyInstallLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyCompileLabel::Tag>;
-template class ConcreteDependencyLabel<DependencySuggestedLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyRecommendedLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyRequiredLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyAnyLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyMineLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyPrimaryLabel::Tag>;
-template class ConcreteDependencyLabel<DependencyABILabel::Tag>;
+template class ConcreteDependencyLabel<DependencyHostLabel::Tag, DependencySystemLabel>;
+template class ConcreteDependencyLabel<DependencyTargetLabel::Tag, DependencySystemLabel>;
+template class ConcreteDependencyLabel<DependencyBuildLabel::Tag, DependencyTypeLabel>;
+template class ConcreteDependencyLabel<DependencyRunLabel::Tag, DependencyTypeLabel>;
+template class ConcreteDependencyLabel<DependencyInstallLabel::Tag, DependencyTypeLabel>;
+template class ConcreteDependencyLabel<DependencyCompileLabel::Tag, DependencyTypeLabel>;
+template class ConcreteDependencyLabel<DependencySuggestedLabel::Tag, DependencySuggestLabel>;
+template class ConcreteDependencyLabel<DependencyRecommendedLabel::Tag, DependencySuggestLabel>;
+template class ConcreteDependencyLabel<DependencyRequiredLabel::Tag, DependencySuggestLabel>;
+template class ConcreteDependencyLabel<DependencyAnyLabel::Tag, DependencyABIsLabel>;
+template class ConcreteDependencyLabel<DependencyMineLabel::Tag, DependencyABIsLabel>;
+template class ConcreteDependencyLabel<DependencyPrimaryLabel::Tag, DependencyABIsLabel>;
+template class ConcreteDependencyLabel<DependencyABILabel::Tag, DependencyABIsLabel>;

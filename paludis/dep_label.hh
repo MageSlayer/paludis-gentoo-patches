@@ -46,15 +46,51 @@ namespace paludis
         VisitorTypes<
             DependencyLabelVisitorTypes,
             DependencyLabel,
+            DependencySystemLabel,
+            DependencyTypeLabel,
+            DependencySuggestLabel,
+            DependencyABIsLabel
+        >
+    {
+    };
+
+    struct DependencySystemLabelVisitorTypes :
+        VisitorTypes<
+            DependencySystemLabelVisitorTypes,
+            DependencySystemLabel,
             DependencyHostLabel,
-            DependencyTargetLabel,
+            DependencyTargetLabel
+        >
+    {
+    };
+
+    struct DependencyTypeLabelVisitorTypes :
+        VisitorTypes<
+            DependencyTypeLabelVisitorTypes,
+            DependencyTypeLabel,
             DependencyBuildLabel,
             DependencyRunLabel,
             DependencyInstallLabel,
-            DependencyCompileLabel,
+            DependencyCompileLabel
+        >
+    {
+    };
+
+    struct DependencySuggestLabelVisitorTypes :
+        VisitorTypes<
+            DependencySuggestLabelVisitorTypes,
+            DependencySuggestLabel,
             DependencySuggestedLabel,
             DependencyRecommendedLabel,
-            DependencyRequiredLabel,
+            DependencyRequiredLabel
+        >
+    {
+    };
+
+    struct DependencyABIsLabelVisitorTypes :
+        VisitorTypes<
+            DependencyABIsLabelVisitorTypes,
+            DependencyABIsLabel,
             DependencyAnyLabel,
             DependencyMineLabel,
             DependencyPrimaryLabel,
@@ -101,14 +137,46 @@ namespace paludis
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
-    template <typename T_>
-    class PALUDIS_VISIBLE ConcreteDependencyLabel :
+    struct PALUDIS_VISIBLE DependencySystemLabel :
         public DependencyLabel,
-        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, ConcreteDependencyLabel<T_> >,
-        private PrivateImplementationPattern<ConcreteDependencyLabel<T_> >
+        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>,
+        public virtual ConstAcceptInterface<DependencySystemLabelVisitorTypes>
+    {
+        typedef DependencySystemLabelVisitorTypes VisitorTypes;
+    };
+
+    struct PALUDIS_VISIBLE DependencyTypeLabel :
+        public DependencyLabel,
+        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>,
+        public virtual ConstAcceptInterface<DependencyTypeLabelVisitorTypes>
+    {
+        typedef DependencyTypeLabelVisitorTypes VisitorTypes;
+    };
+
+    struct PALUDIS_VISIBLE DependencySuggestLabel :
+        public DependencyLabel,
+        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>,
+        public virtual ConstAcceptInterface<DependencySuggestLabelVisitorTypes>
+    {
+        typedef DependencySuggestLabelVisitorTypes VisitorTypes;
+    };
+
+    struct PALUDIS_VISIBLE DependencyABIsLabel :
+        public DependencyLabel,
+        public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>,
+        public virtual ConstAcceptInterface<DependencyABIsLabelVisitorTypes>
+    {
+        typedef DependencyABIsLabelVisitorTypes VisitorTypes;
+    };
+
+    template <typename T_, typename C_>
+    class PALUDIS_VISIBLE ConcreteDependencyLabel :
+        public C_,
+        public ConstAcceptInterfaceVisitsThis<typename C_::VisitorTypes, ConcreteDependencyLabel<T_, C_> >,
+        private PrivateImplementationPattern<ConcreteDependencyLabel<T_, C_> >
     {
         private:
-            using PrivateImplementationPattern<ConcreteDependencyLabel<T_> >::_imp;
+            using PrivateImplementationPattern<ConcreteDependencyLabel<T_, C_> >::_imp;
 
         public:
             ConcreteDependencyLabel(const std::string &);
