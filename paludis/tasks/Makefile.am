@@ -41,6 +41,8 @@ libpaludistasks_la_SOURCES = $(paludis_tasks_include_HEADERS) \
 	report_task.cc \
 	exceptions.cc
 
+libpaludistasks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
 if ! MONOLITHIC
 
 libpaludistasks_la_LIBADD = \
