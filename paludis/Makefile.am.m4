@@ -89,8 +89,12 @@ libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
 
 libpaludispythonhooks_la_SOURCES = python_hooks.cc
-libpaludispythonhooks_la_CXXFLAGS = $(AM_CXXFLAGS) -I@PYTHON_INCLUDE_DIR@
+libpaludispythonhooks_la_CXXFLAGS = $(AM_CXXFLAGS) \
+	@PALUDIS_CXXFLAGS_NO_STRICT_ALIASING@ \
+	@PALUDIS_CXXFLAGS_NO_WSHADOW@ \
+	-I@PYTHON_INCLUDE_DIR@
 libpaludispythonhooks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
+libpaludispythonhooks_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
 
 libpaludismanpagethings_la_SOURCES = name.cc
 
@@ -170,6 +174,7 @@ TESTS_ENVIRONMENT = env \
 	PYTHONPATH="$(top_builddir)/python/" \
 	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
-		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/`" \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
+		`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
