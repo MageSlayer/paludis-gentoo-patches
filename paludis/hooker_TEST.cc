@@ -27,13 +27,6 @@
 #include <fstream>
 #include <iterator>
 
-#ifdef ENABLE_PYTHON
-#  include <boost/version.hpp>
-#  if BOOST_VERSION >= 103400
-#    define PYTHON_HOOKS 1
-#  endif
-#endif
-
 using namespace test;
 using namespace paludis;
 
@@ -50,7 +43,7 @@ namespace test_cases
             HookResult result(0, "");
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-#ifdef PYTHON_HOOKS
+#ifdef ENABLE_PYTHON_HOOKS
             result = hooker.perform_hook(Hook("py_hook"));
             TEST_CHECK_EQUAL(result.max_exit_status, 0);
 #endif
@@ -89,7 +82,7 @@ namespace test_cases
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/ordering.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
-#ifdef PYTHON_HOOKS
+#ifdef ENABLE_PYTHON_HOOKS
             TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\npy_hook\ng\ni\nh\nsohook\nk\nj\n");
 #else
             TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\ng\ni\nh\nsohook\nk\nj\n");
@@ -173,7 +166,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.max_exit_status, 0);
             TEST_CHECK_EQUAL(result.output, "foo");
 
-#ifdef PYTHON_HOOKS
+#ifdef ENABLE_PYTHON_HOOKS
             result = hooker.perform_hook(Hook("py_hook_output")
                      .grab_output(Hook::AllowedOutputValues()("foo")));
             TEST_CHECK_EQUAL(result.max_exit_status, 0);

@@ -40,13 +40,6 @@
 #include <iterator>
 #include <dlfcn.h>
 
-#ifdef ENABLE_PYTHON
-#  include <boost/version.hpp>
-#  if BOOST_VERSION >= 103400
-#    define PYTHON_HOOKS 1
-#  endif
-#endif
-
 using namespace paludis;
 
 namespace
@@ -499,7 +492,7 @@ Hooker::perform_hook(const Hook & hook) const
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
 
-#ifdef PYTHON_HOOKS
+#ifdef ENABLE_PYTHON_HOOKS
                 if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
                 {
                     static bool load_try(false);

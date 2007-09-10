@@ -885,8 +885,26 @@ int main() { boost::python::throw_error_already_set(); return 0; }
 	LIBS="$save_LIBS"
 	CXXFLAGS="$save_CXXFLAGS"
 	dnl }}}
+
 	AC_DEFINE([ENABLE_PYTHON], [1], [Enable Python])
 
+	dnl {{{ check whether to enable Python Hooks
+	AC_MSG_CHECKING([whether to enable Python Hooks])
+	BOOST_MIN_VERSION="103400"
+	AC_EGREP_CPP(enable,
+				 [#include <boost/version.hpp>
+				  #if BOOST_VERSION >= $BOOST_MIN_VERSION
+				  enable
+				  #endif
+				  ], enable_python_hooks=yes, enable_python_hooks=no)
+	if test $enable_python_hooks = "yes" ; then
+		AC_DEFINE([ENABLE_PYTHON_HOOKS], [1], [Enable Python Hooks])
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_RESULT([no])
+	fi
+	AM_CONDITIONAL([ENABLE_PYTHON_HOOKS], test "$enable_python_hooks" = "yes")
+	dnl }}}
 fi
 AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")
 dnl }}}

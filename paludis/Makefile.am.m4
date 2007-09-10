@@ -130,7 +130,7 @@ else
 lib_LTLIBRARIES = libpaludis.la
 noinst_LTLIBRARIES = libpaludismanpagethings.la
 
-if ENABLE_PYTHON
+if ENABLE_PYTHON_HOOKS
 lib_LTLIBRARIES += libpaludispythonhooks.la
 endif
 
