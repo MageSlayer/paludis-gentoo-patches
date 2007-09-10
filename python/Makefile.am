@@ -83,7 +83,8 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	query_TEST_setup.sh query_TEST_cleanup.sh \
-	repository_TEST_setup.sh repository_TEST_cleanup.sh
+	repository_TEST_setup.sh repository_TEST_cleanup.sh \
+	paludis_output_wrapper.py
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
