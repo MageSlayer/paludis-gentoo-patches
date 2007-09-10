@@ -39,7 +39,7 @@ that is executed when a particular well defined action occurs.</p>
     See <a href="#merger-hooks">Merger / Unmerger Hooks</a>.</li>
 </ul>
 
-<p>There are currently four categories of hook execution code:</p>
+<p>There are currently five categories of hook execution code:</p>
 
 <ul>
     <li><code>.bash</code> hooks. These are simple <code>.bash</code> files that
@@ -49,8 +49,11 @@ that is executed when a particular well defined action occurs.</p>
     <li><code>.hook</code> hooks. These are also <code>bash</code> files, but rather
     than containing the relevant code in global scope, they make use of functions
     to perform hook actions. They also support specifying execution order dependencies
-    upon other <code>.hook</code> files. See <a href="#hook-hooks">Hook Hooks</a>
-    for details.</li>
+    upon other hooks. See <a href="#hook-hooks">Hook Hooks</a> for details.</li>
+
+    <li><code>.py</code> hooks.  These are much like .hook hooks, but written in Python and
+    with additional power given by Python bindings and access to the current Environment.
+    See <a href="#py-hooks">Python Hooks</a> for details.</li>
 
     <li><code>.so</code> hooks.  These are written in C++ and compiled into shared
     libraries, and run inside the Paludis process. See <a href="#so-hooks">So Hooks</a>
@@ -68,11 +71,13 @@ following table indicates availability:</p>
         <td></td>
         <th><code>.bash</code></th>
         <th><code>.hook</code></th>
+        <th><code>.py</code></th>
         <th><code>.so</code></th>
         <th>Repository</th>
     </tr>
     <tr>
         <th>General</th>
+        <td>yes</td>
         <td>yes</td>
         <td>yes</td>
         <td>yes</td>
@@ -94,6 +99,7 @@ following table indicates availability:</p>
     </tr>
     <tr>
         <th>Merger</th>
+        <td>yes</td>
         <td>yes</td>
         <td>yes</td>
         <td>yes</td>
@@ -368,6 +374,38 @@ hook_after_install_all_post()
 <p>Note that the <code>hook_depend_</code> and <code>hook_after_</code> functions
 are cached, and are generally only called once per session, so the output should
 not vary based upon outside parameters.</p>
+
+<h4 id="py-hooks">Python Hooks</h4>
+
+<p>A <code>.py</code> hook is much like <code>.hook</code> hook, but written
+in Python and with full access to the current Paludis environment through
+Python bindings. For each hook it can handle it must, at minimum, define
+a function named <code>hook_run_$HOOK</code> which accepts exactly two positional
+arguments: the current Environment used by Paludis, and the additional Hook environment variables
+represented by a Python dictionary. It may also define the <code>hook_depend_$HOOK</code>
+and <code>hook_after_$HOOK</code> functions which must take exactly one argument,
+the Hook environment, and return a list of strings.
+For example:</p>
+
+<pre>
+def hook_run_install_all_post(env, hook_env):
+    from paludis import *
+
+    print "* Checking for monkeys..."
+
+    if list(env.package_database().query(Query.Package("nice/monkey"))):
+        print "Found a monkey!"
+    else:
+        print "No monkeys found"
+
+def hook_depend_install_all_post(hook_env):
+    # we need to run after the Paludis standard eselect_env_update hook
+    return ["eselect_env_update"]
+
+def hook_after_install_all_post(hook_env):
+    # if checking for rabbits or squirrels, do those first
+    return ["check_for_rabbits", "check_for_squirrels"]
+</pre>
 
 <h4 id="so-hooks">So Hooks</h4>
 

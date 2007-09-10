@@ -885,6 +885,7 @@ int main() { boost::python::throw_error_already_set(); return 0; }
 	LIBS="$save_LIBS"
 	CXXFLAGS="$save_CXXFLAGS"
 	dnl }}}
+	AC_DEFINE([ENABLE_PYTHON], [1], [Enable Python])
 
 fi
 AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")

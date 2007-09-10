@@ -22,6 +22,8 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/graph-fwd.hh>
+#include <string>
 
 namespace paludis
 {
@@ -29,6 +31,19 @@ namespace paludis
     class Environment;
     class Hook;
     class HookResult;
+
+    class HookFile :
+        private InstantiationPolicy<HookFile, instantiation_method::NonCopyableTag>
+    {
+        public:
+            virtual ~HookFile()
+            {
+            }
+
+            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual const FSEntry file_name() const = 0;
+            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
+    };
 
     /**
      * Handles executing hooks for an Environment.

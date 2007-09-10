@@ -56,6 +56,18 @@ ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} so_hook
 mkdir so_hook_output
 ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} so_hook_output
 
+mkdir py_hook
+
+cat <<"END" > py_hook/hook.py
+def hook_run_py_hook(env, hook_env):
+    pass
+END
+
+mkdir py_hook_output
+cat <<"END" > py_hook_output/hook.py
+def hook_run_py_hook_output(env, hook_env):
+    return "foo"
+END
 
 mkdir several_hooks
 cat <<"END" > several_hooks/one.hook
@@ -198,7 +210,7 @@ hook_after_ordering() {
         echo x
         ;;
         h)
-        echo i
+        echo i py_hook
         ;;
         j)
         echo k libpaludissohooks_TEST
@@ -212,6 +224,12 @@ for a in a b c d e f g h i j k ; do
     ln -s ../ordering.common ordering/${a}.hook
 done
 ln -s ../../.libs/libpaludissohooks_TEST.so.${SO_SUFFIX} ordering
+cat <<"END" > ordering/py_hook.py
+def hook_run_ordering(env, hook_env):
+    file("hooker_TEST_dir/ordering.out", "a").write("py_hook\n")
+def hook_depend_ordering(hook_env):
+    return ["f"]
+END
 
 mkdir bad_hooks
 cat <<"END" > bad_hooks.common
@@ -229,6 +247,11 @@ cat <<"END" > bad_hooks/two.hook
 asdf
 END
 chmod +x bad_hooks/two.hook
+
+cat <<"END" > bad_hooks/four.py
+def hook_run_bad_hooks(env, hook_env):
+    1/0
+END
 
 mkdir cycles
 cat <<"END" > cycles.common

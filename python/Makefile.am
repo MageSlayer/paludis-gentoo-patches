@@ -167,7 +167,7 @@ libadditionaltests_la_LIBADD = $(libpaludispython_la_LIBADD)
 
 check_DATA = .libs/paludis.so .libs/additional_tests.so
 pythonlibdir = @PYTHON_INSTALL_DIR@
-pythonlib_DATA = paludis.so
+pythonlib_DATA = paludis.so paludis_output_wrapper.py
 
 .libs/paludis.so : libpaludispython.la paludis_python_so.o
 	mkdir -p .libs

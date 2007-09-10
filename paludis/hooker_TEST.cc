@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -25,6 +26,13 @@
 #include <test/test_framework.hh>
 #include <fstream>
 #include <iterator>
+
+#ifdef ENABLE_PYTHON
+#  include <boost/version.hpp>
+#  if BOOST_VERSION >= 103400
+#    define PYTHON_HOOKS 1
+#  endif
+#endif
 
 using namespace test;
 using namespace paludis;
@@ -42,6 +50,10 @@ namespace test_cases
             HookResult result(0, "");
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+#ifdef PYTHON_HOOKS
+            result = hooker.perform_hook(Hook("py_hook"));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+#endif
             result = hooker.perform_hook(Hook("simple_hook"));
             TEST_CHECK_EQUAL(result.max_exit_status, 3);
             TEST_CHECK_EQUAL(result.output, "");
@@ -77,7 +89,12 @@ namespace test_cases
             std::ifstream f(stringify(FSEntry("hooker_TEST_dir/ordering.out")).c_str());
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
+#ifdef PYTHON_HOOKS
+            TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\npy_hook\ng\ni\nh\nsohook\nk\nj\n");
+#else
             TEST_CHECK_EQUAL(line, "e\nc\nf\nd\nb\na\ng\ni\nh\nsohook\nk\nj\n");
+#endif
+
         }
     } test_hooker_ordering;
 
@@ -156,6 +173,13 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.max_exit_status, 0);
             TEST_CHECK_EQUAL(result.output, "foo");
 
+#ifdef PYTHON_HOOKS
+            result = hooker.perform_hook(Hook("py_hook_output")
+                     .grab_output(Hook::AllowedOutputValues()("foo")));
+            TEST_CHECK_EQUAL(result.max_exit_status, 0);
+            TEST_CHECK_EQUAL(result.output, "foo");
+#endif
+
             result = hooker.perform_hook(Hook("several_hooks_output")
                     .grab_output(Hook::AllowedOutputValues()));
             TEST_CHECK_EQUAL(result.max_exit_status, 0);
@@ -208,6 +232,5 @@ namespace test_cases
             TEST_CHECK_EQUAL(line, "one\ntwo\nthree\n");
         }
     } test_hooker_bad_output_hooks;
-
 }
 

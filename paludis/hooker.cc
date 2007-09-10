@@ -19,6 +19,7 @@
  */
 
 #include "hooker.hh"
+#include "config.h"
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/hashed_containers.hh>
@@ -30,7 +31,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/tokeniser.hh>
@@ -40,25 +40,17 @@
 #include <iterator>
 #include <dlfcn.h>
 
+#ifdef ENABLE_PYTHON
+#  include <boost/version.hpp>
+#  if BOOST_VERSION >= 103400
+#    define PYTHON_HOOKS 1
+#  endif
+#endif
+
 using namespace paludis;
 
 namespace
 {
-    class HookFile;
-
-    class HookFile :
-        private InstantiationPolicy<HookFile, instantiation_method::NonCopyableTag>
-    {
-        public:
-            virtual ~HookFile()
-            {
-            }
-
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-            virtual const FSEntry file_name() const = 0;
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
-    };
-
     class BashHookFile :
         public HookFile
     {
@@ -95,7 +87,7 @@ namespace
             const bool _run_prefixed;
             const Environment * const _env;
 
-            virtual void _add_dependency_class(const Hook &, DirectedGraph<std::string, int> &, bool);
+            void _add_dependency_class(const Hook &, DirectedGraph<std::string, int> &, bool);
 
         public:
             FancyHookFile(const FSEntry & f, const bool r, const Environment * const e) :
@@ -390,6 +382,31 @@ Hooker::add_dir(const FSEntry & dir, const bool v)
     _imp->dirs.push_back(std::make_pair(dir, v));
 }
 
+namespace
+{
+    struct PyHookFileHandle
+    {
+        Mutex mutex;
+        void * handle;
+        tr1::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSEntry &,
+                const bool, const Environment * const);
+
+
+        PyHookFileHandle() :
+            handle(0),
+            create_py_hook_file_handle(0)
+        {
+        }
+
+        ~PyHookFileHandle()
+        {
+            if (0 != handle)
+                dlclose(handle);
+        }
+
+    } pyhookfilehandle;
+}
+
 HookResult
 Hooker::perform_hook(const Hook & hook) const
 {
@@ -482,6 +499,59 @@ Hooker::perform_hook(const Hook & hook) const
                                 + "' because of naming conflict with '" + stringify(
                                     hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name()) + "'");
 
+#ifdef PYTHON_HOOKS
+                if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+                {
+                    static bool load_try(false);
+                    static bool load_ok(false);
+
+                    {
+                        Lock lock(pyhookfilehandle.mutex);
+
+                        if (! load_try)
+                        {
+                            load_try = true;
+
+                            pyhookfilehandle.handle = dlopen("libpaludispythonhooks.so", RTLD_NOW | RTLD_GLOBAL);
+                            if (pyhookfilehandle.handle)
+                            {
+                                pyhookfilehandle.create_py_hook_file_handle =
+                                    reinterpret_cast<tr1::shared_ptr<HookFile> (*)(
+                                            const FSEntry &, const bool, const Environment * const)>(
+                                                reinterpret_cast<uintptr_t>(dlsym(
+                                                        pyhookfilehandle.handle, "create_py_hook_file")));
+                                if (pyhookfilehandle.create_py_hook_file_handle)
+                                {
+                                    load_ok = true;
+                                }
+                                else
+                                {
+                                    Log::get_instance()->message(ll_warning, lc_context,
+                                            "dlsym(libpaludispythonhooks.so, create_py_hook_file) "
+                                            "failed due to error '" + stringify(dlerror()) + "'");
+                                }
+                            }
+                            else
+                            {
+                                Log::get_instance()->message(ll_warning, lc_context,
+                                        "dlopen(libpaludispythonhooks.so) "
+                                        "failed due to error '" + stringify(dlerror()) + "'");
+                            }
+                        }
+                    }
+                    if (load_ok)
+                    {
+                        if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
+                                        tr1::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
+                                                 *e, d->second, _imp->env)))).second)
+                            Log::get_instance()->message(ll_warning, lc_context,
+                                    "Discarding hook file '" + stringify(*e)
+                                    + "' because of naming conflict with '"
+                                    + stringify(hook_files.find(stringify(strip_trailing_string(
+                                                    e->basename(), ".py")))->second->file_name()) + "'");
+                    }
+                }
+#endif
             }
         }
 

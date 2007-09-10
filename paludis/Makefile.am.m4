@@ -77,7 +77,8 @@ DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\" \
-	-DLIBDIR=\"$(libdir)\"
+	-DLIBDIR=\"$(libdir)\" \
+	-DPYTHONINSTALLDIR=\"$(PYTHON_INSTALL_DIR)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt hooker.bash
@@ -86,6 +87,10 @@ BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS)
+
+libpaludispythonhooks_la_SOURCES = python_hooks.cc
+libpaludispythonhooks_la_CXXFLAGS = $(AM_CXXFLAGS) -I@PYTHON_INCLUDE_DIR@
+libpaludispythonhooks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
 
 libpaludismanpagethings_la_SOURCES = name.cc
 
@@ -125,7 +130,12 @@ else
 lib_LTLIBRARIES = libpaludis.la
 noinst_LTLIBRARIES = libpaludismanpagethings.la
 
+if ENABLE_PYTHON
+lib_LTLIBRARIES += libpaludispythonhooks.la
 endif
+
+endif
+
 
 paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist srheaderlist seheaderlist
@@ -157,5 +167,9 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	SO_SUFFIX=@VERSION_LIB_CURRENT@ \
+	PYTHONPATH="$(top_builddir)/python/" \
+	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
+	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
+		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
