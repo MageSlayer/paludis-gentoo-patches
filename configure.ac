@@ -903,10 +903,10 @@ int main() { boost::python::throw_error_already_set(); return 0; }
 	else
 		AC_MSG_RESULT([no])
 	fi
-	AM_CONDITIONAL([ENABLE_PYTHON_HOOKS], test "$enable_python_hooks" = "yes")
 	dnl }}}
 fi
 AM_CONDITIONAL([ENABLE_PYTHON], test "x$enable_python" = "xyes")
+AM_CONDITIONAL([ENABLE_PYTHON_HOOKS], test "x$enable_python_hooks" = "xyes")
 dnl }}}
 
 dnl {{{ vim
