@@ -47,6 +47,7 @@ CommandLine::CommandLine() :
             "Additional actions, mostly for script and internal use."),
     a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified spec is installed"),
     a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified spec"),
+    a_match(&action_args_internal, "match", '\0', "Display all installed packages matching the supplied argument"),
     a_environment_variable(&action_args_internal, "environment-variable", '\0', "Display the value of an environment "
             "variable for a particular package"),
     a_configuration_variable(&action_args_internal, "configuration-variable", '\0', "Display the value of a "

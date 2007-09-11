@@ -233,7 +233,9 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_environment_variable.specified() +
                     CommandLine::get_instance()->a_configuration_variable.specified() +
                     CommandLine::get_instance()->a_info.specified() +
-                    CommandLine::get_instance()->a_best_version.specified()))
+                    CommandLine::get_instance()->a_best_version.specified() +
+                    CommandLine::get_instance()->a_match.specified()
+                    ))
         {
             if ((1 == std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters())) &&
@@ -479,6 +481,15 @@ main(int argc, char *argv[])
                     throw args::DoHelp("best-version action takes exactly one parameter");
 
                 return do_best_version(env);
+            }
+
+            if (CommandLine::get_instance()->a_match.specified())
+            {
+                if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters()))
+                    throw args::DoHelp("match action takes exactly one parameter");
+
+                return do_match(env);
             }
 
             if (CommandLine::get_instance()->a_environment_variable.specified())

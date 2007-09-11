@@ -108,6 +108,9 @@ class CommandLine :
         /// --best-version
         paludis::args::SwitchArg a_best_version;
 
+        /// --match
+        paludis::args::SwitchArg a_match;
+
         /// --environment-variable
         paludis::args::SwitchArg a_environment_variable;
 

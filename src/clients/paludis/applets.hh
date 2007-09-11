@@ -37,6 +37,9 @@ int do_has_version(paludis::tr1::shared_ptr<paludis::Environment>);
 /// Handle --best-version.
 int do_best_version(paludis::tr1::shared_ptr<paludis::Environment>);
 
+/// Handle --match.
+int do_match(paludis::tr1::shared_ptr<paludis::Environment>);
+
 /// Handle --environment-variable.
 int do_environment_variable(paludis::tr1::shared_ptr<paludis::Environment>);
 

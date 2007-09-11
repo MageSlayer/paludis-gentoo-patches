@@ -99,6 +99,48 @@ int do_best_version(tr1::shared_ptr<Environment> env)
     return return_code;
 }
 
+int do_match(tr1::shared_ptr<Environment> env)
+{
+    int return_code(0);
+
+    Context context("When performing match action from command line:");
+
+    std::string query(*CommandLine::get_instance()->begin_parameters());
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
+    tr1::shared_ptr<const PackageIDSequence> entries(env->package_database()->query(
+                query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+
+    while (! entries->empty())
+    {
+        if (! (*entries->last())->virtual_for_key())
+            break;
+
+        Log::get_instance()->message(ll_qa, lc_context) << "match of '" << query <<
+                "' resolves to '" << **entries->last() << "', which is a virtual for '"
+                << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
+                "new style virtuals.";
+        tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+        new_entries->push_back((*entries->last())->virtual_for_key()->value());
+        entries = new_entries;
+    }
+
+    if (entries->empty())
+        return_code = 1;
+    else
+    {
+        for (PackageIDSequence::Iterator i(entries->begin()), i_end(entries->end()) ; i != i_end ; ++i)
+        {
+            // don't include repo, it breaks built_with_use and the like.
+            std::string entry(
+                    stringify((*i)->name()) + "-" +
+                    stringify((*i)->version()));
+            std::cout << entry << std::endl;
+        }
+    }
+
+    return return_code;
+}
+
 int do_environment_variable(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);

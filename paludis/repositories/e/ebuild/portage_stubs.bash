@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -46,6 +46,14 @@ portageq()
         fi
     elif [[ "$1" == "vdb_path" ]] ; then
         vdb_path
+    elif [[ "$1" == "match" ]] ; then
+        if [[ "$(canonicalise $2 )" != "$(canonicalise $ROOT )" ]] ; then
+            eerror "Error emulating 'portageq $@':"
+            die "portageq match emulation only works on current ROOT"
+        else
+            shift ; shift
+            ${PALUDIS_COMMAND} --match "$@"
+        fi
     else
         eerror "Error emulating 'portageq $@':"
         die "portageq emulation for $1 not implemented"

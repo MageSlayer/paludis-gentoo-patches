@@ -8,7 +8,8 @@ libexecprogexheres_SCRIPTS = \
 	builtin_fetch.bash \
 	pkg_nofetch.bash \
 	list_functions.bash \
-	echo_functions.bash
+	echo_functions.bash \
+	portage_stubs.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \
