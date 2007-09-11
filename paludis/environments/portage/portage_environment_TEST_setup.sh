@@ -5,13 +5,16 @@ mkdir portage_environment_TEST_dir || exit 2
 cd portage_environment_TEST_dir || exit 3
 
 mkdir -p profile
-cat <<"END" > profile/make.defaults
+cat <<END > profile/make.defaults
+ROOT="`pwd`"
 ARCH="arch"
 ACCEPT_KEYWORDS="arch"
 USE_EXPAND="FOO_CARDS"
 FOO_CARDS="four"
 USE="foo_c"
 END
+
+mkdir -p var/db/pkg
 
 mkdir -p repo/{profiles,cat-one/pkg-{one,two,three,four,x}}
 cat <<"END" > repo/profiles/repo_name
