@@ -20,12 +20,15 @@
 #include "install_task.hh"
 #include <paludis/dep_spec.hh>
 #include <paludis/action.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
+#include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/tasks/exceptions.hh>
@@ -33,11 +36,16 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
+#include <paludis/dep_list/handled_information.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <functional>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;
+
+#include <paludis/tasks/install_task-se.cc>
 
 namespace paludis
 {
@@ -46,7 +54,6 @@ namespace paludis
     {
         Environment * const env;
         DepList dep_list;
-        DepList::Iterator current_dep_list_entry;
         FetchActionOptions fetch_options;
         InstallActionOptions install_options;
         UninstallActionOptions uninstall_options;
@@ -64,6 +71,8 @@ namespace paludis
         bool had_package_targets;
         bool override_target_type;
 
+        InstallTaskContinueOnFailure continue_on_failure;
+
         bool had_action_failures;
         bool had_resolution_failures;
 
@@ -71,7 +80,6 @@ namespace paludis
                 tr1::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
-            current_dep_list_entry(dep_list.begin()),
             fetch_options(
                     FetchActionOptions::create()
                     .safe_resume(false)
@@ -93,6 +101,7 @@ namespace paludis
             had_set_targets(false),
             had_package_targets(false),
             override_target_type(false),
+            continue_on_failure(itcof_if_fetch_only),
             had_action_failures(false),
             had_resolution_failures(false)
         {
@@ -196,16 +205,20 @@ InstallTask::add_target(const std::string & target)
 }
 
 void
-InstallTask::_execute()
+InstallTask::_build_dep_list()
 {
-    Context context("When executing install task:");
+    Context context("When building dependency list:");
 
-    /* build up our dep list */
     on_build_deplist_pre();
     _imp->dep_list.add(*_imp->targets, _imp->destinations);
     on_build_deplist_post();
+}
 
-    /* we're about to display our task list */
+void
+InstallTask::_display_task_list()
+{
+    Context context("When displaying task list:");
+
     if (_imp->pretend &&
         0 != perform_hook(Hook("install_pretend_pre")("TARGETS", join(_imp->raw_targets.begin(),
                              _imp->raw_targets.end(), " "))).max_exit_status)
@@ -223,7 +236,6 @@ InstallTask::_execute()
                     ("KIND", stringify(dep->kind))).max_exit_status)
             throw InstallActionError("Pretend install aborted by hook");
 
-        _imp->current_dep_list_entry = dep;
         on_display_merge_list_entry(*dep);
 
         if (_imp->pretend &&
@@ -235,8 +247,109 @@ InstallTask::_execute()
 
     /* we're done displaying our task list */
     on_display_merge_list_post();
+}
 
-    /* do pretend phase things */
+namespace
+{
+    struct SummaryVisitor :
+        ConstVisitor<DepListEntryHandledVisitorTypes>
+    {
+        int total, successes, skipped, failures;
+        InstallTask & task;
+        const DepListEntry * entry;
+
+        SummaryVisitor(InstallTask & t) :
+            total(0),
+            successes(0),
+            skipped(0),
+            failures(0),
+            task(t),
+            entry(0)
+        {
+        }
+
+        void visit(const DepListEntryHandledSkippedUnsatisfied & s)
+        {
+            ++skipped;
+            ++total;
+            task.on_display_failure_summary_skipped_unsatisfied(*entry, s.spec());
+        }
+
+        void visit(const DepListEntryHandledFailed &)
+        {
+            ++failures;
+            ++total;
+            task.on_display_failure_summary_failure(*entry);
+        }
+
+        void visit(const DepListEntryUnhandled &)
+        {
+        }
+
+        void visit(const DepListEntryNoHandlingRequired &)
+        {
+        }
+
+        void visit(const DepListEntryHandledSuccess &)
+        {
+            ++successes;
+            ++total;
+            task.on_display_failure_summary_success(*entry);
+        }
+    };
+}
+
+void
+InstallTask::_display_failure_summary()
+{
+    Context context("When displaying summary:");
+
+    if (! _imp->had_action_failures)
+        return;
+
+    switch (_imp->continue_on_failure)
+    {
+        case itcof_if_fetch_only:
+            if (! _imp->fetch_only)
+            {
+                on_display_failure_no_summary();
+                return;
+            }
+            break;
+
+        case itcof_always:
+        case itcof_if_satisfied:
+            break;
+
+        case itcof_never:
+            on_display_failure_no_summary();
+            return;
+
+        case last_itcof:
+            throw InternalError(PALUDIS_HERE, "Bad continue_on_failure");
+    }
+
+    on_display_failure_summary_pre();
+
+    /* display our summary */
+    SummaryVisitor s(*this);
+    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+    {
+        s.entry = &*dep;
+        dep->handled->accept(s);
+    }
+
+    /* we're done displaying our task list */
+    on_display_failure_summary_totals(s.total, s.successes, s.skipped, s.failures);
+    on_display_failure_summary_post();
+}
+
+bool
+InstallTask::_pretend()
+{
+    Context context("When performing pretend actions:");
+
     bool pretend_failed(false);
 
     SupportsActionTest<PretendAction> pretend_action_query;
@@ -254,14 +367,188 @@ InstallTask::_execute()
         if (0 != perform_hook(Hook("install_pretend_post")("TARGETS", join(
                              _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))).max_exit_status)
             throw InstallActionError("Pretend install aborted by hook");
-        return;
     }
 
-    if (_imp->dep_list.has_errors() || pretend_failed)
+    return pretend_failed;
+}
+
+void
+InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f)
+{
+    std::string cpvr(stringify(*dep->package_id));
+
+    bool live_destination(false);
+    if (dep->destination)
+        if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
+            live_destination = true;
+
+    /* we're about to fetch / install one item */
+    if (_imp->fetch_only)
     {
-        on_not_continuing_due_to_errors();
-        return;
+        if (0 != perform_hook(Hook("fetch_pre")
+                     ("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
+            throw InstallActionError("Fetch of '" + cpvr + "' aborted by hook");
+        on_fetch_pre(*dep, x, y, s, f);
     }
+    else
+    {
+        if (0 != perform_hook(Hook("install_pre")
+                     ("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))
+                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status)
+            throw InstallActionError("Install of '" + cpvr + "' aborted by hook");
+        on_install_pre(*dep, x, y, s, f);
+    }
+
+    /* fetch / install one item */
+    try
+    {
+        FetchAction fetch_action(_imp->fetch_options);
+        dep->package_id->perform_action(fetch_action);
+
+        if (! _imp->fetch_only)
+        {
+            _imp->install_options.destination = dep->destination;
+            InstallAction install_action(_imp->install_options);
+            dep->package_id->perform_action(install_action);
+        }
+    }
+    catch (const InstallActionError & e)
+    {
+        on_install_fail(*dep, x, y, s, f);
+        HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
+        throw;
+    }
+
+    /* we've fetched / installed one item */
+    if (_imp->fetch_only)
+    {
+        on_fetch_post(*dep, x, y, s, f);
+        if (0 != perform_hook(Hook("fetch_post")
+                     ("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
+            throw InstallActionError("Fetch of '" + cpvr + "' aborted by hook");
+    }
+    else
+    {
+        on_install_post(*dep, x, y, s, f);
+        if (0 != perform_hook(Hook("install_post")
+                     ("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))
+                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status)
+            throw InstallActionError("Install of '" + cpvr + "' aborted by hook");
+    }
+
+    if (_imp->fetch_only || ! live_destination)
+        return;
+
+    /* figure out whether we need to unmerge (clean) anything */
+    on_build_cleanlist_pre(*dep);
+
+    // manually invalidate any installed repos, they're probably
+    // wrong now
+    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+        if ((*r)->installed_interface)
+            ((*r).get())->invalidate();
+
+    // look for packages with the same name in the same slot in the destination repos
+    tr1::shared_ptr<const PackageIDSequence> collision_list;
+
+    if (dep->destination)
+        collision_list = _imp->env->package_database()->query(
+                query::Matches(PackageDepSpec(
+                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
+                        tr1::shared_ptr<CategoryNamePart>(),
+                        tr1::shared_ptr<PackageNamePart>(),
+                        tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
+                        tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
+                query::SupportsAction<UninstallAction>(),
+                qo_order_by_version);
+
+    // don't clean the thing we just installed
+    PackageIDSequence clean_list;
+    if (collision_list)
+        for (PackageIDSequence::Iterator c(collision_list->begin()),
+                c_end(collision_list->end()) ; c != c_end ; ++c)
+            if (dep->package_id->version() != (*c)->version())
+                clean_list.push_back(*c);
+    /* no need to sort clean_list here, although if the above is
+     * changed then check that this still holds... */
+
+    on_build_cleanlist_post(*dep);
+
+    /* ok, we have the cleanlist. we're about to clean */
+    if (clean_list.empty())
+        on_no_clean_needed(*dep);
+    else
+    {
+        if (0 != perform_hook(Hook("clean_all_pre")("TARGETS", join(
+                             indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
+            throw InstallActionError("Clean aborted by hook");
+        on_clean_all_pre(*dep, clean_list);
+
+        for (PackageIDSequence::Iterator c(clean_list.begin()),
+                c_end(clean_list.end()) ; c != c_end ; ++c)
+        {
+            /* clean one item */
+            if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(**c))
+                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
+                throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
+            on_clean_pre(*dep, **c, x, y, s, f);
+
+            try
+            {
+                UninstallAction uninstall_action(_imp->uninstall_options);
+                (*c)->perform_action(uninstall_action);
+            }
+            catch (const UninstallActionError & e)
+            {
+                on_clean_fail(*dep, **c, x, y, s, f);
+                HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
+                            ("TARGET", stringify(**c))("MESSAGE", e.message())));
+                throw;
+            }
+
+            on_clean_post(*dep, **c, x, y, s, f);
+            if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(**c))
+                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
+                throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
+        }
+
+        /* we're done cleaning */
+        if (0 != perform_hook(Hook("clean_all_post")("TARGETS", join(
+                             indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
+            throw InstallActionError("Clean aborted by hook");
+        on_clean_all_post(*dep, clean_list);
+    }
+
+    dep->handled.reset(new DepListEntryHandledSuccess);
+
+    /* if we installed paludis and a re-exec is available, use it. */
+    if (_imp->env->is_paludis_package(dep->package_id->name()))
+    {
+        DepList::Iterator d(dep);
+        do
+        {
+            ++d;
+            if (d == _imp->dep_list.end())
+                break;
+        }
+        while (dlk_package != d->kind);
+
+        if (d != _imp->dep_list.end())
+            on_installed_paludis();
+    }
+}
+
+void
+InstallTask::_main_actions()
+{
+    using namespace tr1::placeholders;
 
     /* we're about to fetch / install the entire list */
     if (_imp->fetch_only)
@@ -288,11 +575,9 @@ InstallTask::_execute()
     }
 
     /* fetch / install our entire list */
-    int x(0), y(0);
-    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
-            dep != dep_end ; ++dep)
-        if (dlk_package == dep->kind)
-            ++y;
+    int x(0), y(std::count_if(_imp->dep_list.begin(), _imp->dep_list.end(),
+                tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, tr1::bind<DepListEntryKind>(&DepListEntry::kind, _1)))),
+        s(0), f(0);
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
@@ -300,175 +585,66 @@ InstallTask::_execute()
         if (dlk_package != dep->kind)
             continue;
 
-        bool live_destination(false);
-        if (dep->destination)
-            if (dep->destination->destination_interface && dep->destination->destination_interface->want_pre_post_phases())
-                live_destination = true;
-
         ++x;
-        _imp->current_dep_list_entry = dep;
 
-        std::string cpvr(stringify(*dep->package_id));
-
-        /* we're about to fetch / install one item */
-        if (_imp->fetch_only)
+        if (_imp->had_action_failures)
         {
-            if (0 != perform_hook(Hook("fetch_pre")
-                         ("TARGET", cpvr)
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                throw InstallActionError("Fetch of '" + cpvr + "' aborted by hook");
-            on_fetch_pre(*dep);
-        }
-        else
-        {
-            if (0 != perform_hook(Hook("install_pre")
-                         ("TARGET", cpvr)
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))
-                         ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status)
-                throw InstallActionError("Install of '" + cpvr + "' aborted by hook");
-            on_install_pre(*dep);
+            switch (_imp->continue_on_failure)
+            {
+                case itcof_if_fetch_only:
+                    if (_imp->fetch_only)
+                        break;
+                    ++s;
+                    continue;
+
+                case itcof_never:
+                    ++s;
+                    continue;
+
+                case itcof_if_satisfied:
+                    {
+                        tr1::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
+                        if (! d)
+                            break;
+                        dep->handled.reset(new DepListEntryHandledSkippedUnsatisfied(*d));
+                        on_skip_unsatisfied(*dep, *d, x, y, s, f);
+                        ++s;
+                        continue;
+                    }
+
+                case itcof_always:
+                    break;
+
+                case last_itcof:
+                    throw InternalError(PALUDIS_HERE, "Bad continue_on_failure");
+            }
         }
 
-        /* fetch / install one item */
         try
         {
-            FetchAction fetch_action(_imp->fetch_options);
-            dep->package_id->perform_action(fetch_action);
-
-            if (! _imp->fetch_only)
-            {
-                _imp->install_options.destination = dep->destination;
-                InstallAction install_action(_imp->install_options);
-                dep->package_id->perform_action(install_action);
-            }
+            _one(dep, x, y, s, f);
         }
         catch (const InstallActionError & e)
         {
-            on_install_fail(*dep);
-            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
-            throw;
+            _imp->had_action_failures = true;
+            dep->handled.reset(new DepListEntryHandledFailed);
+            on_install_action_error(e);
+            ++f;
         }
-
-        /* we've fetched / installed one item */
-        if (_imp->fetch_only)
+        catch (const FetchActionError & e)
         {
-            on_fetch_post(*dep);
-            if (0 != perform_hook(Hook("fetch_post")
-                         ("TARGET", cpvr)
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                throw InstallActionError("Fetch of '" + cpvr + "' aborted by hook");
+            _imp->had_action_failures = true;
+            dep->handled.reset(new DepListEntryHandledFailed);
+            on_fetch_action_error(e);
+            ++f;
         }
-        else
-        {
-            on_install_post(*dep);
-            if (0 != perform_hook(Hook("install_post")
-                         ("TARGET", cpvr)
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))
-                         ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status)
-                throw InstallActionError("Install of '" + cpvr + "' aborted by hook");
-        }
+    }
 
-        if (_imp->fetch_only || ! live_destination)
-            continue;
-
-        /* figure out whether we need to unmerge (clean) anything */
-        on_build_cleanlist_pre(*dep);
-
-        // manually invalidate any installed repos, they're probably
-        // wrong now
-        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
-                r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-            if ((*r)->installed_interface)
-                ((*r).get())->invalidate();
-
-        // look for packages with the same name in the same slot in the destination repos
-        tr1::shared_ptr<const PackageIDSequence> collision_list;
-
-        if (dep->destination)
-            collision_list = _imp->env->package_database()->query(
-                    query::Matches(PackageDepSpec(
-                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package_id->name())),
-                            tr1::shared_ptr<CategoryNamePart>(),
-                            tr1::shared_ptr<PackageNamePart>(),
-                            tr1::shared_ptr<VersionRequirements>(),
-                            vr_and,
-                            tr1::shared_ptr<SlotName>(new SlotName(dep->package_id->slot())),
-                            tr1::shared_ptr<RepositoryName>(new RepositoryName(dep->destination->name())))) &
-                    query::SupportsAction<UninstallAction>(),
-                    qo_order_by_version);
-
-        // don't clean the thing we just installed
-        PackageIDSequence clean_list;
-        if (collision_list)
-            for (PackageIDSequence::Iterator c(collision_list->begin()),
-                    c_end(collision_list->end()) ; c != c_end ; ++c)
-                if (dep->package_id->version() != (*c)->version())
-                    clean_list.push_back(*c);
-        /* no need to sort clean_list here, although if the above is
-         * changed then check that this still holds... */
-
-        on_build_cleanlist_post(*dep);
-
-        /* ok, we have the cleanlist. we're about to clean */
-        if (clean_list.empty())
-            on_no_clean_needed(*dep);
-        else
-        {
-            if (0 != perform_hook(Hook("clean_all_pre")("TARGETS", join(
-                                 indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
-                throw InstallActionError("Clean aborted by hook");
-            on_clean_all_pre(*dep, clean_list);
-
-            for (PackageIDSequence::Iterator c(clean_list.begin()),
-                    c_end(clean_list.end()) ; c != c_end ; ++c)
-            {
-                /* clean one item */
-                if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(**c))
-                             ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                    throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
-                on_clean_pre(*dep, **c);
-
-                try
-                {
-                    UninstallAction uninstall_action(_imp->uninstall_options);
-                    (*c)->perform_action(uninstall_action);
-                }
-                catch (const UninstallActionError & e)
-                {
-                    on_clean_fail(*dep, **c);
-                    HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
-                                ("TARGET", stringify(**c))("MESSAGE", e.message())));
-                    throw;
-                }
-
-                on_clean_post(*dep, **c);
-                if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(**c))
-                             ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                    throw InstallActionError("Clean of '" + cpvr + "' aborted by hook");
-            }
-
-            /* we're done cleaning */
-            if (0 != perform_hook(Hook("clean_all_post")("TARGETS", join(
-                                 indirect_iterator(clean_list.begin()), indirect_iterator(clean_list.end()), " "))).max_exit_status)
-                throw InstallActionError("Clean aborted by hook");
-            on_clean_all_post(*dep, clean_list);
-        }
-
-        /* if we installed paludis and a re-exec is available, use it. */
-        if (dep->package_id->name() == QualifiedPackageName("sys-apps/paludis"))
-        {
-            DepList::Iterator d(dep);
-            do
-            {
-                ++d;
-                if (d == dep_end)
-                    break;
-            }
-            while (dlk_package != d->kind);
-
-            if (d != dep_end)
-                on_installed_paludis();
-        }
+    /* go no further if we had failures */
+    if (_imp->had_action_failures)
+    {
+        _display_failure_summary();
+        return;
     }
 
     /* update world */
@@ -534,6 +710,27 @@ InstallTask::_execute()
 }
 
 void
+InstallTask::_execute()
+{
+    Context context("When executing install task:");
+
+    _build_dep_list();
+    _display_task_list();
+    bool pretend_failed(_pretend());
+
+    if (_imp->pretend)
+        return;
+
+    if (_imp->dep_list.has_errors() || pretend_failed)
+    {
+        on_not_continuing_due_to_errors();
+        return;
+    }
+
+    _main_actions();
+}
+
+void
 InstallTask::execute()
 {
     try
@@ -544,16 +741,6 @@ InstallTask::execute()
     {
         _imp->had_resolution_failures = true;
         on_ambiguous_package_name_error(e);
-    }
-    catch (const InstallActionError & e)
-    {
-        _imp->had_action_failures = true;
-        on_install_action_error(e);
-    }
-    catch (const FetchActionError & e)
-    {
-        _imp->had_action_failures = true;
-        on_fetch_action_error(e);
     }
     catch (const NoSuchPackageError & e)
     {
@@ -591,12 +778,6 @@ const DepList &
 InstallTask::dep_list() const
 {
     return _imp->dep_list;
-}
-
-DepList::Iterator
-InstallTask::current_dep_list_entry() const
-{
-    return _imp->current_dep_list_entry;
 }
 
 void
@@ -786,5 +967,156 @@ bool
 InstallTask::had_resolution_failures() const
 {
     return _imp->had_resolution_failures;
+}
+
+void
+InstallTask::set_continue_on_failure(const InstallTaskContinueOnFailure c)
+{
+    _imp->continue_on_failure = c;
+}
+
+namespace
+{
+    struct CheckSatisfiedVisitor :
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckSatisfiedVisitor, AllDepSpec>
+    {
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckSatisfiedVisitor, AllDepSpec>::visit_sequence;
+
+        const Environment * const env;
+        const PackageID & id;
+        tr1::shared_ptr<const PackageDepSpec> failure;
+
+        CheckSatisfiedVisitor(const Environment * const e,
+                const PackageID & i) :
+            env(e),
+            id(i)
+        {
+        }
+
+        void visit_leaf(const BlockDepSpec &)
+        {
+        }
+
+        void visit_leaf(const DependencyLabelDepSpec &)
+        {
+        }
+
+        void visit_leaf(const PackageDepSpec & a)
+        {
+            if (! failure)
+                if (env->package_database()->query(query::Matches(a) & query::SupportsAction<InstalledAction>(), qo_whatever)->empty())
+                    failure.reset(new PackageDepSpec(a));
+        }
+
+        void visit_sequence(const UseDepSpec & u,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            if (env->query_use(u.flag(), id) ^ u.inverse())
+                std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit_sequence(const AnyDepSpec &,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            if (failure)
+                return;
+
+            failure.reset();
+            for ( ; cur != end ; ++cur)
+            {
+                failure.reset();
+                cur->accept(*this);
+                if (! failure)
+                    break;
+            }
+        }
+    };
+}
+
+tr1::shared_ptr<const PackageDepSpec>
+InstallTask::_unsatisfied(const DepListEntry & e) const
+{
+    Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are satisfied:");
+
+    CheckSatisfiedVisitor v(environment(), *e.package_id);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
+        if (e.package_id->build_dependencies_key())
+            e.package_id->build_dependencies_key()->value()->accept(v);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
+        if (e.package_id->run_dependencies_key())
+            e.package_id->run_dependencies_key()->value()->accept(v);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
+        if (e.package_id->post_dependencies_key())
+            e.package_id->post_dependencies_key()->value()->accept(v);
+
+    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
+                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
+            && dl_suggested_install == _imp->dep_list.options()->suggested)
+        if (e.package_id->suggested_dependencies_key())
+            e.package_id->suggested_dependencies_key()->value()->accept(v);
+
+    return v.failure;
+}
+
+namespace
+{
+    struct NotYetInstalledVisitor :
+        ConstVisitor<DepListEntryHandledVisitorTypes>
+    {
+        tr1::shared_ptr<const PackageID> id;
+        tr1::shared_ptr<PackageIDSequence> result;
+
+        NotYetInstalledVisitor() :
+            result(new PackageIDSequence)
+        {
+        }
+
+        void visit(const DepListEntryHandledSuccess &)
+        {
+        }
+
+        void visit(const DepListEntryHandledSkippedUnsatisfied &)
+        {
+            result->push_back(id);
+        }
+
+        void visit(const DepListEntryHandledFailed &)
+        {
+            result->push_back(id);
+        }
+
+        void visit(const DepListEntryUnhandled &)
+        {
+            result->push_back(id);
+        }
+
+        void visit(const DepListEntryNoHandlingRequired &)
+        {
+        }
+    };
+}
+
+const tr1::shared_ptr<const PackageIDSequence>
+InstallTask::packages_not_yet_installed_successfully() const
+{
+    NotYetInstalledVisitor s;
+
+    for (DepList::ConstIterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+    {
+        s.id = dep->package_id;
+        dep->handled->accept(s);
+    }
+
+    return s.result;
 }
 

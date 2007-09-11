@@ -156,11 +156,11 @@ class TestCase_02_DepList(unittest.TestCase):
         dl.add(cds, dd)
         self.assert_(dl.already_installed(pds, dd))
 
-    def test_07_entries(self):
-        dl.add(pds, dd)
-
-        entries = list(dl)
-        self.assert_(isinstance(entries[0], DepListEntry))
+###    def test_07_entries(self):
+###        dl.add(pds, dd)
+###
+###        entries = list(dl)
+###        self.assert_(isinstance(entries[0], DepListEntry))
 
 
 class TestCase_03_DepListEntry(unittest.TestCase):
@@ -173,17 +173,17 @@ class TestCase_03_DepListEntry(unittest.TestCase):
     def test_01_no_create(self):
         self.assertRaises(Exception, DepListEntry)
 
-    def test_02_data_members(self):
-        dl.add(pds, dd)
-
-        dle = list(dl)[0]
-
-        self.assertEquals(dle.kind, DepListEntryKind.PACKAGE)
-        self.assertEquals(dle.package_id.name, "foo/bar")
-        self.assertEquals(dle.associated_entry, None)
-        self.assertEquals(list(dle.tags), [])
-        self.assertEquals(str(dle.destination.name), "installed")
-        self.assertEquals(dle.state, DepListEntryState.HAS_ALL_DEPS)
+###    def test_02_data_members(self):
+###        dl.add(pds, dd)
+###
+###        dle = list(dl)[0]
+###
+###        self.assertEquals(dle.kind, DepListEntryKind.PACKAGE)
+###        self.assertEquals(dle.package_id.name, "foo/bar")
+###        self.assertEquals(dle.associated_entry, None)
+###        self.assertEquals(list(dle.tags), [])
+###        self.assertEquals(str(dle.destination.name), "installed")
+###        self.assertEquals(dle.state, DepListEntryState.HAS_ALL_DEPS)
 
 
 if __name__ == "__main__":

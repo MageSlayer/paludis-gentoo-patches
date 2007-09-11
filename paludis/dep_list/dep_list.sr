@@ -61,6 +61,8 @@ make_class_DepListEntry()
     key generation long
     key state DepListEntryState
 
+    key handled "tr1::shared_ptr<const DepListEntryHandled>"
+
     allow_named_args
 
     doxygen_comment << "END"

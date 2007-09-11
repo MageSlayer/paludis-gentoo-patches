@@ -25,6 +25,7 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_list/options.hh>
 #include <paludis/dep_list/dep_list-fwd.hh>
+#include <paludis/dep_list/handled_information-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -188,11 +189,14 @@ namespace paludis
             ///\name Iterate over our dependency list entries.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<DepList, const DepListEntry> Iterator;
+            typedef libwrapiter::ForwardIterator<DepList, DepListEntry> Iterator;
+            typedef libwrapiter::ForwardIterator<DepList, const DepListEntry> ConstIterator;
 
-            Iterator begin() const;
+            Iterator begin();
+            Iterator end();
 
-            Iterator end() const;
+            ConstIterator begin() const;
+            ConstIterator end() const;
 
             ///\}
     };

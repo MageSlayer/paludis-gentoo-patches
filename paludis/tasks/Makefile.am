@@ -1,5 +1,7 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = stage_options-sr.hh stage_options-sr.cc
+DISTCLEANFILES = \
+	stage_options-sr.hh stage_options-sr.cc \
+	install_task-se.hh install_task-se.cc
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
@@ -25,6 +27,7 @@ paludis_tasks_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/task
 paludis_tasks_include_HEADERS = \
 	find_unused_packages_task.hh \
 	install_task.hh \
+	install_task-se.hh \
 	uninstall_task.hh \
 	sync_task.hh \
 	stage_builder_task.hh \
@@ -43,23 +46,24 @@ libpaludistasks_la_SOURCES = $(paludis_tasks_include_HEADERS) \
 
 libpaludistasks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-if ! MONOLITHIC
-
 libpaludistasks_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la
 
-endif
-
 BUILT_SOURCES = \
 	stage_options-sr.hh \
-	stage_options-sr.cc
+	stage_options-sr.cc \
+	install_task-se.hh \
+	install_task-se.cc
 
 EXTRA_DIST = \
 	stage_options.sr \
 	stage_options-sr.hh \
-	stage_options-sr.cc
+	stage_options-sr.cc \
+	install_task.se \
+	install_task-se.hh \
+	install_task-se.cc
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
@@ -69,3 +73,10 @@ stage_options-sr.hh : stage_options.sr $(top_srcdir)/misc/make_sr.bash
 
 stage_options-sr.cc : stage_options.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/stage_options.sr > $@
+
+install_task-se.hh : install_task.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/install_task.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+install_task-se.cc : install_task.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/install_task.se > $@ ; then rm -f $@ ; exit 1 ; fi
+

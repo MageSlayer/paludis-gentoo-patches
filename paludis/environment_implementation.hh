@@ -71,6 +71,8 @@ namespace paludis
             virtual std::string default_distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual bool is_paludis_package(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

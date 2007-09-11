@@ -34,6 +34,8 @@ namespace paludis
 {
     class Environment;
 
+#include <paludis/tasks/install_task-se.hh>
+
     /**
      * Task used to install one or more targets.
      *
@@ -46,6 +48,14 @@ namespace paludis
     {
         private:
             void _execute();
+            void _build_dep_list();
+            void _display_task_list();
+            bool _pretend();
+            void _main_actions();
+            void _one(const DepList::Iterator, const int, const int, const int, const int);
+            void _display_failure_summary();
+
+            tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
 
         protected:
             ///\name Basic operations
@@ -75,6 +85,7 @@ namespace paludis
             void set_checks_mode(const InstallActionChecksOption value);
             void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
+            void set_continue_on_failure(const InstallTaskContinueOnFailure);
 
             ///\}
 
@@ -106,28 +117,42 @@ namespace paludis
             virtual void on_display_merge_list_post() = 0;
             virtual void on_display_merge_list_entry(const DepListEntry &) = 0;
 
+            virtual void on_display_failure_summary_pre() = 0;
+            virtual void on_display_failure_summary_success(const DepListEntry &) = 0;
+            virtual void on_display_failure_summary_failure(const DepListEntry &) = 0;
+            virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &) = 0;
+            virtual void on_display_failure_summary_totals(const int, const int, const int, const int) = 0;
+            virtual void on_display_failure_summary_post() = 0;
+            virtual void on_display_failure_no_summary() = 0;
+
             virtual void on_not_continuing_due_to_errors() = 0;
 
             virtual void on_fetch_all_pre() = 0;
-            virtual void on_fetch_pre(const DepListEntry &) = 0;
-            virtual void on_fetch_post(const DepListEntry &) = 0;
+            virtual void on_fetch_pre(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
+            virtual void on_fetch_post(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
             virtual void on_fetch_all_post() = 0;
 
             virtual void on_install_all_pre() = 0;
-            virtual void on_install_pre(const DepListEntry &) = 0;
-            virtual void on_install_post(const DepListEntry &) = 0;
-            virtual void on_install_fail(const DepListEntry &) = 0;
+            virtual void on_install_pre(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
+            virtual void on_install_post(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
+            virtual void on_install_fail(const DepListEntry &, const int x, const int y, const int s, const int f) = 0;
             virtual void on_install_all_post() = 0;
+
+            virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
+                    const int x, const int y, const int s, const int f) = 0;
 
             virtual void on_no_clean_needed(const DepListEntry &) = 0;
             virtual void on_clean_all_pre(const DepListEntry &,
                     const PackageIDSequence &) = 0;
             virtual void on_clean_pre(const DepListEntry &,
-                    const PackageID &) = 0;
+                    const PackageID &,
+                    const int x, const int y, const int s, const int f) = 0;
             virtual void on_clean_post(const DepListEntry &,
-                    const PackageID &) = 0;
+                    const PackageID &,
+                    const int x, const int y, const int s, const int f) = 0;
             virtual void on_clean_fail(const DepListEntry &,
-                    const PackageID &) = 0;
+                    const PackageID &,
+                    const int x, const int y, const int s, const int f) = 0;
             virtual void on_clean_all_post(const DepListEntry &,
                     const PackageIDSequence &) = 0;
 
@@ -173,11 +198,6 @@ namespace paludis
             const DepList & dep_list() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch our current deplist entry.
-             */
-            DepList::Iterator current_dep_list_entry() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
              * Fetch our environment.
              */
             Environment * environment() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -202,6 +222,13 @@ namespace paludis
              * Have we had any action failures?
              */
             virtual bool had_action_failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Fetch packages (dlk_package) that have either not yet been installed, or that
+             * were skipped or failed.
+             */
+            virtual const tr1::shared_ptr<const PackageIDSequence> packages_not_yet_installed_successfully() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

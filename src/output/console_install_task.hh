@@ -94,7 +94,6 @@ namespace paludis
         public:
             enum Count
             {
-                current_count,
                 max_count,
                 new_count,
                 upgrade_count,
@@ -128,6 +127,8 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsSet>);
 
         public:
+            virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
+
             virtual void on_build_deplist_pre();
             virtual void on_build_deplist_post();
 
@@ -140,25 +141,28 @@ namespace paludis
             virtual void on_display_merge_list_entry(const DepListEntry &);
 
             virtual void on_fetch_all_pre();
-            virtual void on_fetch_pre(const DepListEntry &);
-            virtual void on_fetch_post(const DepListEntry &);
+            virtual void on_fetch_pre(const DepListEntry &, const int x, const int y, const int s, const int f);
+            virtual void on_fetch_post(const DepListEntry &, const int x, const int y, const int s, const int f);
             virtual void on_fetch_all_post();
 
             virtual void on_install_all_pre();
-            virtual void on_install_pre(const DepListEntry &);
-            virtual void on_install_post(const DepListEntry &);
-            virtual void on_install_fail(const DepListEntry &);
+            virtual void on_install_pre(const DepListEntry &, const int x, const int y, const int s, const int f);
+            virtual void on_install_post(const DepListEntry &, const int x, const int y, const int s, const int f);
+            virtual void on_install_fail(const DepListEntry &, const int x, const int y, const int s, const int f);
             virtual void on_install_all_post();
+
+            virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
+                    const int x, const int y, const int s, const int f);
 
             virtual void on_no_clean_needed(const DepListEntry &);
             virtual void on_clean_all_pre(const DepListEntry &,
                     const PackageIDSequence &);
             virtual void on_clean_pre(const DepListEntry &,
-                    const PackageID &);
+                    const PackageID &, const int x, const int y, const int s, const int f);
             virtual void on_clean_post(const DepListEntry &,
-                    const PackageID &);
+                    const PackageID &, const int x, const int y, const int s, const int f);
             virtual void on_clean_fail(const DepListEntry &,
-                    const PackageID &);
+                    const PackageID &, const int x, const int y, const int s, const int f);
             virtual void on_clean_all_post(const DepListEntry &,
                     const PackageIDSequence &);
 
@@ -180,6 +184,14 @@ namespace paludis
 
             virtual void on_install_action_error(const InstallActionError &);
             virtual void on_fetch_action_error(const FetchActionError &);
+
+            virtual void on_display_failure_summary_pre();
+            virtual void on_display_failure_summary_success(const DepListEntry &);
+            virtual void on_display_failure_summary_failure(const DepListEntry &);
+            virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &);
+            virtual void on_display_failure_summary_totals(const int, const int, const int, const int);
+            virtual void on_display_failure_summary_post();
+            virtual void on_display_failure_no_summary();
 
             ///\name More granular display routines
             ///\{

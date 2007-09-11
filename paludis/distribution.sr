@@ -25,6 +25,8 @@ make_class_Distribution()
     key concept_use std::string
     key concept_keyword std::string
 
+    key paludis_package std::string
+
     allow_named_args
 
     doxygen_comment << "END"

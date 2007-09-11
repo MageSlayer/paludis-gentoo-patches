@@ -81,6 +81,7 @@ namespace paludis
                                     .paludis_environment_keywords_conf_filename(k.get("paludis_environment_keywords_conf_filename"))
                                     .concept_use(k.get("concept_use"))
                                     .concept_keyword(k.get("concept_keyword"))
+                                    .paludis_package(k.get("paludis_package"))
                                     ))));
             }
         }

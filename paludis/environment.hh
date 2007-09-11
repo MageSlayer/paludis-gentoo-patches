@@ -201,6 +201,14 @@ namespace paludis
              */
             virtual gid_t reduced_gid() const = 0;
 
+            /**
+             * Is the specified package Paludis?
+             *
+             * Used by InstallTask to decide whether to exec() after installing
+             * a package.
+             */
+            virtual bool is_paludis_package(const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
             ///\}
 
             ///\name Mirror information

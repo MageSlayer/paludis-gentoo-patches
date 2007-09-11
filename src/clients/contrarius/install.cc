@@ -106,7 +106,8 @@ namespace
                         CommandLine::get_instance()->a_pretend.specified())
                     return;
 
-                if (current_dep_list_entry() != dep_list().end())
+                const tr1::shared_ptr<const PackageIDSequence> p(packages_not_yet_installed_successfully());
+                if (! p->empty())
                 {
                     std::string resume_command = environment()->paludis_command() + " "
                         "--dl-installed-deps-pre discard "
@@ -116,10 +117,8 @@ namespace
                         "--dl-uninstalled-deps-runtime discard "
                         "--dl-uninstalled-deps-post discard "
                         "--install --preserve-world";
-                    for (DepList::Iterator i(current_dep_list_entry()), i_end(dep_list().end()) ;
-                            i != i_end ; ++i)
-                        if (dlk_package == i->kind)
-                            resume_command = resume_command + " '=" + stringify(*i->package_id) + "'";
+                    for (PackageIDSequence::Iterator i(p->begin()), i_end(p->end()) ; i != i_end ; ++i)
+                        resume_command = resume_command + " '=" + stringify(**i) + "'";
 
                     if (CommandLine::get_instance()->a_resume_command_template.specified())
                     {

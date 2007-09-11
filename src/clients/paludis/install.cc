@@ -72,20 +72,15 @@ using std::endl;
 
 namespace
 {
-    std::string make_resume_command(const Environment * const env, const InstallTask & task, bool skip_first)
+    std::string make_resume_command(const Environment * const env, const InstallTask & task, const PackageIDSequence & s)
     {
         std::string resume_command = env->paludis_command()
             + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
             + CommandLine::get_instance()->a_install.long_name();
 
-        for (DepList::Iterator i(skip_first ?
-                    (task.current_dep_list_entry() == task.dep_list().end() ?
-                     task.current_dep_list_entry() :
-                     next(task.current_dep_list_entry())) :
-                    task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
+        for (PackageIDSequence::Iterator i(s.begin()), i_end(s.end()) ;
                 i != i_end ; ++i)
-            if (dlk_package == i->kind)
-                resume_command = resume_command + " '=" + stringify(*i->package_id) + "'";
+            resume_command = resume_command + " '=" + stringify(**i) + "'";
 
         if (CommandLine::get_instance()->a_add_to_world_spec.specified())
             resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
@@ -179,7 +174,7 @@ namespace
                         return;
                 }
 
-                std::string resume_command(make_resume_command(_env.get(), *this, true));
+                std::string resume_command(make_resume_command(_env.get(), *this, *packages_not_yet_installed_successfully()));
 
                 output_heading("Paludis has just upgraded Paludis");
                 output_starred_item("Using '" + resume_command + "' to start a new Paludis instance...");
@@ -191,7 +186,7 @@ namespace
             virtual HookResult perform_hook(const Hook & hook) const
             {
                 return ConsoleInstallTask::perform_hook(hook("RESUME_COMMAND", make_resume_command(
-                                _env.get(), *this, false)));
+                                _env.get(), *this, *packages_not_yet_installed_successfully())));
             }
 
             void show_resume_command() const
@@ -200,9 +195,10 @@ namespace
                         CommandLine::get_instance()->a_pretend.specified())
                     return;
 
-                if (current_dep_list_entry() != dep_list().end())
+                const tr1::shared_ptr<const PackageIDSequence> p(packages_not_yet_installed_successfully());
+                if (! p->empty())
                 {
-                    std::string resume_command(make_resume_command(environment(), *this, false));
+                    std::string resume_command(make_resume_command(environment(), *this, *p));
 
                     if (CommandLine::get_instance()->a_resume_command_template.specified())
                     {
@@ -567,6 +563,20 @@ do_install(tr1::shared_ptr<Environment> env)
 
     if (CommandLine::get_instance()->a_checks.specified())
         task.set_checks_mode(CommandLine::get_instance()->a_checks.option());
+
+    if (CommandLine::get_instance()->a_continue_on_faillure.specified())
+    {
+        if (CommandLine::get_instance()->a_continue_on_faillure.argument() == "if-fetch-only")
+            task.set_continue_on_failure(itcof_if_fetch_only);
+        else if (CommandLine::get_instance()->a_continue_on_faillure.argument() == "never")
+            task.set_continue_on_failure(itcof_never);
+        else if (CommandLine::get_instance()->a_continue_on_faillure.argument() == "if-satisfied")
+            task.set_continue_on_failure(itcof_if_satisfied);
+        else if (CommandLine::get_instance()->a_continue_on_faillure.argument() == "always")
+            task.set_continue_on_failure(itcof_always);
+        else
+            throw args::DoHelp("bad value for --continue-on-failure");
+    }
 
     InstallKilledCatcher install_killed_catcher(env, task);
 

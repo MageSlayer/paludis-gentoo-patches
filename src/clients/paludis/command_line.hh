@@ -219,6 +219,9 @@ class CommandLine :
         /// --show-use-descriptions
         paludis::args::EnumArg a_show_use_descriptions;
 
+        /// --continue-on-failure
+        paludis::args::EnumArg a_continue_on_faillure;
+
         /// }
 
         /// \name Uninstall arguments

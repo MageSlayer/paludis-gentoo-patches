@@ -132,26 +132,24 @@ ConsoleInstallTask::on_no_clean_needed(const DepListEntry &)
 
 void
 ConsoleInstallTask::on_clean_pre(const DepListEntry &,
-        const PackageID & c)
+        const PackageID & c, const int x, const int y, const int s, const int f)
 {
-    std::string m("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Cleaning " + stringify(c));
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Cleaning " + stringify(c));
     output_heading(m);
     output_xterm_title(m);
 }
 
 void
 ConsoleInstallTask::on_clean_post(const DepListEntry &,
-        const PackageID &)
+        const PackageID &, const int, const int, const int, const int)
 {
 }
 
 void
 ConsoleInstallTask::on_clean_fail(const DepListEntry &,
-        const PackageID & c)
+        const PackageID & c, const int x, const int y, const int s, const int f)
 {
-    output_xterm_title("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Failed cleaning " + stringify(c));
+    output_xterm_title("(" + make_x_of_y(x, y, s, f) + ") Failed cleaning " + stringify(c));
 }
 
 void
@@ -275,19 +273,18 @@ ConsoleInstallTask::on_fetch_all_pre()
 }
 
 void
-ConsoleInstallTask::on_fetch_pre(const DepListEntry & d)
+ConsoleInstallTask::on_fetch_pre(const DepListEntry & d, const int x, const int y,
+        const int s, const int f)
 {
-    set_count<current_count>(count<current_count>() + 1);
-
-    std::string m("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Fetching " + stringify(*d.package_id));
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Fetching " + stringify(*d.package_id));
 
     output_heading(m);
     output_xterm_title(m);
 }
 
 void
-ConsoleInstallTask::on_fetch_post(const DepListEntry &)
+ConsoleInstallTask::on_fetch_post(const DepListEntry &, const int, const int,
+        const int, const int)
 {
 }
 
@@ -302,27 +299,36 @@ ConsoleInstallTask::on_install_all_pre()
 }
 
 void
-ConsoleInstallTask::on_install_pre(const DepListEntry & d)
+ConsoleInstallTask::on_install_pre(const DepListEntry & d, const int x,
+        const int y, const int s, const int f)
 {
-    set_count<current_count>(count<current_count>() + 1);
-
-    std::string m("(" + stringify(count<current_count>()) + " of "
-            + stringify(count<max_count>()) + ") Installing " + stringify(*d.package_id));
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Installing " + stringify(*d.package_id));
 
     output_heading(m);
     output_xterm_title(m);
 }
 
 void
-ConsoleInstallTask::on_install_post(const DepListEntry &)
+ConsoleInstallTask::on_skip_unsatisfied(const DepListEntry & d, const PackageDepSpec & spec,
+        const int x, const int y, const int s, const int f)
+{
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id) +
+            " (unsatisfied '" + stringify(spec) + "')");
+
+    output_heading(m);
+}
+
+void
+ConsoleInstallTask::on_install_post(const DepListEntry &, const int, const int,
+        const int, const int)
 {
 }
 
 void
-ConsoleInstallTask::on_install_fail(const DepListEntry & d)
+ConsoleInstallTask::on_install_fail(const DepListEntry & d, const int x, const int y,
+        const int s, const int f)
 {
-    output_xterm_title("(" + stringify(count<current_count>()) + "of "
-            + stringify(count<max_count>()) + ") Failed install of " + stringify(*d.package_id));
+    output_xterm_title("(" + make_x_of_y(x, y, s, f) + ") Failed install of " + stringify(*d.package_id));
 }
 
 void
@@ -1211,7 +1217,6 @@ ConsoleInstallTask::on_install_action_error(const InstallActionError & e)
     output_stream() << "  * " << e.backtrace("\n  * ");
     output_stream() << e.message() << endl;
     output_stream() << endl;
-    show_resume_command();
     output_stream() << endl;
 }
 
@@ -1258,7 +1263,6 @@ ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
         }
     }
 
-    show_resume_command();
     output_stream() << endl;
 }
 
@@ -1360,5 +1364,71 @@ ConsoleInstallTask::on_multiple_set_targets_specified(const MultipleSetTargetsSp
     output_stream() << endl;
     output_stream() << "Package sets (like 'system' and 'world') must be installed individually," << endl;
     output_stream() << "without any other sets or packages." << endl;
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_pre()
+{
+    output_heading("Summary of failures:");
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_success(const DepListEntry &)
+{
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_failure(const DepListEntry & e)
+{
+    output_starred_item_no_endl("");
+    output_stream() << colour(cl_package_name, *e.package_id) << ": " << colour(cl_error, "failure");
+    output_endl();
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_skipped_unsatisfied(const DepListEntry & e,
+        const PackageDepSpec & spec)
+{
+    output_starred_item_no_endl("");
+    output_stream() << colour(cl_package_name, *e.package_id) << ": skipped (dependency '"
+        << spec << "' unsatisfied)";
+    output_endl();
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_totals(const int total, const int successes,
+        const int skipped, const int failures)
+{
+    std::ostringstream s;
+    s << "Total: " << total << render_plural(total, " package", " packages");
+    s << ", " << successes << render_plural(successes, " success", " successes");
+    s << ", " << skipped << render_plural(skipped, " skipped", " skipped");
+    s << ", " << failures << render_plural(failures, " failure", " failures");
+
+    output_endl();
+    output_unstarred_item(s.str());
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_post()
+{
+    show_resume_command();
+}
+
+void
+ConsoleInstallTask::on_display_failure_no_summary()
+{
+    show_resume_command();
+}
+
+std::string
+ConsoleInstallTask::make_x_of_y(const int x, const int y, const int s, const int f)
+{
+    std::string result(stringify(x) + " of " + stringify(y));
+    if (s > 0)
+        result.append(", " + stringify(s) + " skipped");
+    if (f > 0)
+        result.append(", " + stringify(f) + " failed");
+    return result;
 }
 

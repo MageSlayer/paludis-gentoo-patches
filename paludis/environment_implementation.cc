@@ -28,6 +28,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/hook.hh>
+#include <paludis/distribution.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
@@ -175,5 +176,11 @@ tr1::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
     return make_shared_ptr(new SetNameSet);
+}
+
+bool
+EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) const
+{
+    return stringify(n) == DistributionData::get_instance()->distribution_from_string(default_distribution())->paludis_package;
 }
 

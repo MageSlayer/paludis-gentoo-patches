@@ -102,6 +102,13 @@ CommandLine::CommandLine() :
             ("changed",    "Show for new and changed flags")
             ("all",        "Show for all flags"),
             "none"),
+    a_continue_on_faillure(&install_args, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
+            args::EnumArg::EnumArgOptions
+            ("if-fetch-only",       "If fetching only")
+            ("never",               "Never")
+            ("if-satisfied",        "If remaining packages' dependencies are satisfied")
+            ("always",              "Always (UNSAFE)"),
+            "if-fetch-only"),
 
     uninstall_args(this, "Uninstall options",
             "Options which are relevant for --uninstall."),

@@ -232,3 +232,9 @@ AdaptedEnvironment::unmasked_by_user(const PackageID & id) const
     return _imp->env->unmasked_by_user(id);
 }
 
+bool
+AdaptedEnvironment::is_paludis_package(const QualifiedPackageName & q) const
+{
+    return _imp->env->is_paludis_package(q);
+}
+

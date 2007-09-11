@@ -267,6 +267,6 @@ void expose_dep_list()
                 "Return whether a spec matches an item in the list."
             )
 
-        .def("__iter__", bp::range<bp::return_internal_reference<> >(&DepList::begin, &DepList::end))
+//        .def("__iter__", bp::range<bp::return_internal_reference<> >(&DepList::begin, &DepList::end))
         ;
 }

@@ -23,6 +23,7 @@
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/dep_list/show_suggest_visitor.hh>
 #include <paludis/dep_list/condition_tracker.hh>
+#include <paludis/dep_list/handled_information.hh>
 
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -973,6 +974,9 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                 .destination(p->virtual_for_key() ? tr1::shared_ptr<Repository>() : find_destination(*p, destinations))
                 .associated_entry(0)
+                .handled(p->virtual_for_key() ?
+                    tr1::shared_ptr<DepListEntryHandled>(new DepListEntryNoHandlingRequired) :
+                    tr1::shared_ptr<DepListEntryHandled>(new DepListEntryUnhandled))
                 .kind(p->virtual_for_key() ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
@@ -1036,6 +1040,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
                         .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                         .destination(tr1::shared_ptr<Repository>())
                         .associated_entry(&*_imp->current_merge_list_entry)
+                        .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
         }
@@ -1106,6 +1111,7 @@ DepList::add_error_package(const tr1::shared_ptr<const PackageID> & p, const Dep
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                 .destination(tr1::shared_ptr<Repository>())
                 .associated_entry(&*_imp->current_merge_list_entry)
+                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                 .kind(kind)));
 
     if (_imp->current_package_id())
@@ -1141,6 +1147,7 @@ DepList::add_suggested_package(const tr1::shared_ptr<const PackageID> & p,
                 .tags(tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags))
                 .destination(find_destination(*p, destinations))
                 .associated_entry(&*_imp->current_merge_list_entry)
+                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                 .kind(dlk_suggested)));
 
     if (_imp->current_package_id())
@@ -1222,6 +1229,7 @@ DepList::add_already_installed_package(const tr1::shared_ptr<const PackageID> & 
                 .state(dle_has_pre_deps)
                 .destination(tr1::shared_ptr<Repository>())
                 .associated_entry(0)
+                .handled(make_shared_ptr(new DepListEntryNoHandlingRequired))
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p->name(), our_merge_entry));
 
@@ -1391,15 +1399,27 @@ DepList::already_installed(const DependencySpecTree::ConstItem & spec,
 }
 
 DepList::Iterator
-DepList::begin() const
+DepList::begin()
 {
     return Iterator(_imp->merge_list.begin());
 }
 
 DepList::Iterator
-DepList::end() const
+DepList::end()
 {
     return Iterator(_imp->merge_list.end());
+}
+
+DepList::ConstIterator
+DepList::begin() const
+{
+    return ConstIterator(_imp->merge_list.begin());
+}
+
+DepList::ConstIterator
+DepList::end() const
+{
+    return ConstIterator(_imp->merge_list.end());
 }
 
 bool
