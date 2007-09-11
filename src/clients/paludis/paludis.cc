@@ -341,6 +341,10 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_no_safe_resume.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_safe_resume.long_name());
 
+        if (CommandLine::get_instance()->a_continue_on_faillure.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_continue_on_faillure.long_name() + " "
+                    + CommandLine::get_instance()->a_continue_on_faillure.argument());
+
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);
 
