@@ -140,7 +140,8 @@ VersionSpec::VersionSpec(const std::string & text) :
 
             if (number_part.size() > 8)
                 Log::get_instance()->message(ll_qa, lc_context) <<
-                    "Number part '" << number_part << "' exceeds 8 digit limit";
+                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             _imp->parts.push_back(Part(number, number_part));
 
@@ -194,7 +195,8 @@ VersionSpec::VersionSpec(const std::string & text) :
 
                     if (number_part.size() > 8)
                         Log::get_instance()->message(ll_qa, lc_context) <<
-                            "Number part '" << number_part << "' exceeds 8 digit limit";
+                            "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                            "(Paludis supports arbitrary lengths, but other package managers do not)";
 
                     if (number_part.size() > 0)
                     {
@@ -218,7 +220,8 @@ VersionSpec::VersionSpec(const std::string & text) :
 
             if (number_part.size() > 8)
                 Log::get_instance()->message(ll_qa, lc_context) <<
-                    "Number part '" << number_part << "' exceeds 8 digit limit";
+                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             if (number_part.size() > 0)
             {
@@ -240,7 +243,8 @@ VersionSpec::VersionSpec(const std::string & text) :
 
             if (number_part.size() > 8)
                 Log::get_instance()->message(ll_qa, lc_context) <<
-                    "Number part '" << number_part << "' exceeds 8 digit limit";
+                    "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                    "(Paludis supports arbitrary lengths, but other package managers do not)";
 
             if (number_part.size() > 0)
             {
@@ -281,7 +285,8 @@ VersionSpec::VersionSpec(const std::string & text) :
 
                 if (number_part.size() > 8)
                     Log::get_instance()->message(ll_qa, lc_context) <<
-                        "Number part '" << number_part << "' exceeds 8 digit limit";
+                        "Number part '" << number_part << "' exceeds 8 digit limit permitted by the Package Manager Specification "
+                        "(Paludis supports arbitrary lengths, but other package managers do not)";
 
                 /* Are we -r */
                 bool empty(number_part.empty());
