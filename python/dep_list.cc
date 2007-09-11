@@ -236,6 +236,8 @@ void expose_dep_list()
      * DepList
      */
     tr1::shared_ptr<DepListOptions> (DepList::* options_ptr)() = &DepList::options;
+    DepList::Iterator (DepList::*dl_begin_ptr)() = &DepList::begin;
+    DepList::Iterator (DepList::*dl_end_ptr)() = &DepList::end;
     bp::class_<DepList, boost::noncopyable>
         (
          "DepList",
@@ -267,6 +269,6 @@ void expose_dep_list()
                 "Return whether a spec matches an item in the list."
             )
 
-//        .def("__iter__", bp::range<bp::return_internal_reference<> >(&DepList::begin, &DepList::end))
+        .def("__iter__", bp::range<bp::return_internal_reference<> >(dl_begin_ptr, dl_end_ptr))
         ;
 }
