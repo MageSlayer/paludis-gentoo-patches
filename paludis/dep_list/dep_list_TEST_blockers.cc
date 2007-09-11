@@ -129,7 +129,7 @@ namespace test_cases
             d.add(PackageDepSpec(merge_target, pds_pm_permissive), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 4);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
-            TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "virtual/two-1::installed_virtuals (virtual for other/two-1:0::installed)");
+            TEST_CHECK_STRINGIFY_EQUAL(*d.begin()->package_id, "virtual/two-1::installed-virtuals (virtual for other/two-1:0::installed)");
             TEST_CHECK_EQUAL(next(d.begin())->kind, dlk_package);
             TEST_CHECK_STRINGIFY_EQUAL(*next(d.begin())->package_id, "cat/two-1:0::repo");
             TEST_CHECK_EQUAL(next(next(d.begin()))->kind, dlk_provided);

@@ -151,7 +151,7 @@ Implementation<CRANInstalledRepository>::need_ids() const
 #endif
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
-    Repository(RepositoryName("cran_installed"),
+    Repository(RepositoryName("installed-cran"),
             RepositoryCapabilities::create()
             .installed_interface(this)
             .sets_interface(this)

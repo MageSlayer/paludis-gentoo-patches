@@ -90,10 +90,10 @@ namespace
     make_name(const FSEntry & r)
     {
         if (FSEntry("/") == r)
-            return RepositoryName("installed_virtuals");
+            return RepositoryName("installed-virtuals");
         else
         {
-            std::string n("installed_virtuals-" + stringify(r)), result;
+            std::string n("installed-virtuals-" + stringify(r)), result;
             std::transform(n.begin(), n.end(), std::back_inserter(result), MakeSafe());
             return RepositoryName(result);
         }
