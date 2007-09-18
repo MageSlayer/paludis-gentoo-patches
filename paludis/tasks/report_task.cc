@@ -178,7 +178,37 @@ ReportTask::execute()
                 for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ;
                         v != v_end ; ++v)
                 {
-                    bool is_masked((*v)->masked());
+                    bool is_missing(false);
+                    tr1::shared_ptr<const PackageID> origin;
+                    tr1::shared_ptr<RepositoryName> repo_name;
+
+                    if ((*v)->source_origin_key())
+                    {
+                        tr1::shared_ptr<QualifiedPackageName> pkg_name(new QualifiedPackageName((*v)->name()));
+                        tr1::shared_ptr<VersionRequirements> ver_reqs(make_equal_to_version_requirements((*v)->version()));
+                        repo_name.reset(new RepositoryName((*v)->source_origin_key()->value()));
+
+                        tr1::shared_ptr<const PackageIDSequence> installable(
+                            e->package_database()->query(
+                                query::Matches(
+                                    PackageDepSpec(
+                                        pkg_name,
+                                        tr1::shared_ptr<CategoryNamePart>(),
+                                        tr1::shared_ptr<PackageNamePart>(),
+                                        ver_reqs,
+                                        vr_and,
+                                        tr1::shared_ptr<SlotName>(),
+                                        repo_name)) &
+                                query::SupportsAction<InstallAction>(),
+                                qo_best_version_only));
+
+                        if (installable->empty())
+                            is_missing = true;
+                        else
+                            origin = *installable->last();
+                    }
+
+                    bool is_masked(origin && origin->masked());
                     bool is_vulnerable(false);
                     bool is_unused(false);
 
@@ -189,11 +219,11 @@ ReportTask::execute()
                     if (unused.end() != unused.find(*v))
                         is_unused = true;
 
-                    if (is_masked || is_vulnerable || is_unused)
+                    if (is_masked || is_vulnerable || is_missing || is_unused)
                     {
                         on_report_package_failure_pre(**v);
                         if (is_masked)
-                            on_report_package_is_masked(**v);
+                            on_report_package_is_masked(**v, *origin);
                         if (is_vulnerable)
                         {
                             on_report_package_is_vulnerable_pre(**v);
@@ -201,6 +231,8 @@ ReportTask::execute()
                                 on_report_package_is_vulnerable(**v, itag->second->short_text());
                             on_report_package_is_vulnerable_post(**v);
                         }
+                        if (is_missing)
+                            on_report_package_is_missing(**v, *repo_name);
                         if (is_unused)
                             on_report_package_is_unused(**v);
                         on_report_package_failure_post(**v);

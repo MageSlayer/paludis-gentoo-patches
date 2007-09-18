@@ -53,11 +53,11 @@ namespace
             virtual void on_report_check_package_pre(const QualifiedPackageName & p);
             virtual void on_report_package_success(const PackageID & id);
             virtual void on_report_package_failure_pre(const PackageID & id);
-            virtual void on_report_package_is_masked(const PackageID & id);
+            virtual void on_report_package_is_masked(const PackageID & installed, const PackageID & origin);
             virtual void on_report_package_is_vulnerable_pre(const PackageID & id);
             virtual void on_report_package_is_vulnerable(const PackageID & id, const std::string & tag);
             virtual void on_report_package_is_vulnerable_post(const PackageID & id);
-            virtual void on_report_package_is_missing(const PackageID & id);
+            virtual void on_report_package_is_missing(const PackageID & id, const RepositoryName & repo_name);
             virtual void on_report_package_is_unused(const PackageID & id);
             virtual void on_report_package_failure_post(const PackageID & id);
             virtual void on_report_check_package_post(const QualifiedPackageName & p);
@@ -92,12 +92,12 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_masked(const PackageID & id)
+    OurReportTask::on_report_package_is_masked(const PackageID &, const PackageID & origin)
     {
         cout << endl << "    Masked by: ";
 
         bool comma(false);
-        for (PackageID::MasksIterator m(id.begin_masks()), m_end(id.end_masks()) ;
+        for (PackageID::MasksIterator m(origin.begin_masks()), m_end(origin.end_masks()) ;
                 m != m_end ; ++m)
         {
             if (comma)
@@ -105,6 +105,7 @@ namespace
             cout << colour(cl_masked, (*m)->description());
             comma = true;
         }
+        cout << " in its original repository '" << origin.repository()->name() << "'";
         ++_n_errors;
     }
 
@@ -127,9 +128,9 @@ namespace
     }
 
     void
-    OurReportTask::on_report_package_is_missing(const PackageID &)
+    OurReportTask::on_report_package_is_missing(const PackageID &, const RepositoryName & repo_name)
     {
-        cout << endl << "    No longer exists in its original repository";
+        cout << endl << "    No longer exists in its original repository '" << repo_name << "'";
         ++_n_errors;
     }
 
