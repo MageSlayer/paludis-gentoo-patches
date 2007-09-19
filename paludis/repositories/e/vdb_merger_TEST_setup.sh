@@ -4,9 +4,10 @@
 mkdir vdb_merger_TEST_dir || exit 2
 cd vdb_merger_TEST_dir || exit 3
 
-mkdir -p config_protect/{image,root,CONTENTS} || exit 4
 
-cd config_protect/image
+mkdir -p config_protect_dir/{image,root,CONTENTS} || exit 4
+
+cd config_protect_dir/image
 
 echo foo >protected_file
 echo foo >unprotected_file
@@ -57,4 +58,9 @@ mkdir protected_dir_not_really
 echo bar >protected_dir_not_really/unprotected_file
 
 cd ../..
+
+
+for d in *_dir; do
+    ln -s ${d} ${d%_dir}
+done
 

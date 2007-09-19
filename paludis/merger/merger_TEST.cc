@@ -141,10 +141,10 @@ namespace
             MergerTest(EntryType src_type, EntryType dst_type, int n = 0) :
                 TestCase("merge " + stringify(src_type) + " over " + stringify(dst_type) + (0 == n ? "" : " "
                             + stringify(n))),
-                image_dir("merger_TEST_dir/image_" + stringify(src_type) + "_over_" + stringify(dst_type)
-                        + (0 == n ? "" : "_" + stringify(n))),
-                root_dir("merger_TEST_dir/root_" + stringify(src_type) + "_over_" + stringify(dst_type)
-                        + (0 == n ? "" : "_" + stringify(n))),
+                image_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
+                        + (0 == n ? "" : "_" + stringify(n)) + "/image"),
+                root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
+                        + (0 == n ? "" : "_" + stringify(n)) + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(MergerOptions::create()
                         .image(image_dir)
@@ -156,8 +156,8 @@ namespace
 
             MergerTest(const std::string & custom_test) :
                 TestCase("merge " + custom_test + " test"),
-                image_dir("merger_TEST_dir/image_" + custom_test),
-                root_dir("merger_TEST_dir/root_" + custom_test),
+                image_dir("merger_TEST_dir/" + custom_test + "/image"),
+                root_dir("merger_TEST_dir/" + custom_test + "/root"),
                 env(FSEntry("merger_TEST_dir/hooks")),
                 merger(MergerOptions::create()
                         .image(image_dir)

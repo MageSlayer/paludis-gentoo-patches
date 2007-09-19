@@ -68,7 +68,11 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.key(), "R")
         self.assertEquals(m.description(), "repository")
 
-        package_mask_path = os.path.join(os.getcwd(), "mask_TEST_dir/testrepo/profiles/package.mask")
+        for section in self.db.fetch_repository("testrepo").info(False).sections:
+            for k, v in section.kvs:
+                if k == "location":
+                    location = v
+        package_mask_path = os.path.join(location, "profiles/package.mask")
         self.assertEquals(m.mask_key().value().mask_file, package_mask_path)
         self.assert_(isinstance(m.mask_key().value().comment, StringIterable))
 

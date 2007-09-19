@@ -107,7 +107,7 @@ Merger::merge()
         Log::get_instance()->message(ll_warning, lc_context,
                 "Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' pre hooks returned non-zero");
 
-    do_dir_recursive(false, _options.image, _options.root);
+    do_dir_recursive(false, _options.image, _options.root.realpath());
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_post")
@@ -146,7 +146,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
     if (! src.is_directory())
         throw MergerError("Source directory '" + stringify(src) + "' is not a directory");
     if ((! is_check) && (! dst.is_directory()))
-        throw MergerError("Destination directory '" + stringify(src) + "' is not a directory");
+        throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
 
     on_enter_dir(is_check, src);
 
@@ -217,7 +217,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root.realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }
@@ -289,7 +289,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root.realpath())));
             display_override("--- [skp] " + tidy);
             _skip_dir = true;
             return;
@@ -363,7 +363,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root)));
+            std::string tidy(stringify((dst / src.basename()).strip_leading(_options.root.realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }

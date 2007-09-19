@@ -48,13 +48,15 @@ namespace paludis
     struct Implementation<VDBMerger>
     {
         VDBMergerOptions options;
+        FSEntry realroot;
         tr1::shared_ptr<std::ofstream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
         Implementation(const VDBMergerOptions & o) :
-            options(o)
+            options(o),
+            realroot(options.root.realpath())
         {
             WhitespaceTokeniser::get_instance()->tokenise(o.config_protect,
                     std::back_inserter(config_protect));
@@ -114,8 +116,8 @@ VDBMerger::extend_hook(const Hook & h)
 void
 VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
-    std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->options.root))),
-            tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
+    std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
+            tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     time_t timestamp((dst_dir / dst_name).mtime());
 
     std::ifstream infile(stringify(FSEntry(dst_dir / dst_name)).c_str());
@@ -135,7 +137,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 void
 VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     display_override(">>> [dir] " + tidy);
 
     *_imp->contents_file << "dir " << tidy << std::endl;
@@ -144,7 +146,7 @@ VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
 void
 VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
     time_t timestamp((dst_dir / src.basename()).mtime());
 
@@ -174,7 +176,7 @@ VDBMerger::on_warn(bool is_check, const std::string & s)
 bool
 VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
 
     bool result(false);
     for (std::list<std::string>::const_iterator c(_imp->config_protect.begin()),
@@ -204,7 +206,7 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     std::ifstream our_md5_file(stringify(src).c_str());
     if (! our_md5_file)
-        throw MergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->options.root)) + "'");
+        throw MergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->realroot)) + "'");
     MD5 our_md5(our_md5_file);
 
     while (true)
