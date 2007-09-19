@@ -155,14 +155,14 @@ KeywordsConf::query(tr1::shared_ptr<const KeywordNameSet> k, const PackageID & e
                 for (KeywordsList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
                         l != l_end ; ++l)
                 {
-                    if (k->end() != k->find(*l))
-                        return true;
-
                     if (*l == star_keyword)
                         return true;
 
-                    if (*l == minus_star_keyword)
+                    else if (*l == minus_star_keyword)
                         break_when_done = true;
+
+                    else if (k->end() != k->find(*l))
+                        return true;
                 }
             }
         }
