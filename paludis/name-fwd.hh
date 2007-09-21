@@ -183,13 +183,6 @@ namespace paludis
      * \ingroup grpnames
      */
     typedef Set<IUseFlag> IUseFlagSet;
-
-    /**
-     * A collection of inherited packages.
-     *
-     * \ingroup grpnames
-     */
-    typedef Set<std::string> InheritedSet;
 }
 
 #endif

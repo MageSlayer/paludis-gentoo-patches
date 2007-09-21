@@ -278,7 +278,7 @@ namespace
         {
         }
 
-        void visit(const MetadataSetKey<InheritedSet> &)
+        void visit(const MetadataSetKey<Set<std::string> > &)
         {
         }
 

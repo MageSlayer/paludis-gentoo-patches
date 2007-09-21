@@ -260,10 +260,10 @@ VDBRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! e.use_key())
+    if (! static_cast<const VDBID *>(&e)->use_key())
         return use_unspecified;
 
-    if (e.use_key()->value()->end() != e.use_key()->value()->find(f))
+    if (static_cast<const VDBID *>(&e)->use_key()->value()->end() != static_cast<const VDBID *>(&e)->use_key()->value()->find(f))
         return use_enabled;
     else
         return use_disabled;

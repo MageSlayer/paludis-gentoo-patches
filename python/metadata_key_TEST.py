@@ -62,8 +62,8 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.assert_(isinstance(self.ipid.find_metadata("IUSE"), MetadataIUseFlagIterableKey))
 
     def test_07_inherited(self):
-        self.assert_(isinstance(self.pid.find_metadata("INHERITED"), MetadataInheritedIterableKey))
-        self.assert_(isinstance(self.ipid.find_metadata("INHERITED"), MetadataInheritedIterableKey))
+        self.assert_(isinstance(self.pid.find_metadata("INHERITED"), MetadataStringIterableKey))
+        self.assert_(isinstance(self.ipid.find_metadata("INHERITED"), MetadataStringIterableKey))
 
     def test_08_depend(self):
         self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
@@ -153,15 +153,15 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_iuse_flag_set_key(TestKey())
 
-    def test_09_inherited_iterable(self):
-        class TestKey(MetadataInheritedIterableKey):
+    def test_09_string_iterable(self):
+        class TestKey(MetadataStringIterableKey):
             def __init__(self):
-                MetadataInheritedIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataStringIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
                 return ["keyword"]
 
-        test_metadata_inherited_set_key(TestKey())
+        test_metadata_string_set_key(TestKey())
 
     def test_10_license_spec_tree(self):
         class TestKey(MetadataLicenseSpecTreeKey):

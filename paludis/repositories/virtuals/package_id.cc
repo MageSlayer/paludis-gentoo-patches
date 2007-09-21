@@ -237,18 +237,6 @@ VirtualsPackageID::iuse_key() const
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
-VirtualsPackageID::inherited_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
-}
-
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
-VirtualsPackageID::use_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 VirtualsPackageID::license_key() const
 {

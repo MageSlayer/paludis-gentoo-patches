@@ -68,9 +68,7 @@ namespace paludis
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const = 0;

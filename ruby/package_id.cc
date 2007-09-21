@@ -44,7 +44,7 @@ namespace
     static VALUE c_metadata_keyword_name_set_key;
     static VALUE c_metadata_use_flag_name_set_key;
     static VALUE c_metadata_iuse_flag_set_key;
-    static VALUE c_metadata_inherited_set_key;
+    static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_key_type;
     static VALUE c_repository_mask_info;
@@ -113,10 +113,10 @@ namespace
                     new tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(mm)));
         }
 
-        void visit(const MetadataSetKey<InheritedSet> &)
+        void visit(const MetadataSetKey<Set<std::string> > &)
         {
-            value = Data_Wrap_Struct(c_metadata_inherited_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<InheritedSet> > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<InheritedSet> >(tr1::static_pointer_cast<const MetadataSetKey<InheritedSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > >::free,
+                    new tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >(tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(mm)));
         }
 
         void visit(const MetadataSetKey<PackageIDSequence> &)
@@ -532,9 +532,7 @@ namespace
         rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
-        rb_define_method(c_package_id, "use_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<UseFlagNameSet>,&PackageID::use_key>::fetch)), 0);
         rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
-        rb_define_method(c_package_id, "inherited_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<InheritedSet>,&PackageID::inherited_key>::fetch)), 0);
         rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::short_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::long_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataContentsKey,&PackageID::contents_key>::fetch)), 0);
@@ -638,12 +636,12 @@ namespace
         rb_define_method(c_metadata_iuse_flag_set_key, "value", RUBY_FUNC_CAST((&SetValue<IUseFlagSet>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataInheritedSetKey
+         * Document-class: Paludis::MetadataStringSetKey
          *
-         * Metadata class for Inherited
+         * Metadata class for String sets
          */
-        c_metadata_inherited_set_key = rb_define_class_under(paludis_module(), "MetadataInheritedSetKey", c_metadata_key);
-        rb_define_method(c_metadata_inherited_set_key, "value", RUBY_FUNC_CAST((&SetValue<InheritedSet>::fetch)), 0);
+        c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
+        rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
 
         /*
          * Document-module: Paludis::MetadataKeyType

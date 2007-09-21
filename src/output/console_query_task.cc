@@ -194,7 +194,7 @@ namespace
                             id, k.value());
             }
 
-            void visit(const MetadataSetKey<InheritedSet> & k)
+            void visit(const MetadataSetKey<Set<std::string> > & k)
             {
                 if (k.type() == type)
                     task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));

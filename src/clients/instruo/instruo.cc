@@ -30,6 +30,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/set.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
@@ -106,7 +107,7 @@ namespace
         {
         }
 
-        void visit(const MetadataSetKey<InheritedSet> &)
+        void visit(const MetadataSetKey<Set<std::string> > &)
         {
         }
 
@@ -186,9 +187,9 @@ namespace
             const tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<InheritedSet> & k)
+        void visit(const MetadataSetKey<Set<std::string> > & k)
         {
-            const tr1::shared_ptr<const InheritedSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
         void visit(const MetadataSetKey<KeywordNameSet> & k)

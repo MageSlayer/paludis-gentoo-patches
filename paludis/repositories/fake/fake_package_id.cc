@@ -392,18 +392,6 @@ FakePackageID::iuse_key() const
     return _imp->iuse;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
-FakePackageID::inherited_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
-}
-
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
-FakePackageID::use_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 FakePackageID::license_key() const
 {

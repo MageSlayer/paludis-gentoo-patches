@@ -73,7 +73,7 @@ namespace paludis
 
         tr1::shared_ptr<const MetadataFSEntryKey> fs_location;
         tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use;
-        tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited;
+        tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > inherited;
         tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse;
         tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
@@ -460,7 +460,7 @@ VDBID::iuse_key() const
     return _imp->iuse;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
+const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >
 VDBID::inherited_key() const
 {
     need_keys_added();

@@ -44,7 +44,7 @@ namespace paludis
             MetadataSetKey<UseFlagNameSet>,
             MetadataSetKey<IUseFlagSet>,
             MetadataSetKey<KeywordNameSet>,
-            MetadataSetKey<InheritedSet>,
+            MetadataSetKey<Set<std::string> >,
             MetadataSetKey<PackageIDSequence>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,

@@ -66,9 +66,7 @@ namespace paludis
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
-                virtual const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
-                virtual const tr1::shared_ptr<const MetadataSetKey<InheritedSet> > inherited_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
@@ -88,6 +86,8 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
                 virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
+
+                const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > inherited_key() const;
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

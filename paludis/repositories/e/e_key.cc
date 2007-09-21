@@ -667,7 +667,7 @@ namespace paludis
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable tr1::shared_ptr<InheritedSet> value;
+        mutable tr1::shared_ptr<Set<std::string> > value;
 
         Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             id(i),
@@ -679,7 +679,7 @@ namespace paludis
 
 EInheritedKey::EInheritedKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSetKey<InheritedSet>(r, h, t),
+    MetadataSetKey<Set<std::string> >(r, h, t),
     PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
     _imp(PrivateImplementationPattern<EInheritedKey>::_imp.get())
 {
@@ -689,7 +689,7 @@ EInheritedKey::~EInheritedKey()
 {
 }
 
-const tr1::shared_ptr<const InheritedSet>
+const tr1::shared_ptr<const Set<std::string> >
 EInheritedKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -697,7 +697,7 @@ EInheritedKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new InheritedSet);
+    _imp->value.reset(new Set<std::string>);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, _imp->value->inserter());
     return _imp->value;

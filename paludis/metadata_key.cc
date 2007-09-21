@@ -116,7 +116,7 @@ MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::s
 
 template class MetadataSetKey<KeywordNameSet>;
 template class MetadataSetKey<IUseFlagSet>;
-template class MetadataSetKey<InheritedSet>;
+template class MetadataSetKey<Set<std::string> >;
 template class MetadataSetKey<UseFlagNameSet>;
 template class MetadataSetKey<PackageIDSequence>;
 

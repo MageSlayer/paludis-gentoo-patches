@@ -319,22 +319,10 @@ CRANPackageID::keywords_key() const
     return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
-CRANPackageID::use_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
-}
-
 const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
 CRANPackageID::iuse_key() const
 {
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
-}
-
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
-CRANPackageID::inherited_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >

@@ -213,7 +213,7 @@ void expose_additional_tests()
     bp::def("test_metadata_keyword_name_set_key", &metadata_key::test_metadata_set_key<KeywordNameSet>);
     bp::def("test_metadata_use_flag_name_set_key", &metadata_key::test_metadata_set_key<UseFlagNameSet>);
     bp::def("test_metadata_iuse_flag_set_key", &metadata_key::test_metadata_set_key<IUseFlagSet>);
-    bp::def("test_metadata_inherited_set_key", &metadata_key::test_metadata_set_key<InheritedSet>);
+    bp::def("test_metadata_string_set_key", &metadata_key::test_metadata_set_key<Set<std::string> >);
     bp::def("test_metadata_license_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<LicenseSpecTree>);
     bp::def("test_metadata_provide_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<ProvideSpecTree>);
     bp::def("test_metadata_dependency_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<DependencySpecTree>);

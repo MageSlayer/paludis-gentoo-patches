@@ -201,11 +201,11 @@ void expose_name()
         );
 
     /**
-     * InheritedIterable
+     * StringSetIterable
      */
-    class_iterable<InheritedSet>
+    class_iterable<Set<std::string> >
         (
-         "InheritedIterable",
+         "StringSetIterable",
          "Iterable of string",
          true
         );

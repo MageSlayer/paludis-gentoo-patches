@@ -409,18 +409,6 @@ GemSpecification::iuse_key() const
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
-GemSpecification::inherited_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<InheritedSet> >();
-}
-
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
-GemSpecification::use_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 GemSpecification::license_key() const
 {

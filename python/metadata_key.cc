@@ -88,9 +88,9 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<InheritedSet> & k)
+        void visit(const MetadataSetKey<Set<std::string> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<InheritedSet> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -560,7 +560,7 @@ void expose_metadata_key()
     class_set_key<KeywordNameSet>("KeywordNameIterable");
     class_set_key<UseFlagNameSet>("UseFlagNameIterable");
     class_set_key<IUseFlagSet>("IUseFlagIterable");
-    class_set_key<InheritedSet>("InheritedIterable");
+    class_set_key<Set<std::string> >("StringIterable");
 
     /**
      * MetadataSpecTreeKeys
@@ -571,3 +571,4 @@ void expose_metadata_key()
     class_spec_tree_key<RestrictSpecTree>("RestrictSpecTree");
     class_spec_tree_key<URISpecTree>("URISpecTree");
 }
+

@@ -52,7 +52,8 @@ module Paludis
         include TestStuff
 
         def classes
-            [MetadataStringKey, MetadataContentsKey, MetadataTimeKey, MetadataUseFlagNameSetKey, MetadataKeywordNameSetKey, MetadataIUseFlagSetKey, MetadataInheritedSetKey]
+            [MetadataStringKey, MetadataContentsKey, MetadataTimeKey, MetadataUseFlagNameSetKey, MetadataKeywordNameSetKey,
+                MetadataIUseFlagSetKey, MetadataStringSetKey]
         end
 
         def all_classes
@@ -105,7 +106,7 @@ module Paludis
 
         def test_members
             [:name, :version, :slot, :repository_name, :==, :keywords_key,
-                :use_key, :iuse_key, :inherited_key, :short_description_key,
+                :iuse_key, :short_description_key,
                 :long_description_key, :contents_key, :installed_time_key,
                 :source_origin_key, :binary_origin_key].each do |method|
 
@@ -193,23 +194,13 @@ module Paludis
         end
 
         def test_use_key
-            assert_nil pid_testrepo.use_key
-            #assert_kind_of MetadataUseFlagNameSetKey, pid_testrepo.use_key
-            #assert_kind_of Array, pid_testrepo.use_key.value
-            #assert_equal ['test'], pid_testrepo.use_key.value
+            assert_nil pid_testrepo["USE"]
         end
 
         def test_iuse_key
             assert_kind_of MetadataIUseFlagSetKey, pid_testrepo.iuse_key
             assert_kind_of Array, pid_testrepo.iuse_key.value
             assert_equal ['testflag'], pid_testrepo.iuse_key.value
-        end
-
-        def test_inherited_key
-            assert_nil pid_testrepo.inherited_key
-            #assert_kind_of MetadataInheritSetKey, pid_testrepo.inherited_key
-            #assert_kind_of Array, pid_testrepo.iuse_key.value
-            #assert_equal ['testflag'], pid_testrepo.iuse_key.value
         end
 
         def test_repository_mask_info_keys
@@ -277,9 +268,9 @@ module Paludis
         end
 
         def test_use_key
-            assert_kind_of MetadataUseFlagNameSetKey, pid_installed.use_key
-            assert_kind_of Array, pid_installed.use_key.value
-            assert_equal ['test', 'test_use'], pid_installed.use_key.value
+            assert_kind_of MetadataUseFlagNameSetKey, pid_installed["USE"]
+            assert_kind_of Array, pid_installed["USE"].value
+            assert_equal ['test', 'test_use'], pid_installed["USE"].value
         end
 
         def test_iuse_key
@@ -289,9 +280,9 @@ module Paludis
         end
 
         def test_inherited_key
-            assert_kind_of MetadataInheritedSetKey, pid_installed.inherited_key
-            assert_kind_of Array, pid_installed.inherited_key.value
-            assert_equal ['test_inherited'], pid_installed.inherited_key.value
+            assert_kind_of MetadataStringSetKey, pid_installed["INHERITED"]
+            assert_kind_of Array, pid_installed["INHERITED"].value
+            assert_equal ['test_inherited'], pid_installed["INHERITED"].value
         end
     end
 end

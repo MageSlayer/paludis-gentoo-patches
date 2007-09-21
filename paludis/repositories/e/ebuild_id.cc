@@ -494,12 +494,6 @@ EbuildID::keywords_key() const
     return _imp->keywords;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
-EbuildID::use_key() const
-{
-    return tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >();
-}
-
 const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
 EbuildID::iuse_key() const
 {
@@ -612,7 +606,7 @@ EbuildID::binary_origin_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<InheritedSet> >
+const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >
 EbuildID::inherited_key() const
 {
     return _imp->inherited;

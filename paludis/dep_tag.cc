@@ -19,6 +19,7 @@
 
 #include "dep_tag.hh"
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>

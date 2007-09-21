@@ -65,7 +65,7 @@ namespace
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
-        void visit(const MetadataSetKey<InheritedSet> & k)
+        void visit(const MetadataSetKey<Set<std::string> > & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }

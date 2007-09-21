@@ -229,7 +229,7 @@ namespace paludis
         };
 
         class EInheritedKey :
-            public MetadataSetKey<InheritedSet>,
+            public MetadataSetKey<Set<std::string> >,
             private PrivateImplementationPattern<EInheritedKey>
         {
             private:
@@ -240,7 +240,7 @@ namespace paludis
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EInheritedKey();
 
-                const tr1::shared_ptr<const InheritedSet> value() const
+                const tr1::shared_ptr<const Set<std::string> > value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
