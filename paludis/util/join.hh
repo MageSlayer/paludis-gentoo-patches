@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_JOIN_HH 1
 
 #include <paludis/util/stringify.hh>
+#include <iterator>
 #include <string>
 
 /** \file
@@ -52,6 +53,27 @@ namespace paludis
     }
 
     /**
+     * Join together the items from i to end using joiner, using
+     * a function other than stringify.
+     *
+     * \ingroup grpjoin
+     */
+    template <typename I_, typename T_, typename F_>
+    T_ join(I_ i, I_ end, const T_ & joiner, const F_ & f)
+    {
+        T_ result;
+        if (i != end)
+            while (true)
+            {
+                result += (f)(*i);
+                if (++i == end)
+                    break;
+                result += joiner;
+            }
+        return result;
+    }
+
+    /**
      * Convenience alternative join allowing a char * to be used for a
      * string.
      *
@@ -61,6 +83,18 @@ namespace paludis
     std::string join(I_ begin, const I_ end, const char * const t)
     {
         return join(begin, end, std::string(t));
+    }
+
+    /**
+     * Convenience alternative join allowing a char * to be used for a
+     * string, using a function other than stringify.
+     *
+     * \ingroup grpjoin
+     */
+    template <typename I_, typename F_>
+    std::string join(I_ begin, const I_ end, const char * const t, const F_ & f)
+    {
+        return join(begin, end, std::string(t), f);
     }
 }
 

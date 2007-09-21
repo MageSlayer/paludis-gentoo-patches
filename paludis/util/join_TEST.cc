@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,14 @@ using namespace test;
  * Test cases for join.hh .
  *
  */
+
+namespace
+{
+    std::string make_purdy(const int x)
+    {
+        return "<" + stringify(x) + ">";
+    }
+}
 
 namespace test_cases
 {
@@ -74,6 +82,26 @@ namespace test_cases
     } test_join_list;
 
     /**
+     * \test Test join on a list of ints.
+     *
+     */
+    struct JoinListIntTest : TestCase
+    {
+        JoinListIntTest() : TestCase("join list int") { }
+
+        void run()
+        {
+            std::list<int> v;
+            v.push_back(1);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1");
+            v.push_back(2);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1/2");
+            v.push_back(3);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1/2/3");
+        }
+    } test_join_list_int;
+
+    /**
      * \test Test join with empty things.
      *
      */
@@ -94,5 +122,21 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(v.begin(), v.end(), "*"), "*");
         }
     } test_join_empty;
+
+    struct JoinFunctionTest : TestCase
+    {
+        JoinFunctionTest() : TestCase("join function") { }
+
+        void run()
+        {
+            std::list<int> v;
+            v.push_back(1);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>");
+            v.push_back(2);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>/<2>");
+            v.push_back(3);
+            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>/<2>/<3>");
+        }
+    } test_join_function;
 }
 
