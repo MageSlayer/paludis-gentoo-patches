@@ -76,16 +76,6 @@ namespace paludis
 
 namespace
 {
-    struct NamesCategoryComparator
-    {
-        bool
-        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
-        {
-            return a.first.category < b.first.category;
-        }
-    };
-
     struct NamesNameComparator
     {
         bool
@@ -93,6 +83,30 @@ namespace
                 const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
         {
             return a.first < b.first;
+        }
+    };
+
+    struct NamesSortComparator
+    {
+        bool
+        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
+                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
+        {
+            if (a.first < b.first)
+                return true;
+            if (a.first > b.first)
+                return false;
+            return stringify(*a.second) < stringify(*b.second);
+        }
+    };
+
+    struct NamesUniqueComparator
+    {
+        bool
+        operator() (const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & a,
+                const std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > & b) const
+        {
+            return a.first == b.first && stringify(*a.second) == stringify(*b.second);
         }
     };
 }
@@ -156,7 +170,8 @@ VirtualsRepository::need_names() const
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p->provided_by->name()))))));
     }
 
-    std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
+    std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
+    _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
 
     std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > new_names;
 
@@ -184,7 +199,8 @@ VirtualsRepository::need_names() const
     }
 
     std::copy(new_names.begin(), new_names.end(), std::back_inserter(_imp->names));
-    std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
+    std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
+    _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
 
     _imp->has_names = true;
 }
