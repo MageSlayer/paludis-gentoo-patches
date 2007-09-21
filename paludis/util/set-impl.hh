@@ -110,4 +110,11 @@ paludis::Set<T_, C_>::insert(const T_ & t)
     _imp->set.insert(t);
 }
 
+template <typename T_, typename C_>
+void
+paludis::Set<T_, C_>::erase(const T_ & t)
+{
+    _imp->set.erase(t);
+}
+
 #endif

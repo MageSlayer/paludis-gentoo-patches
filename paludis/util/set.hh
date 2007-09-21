@@ -59,6 +59,7 @@ namespace paludis
             Inserter inserter();
 
             void insert(const T_ &);
+            void erase(const T_ &);
     };
 }
 
