@@ -221,24 +221,24 @@ ReportTask::execute()
 
                     if (is_masked || is_vulnerable || is_missing || is_unused)
                     {
-                        on_report_package_failure_pre(**v);
+                        on_report_package_failure_pre(*v);
                         if (is_masked)
-                            on_report_package_is_masked(**v, *origin);
+                            on_report_package_is_masked(*v, origin);
                         if (is_vulnerable)
                         {
-                            on_report_package_is_vulnerable_pre(**v);
+                            on_report_package_is_vulnerable_pre(*v);
                             for (VulnerableChecker::ConstIterator itag(pi.first) ; itag != pi.second ; ++itag)
-                                on_report_package_is_vulnerable(**v, itag->second->short_text());
-                            on_report_package_is_vulnerable_post(**v);
+                                on_report_package_is_vulnerable(*v, itag->second->short_text());
+                            on_report_package_is_vulnerable_post(*v);
                         }
                         if (is_missing)
-                            on_report_package_is_missing(**v, *repo_name);
+                            on_report_package_is_missing(*v, *repo_name);
                         if (is_unused)
-                            on_report_package_is_unused(**v);
-                        on_report_package_failure_post(**v);
+                            on_report_package_is_unused(*v);
+                        on_report_package_failure_post(*v);
                     }
                     else
-                        on_report_package_success(**v);
+                        on_report_package_success(*v);
                 }
 
                 on_report_check_package_post(*p);

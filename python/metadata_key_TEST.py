@@ -149,7 +149,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataIUseFlagIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
-                return [IUseFlag("iuse", IUseFlagParseMode.PERMISSIVE)]
+                return [IUseFlag("iuse", IUseFlagParseMode.PERMISSIVE, -1)]
 
         test_metadata_iuse_flag_set_key(TestKey())
 

@@ -24,6 +24,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -157,7 +158,8 @@ namespace
     template <typename T_>
     std::string flatten(const T_ & d)
     {
-        DepSpecPrettyPrinter p(0, false);
+        StringifyFormatter ff;
+        DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
         d->accept(p);
         return stringify(p);
     }

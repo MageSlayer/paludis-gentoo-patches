@@ -164,7 +164,7 @@ VDBID::need_keys_added() const
     if (! env->env_use.empty())
         if ((_imp->dir / env->env_use).exists())
         {
-            _imp->use.reset(new EUseKey(shared_from_this(), env->env_use, env->description_use,
+            _imp->use.reset(new EUseKey(_imp->environment, shared_from_this(), env->env_use, env->description_use,
                         file_contents(_imp->dir / env->env_use), mkt_internal));
             add_metadata_key(_imp->use);
         }
@@ -180,7 +180,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_iuse.empty())
         if ((_imp->dir / vars->metadata_iuse).exists())
         {
-            _imp->iuse.reset(new EIUseKey(shared_from_this(), vars->metadata_iuse, vars->description_iuse,
+            _imp->iuse.reset(new EIUseKey(_imp->environment, shared_from_this(), vars->metadata_iuse, vars->description_iuse,
                         file_contents(_imp->dir / vars->metadata_iuse), mkt_normal));
             add_metadata_key(_imp->iuse);
         }
@@ -188,7 +188,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_license.empty())
         if ((_imp->dir / vars->metadata_license).exists())
         {
-            _imp->license.reset(new ELicenseKey(shared_from_this(), vars->metadata_license, vars->description_license,
+            _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->metadata_license, vars->description_license,
                         file_contents(_imp->dir / vars->metadata_license),  mkt_normal));
             add_metadata_key(_imp->license);
         }
@@ -196,7 +196,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_provide.empty())
         if ((_imp->dir / vars->metadata_provide).exists())
         {
-            _imp->provide.reset(new EProvideKey(shared_from_this(), vars->metadata_provide, vars->description_provide,
+            _imp->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->metadata_provide, vars->description_provide,
                         file_contents(_imp->dir / vars->metadata_provide), mkt_internal));
             add_metadata_key(_imp->provide);
         }
@@ -204,7 +204,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_build_depend.empty())
         if ((_imp->dir / vars->metadata_build_depend).exists())
         {
-            _imp->build_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_build_depend,
+            _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_build_depend,
                         vars->description_build_depend, file_contents(_imp->dir / vars->metadata_build_depend), mkt_dependencies));
             add_metadata_key(_imp->build_dependencies);
         }
@@ -212,7 +212,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_run_depend.empty())
         if ((_imp->dir / vars->metadata_run_depend).exists())
         {
-            _imp->run_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_run_depend,
+            _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_run_depend,
                         vars->description_run_depend, file_contents(_imp->dir / vars->metadata_run_depend), mkt_dependencies));
             add_metadata_key(_imp->run_dependencies);
         }
@@ -220,7 +220,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_pdepend.empty())
         if ((_imp->dir / vars->metadata_pdepend).exists())
         {
-            _imp->post_dependencies.reset(new EDependenciesKey(shared_from_this(), vars->metadata_pdepend,
+            _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->metadata_pdepend,
                         vars->description_pdepend, file_contents(_imp->dir / vars->metadata_pdepend), mkt_dependencies));
             add_metadata_key(_imp->post_dependencies);
         }
@@ -228,7 +228,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_restrict.empty())
         if ((_imp->dir / vars->metadata_restrict).exists())
         {
-            _imp->restrictions.reset(new ERestrictKey(shared_from_this(), vars->metadata_restrict, vars->description_restrict,
+            _imp->restrictions.reset(new ERestrictKey(_imp->environment, shared_from_this(), vars->metadata_restrict, vars->description_restrict,
                         file_contents(_imp->dir / vars->metadata_restrict), mkt_internal));
             add_metadata_key(_imp->restrictions);
         }
@@ -236,7 +236,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_src_uri.empty())
         if ((_imp->dir / vars->metadata_src_uri).exists())
         {
-            _imp->src_uri.reset(new EURIKey(shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
+            _imp->src_uri.reset(new EURIKey(_imp->environment, shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
                         file_contents(_imp->dir / vars->metadata_src_uri), mkt_dependencies));
             add_metadata_key(_imp->src_uri);
         }
@@ -252,7 +252,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_homepage.empty())
         if ((_imp->dir / vars->metadata_homepage).exists())
         {
-            _imp->homepage.reset(new EURIKey(shared_from_this(), vars->metadata_homepage, vars->description_homepage,
+            _imp->homepage.reset(new EURIKey(_imp->environment, shared_from_this(), vars->metadata_homepage, vars->description_homepage,
                         file_contents(_imp->dir / vars->metadata_homepage), mkt_significant));
             add_metadata_key(_imp->homepage);
         }

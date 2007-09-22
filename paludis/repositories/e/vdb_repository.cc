@@ -45,6 +45,7 @@
 #include <paludis/set_file.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/stringify_formatter.hh>
 
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -919,8 +920,9 @@ VDBRepository::regenerate_provides_cache() const
             if (! (*e)->provide_key())
                 continue;
 
-            tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());;
-            DepSpecPrettyPrinter p(0, false);
+            tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());
+            StringifyFormatter ff;
+            DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, 0);
             provide->accept(p);
             std::string provide_str(strip_leading(strip_trailing(stringify(p), " \t\r\n"), " \t\r\n"));
             if (provide_str.empty())

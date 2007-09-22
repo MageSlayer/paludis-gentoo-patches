@@ -11,6 +11,7 @@ libgtkpaludis_a_SOURCES = \
 	main_notebook_page.cc                main_notebook_page.hh                \
 	main_window.cc                       main_window.hh                       \
 	markup.cc                            markup.hh                            \
+	markup_formatter.cc                  markup_formatter.hh                  \
 	messages_page.cc                     messages_page.hh                     \
 	package_buttons.cc                   package_buttons.hh                   \
 	packages_filter.cc                   packages_filter.hh                   \

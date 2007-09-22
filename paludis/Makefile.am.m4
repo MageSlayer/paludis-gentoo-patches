@@ -175,6 +175,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_PYTHON_DIR="$(top_srcdir)/python/" \
 	LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
+		`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs/ \
 		`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
 

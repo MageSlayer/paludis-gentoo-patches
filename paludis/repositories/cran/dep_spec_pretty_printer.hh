@@ -22,13 +22,20 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/formatter.hh>
+#include <paludis/environment-fwd.hh>
 #include <iosfwd>
 
 namespace paludis
 {
     namespace cranrepository
     {
-        class DepSpecPrettyPrinter :
+        /**
+         * Pretty printer for CRAN dep heirarchies.
+         *
+         * \ingroup grpcranrepository
+         */
+        class PALUDIS_VISIBLE DepSpecPrettyPrinter :
             private PrivateImplementationPattern<DepSpecPrettyPrinter>,
             public ConstVisitor<DependencySpecTree>,
             public ConstVisitor<DependencySpecTree>::VisitConstSequence<DepSpecPrettyPrinter, AllDepSpec>,
@@ -38,8 +45,33 @@ namespace paludis
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
             public:
-                DepSpecPrettyPrinter(const unsigned initial_indent, const bool multiline);
+                ///\name Basic operations
+                ///\{
+
+                /**
+                 * Constructor.
+                 *
+                 * \param env An optional environment, to use for formatting PackageDepSpec items
+                 *   as format::Installed() etc. May be null, in which case format::Plain() is
+                 *   always used.
+                 *
+                 * \param formatter The formatter to use. If no fancy formatting is required, use
+                 *   StringifyFormatter.
+                 *
+                 * \param initial_indent Amount of indenting to use. Should probably be 0 if
+                 *   use_newlines is false.
+                 *
+                 * \param use_newlines Whether to format over multiple lines.
+                 */
+                DepSpecPrettyPrinter(
+                        const Environment * const env,
+                        const GenericSpecTree::Formatter & formatter,
+                        unsigned initial_indent,
+                        bool use_newlines);
+
                 ~DepSpecPrettyPrinter();
+
+                ///\}
 
                 void visit_leaf(const PackageDepSpec &);
 
@@ -48,7 +80,7 @@ namespace paludis
                 void visit_leaf(const DependencyLabelDepSpec &);
         };
 
-        std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p);
+        std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p) PALUDIS_VISIBLE;
     }
 }
 

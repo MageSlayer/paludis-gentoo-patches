@@ -23,7 +23,6 @@
 #include <paludis/tasks/install_task.hh>
 #include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <src/output/use_flag_pretty_printer.hh>
 #include <src/output/console_task.hh>
 #include <iosfwd>
 
@@ -33,7 +32,7 @@ namespace paludis
 
     enum UseDescriptionState
     {
-        uds_unchanged,
+        uds_all,
         uds_changed,
         uds_new
     };
@@ -287,7 +286,6 @@ namespace paludis
 
             tr1::shared_ptr<DepTagSummaryDisplayer> make_dep_tag_summary_displayer();
             tr1::shared_ptr<EntryDepTagDisplayer> make_entry_dep_tag_displayer();
-            tr1::shared_ptr<UseFlagPrettyPrinter> make_use_flag_pretty_printer();
 
             ///\}
     };

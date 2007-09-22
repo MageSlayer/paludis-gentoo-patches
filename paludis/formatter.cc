@@ -17,30 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH 1
+#include <paludis/formatter.hh>
 
-#include <paludis/util/attributes.hh>
-#include <paludis/name-fwd.hh>
-#include <iosfwd>
+using namespace paludis;
 
-namespace paludis
-{
-    class MetadataKeyVisitorTypes;
-
-    class MetadataKey;
-    class MetadataPackageIDKey;
-    class MetadataStringKey;
-    class MetadataContentsKey;
-    class MetadataTimeKey;
-    class MetadataRepositoryMaskInfoKey;
-    class MetadataFSEntryKey;
-    template <typename C_> class MetadataSetKey;
-    template <> class MetadataSetKey<IUseFlagSet>;
-    template <typename C_> class MetadataSpecTreeKey;
-
-#include <paludis/metadata_key-se.hh>
-
-}
-
-#endif

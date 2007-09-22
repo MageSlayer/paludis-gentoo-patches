@@ -28,6 +28,7 @@
 #include <paludis/util/virtual_constructor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/stringify_formatter.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 
 #include <cstdlib>
@@ -59,6 +60,7 @@ namespace
         ConstVisitor<MetadataKeyVisitorTypes>
     {
         std::ostringstream stream;
+        StringifyFormatter formatter;
 
         void visit(const MetadataSetKey<IUseFlagSet> & k)
         {
@@ -82,27 +84,27 @@ namespace
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat();
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
         void visit(const MetadataSpecTreeKey<URISpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat();
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat();
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat();
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat();
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
         void visit(const MetadataSetKey<PackageIDSequence> & k)

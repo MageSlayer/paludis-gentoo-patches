@@ -28,11 +28,15 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/formatter.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
+#include <paludis/package_database.hh>
+#include <paludis/query.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -53,9 +57,11 @@ namespace paludis
     template <>
     struct Implementation<VirtualsDepKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const TreeLeaf<DependencySpecTree, PackageDepSpec> > value;
 
-        Implementation(const tr1::shared_ptr<const PackageID> & v, bool exact) :
+        Implementation(const Environment * const e, const tr1::shared_ptr<const PackageID> & v, bool exact) :
+            env(e),
             value(exact ?
                     new TreeLeaf<DependencySpecTree, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(
                                 make_shared_ptr(new QualifiedPackageName(v->name())),
@@ -93,10 +99,10 @@ VirtualsPackageIDKey::value() const
     return _imp->value;
 }
 
-VirtualsDepKey::VirtualsDepKey(const std::string & r, const std::string & h,
+VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & r, const std::string & h,
         const tr1::shared_ptr<const PackageID> & v, const bool exact) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
-    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(v, exact)),
+    PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, exact)),
     _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp.get())
 {
 }
@@ -112,15 +118,39 @@ VirtualsDepKey::value() const
 }
 
 std::string
-VirtualsDepKey::pretty_print() const
+VirtualsDepKey::pretty_print(const DependencySpecTree::Formatter & f) const
 {
-    return stringify(*_imp->value->item());
+    if (_imp->env)
+    {
+        if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
+                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+            return f.format(*_imp->value->item(), format::Installed());
+        else if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
+                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+            return f.format(*_imp->value->item(), format::Installable());
+        else
+            return f.format(*_imp->value->item(), format::Plain());
+    }
+    else
+        return f.format(*_imp->value->item(), format::Plain());
 }
 
 std::string
-VirtualsDepKey::pretty_print_flat() const
+VirtualsDepKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
 {
-    return stringify(*_imp->value->item());
+    if (_imp->env)
+    {
+        if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
+                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+            return f.format(*_imp->value->item(), format::Installed());
+        else if (! _imp->env->package_database()->query(query::Matches(*_imp->value->item()) &
+                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+            return f.format(*_imp->value->item(), format::Installable());
+        else
+            return f.format(*_imp->value->item(), format::Plain());
+    }
+    else
+        return f.format(*_imp->value->item(), format::Plain());
 }
 
 namespace paludis
@@ -128,6 +158,7 @@ namespace paludis
     template <>
     struct Implementation<VirtualsPackageID>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const Repository> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
@@ -137,17 +168,19 @@ namespace paludis
         mutable bool has_masks;
         mutable Mutex mutex;
 
-         Implementation(
+        Implementation(
+                const Environment * const e,
                 const tr1::shared_ptr<const Repository> & o,
                 const QualifiedPackageName & n,
                 const tr1::shared_ptr<const PackageID> & p,
                 const bool b) :
+            env(e),
             repository(o),
             name(n),
             version(p->version()),
             virtual_for(new virtuals::VirtualsPackageIDKey(p)),
-            bdep(new virtuals::VirtualsDepKey("DEPEND", "Build dependencies", p, b)),
-            rdep(new virtuals::VirtualsDepKey("RDEPEND", "Run dependencies", p, b)),
+            bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, b)),
+            rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, b)),
             has_masks(false)
         {
         }
@@ -155,12 +188,13 @@ namespace paludis
 }
 
 VirtualsPackageID::VirtualsPackageID(
+        const Environment * const e,
         const tr1::shared_ptr<const Repository> & owner,
         const QualifiedPackageName & virtual_name,
         const tr1::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
     PrivateImplementationPattern<VirtualsPackageID>(
-            new Implementation<VirtualsPackageID>(owner, virtual_name, virtual_for, exact)),
+            new Implementation<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact)),
     _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp.get())
 {
     add_metadata_key(_imp->virtual_for);

@@ -719,7 +719,7 @@ ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
     {
         if (e.iuse_key())
         {
-            IUseFlagSet::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified)));
+            IUseFlagSet::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified, std::string::npos)));
             if (i != e.iuse_key()->value()->end())
                 result = i->state;
         }

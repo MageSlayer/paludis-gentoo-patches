@@ -24,7 +24,13 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/stringify_formatter-impl.hh>
+#include <paludis/formatter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;
@@ -42,15 +48,15 @@ URIKey::value() const
 }
 
 std::string
-URIKey::pretty_print() const
+URIKey::pretty_print(const URISpecTree::Formatter & f) const
 {
-    return _v;
+    return f.format(_v, format::Plain());
 }
 
 std::string
-URIKey::pretty_print_flat() const
+URIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
 {
-    return _v;
+    return f.format(_v, format::Plain());
 }
 
 StringKey::StringKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
@@ -78,8 +84,10 @@ FSLocationKey::value() const
     return _v;
 }
 
-PackageIDSequenceKey::PackageIDSequenceKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
+        const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataSetKey<PackageIDSequence>(r, h, t),
+    _env(e),
     _v(new PackageIDSequence)
 {
 }
@@ -96,6 +104,17 @@ PackageIDSequenceKey::push_back(const tr1::shared_ptr<const PackageID> & i)
     _v->push_back(i);
 }
 
+std::string
+PackageIDSequenceKey::pretty_print_flat(const Formatter<tr1::shared_ptr<const PackageID> > & f) const
+{
+    using namespace tr1::placeholders;
+    return join(value()->begin(), value()->end(), " ", tr1::bind(
+                static_cast<std::string (Formatter<tr1::shared_ptr<const PackageID> >::*)(
+                    const tr1::shared_ptr<const PackageID> &, const format::Plain &) const>(
+                        &Formatter<tr1::shared_ptr<const PackageID> >::format),
+                tr1::cref(f), _1, format::Plain()));
+}
+
 PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
         const CRANPackageID * const v, const MetadataKeyType t) :
     MetadataPackageIDKey(r, h, t),
@@ -109,9 +128,10 @@ PackageIDKey::value() const
     return _v->shared_from_this();
 }
 
-DepKey::DepKey(const std::string & r, const std::string & h, const std::string & v,
+DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
+    _env(e),
     _v(v)
 {
 }
@@ -129,17 +149,19 @@ DepKey::value() const
 }
 
 std::string
-DepKey::pretty_print() const
+DepKey::pretty_print(const DependencySpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_env, ff, 12, true);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-DepKey::pretty_print_flat() const
+DepKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_env, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }

@@ -30,11 +30,12 @@ make_class_IUseFlag()
 
     key flag UseFlagName
     key state UseFlagState
+    key prefix_delim_pos "std::string::size_type"
 
     comparison_operators all flag
 
     extra_constructors <<END
-        IUseFlag(const std::string &, const IUseFlagParseMode);
+        IUseFlag(const std::string &, const IUseFlagParseMode, const std::string::size_type);
 END
 
     doxygen_comment << "END"

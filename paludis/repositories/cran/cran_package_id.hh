@@ -44,8 +44,10 @@ namespace paludis
                 virtual void need_masks_added() const;
 
             public:
-                CRANPackageID(const tr1::shared_ptr<const CRANRepository> &, const FSEntry &);
-                CRANPackageID(const tr1::shared_ptr<const CRANRepository> &, const CRANPackageID * const, const std::string &);
+                CRANPackageID(const Environment * const, const tr1::shared_ptr<const CRANRepository> &,
+                        const FSEntry &);
+                CRANPackageID(const Environment * const, const tr1::shared_ptr<const CRANRepository> &,
+                        const CRANPackageID * const, const std::string &);
                 ~CRANPackageID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;

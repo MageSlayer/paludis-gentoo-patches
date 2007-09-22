@@ -22,6 +22,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/stringify_formatter-impl.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/dep_list/override_functions.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
@@ -1738,7 +1739,8 @@ namespace test_cases
                 {
                     cat_three_has_tag_from_cat_one = true;
                     TEST_CHECK_STRINGIFY_EQUAL(*tag->dependency(), "cat/three");
-                    erepository::DepSpecPrettyPrinter pretty(0, false);
+                    StringifyFormatter ff;
+                    erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                     tag->conditions()->accept(pretty);
                     TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat/three");
                 }
@@ -1748,14 +1750,16 @@ namespace test_cases
                     if ("<cat/three-1" == stringify(*tag->dependency()))
                     {
                         cat_three_has_first_tag_from_cat_two = true;
-                        erepository::DepSpecPrettyPrinter pretty(0, false);
+                        StringifyFormatter ff;
+                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( <cat/three-1 ) )");
                     }
                     else if ("cat/three:0" == stringify(*tag->dependency()))
                     {
                         cat_three_has_second_tag_from_cat_two = true;
-                        erepository::DepSpecPrettyPrinter pretty(0, false);
+                        StringifyFormatter ff;
+                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( cat/three:0 ) )");
                     }
@@ -1781,7 +1785,8 @@ namespace test_cases
                 tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag));
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
-            erepository::DepSpecPrettyPrinter pretty(0, false);
+            StringifyFormatter ff;
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             deptag->conditions()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( =cat/four-1 ) )");
 

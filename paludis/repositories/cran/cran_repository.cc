@@ -219,7 +219,8 @@ CRANRepository::need_ids() const
     for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
         {
-            tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(shared_from_this(), *d));
+            tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment,
+                        shared_from_this(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
                 Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << *id << "' due to name collision";
 

@@ -407,9 +407,10 @@ namespace
     }
 }
 
-IUseFlag::IUseFlag(const std::string & s, IUseFlagParseMode m) try:
+IUseFlag::IUseFlag(const std::string & s, IUseFlagParseMode m, const std::string::size_type p) try:
     flag(get_flag(s)),
-    state(get_state(s, m))
+    state(get_state(s, m)),
+    prefix_delim_pos(p)
 {
 }
 catch (const UseFlagNameError &)

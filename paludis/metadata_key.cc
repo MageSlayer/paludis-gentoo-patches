@@ -17,11 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "metadata_key.hh"
+#include <paludis/metadata_key.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/name.hh>
 
 using namespace paludis;
 
@@ -104,6 +107,11 @@ MetadataRepositoryMaskInfoKey::MetadataRepositoryMaskInfoKey(const std::string &
 
 template <typename C_>
 MetadataSetKey<C_>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
+MetadataSetKey<IUseFlagSet>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
 }

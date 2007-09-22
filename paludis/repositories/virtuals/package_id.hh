@@ -51,17 +51,17 @@ namespace paludis
                 Implementation<VirtualsDepKey> * const _imp;
 
             public:
-                VirtualsDepKey(const std::string &, const std::string &,
+                VirtualsDepKey(const Environment * const, const std::string &, const std::string &,
                         const tr1::shared_ptr<const PackageID> &, const bool);
                 ~VirtualsDepKey();
 
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print() const
+                virtual std::string pretty_print(const DependencySpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat() const
+                virtual std::string pretty_print_flat(const DependencySpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -78,6 +78,7 @@ namespace paludis
 
             public:
                 VirtualsPackageID(
+                        const Environment * const,
                         const tr1::shared_ptr<const Repository> & repo,
                         const QualifiedPackageName & virtual_name,
                         const tr1::shared_ptr<const PackageID> & virtual_for,

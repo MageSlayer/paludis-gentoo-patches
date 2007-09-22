@@ -42,6 +42,7 @@ enum Colour
 
 #if PALUDIS_COLOUR_PINK==1
     cl_package_name  = cl_bold_pink,
+    cl_installable_package_name  = cl_pink,
     cl_repository_name = cl_pink,
     cl_flag_on       = cl_pink,
     cl_flag_off      = cl_red,
@@ -55,6 +56,7 @@ enum Colour
     cl_key_name      = cl_pink,
 #else
     cl_package_name  = cl_bold_blue,
+    cl_installable_package_name  = cl_blue,
     cl_repository_name = cl_blue,
     cl_flag_on       = cl_green,
     cl_flag_off      = cl_red,

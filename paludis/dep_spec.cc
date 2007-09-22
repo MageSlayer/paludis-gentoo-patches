@@ -647,6 +647,33 @@ paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & s, const BlockDepSpec & a)
+{
+    s << "!" << *a.blocked_spec();
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const UseDepSpec & a)
+{
+    if (a.inverse())
+        s << "!";
+    s << a.flag() << "?";
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const URIDepSpec & p)
+{
+    if (! p.renamed_url_suffix().empty())
+        s << p.original_url() << " -> " << p.renamed_url_suffix();
+    else
+        s << p.original_url();
+
+    return s;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 {
     if (a.version_requirements_ptr())

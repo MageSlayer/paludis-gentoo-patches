@@ -35,6 +35,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/stringify_formatter.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <set>
 #include <algorithm>
@@ -237,7 +238,9 @@ namespace
             {
                 if (reporter)
                 {
-                    erepository::DepSpecPrettyPrinter printer(0, false);
+                    StringifyFormatter ff;
+                    erepository::DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(),
+                            ff, 0, false, 0);
                     std::for_each(begin, end, accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"

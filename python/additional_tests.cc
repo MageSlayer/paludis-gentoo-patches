@@ -29,6 +29,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
+#include <paludis/stringify_formatter-impl.hh>
 
 using namespace paludis;
 namespace bp = boost::python;
@@ -180,8 +181,9 @@ namespace metadata_key
     {
         test_metadata_key(m);
         m.value();
-        m.pretty_print();
-        m.pretty_print_flat();
+        StringifyFormatter ff;
+        m.pretty_print(ff);
+        m.pretty_print_flat(ff);
     }
 }
 

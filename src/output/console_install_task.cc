@@ -19,8 +19,8 @@
 
 #include "console_install_task.hh"
 #include "colour.hh"
-#include "use_flag_pretty_printer.hh"
-#include "licence.hh"
+#include "colour_formatter.hh"
+#include "mask_displayer.hh"
 
 #include <paludis/util/log.hh>
 #include <paludis/util/sr.hh>
@@ -532,7 +532,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
                     continue;
                 break;
 
-            case uds_unchanged:
+            case uds_all:
                 if (! want_unchanged_use_flags())
                     continue;
                 break;
@@ -939,11 +939,23 @@ ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
         if (i)
             d = i->describe_use_flag(*f, *p);
 
-        _all_use_descriptions->insert(UseDescription::create()
+        UseDescription e(UseDescription::create()
                 .flag(*f)
                 .state(s)
                 .package_id(p)
                 .description(d));
+
+        Set<UseDescription, UseDescriptionComparator>::Iterator x(_all_use_descriptions->find(e));
+        if (_all_use_descriptions->end() == x)
+            _all_use_descriptions->insert(e);
+        else
+        {
+            if (x->state < e.state)
+            {
+                _all_use_descriptions->erase(e);
+                _all_use_descriptions->insert(e);
+            }
+        }
     }
 }
 
@@ -957,25 +969,27 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         return;
 
     output_no_endl(" ");
-    tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
-    tr1::shared_ptr<const PackageID> old_id;
-    tr1::shared_ptr<const IUseFlagSet> old;
+    ColourFormatter formatter;
 
+    tr1::shared_ptr<const PackageID> old_id;
     if (! existing_slot_repo->empty())
         old_id = *existing_slot_repo->last();
     else if (! existing_repo->empty())
         old_id = *existing_repo->last();
 
-    if (old_id && old_id->iuse_key())
-        old = old_id->iuse_key()->value();
-
     if (d.package_id->iuse_key())
-        printer->print_package_flags(d.package_id, d.package_id->iuse_key()->value(), old_id, old);
+    {
+        if (old_id)
+            output_stream() << d.package_id->iuse_key()->pretty_print_flat_with_comparison(environment(), old_id, formatter);
+        else
+            output_stream() << d.package_id->iuse_key()->pretty_print_flat(formatter);
+    }
 
-    _add_descriptions(printer->new_flags(), d.package_id, uds_new);
-    _add_descriptions(printer->changed_flags(), d.package_id, uds_changed);
-    _add_descriptions(printer->unchanged_flags(), d.package_id, uds_unchanged);
-    std::copy(printer->expand_prefixes()->begin(), printer->expand_prefixes()->end(), _all_expand_prefixes->inserter());
+    _add_descriptions(formatter.seen_new_use_flag_names(), d.package_id, uds_new);
+    _add_descriptions(formatter.seen_changed_use_flag_names(), d.package_id, uds_changed);
+    _add_descriptions(formatter.seen_use_flag_names(), d.package_id, uds_all);
+    std::copy(formatter.seen_use_expand_prefixes()->begin(), formatter.seen_use_expand_prefixes()->end(),
+            _all_expand_prefixes->inserter());
 }
 
 void
@@ -1107,12 +1121,6 @@ ConsoleInstallTask::make_entry_dep_tag_displayer()
     return tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
 }
 
-tr1::shared_ptr<UseFlagPrettyPrinter>
-ConsoleInstallTask::make_use_flag_pretty_printer()
-{
-    return tr1::shared_ptr<UseFlagPrettyPrinter>(new UseFlagPrettyPrinter(environment()));
-}
-
 EntryDepTagDisplayer::EntryDepTagDisplayer()
 {
 }
@@ -1143,40 +1151,6 @@ EntryDepTagDisplayer::visit(const GeneralSetDepTag & tag)
     text() = tag.short_text(); // + "<" + tag->source() + ">";
 }
 
-namespace
-{
-    struct MaskDisplayer :
-        ConstVisitor<MaskVisitorTypes>
-    {
-        std::ostringstream s;
-
-        void visit(const UnacceptedMask & m)
-        {
-            s << m.description();
-        }
-
-        void visit(const RepositoryMask & m)
-        {
-            s << m.description();
-        }
-
-        void visit(const UserMask & m)
-        {
-            s << m.description();
-        }
-
-        void visit(const UnsupportedMask & m)
-        {
-            s << m.description();
-        }
-
-        void visit(const AssociationMask & m)
-        {
-             s << m.description();
-        }
-    };
-}
-
 void
 ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e)
 {
@@ -1188,9 +1162,9 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
     {
         if (need_comma)
             output_no_endl(", ");
-        MaskDisplayer d;
+        MaskDisplayer d(environment(), e.package_id, true);
         (*m)->accept(d);
-        output_no_endl(d.s.str());
+        output_no_endl(d.result());
     }
 
     output_endl();
@@ -1307,7 +1281,10 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
                 {
                     if (need_comma)
                         output_stream() << ", ";
-                    output_stream() << (*m)->description();
+
+                    MaskDisplayer d(environment(), *pp, true);
+                    (*m)->accept(d);
+                    output_no_endl(d.result());
 
                     need_comma = true;
                 }

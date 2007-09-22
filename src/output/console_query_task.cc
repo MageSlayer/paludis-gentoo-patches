@@ -18,8 +18,8 @@
  */
 
 #include "console_query_task.hh"
-#include "licence.hh"
-#include "use_flag_pretty_printer.hh"
+#include "mask_displayer.hh"
+#include "colour_formatter.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -28,6 +28,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/strip.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <paludis/query.hh>
@@ -93,6 +94,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID
     display_header(a, display_entry);
     display_versions_by_repository(a, entries, display_entry);
     display_metadata(a, display_entry);
+    display_masks(a, display_entry);
     output_endl();
 }
 
@@ -190,42 +192,90 @@ namespace
             void visit(const MetadataSetKey<IUseFlagSet> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_iuse(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "),
-                            id, k.value());
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
             }
 
             void visit(const MetadataSetKey<Set<std::string> > & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
             }
 
             void visit(const MetadataSetKey<UseFlagNameSet> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
             }
 
             void visit(const MetadataSetKey<KeywordNameSet> & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_key(k.human_name(), k.raw_name(), join(k.value()->begin(), k.value()->end(), " "));
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
             }
 
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
             {
                 if (k.type() == type)
                 {
+                    ColourFormatter formatter;
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(k.pretty_print_flat());
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print();
+                        task->output_stream() << k.pretty_print(formatter);
                         task->output_endl();
                     }
                 }
@@ -235,15 +285,16 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourFormatter formatter;
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(k.pretty_print_flat());
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
-                        task->output_stream() << k.pretty_print_flat();
+                        task->output_stream() << k.pretty_print_flat(formatter);
                         task->output_right_column("");
                     }
                 }
@@ -253,17 +304,18 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourFormatter formatter;
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(k.pretty_print_flat());
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
-                        LicenceDisplayer d(task->output_stream(), env, id);
-                        k.value()->accept(d);
                         task->output_right_column("");
+                        task->output_stream() << k.pretty_print(formatter);
+                        task->output_endl();
                     }
                 }
             }
@@ -272,16 +324,17 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourFormatter formatter;
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(k.pretty_print_flat());
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print();
+                        task->output_stream() << k.pretty_print(formatter);
                         task->output_endl();
                     }
                 }
@@ -291,16 +344,17 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourFormatter formatter;
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(k.pretty_print_flat());
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print();
+                        task->output_stream() << k.pretty_print(formatter);
                         task->output_endl();
                     }
                 }
@@ -310,25 +364,18 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    if (k.value()->empty() || next(k.value()->begin()) == k.value()->end())
-                        task->display_metadata_pde(k.human_name(), k.raw_name(), **k.value()->begin());
-                    else if (task->want_raw())
+                    ColourFormatter formatter;
+                    if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":");
-                        task->output_right_column(join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), ", "));
+                        task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        for (PackageIDSequence::Iterator i(k.value()->begin()), i_end(k.value()->end()) ;
-                                i != i_end ; ++i)
-                        {
-                            if (i == k.value()->begin())
-                                task->output_left_column(k.human_name() + ":");
-                            else
-                                task->output_left_column("");
-
-                            task->output_right_column(task->render_as_package_name(stringify(**i)));
-                        }
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column("");
+                        task->output_stream() << k.pretty_print_flat(formatter);
+                        task->output_endl();
                     }
                 }
             }
@@ -336,31 +383,101 @@ namespace
             void visit(const MetadataPackageIDKey & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_pde(k.human_name(), k.raw_name(), *k.value());
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(stringify(*k.value()));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(stringify(*k.value()));
+                    }
+                }
             }
 
             void visit(const MetadataStringKey & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_key(k.human_name(), k.raw_name(), k.value());
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(stringify(k.value()));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(stringify(k.value()));
+                    }
+                }
             }
 
             void visit(const MetadataTimeKey & k)
             {
+                if (0 == k.value())
+                    return;
+
+                time_t t(k.value());
+                char buf[255];
+                if (! strftime(buf, 254, "%c", gmtime(&t)))
+                    buf[0] = '\0';
+
                 if (k.type() == type)
-                    task->display_metadata_time(k.human_name(), k.raw_name(), k.value());
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(stringify(buf));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(stringify(buf));
+                    }
+                }
             }
 
             void visit(const MetadataRepositoryMaskInfoKey & k)
             {
-                if (k.type() == type)
-                    task->display_metadata_repository_mask_info(k.human_name(), k.raw_name(), k.value());
+                if (k.type() == type && k.value())
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(stringify(k.value()->mask_file) + ": " +
+                                join(k.value()->comment->begin(), k.value()->comment->end(), " "));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(stringify(k.value()->mask_file) + ":");
+                        for (Sequence<std::string>::Iterator it(k.value()->comment->begin()),
+                                it_end(k.value()->comment->end()); it_end != it; ++it)
+                        {
+                            task->output_left_column("");
+                            task->output_right_column(*it);
+                        }
+                    }
+                }
             }
 
             void visit(const MetadataFSEntryKey & k)
             {
                 if (k.type() == type)
-                    task->display_metadata_key(k.human_name(), k.raw_name(), stringify(k.value()));
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(stringify(k.value()));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_right_column(stringify(k.value()));
+                    }
+                }
             }
 
             void visit(const MetadataContentsKey &)
@@ -388,6 +505,19 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr
     {
         Displayer dr(this, _imp->env, id, mkt_internal);
         std::for_each(indirect_iterator(id->begin_metadata()), indirect_iterator(id->end_metadata()), accept_visitor(dr));
+    }
+}
+
+void
+ConsoleQueryTask::display_masks(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
+{
+    for (PackageID::MasksIterator m(id->begin_masks()), m_end(id->end_masks()) ;
+            m != m_end ; ++m)
+    {
+        MaskDisplayer d(_imp->env, id, false);
+        (*m)->accept(d);
+        output_left_column("Masked by " + strip_leading_string((*m)->description(), "by ") + ":");
+        output_right_column(d.result());
     }
 }
 
@@ -465,82 +595,6 @@ namespace
         IsEmpty e;
         d->accept(e);
         return e.empty;
-    }
-}
-
-void
-ConsoleQueryTask::display_metadata_pde(const std::string & k, const std::string & kk,
-        const PackageID & v) const
-{
-    output_left_column((want_raw() ? kk : k) + ":");
-    output_right_column(stringify(v));
-}
-
-void
-ConsoleQueryTask::display_metadata_time(const std::string & k, const std::string & kk,
-        time_t t) const
-{
-    if (0 == t)
-        return;
-
-    if (want_raw())
-    {
-        output_left_column(kk + ":");
-        output_right_column(stringify(t));
-    }
-    else
-    {
-        char buf[255];
-        if (strftime(buf, 254, "%c", gmtime(&t)))
-        {
-            output_left_column(k + ":");
-            output_right_column(stringify(buf));
-        }
-    }
-}
-
-void
-ConsoleQueryTask::display_metadata_repository_mask_info(const std::string & k, const std::string & kk,
-        tr1::shared_ptr<const RepositoryMaskInfo> i) const
-{
-    if (! i)
-        return;
-
-    if (want_raw())
-    {
-        output_left_column(kk + ":");
-        output_right_column(stringify(i->mask_file) + ": " + join(i->comment->begin(), i->comment->end(), " "));
-    }
-    else
-    {
-        output_left_column(k + ":");
-        output_right_column(stringify(i->mask_file) + ":");
-        for (Sequence<std::string>::Iterator it(i->comment->begin()),
-                 it_end(i->comment->end()); it_end != it; ++it)
-        {
-            output_left_column("");
-            output_right_column(*it);
-        }
-    }
-}
-
-void
-ConsoleQueryTask::display_metadata_iuse(const std::string & k, const std::string & kk,
-        const std::string & v, const tr1::shared_ptr<const PackageID> & id,
-        const tr1::shared_ptr<const IUseFlagSet> & e) const
-{
-    if (v.empty())
-        return;
-
-    output_left_column((want_raw() ? kk : k) + ":");
-
-    if (want_raw())
-        output_right_column(normalise(v));
-    else
-    {
-        UseFlagPrettyPrinter printer(_imp->env);
-        printer.print_package_flags(id, e);
-        output_right_column("");
     }
 }
 

@@ -20,13 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_FWD_HH 1
 
+#include <paludis/util/no_type.hh>
+
 namespace paludis
 {
     namespace visitor_internals
     {
-        template <unsigned u_>
-        class NoType;
-
         template <typename H_>
         class ConstAcceptInterface;
 
@@ -120,26 +119,26 @@ namespace paludis
         template <
             typename Heirarchy_,
             typename BasicNode_,
-            typename ContainedItem1_ = visitor_internals::NoType<1>,
-            typename ContainedItem2_ = visitor_internals::NoType<2>,
-            typename ContainedItem3_ = visitor_internals::NoType<3>,
-            typename ContainedItem4_ = visitor_internals::NoType<4>,
-            typename ContainedItem5_ = visitor_internals::NoType<5>,
-            typename ContainedItem6_ = visitor_internals::NoType<6>,
-            typename ContainedItem7_ = visitor_internals::NoType<7>,
-            typename ContainedItem8_ = visitor_internals::NoType<8>,
-            typename ContainedItem9_ = visitor_internals::NoType<9>,
-            typename ContainedItem10_ = visitor_internals::NoType<10>,
-            typename ContainedItem11_ = visitor_internals::NoType<11>,
-            typename ContainedItem12_ = visitor_internals::NoType<12>,
-            typename ContainedItem13_ = visitor_internals::NoType<13>,
-            typename ContainedItem14_ = visitor_internals::NoType<14>,
-            typename ContainedItem15_ = visitor_internals::NoType<15>,
-            typename ContainedItem16_ = visitor_internals::NoType<16>,
-            typename ContainedItem17_ = visitor_internals::NoType<17>,
-            typename ContainedItem18_ = visitor_internals::NoType<18>,
-            typename ContainedItem19_ = visitor_internals::NoType<19>,
-            typename ContainedItem20_ = visitor_internals::NoType<20> >
+            typename ContainedItem1_ = NoType<1>,
+            typename ContainedItem2_ = NoType<2>,
+            typename ContainedItem3_ = NoType<3>,
+            typename ContainedItem4_ = NoType<4>,
+            typename ContainedItem5_ = NoType<5>,
+            typename ContainedItem6_ = NoType<6>,
+            typename ContainedItem7_ = NoType<7>,
+            typename ContainedItem8_ = NoType<8>,
+            typename ContainedItem9_ = NoType<9>,
+            typename ContainedItem10_ = NoType<10>,
+            typename ContainedItem11_ = NoType<11>,
+            typename ContainedItem12_ = NoType<12>,
+            typename ContainedItem13_ = NoType<13>,
+            typename ContainedItem14_ = NoType<14>,
+            typename ContainedItem15_ = NoType<15>,
+            typename ContainedItem16_ = NoType<16>,
+            typename ContainedItem17_ = NoType<17>,
+            typename ContainedItem18_ = NoType<18>,
+            typename ContainedItem19_ = NoType<19>,
+            typename ContainedItem20_ = NoType<20> >
         class VisitorTypes;
 
         template <typename I_>

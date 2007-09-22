@@ -20,11 +20,16 @@
 #include <algorithm>
 #include <sstream>
 #include <paludis/dep_spec.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/formatter.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/environment.hh>
+#include <paludis/query.hh>
+#include <paludis/package_database.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
@@ -42,16 +47,30 @@ namespace paludis
     struct Implementation<DepSpecPrettyPrinter>
     {
         std::stringstream s;
+        const Environment * const env;
+        const tr1::shared_ptr<const PackageID> id;
+        GenericSpecTree::Formatter formatter;
         unsigned indent;
         bool extra_label_indent;
         bool use_newlines;
+        bool plain_text_is_license;
         bool outer_block;
         bool need_space;
 
-        Implementation(unsigned i, bool b) :
-            indent(i),
+        Implementation(
+                const Environment * const e,
+                const tr1::shared_ptr<const PackageID> & i,
+                const GenericSpecTree::Formatter & f,
+                unsigned in,
+                bool b,
+                bool c) :
+            env(e),
+            id(i),
+            formatter(f),
+            indent(in),
             extra_label_indent(false),
             use_newlines(b),
+            plain_text_is_license(c),
             outer_block(true),
             need_space(false)
         {
@@ -59,8 +78,14 @@ namespace paludis
     };
 }
 
-DepSpecPrettyPrinter::DepSpecPrettyPrinter(unsigned i, bool b) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(i, b))
+DepSpecPrettyPrinter::DepSpecPrettyPrinter(
+        const Environment * const e,
+        const tr1::shared_ptr<const PackageID> & id,
+        const GenericSpecTree::Formatter & f,
+        unsigned i,
+        bool b,
+        bool c) :
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b, c))
 {
 }
 
@@ -82,20 +107,34 @@ DepSpecPrettyPrinter::visit_sequence(const AllDepSpec &,
 {
     if (! _imp->outer_block)
     {
-        _imp->s << indent() << "(";
-        _imp->s << newline();
+        if (_imp->use_newlines)
+            _imp->s << _imp->formatter.indent(_imp->indent);
+        else if (_imp->need_space)
+            _imp->s << " ";
+        _imp->s << "(";
+        if (_imp->use_newlines)
+            _imp->s << _imp->formatter.newline();
+        else
+            _imp->need_space = true;
     }
 
     {
-        Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 4);
+        Save<unsigned> old_indent(&_imp->indent, _imp->outer_block ? _imp->indent : _imp->indent + 1);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, _imp->outer_block ? _imp->extra_label_indent : false);
         std::for_each(cur, end, accept_visitor(*this));
     }
 
     if (! _imp->outer_block)
     {
-        _imp->s << indent() << ")";
-        _imp->s << newline();
+        if (_imp->use_newlines)
+            _imp->s << _imp->formatter.indent(_imp->indent);
+        else if (_imp->need_space)
+            _imp->s << " ";
+        _imp->s << ")";
+        if (_imp->use_newlines)
+            _imp->s << _imp->formatter.newline();
+        else
+            _imp->need_space = true;
     }
 }
 
@@ -106,15 +145,31 @@ DepSpecPrettyPrinter::visit_sequence(const AnyDepSpec &,
 {
     Save<bool> old_outer(&_imp->outer_block, false);
 
-    _imp->s << indent() << "|| (";
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+    _imp->s << "|| (";
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+
     {
-        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
+        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 1);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
         std::for_each(cur, end, accept_visitor(*this));
     }
-    _imp->s << indent() << ")";
-    _imp->s << newline();
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+    _imp->s << ")";
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 }
 
 void
@@ -124,48 +179,125 @@ DepSpecPrettyPrinter::visit_sequence(const UseDepSpec & a,
 {
     Save<bool> old_outer(&_imp->outer_block, false);
 
-    _imp->s << indent() << (a.inverse() ? "!" : "") << a.flag() << "? (";
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    if (_imp->env && _imp->id)
     {
-        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 4);
+        if (_imp->env->query_use(a.flag(), *_imp->id))
+            _imp->s << _imp->formatter.format(a, format::Enabled()) << " (";
+        else
+            _imp->s << _imp->formatter.format(a, format::Disabled()) << " (";
+    }
+    else
+        _imp->s << _imp->formatter.format(a, format::Plain()) << " (";
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+
+    {
+        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 1);
         Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
         std::for_each(cur, end, accept_visitor(*this));
     }
-    _imp->s << indent() << ")";
-    _imp->s << newline();
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+    _imp->s << ")";
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 }
 
 void
 DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 {
-    _imp->s << indent() << p;
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    if (_imp->env)
+    {
+        if (! _imp->env->package_database()->query(query::Matches(p) &
+                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+            _imp->s << _imp->formatter.format(p, format::Installed());
+        else if (! _imp->env->package_database()->query(query::Matches(p) &
+                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+            _imp->s << _imp->formatter.format(p, format::Installable());
+        else
+            _imp->s << _imp->formatter.format(p, format::Plain());
+    }
+    else
+        _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 }
 
 void
 DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 {
-    _imp->s << indent() << p.text();
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    if (_imp->env && _imp->id && _imp->plain_text_is_license)
+    {
+        if (_imp->env->accept_license(p.text(), *_imp->id))
+            _imp->s << _imp->formatter.format(p, format::Accepted());
+        else
+            _imp->s << _imp->formatter.format(p, format::Unaccepted());
+    }
+    else
+        _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 }
 
 void
 DepSpecPrettyPrinter::visit_leaf(const URIDepSpec & p)
 {
-    if (! p.renamed_url_suffix().empty())
-    {
-        _imp->s << indent() << p.original_url() << " -> " << p.renamed_url_suffix();
-    }
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
     else
-        _imp->s << indent() << p.original_url();
-    _imp->s << newline();
+        _imp->need_space = true;
 }
 
 void
 DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 {
-    _imp->s << indent() << "!" << *b.blocked_spec();
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(b, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 }
 
 void
@@ -174,16 +306,25 @@ DepSpecPrettyPrinter::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
     if (_imp->extra_label_indent)
     {
         _imp->extra_label_indent = false;
-        _imp->indent -= 4;
+        _imp->indent -= 1;
     }
 
-    _imp->s << indent() << stringify(l);
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(l, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 
     if (! _imp->extra_label_indent)
     {
         _imp->extra_label_indent = true;
-        _imp->indent += 4;
+        _imp->indent += 1;
     }
 }
 
@@ -193,42 +334,25 @@ DepSpecPrettyPrinter::visit_leaf(const DependencyLabelDepSpec & l)
     if (_imp->extra_label_indent)
     {
         _imp->extra_label_indent = false;
-        _imp->indent -= 4;
+        _imp->indent -= 1;
     }
 
-    _imp->s << indent() << stringify(l);
-    _imp->s << newline();
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(l, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
 
     if (!_imp->extra_label_indent)
     {
         _imp->extra_label_indent = true;
-        _imp->indent += 4;
+        _imp->indent += 1;
     }
-}
-
-std::string
-DepSpecPrettyPrinter::newline()
-{
-    if (_imp->use_newlines)
-        return "\n";
-    else
-    {
-        _imp->need_space = true;
-        return "";
-    }
-}
-
-std::string
-DepSpecPrettyPrinter::indent()
-{
-    if (_imp->use_newlines)
-        return std::string(_imp->indent, ' ');
-    else if (_imp->need_space)
-    {
-        _imp->need_space = false;
-        return " ";
-    }
-    else
-        return "";
 }
 

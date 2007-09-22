@@ -22,8 +22,12 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
+#include <paludis/formatter.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -286,6 +290,58 @@ struct MetadataSetKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataSetKey", "value");
     }
+
+    std::string pretty_print_flat(const Formatter<typename C_::value_type> &) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        /* todo: make an override */
+        return join(value()->begin(), value()->end(), " ");
+    }
+};
+
+template <>
+struct MetadataSetKeyWrapper<IUseFlagSet> :
+    MetadataSetKey<IUseFlagSet>,
+    bp::wrapper<MetadataSetKey<IUseFlagSet> >
+{
+    MetadataSetKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSetKey<IUseFlagSet>(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const IUseFlagSet> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSetKey", "value");
+    }
+
+    std::string pretty_print_flat(const Formatter<IUseFlag> &) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        /* todo: make an override */
+        return join(value()->begin(), value()->end(), " ");
+    }
+
+    std::string pretty_print_flat_with_comparison(
+            const Environment * const,
+            const tr1::shared_ptr<const PackageID> &,
+            const Formatter<IUseFlag> &) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        /* todo: make an override */
+        return join(value()->begin(), value()->end(), " ");
+    }
 };
 
 template <typename C_>
@@ -309,22 +365,24 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print() const
+    virtual std::string pretty_print(const typename C_::Formatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
+        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print"))
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat() const
+    virtual std::string pretty_print_flat(const typename C_::Formatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
+        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print_flat"))
             return f();
         else

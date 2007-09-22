@@ -26,6 +26,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
+#include <paludis/stringify_formatter.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -96,7 +97,8 @@ namespace test_cases
             env.package_database()->add_repository(0, installed);
 
             tr1::shared_ptr<SetSpecTree::ConstItem> set1(repo->sets_interface->package_set(SetName("set1")));
-            erepository::DepSpecPrettyPrinter pretty(0, false);
+            StringifyFormatter ff;
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             set1->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
@@ -130,7 +132,8 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             tr1::shared_ptr<SetSpecTree::ConstItem> insecurity(repo->sets_interface->package_set(SetName("insecurity")));
-            erepository::DepSpecPrettyPrinter pretty(0, false);
+            StringifyFormatter ff;
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             insecurity->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
@@ -171,7 +174,8 @@ namespace test_cases
             env.package_database()->add_repository(0, installed);
 
             tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface->package_set(SetName("security")));
-            erepository::DepSpecPrettyPrinter pretty(0, false);
+            StringifyFormatter ff;
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
             security->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }

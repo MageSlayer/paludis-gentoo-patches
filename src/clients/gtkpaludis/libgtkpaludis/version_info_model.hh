@@ -19,6 +19,10 @@ namespace gtkpaludis
         public Gtk::TreeStore
     {
         protected:
+            class MetadataPopulator;
+            class KeyMetadataPopulator;
+            class MaskMetadataPopulator;
+            class MaskPopulator;
             class PopulateData;
 
             void populate_in_paludis_thread(paludis::tr1::shared_ptr<const paludis::PackageID>);

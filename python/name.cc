@@ -249,9 +249,11 @@ void expose_name()
         (
          "IUseFlag",
          "Represents an IUse flag.",
-         bp::init<const std::string &, IUseFlagParseMode>("__init__(string, IUseFlagParseMode")
+         bp::init<const std::string &, IUseFlagParseMode, const std::string::size_type>(
+             "__init__(string, IUseFlagParseMode, Integer)")
         )
-        .def(bp::init<const UseFlagName &, const UseFlagState &>("__init__(UseFlagName, UseFlagState)"))
+        .def(bp::init<const UseFlagName &, const UseFlagState &, const std::string::size_type>(
+                    "__init__(UseFlagName, UseFlagState, Integer)"))
 
         .def_readwrite("flag", &IUseFlag::flag,
                 "[rw] UseFlagName"
@@ -259,6 +261,10 @@ void expose_name()
 
         .def_readwrite("state", &IUseFlag::state,
                 "[rw] UseFlagState"
+                )
+
+        .def_readwrite("prefix_delim_pos", &IUseFlag::prefix_delim_pos,
+                "[rw] Integer"
                 )
 
         .def("__cmp__", &py_cmp<IUseFlag>)

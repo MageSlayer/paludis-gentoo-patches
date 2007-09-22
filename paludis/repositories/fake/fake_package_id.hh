@@ -24,6 +24,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/set.hh>
 
 namespace paludis
 {
@@ -37,7 +38,8 @@ namespace paludis
         protected:
             Implementation<FakeMetadataSetKey> * const _imp;
 
-            FakeMetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
+            FakeMetadataSetKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const PackageID * const, const Environment * const);
 
         public:
             ~FakeMetadataSetKey();
@@ -49,9 +51,13 @@ namespace paludis
         public FakeMetadataSetKey<KeywordNameSet>
     {
         public:
-            FakeMetadataKeywordSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+            FakeMetadataKeywordSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType,
+                    const PackageID * const, const Environment * const);
 
             void set_from_string(const std::string &);
+
+            virtual std::string pretty_print_flat(const Formatter<KeywordName> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataIUseSetKey :
@@ -59,9 +65,19 @@ namespace paludis
     {
         public:
             FakeMetadataIUseSetKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
-                    const MetadataKeyType);
+                    const MetadataKeyType, const PackageID * const, const Environment * const);
 
             void set_from_string(const std::string &, const IUseFlagParseMode);
+
+            virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat_with_comparison(
+                    const Environment * const,
+                    const tr1::shared_ptr<const PackageID> &,
+                    const Formatter<IUseFlag> &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <typename C_>
@@ -82,10 +98,10 @@ namespace paludis
 
             void set_from_string(const std::string &);
 
-            virtual std::string pretty_print() const
+            virtual std::string pretty_print(const typename C_::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat() const
+            virtual std::string pretty_print_flat(const typename C_::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 

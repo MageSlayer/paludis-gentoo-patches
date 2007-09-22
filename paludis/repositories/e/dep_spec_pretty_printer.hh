@@ -22,11 +22,14 @@
 
 #include <iosfwd>
 #include <paludis/dep_spec.hh>
+#include <paludis/metadata_key-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 /** \file
- * Declarations for the DepSpecPrettyPrinter class.
+ * Declarations for the paludis::erepository::DepSpecPrettyPrinter class.
  *
- * \ingroup grpdepspecprettyprinter
+ * \ingroup grperepository
  */
 
 namespace paludis
@@ -36,7 +39,7 @@ namespace paludis
         /**
          * Pretty print dependency specs.
          *
-         * \ingroup grpdepspecprettyprinter
+         * \ingroup grperepository
          */
         class PALUDIS_VISIBLE DepSpecPrettyPrinter :
             public ConstVisitor<GenericSpecTree>,
@@ -44,15 +47,37 @@ namespace paludis
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
-            private:
-                std::string newline();
-                std::string indent();
-
             public:
                 ///\name Basic operations
                 ///\{
 
-                DepSpecPrettyPrinter(unsigned initial_indent, bool use_newlines = true);
+                /**
+                 * Constructor.
+                 *
+                 * \param env An optional environment, to use for formatting PackageDepSpec items
+                 *   as format::Installed() etc. May be null, in which case format::Plain() is
+                 *   always used.
+                 *
+                 * \param id The ID to use for determining use flag formatting. May be null, in
+                 *   which case format::Plain() is used.
+                 *
+                 * \param formatter The formatter to use. If no fancy formatting is required, use
+                 *   StringifyFormatter.
+                 *
+                 * \param initial_indent Amount of indenting to use. Should probably be 0 if
+                 *   use_newlines is false.
+                 *
+                 * \param use_newlines Whether to format over multiple lines.
+                 *
+                 * \param plain_text_is_license Whether plain text is a license.
+                 */
+                DepSpecPrettyPrinter(
+                        const Environment * const env,
+                        const tr1::shared_ptr<const PackageID> & id,
+                        const GenericSpecTree::Formatter & formatter,
+                        unsigned initial_indent,
+                        bool use_newlines,
+                        const bool plain_text_is_license);
 
                 ~DepSpecPrettyPrinter();
 
@@ -91,7 +116,7 @@ namespace paludis
         /**
          * Output a DepSpecPrettyPrinter to an ostream.
          *
-         * \ingroup grpdepspecprettyprinter
+         * \ingroup grperepository
          */
         std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p) PALUDIS_VISIBLE;
     }

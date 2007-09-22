@@ -19,7 +19,6 @@
 
 #include <src/output/colour.hh>
 #include "install.hh"
-#include <src/output/licence.hh>
 #include <src/output/console_install_task.hh>
 #include <src/common_args/do_help.hh>
 

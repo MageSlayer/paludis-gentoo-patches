@@ -27,6 +27,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/formatter-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -159,6 +160,32 @@ namespace paludis
         public:
             virtual const tr1::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string pretty_print_flat(const Formatter<typename C_::value_type> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    template <>
+    class PALUDIS_VISIBLE MetadataSetKey<IUseFlagSet> :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSetKey<IUseFlagSet> >
+    {
+        protected:
+            MetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const tr1::shared_ptr<const IUseFlagSet> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string pretty_print_flat_with_comparison(
+                    const Environment * const,
+                    const tr1::shared_ptr<const PackageID> &,
+                    const Formatter<IUseFlag> &
+                    ) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     template <typename C_>
@@ -173,10 +200,10 @@ namespace paludis
             virtual const tr1::shared_ptr<const typename C_::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::string pretty_print() const
+            virtual std::string pretty_print(const typename C_::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::string pretty_print_flat() const
+            virtual std::string pretty_print_flat(const typename C_::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }

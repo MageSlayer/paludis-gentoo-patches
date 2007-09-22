@@ -19,8 +19,6 @@
 
 #include <src/output/colour.hh>
 #include "query.hh"
-#include <src/output/licence.hh>
-#include <src/output/use_flag_pretty_printer.hh>
 #include <src/output/console_query_task.hh>
 #include <functional>
 #include <iomanip>

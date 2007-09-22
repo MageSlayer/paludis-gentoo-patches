@@ -1218,7 +1218,7 @@ namespace paludis
          * \nosubgrouping
          */
         template <typename I_, typename H_, unsigned u_>
-        struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const visitor_internals::NoType<u_> >
+        struct PALUDIS_VISIBLE GetConstItemVisits<I_, H_, const NoType<u_> >
         {
         };
 

@@ -33,8 +33,13 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/idle_action_pool.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <paludis/contents.hh>
+#include <paludis/repository.hh>
+#include <paludis/environment.hh>
+#include <paludis/stringify_formatter-impl.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -42,6 +47,7 @@
 #include <list>
 #include <vector>
 #include <fstream>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -91,13 +97,17 @@ namespace paludis
     template <>
     struct Implementation<EDependenciesKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
         mutable tr1::function<void () throw ()> value_used;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(
+                const Environment * const e,
+                const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
             id(i),
             string_value(v)
         {
@@ -105,10 +115,12 @@ namespace paludis
     };
 }
 
-EDependenciesKey::EDependenciesKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EDependenciesKey::EDependenciesKey(
+        const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(id, v)),
+    PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v)),
     _imp(PrivateImplementationPattern<EDependenciesKey>::_imp.get())
 {
 }
@@ -139,17 +151,19 @@ EDependenciesKey::value() const
 }
 
 std::string
-EDependenciesKey::pretty_print() const
+EDependenciesKey::pretty_print(const DependencySpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-EDependenciesKey::pretty_print_flat() const
+EDependenciesKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -182,13 +196,16 @@ namespace paludis
     template <>
     struct Implementation<ELicenseKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const LicenseSpecTree::ConstItem> value;
         mutable tr1::function<void () throw ()> value_used;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const Environment * const e,
+                const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
             id(i),
             string_value(v)
         {
@@ -196,10 +213,12 @@ namespace paludis
     };
 }
 
-ELicenseKey::ELicenseKey(const tr1::shared_ptr<const ERepositoryID> & id,
+ELicenseKey::ELicenseKey(
+        const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<LicenseSpecTree>(r, h, t),
-    PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(id, v)),
+    PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v)),
     _imp(PrivateImplementationPattern<ELicenseKey>::_imp.get())
 {
 }
@@ -230,17 +249,19 @@ ELicenseKey::value() const
 }
 
 std::string
-ELicenseKey::pretty_print() const
+ELicenseKey::pretty_print(const LicenseSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, true);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-ELicenseKey::pretty_print_flat() const
+ELicenseKey::pretty_print_flat(const LicenseSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -273,12 +294,14 @@ namespace paludis
     template <>
     struct Implementation<EURIKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const URISpecTree::ConstItem> value;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
             id(i),
             string_value(v)
         {
@@ -286,10 +309,11 @@ namespace paludis
     };
 }
 
-EURIKey::EURIKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EURIKey::EURIKey(const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<URISpecTree>(r, h, t),
-    PrivateImplementationPattern<EURIKey>(new Implementation<EURIKey>(id, v)),
+    PrivateImplementationPattern<EURIKey>(new Implementation<EURIKey>(e, id, v)),
     _imp(PrivateImplementationPattern<EURIKey>::_imp.get())
 {
 }
@@ -312,17 +336,19 @@ EURIKey::value() const
 }
 
 std::string
-EURIKey::pretty_print() const
+EURIKey::pretty_print(const URISpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-EURIKey::pretty_print_flat() const
+EURIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -332,12 +358,14 @@ namespace paludis
     template <>
     struct Implementation<ERestrictKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const RestrictSpecTree::ConstItem> value;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
             id(i),
             string_value(v)
         {
@@ -345,10 +373,11 @@ namespace paludis
     };
 }
 
-ERestrictKey::ERestrictKey(const tr1::shared_ptr<const ERepositoryID> & id,
+ERestrictKey::ERestrictKey(const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<RestrictSpecTree>(r, h, t),
-    PrivateImplementationPattern<ERestrictKey>(new Implementation<ERestrictKey>(id, v)),
+    PrivateImplementationPattern<ERestrictKey>(new Implementation<ERestrictKey>(e, id, v)),
     _imp(PrivateImplementationPattern<ERestrictKey>::_imp.get())
 {
 }
@@ -371,17 +400,19 @@ ERestrictKey::value() const
 }
 
 std::string
-ERestrictKey::pretty_print() const
+ERestrictKey::pretty_print(const RestrictSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-ERestrictKey::pretty_print_flat() const
+ERestrictKey::pretty_print_flat(const RestrictSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -391,12 +422,14 @@ namespace paludis
     template <>
     struct Implementation<EProvideKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const ProvideSpecTree::ConstItem> value;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
             id(i),
             string_value(v)
         {
@@ -404,10 +437,10 @@ namespace paludis
     };
 }
 
-EProvideKey::EProvideKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EProvideKey::EProvideKey(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<ProvideSpecTree>(r, h, t),
-    PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(id, v)),
+    PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(e, id, v)),
     _imp(PrivateImplementationPattern<EProvideKey>::_imp.get())
 {
 }
@@ -430,17 +463,19 @@ EProvideKey::value() const
 }
 
 std::string
-EProvideKey::pretty_print() const
+EProvideKey::pretty_print(const ProvideSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(12, true);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-EProvideKey::pretty_print_flat() const
+EProvideKey::pretty_print_flat(const ProvideSpecTree::Formatter & f) const
 {
-    DepSpecPrettyPrinter p(0, false);
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -451,23 +486,27 @@ namespace paludis
     struct Implementation<EIUseKey>
     {
         const tr1::shared_ptr<const ERepositoryID> id;
+        const Environment * const env;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<IUseFlagSet> value;
         mutable tr1::function<void () throw ()> value_used;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v) :
             id(i),
+            env(e),
             string_value(v)
         {
         }
     };
 }
 
-EIUseKey::EIUseKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EIUseKey::EIUseKey(
+        const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<IUseFlagSet>(r, h, t),
-    PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, v)),
+    PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EIUseKey>::_imp.get())
 {
 }
@@ -496,9 +535,23 @@ EIUseKey::value() const
     _imp->value.reset(new IUseFlagSet);
     std::list<std::string> tokens;
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
+
+    tr1::shared_ptr<const UseFlagNameSet> prefixes;
+    if (_imp->id->repository()->use_interface)
+        prefixes = _imp->id->repository()->use_interface->use_expand_prefixes();
+    else
+        prefixes.reset(new UseFlagNameSet);
+
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
-        _imp->value->insert(IUseFlag(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode));
+    {
+        IUseFlag f(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode, std::string::npos);
+        for (UseFlagNameSet::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
+                p != p_end ; ++p)
+            if (0 == stringify(f.flag).compare(0, stringify(*p).length(), stringify(*p), 0, stringify(*p).length()))
+                f.prefix_delim_pos = stringify(*p).length();
+        _imp->value->insert(f);
+    }
 
     return _imp->value;
 }
@@ -511,13 +564,7 @@ EIUseKey::idle_load() const
     {
         try
         {
-            _imp->value.reset(new IUseFlagSet);
-            std::list<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-                _imp->value->insert(IUseFlag(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode));
-            _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
+            tr1::shared_ptr<const IUseFlagSet> PALUDIS_ATTRIBUTE((unused)) a(value());
         }
         catch (...)
         {
@@ -532,29 +579,188 @@ EIUseKey::idle_load() const
     return iar_already_completed;
 }
 
+std::string
+EIUseKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
+{
+    std::string result;
+    std::multimap<std::string, IUseFlag> prefixes;
+    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (std::string::npos != i->prefix_delim_pos)
+        {
+            prefixes.insert(std::make_pair(stringify(i->flag).substr(0, i->prefix_delim_pos), *i));
+            continue;
+        }
+
+        if (! result.empty())
+            result.append(" ");
+
+        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+            result.append(f.format(*i, format::Masked()));
+        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+            result.append(f.format(*i, format::Forced()));
+        else if (_imp->env->query_use(i->flag, *_imp->id))
+            result.append(f.format(*i, format::Enabled()));
+        else
+            result.append(f.format(*i, format::Disabled()));
+    }
+
+    for (std::multimap<std::string, IUseFlag>::const_iterator j(prefixes.begin()), j_end(prefixes.end()) ;
+            j != j_end ; ++j)
+    {
+        if (! result.empty())
+            result.append(" ");
+
+        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(j->second.flag, *_imp->id))
+            result.append(f.format(j->second, format::Masked()));
+        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(j->second.flag, *_imp->id))
+            result.append(f.format(j->second, format::Forced()));
+        else if (_imp->env->query_use(j->second.flag, *_imp->id))
+            result.append(f.format(j->second, format::Enabled()));
+        else
+            result.append(f.format(j->second, format::Disabled()));
+    }
+
+    return result;
+}
+
+std::string
+EIUseKey::pretty_print_flat_with_comparison(
+        const Environment * const env,
+        const tr1::shared_ptr<const PackageID> & id,
+        const Formatter<IUseFlag> & f) const
+{
+    std::string result;
+    std::multimap<std::string, IUseFlag> prefixes;
+    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (std::string::npos != i->prefix_delim_pos)
+        {
+            prefixes.insert(std::make_pair(stringify(i->flag).substr(0, i->prefix_delim_pos), *i));
+            continue;
+        }
+
+        if (! result.empty())
+            result.append(" ");
+
+        std::string l;
+        bool n;
+
+        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(i->flag, *_imp->id))
+        {
+            l = f.format(*i, format::Masked());
+            n = false;
+        }
+        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(i->flag, *_imp->id))
+        {
+            l = f.format(*i, format::Forced());
+            n = true;
+        }
+        else if (_imp->env->query_use(i->flag, *_imp->id))
+        {
+            l = f.format(*i, format::Enabled());
+            n = true;
+        }
+        else
+        {
+            l = f.format(*i, format::Disabled());
+            n = false;
+        }
+
+        if (! id->iuse_key())
+            l = f.decorate(*i, l, format::Added());
+        else
+        {
+            using namespace tr1::placeholders;
+            IUseFlagSet::Iterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
+                        tr1::bind(std::equal_to<UseFlagName>(), i->flag, tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
+
+            if (p == id->iuse_key()->value()->end())
+                l = f.decorate(*i, l, format::Added());
+            else if (n != env->query_use(i->flag, *id))
+                l = f.decorate(*i, l, format::Changed());
+        }
+
+        result.append(l);
+    }
+
+    for (std::multimap<std::string, IUseFlag>::const_iterator j(prefixes.begin()), j_end(prefixes.end()) ;
+            j != j_end ; ++j)
+    {
+        if (! result.empty())
+            result.append(" ");
+
+        std::string l;
+        bool n;
+
+        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(j->second.flag, *_imp->id))
+        {
+            l = f.format(j->second, format::Masked());
+            n = false;
+        }
+        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(j->second.flag, *_imp->id))
+        {
+            l = f.format(j->second, format::Forced());
+            n = true;
+        }
+        else if (_imp->env->query_use(j->second.flag, *_imp->id))
+        {
+            l = f.format(j->second, format::Enabled());
+            n = true;
+        }
+        else
+        {
+            l = f.format(j->second, format::Disabled());
+            n = false;
+        }
+
+        if (! id->iuse_key())
+            l = f.decorate(j->second, l, format::Added());
+        else
+        {
+            using namespace tr1::placeholders;
+            IUseFlagSet::Iterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
+                        tr1::bind(std::equal_to<UseFlagName>(), j->second.flag, tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
+
+            if (p == id->iuse_key()->value()->end())
+                l = f.decorate(j->second, l, format::Added());
+            else if (n != env->query_use(j->second.flag, *id))
+                l = f.decorate(j->second, l, format::Changed());
+        }
+
+        result.append(l);
+    }
+
+    return result;
+}
+
 namespace paludis
 {
     template <>
     struct Implementation<EKeywordsKey>
     {
         const tr1::shared_ptr<const ERepositoryID> id;
+        const Environment * const env;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<KeywordNameSet> value;
         mutable tr1::function<void () throw ()> value_used;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v) :
             id(i),
+            env(e),
             string_value(v)
         {
         }
     };
 }
 
-EKeywordsKey::EKeywordsKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EKeywordsKey::EKeywordsKey(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<KeywordNameSet>(r, h, t),
-    PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, v)),
+    PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EKeywordsKey>::_imp.get())
 {
 }
@@ -610,28 +816,51 @@ EKeywordsKey::idle_load() const
     return iar_already_completed;
 }
 
+std::string
+EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
+{
+    std::string result;
+    for (KeywordNameSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! result.empty())
+            result.append(" ");
+
+        tr1::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
+        k->insert(*i);
+        if (_imp->env->accept_keywords(k, *_imp->id))
+            result.append(f.format(*i, format::Accepted()));
+        else
+            result.append(f.format(*i, format::Unaccepted()));
+    }
+
+    return result;
+}
+
 namespace paludis
 {
     template <>
     struct Implementation<EUseKey>
     {
         const tr1::shared_ptr<const ERepositoryID> id;
+        const Environment * const env;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<UseFlagNameSet> value;
 
-        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+        Implementation(const tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v) :
             id(i),
+            env(e),
             string_value(v)
         {
         }
     };
 }
 
-EUseKey::EUseKey(const tr1::shared_ptr<const ERepositoryID> & id,
+EUseKey::EUseKey(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<UseFlagNameSet>(r, h, t),
-    PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, v)),
+    PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EUseKey>::_imp.get())
 {
 }
@@ -657,6 +886,29 @@ EUseKey::value() const
         if ('-' != t->at(0))
             _imp->value->insert(UseFlagName(*t));
     return _imp->value;
+}
+
+std::string
+EUseKey::pretty_print_flat(const Formatter<UseFlagName> & f) const
+{
+    std::string result;
+    for (UseFlagNameSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! result.empty())
+            result.append(" ");
+
+        if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_mask(*i, *_imp->id))
+            result.append(f.format(*i, format::Masked()));
+        else if (_imp->id->repository()->use_interface && _imp->id->repository()->use_interface->query_use_force(*i, *_imp->id))
+            result.append(f.format(*i, format::Forced()));
+        else if (_imp->env->query_use(*i, *_imp->id))
+            result.append(f.format(*i, format::Enabled()));
+        else
+            result.append(f.format(*i, format::Disabled()));
+    }
+
+    return result;
 }
 
 namespace paludis
@@ -701,6 +953,12 @@ EInheritedKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, _imp->value->inserter());
     return _imp->value;
+}
+
+std::string
+EInheritedKey::pretty_print_flat(const Formatter<std::string> &) const
+{
+    return join(value()->begin(), value()->end(), " ");
 }
 
 namespace paludis

@@ -159,7 +159,8 @@ InstalledVirtualsRepository::need_ids() const
             if (i == _imp->ids.end())
                 i = _imp->ids.insert(std::make_pair(p->virtual_name, make_shared_ptr(new PackageIDSequence))).first;
 
-            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(shared_from_this(), p->virtual_name, p->provided_by, false));
+            tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
+                        _imp->env, shared_from_this(), p->virtual_name, p->provided_by, false));
             i->second->push_back(id);
         }
     }

@@ -21,6 +21,9 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/environment.hh>
+#include <paludis/query.hh>
+#include <paludis/package_database.hh>
 #include <ostream>
 #include <sstream>
 
@@ -33,11 +36,19 @@ namespace paludis
     struct Implementation<DepSpecPrettyPrinter>
     {
         std::stringstream s;
+        const Environment * const env;
+        GenericSpecTree::Formatter formatter;
         const unsigned indent;
         const bool multiline;
         bool need_comma;
 
-        Implementation(const unsigned u, const bool m) :
+        Implementation(
+                const Environment * const e,
+                const GenericSpecTree::Formatter & f,
+                const unsigned u,
+                const bool m) :
+            env(e),
+            formatter(f),
             indent(u),
             multiline(m),
             need_comma(false)
@@ -46,8 +57,9 @@ namespace paludis
     };
 }
 
-DepSpecPrettyPrinter::DepSpecPrettyPrinter(const unsigned initial_indent, const bool multiline) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(initial_indent, multiline))
+DepSpecPrettyPrinter::DepSpecPrettyPrinter(const Environment * const e,
+        const GenericSpecTree::Formatter & f, const unsigned initial_indent, const bool multiline) :
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, f, initial_indent, multiline))
 {
 }
 
@@ -59,16 +71,28 @@ void
 DepSpecPrettyPrinter::visit_leaf(const PackageDepSpec & p)
 {
     if (_imp->multiline)
-        _imp->s << std::string(_imp->indent, ' ');
+        _imp->s << _imp->formatter.indent(_imp->indent);
     else if (_imp->need_comma)
         _imp->s << ", ";
     else
         _imp->need_comma = true;
 
-    _imp->s << stringify(p);
+    if (_imp->env)
+    {
+        if (! _imp->env->package_database()->query(query::Matches(p) &
+                    query::InstalledAtRoot(_imp->env->root()), qo_whatever)->empty())
+            _imp->s << _imp->formatter.format(p, format::Installed());
+        else if (! _imp->env->package_database()->query(query::Matches(p) &
+                    query::SupportsAction<InstallAction>() & query::NotMasked(), qo_whatever)->empty())
+            _imp->s << _imp->formatter.format(p, format::Installable());
+        else
+            _imp->s << _imp->formatter.format(p, format::Plain());
+    }
+    else
+        _imp->s << _imp->formatter.format(p, format::Plain());
 
     if (_imp->multiline)
-        _imp->s << std::endl;
+        _imp->s << _imp->formatter.newline();
 }
 
 void

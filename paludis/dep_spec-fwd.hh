@@ -22,7 +22,8 @@
 
 #include <iosfwd>
 #include <string>
-#include <paludis/dep_label.hh>
+#include <paludis/dep_label-fwd.hh>
+#include <paludis/formatter-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 
@@ -74,6 +75,27 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const LabelsDepSpec<DependencyLabelVisitorTypes> &) PALUDIS_VISIBLE;
 
     /**
+     * A BlockDepSpec can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const BlockDepSpec &) PALUDIS_VISIBLE;
+
+    /**
+     * A URIDepSpec can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const URIDepSpec &) PALUDIS_VISIBLE;
+
+    /**
+     * A UseDepSpec can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const UseDepSpec &) PALUDIS_VISIBLE;
+
+    /**
      * A generic DepSpec heirarchy.
      *
      * \ingroup grpdepspecs
@@ -93,6 +115,15 @@ namespace paludis
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PlainTextDepSpec,
+            URIDepSpec,
+            PackageDepSpec,
+            BlockDepSpec,
+            LabelsDepSpec<URILabelVisitorTypes>,
+            LabelsDepSpec<DependencyLabelVisitorTypes>
+                > Formatter;
     };
 
     /**
@@ -110,6 +141,10 @@ namespace paludis
             ConstTreeSequence<LicenseSpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PlainTextDepSpec
+                > Formatter;
     };
 
     /**
@@ -127,6 +162,11 @@ namespace paludis
             ConstTreeSequence<URISpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            URIDepSpec,
+            LabelsDepSpec<URILabelVisitorTypes>
+                > Formatter;
     };
 
     /**
@@ -146,6 +186,13 @@ namespace paludis
             ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PlainTextDepSpec,
+            URIDepSpec,
+            PackageDepSpec,
+            BlockDepSpec
+                > Formatter;
     };
 
     /**
@@ -162,6 +209,10 @@ namespace paludis
             ConstTreeSequence<ProvideSpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PackageDepSpec
+                > Formatter;
     };
 
     /**
@@ -178,6 +229,10 @@ namespace paludis
             ConstTreeSequence<RestrictSpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PlainTextDepSpec
+                > Formatter;
     };
 
     /**
@@ -197,6 +252,12 @@ namespace paludis
             ConstTreeSequence<DependencySpecTree, UseDepSpec>
         >
     {
+        typedef Formatter<
+            UseDepSpec,
+            PackageDepSpec,
+            BlockDepSpec,
+            LabelsDepSpec<DependencyLabelVisitorTypes>
+                > Formatter;
     };
 
     /**
@@ -212,6 +273,9 @@ namespace paludis
             ConstTreeSequence<SetSpecTree, AllDepSpec>
         >
     {
+        typedef Formatter<
+            PackageDepSpec
+                > Formatter;
     };
 }
 

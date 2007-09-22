@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +21,6 @@
 #include "install.hh"
 #include <src/output/colour.hh>
 #include <src/output/console_install_task.hh>
-#include <src/output/licence.hh>
 
 #include <iostream>
 #include <limits>

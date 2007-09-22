@@ -54,6 +54,8 @@ namespace paludis
     template <>
     struct Implementation<CRANPackageID>
     {
+        const Environment * const env;
+
         const tr1::shared_ptr<const Repository> repository;
         const tr1::shared_ptr<const CRANRepository> cran_repository;
         const tr1::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
@@ -70,7 +72,9 @@ namespace paludis
         tr1::shared_ptr<DepKey> depends_key;
         tr1::shared_ptr<DepKey> suggests_key;
 
-        Implementation(const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+        Implementation(const Environment * const e,
+                const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+            env(e),
             repository(r),
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
@@ -78,7 +82,9 @@ namespace paludis
         {
         }
 
-        Implementation(const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+        Implementation(const Environment * const e,
+                const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+            env(e),
             repository(c),
             cran_repository(c),
             name("cran/" + cran_name_to_internal(t)),
@@ -89,8 +95,8 @@ namespace paludis
     };
 }
 
-CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
-    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(r, f)),
+CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(env, r, f)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
@@ -188,13 +194,13 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, co
             Context local_context("When handling Contains: key:");
             std::list<std::string> tokens;
             WhitespaceTokeniser::get_instance()->tokenise(file.get("Contains"), std::back_inserter(tokens));
-            _imp->contains_key.reset(new PackageIDSequenceKey("Contains", "Contains", mkt_normal));
+            _imp->contains_key.reset(new PackageIDSequenceKey(_imp->env, "Contains", "Contains", mkt_normal));
             add_metadata_key(_imp->contains_key);
             for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                     t != t_end ; ++t)
             {
                 if (*t != stringify(name().package))
-                    _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(_imp->cran_repository, this, *t)));
+                    _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(_imp->env, _imp->cran_repository, this, *t)));
                 else
                 {
                     /* yay CRAN... */
@@ -207,17 +213,17 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, co
         if (! file.get("Suggests").empty())
         {
             Context local_context("When handling Suggests: key:");
-            _imp->suggests_key.reset(new DepKey("Suggests", "Suggests", file.get("Suggests"), mkt_dependencies));
+            _imp->suggests_key.reset(new DepKey(_imp->env, "Suggests", "Suggests", file.get("Suggests"), mkt_dependencies));
             add_metadata_key(_imp->suggests_key);
         }
 
         if (! file.get("Depends").empty())
         {
             Context local_context("When handling Depends: key:");
-            _imp->depends_key.reset(new DepKey("Depends", "Depends", file.get("Depends") + ", R", mkt_dependencies));
+            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", file.get("Depends") + ", R", mkt_dependencies));
         }
         else
-            _imp->depends_key.reset(new DepKey("Depends", "Depends", "R", mkt_dependencies));
+            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", "R", mkt_dependencies));
         add_metadata_key(_imp->depends_key);
     }
     catch (const Exception & e)
@@ -259,8 +265,9 @@ CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & r, co
 #endif
 }
 
-CRANPackageID::CRANPackageID(const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
-    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(c, r, t)),
+CRANPackageID::CRANPackageID(const Environment * const e,
+        const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+    PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(e, c, r, t)),
     _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");

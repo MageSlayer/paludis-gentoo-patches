@@ -17,30 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FORMATTER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_FORMATTER_FWD_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <paludis/name-fwd.hh>
-#include <iosfwd>
+#include <paludis/util/no_type.hh>
 
 namespace paludis
 {
-    class MetadataKeyVisitorTypes;
-
-    class MetadataKey;
-    class MetadataPackageIDKey;
-    class MetadataStringKey;
-    class MetadataContentsKey;
-    class MetadataTimeKey;
-    class MetadataRepositoryMaskInfoKey;
-    class MetadataFSEntryKey;
-    template <typename C_> class MetadataSetKey;
-    template <> class MetadataSetKey<IUseFlagSet>;
-    template <typename C_> class MetadataSpecTreeKey;
-
-#include <paludis/metadata_key-se.hh>
-
+    template <
+        typename T1_,
+        typename T2_ = NoType<2u>,
+        typename T3_ = NoType<3u>,
+        typename T4_ = NoType<4u>,
+        typename T5_ = NoType<5u>,
+        typename T6_ = NoType<6u>,
+        typename T7_ = NoType<7u>,
+        typename T8_ = NoType<8u>,
+        typename T9_ = NoType<9u>
+        >
+    class Formatter;
 }
 
 #endif

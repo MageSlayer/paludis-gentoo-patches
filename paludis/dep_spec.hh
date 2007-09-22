@@ -22,7 +22,7 @@
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
-#include <paludis/dep_label-fwd.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
