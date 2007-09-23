@@ -48,13 +48,13 @@ CommandLine::CommandLine() :
     a_report_file(&general_args, "report-file", 'r',
             "Write report to the specified file, rather than stdout")
 {
-    add_usage_line("--generate-cache");
+    add_usage_line("--generate-cache [ at least one of --repository-dir /dir or --output-dir /dir ]");
 }
 
 std::string
 CommandLine::app_name() const
 {
-    return "instruo [ at least one of --repository-dir /dir or --output-dir /dir ]";
+    return "instruo";
 }
 
 std::string
