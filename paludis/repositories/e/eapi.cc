@@ -115,6 +115,7 @@ namespace paludis
                                                             .ebuild_metadata(k.get("ebuild_metadata"))
                                                             .ebuild_nofetch(k.get("ebuild_nofetch"))
                                                             .ebuild_variable(k.get("ebuild_variable"))
+                                                            .ebuild_info(k.get("ebuild_info"))
                                                             .ebuild_config(k.get("ebuild_config")))))
 
                                             .ebuild_metadata_variables(make_shared_ptr(new EAPIEbuildMetadataVariables(

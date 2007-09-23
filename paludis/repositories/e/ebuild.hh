@@ -291,6 +291,31 @@ namespace paludis
         };
 
         /**
+         * An EbuildInfoCommand is used to obtain information from a package in a VDBRepository.
+         *
+         * \ingroup grpebuildinterface
+         */
+        class EbuildInfoCommand :
+            public EbuildCommand
+        {
+            protected:
+                /// Parameters for config.
+                const EbuildInfoCommandParams info_params;
+
+                virtual std::string commands() const;
+
+                virtual bool failure();
+
+                virtual Command extend_command(const Command &);
+
+            public:
+                /**
+                 * Constructor.
+                 */
+                EbuildInfoCommand(const EbuildCommandParams &, const EbuildInfoCommandParams &);
+        };
+
+        /**
          * Command for generating VDB entries (not a regular EbuildCommand).
          *
          * \ingroup grpebuildinterface

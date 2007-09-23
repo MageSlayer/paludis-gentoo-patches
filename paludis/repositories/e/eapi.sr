@@ -9,6 +9,7 @@ make_class_EAPIEbuildPhases()
     key ebuild_install            std::string
     key ebuild_uninstall          std::string
     key ebuild_pretend            std::string
+    key ebuild_info               std::string
     key ebuild_metadata           std::string
     key ebuild_nofetch            std::string
     key ebuild_variable           std::string

@@ -30,6 +30,7 @@ using namespace paludis;
 
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
+template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
 template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
@@ -37,6 +38,7 @@ template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
 
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
+template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
 template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
@@ -205,6 +207,11 @@ namespace
             s << "config";
         }
 
+        void visit(const InfoAction &)
+        {
+            s << "info";
+        }
+
         void visit(const FetchAction &)
         {
             s << "fetch";
@@ -255,6 +262,11 @@ UninstallActionError::UninstallActionError(const std::string & msg) throw () :
 
 ConfigActionError::ConfigActionError(const std::string & msg) throw () :
     ActionError("Configuration error: " + msg)
+{
+}
+
+InfoActionError::InfoActionError(const std::string & msg) throw () :
+    ActionError("Info error: " + msg)
 {
 }
 

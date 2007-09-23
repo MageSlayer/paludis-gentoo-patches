@@ -662,6 +662,84 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     }
 }
 
+void
+EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
+        tr1::shared_ptr<const ERepositoryProfile> p) const
+{
+    using namespace tr1::placeholders;
+
+    Context context("When infoing '" + stringify(*id) + "':");
+
+    bool userpriv_restrict;
+    {
+        DepSpecFlattener restricts(_imp->params.environment, id);
+        if (id->restrict_key())
+            id->restrict_key()->value()->accept(restricts);
+
+        userpriv_restrict =
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+    }
+
+    /* make use */
+    std::string use(make_use(_imp->params.environment, *id, p));
+
+    /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
+     * environment variables */
+    std::string expand_sep(stringify(id->eapi()->supported->ebuild_options->use_expand_separator));
+    tr1::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
+                _imp->params.environment, *id, p, use, expand_sep));
+
+    tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
+
+    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
+    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            phase != phase_end ; ++phase)
+    {
+        if (phase->option("installed=true"))
+            continue;
+
+        EbuildCommandParams command_params(EbuildCommandParams::create()
+                .environment(_imp->params.environment)
+                .package_id(id)
+                .ebuild_dir(_imp->e_repository->layout()->package_directory(id->name()))
+                .ebuild_file(_imp->e_repository->layout()->package_file(*id))
+                .files_dir(_imp->e_repository->layout()->package_directory(id->name()) / "files")
+                .eclassdirs(_imp->params.eclassdirs)
+                .exlibsdirs(exlibsdirs)
+                .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                    _imp->params.location)
+                .distdir(_imp->params.distdir)
+                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
+                .sandbox(phase->option("sandbox"))
+                .userpriv(phase->option("userpriv"))
+                .builddir(_imp->params.builddir));
+
+        FSEntry i(_imp->e_repository->layout()->info_variables_file(
+                    _imp->e_repository->params().location / "profiles"));
+
+        if (_imp->e_repository->params().master_repository && ! i.exists())
+            i = _imp->e_repository->params().master_repository->layout()->info_variables_file(
+                    _imp->e_repository->params().master_repository->params().location / "profiles");
+
+        EbuildInfoCommandParams info_params(
+                EbuildInfoCommandParams::create()
+                .use(use)
+                .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
+                .expand_vars(expand_vars)
+                .root(stringify(_imp->params.environment->root()))
+                .profiles(_imp->params.profiles)
+                .load_environment(0)
+                .info_vars(i)
+                );
+
+        EbuildInfoCommand cmd(command_params, info_params);
+        cmd();
+    }
+}
+
 std::string
 EbuildEntries::get_environment_variable(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & var, tr1::shared_ptr<const ERepositoryProfile>) const

@@ -141,6 +141,10 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }

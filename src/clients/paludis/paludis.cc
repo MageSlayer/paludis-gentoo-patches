@@ -24,6 +24,7 @@
 #include "do_config.hh"
 #include "install.hh"
 #include "list.hh"
+#include "info.hh"
 #include "owner.hh"
 #include "query.hh"
 #include "report.hh"
@@ -72,62 +73,7 @@ namespace
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             cout << " svn " << PALUDIS_SUBVERSION_REVISION;
-        cout << endl << endl;
-        cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
-            << " on " << PALUDIS_BUILD_DATE << endl;
-        cout << "CXX:         " << PALUDIS_BUILD_CXX
-#if defined(__ICC)
-            << " " << __ICC
-#elif defined(__VERSION__)
-            << " " << __VERSION__
-#endif
-            << endl;
-        cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
-        cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
-        cout << "DATADIR:     " << DATADIR << endl;
-        cout << "LIBDIR:      " << LIBDIR << endl;
-        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
-        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
-        cout << "stdlib:      "
-#if defined(__GLIBCXX__)
-#  define XSTRINGIFY(x) #x
-#  define STRINGIFY(x) XSTRINGIFY(x)
-            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
-#endif
-            << endl;
-
-        cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
-            << "." << LIBEBT_VERSION_MICRO << endl;
-        cout << "libwrapiter: " << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR
-            << "." << LIBWRAPITER_VERSION_MICRO << endl;
-#if HAVE_SANDBOX
-        cout << "sandbox:     enabled" << endl;
-#else
-        cout << "sandbox:     disabled" << endl;
-#endif
-    }
-
-    void display_info(tr1::shared_ptr<Environment> env)
-    {
-        for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
-                r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-        {
-            cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
-
-            tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
-            for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
-                    i_end(ii->end_sections()) ; i != i_end ; ++i)
-            {
-                cout << "    " << colour(cl_heading, (*i)->heading() + ":") << endl;
-                for (RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
-                        k_end((*i)->end_kvs()) ; k != k_end ; ++k)
-                    cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
-                        << std::setw(0) << " " << k->second << endl;
-                cout << endl;
-            }
-        }
-
+        cout << endl;
     }
 }
 
@@ -359,10 +305,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->a_info.specified())
             {
                 display_version();
-                cout << endl;
-                display_info(env);
-                cout << endl;
-                return EXIT_SUCCESS;
+                return do_info(env);
             }
 
             if (CommandLine::get_instance()->a_query.specified())

@@ -263,7 +263,7 @@ CommandLine::CommandLine() :
     add_usage_line("--contents target ...");
     add_usage_line("--owner [owner options] files ...");
     add_usage_line("--version");
-    add_usage_line("--info");
+    add_usage_line("--info [target ...]");
     add_usage_line("--help");
 
     add_usage_line("--has-version spec");

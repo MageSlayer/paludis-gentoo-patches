@@ -142,6 +142,29 @@ END
     allow_named_args
 }
 
+make_class_EbuildInfoCommandParams()
+{
+    key use std::string
+    key use_expand std::string
+    key root std::string
+    key profiles "tr1::shared_ptr<const FSEntrySequence>"
+    key expand_vars "tr1::shared_ptr<const Map<std::string, std::string> >"
+    key load_environment "const FSEntry *"
+    key info_vars "FSEntry"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildInfoCommand.
+         *
+         * \see EbuildInfoCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}
+
 make_class_WriteVDBEntryParams()
 {
     key environment "const Environment *"

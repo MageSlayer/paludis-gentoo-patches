@@ -44,7 +44,8 @@ namespace paludis
             InstalledAction,
             UninstallAction,
             PretendAction,
-            ConfigAction
+            ConfigAction,
+            InfoAction
         >
     {
     };
@@ -58,7 +59,8 @@ namespace paludis
             SupportsActionTest<InstalledAction>,
             SupportsActionTest<UninstallAction>,
             SupportsActionTest<PretendAction>,
-            SupportsActionTest<ConfigAction>
+            SupportsActionTest<ConfigAction>,
+            SupportsActionTest<InfoAction>
         >
     {
     };
@@ -128,6 +130,12 @@ namespace paludis
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
         public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>
+    {
+    };
+
+    class PALUDIS_VISIBLE InfoAction:
+        public Action,
+        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>
     {
     };
 
@@ -232,6 +240,21 @@ namespace paludis
              * Constructor.
              */
             ConfigActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if an info fails.
+     *
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE InfoActionError : public ActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            InfoActionError(const std::string & msg) throw ();
     };
 }
 

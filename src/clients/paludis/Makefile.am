@@ -4,7 +4,9 @@ DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DLIBDIR=\"$(libdir)\"
+	-DLIBDIR=\"$(libdir)\" \
+	-DPYTHONINSTALLDIR=\"$(PYTHON_INSTALL_DIR)\" \
+	-DRUBYINSTALLDIR=\"$(RUBY_INSTALL_DIR)\"
 
 SUBDIRS = .
 
@@ -36,6 +38,7 @@ man_paludis_LDADD = \
 paludis_SOURCES = \
 	applets.hh           applets.cc           \
 	command_line.hh      command_line.cc      \
+	info.hh              info.cc              \
 	install.hh           install.cc           \
 	uninstall.hh         uninstall.cc         \
 	list.hh              list.cc              \

@@ -374,7 +374,7 @@ ebuild_main()
     for action in $@ ; do
         case ${action} in
             metadata|variable|init|prepare|merge|unmerge|tidyup|\
-                    strip|loadenv|saveenv|initbin|unpackbin)
+                    strip|loadenv|saveenv|initbin|unpackbin|infovars)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -382,7 +382,7 @@ ebuild_main()
                 ebuild_load_module src_${action}
             ;;
 
-            setup|config|nofetch|preinst|postinst|prerm|postrm|pretend)
+            setup|config|nofetch|preinst|postinst|prerm|postrm|pretend|info)
                 ebuild_load_module pkg_${action}
             ;;
 

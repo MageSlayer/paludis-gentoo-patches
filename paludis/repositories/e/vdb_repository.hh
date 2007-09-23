@@ -234,6 +234,8 @@ namespace paludis
 
             void perform_config(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
 
+            void perform_info(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+
             ///\}
 
     };

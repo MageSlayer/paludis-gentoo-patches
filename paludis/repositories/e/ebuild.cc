@@ -750,3 +750,64 @@ EbuildPretendCommand::EbuildPretendCommand(const EbuildCommandParams & p,
 {
 }
 
+std::string
+EbuildInfoCommand::commands() const
+{
+    return params.commands;
+}
+
+bool
+EbuildInfoCommand::failure()
+{
+    return false;
+}
+
+Command
+EbuildInfoCommand::extend_command(const Command & cmd)
+{
+    std::string info_vars;
+    if (info_params.info_vars.is_regular_file_or_symlink_to_regular_file())
+    {
+        LineConfigFile info_vars_f(info_params.info_vars, LineConfigFileOptions());
+        info_vars = join(info_vars_f.begin(), info_vars_f.end(), " ");
+    }
+
+    Command result(Command(cmd)
+            .with_stdout_prefix("        ")
+            .with_stderr_prefix("        ")
+            .with_prefix_discard_blank_output()
+            .with_prefix_blank_lines()
+            .with_setenv("ROOT", info_params.root)
+            .with_setenv("PALUDIS_INFO_VARS", info_vars)
+            .with_setenv("PALUDIS_PROFILE_DIR",
+                info_params.profiles->empty() ? std::string("") : stringify(*info_params.profiles->begin()))
+            .with_setenv("PALUDIS_PROFILE_DIRS", join(info_params.profiles->begin(),
+                    info_params.profiles->end(), " ")));
+
+    if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use.empty())
+        result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use, info_params.use);
+    if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand.empty())
+        result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand, info_params.use_expand);
+
+    for (Map<std::string, std::string>::Iterator
+            i(info_params.expand_vars->begin()),
+            j(info_params.expand_vars->end()) ; i != j ; ++i)
+        result.with_setenv(i->first, i->second);
+
+    result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+
+    if (info_params.load_environment)
+        result
+            .with_setenv("PALUDIS_LOAD_ENVIRONMENT", stringify(*info_params.load_environment))
+            .with_setenv("PALUDIS_SKIP_INHERIT", "yes");
+
+    return result;
+}
+
+EbuildInfoCommand::EbuildInfoCommand(const EbuildCommandParams & p,
+        const EbuildInfoCommandParams & f) :
+    EbuildCommand(p),
+    info_params(f)
+{
+}
+

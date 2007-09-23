@@ -206,6 +206,8 @@ namespace paludis
 
             const ERepositoryParams & params() const;
 
+            virtual FSEntry info_variables_file(const FSEntry &) const;
+
             ///\}
 
             ///\name Profile setting and querying functions

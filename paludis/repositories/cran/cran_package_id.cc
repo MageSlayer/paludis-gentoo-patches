@@ -508,6 +508,10 @@ namespace
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }
+
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+        }
     };
 }
 

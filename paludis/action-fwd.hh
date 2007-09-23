@@ -32,6 +32,7 @@ namespace paludis
     class PretendAction;
     class ConfigAction;
     class FetchAction;
+    class InfoAction;
 
     class SupportsActionTestBase;
     template <typename A_> class SupportsActionTest;
@@ -45,6 +46,7 @@ namespace paludis
     class FetchActionError;
     class UninstallActionError;
     class ConfigActionError;
+    class InfoActionError;
 
     class FetchActionFailure;
 

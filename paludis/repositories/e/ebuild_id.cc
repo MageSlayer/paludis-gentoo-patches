@@ -791,6 +791,11 @@ namespace
             result = true;
         }
 
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }
@@ -839,6 +844,13 @@ namespace
         void visit(const PretendAction &)
         {
             tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->pretend(
+                    tr1::static_pointer_cast<const ERepositoryID>(id),
+                    tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
+        }
+
+        void visit(const InfoAction &)
+        {
+            tr1::static_pointer_cast<const ERepository>(id->repository())->entries()->info(
                     tr1::static_pointer_cast<const ERepositoryID>(id),
                     tr1::static_pointer_cast<const ERepository>(id->repository())->profile());
         }

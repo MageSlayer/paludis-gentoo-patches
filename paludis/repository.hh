@@ -756,6 +756,13 @@ namespace paludis
 
             ///\}
 
+            ///\name Layout helpers
+            ///\{
+
+            virtual FSEntry info_variables_file(const FSEntry &) const = 0;
+
+            ///\}
+
             virtual ~RepositoryEInterface();
     };
 

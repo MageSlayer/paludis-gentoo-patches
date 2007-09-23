@@ -25,6 +25,8 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/e_repository_params.hh>
+#include <paludis/repositories/e/e_repository.hh>
 
 #include <paludis/action.hh>
 #include <paludis/config_file.hh>
@@ -490,6 +492,94 @@ VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) c
                 .load_environment(load_env.get()));
 
         config_cmd();
+    }
+}
+
+void
+VDBRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) const
+{
+    Context context("When infoing '" + stringify(*id) + "':");
+
+    if (! _imp->params.root.is_directory())
+        throw InstallActionError("Couldn't info '" + stringify(*id) +
+                "' because root ('" + stringify(_imp->params.root) + "') is not a directory");
+
+    tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    eclassdirs->push_back(FSEntry(_imp->params.location / stringify(id->name().category) /
+                (stringify(id->name().package) + "-" + stringify(id->version()))));
+
+    FSEntry pkg_dir(_imp->params.location / stringify(id->name().category) /
+            (stringify(id->name().package) + "-" + stringify(id->version())));
+    tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
+
+    EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
+
+    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            phase != phase_end ; ++phase)
+    {
+        if (phase->option("installed=false"))
+            continue;
+
+        /* try to find an info_vars file from the original repo */
+        FSEntry i("/dev/null");
+        if (id->source_origin_key())
+        {
+            RepositoryName rn(id->source_origin_key()->value());
+            if (_imp->params.environment->package_database()->has_repository_named(rn))
+            {
+                const tr1::shared_ptr<const Repository> r(_imp->params.environment->package_database()->fetch_repository(rn));
+                if (r->e_interface)
+                {
+                    i = r->e_interface->info_variables_file(r->e_interface->params().location / "profiles");
+
+                    /* also try its master, if it has one */
+                    if ((! i.exists()) && r->e_interface->params().master_repository)
+                        i = r->e_interface->info_variables_file(r->e_interface->params().master_repository->params().location / "profiles");
+                }
+            }
+        }
+
+        /* try to find an info_vars file from any repo */
+        if (i == FSEntry("/dev/null"))
+        {
+            for (PackageDatabase::RepositoryIterator r(_imp->params.environment->package_database()->begin_repositories()),
+                    r_end(_imp->params.environment->package_database()->end_repositories()) ;
+                    r != r_end ; ++r)
+            {
+                if (! (*r)->e_interface)
+                    continue;
+
+                i = (*r)->e_interface->info_variables_file((*r)->e_interface->params().location / "profiles");
+                if (i.exists())
+                    break;
+            }
+        }
+
+        EbuildInfoCommand info_cmd(EbuildCommandParams::create()
+                .environment(_imp->params.environment)
+                .package_id(id)
+                .ebuild_dir(pkg_dir)
+                .ebuild_file(pkg_dir / (stringify(id->name().package) + "-" + stringify(id->version()) + ".ebuild"))
+                .files_dir(pkg_dir)
+                .eclassdirs(eclassdirs)
+                .exlibsdirs(make_shared_ptr(new FSEntrySequence))
+                .portdir(_imp->params.location)
+                .distdir(pkg_dir)
+                .sandbox(phase->option("sandbox"))
+                .userpriv(phase->option("userpriv"))
+                .commands(join(phase->begin_commands(), phase->end_commands(), " "))
+                .builddir(_imp->params.builddir),
+
+                EbuildInfoCommandParams::create()
+                .root(stringify(_imp->params.root) + "/")
+                .use("")
+                .use_expand("")
+                .expand_vars(make_shared_ptr(new Map<std::string, std::string>))
+                .profiles(make_shared_ptr(new FSEntrySequence))
+                .info_vars(i)
+                .load_environment(load_env.get()));
+
+        info_cmd();
     }
 }
 
@@ -1202,6 +1292,11 @@ namespace
 
         void visit(const SupportsActionTest<FetchAction> &)
         {
+        }
+
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+            result = true;
         }
 
         void visit(const SupportsActionTest<UninstallAction> &)

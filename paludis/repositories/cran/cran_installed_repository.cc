@@ -640,6 +640,10 @@ namespace
         {
             result = true;
         }
+
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+        }
     };
 }
 

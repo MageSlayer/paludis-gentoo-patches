@@ -639,6 +639,11 @@ namespace
         {
         }
 
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+            result = true;
+        }
+
         void visit(const SupportsActionTest<UninstallAction> &)
         {
             result = true;
@@ -679,6 +684,11 @@ namespace
         void visit(const ConfigAction &)
         {
             tr1::static_pointer_cast<const VDBRepository>(id->repository())->perform_config(id);
+        }
+
+        void visit(const InfoAction &)
+        {
+            tr1::static_pointer_cast<const VDBRepository>(id->repository())->perform_info(id);
         }
 
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));

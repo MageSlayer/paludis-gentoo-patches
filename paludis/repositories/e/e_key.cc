@@ -154,7 +154,7 @@ std::string
 EDependenciesKey::pretty_print(const DependencySpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -252,7 +252,7 @@ std::string
 ELicenseKey::pretty_print(const LicenseSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, true);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -339,7 +339,7 @@ std::string
 EURIKey::pretty_print(const URISpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -403,7 +403,7 @@ std::string
 ERestrictKey::pretty_print(const RestrictSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -466,7 +466,7 @@ std::string
 EProvideKey::pretty_print(const ProvideSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 12, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
     value()->accept(p);
     return stringify(p);
 }

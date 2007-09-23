@@ -8,6 +8,7 @@ libexecprogdir = $(libexecdir)/paludis/
 
 libexecprog_SCRIPTS = \
 	build_functions.bash \
+	builtin_infovars.bash \
 	builtin_init.bash \
 	builtin_initbin.bash \
 	builtin_loadenv.bash \
@@ -28,6 +29,7 @@ libexecprog_SCRIPTS = \
 	list_functions.bash \
 	multilib_functions.bash \
 	pkg_config.bash \
+	pkg_info.bash \
 	pkg_nofetch.bash \
 	pkg_postinst.bash \
 	pkg_postrm.bash \

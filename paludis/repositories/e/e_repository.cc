@@ -1129,6 +1129,11 @@ namespace
         void visit(const SupportsActionTest<UninstallAction> &)
         {
         }
+
+        void visit(const SupportsActionTest<InfoAction> &)
+        {
+            result = true;
+        }
     };
 }
 
@@ -1235,5 +1240,11 @@ ERepository::arch_variable() const
 {
     return erepository::EAPIData::get_instance()->eapi_from_string(
             params().profile_eapi)->supported->ebuild_environment_variables->env_arch;
+}
+
+FSEntry
+ERepository::info_variables_file(const FSEntry & f) const
+{
+    return layout()->info_variables_file(f);
 }
 

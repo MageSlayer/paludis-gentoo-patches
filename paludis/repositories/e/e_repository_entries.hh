@@ -100,6 +100,12 @@ namespace paludis
                         tr1::shared_ptr<const ERepositoryProfile>) const = 0;
 
                 /**
+                 * Handle an info.
+                 */
+                virtual void info(const tr1::shared_ptr<const ERepositoryID> &,
+                        tr1::shared_ptr<const ERepositoryProfile>) const = 0;
+
+                /**
                  * Handle a merge.
                  */
                 virtual void merge(const MergeOptions &) = 0;
