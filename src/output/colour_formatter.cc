@@ -147,7 +147,7 @@ ColourFormatter::format(const IUseFlag & f, const format::Disabled &) const
         }
     }
 
-    return h + colour(cl_flag_off, g);
+    return h + colour(cl_flag_off, "-" + g);
 }
 
 std::string
@@ -193,7 +193,7 @@ ColourFormatter::format(const IUseFlag & f, const format::Masked &) const
         }
     }
 
-    return h + colour(cl_flag_off, "(" + g + ")");
+    return h + colour(cl_flag_off, "(-" + g + ")");
 }
 
 std::string
@@ -225,7 +225,7 @@ ColourFormatter::format(const UseFlagName & f, const format::Enabled &) const
 std::string
 ColourFormatter::format(const UseFlagName & f, const format::Disabled &) const
 {
-    return colour(cl_flag_off, f);
+    return colour(cl_flag_off, "-" + stringify(f));
 }
 
 std::string
@@ -237,7 +237,7 @@ ColourFormatter::format(const UseFlagName & f, const format::Forced &) const
 std::string
 ColourFormatter::format(const UseFlagName & f, const format::Masked &) const
 {
-    return colour(cl_flag_off, "(" + stringify(f) + ")");
+    return colour(cl_flag_off, "(-" + stringify(f) + ")");
 }
 
 std::string
