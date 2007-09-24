@@ -7,6 +7,7 @@ set +o posix
 
 export TEST_STATUS=
 export PALUDIS_IN_TEST_FRAMEWORK="yes"
+unset PALUDIS_UTILITY_PATH_SUFFIXES PALUDIS_EBUILD_MODULE_SUFFIXES
 
 test_return_code()
 {
