@@ -94,7 +94,7 @@ libpaludispythonhooks_la_CXXFLAGS = $(AM_CXXFLAGS) \
 	@PALUDIS_CXXFLAGS_NO_WSHADOW@ \
 	-I@PYTHON_INCLUDE_DIR@
 libpaludispythonhooks_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
-libpaludispythonhooks_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
+libpaludispythonhooks_la_LIBADD = libpaludis.la
 
 libpaludismanpagethings_la_SOURCES = name.cc
 
@@ -103,7 +103,7 @@ libpaludissohooks_TEST_la_SOURCES = sohooks_TEST.cc
 # -rpath to force shared library
 libpaludissohooks_TEST_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
-libpaludissohooks_TEST_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
+libpaludissohooks_TEST_la_LIBADD = libpaludis.la
 
 libpaludis_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
