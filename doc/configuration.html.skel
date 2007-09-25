@@ -264,8 +264,9 @@ are executed by Paludis and their stdout is used as if it were a normal reposito
 
 <p>Each repository can have a key named <code>importance</code>. This is used when
 two different repositories contain an identically named and versioned package (e.g. foo/bar-1.0).
-The repository with the higher importance will always be chosen first. If not
-provided, the default is 0.</p>
+The repository with the higher importance will always be chosen first. The normal default value for
+importance is 0, repositories which specify <code>master_repository</code> have a default
+importance of 10.</p>
 
 <p>To avoid duplication across configuration files, a file named
 <code>repository_defaults.conf</code> can be used to specify defaults (this file
