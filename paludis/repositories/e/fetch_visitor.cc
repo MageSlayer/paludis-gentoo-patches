@@ -56,6 +56,7 @@ namespace paludis
         const std::string mirrors_name;
         const bool fetch_restrict;
         const bool no_mirror;
+        const bool safe_resume;
 
         tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > default_label;
         std::list<const LabelsDepSpec<URILabelVisitorTypes> *> labels;
@@ -69,7 +70,8 @@ namespace paludis
                 const bool u,
                 const std::string & m,
                 const bool n,
-                const bool nm) :
+                const bool nm,
+                const bool sr) :
             env(e),
             id(i),
             eapi(p),
@@ -78,7 +80,8 @@ namespace paludis
             userpriv(u),
             mirrors_name(m),
             fetch_restrict(n),
-            no_mirror(nm)
+            no_mirror(nm),
+            safe_resume(sr)
         {
             if (fetch_restrict)
             {
@@ -107,8 +110,9 @@ FetchVisitor::FetchVisitor(
         const bool u,
         const std::string & m,
         const bool n,
-        const bool nm) :
-    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, nm))
+        const bool nm,
+        const bool sr) :
+    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, nm, sr))
 {
 }
 
@@ -240,6 +244,10 @@ FetchVisitor::visit_leaf(const URIDepSpec & u)
                     .with_setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
                     .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                     .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
+
+                if (_imp->safe_resume)
+                    cmd
+                        .with_setenv("PALUDIS_USE_SAFE_RESUME", "yesplease");
 
                 std::cout << "Trying to fetch '" << i->first << "' to '" << i->second << "'..." << std::endl;
                 if (0 != run_command(cmd))

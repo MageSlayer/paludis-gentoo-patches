@@ -48,7 +48,8 @@ namespace paludis
                         const bool userpriv,
                         const std::string & mirrors_name,
                         const bool fetch_restrict,
-                        const bool no_mirror);
+                        const bool no_mirror,
+                        const bool safe_resume);
 
                 ~FetchVisitor();
 
