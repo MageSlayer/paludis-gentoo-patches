@@ -143,7 +143,7 @@ InstalledVirtualsRepository::need_ids() const
     /* Populate our _imp->entries. We need to iterate over each repository in
      * our env's package database, see if it has a provides interface, and if it
      * does create an entry for each provided package. */
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->provides_interface)
@@ -152,7 +152,7 @@ InstalledVirtualsRepository::need_ids() const
         tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
                 (*r)->provides_interface->provided_packages());
 
-        for (RepositoryProvidesInterface::ProvidesSequence::Iterator p(
+        for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
                     pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
         {
             IDMap::iterator i(_imp->ids.find(p->virtual_name));

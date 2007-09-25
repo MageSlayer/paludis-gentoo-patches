@@ -277,7 +277,7 @@ paludis::run_command(const Command & cmd)
     if (! cmd.chdir().empty())
         extras.append(" [chdir " + cmd.chdir() + "]");
 
-    for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+    for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
         extras.append(" [setenv " + s->first + "=" + s->second + "]");
 
     if (cmd.gid() && *cmd.gid() != getgid())
@@ -308,7 +308,7 @@ paludis::run_command(const Command & cmd)
                 if (-1 == chdir(stringify(cmd.chdir()).c_str()))
                     throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
 
-            for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
                 setenv(s->first.c_str(), s->second.c_str(), 1);
 
             if (-1 != stdout_write_fd)
@@ -392,16 +392,16 @@ Command::chdir() const
     return _imp->chdir;
 }
 
-Command::Iterator
+Command::ConstIterator
 Command::begin_setenvs() const
 {
-    return Iterator(_imp->setenv_values.begin());
+    return ConstIterator(_imp->setenv_values.begin());
 }
 
-Command::Iterator
+Command::ConstIterator
 Command::end_setenvs() const
 {
-    return Iterator(_imp->setenv_values.end());
+    return ConstIterator(_imp->setenv_values.end());
 }
 
 void

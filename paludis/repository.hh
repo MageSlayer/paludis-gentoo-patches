@@ -537,11 +537,11 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<RepositoryMirrorsInterface,
-                    const std::pair<const std::string, std::string> > MirrorsIterator;
+                    const std::pair<const std::string, std::string> > MirrorsConstIterator;
 
-            virtual MirrorsIterator begin_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-            virtual MirrorsIterator end_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -746,12 +746,12 @@ namespace paludis
             typedef RepositoryEInterfaceProfilesDescLine ProfilesDescLine;
 
             typedef libwrapiter::ForwardIterator<RepositoryEInterface,
-                    const ProfilesDescLine> ProfilesIterator;
-            virtual ProfilesIterator begin_profiles() const = 0;
-            virtual ProfilesIterator end_profiles() const = 0;
+                    const ProfilesDescLine> ProfilesConstIterator;
+            virtual ProfilesConstIterator begin_profiles() const = 0;
+            virtual ProfilesConstIterator end_profiles() const = 0;
 
-            virtual ProfilesIterator find_profile(const FSEntry & location) const = 0;
-            virtual void set_profile(const ProfilesIterator & iter) = 0;
+            virtual ProfilesConstIterator find_profile(const FSEntry & location) const = 0;
+            virtual void set_profile(const ProfilesConstIterator & iter) = 0;
             virtual void set_profile_by_arch(const UseFlagName &) = 0;
 
             ///\}

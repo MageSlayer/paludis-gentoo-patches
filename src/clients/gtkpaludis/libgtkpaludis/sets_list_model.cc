@@ -59,7 +59,7 @@ SetsListModel::populate_in_paludis_thread()
 
     if (repos)
     {
-        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             RepositorySetsInterface * const i(_imp->main_window->environment()->package_database()->fetch_repository(*r)->sets_interface);
@@ -72,7 +72,7 @@ SetsListModel::populate_in_paludis_thread()
     }
     else
     {
-        for (IndirectIterator<PackageDatabase::RepositoryIterator>
+        for (IndirectIterator<PackageDatabase::RepositoryConstIterator>
                 r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
                 r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
                 r != r_end ; ++r)
@@ -97,7 +97,7 @@ void
 SetsListModel::populate_in_gui_thread(tr1::shared_ptr<const SetNameSet> names)
 {
     clear();
-    for (SetNameSet::Iterator n(names->begin()), n_end(names->end()) ;
+    for (SetNameSet::ConstIterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_set_name] = stringify(*n);
 }

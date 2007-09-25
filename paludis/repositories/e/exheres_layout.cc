@@ -146,7 +146,7 @@ ExheresLayout::need_category_names() const
 
         LineConfigFile cats(*i, LineConfigFileOptions());
 
-        for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
+        for (LineConfigFile::ConstIterator line(cats.begin()), line_end(cats.end()) ;
                 line != line_end ; ++line)
         {
             try
@@ -526,7 +526,7 @@ ExheresLayout::invalidate_masks()
     Lock l(_imp->big_nasty_mutex);
 
     for (IDMap::iterator it(_imp->ids.begin()), it_end(_imp->ids.end()); it_end != it; ++it)
-        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+        for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }

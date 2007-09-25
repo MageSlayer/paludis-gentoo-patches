@@ -179,7 +179,7 @@ namespace paludis
                 Context context("When loading profiles for repository '" + stringify(name) + "':");
                 load_environment();
 
-                for (FSEntrySequence::Iterator d(dirs.begin()), d_end(dirs.end()) ;
+                for (FSEntrySequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
                 {
                     Context subcontext("When using directory '" + stringify(*d) + "':");
@@ -252,7 +252,7 @@ Implementation<ERepositoryProfile>::load_profile_parent(const FSEntry & dir)
 
     LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
 
-    LineConfigFile::Iterator i(file.begin()), i_end(file.end());
+    LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
     bool once(false);
     if (i == i_end)
         Log::get_instance()->message(ll_warning, lc_context, "parent file is empty");
@@ -298,7 +298,7 @@ Implementation<ERepositoryProfile>::load_profile_make_defaults(const FSEntry & d
     KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
             kvcfo_disallow_space_around_equals + kvcfo_disallow_space_inside_unquoted_values);
 
-    for (KeyValueConfigFile::Iterator k(file.begin()), k_end(file.end()) ;
+    for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
             k != k_end ; ++k)
     {
         if (is_incremental(k->first))
@@ -427,7 +427,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
-        for (erepository::ProfileFile<LineConfigFile>::Iterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
+        for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
         {
             if (0 != i->compare(0, 1, "*", 0, 1))
                 continue;
@@ -448,7 +448,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                 env->default_distribution())->support_old_style_virtuals)
         try
         {
-            for (erepository::ProfileFile<LineConfigFile>::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
+            for (erepository::ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
@@ -468,7 +468,7 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
                     " failed due to exception: " + e.message() + " (" + e.what() + ")");
         }
 
-    for (erepository::ProfileFile<erepository::MaskFile>::Iterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
+    for (erepository::ProfileFile<erepository::MaskFile>::ConstIterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
             line != line_end ; ++line)
     {
         if (line->first.empty())
@@ -501,7 +501,7 @@ Implementation<ERepositoryProfile>::load_basic_use_file(const FSEntry & file, Fl
 
     Context context("When loading basic use file '" + stringify(file) + ":");
     LineConfigFile f(file, LineConfigFileOptions());
-    for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+    for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
         std::list<std::string> tokens;
@@ -536,7 +536,7 @@ Implementation<ERepositoryProfile>::load_spec_use_file(const FSEntry & file, Pac
 
     Context context("When loading specised use file '" + stringify(file) + ":");
     LineConfigFile f(file, LineConfigFileOptions());
-    for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+    for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
         std::list<std::string> tokens;
@@ -719,7 +719,7 @@ ERepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
     {
         if (e.iuse_key())
         {
-            IUseFlagSet::Iterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified, std::string::npos)));
+            IUseFlagSet::ConstIterator i(e.iuse_key()->value()->find(IUseFlag(u, use_unspecified, std::string::npos)));
             if (i != e.iuse_key()->value()->end())
                 result = i->state;
         }
@@ -744,46 +744,46 @@ ERepositoryProfile::system_packages() const
     return _imp->system_packages;
 }
 
-ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::UseExpandConstIterator
 ERepositoryProfile::begin_use_expand() const
 {
-    return UseExpandIterator(_imp->use_expand.begin());
+    return UseExpandConstIterator(_imp->use_expand.begin());
 }
 
-ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::UseExpandConstIterator
 ERepositoryProfile::end_use_expand() const
 {
-    return UseExpandIterator(_imp->use_expand.end());
+    return UseExpandConstIterator(_imp->use_expand.end());
 }
 
-ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::UseExpandConstIterator
 ERepositoryProfile::begin_use_expand_hidden() const
 {
-    return UseExpandIterator(_imp->use_expand_hidden.begin());
+    return UseExpandConstIterator(_imp->use_expand_hidden.begin());
 }
 
-ERepositoryProfile::UseExpandIterator
+ERepositoryProfile::UseExpandConstIterator
 ERepositoryProfile::end_use_expand_hidden() const
 {
-    return UseExpandIterator(_imp->use_expand_hidden.end());
+    return UseExpandConstIterator(_imp->use_expand_hidden.end());
 }
 
-ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::VirtualsConstIterator
 ERepositoryProfile::begin_virtuals() const
 {
-    return VirtualsIterator(_imp->virtuals.begin());
+    return VirtualsConstIterator(_imp->virtuals.begin());
 }
 
-ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::VirtualsConstIterator
 ERepositoryProfile::find_virtual(const QualifiedPackageName & n) const
 {
-    return VirtualsIterator(_imp->virtuals.find(n));
+    return VirtualsConstIterator(_imp->virtuals.find(n));
 }
 
-ERepositoryProfile::VirtualsIterator
+ERepositoryProfile::VirtualsConstIterator
 ERepositoryProfile::end_virtuals() const
 {
-    return VirtualsIterator(_imp->virtuals.end());
+    return VirtualsConstIterator(_imp->virtuals.end());
 }
 
 tr1::shared_ptr<const RepositoryMaskInfo>

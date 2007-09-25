@@ -305,7 +305,7 @@ namespace
 {
     std::string get(const tr1::shared_ptr<const Map<std::string, std::string> > & k, const std::string & s)
     {
-        Map<std::string, std::string>::Iterator i(k->find(s));
+        Map<std::string, std::string>::ConstIterator i(k->find(s));
         if (k->end() == i)
             return "";
         return i->second;
@@ -471,7 +471,7 @@ EbuildNoFetchCommand::extend_command(const Command & cmd)
     if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand.empty())
         result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand, fetch_params.use_expand);
 
-    for (Map<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::ConstIterator
             i(fetch_params.expand_vars->begin()),
             j(fetch_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
@@ -547,7 +547,7 @@ EbuildInstallCommand::extend_command(const Command & cmd)
     if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand.empty())
         result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand, install_params.use_expand);
 
-    for (Map<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::ConstIterator
             i(install_params.expand_vars->begin()),
             j(install_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
@@ -733,7 +733,7 @@ EbuildPretendCommand::extend_command(const Command & cmd)
     if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand.empty())
         result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand, pretend_params.use_expand);
 
-    for (Map<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::ConstIterator
             i(pretend_params.expand_vars->begin()),
             j(pretend_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
@@ -789,7 +789,7 @@ EbuildInfoCommand::extend_command(const Command & cmd)
     if (! params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand.empty())
         result.with_setenv(params.package_id->eapi()->supported->ebuild_environment_variables->env_use_expand, info_params.use_expand);
 
-    for (Map<std::string, std::string>::Iterator
+    for (Map<std::string, std::string>::ConstIterator
             i(info_params.expand_vars->begin()),
             j(info_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);

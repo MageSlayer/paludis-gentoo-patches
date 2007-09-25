@@ -133,16 +133,16 @@ Hook::validate_value(const std::string & v) const
         return (_imp->allowed_values.find(v) != _imp->allowed_values.end());
 }
 
-Hook::Iterator
+Hook::ConstIterator
 Hook::begin() const
 {
-    return Iterator(_imp->extra_env.begin());
+    return ConstIterator(_imp->extra_env.begin());
 }
 
-Hook::Iterator
+Hook::ConstIterator
 Hook::end() const
 {
-    return Iterator(_imp->extra_env.end());
+    return ConstIterator(_imp->extra_env.end());
 }
 
 std::string

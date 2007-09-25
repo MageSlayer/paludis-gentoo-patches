@@ -62,9 +62,9 @@ namespace paludis
 
             /* RepositoryMirrorsInterface */
 
-            virtual MirrorsIterator begin_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MirrorsIterator end_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

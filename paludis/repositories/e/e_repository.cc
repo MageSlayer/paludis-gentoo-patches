@@ -216,7 +216,7 @@ namespace paludis
 
         bool found_one(false);
         tr1::shared_ptr<const FSEntrySequence> profiles_desc_files(layout->profiles_desc_files());
-        for (FSEntrySequence::Iterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
+        for (FSEntrySequence::ConstIterator p(profiles_desc_files->begin()), p_end(profiles_desc_files->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->exists())
@@ -225,7 +225,7 @@ namespace paludis
             found_one = true;
 
             LineConfigFile f(*p, LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
+            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
                 WhitespaceTokeniser::get_instance()->tokenise(*line,
@@ -395,7 +395,7 @@ ERepository::repository_masked(const PackageID & id) const
         Context context("When querying repository mask for '" + stringify(id) + "':");
 
         tr1::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
-        for (FSEntrySequence::Iterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
+        for (FSEntrySequence::ConstIterator p(repository_mask_files->begin()), p_end(repository_mask_files->end()) ;
                 p != p_end ; ++p)
         {
             Context context_local("When reading '" + stringify(*p) + "':");
@@ -403,7 +403,7 @@ ERepository::repository_masked(const PackageID & id) const
             if (p->exists())
             {
                 erepository::MaskFile ff(*p, LineConfigFileOptions());
-                for (erepository::MaskFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+                for (erepository::MaskFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
                     try
@@ -474,7 +474,7 @@ ERepository::do_arch_flags() const
 
         bool found_one(false);
         tr1::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
-        for (FSEntrySequence::Iterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
+        for (FSEntrySequence::ConstIterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->exists())
@@ -523,13 +523,13 @@ ERepository::need_mirrors() const
     {
         bool found_one(false);
         tr1::shared_ptr<const FSEntrySequence> mirror_files(_imp->layout->mirror_files());
-        for (FSEntrySequence::Iterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
+        for (FSEntrySequence::ConstIterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
                 p != p_end ; ++p)
         {
             if (p->exists())
             {
                 LineConfigFile mirrors(*p, LineConfigFileOptions());
-                for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+                for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> ee;
                     WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(ee));
@@ -687,7 +687,7 @@ ERepository::info(bool verbose) const
 
     tr1::shared_ptr<RepositoryInfo> result(new RepositoryInfo);
 
-    for (RepositoryInfo::SectionIterator s(result_non_verbose->begin_sections()),
+    for (RepositoryInfo::SectionConstIterator s(result_non_verbose->begin_sections()),
             s_end(result_non_verbose->end_sections()) ; s != s_end ; ++s)
         result->add_section(*s);
 
@@ -765,18 +765,18 @@ ERepository::profile_variable(const std::string & s) const
     return _imp->profile_ptr->environment_variable(s);
 }
 
-ERepository::MirrorsIterator
+ERepository::MirrorsConstIterator
 ERepository::begin_mirrors(const std::string & s) const
 {
     need_mirrors();
-    return MirrorsIterator(_imp->mirrors.equal_range(s).first);
+    return MirrorsConstIterator(_imp->mirrors.equal_range(s).first);
 }
 
-ERepository::MirrorsIterator
+ERepository::MirrorsConstIterator
 ERepository::end_mirrors(const std::string & s) const
 {
     need_mirrors();
-    return MirrorsIterator(_imp->mirrors.equal_range(s).second);
+    return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 
 tr1::shared_ptr<const ERepository::VirtualsSequence>
@@ -789,7 +789,7 @@ ERepository::virtual_packages() const
 
     tr1::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
 
-    for (ERepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
+    for (ERepositoryProfile::VirtualsConstIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
         result->push_back(RepositoryVirtualsEntry::create()
                 .provided_by_spec(i->second)
@@ -806,7 +806,7 @@ ERepository::do_use_expand_flags() const
     std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(_imp->params.profile_eapi
                     )->supported->ebuild_options->use_expand_separator));
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
         std::list<std::string> values;
@@ -830,7 +830,7 @@ ERepository::do_use_expand_prefixes() const
     _imp->need_profiles();
 
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand()),
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
         std::string lower_i;
@@ -847,7 +847,7 @@ ERepository::do_use_expand_hidden_prefixes() const
     _imp->need_profiles();
 
     tr1::shared_ptr<UseFlagNameSet> result(new UseFlagNameSet);
-    for (ERepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
+    for (ERepositoryProfile::UseExpandConstIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
             i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
     {
         std::string lower_i;
@@ -876,33 +876,33 @@ ERepository::do_category_names_containing_package(const PackageNamePart & p) con
     return result ? result : Repository::do_category_names_containing_package(p);
 }
 
-ERepository::ProfilesIterator
+ERepository::ProfilesConstIterator
 ERepository::begin_profiles() const
 {
     _imp->need_profiles_desc();
-    return ProfilesIterator(_imp->profiles_desc.begin());
+    return ProfilesConstIterator(_imp->profiles_desc.begin());
 }
 
-ERepository::ProfilesIterator
+ERepository::ProfilesConstIterator
 ERepository::end_profiles() const
 {
     _imp->need_profiles_desc();
-    return ProfilesIterator(_imp->profiles_desc.end());
+    return ProfilesConstIterator(_imp->profiles_desc.end());
 }
 
-ERepository::ProfilesIterator
+ERepository::ProfilesConstIterator
 ERepository::find_profile(const FSEntry & location) const
 {
     _imp->need_profiles_desc();
     for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
             i_end(_imp->profiles_desc.end()) ; i != i_end ; ++i)
         if (i->path == location)
-            return ProfilesIterator(i);
-    return ProfilesIterator(_imp->profiles_desc.end());
+            return ProfilesConstIterator(i);
+    return ProfilesConstIterator(_imp->profiles_desc.end());
 }
 
 void
-ERepository::set_profile(const ProfilesIterator & iter)
+ERepository::set_profile(const ProfilesConstIterator & iter)
 {
     Context context("When setting profile by iterator:");
 
@@ -921,14 +921,14 @@ ERepository::set_profile_by_arch(const UseFlagName & arch)
 {
     Context context("When setting profile by arch '" + stringify(arch) + "':");
 
-    for (ProfilesIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
+    for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
         if (p->arch == stringify(arch) && p->status == "stable")
         {
             set_profile(p);
             return;
         }
 
-    for (ProfilesIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
+    for (ProfilesConstIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
         if (p->arch == stringify(arch))
         {
             set_profile(p);
@@ -949,7 +949,7 @@ ERepository::do_describe_use_flag(const UseFlagName & f,
         std::string expand_sep(stringify(erepository::EAPIData::get_instance()->eapi_from_string(
                         _imp->params.profile_eapi)->supported->ebuild_options->use_expand_separator));
         tr1::shared_ptr<const FSEntrySequence> use_desc_dirs(_imp->layout->use_desc_dirs());
-        for (FSEntrySequence::Iterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
+        for (FSEntrySequence::ConstIterator p(use_desc_dirs->begin()), p_end(use_desc_dirs->end()) ;
                 p != p_end ; ++p)
             _imp->use_desc.push_back(tr1::shared_ptr<UseDesc>(new UseDesc(*p, expand_sep)));
     }
@@ -1158,7 +1158,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
     tr1::shared_ptr<Map<FSEntry, std::string> > files = _imp->layout->manifest_files(qpn);
 
-    for (Map<FSEntry, std::string>::Iterator f(files->begin()) ;
+    for (Map<FSEntry, std::string>::ConstIterator f(files->begin()) ;
             f != files->end() ; ++f)
     {
         FSEntry file(f->first);
@@ -1190,7 +1190,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
     std::set<std::string> done_files;
 
-    for (PackageIDSequence::Iterator v(versions->begin()),
+    for (PackageIDSequence::ConstIterator v(versions->begin()),
             v_end(versions->end()) ;
             v != v_end ; ++v)
     {
@@ -1200,7 +1200,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         paludis::erepository::AAVisitor aa;
         id->src_uri_key()->value()->accept(aa);
 
-        for (paludis::erepository::AAVisitor::Iterator d(aa.begin()) ;
+        for (paludis::erepository::AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)
         {
             if (done_files.count(*d))

@@ -137,16 +137,16 @@ AmbiguousPackageNameError::~AmbiguousPackageNameError() throw ()
     delete _name_data;
 }
 
-AmbiguousPackageNameError::OptionsIterator
+AmbiguousPackageNameError::OptionsConstIterator
 AmbiguousPackageNameError::begin_options() const
 {
-    return OptionsIterator(_name_data->names.begin());
+    return OptionsConstIterator(_name_data->names.begin());
 }
 
-AmbiguousPackageNameError::OptionsIterator
+AmbiguousPackageNameError::OptionsConstIterator
 AmbiguousPackageNameError::end_options() const
 {
-    return OptionsIterator(_name_data->names.end());
+    return OptionsConstIterator(_name_data->names.end());
 }
 
 const std::string &
@@ -195,7 +195,7 @@ PackageDatabase::add_repository(int i, const tr1::shared_ptr<Repository> r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
-    for (IndirectIterator<RepositoryIterator> r_c(begin_repositories()), r_end(end_repositories()) ;
+    for (IndirectIterator<RepositoryConstIterator> r_c(begin_repositories()), r_end(end_repositories()) ;
             r_c != r_end ; ++r_c)
         if (r_c->name() == r->name())
             throw DuplicateRepositoryError(stringify(r->name()));
@@ -221,13 +221,13 @@ PackageDatabase::fetch_unique_qualified_package_name(
 
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
-    for (IndirectIterator<RepositoryIterator> r(begin_repositories()), r_end(end_repositories()) ;
+    for (IndirectIterator<RepositoryConstIterator> r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
         tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names_containing_package(p));
-        for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
             result->insert(*c + p);
     }
@@ -251,7 +251,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     if (! repos)
     {
         repos.reset(new RepositoryNameSequence);
-        for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+        for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
                 r != r_end ; ++r)
             repos->push_back((*r)->name());
     }
@@ -265,7 +265,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     if (! cats)
     {
         cats.reset(new CategoryNamePartSet);
-        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             tr1::shared_ptr<const CategoryNamePartSet> local_cats(fetch_repository(*r)->category_names());
@@ -282,9 +282,9 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     if (! pkgs)
     {
         pkgs.reset(new QualifiedPackageNameSet);
-        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
-            for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+            for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                     c != c_end ; ++c)
             {
                 tr1::shared_ptr<const QualifiedPackageNameSet> local_pkgs(fetch_repository(*r)->package_names(*c));
@@ -300,9 +300,9 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     tr1::shared_ptr<PackageIDSequence> ids(q.ids(*_imp->environment, repos, pkgs));
     if (! ids)
     {
-        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
-            for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> local_ids(fetch_repository(*r)->package_ids(*p));
@@ -365,7 +365,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                 {
                     std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > best;
                     PackageIDComparator c(this);
-                    for (PackageIDSequence::Iterator r(result->begin()), r_end(result->end()) ;
+                    for (PackageIDSequence::ConstIterator r(result->begin()), r_end(result->end()) ;
                             r != r_end ; ++r)
                     {
                         std::pair<std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::iterator, bool> p(
@@ -384,7 +384,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                 {
                     std::map<std::pair<QualifiedPackageName, SlotName>, tr1::shared_ptr<const PackageID> > best;
                     PackageIDComparator c(this);
-                    for (PackageIDSequence::Iterator r(result->begin()), r_end(result->end()) ;
+                    for (PackageIDSequence::ConstIterator r(result->begin()), r_end(result->end()) ;
                             r != r_end ; ++r)
                     {
                         std::pair<std::map<std::pair<QualifiedPackageName, SlotName>, tr1::shared_ptr<const PackageID> >::iterator, bool> p(
@@ -425,7 +425,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 tr1::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
-    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->name() == n)
             return *r;
@@ -436,7 +436,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
 tr1::shared_ptr<Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n)
 {
-    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->name() == n)
             return *r;
@@ -447,7 +447,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n)
 bool
 PackageDatabase::has_repository_named(const RepositoryName & n) const
 {
-    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->name() == n)
             return true;
@@ -458,7 +458,7 @@ PackageDatabase::has_repository_named(const RepositoryName & n) const
 RepositoryName
 PackageDatabase::favourite_repository() const
 {
-    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->can_be_favourite_repository())
             return (*r)->name();
@@ -472,7 +472,7 @@ PackageDatabase::more_important_than(const RepositoryName & lhs,
 {
     std::map<std::string, int> rank;
     int x(0);
-    for (PackageDatabase::RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+    for (PackageDatabase::RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         rank.insert(std::make_pair(stringify((*r)->name()), ++x));
 
@@ -487,15 +487,15 @@ PackageDatabase::more_important_than(const RepositoryName & lhs,
     return l->second > r->second;
 }
 
-PackageDatabase::RepositoryIterator
+PackageDatabase::RepositoryConstIterator
 PackageDatabase::begin_repositories() const
 {
-    return RepositoryIterator(_imp->repositories.begin());
+    return RepositoryConstIterator(_imp->repositories.begin());
 }
 
-PackageDatabase::RepositoryIterator
+PackageDatabase::RepositoryConstIterator
 PackageDatabase::end_repositories() const
 {
-    return RepositoryIterator(_imp->repositories.end());
+    return RepositoryConstIterator(_imp->repositories.end());
 }
 

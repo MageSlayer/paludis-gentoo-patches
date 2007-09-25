@@ -45,7 +45,7 @@ namespace test_cases
             URIMirrorsThenListedLabel label("mirrors-then-listed");
             label.accept(f);
 
-            SourceURIFinder::Iterator i(f.begin());
+            SourceURIFinder::ConstIterator i(f.begin());
 
             TEST_CHECK(i != f.end());
             TEST_CHECK_EQUAL(i->first, "http://example.com/path/input");
@@ -71,7 +71,7 @@ namespace test_cases
             URIMirrorsThenListedLabel label("mirrors-then-listed");
             label.accept(f);
 
-            SourceURIFinder::Iterator i(f.begin());
+            SourceURIFinder::ConstIterator i(f.begin());
 
             TEST_CHECK(i != f.end());
             TEST_CHECK_EQUAL(i->first, "http://fake-repo/fake-repo/output");

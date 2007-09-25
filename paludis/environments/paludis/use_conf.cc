@@ -88,7 +88,7 @@ UseConf::add(const FSEntry & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
+    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
     {
         std::vector<std::string> tokens;
@@ -202,7 +202,7 @@ UseConf::query(const UseFlagName & f, const PackageID & e) const
     if (e.repository()->use_interface)
     {
         tr1::shared_ptr<const UseFlagNameSet> prefixes(e.repository()->use_interface->use_expand_prefixes());
-        for (UseFlagNameSet::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
+        for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == p->data().compare(0, p->data().length(), stringify(f), 0, p->data().length()))
             {

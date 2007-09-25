@@ -225,7 +225,7 @@ CRANRepository::need_ids() const
                 Log::get_instance()->message(ll_warning, lc_context) << "Couldn't insert package '" << *id << "' due to name collision";
 
             if (id->contains_key())
-                for (PackageIDSequence::Iterator i(id->contains_key()->value()->begin()),
+                for (PackageIDSequence::ConstIterator i(id->contains_key()->value()->begin()),
                         i_end(id->contains_key()->value()->end()) ; i != i_end ; ++i)
                     if (! _imp->ids.insert(std::make_pair((*i)->name(),
                                     tr1::static_pointer_cast<const cranrepository::CRANPackageID>(*i))).second)

@@ -133,7 +133,7 @@ main(int argc, char *argv[])
                 results(tr1::cref(comparator));
             unsigned success(0), total(0);
 
-            for (PackageIDSequence::Iterator i(ids->begin()), i_end(ids->end()) ;
+            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
                 Context i_context("When fetching ID '" + stringify(**i) + "':");
@@ -157,7 +157,7 @@ main(int argc, char *argv[])
                 }
                 catch (const FetchActionError & e)
                 {
-                    for (Sequence<FetchActionFailure>::Iterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
+                    for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ; f != f_end ; ++f)
                     {
                         std::string r;
                         if (f->requires_manual_fetching)

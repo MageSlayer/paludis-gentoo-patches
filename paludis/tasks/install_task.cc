@@ -448,7 +448,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
     // manually invalidate any installed repos, they're probably
     // wrong now
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
         if ((*r)->installed_interface)
             ((*r).get())->invalidate();
@@ -472,7 +472,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     // don't clean the thing we just installed
     PackageIDSequence clean_list;
     if (collision_list)
-        for (PackageIDSequence::Iterator c(collision_list->begin()),
+        for (PackageIDSequence::ConstIterator c(collision_list->begin()),
                 c_end(collision_list->end()) ; c != c_end ; ++c)
             if (dep->package_id->version() != (*c)->version())
                 clean_list.push_back(*c);
@@ -491,7 +491,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             throw InstallActionError("Clean aborted by hook");
         on_clean_all_pre(*dep, clean_list);
 
-        for (PackageIDSequence::Iterator c(clean_list.begin()),
+        for (PackageIDSequence::ConstIterator c(clean_list.begin()),
                 c_end(clean_list.end()) ; c != c_end ; ++c)
         {
             /* clean one item */
@@ -823,16 +823,16 @@ InstallTask::set_add_to_world_spec(const std::string & value)
     _imp->add_to_world_spec.reset(new std::string(value));
 }
 
-InstallTask::TargetsIterator
+InstallTask::TargetsConstIterator
 InstallTask::begin_targets() const
 {
-    return TargetsIterator(_imp->raw_targets.begin());
+    return TargetsConstIterator(_imp->raw_targets.begin());
 }
 
-InstallTask::TargetsIterator
+InstallTask::TargetsConstIterator
 InstallTask::end_targets() const
 {
-    return TargetsIterator(_imp->raw_targets.end());
+    return TargetsConstIterator(_imp->raw_targets.end());
 }
 
 Environment *
@@ -893,7 +893,7 @@ InstallTask::world_update_set(const SetName & s)
         return;
     }
 
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->world_interface)
@@ -949,7 +949,7 @@ InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem>
     for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
-        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
             if ((*r)->world_interface && (*i)->package_ptr())

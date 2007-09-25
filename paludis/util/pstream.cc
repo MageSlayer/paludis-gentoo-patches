@@ -77,7 +77,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
     if (! cmd.chdir().empty())
         extras.append(" [chdir " + cmd.chdir() + "]");
 
-    for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+    for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
         extras.append(" [setenv " + s->first + "=" + s->second + "]");
 
     if (cmd.gid() && *cmd.gid() != getgid())
@@ -110,7 +110,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
                 if (-1 == chdir(cmd.chdir().c_str()))
                     throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
 
-            for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
                 setenv(s->first.c_str(), s->second.c_str(), 1);
 
             if (-1 == dup2(stdout_pipe.write_fd(), 1))

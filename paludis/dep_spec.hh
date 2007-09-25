@@ -221,15 +221,15 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<UseRequirements,
-                    const std::pair<const UseFlagName, UseFlagState> > Iterator;
+                    const std::pair<const UseFlagName, UseFlagState> > ConstIterator;
 
-            Iterator begin() const;
-            Iterator end() const;
+            ConstIterator begin() const;
+            ConstIterator end() const;
 
             ///\}
 
             /// Find the requirement for a particular USE flag.
-            Iterator find(const UseFlagName & u) const
+            ConstIterator find(const UseFlagName & u) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Insert a new requirement.
@@ -487,9 +487,9 @@ namespace paludis
             ///\{
 
             void add_label(const tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
-            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>, const typename SpecTree_::BasicNode> Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>, const typename SpecTree_::BasicNode> ConstIterator;
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

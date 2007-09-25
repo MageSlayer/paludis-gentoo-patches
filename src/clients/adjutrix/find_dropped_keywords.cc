@@ -120,7 +120,7 @@ namespace
         VersionsInSlots versions_in_slots;
 
         tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
-        for (PackageIDSequence::Iterator v(versions->begin()), v_end(versions->end()) ;
+        for (PackageIDSequence::ConstIterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
             if (! (*v)->keywords_key())
@@ -171,7 +171,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
 
     KeywordName keyword(*CommandLine::get_instance()->begin_parameters());
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -183,7 +183,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
         write_repository_header(keyword, r->name());
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -194,7 +194,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
                     continue;
 
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())

@@ -233,7 +233,7 @@ PackagesListModel::populate_in_paludis_thread()
 
         QualifiedPackageName old_qpn("OLD/OLD");
 
-        for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+        for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
                 p != p_end ; ++p)
         {
             if (old_qpn != (*p)->name())
@@ -273,7 +273,7 @@ PackagesListModel::populate_in_paludis_thread()
                             query::Matches(ds),
                             qo_best_version_in_slot_only));
 
-                for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
                         p != p_end ; ++p)
                 {
                     atom_iter->children.push_back(make_item(ds,
@@ -292,7 +292,7 @@ PackagesListModel::populate_in_paludis_thread()
                 QualifiedPackageName old_qpn("OLD/OLD");
                 std::list<PopulateItem>::iterator pkg_iter;
 
-                for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+                for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
                         p != p_end ; ++p)
                 {
                     if (old_qpn != (*p)->name())

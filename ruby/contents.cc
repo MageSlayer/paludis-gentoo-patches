@@ -171,7 +171,7 @@ namespace
         tr1::shared_ptr<Contents> * ptr;
         Data_Get_Struct(self, tr1::shared_ptr<Contents>, ptr);
 
-        for (Contents::Iterator i ((*ptr)->begin()), i_end((*ptr)->end()) ; i != i_end; ++i)
+        for (Contents::ConstIterator i ((*ptr)->begin()), i_end((*ptr)->end()) ; i != i_end; ++i)
             rb_yield(contents_entry_to_value(*i));
         return self;
     }

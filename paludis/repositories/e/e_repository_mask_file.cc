@@ -52,7 +52,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
     LineConfigFile file(f, myopts);
     tr1::shared_ptr<Sequence<std::string> > comment(new Sequence<std::string>);
     bool comment_used(false);
-    for (LineConfigFile::Iterator it(file.begin()), it_end(file.end()); it_end != it; ++it)
+    for (LineConfigFile::ConstIterator it(file.begin()), it_end(file.end()); it_end != it; ++it)
     {
         if (it->empty())
         {
@@ -79,16 +79,16 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
     }
 }
 
-MaskFile::Iterator
+MaskFile::ConstIterator
 MaskFile::begin() const
 {
-    return Iterator(_imp->lines.begin());
+    return ConstIterator(_imp->lines.begin());
 }
 
-MaskFile::Iterator
+MaskFile::ConstIterator
 MaskFile::end() const
 {
-    return Iterator(_imp->lines.end());
+    return ConstIterator(_imp->lines.end());
 }
 
 MaskFile::~MaskFile()

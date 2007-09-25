@@ -136,39 +136,39 @@ namespace paludis
          * \nosubgrouping
          */
         template <typename H_>
-        class PALUDIS_VISIBLE MutableAcceptInterface :
+        class PALUDIS_VISIBLE AcceptInterface :
             public ConstAcceptInterface<H_>
         {
             private:
                 template <bool b_, typename T_>
-                struct PALUDIS_VISIBLE Accept
+                struct PALUDIS_VISIBLE ConstAccept
                 {
-                    static void forward(MutableAcceptInterface * const h, T_ & t);
+                    static void forward(AcceptInterface * const h, T_ & t);
                 };
 
                 template <typename T_>
-                struct PALUDIS_VISIBLE Accept<true, T_>
+                struct PALUDIS_VISIBLE ConstAccept<true, T_>
                 {
-                    static void forward(MutableAcceptInterface * const h, T_ & t);
+                    static void forward(AcceptInterface * const h, T_ & t);
                 };
 
                 template <bool b_, typename T_>
-                struct PALUDIS_VISIBLE MutableAccept
+                struct PALUDIS_VISIBLE Accept
                 {
-                    static void forward(MutableAcceptInterface * const h, T_ & t);
+                    static void forward(AcceptInterface * const h, T_ & t);
                 };
 
                 template <typename T_>
-                struct PALUDIS_VISIBLE MutableAccept<false, T_>
+                struct PALUDIS_VISIBLE Accept<false, T_>
                 {
-                    static void forward(MutableAcceptInterface * const h, T_ & t);
+                    static void forward(AcceptInterface * const h, T_ & t);
                 };
 
             protected:
                 ///\name Visitor operations
                 ///\{
 
-                virtual void real_mutable_accept(MutableVisitor<H_> &) = 0;
+                virtual void real_mutable_accept(Visitor<H_> &) = 0;
 
                 ///\}
 
@@ -176,7 +176,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                virtual ~MutableAcceptInterface();
+                virtual ~AcceptInterface();
 
                 ///\}
 
@@ -186,7 +186,7 @@ namespace paludis
                 template <typename V_>
                 void mutable_accept(V_ & v)
                 {
-                    MutableAccept<tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
+                    Accept<tr1::is_same<typename H_::Heirarchy, typename V_::Heirarchy>::value, V_>::forward(this, v);
                 }
 
                 template <typename V_>
@@ -198,7 +198,7 @@ namespace paludis
                 template <typename V_>
                 void accept(V_ & v)
                 {
-                    Accept<V_::visitor_is_const, V_>::forward(this, v);
+                    ConstAccept<V_::visitor_is_const, V_>::forward(this, v);
                 }
 
                 ///\}
@@ -211,8 +211,8 @@ namespace paludis
          * \nosubgrouping
          */
         template <typename H_, typename T_>
-        class PALUDIS_VISIBLE MutableAcceptInterfaceVisitsThis :
-            public virtual MutableAcceptInterface<H_>
+        class PALUDIS_VISIBLE AcceptInterfaceVisitsThis :
+            public virtual AcceptInterface<H_>
         {
             protected:
                 ///\name Visitor operations
@@ -220,7 +220,7 @@ namespace paludis
 
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
-                virtual void real_mutable_accept(MutableVisitor<H_> & v);
+                virtual void real_mutable_accept(Visitor<H_> & v);
 
                 ///\}
         };
@@ -233,7 +233,7 @@ namespace paludis
          */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeLeaf :
-            public MutableAcceptInterface<H_>
+            public AcceptInterface<H_>
         {
             private:
                 TreeLeaf(const TreeLeaf &);
@@ -245,7 +245,7 @@ namespace paludis
                 ///\name Visitor operations
                 ///\{
 
-                virtual void real_mutable_accept(MutableVisitor<H_> & v);
+                virtual void real_mutable_accept(Visitor<H_> & v);
 
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
@@ -279,20 +279,20 @@ namespace paludis
          */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeSequence :
-            public MutableAcceptInterface<H_>
+            public AcceptInterface<H_>
         {
             private:
                 TreeSequence(const TreeSequence &);
                 const TreeSequence & operator= (const TreeSequence &);
 
                 const tr1::shared_ptr<T_> _item;
-                const tr1::shared_ptr<Sequence<tr1::shared_ptr<MutableAcceptInterface<H_> > > > _items;
+                const tr1::shared_ptr<Sequence<tr1::shared_ptr<AcceptInterface<H_> > > > _items;
 
             protected:
                 ///\name Visitor operations
                 ///\{
 
-                virtual void real_mutable_accept(MutableVisitor<H_> & v);
+                virtual void real_mutable_accept(Visitor<H_> & v);
 
                 virtual void real_const_accept(ConstVisitor<H_> & v) const;
 
@@ -320,7 +320,7 @@ namespace paludis
                 ///\name Work on our children
                 ///\{
 
-                void add(tr1::shared_ptr<MutableAcceptInterface<H_> > i);
+                void add(tr1::shared_ptr<AcceptInterface<H_> > i);
 
                 typename H_::ConstSequenceIterator
                 const_begin() const;
@@ -328,10 +328,10 @@ namespace paludis
                 typename H_::ConstSequenceIterator
                 const_end() const;
 
-                typename H_::MutableSequenceIterator
+                typename H_::SequenceIterator
                 mutable_begin();
 
-                typename H_::MutableSequenceIterator
+                typename H_::SequenceIterator
                 mutable_end();
 
                 ///\}
@@ -522,8 +522,8 @@ namespace paludis
                 ///\{
 
                 virtual void visit_sequence(T_ &,
-                        typename TreeSequenceIteratorTypes<H_>::MutableIterator,
-                        typename TreeSequenceIteratorTypes<H_>::MutableIterator) = 0;
+                        typename TreeSequenceIteratorTypes<H_>::Iterator,
+                        typename TreeSequenceIteratorTypes<H_>::Iterator) = 0;
 
                 void visit(TreeSequence<H_, T_> & s);
 
@@ -634,7 +634,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, const ConstAcceptInterface<H_> > ConstIterator;
-            typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, MutableAcceptInterface<H_> > MutableIterator;
+            typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, AcceptInterface<H_> > Iterator;
 
             ///\}
         };
@@ -803,8 +803,8 @@ namespace paludis
                 ///\{
 
                 virtual void visit_sequence(T_ & t,
-                        typename TreeSequenceIteratorTypes<H_>::MutableIterator c,
-                        typename TreeSequenceIteratorTypes<H_>::MutableIterator e);
+                        typename TreeSequenceIteratorTypes<H_>::Iterator c,
+                        typename TreeSequenceIteratorTypes<H_>::Iterator e);
 
                 ///\}
         };
@@ -865,8 +865,8 @@ namespace paludis
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
-        class PALUDIS_VISIBLE MutableProxyVisitor :
-            public MutableVisitor<H_>,
+        class PALUDIS_VISIBLE ProxyVisitor :
+            public Visitor<H_>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem1>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem2>,
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem3>,
@@ -889,20 +889,20 @@ namespace paludis
             public ProxyVisits<H_, LargerH_, typename H_::ContainedItem20>
         {
             private:
-                MutableVisitor<LargerH_> * const _larger_h;
+                Visitor<LargerH_> * const _larger_h;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                MutableProxyVisitor(MutableVisitor<LargerH_> * const l);
+                ProxyVisitor(Visitor<LargerH_> * const l);
 
                 ///\}
 
                 ///\name Visitor operations
                 ///\{
 
-                MutableVisitor<LargerH_> * larger_visitor() const;
+                Visitor<LargerH_> * larger_visitor() const;
 
                 ///\}
         };
@@ -955,38 +955,38 @@ namespace paludis
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
-        class PALUDIS_VISIBLE MutableProxyIterator :
+        class PALUDIS_VISIBLE ProxyIterator :
             public paludis::equality_operators::HasEqualityOperators
         {
             private:
                 struct PALUDIS_VISIBLE Adapter :
-                    MutableAcceptInterface<LargerH_>
+                    AcceptInterface<LargerH_>
                 {
-                    MutableAcceptInterface<H_> & _i;
+                    AcceptInterface<H_> & _i;
 
-                    Adapter(MutableAcceptInterface<H_> & i);
+                    Adapter(AcceptInterface<H_> & i);
 
                     void real_const_accept(ConstVisitor<LargerH_> & v) const;
 
-                    void real_mutable_accept(MutableVisitor<LargerH_> & v);
+                    void real_mutable_accept(Visitor<LargerH_> & v);
                 };
 
-                typename TreeSequenceIteratorTypes<H_>::MutableIterator _i;
+                typename TreeSequenceIteratorTypes<H_>::Iterator _i;
                 mutable tr1::shared_ptr<Adapter> _c;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                MutableProxyIterator(typename TreeSequenceIteratorTypes<H_>::MutableIterator i);
+                ProxyIterator(typename TreeSequenceIteratorTypes<H_>::Iterator i);
 
-                bool operator== (const MutableProxyIterator & other) const;
+                bool operator== (const ProxyIterator & other) const;
 
-                MutableAcceptInterface<LargerH_> * operator-> () const;
+                AcceptInterface<LargerH_> * operator-> () const;
 
-                MutableAcceptInterface<LargerH_> & operator* () const;
+                AcceptInterface<LargerH_> & operator* () const;
 
-                MutableProxyIterator & operator++ ();
+                ProxyIterator & operator++ ();
 
                 ///\}
         };
@@ -1050,10 +1050,10 @@ namespace paludis
                 typedef ContainedItem19_ ContainedItem19;
                 typedef ContainedItem20_ ContainedItem20;
 
-                typedef MutableAcceptInterface<Heirarchy_> Item;
+                typedef AcceptInterface<Heirarchy_> Item;
                 typedef const ConstAcceptInterface<Heirarchy_> ConstItem;
 
-                typedef typename TreeSequenceIteratorTypes<Heirarchy_>::MutableIterator MutableSequenceIterator;
+                typedef typename TreeSequenceIteratorTypes<Heirarchy_>::Iterator SequenceIterator;
                 typedef typename TreeSequenceIteratorTypes<Heirarchy_>::ConstIterator ConstSequenceIterator;
 
                 ///\}
@@ -1148,7 +1148,7 @@ namespace paludis
          * \ingroup grpvisitor
          */
         template <typename H_>
-        class MutableVisitor :
+        class Visitor :
             public virtual Visits<typename H_::ContainedItem1>,
             public virtual Visits<typename H_::ContainedItem2>,
             public virtual Visits<typename H_::ContainedItem3>,
@@ -1193,8 +1193,8 @@ namespace paludis
                     ///\{
 
                     virtual void visit_sequence(B_ &,
-                            typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator c,
-                            typename TreeSequenceIteratorTypes<Heirarchy>::MutableIterator e);
+                            typename TreeSequenceIteratorTypes<Heirarchy>::Iterator c,
+                            typename TreeSequenceIteratorTypes<Heirarchy>::Iterator e);
 
                     ///\}
                 };

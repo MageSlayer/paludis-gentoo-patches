@@ -101,7 +101,7 @@ namespace
         cout << endl << "    Masked by: ";
 
         bool comma(false);
-        for (PackageID::MasksIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
+        for (PackageID::MasksConstIterator m(origin->begin_masks()), m_end(origin->end_masks()) ;
                 m != m_end ; ++m)
         {
             if (comma)

@@ -155,7 +155,7 @@ VirtualsRepository::need_names() const
     Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_names");
 
     /* Determine our virtual name -> package mappings. */
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->provides_interface)
@@ -163,7 +163,7 @@ VirtualsRepository::need_names() const
 
         tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> provides(
                 (*r)->provides_interface->provided_packages());
-        for (RepositoryProvidesInterface::ProvidesSequence::Iterator p(provides->begin()),
+        for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
             _imp->names.push_back(std::make_pair(p->virtual_name, tr1::shared_ptr<const PackageDepSpec>(
                             new PackageDepSpec(
@@ -175,7 +175,7 @@ VirtualsRepository::need_names() const
 
     std::vector<std::pair<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > new_names;
 
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->virtuals_interface)
@@ -183,7 +183,7 @@ VirtualsRepository::need_names() const
 
         tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> virtuals(
                 (*r)->virtuals_interface->virtual_packages());
-        for (RepositoryVirtualsInterface::VirtualsSequence::Iterator v(virtuals->begin()),
+        for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator v(virtuals->begin()),
                 v_end(virtuals->end()) ; v != v_end ; ++v)
         {
             std::pair<
@@ -232,7 +232,7 @@ VirtualsRepository::need_ids() const
                     + stringify(*v->second) + "' for virtual '"
                     + stringify(v->first) + "'");
 
-        for (PackageIDSequence::Iterator m(matches->begin()), m_end(matches->end()) ;
+        for (PackageIDSequence::ConstIterator m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
             IDMap::iterator i(_imp->ids.find(v->first));
@@ -333,7 +333,7 @@ VirtualsRepository::invalidate_masks()
     Lock l(*_imp->big_nasty_mutex);
 
     for (IDMap::iterator it(_imp->ids.begin()), it_end(_imp->ids.end()); it_end != it; ++it)
-        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+        for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }

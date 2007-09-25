@@ -46,10 +46,10 @@ namespace paludis
             Set();
             ~Set();
 
-            typedef libwrapiter::ForwardIterator<Set<T_, C_>, const T_> Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator find(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<Set<T_, C_>, const T_> ConstIterator;
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator find(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
             unsigned size() const PALUDIS_ATTRIBUTE((warn_unused_result));

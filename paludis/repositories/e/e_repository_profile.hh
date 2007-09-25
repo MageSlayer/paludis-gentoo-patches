@@ -84,12 +84,12 @@ namespace paludis
             ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
             ///\{
 
-            typedef libwrapiter::ForwardIterator<ERepositoryProfile, const UseFlagName> UseExpandIterator;
+            typedef libwrapiter::ForwardIterator<ERepositoryProfile, const UseFlagName> UseExpandConstIterator;
 
-            UseExpandIterator begin_use_expand() const;
-            UseExpandIterator end_use_expand() const;
-            UseExpandIterator begin_use_expand_hidden() const;
-            UseExpandIterator end_use_expand_hidden() const;
+            UseExpandConstIterator begin_use_expand() const;
+            UseExpandConstIterator end_use_expand() const;
+            UseExpandConstIterator begin_use_expand_hidden() const;
+            UseExpandConstIterator end_use_expand_hidden() const;
 
             ///\}
 
@@ -119,11 +119,11 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<ERepositoryProfile,
-                const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsIterator;
+                const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsConstIterator;
 
-            VirtualsIterator begin_virtuals() const;
-            VirtualsIterator end_virtuals() const;
-            VirtualsIterator find_virtual(const QualifiedPackageName &) const;
+            VirtualsConstIterator begin_virtuals() const;
+            VirtualsConstIterator end_virtuals() const;
+            VirtualsConstIterator find_virtual(const QualifiedPackageName &) const;
 
             ///\}
     };

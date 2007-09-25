@@ -73,15 +73,15 @@ FakeInstalledRepository::provided_packages() const
     tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
     tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
-    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
         tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
-        for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
             tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
-            for (PackageIDSequence::Iterator v(vers->begin()), v_end(vers->end()) ;
+            for (PackageIDSequence::ConstIterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
                 if (! (*v)->provide_key())
@@ -90,7 +90,7 @@ FakeInstalledRepository::provided_packages() const
                 DepSpecFlattener f(environment(), *v);
                 (*v)->provide_key()->value()->accept(f);
 
-                for (DepSpecFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
+                for (DepSpecFlattener::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(RepositoryProvidesEntry::create()
                             .virtual_name(QualifiedPackageName((*q)->text()))
                             .provided_by(*v));

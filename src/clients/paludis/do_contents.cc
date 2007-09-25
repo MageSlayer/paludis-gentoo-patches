@@ -107,7 +107,7 @@ do_one_contents(
     if (entries->empty())
         throw NoSuchPackageError(q);
 
-    for (PackageIDSequence::Iterator i(entries->begin()),
+    for (PackageIDSequence::ConstIterator i(entries->begin()),
             i_end(entries->end()) ; i != i_end ; ++i)
         do_one_contents_entry(env, **i);
 }
@@ -119,7 +119,7 @@ do_contents(tr1::shared_ptr<Environment> env)
 
     Context context("When performing contents action from command line:");
 
-    CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
     {
@@ -133,7 +133,7 @@ do_contents(tr1::shared_ptr<Environment> env)
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-            for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
             cerr << endl;

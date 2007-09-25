@@ -116,7 +116,7 @@ int do_sync(tr1::shared_ptr<Environment> env)
 
     OurSyncTask task(env);
 
-    for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
         task.add_target(*q);
 

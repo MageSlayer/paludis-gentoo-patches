@@ -60,9 +60,9 @@ namespace paludis
 
                 typedef libwrapiter::ForwardIterator<GemSpecifications,
                         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >
-                            Iterator;
-                Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                            ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///\}
         };

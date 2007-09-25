@@ -546,7 +546,7 @@ EIUseKey::value() const
             t != t_end ; ++t)
     {
         IUseFlag f(*t, _imp->id->eapi()->supported->iuse_flag_parse_mode, std::string::npos);
-        for (UseFlagNameSet::Iterator p(prefixes->begin()), p_end(prefixes->end()) ;
+        for (UseFlagNameSet::ConstIterator p(prefixes->begin()), p_end(prefixes->end()) ;
                 p != p_end ; ++p)
             if (0 == stringify(f.flag).compare(0, stringify(*p).length(), stringify(*p), 0, stringify(*p).length()))
                 f.prefix_delim_pos = stringify(*p).length();
@@ -584,7 +584,7 @@ EIUseKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
 {
     std::string result;
     std::multimap<std::string, IUseFlag> prefixes;
-    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (std::string::npos != i->prefix_delim_pos)
@@ -633,7 +633,7 @@ EIUseKey::pretty_print_flat_with_comparison(
 {
     std::string result;
     std::multimap<std::string, IUseFlag> prefixes;
-    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (std::string::npos != i->prefix_delim_pos)
@@ -674,7 +674,7 @@ EIUseKey::pretty_print_flat_with_comparison(
         else
         {
             using namespace tr1::placeholders;
-            IUseFlagSet::Iterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
+            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
                         tr1::bind(std::equal_to<UseFlagName>(), i->flag, tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
 
             if (p == id->iuse_key()->value()->end())
@@ -721,7 +721,7 @@ EIUseKey::pretty_print_flat_with_comparison(
         else
         {
             using namespace tr1::placeholders;
-            IUseFlagSet::Iterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
+            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
                         tr1::bind(std::equal_to<UseFlagName>(), j->second.flag, tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
 
             if (p == id->iuse_key()->value()->end())
@@ -820,7 +820,7 @@ std::string
 EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
 {
     std::string result;
-    for (KeywordNameSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (KeywordNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (! result.empty())
@@ -892,7 +892,7 @@ std::string
 EUseKey::pretty_print_flat(const Formatter<UseFlagName> & f) const
 {
     std::string result;
-    for (UseFlagNameSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (UseFlagNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (! result.empty())

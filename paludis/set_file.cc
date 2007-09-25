@@ -248,7 +248,7 @@ SimpleHandler::SimpleHandler(const SetFileParams & p) :
 
     LineConfigFile ff(_p.file_name, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments
             + lcfo_no_skip_blank_lines);
-    for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
             line != line_end ; ++line)
         _lines.push_back(*line);
 }
@@ -354,7 +354,7 @@ PaludisConfHandler::PaludisConfHandler(const SetFileParams & p) :
 
     LineConfigFile ff(_p.file_name, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments
             + lcfo_no_skip_blank_lines);
-    for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
             line != line_end ; ++line)
         _lines.push_back(*line);
 }
@@ -436,7 +436,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
 
     LineConfigFile ff(s, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments
             + lcfo_no_skip_blank_lines);
-    for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
             line != line_end ; ++line)
         do_one_conf_line(*line, _contents, _p);
 

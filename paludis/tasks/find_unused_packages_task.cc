@@ -56,7 +56,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 
     SlotName old_slot("I_am_a_slot");
     std::set<KeywordName> keywords;
-    for (PackageIDSequence::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
+    for (PackageIDSequence::ReverseConstIterator p(packages->rbegin()), p_end(packages->rend()) ;
             p != p_end ; ++p)
     {
         if (! (*p)->keywords_key())
@@ -70,7 +70,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 
         tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
         bool used(false);
-        for (KeywordNameSet::Iterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
+        for (KeywordNameSet::ConstIterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)
         {
             std::string stable_keyword(stringify(*k));

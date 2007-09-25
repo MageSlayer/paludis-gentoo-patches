@@ -180,16 +180,16 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
     }
 }
 
-ArgsHandler::ParametersIterator
+ArgsHandler::ParametersConstIterator
 ArgsHandler::begin_parameters() const
 {
-    return ParametersIterator(_imp->parameters.begin());
+    return ParametersConstIterator(_imp->parameters.begin());
 }
 
-ArgsHandler::ParametersIterator
+ArgsHandler::ParametersConstIterator
 ArgsHandler::end_parameters() const
 {
-    return ParametersIterator(_imp->parameters.end());
+    return ParametersConstIterator(_imp->parameters.end());
 }
 
 bool
@@ -214,39 +214,39 @@ ArgsHandler::add_option(ArgsOption * const opt, const std::string & long_name,
         _imp->shortopts[short_name] = opt;
 }
 
-ArgsHandler::UsageLineIterator
+ArgsHandler::UsageLineConstIterator
 ArgsHandler::begin_usage_lines() const
 {
-    return UsageLineIterator(_imp->usage_lines.begin());
+    return UsageLineConstIterator(_imp->usage_lines.begin());
 }
 
-ArgsHandler::UsageLineIterator
+ArgsHandler::UsageLineConstIterator
 ArgsHandler::end_usage_lines() const
 {
-    return UsageLineIterator(_imp->usage_lines.end());
+    return UsageLineConstIterator(_imp->usage_lines.end());
 }
 
-ArgsHandler::EnvironmentLineIterator
+ArgsHandler::EnvironmentLineConstIterator
 ArgsHandler::begin_environment_lines() const
 {
-    return EnvironmentLineIterator(_imp->environment_lines.begin());
+    return EnvironmentLineConstIterator(_imp->environment_lines.begin());
 }
 
-ArgsHandler::EnvironmentLineIterator
+ArgsHandler::EnvironmentLineConstIterator
 ArgsHandler::end_environment_lines() const
 {
-    return EnvironmentLineIterator(_imp->environment_lines.end());
+    return EnvironmentLineConstIterator(_imp->environment_lines.end());
 }
 
-ArgsHandler::ArgsGroupsIterator
+ArgsHandler::ArgsGroupsConstIterator
 ArgsHandler::begin_args_groups() const
 {
-    return ArgsGroupsIterator(_imp->groups.begin());
+    return ArgsGroupsConstIterator(_imp->groups.begin());
 }
 
-ArgsHandler::ArgsGroupsIterator
+ArgsHandler::ArgsGroupsConstIterator
 ArgsHandler::end_args_groups() const
 {
-    return ArgsGroupsIterator(_imp->groups.end());
+    return ArgsGroupsConstIterator(_imp->groups.end());
 }
 

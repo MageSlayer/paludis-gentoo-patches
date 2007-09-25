@@ -51,9 +51,9 @@ namespace paludis
 
                 ~SourceURIFinder();
 
-                typedef libwrapiter::ForwardIterator<SourceURIFinder, const std::pair<std::string, std::string> > Iterator;
-                Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                typedef libwrapiter::ForwardIterator<SourceURIFinder, const std::pair<std::string, std::string> > ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void visit(const URIMirrorsOnlyLabel &);
                 void visit(const URIMirrorsThenListedLabel &);

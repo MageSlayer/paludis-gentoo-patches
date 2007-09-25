@@ -55,16 +55,16 @@ AmbiguousUnmergeTargetError::~AmbiguousUnmergeTargetError() throw ()
 {
 }
 
-AmbiguousUnmergeTargetError::Iterator
+AmbiguousUnmergeTargetError::ConstIterator
 AmbiguousUnmergeTargetError::begin() const
 {
-    return Iterator(_p->begin());
+    return ConstIterator(_p->begin());
 }
 
-AmbiguousUnmergeTargetError::Iterator
+AmbiguousUnmergeTargetError::ConstIterator
 AmbiguousUnmergeTargetError::end() const
 {
-    return Iterator(_p->end());
+    return ConstIterator(_p->end());
 }
 
 std::string
@@ -177,7 +177,7 @@ UninstallTask::add_target(const std::string & target)
                 _imp->had_set_targets = true;
                 DepSpecFlattener f(_imp->env, tr1::shared_ptr<const PackageID>());
                 spec->accept(f);
-                for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+                for (DepSpecFlattener::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
                     _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     stringify((*i)->text()), pds_pm_permissive)));
             }
@@ -261,12 +261,12 @@ UninstallTask::execute()
                 if (_imp->all_versions)
                 {
                     /* all_versions, not all_packages. */
-                    for (PackageIDSequence::Iterator i_start(r->begin()), i(r->begin()),
+                    for (PackageIDSequence::ConstIterator i_start(r->begin()), i(r->begin()),
                             i_end(r->end()) ; i != i_end ; ++i)
                         if ((*i)->name() != (*i_start)->name())
                             throw AmbiguousUnmergeTargetError(stringify(**t), r);
 
-                    for (PackageIDSequence::Iterator i(r->begin()), i_end(r->end()) ;
+                    for (PackageIDSequence::ConstIterator i(r->begin()), i_end(r->end()) ;
                             i != i_end ; ++i)
                         list.add(*i);
                 }
@@ -281,7 +281,7 @@ UninstallTask::execute()
 
     on_display_unmerge_list_pre();
 
-    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+    for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
         on_display_unmerge_list_entry(*i);
 
     on_display_unmerge_list_post();
@@ -305,7 +305,7 @@ UninstallTask::execute()
                     tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
-        for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+        for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
             if (i->kind != ulk_virtual)
                 being_removed[i->package_id->name()].insert(i->package_id->version());
 
@@ -318,7 +318,7 @@ UninstallTask::execute()
                                 tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))) &
                         query::SupportsAction<InstalledAction>(),
                         qo_whatever));
-            for (PackageIDSequence::Iterator r(installed->begin()), r_end(installed->end()) ;
+            for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
                 if (i->second.end() == i->second.find((*r)->version()))
                     remove = false;
@@ -346,11 +346,11 @@ UninstallTask::execute()
     on_uninstall_all_pre();
 
     int x(0), y(0);
-    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+    for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
         if (i->kind != ulk_virtual)
             ++y;
 
-    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+    for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
         if (i->kind == ulk_virtual)
             continue;
@@ -410,7 +410,7 @@ UninstallTask::set_all_versions(const bool value)
 void
 UninstallTask::world_remove_set(const SetName & s)
 {
-    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->world_interface)
@@ -459,7 +459,7 @@ UninstallTask::world_remove_packages(tr1::shared_ptr<const SetSpecTree::ConstIte
     for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
-        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
             if ((*r)->world_interface && (*i)->package_ptr())

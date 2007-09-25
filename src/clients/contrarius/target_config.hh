@@ -46,7 +46,7 @@ class TargetConfig :
     private:
         typedef std::list<std::pair<std::string, std::string> > SpecEntryList;
 
-        typedef libwrapiter::ForwardIterator<TargetConfig, const std::string> Iterator;
+        typedef libwrapiter::ForwardIterator<TargetConfig, const std::string> ConstIterator;
 
         SpecEntryList _binutils_list;
 

@@ -69,7 +69,7 @@ namespace paludis
          * \ingroup grplibpaludisargs
          */
         class PALUDIS_VISIBLE ArgsVisitor :
-            public MutableVisitor<ArgsVisitorTypes>
+            public Visitor<ArgsVisitorTypes>
         {
             private:
                 libwrapiter::ForwardIterator<ArgsVisitor, std::string> * _args_index, _args_end;

@@ -145,7 +145,7 @@ namespace
 
         void visit(const yaml::MapNode & n)
         {
-            yaml::MapNode::Iterator i(n.find("version"));
+            yaml::MapNode::ConstIterator i(n.find("version"));
             if (i == n.end())
                 throw BadSpecificationError("Version has no version: key");
             text = extract_text_only(*i->second, "for Version version: key");
@@ -186,7 +186,7 @@ namespace
                 throw BadSpecificationError("Found sequence rather than text " + extra);
 
             bool w(false);
-            for (yaml::SequenceNode::Iterator i(s.begin()), i_end(s.end()) ; i != i_end ; ++i)
+            for (yaml::SequenceNode::ConstIterator i(s.begin()), i_end(s.end()) ; i != i_end ; ++i)
             {
                 if (w)
                     result.append(", ");
@@ -219,7 +219,7 @@ namespace
 
     std::string required_text_only_key(const yaml::MapNode & n, const std::string & k)
     {
-        yaml::MapNode::Iterator i(n.find(k));
+        yaml::MapNode::ConstIterator i(n.find(k));
         if (i == n.end())
             throw BadSpecificationError("Key '" + k + "' not defined");
         return extract_text_only(*i->second, "for key '" + k + "'");
@@ -227,7 +227,7 @@ namespace
 
     std::string optional_text_sequence_key(const yaml::MapNode & n, const std::string & k)
     {
-        yaml::MapNode::Iterator i(n.find(k));
+        yaml::MapNode::ConstIterator i(n.find(k));
         if (i == n.end())
             return "";
         return extract_text_sequence(*i->second, "for key '" + k + "'");
@@ -235,7 +235,7 @@ namespace
 
     std::string optional_text_only_key(const yaml::MapNode & n, const std::string & k)
     {
-        yaml::MapNode::Iterator i(n.find(k));
+        yaml::MapNode::ConstIterator i(n.find(k));
         if (i == n.end())
             return "";
         return extract_text_only(*i->second, "for key '" + k + "'");
@@ -243,7 +243,7 @@ namespace
 
     std::string required_version(const yaml::MapNode & n, const std::string & k)
     {
-        yaml::MapNode::Iterator i(n.find(k));
+        yaml::MapNode::ConstIterator i(n.find(k));
         if (i == n.end())
             throw BadSpecificationError("Key '" + k + "' not defined");
 

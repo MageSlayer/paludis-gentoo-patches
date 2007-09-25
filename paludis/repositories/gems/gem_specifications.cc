@@ -73,7 +73,7 @@ namespace
                 throw BadSpecificationError("Found sequence rather than text " + extra);
 
             bool w(false);
-            for (yaml::SequenceNode::Iterator i(s.begin()), i_end(s.end()) ; i != i_end ; ++i)
+            for (yaml::SequenceNode::ConstIterator i(s.begin()), i_end(s.end()) ; i != i_end ; ++i)
             {
                 if (w)
                     result.append(", ");
@@ -114,7 +114,7 @@ namespace
 
         void visit(const yaml::MapNode & n)
         {
-            for (yaml::MapNode::Iterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
+            for (yaml::MapNode::ConstIterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
             {
                 std::string pv(extract_text_only(*i->first, " as key for gem"));
                 Context c_item("When handling Gem entry '" + pv + "':");
@@ -164,7 +164,7 @@ namespace
 
         void visit(const yaml::MapNode & n)
         {
-            yaml::MapNode::Iterator i(n.find("gems"));
+            yaml::MapNode::ConstIterator i(n.find("gems"));
             if (n.end() == i)
                 throw BadSpecificationError("Top level map does not contain 'gems' node");
 
@@ -200,15 +200,15 @@ GemSpecifications::~GemSpecifications()
 {
 }
 
-GemSpecifications::Iterator
+GemSpecifications::ConstIterator
 GemSpecifications::begin() const
 {
-    return Iterator(_imp->specs.begin());
+    return ConstIterator(_imp->specs.begin());
 }
 
-GemSpecifications::Iterator
+GemSpecifications::ConstIterator
 GemSpecifications::end() const
 {
-    return Iterator(_imp->specs.end());
+    return ConstIterator(_imp->specs.end());
 }
 

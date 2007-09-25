@@ -164,20 +164,20 @@ UninstallList::add_unused()
             world_plus_deps->begin(), world_plus_deps->end(), unused->inserter(),
             PackageIDSetComparator());
 
-    for (PackageIDSet::Iterator i(unused->begin()), i_end(unused->end()) ; i != i_end ; ++i)
+    for (PackageIDSet::ConstIterator i(unused->begin()), i_end(unused->end()) ; i != i_end ; ++i)
         add_package(*i, tr1::shared_ptr<DepTag>(), (*i)->virtual_for_key() ? ulk_virtual : ulk_package);
 }
 
-UninstallList::Iterator
+UninstallList::ConstIterator
 UninstallList::begin() const
 {
-    return Iterator(_imp->uninstall_list.begin());
+    return ConstIterator(_imp->uninstall_list.begin());
 }
 
-UninstallList::Iterator
+UninstallList::ConstIterator
 UninstallList::end() const
 {
-    return Iterator(_imp->uninstall_list.end());
+    return ConstIterator(_imp->uninstall_list.end());
 }
 
 UninstallListOptions::UninstallListOptions() :
@@ -220,18 +220,18 @@ UninstallList::collect_all_installed() const
     Context context("When collecting all installed packages:");
 
     tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
-    for (PackageDatabase::RepositoryIterator i(_imp->env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator i(_imp->env->package_database()->begin_repositories()),
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
     {
         if (! (*i)->installed_interface)
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cats((*i)->category_names());
-        for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
         {
             tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*i)->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> ids((*i)->package_ids(*p));
@@ -275,7 +275,7 @@ namespace
 
             tr1::shared_ptr<const PackageIDSequence> m(env->package_database()->query(
                         query::Matches(a) & query::InstalledAtRoot(env->root()), qo_order_by_version));
-            for (PackageIDSequence::Iterator it = m->begin(), it_end = m->end();
+            for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(DepTagEntry(tr1::shared_ptr<const DepTag>(new DependencyDepTag(*it, a, conditions)), 0));
         }
@@ -319,7 +319,7 @@ UninstallList::collect_depped_upon(tr1::shared_ptr<const PackageIDSet> targets) 
     tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
     Lock l(_imp->dep_collector_cache_mutex);
-    for (PackageIDSet::Iterator i(targets->begin()), i_end(targets->end()) ;
+    for (PackageIDSet::ConstIterator i(targets->begin()), i_end(targets->end()) ;
             i != i_end ; ++i)
     {
         Context local_context("When collecting depended upon packages for '" + stringify(**i) + "':");
@@ -342,7 +342,7 @@ UninstallList::collect_depped_upon(tr1::shared_ptr<const PackageIDSet> targets) 
                         tr1::shared_ptr<const DepListEntryTags>(c.matches))).first;
         }
 
-        for (DepListEntryTags::Iterator it(cache->second->begin()), it_end(cache->second->end());
+        for (DepListEntryTags::ConstIterator it(cache->second->begin()), it_end(cache->second->end());
              it_end != it; ++it)
             result->insert(tr1::static_pointer_cast<const DependencyDepTag>(it->tag)->package_id());
     }
@@ -394,7 +394,7 @@ UninstallList::add_unused_dependencies()
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
         tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
-        for (PackageIDSet::Iterator i(unused_dependencies->begin()),
+        for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
             if (match_package_in_set(*_imp->env, *world, **i))
@@ -419,7 +419,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
 
     Lock l(_imp->dep_collector_cache_mutex);
 
-    for (PackageIDSet::Iterator i(everything->begin()),
+    for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
         Context local_context("When seeing whether '" + stringify(**i) + "' has a dep:");
@@ -442,7 +442,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
         }
 
         bool logged(false);
-        for (DepListEntryTags::Iterator it(cache->second->begin()), it_end(cache->second->end());
+        for (DepListEntryTags::ConstIterator it(cache->second->begin()), it_end(cache->second->end());
              it_end != it; ++it)
         {
             tr1::shared_ptr<const DependencyDepTag> tag(tr1::static_pointer_cast<const DependencyDepTag>(it->tag));
@@ -471,7 +471,7 @@ UninstallList::collect_world() const
     tr1::shared_ptr<const PackageIDSet> everything(collect_all_installed());
 
     tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
-    for (PackageIDSet::Iterator i(everything->begin()),
+    for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
         if (match_package_in_set(*_imp->env, *world, **i))
             result->insert(*i);

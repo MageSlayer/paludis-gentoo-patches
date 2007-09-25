@@ -188,7 +188,7 @@ namespace
     {
         tr1::shared_ptr<const DestinationsSet> dc (value_to_environment(self)->default_destinations());
         VALUE result(rb_ary_new());
-        for (DestinationsSet::Iterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
+        for (DestinationsSet::ConstIterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
             rb_ary_push(result, repository_to_value(*i));
 
         return result;

@@ -84,7 +84,7 @@ namespace
         {
             s << "map(";
             bool w(false);
-            for (MapNode::Iterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
+            for (MapNode::ConstIterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
             {
                 if (w)
                     s << ", ";
@@ -101,7 +101,7 @@ namespace
         {
             s << "seq(";
             bool w(false);
-            for (SequenceNode::Iterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
+            for (SequenceNode::ConstIterator i(n.begin()), i_end(n.end()) ; i != i_end ; ++i)
             {
                 if (w)
                     s << ", ";

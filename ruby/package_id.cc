@@ -271,7 +271,7 @@ namespace
     {
         tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        PackageID::MetadataIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
+        PackageID::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
         if ((*self_ptr)->end_metadata() == it)
             return Qnil;
         return metadata_key_to_value(*it);
@@ -288,7 +288,7 @@ namespace
     {
         tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
-        for (PackageID::MetadataIterator it((*self_ptr)->begin_metadata()),
+        for (PackageID::MetadataConstIterator it((*self_ptr)->begin_metadata()),
                 it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
         {
             VALUE val(metadata_key_to_value(*it));
@@ -472,7 +472,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<T_> >, self_ptr);
             tr1::shared_ptr<const T_> c = (*self_ptr)->value();
             VALUE result (rb_ary_new());
-            for (typename T_::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
         }
@@ -488,7 +488,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >, self_ptr);
             tr1::shared_ptr<const PackageIDSequence> c = (*self_ptr)->value();
             VALUE result (rb_ary_new());
-            for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
             return result;
         }
@@ -508,7 +508,7 @@ namespace
         tr1::shared_ptr<const RepositoryMaskInfo> * ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const RepositoryMaskInfo>, ptr);
         VALUE result(rb_ary_new());
-        for (Sequence<std::string>::Iterator it((*ptr)->comment->begin()),
+        for (Sequence<std::string>::ConstIterator it((*ptr)->comment->begin()),
                  it_end((*ptr)->comment->end()); it_end != it; ++it)
             rb_ary_push(result, rb_str_new2(it->c_str()));
         return result;

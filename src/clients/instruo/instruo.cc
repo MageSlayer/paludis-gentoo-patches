@@ -308,7 +308,7 @@ main(int argc, char *argv[])
         unsigned success(0), total(0);
 
         CategoryNamePart old_cat("OLDCAT");
-        for (PackageIDSequence::Iterator i(ids->begin()), i_end(ids->end()) ;
+        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             Context i_context("When fetching ID '" + stringify(**i) + "':");
@@ -323,7 +323,7 @@ main(int argc, char *argv[])
 
             try
             {
-                PackageID::MetadataIterator eapi_i((*i)->find_metadata("EAPI"));
+                PackageID::MetadataConstIterator eapi_i((*i)->find_metadata("EAPI"));
                 if ((*i)->end_metadata() == eapi_i)
                 {
                     results.insert(std::make_pair(*i, "No EAPI metadata key"));
@@ -346,7 +346,7 @@ main(int argc, char *argv[])
 
                 bool metadata_errors(false);
                 KeyValidator v;
-                for (PackageID::MetadataIterator m((*i)->begin_metadata()),
+                for (PackageID::MetadataConstIterator m((*i)->begin_metadata()),
                          m_end((*i)->end_metadata()); m_end != m; ++m)
                 {
                     try

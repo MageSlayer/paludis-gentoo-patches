@@ -84,7 +84,7 @@ LicensesConf::add(const FSEntry & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
+    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
     {
         std::vector<std::string> tokens;

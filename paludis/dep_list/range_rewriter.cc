@@ -86,7 +86,7 @@ RangeRewriter::visit_leaf(const PackageDepSpec & a)
             return;
         }
 
-        for (VersionRequirements::Iterator v(a.version_requirements_ptr()->begin()),
+        for (VersionRequirements::ConstIterator v(a.version_requirements_ptr()->begin()),
                 v_end(a.version_requirements_ptr()->end()) ; v != v_end ; ++v)
             _spec->version_requirements_ptr()->push_back(*v);
     }

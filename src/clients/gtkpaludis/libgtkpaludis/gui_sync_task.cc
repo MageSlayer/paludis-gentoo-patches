@@ -41,7 +41,7 @@ GuiSyncTask::~GuiSyncTask()
 void
 GuiSyncTask::on_sync_all_pre()
 {
-    for (TargetsIterator t(begin_targets()), t_end(end_targets()) ;
+    for (TargetsConstIterator t(begin_targets()), t_end(end_targets()) ;
             t != t_end ; ++t)
         _imp->task_window->gui_thread_action(
                 sigc::bind(sigc::mem_fun(_imp->task_window, &TaskWindow::append_sequence_item),

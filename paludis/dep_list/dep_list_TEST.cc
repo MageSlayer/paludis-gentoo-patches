@@ -1727,7 +1727,7 @@ namespace test_cases
             bool cat_three_has_first_tag_from_cat_two(false);
             bool cat_three_has_second_tag_from_cat_two(false);
 
-            for (DepListEntryTags::Iterator tag_it(tags->begin()),
+            for (DepListEntryTags::ConstIterator tag_it(tags->begin()),
                      tag_it_end(tags->end()); tag_it_end != tag_it; ++tag_it)
             {
                 if ("dependency" != tag_it->tag->category())

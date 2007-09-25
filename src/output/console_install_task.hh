@@ -232,8 +232,8 @@ namespace paludis
             virtual void display_merge_list_post_use_descriptions(const std::string &);
             virtual void display_use_summary_start(const std::string &);
             virtual void display_use_summary_flag(const std::string &,
-                    Set<UseDescription, UseDescriptionComparator>::Iterator,
-                    Set<UseDescription, UseDescriptionComparator>::Iterator);
+                    Set<UseDescription, UseDescriptionComparator>::ConstIterator,
+                    Set<UseDescription, UseDescriptionComparator>::ConstIterator);
             virtual void display_use_summary_end();
 
             virtual void show_resume_command() const = 0;

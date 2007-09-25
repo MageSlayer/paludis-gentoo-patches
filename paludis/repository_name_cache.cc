@@ -178,11 +178,11 @@ RepositoryNameCache::regenerate_cache() const
     MakeHashedMap<std::string, std::string>::Type m;
 
     tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
-    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
         tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
-        for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
             m[stringify(p->package)].append(stringify(*c) + "\n");
     }

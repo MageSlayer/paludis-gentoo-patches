@@ -117,7 +117,7 @@ GemsRepository::invalidate_masks()
 
     for (MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::Type::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
          it_end != it; ++it)
-        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+        for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }
@@ -225,7 +225,7 @@ GemsRepository::need_ids() const
     yaml::Document master_doc(output);
     gems::GemSpecifications specs(_imp->params.environment, shared_from_this(), *master_doc.top());
 
-    for (gems::GemSpecifications::Iterator i(specs.begin()), i_end(specs.end()) ;
+    for (gems::GemSpecifications::ConstIterator i(specs.begin()), i_end(specs.end()) ;
             i != i_end ; ++i)
     {
         pkgs->insert(i->first.first);

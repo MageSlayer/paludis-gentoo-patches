@@ -28,21 +28,21 @@ using namespace paludis;
 #include <paludis/action-se.cc>
 #include <paludis/action-sr.cc>
 
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
-template class MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>;
+template class AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>;
 
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
-template class MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstallAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<ConfigAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InfoAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<PretendAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<InstalledAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<UninstallAction> >;
+template class AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<FetchAction> >;
 
 template class Sequence<FetchActionFailure>;
 

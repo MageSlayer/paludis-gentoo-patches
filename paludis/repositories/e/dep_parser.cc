@@ -312,7 +312,7 @@ namespace
         std::string arrow_lhs;
         DepParserState state(dps_initial);
         DepLexer lexer(s);
-        DepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
+        DepLexer::ConstIterator i(lexer.begin()), i_end(lexer.end());
 
         for ( ; i != i_end ; ++i)
         {
@@ -338,7 +338,7 @@ namespace
                                          if (i->second.empty())
                                              throw DepStringParseError(i->second, "Empty text entry");
 
-                                         DepLexer::Iterator i_fwd(next(i));
+                                         DepLexer::ConstIterator i_fwd(next(i));
                                          if (i_fwd != i_end && i_fwd->first == dpl_whitespace && ++i_fwd != i_end
                                                  && i_fwd->first == dpl_arrow)
                                          {

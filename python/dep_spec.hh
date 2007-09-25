@@ -87,11 +87,11 @@ namespace paludis
                 void add_child(const tr1::shared_ptr<const PythonDepSpec>);
 
                 typedef libwrapiter::ForwardIterator<PythonCompositeDepSpec,
-                        const tr1::shared_ptr<const PythonDepSpec> > Iterator;
+                        const tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
 
-                Iterator begin() const
+                ConstIterator begin() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const
+                ConstIterator end() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

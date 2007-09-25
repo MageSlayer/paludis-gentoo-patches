@@ -185,7 +185,7 @@ PyHookFile::run(const Hook & hook) const
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
+    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         hook_env[x->first] = x->second;
 
     bp::object result;
@@ -276,7 +276,7 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
+    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         hook_env[x->first] = x->second;
 
     bp::object result;

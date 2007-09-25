@@ -98,9 +98,9 @@ namespace paludis
             bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             void override_target_type(const DepListTargetType);
 
-            typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsIterator;
-            TargetsIterator begin_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            TargetsIterator end_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsConstIterator;
+            TargetsConstIterator begin_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            TargetsConstIterator end_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

@@ -85,7 +85,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, tr1::shared_ptr<const PackageID
     if (! display_entry)
     {
         display_entry = *preferred_entries->last();
-        for (PackageIDSequence::Iterator i(preferred_entries->begin()),
+        for (PackageIDSequence::ConstIterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
             if (! (*i)->masked())
                 display_entry = *i;
@@ -115,13 +115,13 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
 {
     /* find all repository names. */
     RepositoryNameSequence repo_names;
-    PackageIDSequence::Iterator e(entries->begin()), e_end(entries->end());
+    PackageIDSequence::ConstIterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
         if (repo_names.end() == std::find(repo_names.begin(), repo_names.end(), (*e)->repository()->name()))
             repo_names.push_back((*e)->repository()->name());
 
     /* display versions, by repository. */
-    RepositoryNameSequence::Iterator r(repo_names.begin()), r_end(repo_names.end());
+    RepositoryNameSequence::ConstIterator r(repo_names.begin()), r_end(repo_names.end());
     for ( ; r != r_end ; ++r)
     {
         output_left_column(stringify(*r) + ":");
@@ -146,7 +146,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                 else
                 {
                     std::string reasons;
-                    for (PackageID::MasksIterator m((*e)->begin_masks()), m_end((*e)->end_masks()) ;
+                    for (PackageID::MasksConstIterator m((*e)->begin_masks()), m_end((*e)->end_masks()) ;
                             m != m_end ; ++m)
                     {
                         reasons.append(stringify((*m)->key()));
@@ -453,7 +453,7 @@ namespace
                     {
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column(stringify(k.value()->mask_file) + ":");
-                        for (Sequence<std::string>::Iterator it(k.value()->comment->begin()),
+                        for (Sequence<std::string>::ConstIterator it(k.value()->comment->begin()),
                                 it_end(k.value()->comment->end()); it_end != it; ++it)
                         {
                             task->output_left_column("");
@@ -511,7 +511,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const tr1::shared_ptr
 void
 ConsoleQueryTask::display_masks(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> & id) const
 {
-    for (PackageID::MasksIterator m(id->begin_masks()), m_end(id->end_masks()) ;
+    for (PackageID::MasksConstIterator m(id->begin_masks()), m_end(id->end_masks()) ;
             m != m_end ; ++m)
     {
         MaskDisplayer d(_imp->env, id, false);

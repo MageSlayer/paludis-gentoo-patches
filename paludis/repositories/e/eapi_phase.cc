@@ -74,16 +74,16 @@ EAPIPhase::option(const std::string & s) const
     return _imp->options.count(s);
 }
 
-EAPIPhase::Iterator
+EAPIPhase::ConstIterator
 EAPIPhase::begin_commands() const
 {
-    return Iterator(_imp->commands.begin());
+    return ConstIterator(_imp->commands.begin());
 }
 
-EAPIPhase::Iterator
+EAPIPhase::ConstIterator
 EAPIPhase::end_commands() const
 {
-    return Iterator(_imp->commands.end());
+    return ConstIterator(_imp->commands.end());
 }
 
 EAPIPhases::EAPIPhases(const std::string & s) :
@@ -103,15 +103,15 @@ EAPIPhases::~EAPIPhases()
 {
 }
 
-EAPIPhases::Iterator
+EAPIPhases::ConstIterator
 EAPIPhases::begin_phases() const
 {
-    return Iterator(indirect_iterator(_imp->phases.begin()));
+    return ConstIterator(indirect_iterator(_imp->phases.begin()));
 }
 
-EAPIPhases::Iterator
+EAPIPhases::ConstIterator
 EAPIPhases::end_phases() const
 {
-    return Iterator(indirect_iterator(_imp->phases.end()));
+    return ConstIterator(indirect_iterator(_imp->phases.end()));
 }
 

@@ -124,11 +124,11 @@ namespace paludis
                 ///\name Iterate over our repositories
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<PaludisConfig, const RepositoryConfigEntry> RepositoryIterator;
+                typedef libwrapiter::ForwardIterator<PaludisConfig, const RepositoryConfigEntry> RepositoryConstIterator;
 
-                RepositoryIterator begin_repositories() const;
+                RepositoryConstIterator begin_repositories() const;
 
-                RepositoryIterator end_repositories() const;
+                RepositoryConstIterator end_repositories() const;
 
                 ///\}
 

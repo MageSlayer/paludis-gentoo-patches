@@ -54,7 +54,7 @@ namespace paludis
         };
 
         /**
-         * Gives an Iterator of Manifest2Entrys from a given Manifest 2 style
+         * Gives an ConstIterator of Manifest2Entrys from a given Manifest 2 style
          * file.
          *
          * \ingroup grpmanifest2reader
@@ -69,12 +69,12 @@ namespace paludis
                 ~Manifest2Reader();
 
                 ///}
-                
+
                 /// \name Iterator functions
-                
-                typedef libwrapiter::ForwardIterator<Manifest2Reader, const Manifest2Entry> Iterator;
-                Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                typedef libwrapiter::ForwardIterator<Manifest2Reader, const Manifest2Entry> ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///}
         };

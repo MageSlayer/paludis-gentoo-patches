@@ -148,7 +148,7 @@ BashHookFile::run(const Hook & hook) const
             .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ")
             .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 
-    for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
+    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
     int exit_status(0);
@@ -199,7 +199,7 @@ FancyHookFile::run(const Hook & hook) const
             .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ")
             .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ");
 
-    for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
+    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
     int exit_status(0);
@@ -258,7 +258,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
 
     cmd.with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 
-    for (Hook::Iterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
+    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
 
     PStream s(cmd);
@@ -415,7 +415,7 @@ Hooker::perform_hook(const Hook & hook) const
         switch (hook.output_dest)
         {
             case hod_stdout:
-                for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
                     if ((*r)->hook_interface)
                         result.max_exit_status = std::max(result.max_exit_status,
@@ -423,7 +423,7 @@ Hooker::perform_hook(const Hook & hook) const
                 continue;
 
             case hod_grab:
-                for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+                for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
                     if ((*r)->hook_interface)
                     {

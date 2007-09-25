@@ -203,7 +203,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 
     bool found(false);
 
-    for (Manifest2Reader::Iterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
+    for (Manifest2Reader::ConstIterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
         m != m_end ; ++m)
     {
         if (distfile.basename() != m->name)

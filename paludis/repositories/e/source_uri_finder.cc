@@ -65,16 +65,16 @@ SourceURIFinder::~SourceURIFinder()
 {
 }
 
-SourceURIFinder::Iterator
+SourceURIFinder::ConstIterator
 SourceURIFinder::begin() const
 {
-    return Iterator(_imp->items.begin());
+    return ConstIterator(_imp->items.begin());
 }
 
-SourceURIFinder::Iterator
+SourceURIFinder::ConstIterator
 SourceURIFinder::end() const
 {
-    return Iterator(_imp->items.end());
+    return ConstIterator(_imp->items.end());
 }
 
 void
@@ -132,7 +132,7 @@ SourceURIFinder::add_local_mirrors()
     if (mirrors->empty())
         Log::get_instance()->message(ll_debug, lc_context) << "Mirrors set is empty";
 
-    for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+    for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
         Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
         _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
@@ -148,7 +148,7 @@ SourceURIFinder::add_mirrors()
     if (mirrors->empty())
         Log::get_instance()->message(ll_debug, lc_context) << "Environment mirrors set is empty";
 
-    for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+    for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
     {
         Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << _imp->filename;
         _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + _imp->filename, _imp->filename));
@@ -157,7 +157,7 @@ SourceURIFinder::add_mirrors()
     {
         Context local_context("When adding repository mirrors '" + _imp->mirrors_name + "':");
         if (_imp->repo->mirrors_interface)
-            for (RepositoryMirrorsInterface::MirrorsIterator m(_imp->repo->mirrors_interface->begin_mirrors(_imp->mirrors_name)),
+            for (RepositoryMirrorsInterface::MirrorsConstIterator m(_imp->repo->mirrors_interface->begin_mirrors(_imp->mirrors_name)),
                     m_end(_imp->repo->mirrors_interface->end_mirrors(_imp->mirrors_name)) ;
                     m != m_end ; ++m)
             {
@@ -186,7 +186,7 @@ SourceURIFinder::add_listed()
             tr1::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror));
             if (mirrors->empty())
                 Log::get_instance()->message(ll_debug, lc_context) << "Mirrors set is empty";
-            for (MirrorsSequence::Iterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
+            for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
             {
                 Log::get_instance()->message(ll_debug, lc_context) << "Adding " << strip_trailing(*m, "/") << "/" << original_name;
                 _imp->items.push_back(std::make_pair(strip_trailing(*m, "/") + "/" + original_name, _imp->filename));
@@ -196,7 +196,7 @@ SourceURIFinder::add_listed()
         {
             Context local_context("When adding from repository for listed mirror '" + mirror + "':");
             if (_imp->repo->mirrors_interface)
-                for (RepositoryMirrorsInterface::MirrorsIterator m(_imp->repo->mirrors_interface->begin_mirrors(mirror)),
+                for (RepositoryMirrorsInterface::MirrorsConstIterator m(_imp->repo->mirrors_interface->begin_mirrors(mirror)),
                         m_end(_imp->repo->mirrors_interface->end_mirrors(mirror)) ;
                         m != m_end ; ++m)
                 {

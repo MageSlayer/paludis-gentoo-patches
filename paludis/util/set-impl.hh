@@ -55,24 +55,24 @@ paludis::Set<T_, C_>::~Set()
 }
 
 template <typename T_, typename C_>
-typename paludis::Set<T_, C_>::Iterator
+typename paludis::Set<T_, C_>::ConstIterator
 paludis::Set<T_, C_>::begin() const
 {
-    return Iterator(_imp->set.begin());
+    return ConstIterator(_imp->set.begin());
 }
 
 template <typename T_, typename C_>
-typename paludis::Set<T_, C_>::Iterator
+typename paludis::Set<T_, C_>::ConstIterator
 paludis::Set<T_, C_>::end() const
 {
-    return Iterator(_imp->set.end());
+    return ConstIterator(_imp->set.end());
 }
 
 template <typename T_, typename C_>
-typename paludis::Set<T_, C_>::Iterator
+typename paludis::Set<T_, C_>::ConstIterator
 paludis::Set<T_, C_>::find(const T_ & t) const
 {
-    return Iterator(_imp->set.find(t));
+    return ConstIterator(_imp->set.find(t));
 }
 
 template <typename T_, typename C_>

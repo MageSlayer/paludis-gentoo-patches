@@ -65,7 +65,7 @@ namespace
                 return;
 
             LineConfigFile f(FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt", LineConfigFileOptions());
-            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
                 std::string::size_type p(line->find(" - "));
@@ -115,7 +115,7 @@ Repository::do_category_names_containing_package(const PackageNamePart & p) cons
 
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
-    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))
             result->insert(*c);

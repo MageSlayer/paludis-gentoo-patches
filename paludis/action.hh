@@ -66,7 +66,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Action :
-        public virtual MutableAcceptInterface<ActionVisitorTypes>
+        public virtual AcceptInterface<ActionVisitorTypes>
     {
         public:
             virtual ~Action() = 0;
@@ -75,7 +75,7 @@ namespace paludis
     class PALUDIS_VISIBLE InstallAction :
         public Action,
         private PrivateImplementationPattern<InstallAction>,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>
     {
         public:
             InstallAction(const InstallActionOptions &);
@@ -87,7 +87,7 @@ namespace paludis
     class PALUDIS_VISIBLE FetchAction :
         public Action,
         private PrivateImplementationPattern<FetchAction>,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
     {
         public:
             FetchAction(const FetchActionOptions &);
@@ -99,7 +99,7 @@ namespace paludis
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
         private PrivateImplementationPattern<UninstallAction>,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
     {
         public:
             UninstallAction(const UninstallActionOptions &);
@@ -110,14 +110,14 @@ namespace paludis
 
     class PALUDIS_VISIBLE InstalledAction :
         public Action,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>
     {
     };
 
     class PALUDIS_VISIBLE PretendAction :
         public Action,
         private PrivateImplementationPattern<PretendAction>,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>
     {
         public:
             PretendAction();
@@ -129,18 +129,18 @@ namespace paludis
 
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>
     {
     };
 
     class PALUDIS_VISIBLE InfoAction:
         public Action,
-        public MutableAcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>
+        public AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>
     {
     };
 
     class PALUDIS_VISIBLE SupportsActionTestBase :
-        public virtual MutableAcceptInterface<SupportsActionTestVisitorTypes>
+        public virtual AcceptInterface<SupportsActionTestVisitorTypes>
     {
         public:
             virtual ~SupportsActionTestBase() = 0;
@@ -149,7 +149,7 @@ namespace paludis
     template <typename A_>
     class PALUDIS_VISIBLE SupportsActionTest :
         public SupportsActionTestBase,
-        public MutableAcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<A_> >
+        public AcceptInterfaceVisitsThis<SupportsActionTestVisitorTypes, SupportsActionTest<A_> >
     {
     };
 

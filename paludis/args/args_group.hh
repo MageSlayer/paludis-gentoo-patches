@@ -74,10 +74,10 @@ namespace paludis
                 ///\name Iterate over our ArgsOptions.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsGroup, ArgsOption * const> Iterator;
+                typedef libwrapiter::ForwardIterator<ArgsGroup, ArgsOption * const> ConstIterator;
 
-                Iterator begin() const;
-                Iterator end() const;
+                ConstIterator begin() const;
+                ConstIterator end() const;
 
                 ///\}
 

@@ -195,10 +195,10 @@ namespace paludis
             ///\name Iterate over our lines
             ///\{
 
-            typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> Iterator;
+            typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> ConstIterator;
 
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -286,9 +286,9 @@ namespace paludis
                     ///\name Iterate over our default keys
                     ///\{
 
-                    typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > Iterator;
-                    Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                    Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > ConstIterator;
+                    ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                     ///\}
             };
@@ -318,9 +318,9 @@ namespace paludis
             ///\name Iterate over our keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > ConstIterator;
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

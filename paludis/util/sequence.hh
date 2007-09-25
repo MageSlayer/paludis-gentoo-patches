@@ -45,15 +45,15 @@ namespace paludis
             Sequence();
             ~Sequence();
 
-            typedef libwrapiter::ForwardIterator<Sequence<T_>, const T_> Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator last() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<Sequence<T_>, const T_> ConstIterator;
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator last() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            struct ReverseIteratorTag;
-            typedef libwrapiter::ForwardIterator<typename Sequence<T_>::ReverseIteratorTag, const T_> ReverseIterator;
-            ReverseIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            ReverseIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            struct ReverseConstIteratorTag;
+            typedef libwrapiter::ForwardIterator<typename Sequence<T_>::ReverseConstIteratorTag, const T_> ReverseConstIterator;
+            ReverseConstIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ReverseConstIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

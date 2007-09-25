@@ -69,16 +69,16 @@ StageBuilderTask::queue_stage(tr1::shared_ptr<const StageBase> p)
     _imp->stages.push_back(p);
 }
 
-StageBuilderTask::StageIterator
+StageBuilderTask::StageConstIterator
 StageBuilderTask::begin_stages() const
 {
-    return StageIterator(_imp->stages.begin());
+    return StageConstIterator(_imp->stages.begin());
 }
 
-StageBuilderTask::StageIterator
+StageBuilderTask::StageConstIterator
 StageBuilderTask::end_stages() const
 {
-    return StageIterator(_imp->stages.end());
+    return StageConstIterator(_imp->stages.end());
 }
 
 void

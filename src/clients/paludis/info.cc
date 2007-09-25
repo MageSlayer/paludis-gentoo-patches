@@ -62,7 +62,7 @@ int do_one_info(
         preferred_entries = entries;
 
     tr1::shared_ptr<const PackageID> display_entry(*preferred_entries->last());
-        for (PackageIDSequence::Iterator i(preferred_entries->begin()),
+        for (PackageIDSequence::ConstIterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
             if (! (*i)->masked())
                 display_entry = *i;
@@ -133,18 +133,18 @@ do_info(const tr1::shared_ptr<const Environment> & env)
 
     cout << endl;
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
 
         tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
-        for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
+        for (RepositoryInfo::SectionConstIterator i(ii->begin_sections()),
                 i_end(ii->end_sections()) ; i != i_end ; ++i)
         {
             cout << "    " << colour(cl_heading, (*i)->heading() + ":") << endl;
-            for (RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
+            for (RepositoryInfoSection::KeyValueConstIterator k((*i)->begin_kvs()),
                     k_end((*i)->end_kvs()) ; k != k_end ; ++k)
                 cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
                     << std::setw(0) << " " << k->second << endl;
@@ -162,7 +162,7 @@ do_info(const tr1::shared_ptr<const Environment> & env)
     }
     else
     {
-        for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+        for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
                 q_end(CommandLine::get_instance()->end_parameters()) ;
                 q != q_end ; ++q)
         {
@@ -176,7 +176,7 @@ do_info(const tr1::shared_ptr<const Environment> & env)
                 cout << "Query error:" << endl;
                 cout << "  * " << e.backtrace("\n  * ");
                 cout << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-                for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+                for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
                         o_end(e.end_options()) ; o != o_end ; ++o)
                     cout << "    * " << colour(cl_package_name, *o) << endl;
                 cout << endl;

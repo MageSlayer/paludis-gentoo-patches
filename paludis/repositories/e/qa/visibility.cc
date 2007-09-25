@@ -53,7 +53,7 @@ namespace
         const tr1::shared_ptr<const PackageID> & id;
         const tr1::shared_ptr<const ERepository> repo;
         const std::set<KeywordName> & accepted_keywords;
-        const ERepository::ProfilesIterator profile;
+        const ERepository::ProfilesConstIterator profile;
         const std::string name;
         const bool unstable;
         const tr1::shared_ptr<const MetadataKey> & key;
@@ -68,7 +68,7 @@ namespace
                 const tr1::shared_ptr<const PackageID> & i,
                 const tr1::shared_ptr<const ERepository> o,
                 const std::set<KeywordName> & a,
-                const ERepository::ProfilesIterator & p,
+                const ERepository::ProfilesConstIterator & p,
                 const std::string & n,
                 const bool u,
                 const tr1::shared_ptr<const MetadataKey> & k) :
@@ -107,7 +107,7 @@ namespace
             /* rewrite virtuals to avoid problems later on */
             if (p->package_ptr())
             {
-                ERepositoryProfile::VirtualsIterator v(profile->profile->find_virtual(*p->package_ptr()));
+                ERepositoryProfile::VirtualsConstIterator v(profile->profile->find_virtual(*p->package_ptr()));
                 if (profile->profile->end_virtuals() != v)
                 {
                     tr1::shared_ptr<VersionRequirements> reqs;
@@ -157,7 +157,7 @@ namespace
             }
             else
             {
-                for (PackageIDSequence::Iterator i(matches->begin()), i_end(matches->end()) ;
+                for (PackageIDSequence::ConstIterator i(matches->begin()), i_end(matches->end()) ;
                         i != i_end ; ++i)
                 {
                     /* can't use the usual masked rules here, so this gets a bit complicated... */
@@ -279,7 +279,7 @@ paludis::erepository::visibility_check(
     if (repo->repository_masked(*id) || ! id->keywords_key())
         return true;
 
-    for (ERepository::ProfilesIterator p(repo->begin_profiles()), p_end(repo->end_profiles()) ;
+    for (ERepository::ProfilesConstIterator p(repo->begin_profiles()), p_end(repo->end_profiles()) ;
             p != p_end ; ++p)
     {
         if (p->profile->profile_masked(*id))

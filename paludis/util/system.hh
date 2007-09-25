@@ -222,9 +222,9 @@ namespace paludis
             ///\name Iterate over our setenvs.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
-            Iterator begin_setenvs() const;
-            Iterator end_setenvs() const;
+            typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > ConstIterator;
+            ConstIterator begin_setenvs() const;
+            ConstIterator end_setenvs() const;
 
             ///\}
     };

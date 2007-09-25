@@ -163,7 +163,7 @@ namespace
                 return;
             tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags);
             GenerationGreaterThan pred(g);
-            for (DepListEntryTags::Iterator i(e.tags->begin()), i_end(e.tags->end()) ;
+            for (DepListEntryTags::ConstIterator i(e.tags->begin()), i_end(e.tags->end()) ;
                     i != i_end ; ++i)
                 if (! pred(*i))
                     t->insert(*i);
@@ -388,7 +388,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
                 query::Matches(a),
                 qo_order_by_version));
 
-    for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
+    for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
         if (! (*p)->masked())
         {
@@ -399,21 +399,21 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     /* are we allowed to override mask reasons? */
     if (! best_visible_candidate && d->_imp->opts->override_masks)
     {
-        for (DepListOverrideMasksFunctions::Iterator of(d->_imp->opts->override_masks->begin()),
+        for (DepListOverrideMasksFunctions::ConstIterator of(d->_imp->opts->override_masks->begin()),
                 of_end(d->_imp->opts->override_masks->end()) ; of != of_end ; ++of)
         {
             if (best_visible_candidate)
                 break;
 
-            for (PackageIDSequence::ReverseIterator p(installable_candidates->rbegin()),
+            for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
                 bool success(true);
-                for (PackageID::MasksIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
+                for (PackageID::MasksConstIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
                         m != m_end ; ++m)
                 {
                     bool local_success(false);
-                    for (DepListOverrideMasksFunctions::Iterator o(d->_imp->opts->override_masks->begin()),
+                    for (DepListOverrideMasksFunctions::ConstIterator o(d->_imp->opts->override_masks->begin()),
                             o_end(next(of)) ; o != o_end ; ++o)
                         if ((*o)(**p, **m))
                             local_success = true;
@@ -474,7 +474,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             tr1::shared_ptr<const PackageIDSequence> match_except_reqs(d->_imp->env->package_database()->query(
                         query::Matches(*a.without_use_requirements()), qo_whatever));
 
-            for (PackageIDSequence::Iterator i(match_except_reqs->begin()),
+            for (PackageIDSequence::ConstIterator i(match_except_reqs->begin()),
                     i_end(match_except_reqs->end()) ; i != i_end ; ++i)
                 if (! (*i)->masked())
                     throw UseRequirementsNotMetError(stringify(a));
@@ -492,7 +492,7 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     tr1::shared_ptr<PackageIDSequence> already_installed_in_same_slot(new PackageIDSequence);
-    for (PackageIDSequence::Iterator aa(already_installed->begin()),
+    for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
         if ((*aa)->slot() == best_visible_candidate->slot())
             already_installed_in_same_slot->push_back(*aa);
@@ -769,7 +769,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)
         return;
 
-    for (PackageIDSequence::Iterator aa(already_installed->begin()),
+    for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
         if (! match_package(*d->_imp->env, *a.blocked_spec(), **aa))
@@ -1008,7 +1008,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
             throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 
-        for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        for (DepSpecFlattener::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
             v->push_back(VersionRequirement(vo_equal, p->version()));
@@ -1470,7 +1470,7 @@ tr1::shared_ptr<Repository>
 DepList::find_destination(const PackageID & p,
         tr1::shared_ptr<const DestinationsSet> dd)
 {
-    for (DestinationsSet::Iterator d(dd->begin()), d_end(dd->end()) ;
+    for (DestinationsSet::ConstIterator d(dd->begin()), d_end(dd->end()) ;
              d != d_end ; ++d)
         if ((*d)->destination_interface)
             if ((*d)->destination_interface->is_suitable_destination_for(p))

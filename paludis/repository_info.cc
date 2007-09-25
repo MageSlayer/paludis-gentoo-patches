@@ -80,16 +80,16 @@ RepositoryInfoSection::heading() const
     return _imp->heading;
 }
 
-RepositoryInfoSection::KeyValueIterator
+RepositoryInfoSection::KeyValueConstIterator
 RepositoryInfoSection::begin_kvs() const
 {
-    return KeyValueIterator(_imp->kvs.begin());
+    return KeyValueConstIterator(_imp->kvs.begin());
 }
 
-RepositoryInfoSection::KeyValueIterator
+RepositoryInfoSection::KeyValueConstIterator
 RepositoryInfoSection::end_kvs() const
 {
-    return KeyValueIterator(_imp->kvs.end());
+    return KeyValueConstIterator(_imp->kvs.end());
 }
 
 RepositoryInfoSection &
@@ -118,23 +118,23 @@ RepositoryInfo::~RepositoryInfo()
 {
 }
 
-RepositoryInfo::SectionIterator
+RepositoryInfo::SectionConstIterator
 RepositoryInfo::begin_sections() const
 {
-    return SectionIterator(_imp->sections.begin());
+    return SectionConstIterator(_imp->sections.begin());
 }
 
-RepositoryInfo::SectionIterator
+RepositoryInfo::SectionConstIterator
 RepositoryInfo::end_sections() const
 {
-    return SectionIterator(_imp->sections.end());
+    return SectionConstIterator(_imp->sections.end());
 }
 
 std::string
 RepositoryInfo::get_key_with_default(const std::string & k, const std::string & d) const
 {
     std::string result(d);
-    for (SectionIterator i(begin_sections()), i_end(end_sections()) ; i != i_end ; ++i)
+    for (SectionConstIterator i(begin_sections()), i_end(end_sections()) ; i != i_end ; ++i)
         result = (*i)->get_key_with_default(k, result);
     return result;
 }

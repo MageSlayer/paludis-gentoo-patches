@@ -30,13 +30,13 @@ namespace paludis
         class ConstAcceptInterface;
 
         template <typename H_>
-        class MutableAcceptInterface;
+        class AcceptInterface;
 
         template <typename H_, typename T_>
         class ConstAcceptInterfaceVisitsThis;
 
         template <typename H_, typename T_>
-        class MutableAcceptInterfaceVisitsThis;
+        class AcceptInterfaceVisitsThis;
 
         template <typename H_, typename I_>
         class TreeLeaf;
@@ -105,16 +105,16 @@ namespace paludis
         class ConstProxyIterator;
 
         template <typename H_, typename LargerH_>
-        class MutableProxyVisitor;
+        class ProxyVisitor;
 
         template <typename H_, typename LargerH_>
-        class MutableProxyIterator;
+        class ProxyIterator;
 
         template <typename H_>
         class ConstVisitor;
 
         template <typename H_>
-        class MutableVisitor;
+        class Visitor;
 
         template <
             typename Heirarchy_,
@@ -150,13 +150,13 @@ namespace paludis
     using visitor_internals::ConstTreeSequence;
     using visitor_internals::TreeLeaf;
     using visitor_internals::VisitorTypes;
-    using visitor_internals::MutableVisitor;
+    using visitor_internals::Visitor;
     using visitor_internals::ConstVisitor;
     using visitor_internals::Visits;
     using visitor_internals::ConstAcceptInterface;
-    using visitor_internals::MutableAcceptInterface;
+    using visitor_internals::AcceptInterface;
     using visitor_internals::ConstAcceptInterfaceVisitsThis;
-    using visitor_internals::MutableAcceptInterfaceVisitsThis;
+    using visitor_internals::AcceptInterfaceVisitsThis;
     using visitor_internals::get_const_item;
 
     template <typename Visitor_>

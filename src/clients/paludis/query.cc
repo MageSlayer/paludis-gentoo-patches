@@ -146,7 +146,7 @@ int do_query(tr1::shared_ptr<Environment> env)
 
     tr1::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
 
-    CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
     {
@@ -160,7 +160,7 @@ int do_query(tr1::shared_ptr<Environment> env)
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-            for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
             cerr << endl;
@@ -187,7 +187,7 @@ int do_query(tr1::shared_ptr<Environment> env)
     {
         cout << colour(cl_heading, "Key to mask reasons:") << endl << endl;
 
-        for (Map<char, std::string>::Iterator m(masks_to_explain->begin()), m_end(masks_to_explain->end()) ;
+        for (Map<char, std::string>::ConstIterator m(masks_to_explain->begin()), m_end(masks_to_explain->end()) ;
                 m != m_end ; ++m)
             cout << "* " << colour(cl_masked, m->first) << ": " << m->second << endl;
 

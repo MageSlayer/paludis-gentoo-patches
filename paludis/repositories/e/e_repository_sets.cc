@@ -202,7 +202,7 @@ namespace
         /* a package is affected if it matches any vulnerable line, except if it matches
          * any unaffected line. */
         bool vulnerable(false);
-        for (GLSAPackage::RangesIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
+        for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
                 r != r_end && ! vulnerable ; ++r)
             if (match_range(c, *r))
                 vulnerable = true;
@@ -210,7 +210,7 @@ namespace
         if (! vulnerable)
             return false;
 
-        for (GLSAPackage::RangesIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
+        for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
                 r != r_end && vulnerable ; ++r)
             if (match_range(c, *r))
                 vulnerable = false;
@@ -244,7 +244,7 @@ ERepositorySets::security_set(bool insecurity) const
             Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
                     stringify(*f) + "':");
 
-            for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
+            for (GLSA::PackagesConstIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
                 tr1::shared_ptr<const PackageIDSequence> candidates;
@@ -256,7 +256,7 @@ ERepositorySets::security_set(bool insecurity) const
                             query::SupportsAction<InstalledAction>(),
                             qo_order_by_version);
 
-                for (PackageIDSequence::Iterator c(candidates->begin()), c_end(candidates->end()) ;
+                for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
                     if (! is_vulnerable(*glsa_pkg, **c))
@@ -303,7 +303,7 @@ ERepositorySets::security_set(bool insecurity) const
                                     query::NotMasked(),
                                     qo_order_by_version));
 
-                        for (PackageIDSequence::ReverseIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
+                        for (PackageIDSequence::ReverseConstIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {
                             if (is_vulnerable(*glsa_pkg, **r))
                             {

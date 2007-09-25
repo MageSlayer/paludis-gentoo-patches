@@ -235,12 +235,12 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Contents, const tr1::shared_ptr<const ContentsEntry> > Iterator;
+            typedef libwrapiter::ForwardIterator<Contents, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
 
-            Iterator begin() const
+            ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const
+            ConstIterator end() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

@@ -113,9 +113,9 @@ namespace paludis
             ///\name Iterate over our stages
             ///\{
 
-            typedef libwrapiter::ForwardIterator<StageBuilderTask, const tr1::shared_ptr<const StageBase> > StageIterator;
-            StageIterator begin_stages() const;
-            StageIterator end_stages() const;
+            typedef libwrapiter::ForwardIterator<StageBuilderTask, const tr1::shared_ptr<const StageBase> > StageConstIterator;
+            StageConstIterator begin_stages() const;
+            StageConstIterator end_stages() const;
 
             ///\}
 

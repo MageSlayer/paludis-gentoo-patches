@@ -128,7 +128,7 @@ int do_match(tr1::shared_ptr<Environment> env)
         return_code = 1;
     else
     {
-        for (PackageIDSequence::Iterator i(entries->begin()), i_end(entries->end()) ; i != i_end ; ++i)
+        for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ; i != i_end ; ++i)
         {
             // don't include repo, it breaks built_with_use and the like.
             std::string entry(
@@ -187,9 +187,9 @@ int do_configuration_variable(tr1::shared_ptr<Environment> env)
                 RepositoryName(repo_str))->info(false));
 
     return_code = 1;
-    for (RepositoryInfo::SectionIterator s(info->begin_sections()),
+    for (RepositoryInfo::SectionConstIterator s(info->begin_sections()),
             s_end(info->end_sections()) ; s != s_end ; ++s)
-        for (RepositoryInfoSection::KeyValueIterator k((*s)->begin_kvs()),
+        for (RepositoryInfoSection::KeyValueConstIterator k((*s)->begin_kvs()),
                 k_end((*s)->end_kvs()) ; k != k_end ; ++k)
             if (var_str == k->first)
             {
@@ -224,7 +224,7 @@ int do_list_sync_protocols(tr1::shared_ptr<Environment> env)
     std::map<std::string, std::string> syncers;
 
     tr1::shared_ptr<const FSEntrySequence> sd(env->syncers_dirs());
-    for (FSEntrySequence::Iterator d(sd->begin()),
+    for (FSEntrySequence::ConstIterator d(sd->begin()),
             d_end(sd->end()) ; d != d_end ; ++d)
     {
         FSEntry dir(*d);
@@ -288,7 +288,7 @@ int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
 
     if (! CommandLine::get_instance()->empty())
     {
-        CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+        CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters());
         for ( ; q != q_end ; ++q)
         {
@@ -301,7 +301,7 @@ int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
     }
     else
     {
-        for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                 r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
         {
             if (installed != (0 != (*r)->installed_interface))

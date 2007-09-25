@@ -134,14 +134,14 @@ namespace
             {
             }
 
-            typedef std::list<const URIDepSpec *>::const_iterator Iterator;
+            typedef std::list<const URIDepSpec *>::const_iterator ConstIterator;
 
-            Iterator begin()
+            ConstIterator begin()
             {
                 return _specs.begin();
             }
 
-            Iterator end() const
+            ConstIterator end() const
             {
                 return _specs.end();
             }
@@ -197,14 +197,14 @@ namespace
                 }
             }
 
-            typedef std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator Iterator;
+            typedef std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator ConstIterator;
 
-            Iterator begin()
+            ConstIterator begin()
             {
                 return _specs.begin();
             }
 
-            Iterator end() const
+            ConstIterator end() const
             {
                 return _specs.end();
             }
@@ -217,7 +217,7 @@ namespace
     get_root(tr1::shared_ptr<const DestinationsSet> destinations)
     {
         if (destinations)
-            for (DestinationsSet::Iterator d(destinations->begin()), d_end(destinations->end()) ;
+            for (DestinationsSet::ConstIterator d(destinations->begin()), d_end(destinations->end()) ;
                     d != d_end ; ++d)
                 if ((*d)->installed_interface)
                     return (*d)->installed_interface->root();
@@ -232,7 +232,7 @@ namespace
         std::string use;
 
         if (id.iuse_key())
-            for (IUseFlagSet::Iterator i(id.iuse_key()->value()->begin()),
+            for (IUseFlagSet::ConstIterator i(id.iuse_key()->value()->begin()),
                     i_end(id.iuse_key()->value()->end()) ; i != i_end ; ++i)
                 if (env->query_use(i->flag, id))
                     use += stringify(i->flag) + " ";
@@ -254,7 +254,7 @@ namespace
         tr1::shared_ptr<Map<std::string, std::string> > expand_vars(
             new Map<std::string, std::string>);
 
-        for (ERepositoryProfile::UseExpandIterator x(profile->begin_use_expand()),
+        for (ERepositoryProfile::UseExpandConstIterator x(profile->begin_use_expand()),
                 x_end(profile->end_use_expand()) ; x != x_end ; ++x)
         {
             std::string lower_x;
@@ -270,7 +270,7 @@ namespace
             /* possible values from environment */
             tr1::shared_ptr<const UseFlagNameSet> possible_values_from_env(
                     env->known_use_expand_names(*x, e));
-            for (UseFlagNameSet::Iterator i(possible_values_from_env->begin()),
+            for (UseFlagNameSet::ConstIterator i(possible_values_from_env->begin()),
                     i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
                 possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
 
@@ -284,7 +284,7 @@ namespace
                     use.append(lower_x + expand_sep + stringify(*u) + " ");
 
                 std::string value;
-                Map<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
+                Map<std::string, std::string>::ConstIterator i(expand_vars->find(stringify(*x)));
                 if (expand_vars->end() != i)
                 {
                     value = i->second;
@@ -364,7 +364,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         if (id->src_uri_key())
             id->src_uri_key()->value()->accept(f);
 
-        for (AFinder::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
 
@@ -384,7 +384,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
                 id->src_uri_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
-            for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+            for (AAFinder::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
                 if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
                 {
@@ -429,7 +429,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
             tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
             EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_nofetch);
-            for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)
             {
                 EbuildCommandParams command_params(EbuildCommandParams::create()
@@ -498,7 +498,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         if (id->src_uri_key())
             id->src_uri_key()->value()->accept(f);
 
-        for (AFinder::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
 
@@ -518,7 +518,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                 id->src_uri_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
-            for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+            for (AAFinder::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
                 if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
                 {
@@ -577,7 +577,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
     }
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_install);
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("merge"))
@@ -695,7 +695,7 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("installed=true"))
@@ -836,7 +836,7 @@ EbuildEntries::pretend(const tr1::shared_ptr<const ERepositoryID> & id,
     tr1::shared_ptr<const FSEntrySequence> exlibsdirs(_imp->e_repository->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_pretend);
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         EbuildCommandParams command_params(EbuildCommandParams::create()

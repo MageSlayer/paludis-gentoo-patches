@@ -58,9 +58,9 @@ namespace paludis
                 ///\name Iterate over our profile lines.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ProfileFile, typename F_::Iterator::value_type> Iterator;
-                Iterator begin() const;
-                Iterator end() const;
+                typedef libwrapiter::ForwardIterator<ProfileFile, typename F_::ConstIterator::value_type> ConstIterator;
+                ConstIterator begin() const;
+                ConstIterator end() const;
 
                 ///\}
         };

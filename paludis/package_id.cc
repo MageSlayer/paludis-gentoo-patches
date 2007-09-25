@@ -76,18 +76,18 @@ PackageID::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
     _imp->keys.push_back(k);
 }
 
-PackageID::MetadataIterator
+PackageID::MetadataConstIterator
 PackageID::begin_metadata() const
 {
     need_keys_added();
-    return MetadataIterator(_imp->keys.begin());
+    return MetadataConstIterator(_imp->keys.begin());
 }
 
-PackageID::MetadataIterator
+PackageID::MetadataConstIterator
 PackageID::end_metadata() const
 {
     need_keys_added();
-    return MetadataIterator(_imp->keys.end());
+    return MetadataConstIterator(_imp->keys.end());
 }
 
 void
@@ -96,18 +96,18 @@ PackageID::add_mask(const tr1::shared_ptr<const Mask> & k) const
     _imp->masks.push_back(k);
 }
 
-PackageID::MasksIterator
+PackageID::MasksConstIterator
 PackageID::begin_masks() const
 {
     need_masks_added();
-    return MasksIterator(_imp->masks.begin());
+    return MasksConstIterator(_imp->masks.begin());
 }
 
-PackageID::MasksIterator
+PackageID::MasksConstIterator
 PackageID::end_masks() const
 {
     need_masks_added();
-    return MasksIterator(_imp->masks.end());
+    return MasksConstIterator(_imp->masks.end());
 }
 
 bool
@@ -122,7 +122,7 @@ PackageID::invalidate_masks() const
     _imp->masks.clear();
 }
 
-PackageID::MetadataIterator
+PackageID::MetadataConstIterator
 PackageID::find_metadata(const std::string & s) const
 {
     using namespace tr1::placeholders;
@@ -187,7 +187,7 @@ PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
     PrivateImplementationPattern<PackageIDComparator>(new Implementation<PackageIDComparator>)
 {
     unsigned c(0);
-    for (PackageDatabase::RepositoryIterator r(db->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
             r_end(db->end_repositories()) ; r != r_end ; ++r)
         _imp->m.insert(std::make_pair((*r)->name(), ++c));
 }

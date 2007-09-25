@@ -73,16 +73,16 @@ GLSAPackage::~GLSAPackage()
 {
 }
 
-GLSAPackage::ArchsIterator
+GLSAPackage::ArchsConstIterator
 GLSAPackage::begin_archs() const
 {
-    return ArchsIterator(_imp->archs.begin());
+    return ArchsConstIterator(_imp->archs.begin());
 }
 
-GLSAPackage::ArchsIterator
+GLSAPackage::ArchsConstIterator
 GLSAPackage::end_archs() const
 {
-    return ArchsIterator(_imp->archs.end());
+    return ArchsConstIterator(_imp->archs.end());
 }
 
 void
@@ -91,28 +91,28 @@ GLSAPackage::add_arch(const UseFlagName & n)
     _imp->archs.push_back(n);
 }
 
-GLSAPackage::RangesIterator
+GLSAPackage::RangesConstIterator
 GLSAPackage::begin_unaffected() const
 {
-    return RangesIterator(_imp->unaffected.begin());
+    return RangesConstIterator(_imp->unaffected.begin());
 }
 
-GLSAPackage::RangesIterator
+GLSAPackage::RangesConstIterator
 GLSAPackage::end_unaffected() const
 {
-    return RangesIterator(_imp->unaffected.end());
+    return RangesConstIterator(_imp->unaffected.end());
 }
 
-GLSAPackage::RangesIterator
+GLSAPackage::RangesConstIterator
 GLSAPackage::begin_vulnerable() const
 {
-    return RangesIterator(_imp->vulnerable.begin());
+    return RangesConstIterator(_imp->vulnerable.begin());
 }
 
-GLSAPackage::RangesIterator
+GLSAPackage::RangesConstIterator
 GLSAPackage::end_vulnerable() const
 {
-    return RangesIterator(_imp->vulnerable.end());
+    return RangesConstIterator(_imp->vulnerable.end());
 }
 
 void
@@ -142,16 +142,16 @@ GLSA::~GLSA()
 {
 }
 
-GLSA::PackagesIterator
+GLSA::PackagesConstIterator
 GLSA::begin_packages() const
 {
-    return PackagesIterator(indirect_iterator(_imp->packages.begin()));
+    return PackagesConstIterator(indirect_iterator(_imp->packages.begin()));
 }
 
-GLSA::PackagesIterator
+GLSA::PackagesConstIterator
 GLSA::end_packages() const
 {
-    return PackagesIterator(indirect_iterator(_imp->packages.end()));
+    return PackagesConstIterator(indirect_iterator(_imp->packages.end()));
 }
 
 void

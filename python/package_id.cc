@@ -38,7 +38,7 @@ struct PackageIDWrapper
     static PyObject *
     find_metadata(const PackageID & self, const std::string & key)
     {
-        PackageID::MetadataIterator i(self.find_metadata(key));
+        PackageID::MetadataConstIterator i(self.find_metadata(key));
         if (i != self.end_metadata())
             return bp::incref(bp::object(*i).ptr());
         else

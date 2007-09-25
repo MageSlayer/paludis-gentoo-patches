@@ -65,7 +65,7 @@ SyncTask::execute()
     Context context("When executing sync task:");
 
     if (_imp->targets.empty())
-        for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
             _imp->targets.push_back((*r)->name());
 
@@ -118,15 +118,15 @@ SyncTask::execute()
         throw SyncFailedError("Sync aborted by hook");
 }
 
-SyncTask::TargetsIterator
+SyncTask::TargetsConstIterator
 SyncTask::begin_targets() const
 {
-    return TargetsIterator(_imp->targets.begin());
+    return TargetsConstIterator(_imp->targets.begin());
 }
 
-SyncTask::TargetsIterator
+SyncTask::TargetsConstIterator
 SyncTask::end_targets() const
 {
-    return TargetsIterator(_imp->targets.end());
+    return TargetsConstIterator(_imp->targets.end());
 }
 

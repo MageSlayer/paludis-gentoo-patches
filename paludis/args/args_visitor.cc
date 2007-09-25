@@ -38,15 +38,15 @@
 using namespace paludis;
 using namespace paludis::args;
 
-template class MutableVisitor<ArgsVisitorTypes>;
-template class MutableAcceptInterface<ArgsVisitorTypes>;
+template class Visitor<ArgsVisitorTypes>;
+template class AcceptInterface<ArgsVisitorTypes>;
 
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>;
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>;
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>;
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>;
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>;
-template class MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>;
+template class AcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>;
 
 template class Visits<IntegerArg>;
 template class Visits<EnumArg>;

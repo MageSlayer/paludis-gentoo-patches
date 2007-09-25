@@ -154,7 +154,7 @@ struct RepositoryEInterfaceWrapper
     static bp::object
     my_find_profile(const RepositoryEInterface & self, const FSEntry & location)
     {
-        RepositoryEInterface::ProfilesIterator p(self.find_profile(location));
+        RepositoryEInterface::ProfilesConstIterator p(self.find_profile(location));
         if (p == self.end_profiles())
             return bp::object();
         return bp::object(bp::ptr(&*p));

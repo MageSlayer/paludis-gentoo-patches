@@ -61,14 +61,14 @@ void
 RepositoryInfoModel::set_repository_in_gui_thread(tr1::shared_ptr<const RepositoryInfo> info)
 {
     clear();
-    for (IndirectIterator<RepositoryInfo::SectionIterator>
+    for (IndirectIterator<RepositoryInfo::SectionConstIterator>
             s(indirect_iterator(info->begin_sections())), s_end(indirect_iterator(info->end_sections())) ;
             s != s_end ; ++s)
     {
         iterator i(append());
         (*i)[_imp->columns.col_key] = s->heading();
 
-        for (RepositoryInfoSection::KeyValueIterator k(s->begin_kvs()), k_end(s->end_kvs()) ;
+        for (RepositoryInfoSection::KeyValueConstIterator k(s->begin_kvs()), k_end(s->end_kvs()) ;
                 k != k_end ; ++k)
         {
             iterator j(append(i->children()));

@@ -48,7 +48,7 @@ paludis::match_package(
         switch (spec.version_requirements_mode())
         {
             case vr_and:
-                for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
+                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
                         r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
                     if (! r->version_operator.as_version_spec_comparator()(entry.version(), r->version_spec))
                         return false;
@@ -57,7 +57,7 @@ paludis::match_package(
             case vr_or:
                 {
                     bool matched(false);
-                    for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
+                    for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
                             r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
                         if (r->version_operator.as_version_spec_comparator()(entry.version(), r->version_spec))
                         {
@@ -84,7 +84,7 @@ paludis::match_package(
 
     if (spec.use_requirements_ptr())
     {
-        for (UseRequirements::Iterator u(spec.use_requirements_ptr()->begin()),
+        for (UseRequirements::ConstIterator u(spec.use_requirements_ptr()->begin()),
                 u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
         {
             switch (u->second)

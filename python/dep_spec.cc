@@ -143,16 +143,16 @@ PythonCompositeDepSpec::add_child(const tr1::shared_ptr<const PythonDepSpec> c)
     _imp->children.push_back(c);
 }
 
-PythonCompositeDepSpec::Iterator
+PythonCompositeDepSpec::ConstIterator
 PythonCompositeDepSpec::begin() const
 {
-    return Iterator(_imp->children.begin());
+    return ConstIterator(_imp->children.begin());
 }
 
-PythonCompositeDepSpec::Iterator
+PythonCompositeDepSpec::ConstIterator
 PythonCompositeDepSpec::end() const
 {
-    return Iterator(_imp->children.end());
+    return ConstIterator(_imp->children.end());
 }
 
 PythonAnyDepSpec::PythonAnyDepSpec()
@@ -890,8 +890,8 @@ SpecTreeFromPython<H_>::real_visit(const PythonAllDepSpec & d)
 
     Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
             tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, cds, tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
             accept_visitor(*this));
 }
 
@@ -906,8 +906,8 @@ SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
 
     Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
             tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, cds, tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
             accept_visitor(*this));
 }
 
@@ -923,8 +923,8 @@ SpecTreeFromPython<H_>::real_visit(const PythonUseDepSpec & d)
 
     Save<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> > old_add(&_add,
             tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, cds, tr1::placeholders::_1));
-    std::for_each(IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.begin()),
-            IndirectIterator<PythonCompositeDepSpec::Iterator, const PythonDepSpec>(d.end()),
+    std::for_each(IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.begin()),
+            IndirectIterator<PythonCompositeDepSpec::ConstIterator, const PythonDepSpec>(d.end()),
             accept_visitor(*this));
 }
 

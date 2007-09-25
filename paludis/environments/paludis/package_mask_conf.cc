@@ -71,7 +71,7 @@ PackageMaskConf::add(const FSEntry & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::Iterator line(f->begin()), line_end(f->end()) ;
+    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
             line != line_end ; ++line)
         _imp->masks.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*line, pds_pm_unspecific)));
 }

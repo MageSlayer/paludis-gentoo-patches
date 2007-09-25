@@ -176,9 +176,9 @@ namespace paludis
             ///\name Iterate over our nodes
             ///\{
 
-            class NodeIterator;
-            NodeIterator begin_nodes() const;
-            NodeIterator end_nodes() const;
+            class NodeConstIterator;
+            NodeConstIterator begin_nodes() const;
+            NodeConstIterator end_nodes() const;
 
             ///\}
 

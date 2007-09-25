@@ -44,12 +44,12 @@ do_search(const Environment & env)
     std::list<tr1::shared_ptr<Matcher> > matchers;
     std::list<tr1::shared_ptr<Extractor> > extractors;
 
-    for (CommandLine::ParametersIterator p(CommandLine::get_instance()->begin_parameters()),
+    for (CommandLine::ParametersConstIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
         matchers.push_back(MatcherMaker::get_instance()->find_maker(
                 CommandLine::get_instance()->a_matcher.argument())(*p));
 
-    for (paludis::args::StringSetArg::Iterator p(CommandLine::get_instance()->a_extractors.begin_args()),
+    for (paludis::args::StringSetArg::ConstIterator p(CommandLine::get_instance()->a_extractors.begin_args()),
             p_end(CommandLine::get_instance()->a_extractors.end_args()) ; p != p_end ; ++p)
         extractors.push_back(ExtractorMaker::get_instance()->find_maker(*p)(env));
 
@@ -58,7 +58,7 @@ do_search(const Environment & env)
 
     std::set<QualifiedPackageName> pkgs;
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()), r_end(env.package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
@@ -76,7 +76,7 @@ do_search(const Environment & env)
                 continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -87,7 +87,7 @@ do_search(const Environment & env)
                     continue;
 
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs.insert(*p);
         }
@@ -108,7 +108,7 @@ do_search(const Environment & env)
             preferred_entries = entries;
 
         tr1::shared_ptr<const PackageID> display_entry(*preferred_entries->last());
-        for (PackageIDSequence::Iterator i(preferred_entries->begin()),
+        for (PackageIDSequence::ConstIterator i(preferred_entries->begin()),
                 i_end(preferred_entries->end()) ; i != i_end ; ++i)
             if (! (*i)->masked())
                 display_entry = *i;

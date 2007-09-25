@@ -49,38 +49,38 @@ paludis::Sequence<T_>::~Sequence()
 }
 
 template <typename T_>
-typename paludis::Sequence<T_>::Iterator
+typename paludis::Sequence<T_>::ConstIterator
 paludis::Sequence<T_>::begin() const
 {
-    return Iterator(_imp->list.begin());
+    return ConstIterator(_imp->list.begin());
 }
 
 template <typename T_>
-typename paludis::Sequence<T_>::Iterator
+typename paludis::Sequence<T_>::ConstIterator
 paludis::Sequence<T_>::end() const
 {
-    return Iterator(_imp->list.end());
+    return ConstIterator(_imp->list.end());
 }
 
 template <typename T_>
-typename paludis::Sequence<T_>::Iterator
+typename paludis::Sequence<T_>::ConstIterator
 paludis::Sequence<T_>::last() const
 {
-    return Iterator(_imp->list.begin() == _imp->list.end() ? _imp->list.end() : --(_imp->list.end()));
+    return ConstIterator(_imp->list.begin() == _imp->list.end() ? _imp->list.end() : --(_imp->list.end()));
 }
 
 template <typename T_>
-typename paludis::Sequence<T_>::ReverseIterator
+typename paludis::Sequence<T_>::ReverseConstIterator
 paludis::Sequence<T_>::rbegin() const
 {
-    return ReverseIterator(_imp->list.rbegin());
+    return ReverseConstIterator(_imp->list.rbegin());
 }
 
 template <typename T_>
-typename paludis::Sequence<T_>::ReverseIterator
+typename paludis::Sequence<T_>::ReverseConstIterator
 paludis::Sequence<T_>::rend() const
 {
-    return ReverseIterator(_imp->list.rend());
+    return ReverseConstIterator(_imp->list.rend());
 }
 
 template <typename T_>

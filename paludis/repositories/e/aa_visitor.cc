@@ -77,15 +77,15 @@ AAVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
 {
 }
 
-AAVisitor::Iterator
+AAVisitor::ConstIterator
 AAVisitor::begin() const
 {
-    return Iterator(_imp->aa.begin());
+    return ConstIterator(_imp->aa.begin());
 }
 
-AAVisitor::Iterator
+AAVisitor::ConstIterator
 AAVisitor::end() const
 {
-    return Iterator(_imp->aa.end());
+    return ConstIterator(_imp->aa.end());
 }
 

@@ -50,7 +50,7 @@ RepositoriesListModel::populate_in_paludis_thread()
 {
     tr1::shared_ptr<RepositoryNameSequence> columns(new RepositoryNameSequence);
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator>
             r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
             r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
             r != r_end ; ++r)
@@ -64,7 +64,7 @@ void
 RepositoriesListModel::populate_in_gui_thread(tr1::shared_ptr<const RepositoryNameSequence> names)
 {
     clear();
-    for (RepositoryNameSequence::Iterator n(names->begin()), n_end(names->end()) ;
+    for (RepositoryNameSequence::ConstIterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_repo_name] = stringify(*n);
 }

@@ -117,7 +117,7 @@ namespace
                         "--dl-uninstalled-deps-runtime discard "
                         "--dl-uninstalled-deps-post discard "
                         "--install --preserve-world";
-                    for (PackageIDSequence::Iterator i(p->begin()), i_end(p->end()) ; i != i_end ; ++i)
+                    for (PackageIDSequence::ConstIterator i(p->begin()), i_end(p->end()) ; i != i_end ; ++i)
                         resume_command = resume_command + " '=" + stringify(**i) + "'";
 
                     if (CommandLine::get_instance()->a_resume_command_template.specified())

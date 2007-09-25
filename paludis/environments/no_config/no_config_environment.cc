@@ -245,7 +245,7 @@ void
 NoConfigEnvironment::set_accept_unstable(const bool value)
 {
     _imp->accept_unstable = value;
-    for (PackageDatabase::RepositoryIterator it(_imp->package_database->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator it(_imp->package_database->begin_repositories()),
              it_end(_imp->package_database->end_repositories());
          it_end != it; ++it)
         (*it)->invalidate_masks();
@@ -332,7 +332,7 @@ NoConfigEnvironment::accept_keywords(tr1::shared_ptr<const KeywordNameSet> keywo
         WhitespaceTokeniser::get_instance()->tokenise(ak,
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
-        for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+        for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                 k != k_end ; ++k)
         {
             if (accepted.end() != std::find(accepted.begin(), accepted.end(), *k))

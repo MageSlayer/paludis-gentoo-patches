@@ -783,7 +783,7 @@ std::string
 FakeMetadataIUseSetKey::pretty_print_flat(const Formatter<IUseFlag> & f) const
 {
     std::string result;
-    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (! result.empty())
@@ -809,7 +809,7 @@ FakeMetadataIUseSetKey::pretty_print_flat_with_comparison(
         const Formatter<IUseFlag> & f) const
 {
     std::string result;
-    for (IUseFlagSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (IUseFlagSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (! result.empty())
@@ -844,7 +844,7 @@ FakeMetadataIUseSetKey::pretty_print_flat_with_comparison(
         else
         {
             using namespace tr1::placeholders;
-            IUseFlagSet::Iterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
+            IUseFlagSet::ConstIterator p(std::find_if(id->iuse_key()->value()->begin(), id->iuse_key()->value()->end(),
                         tr1::bind(std::equal_to<UseFlagName>(), i->flag, tr1::bind<const UseFlagName>(&IUseFlag::flag, _1))));
 
             if (p == id->iuse_key()->value()->end())
@@ -864,7 +864,7 @@ std::string
 FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) const
 {
     std::string result;
-    for (KeywordNameSet::Iterator i(value()->begin()), i_end(value()->end()) ;
+    for (KeywordNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
             i != i_end ; ++i)
     {
         if (! result.empty())

@@ -56,7 +56,7 @@ void ArgsDumper::visit(const StringSetArg & a)
     generic_visit(a);
 
     if (a.begin_allowed_args() != a.end_allowed_args())
-        for (StringSetArg::AllowedArgIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
+        for (StringSetArg::AllowedArgConstIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
                 it != it_end; ++it)
         {
             std::stringstream p;
@@ -73,7 +73,7 @@ void ArgsDumper::visit(const EnumArg & a)
 {
     generic_visit(a);
 
-    for (EnumArg::AllowedArgIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
+    for (EnumArg::AllowedArgConstIterator it = a.begin_allowed_args(), it_end = a.end_allowed_args();
             it != it_end; ++it)
     {
         std::stringstream p;

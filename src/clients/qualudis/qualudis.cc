@@ -203,7 +203,7 @@ namespace
 
             if (! msg.associated_ids->empty())
             {
-                for (PackageIDSet::Iterator i(msg.associated_ids->begin()),
+                for (PackageIDSet::ConstIterator i(msg.associated_ids->begin()),
                         i_end(msg.associated_ids->end()) ; i != i_end ; ++i)
                     if (! (*i)->fs_location_key() || (*i)->fs_location_key()->value() != msg.entry)
                         std::cout << "      " << stringify(**i) << std::endl;
@@ -211,7 +211,7 @@ namespace
 
             if (! msg.associated_keys->empty())
             {
-                for (QAMessage::KeysSequence::Iterator i(msg.associated_keys->begin()),
+                for (QAMessage::KeysSequence::ConstIterator i(msg.associated_keys->begin()),
                         i_end(msg.associated_keys->end()) ; i != i_end ; ++i)
                 {
                     MetadataKeyPrettyPrinter pp;

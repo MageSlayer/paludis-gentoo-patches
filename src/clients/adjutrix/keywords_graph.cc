@@ -111,7 +111,7 @@ namespace
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
             cout << std::left << std::setw(version_specs_columns_width) << " " << "| ";
-            for (UseFlagNameSet::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (UseFlagNameSet::ConstIterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
             {
                 if ((tallest_arch_name - h) > a->data().length())
@@ -137,7 +137,7 @@ namespace
             << std::string(longest_slot_name + 3, '-') << endl;
 
         SlotName old_slot("first_slot");
-        for (IndirectIterator<PackageIDSequence::Iterator> p(packages->begin()), p_end(packages->end()) ;
+        for (IndirectIterator<PackageIDSequence::ConstIterator> p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
             if (! p->keywords_key())
@@ -153,7 +153,7 @@ namespace
 
             tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
 
-            for (UseFlagNameSet::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
+            for (UseFlagNameSet::ConstIterator a(arch_flags->begin()), a_end(arch_flags->end()) ;
                     a != a_end ; ++a)
             {
                 if (keywords->end() != keywords->find(KeywordName(stringify(*a))))
@@ -188,7 +188,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
 {
     Context context("When performing keywords-graph action:");
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -198,7 +198,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -209,7 +209,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
                     continue;
 
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())

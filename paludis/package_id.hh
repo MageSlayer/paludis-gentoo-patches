@@ -94,10 +94,10 @@ namespace paludis
             ///\name Finding and iterating over metadata keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const MetadataKey> > MetadataIterator;
-            MetadataIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MetadataIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
@@ -112,9 +112,9 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const Mask> > MasksIterator;
-            MasksIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MasksIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const Mask> > MasksConstIterator;
+            MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void invalidate_masks() const;

@@ -98,7 +98,7 @@ do_config(tr1::shared_ptr<Environment> env)
 
     Context context("When performing config action from command line:");
 
-    CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
     {
@@ -112,7 +112,7 @@ do_config(tr1::shared_ptr<Environment> env)
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-            for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
             cerr << endl;
@@ -123,7 +123,7 @@ do_config(tr1::shared_ptr<Environment> env)
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous config target '" << *q << "'. Did you mean:" << endl;
-            for (PackageIDSequence::Iterator o(e.matches->begin()),
+            for (PackageIDSequence::ConstIterator o(e.matches->begin()),
                     o_end(e.matches->end()) ; o != o_end ; ++o)
                 cerr << "    * =" << colour(cl_package_name, **o) << endl;
             cerr << endl;

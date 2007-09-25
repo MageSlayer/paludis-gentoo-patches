@@ -79,9 +79,9 @@ namespace paludis
             ///\name Target iteration
             ///\{
 
-            typedef libwrapiter::ForwardIterator<SyncTask, const RepositoryName> TargetsIterator;
-            TargetsIterator begin_targets() const;
-            TargetsIterator end_targets() const;
+            typedef libwrapiter::ForwardIterator<SyncTask, const RepositoryName> TargetsConstIterator;
+            TargetsConstIterator begin_targets() const;
+            TargetsConstIterator end_targets() const;
 
             ///\}
 

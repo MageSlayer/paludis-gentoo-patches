@@ -95,22 +95,22 @@ do_one_owner(
     bool found_owner=false;
     cout << "* " << colour(cl_package_name, query) << endl;
 
-    for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->installed_interface)
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
-        for (CategoryNamePartSet::Iterator c(cats->begin()),
+        for (CategoryNamePartSet::ConstIterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
             tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkgs->begin()),
+            for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
                 tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
-                for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
+                for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
                 {
                     if (! (*v)->contents_key())
                         continue;
@@ -138,7 +138,7 @@ do_owner(tr1::shared_ptr<Environment> env)
     int return_code(0);
     Context context("When performing owner action from command line:");
 
-    CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
         return_code |= do_one_owner(env, *q);

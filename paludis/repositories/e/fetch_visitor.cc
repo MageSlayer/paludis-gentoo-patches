@@ -168,7 +168,7 @@ FetchVisitor::visit_leaf(const URIDepSpec & u)
     SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
             u.original_url(), u.filename(), _imp->mirrors_name);
     (*_imp->labels.begin())->begin()->accept(source_uri_finder);
-    for (SourceURIFinder::Iterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
+    for (SourceURIFinder::ConstIterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
             i != i_end ; ++i)
     {
         Context local_context("When fetching URI '" + stringify(i->first) + "' to '" + stringify(i->second) + ":");
@@ -196,7 +196,7 @@ FetchVisitor::visit_leaf(const URIDepSpec & u)
 
         const tr1::shared_ptr<const FSEntrySequence> fetch_dirs(_imp->env->fetchers_dirs());
         bool found(false);
-        for (FSEntrySequence::Iterator d(fetch_dirs->begin()), d_end(fetch_dirs->end()) ;
+        for (FSEntrySequence::ConstIterator d(fetch_dirs->begin()), d_end(fetch_dirs->end()) ;
                 d != d_end ; ++d)
             if (make_fetcher(*d, protocol).exists())
             {

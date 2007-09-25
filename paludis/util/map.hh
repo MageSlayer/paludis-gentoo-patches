@@ -44,10 +44,10 @@ namespace paludis
             Map();
             ~Map();
 
-            typedef libwrapiter::ForwardIterator<Map<K_, V_, C_>, const std::pair<const K_, V_> > Iterator;
-            Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            Iterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            typedef libwrapiter::ForwardIterator<Map<K_, V_, C_>, const std::pair<const K_, V_> > ConstIterator;
+            ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             typedef libwrapiter::OutputIterator<Map<K_, V_, C_>, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -56,7 +56,7 @@ namespace paludis
             unsigned size() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void insert(const K_ &, const V_ &);
-            void erase(const Iterator &);
+            void erase(const ConstIterator &);
             void erase(const K_ &);
     };
 }

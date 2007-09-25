@@ -126,7 +126,7 @@ namespace
                     else
                         max_count = std::numeric_limits<long>::max();
 
-                    for (Set<tr1::shared_ptr<DepTag> >::Iterator
+                    for (Set<tr1::shared_ptr<DepTag> >::ConstIterator
                             tag(d.tags->begin()),
                             tag_end(d.tags->end()) ;
                             tag != tag_end ; ++tag)
@@ -235,7 +235,7 @@ namespace
             if (unused)
                 task.add_unused();
             else
-                for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+                for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
                         q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
                     task.add_target(*q);
 
@@ -249,7 +249,7 @@ namespace
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous unmerge target '" << e.target() << "'. Did you mean:" << endl;
-            for (AmbiguousUnmergeTargetError::Iterator o(e.begin()),
+            for (AmbiguousUnmergeTargetError::ConstIterator o(e.begin()),
                     o_end(e.end()) ; o != o_end ; ++o)
                 cerr << "    * =" << colour(cl_package_name, **o) << endl;
             cerr << endl;

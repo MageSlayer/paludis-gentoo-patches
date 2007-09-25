@@ -558,16 +558,16 @@ PaludisConfig::bashrc_files() const
     return _imp->bashrc_files;
 }
 
-PaludisConfig::RepositoryIterator
+PaludisConfig::RepositoryConstIterator
 PaludisConfig::begin_repositories() const
 {
-    return RepositoryIterator(_imp->repos.begin());
+    return RepositoryConstIterator(_imp->repos.begin());
 }
 
-PaludisConfig::RepositoryIterator
+PaludisConfig::RepositoryConstIterator
 PaludisConfig::end_repositories() const
 {
-    return RepositoryIterator(_imp->repos.end());
+    return RepositoryConstIterator(_imp->repos.end());
 }
 
 std::string

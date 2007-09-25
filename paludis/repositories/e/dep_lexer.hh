@@ -107,11 +107,11 @@ namespace paludis
                 ///\{
 
                 typedef libwrapiter::ForwardIterator<DepLexer,
-                        const std::pair<DepLexerLexeme, std::string> > Iterator;
+                        const std::pair<DepLexerLexeme, std::string> > ConstIterator;
 
-                Iterator begin() const;
+                ConstIterator begin() const;
 
-                Iterator end() const;
+                ConstIterator end() const;
 
                 ///\}
 

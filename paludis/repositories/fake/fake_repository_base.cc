@@ -119,7 +119,7 @@ FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
     if (! has_category_named(c))
         return result;
 
-    PackageNamePartSet::Iterator p(_imp->package_names.find(c)->second->begin()),
+    PackageNamePartSet::ConstIterator p(_imp->package_names.find(c)->second->begin()),
         p_end(_imp->package_names.find(c)->second->end());
     for ( ; p != p_end ; ++p)
         result->insert(c + *p);
@@ -194,7 +194,7 @@ FakeRepositoryBase::invalidate_masks()
 {
     for (std::map<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
          it_end != it; ++it)
-        for (PackageIDSequence::Iterator it2(it->second->begin()), it2_end(it->second->end());
+        for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
             (*it2)->invalidate_masks();
 }

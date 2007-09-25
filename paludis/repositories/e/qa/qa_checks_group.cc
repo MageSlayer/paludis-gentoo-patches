@@ -59,19 +59,19 @@ QAChecksGroup<T_>::~QAChecksGroup()
 
 
 template <typename T_>
-typename QAChecksGroup<T_>::Iterator
+typename QAChecksGroup<T_>::ConstIterator
 QAChecksGroup<T_>::begin() const
 {
     need_ordering();
-    return Iterator(_imp->ordered->begin());
+    return ConstIterator(_imp->ordered->begin());
 }
 
 template <typename T_>
-typename QAChecksGroup<T_>::Iterator
+typename QAChecksGroup<T_>::ConstIterator
 QAChecksGroup<T_>::end() const
 {
     need_ordering();
-    return Iterator(_imp->ordered->end());
+    return ConstIterator(_imp->ordered->end());
 }
 
 template <typename T_>

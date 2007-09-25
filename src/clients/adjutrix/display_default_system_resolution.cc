@@ -78,7 +78,7 @@ namespace
         {
             d.add(*env.set(SetName("system")), env.default_destinations());
 
-            for (DepList::Iterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
+            for (DepList::ConstIterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
                 cout << "    " << *e->package_id << endl;
         }
         catch (const NoSuchPackageError & e)
@@ -123,7 +123,7 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
     if (CommandLine::get_instance()->a_profile.begin_args() ==
             CommandLine::get_instance()->a_profile.end_args())
     {
-        for (RepositoryEInterface::ProfilesIterator
+        for (RepositoryEInterface::ProfilesConstIterator
                 p(env.main_repository()->e_interface->begin_profiles()),
                 p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
         {
@@ -133,10 +133,10 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
     }
     else
     {
-        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.begin_args()),
+        for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_profile.begin_args()),
                 i_end(CommandLine::get_instance()->a_profile.end_args()) ; i != i_end ; ++i)
         {
-            RepositoryEInterface::ProfilesIterator
+            RepositoryEInterface::ProfilesConstIterator
                 p(env.main_repository()->e_interface->find_profile(
                             env.main_repository_dir() / "profiles" / (*i)));
             if (p == env.main_repository()->e_interface->end_profiles())

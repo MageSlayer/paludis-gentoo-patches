@@ -118,7 +118,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
         return;
     }
 
-    for (PackageIDSequence::Iterator m(matches->begin()), m_end(matches->end()) ;
+    for (PackageIDSequence::ConstIterator m(matches->begin()), m_end(matches->end()) ;
             m != m_end ; ++m)
     {
         if ((*m)->masked())

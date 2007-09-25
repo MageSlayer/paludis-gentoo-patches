@@ -53,9 +53,9 @@ namespace paludis
                 bool option(const std::string &) const;
                 bool option_contains(const std::string &, const std::string &) const;
 
-                typedef libwrapiter::ForwardIterator<EAPIPhase, const std::string> Iterator;
-                Iterator begin_commands() const;
-                Iterator end_commands() const;
+                typedef libwrapiter::ForwardIterator<EAPIPhase, const std::string> ConstIterator;
+                ConstIterator begin_commands() const;
+                ConstIterator end_commands() const;
 
                 ///\}
         };
@@ -82,9 +82,9 @@ namespace paludis
                 ///\name Information about the phases
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<EAPIPhases, const EAPIPhase> Iterator;
-                Iterator begin_phases() const;
-                Iterator end_phases() const;
+                typedef libwrapiter::ForwardIterator<EAPIPhases, const EAPIPhase> ConstIterator;
+                ConstIterator begin_phases() const;
+                ConstIterator end_phases() const;
 
                 ///\}
         };

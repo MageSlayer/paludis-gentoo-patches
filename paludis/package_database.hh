@@ -117,10 +117,10 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<AmbiguousPackageNameError,
-                    const std::string> OptionsIterator;
+                    const std::string> OptionsConstIterator;
 
-            OptionsIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            OptionsIterator end_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OptionsConstIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OptionsConstIterator end_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -308,12 +308,12 @@ namespace paludis
             ///\name Iterate over our repositories
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageDatabase, const tr1::shared_ptr<Repository> > RepositoryIterator;
+            typedef libwrapiter::ForwardIterator<PackageDatabase, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
 
-            RepositoryIterator begin_repositories() const
+            RepositoryConstIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            RepositoryIterator end_repositories() const
+            RepositoryConstIterator end_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

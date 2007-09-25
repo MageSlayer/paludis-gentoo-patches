@@ -127,14 +127,14 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
 {
     Context context("When loading paludis environment:");
 
-    for (PaludisConfig::RepositoryIterator r(_imp->config->begin_repositories()),
+    for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
     {
         std::string keys;
         if (Log::get_instance()->log_level() <= ll_debug)
         {
             if (r->keys)
-                for (Map<std::string, std::string>::Iterator
+                for (Map<std::string, std::string>::ConstIterator
                         i(r->keys->begin()), i_end(r->keys->end()) ; i != i_end ; ++i)
                 {
                     if (! keys.empty())

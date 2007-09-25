@@ -111,7 +111,7 @@ namespace
             exception_to_ruby_exception(e);
         }
         VALUE result(rb_ary_new());
-        for (PackageIDSequence::Iterator i(items->begin()),
+        for (PackageIDSequence::ConstIterator i(items->begin()),
                 i_end(items->end()) ; i != i_end ; ++i)
             rb_ary_push(result, package_id_to_value(*i));
         return result;
@@ -135,13 +135,13 @@ namespace
 
             if (rb_block_given_p())
             {
-                for (PackageDatabase::RepositoryIterator r((*self_ptr)->begin_repositories()),
+                for (PackageDatabase::RepositoryConstIterator r((*self_ptr)->begin_repositories()),
                         r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
                     rb_yield(repository_to_value(*r));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            for (PackageDatabase::RepositoryIterator r((*self_ptr)->begin_repositories()),
+            for (PackageDatabase::RepositoryConstIterator r((*self_ptr)->begin_repositories()),
                     r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
                 rb_ary_push(result, repository_to_value(*r));
 

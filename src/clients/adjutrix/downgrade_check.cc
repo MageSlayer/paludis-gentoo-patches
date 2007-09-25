@@ -50,7 +50,7 @@ namespace
         QualifiedPackageName old_package("dummy/dummy");
         SlotName old_slot("dummy");
         VersionSpec best_version("0");
-        for (IndirectIterator<PackageIDSequence::Iterator> m(matches->begin()), m_end(matches->end()) ;
+        for (IndirectIterator<PackageIDSequence::ConstIterator> m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
             if (m->name() != old_package || m->slot() != old_slot)
@@ -69,7 +69,7 @@ namespace
     }
 
     std::string
-    make_filename(const RepositoryEInterface::ProfilesIterator & p, bool unstable)
+    make_filename(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -85,7 +85,7 @@ namespace
     }
 
     std::string
-    make_desc(const RepositoryEInterface::ProfilesIterator & p, bool unstable)
+    make_desc(const RepositoryEInterface::ProfilesConstIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -168,7 +168,7 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
     if (! output_dir.mkdir())
         throw ConfigurationError("Output directory already exists");
 
-    for (RepositoryEInterface::ProfilesIterator
+    for (RepositoryEInterface::ProfilesConstIterator
             p(env.main_repository()->e_interface->begin_profiles()),
             p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
     {
@@ -201,7 +201,7 @@ do_downgrade_check(NoConfigEnvironment & env)
 
     std::multimap<QPNS, std::string> results;
 
-    for (RepositoryEInterface::ProfilesIterator
+    for (RepositoryEInterface::ProfilesConstIterator
             p(env.main_repository()->e_interface->begin_profiles()),
             p_end(env.main_repository()->e_interface->end_profiles()) ; p != p_end ; ++p)
     {

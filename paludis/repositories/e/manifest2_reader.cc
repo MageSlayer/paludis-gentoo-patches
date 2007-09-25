@@ -71,7 +71,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
 
     LineConfigFile lines(_imp->manifest, LineConfigFileOptions());
 
-    for (LineConfigFile::Iterator l(lines.begin()), l_end(lines.end()) ;
+    for (LineConfigFile::ConstIterator l(lines.begin()), l_end(lines.end()) ;
         l != l_end ; ++l)
     {
         std::list<std::string> tokens;
@@ -125,7 +125,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
                 Log::get_instance()->message(ll_debug, lc_no_context)
                     << "Skipping unknown checksum type " << checksum_type;
         }
-        
+
         _imp->entries.push_back(Manifest2Entry::create()
             .type(type)
             .size(size)
@@ -142,14 +142,14 @@ Manifest2Reader::~Manifest2Reader()
 {
 }
 
-Manifest2Reader::Iterator
+Manifest2Reader::ConstIterator
 Manifest2Reader::begin() const
 {
-    return Iterator(_imp->entries.begin());
+    return ConstIterator(_imp->entries.begin());
 }
 
-Manifest2Reader::Iterator
+Manifest2Reader::ConstIterator
 Manifest2Reader::end() const
 {
-    return Iterator(_imp->entries.end());
+    return ConstIterator(_imp->entries.end());
 }

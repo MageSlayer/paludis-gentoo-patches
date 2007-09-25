@@ -42,7 +42,7 @@ namespace paludis
          * \ingroup grplibpaludisargs
          */
         class PALUDIS_VISIBLE ArgsOption :
-            public virtual MutableAcceptInterface<ArgsVisitorTypes>
+            public virtual AcceptInterface<ArgsVisitorTypes>
         {
             friend class ArgsHandler;
 
@@ -129,7 +129,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE SwitchArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, SwitchArg>
         {
             public:
                 /**
@@ -148,7 +148,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringArg>
         {
             private:
                 std::string _argument;
@@ -187,7 +187,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>,
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, StringSetArg>,
             private PrivateImplementationPattern<StringSetArg>
         {
             private:
@@ -251,11 +251,11 @@ namespace paludis
                 ///\name Iterate over our args.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<StringArg, const std::string> Iterator;
+                typedef libwrapiter::ForwardIterator<StringArg, const std::string> ConstIterator;
 
-                Iterator begin_args() const;
+                ConstIterator begin_args() const;
 
-                Iterator end_args() const;
+                ConstIterator end_args() const;
 
                 ///\}
 
@@ -268,11 +268,11 @@ namespace paludis
                 ///\{
 
                 typedef libwrapiter::ForwardIterator<StringSetArg,
-                        const std::pair<std::string, std::string> > AllowedArgIterator;
+                        const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
-                AllowedArgIterator begin_allowed_args() const;
+                AllowedArgConstIterator begin_allowed_args() const;
 
-                AllowedArgIterator end_allowed_args() const;
+                AllowedArgConstIterator end_allowed_args() const;
 
                 ///\}
         };
@@ -285,7 +285,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE AliasArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, AliasArg>
         {
             private:
                 ArgsOption * const _other;
@@ -322,7 +322,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE IntegerArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, IntegerArg>
         {
             private:
                 int _argument;
@@ -352,7 +352,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
-            public MutableAcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>,
+            public AcceptInterfaceVisitsThis<ArgsVisitorTypes, EnumArg>,
             private PrivateImplementationPattern<EnumArg>
         {
             private:
@@ -423,11 +423,11 @@ namespace paludis
                 ///\{
 
                 typedef libwrapiter::ForwardIterator<EnumArg,
-                        const std::pair<std::string, std::string> > AllowedArgIterator;
+                        const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
-                AllowedArgIterator begin_allowed_args() const;
+                AllowedArgConstIterator begin_allowed_args() const;
 
-                AllowedArgIterator end_allowed_args() const;
+                AllowedArgConstIterator end_allowed_args() const;
 
                 ///\}
         };

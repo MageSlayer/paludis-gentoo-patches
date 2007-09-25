@@ -65,7 +65,7 @@ namespace
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
+            for (EnumArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
             {
                 _dw.extra_arg_enum(a->first, a->second, e.default_arg());
@@ -81,7 +81,7 @@ namespace
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
+            for (EnumArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
                     a != a_end ; ++a)
             {
                 _dw.extra_arg_string_set(a->first, a->second);
@@ -98,7 +98,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 {
     dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
-    for (ArgsHandler::UsageLineIterator u(h->begin_usage_lines()),
+    for (ArgsHandler::UsageLineConstIterator u(h->begin_usage_lines()),
             u_end(h->end_usage_lines()) ; u != u_end ; ++u)
     {
         dw.usage_line(h->app_name(), *u);
@@ -106,12 +106,12 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 
     dw.start_description(h->app_description());
 
-    for (ArgsHandler::ArgsGroupsIterator a(h->begin_args_groups()),
+    for (ArgsHandler::ArgsGroupsConstIterator a(h->begin_args_groups()),
             a_end(h->end_args_groups()) ; a != a_end ; ++a)
     {
         dw.start_arg_group((*a)->name(), (*a)->description());
 
-        for (paludis::args::ArgsGroup::Iterator b((*a)->begin()), b_end((*a)->end()) ;
+        for (paludis::args::ArgsGroup::ConstIterator b((*a)->begin()), b_end((*a)->end()) ;
                 b != b_end ; ++b)
         {
             dw.arg_group_item((*b)->short_name(), (*b)->long_name(), (*b)->description());
@@ -129,7 +129,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     {
         dw.start_environment();
 
-        for (ArgsHandler::EnvironmentLineIterator a(h->begin_environment_lines()),
+        for (ArgsHandler::EnvironmentLineConstIterator a(h->begin_environment_lines()),
                 a_end(h->end_environment_lines()) ; a != a_end ; ++a)
         {
             dw.environment_line(a->first, a->second);

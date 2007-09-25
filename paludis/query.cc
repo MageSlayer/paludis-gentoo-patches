@@ -104,7 +104,7 @@ namespace
             {
                 tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
-                for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
+                for (PackageDatabase::RepositoryConstIterator i(e.package_database()->begin_repositories()),
                         i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
                     if ((*i)->name() == *spec.repository_ptr())
                     {
@@ -154,9 +154,9 @@ namespace
             {
                 tr1::shared_ptr<QualifiedPackageNameSet> result(
                         new QualifiedPackageNameSet);
-                for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+                for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    for (CategoryNamePartSet::Iterator c(cats->begin()), c_end(cats->end()) ;
+                    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                             c != c_end ; ++c)
                         if (e.package_database()->fetch_repository(*r)->has_package_named(*c +
                                     *spec.package_name_part_ptr()))
@@ -173,17 +173,17 @@ namespace
                 tr1::shared_ptr<const QualifiedPackageNameSet> pkgs) const
         {
             tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+            for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
                 tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
-                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
                     using namespace tr1::placeholders;
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
-                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
+                    for (PackageIDSequence::ConstIterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
                         if (match_package(e, spec, **v))
                             result->push_back(*v);
@@ -242,16 +242,16 @@ namespace
                 tr1::shared_ptr<const QualifiedPackageNameSet> pkgs) const
         {
             tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+            for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
                 tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
-                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
-                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
+                    for (PackageIDSequence::ConstIterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
                         if (! ((*v)->masked()))
                             result->push_back(*v);
@@ -291,7 +291,7 @@ namespace
         {
             tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
-            for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
+            for (PackageDatabase::RepositoryConstIterator i(e.package_database()->begin_repositories()),
                     i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
                 if ((*i)->installed_interface)
                     if (root == (*i)->installed_interface->root())
@@ -524,7 +524,7 @@ namespace
 
             tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
 
-            for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
+            for (PackageDatabase::RepositoryConstIterator i(e.package_database()->begin_repositories()),
                     i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
                 if ((*i)->some_ids_might_support_action(t))
                     result->push_back((*i)->name());
@@ -540,16 +540,16 @@ namespace
             SupportsActionTest<T_> t;
 
             tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-            for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+            for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                      r != r_end ; ++r)
             {
                 tr1::shared_ptr<const Repository> repo(e.package_database()->fetch_repository(*r));
 
-                for (QualifiedPackageNameSet::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                 {
                     tr1::shared_ptr<const PackageIDSequence> i(repo->package_ids(*p));
-                    for (PackageIDSequence::Iterator v(i->begin()), v_end(i->end()) ;
+                    for (PackageIDSequence::ConstIterator v(i->begin()), v_end(i->end()) ;
                             v != v_end ; ++v)
                         if ((*v)->supports_action(t))
                             result->push_back(*v);

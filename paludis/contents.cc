@@ -129,16 +129,16 @@ Contents::add(tr1::shared_ptr<const ContentsEntry> c)
     _imp->c.push_back(c);
 }
 
-Contents::Iterator
+Contents::ConstIterator
 Contents::begin() const
 {
-    return Iterator(_imp->c.begin());
+    return ConstIterator(_imp->c.begin());
 }
 
-Contents::Iterator
+Contents::ConstIterator
 Contents::end() const
 {
-    return Iterator(_imp->c.end());
+    return ConstIterator(_imp->c.end());
 }
 
 std::ostream &

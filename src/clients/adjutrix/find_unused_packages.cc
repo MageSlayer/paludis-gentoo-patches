@@ -42,7 +42,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
 {
     Context context("When performing find-unused-packages action:");
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -60,7 +60,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
         cout << "Searching for unused packages in repository " << stringify(r->name()) << endl;
 
         tr1::shared_ptr<const CategoryNamePartSet> categories(r->category_names());
-        for (CategoryNamePartSet::Iterator c(categories->begin()), c_end(categories->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end()) ;
                 c != c_end ; ++c)
         {
             Context cat_context("When searching for unused packages in category '" + stringify(*c) + "':");
@@ -75,7 +75,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
             cout << " In category " << stringify(*c) << ":" << endl;
             tr1::shared_ptr<const QualifiedPackageNameSet> packages(r->package_names(*c));
 
-            for (QualifiedPackageNameSet::Iterator p(packages->begin()), p_end(packages->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 Context pkg_context("When searching for unused packages with package name '" + stringify(*p) + "':");
@@ -88,7 +88,7 @@ void do_find_unused_packages(const NoConfigEnvironment & env)
                         continue;
 
                 tr1::shared_ptr<const PackageIDSequence> unused(task.execute(*p));
-                for (IndirectIterator<PackageIDSequence::Iterator> u(unused->begin()), u_end(unused->end()) ; 
+                for (IndirectIterator<PackageIDSequence::ConstIterator> u(unused->begin()), u_end(unused->end()) ; 
                         u != u_end ; ++u)
                     cout << stringify(*u) << endl;
             }

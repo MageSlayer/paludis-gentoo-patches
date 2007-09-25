@@ -242,7 +242,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
         LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions());
-        for (LineConfigFile::Iterator line(m.begin()), line_end(m.end()) ;
+        for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
@@ -276,7 +276,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     else
     {
         LineConfigFile file(f, LineConfigFileOptions());
-        for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
+        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
@@ -320,7 +320,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
     else
     {
         LineConfigFile file(f, LineConfigFileOptions());
-        for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
+        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                         strip_trailing(strip_leading(*line, " \t"), " \t"), pds_pm_permissive));
@@ -337,7 +337,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
         Context context_local("When loading parent profiles:");
 
         LineConfigFile f(d / "parent", LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_disallow_comments);
-        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
             _load_profile((d / *line).realpath());
     }
@@ -514,7 +514,7 @@ PortageEnvironment::accept_keywords(tr1::shared_ptr <const KeywordNameSet> keywo
     if (keywords->end() != keywords->find(KeywordName("*")))
         return true;
 
-    for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+    for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
             k != k_end ; ++k)
     {
         bool local_result(false);

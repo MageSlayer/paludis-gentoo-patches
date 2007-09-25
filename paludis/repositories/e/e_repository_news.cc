@@ -127,7 +127,7 @@ ERepositoryNews::update_news() const
             if (news.begin_display_if_installed() != news.end_display_if_installed())
             {
                 bool local_show(false);
-                for (NewsFile::DisplayIfInstalledIterator i(news.begin_display_if_installed()),
+                for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
                     if (! _imp->environment->package_database()->query(
                                 query::Matches(PackageDepSpec(*i, pds_pm_permissive)) &
@@ -140,7 +140,7 @@ ERepositoryNews::update_news() const
             if (news.begin_display_if_keyword() != news.end_display_if_keyword())
             {
                 bool local_show(false);
-                for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
+                for (NewsFile::DisplayIfKeywordConstIterator i(news.begin_display_if_keyword()),
                         i_end(news.end_display_if_keyword()) ; i != i_end && ! local_show ; ++i)
                     if (*i == _imp->e_repository->profile_variable("ARCH"))
                         local_show = true;
@@ -151,14 +151,14 @@ ERepositoryNews::update_news() const
             {
                 bool local_show(false);
                 tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles);
-                for (FSEntrySequence::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
+                for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
                                     stringify(p->realpath())), "/"), "/"));
                     Log::get_instance()->message(ll_debug, lc_no_context,
                             "Profile path is '" + profile + "'");
-                    for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
+                    for (NewsFile::DisplayIfProfileConstIterator i(news.begin_display_if_profile()),
                             i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
                         if (profile == *i)
                             local_show = true;
@@ -225,7 +225,7 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
 
     LineConfigFile line_file(our_filename, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_no_skip_blank_lines
             + lcfo_disallow_comments);
-    for (LineConfigFile::Iterator line(line_file.begin()), line_end(line_file.end()) ;
+    for (LineConfigFile::ConstIterator line(line_file.begin()), line_end(line_file.end()) ;
             line != line_end ; ++line)
     {
         if (line->empty())
@@ -255,40 +255,40 @@ NewsFile::~NewsFile()
 {
 }
 
-NewsFile::DisplayIfInstalledIterator
+NewsFile::DisplayIfInstalledConstIterator
 NewsFile::begin_display_if_installed() const
 {
-    return DisplayIfInstalledIterator(_imp->display_if_installed.begin());
+    return DisplayIfInstalledConstIterator(_imp->display_if_installed.begin());
 }
 
-NewsFile::DisplayIfInstalledIterator
+NewsFile::DisplayIfInstalledConstIterator
 NewsFile::end_display_if_installed() const
 {
-    return DisplayIfInstalledIterator(_imp->display_if_installed.end());
+    return DisplayIfInstalledConstIterator(_imp->display_if_installed.end());
 }
 
-NewsFile::DisplayIfKeywordIterator
+NewsFile::DisplayIfKeywordConstIterator
 NewsFile::begin_display_if_keyword() const
 {
-    return DisplayIfKeywordIterator(_imp->display_if_keyword.begin());
+    return DisplayIfKeywordConstIterator(_imp->display_if_keyword.begin());
 }
 
-NewsFile::DisplayIfKeywordIterator
+NewsFile::DisplayIfKeywordConstIterator
 NewsFile::end_display_if_keyword() const
 {
-    return DisplayIfKeywordIterator(_imp->display_if_keyword.end());
+    return DisplayIfKeywordConstIterator(_imp->display_if_keyword.end());
 }
 
-NewsFile::DisplayIfProfileIterator
+NewsFile::DisplayIfProfileConstIterator
 NewsFile::begin_display_if_profile() const
 {
-    return DisplayIfProfileIterator(_imp->display_if_profile.begin());
+    return DisplayIfProfileConstIterator(_imp->display_if_profile.begin());
 }
 
-NewsFile::DisplayIfProfileIterator
+NewsFile::DisplayIfProfileConstIterator
 NewsFile::end_display_if_profile() const
 {
-    return DisplayIfProfileIterator(_imp->display_if_profile.end());
+    return DisplayIfProfileConstIterator(_imp->display_if_profile.end());
 }
 
 

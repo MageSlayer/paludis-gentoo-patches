@@ -162,10 +162,10 @@ namespace paludis
 
             /* RepositoryMirrorsInterface */
 
-            virtual MirrorsIterator begin_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual MirrorsIterator end_mirrors(const std::string & s) const
+            virtual MirrorsConstIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryVirtualsInterface */
@@ -213,11 +213,11 @@ namespace paludis
             ///\name Profile setting and querying functions
             ///\{
 
-            ProfilesIterator begin_profiles() const;
-            ProfilesIterator end_profiles() const;
+            ProfilesConstIterator begin_profiles() const;
+            ProfilesConstIterator end_profiles() const;
 
-            ProfilesIterator find_profile(const FSEntry & location) const;
-            void set_profile(const ProfilesIterator & iter);
+            ProfilesConstIterator find_profile(const FSEntry & location) const;
+            void set_profile(const ProfilesConstIterator & iter);
             void set_profile_by_arch(const UseFlagName &);
 
             ///\}

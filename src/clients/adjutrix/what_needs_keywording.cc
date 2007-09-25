@@ -77,7 +77,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     DepList d(&env, d_options);
 
-    for (CommandLine::ParametersIterator p(next(CommandLine::get_instance()->begin_parameters())),
+    for (CommandLine::ParametersConstIterator p(next(CommandLine::get_instance()->begin_parameters())),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
     {
         if (std::string::npos == p->find('/'))
@@ -99,7 +99,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
         << std::string(17, '=') << " " << std::string(9, '=') << endl;
 
     bool none(true);
-    for (DepList::Iterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
+    for (DepList::ConstIterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
         if (dlk_masked == p->kind)
         {
             none = false;
@@ -111,7 +111,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             if (p->package_id->keywords_key())
             {
                 tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id->keywords_key()->value());
-                for (KeywordNameSet::Iterator k(keywords->begin()), k_end(keywords->end()) ;
+                for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")
                             || *k == target_keyword
@@ -123,7 +123,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string masks;
 
-            for (PackageID::MasksIterator m(p->package_id->begin_masks()), m_end(p->package_id->end_masks()) ;
+            for (PackageID::MasksConstIterator m(p->package_id->begin_masks()), m_end(p->package_id->end_masks()) ;
                     m != m_end ; ++m)
                 masks.append(stringify((*m)->key()));
 

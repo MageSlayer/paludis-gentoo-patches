@@ -54,16 +54,16 @@ namespace paludis
             ///\name Iterate over our nodes
             ///\{
 
-            typedef libwrapiter::ForwardIterator<RemainingNodes, const std::string> Iterator;
+            typedef libwrapiter::ForwardIterator<RemainingNodes, const std::string> ConstIterator;
 
-            Iterator begin() const
+            ConstIterator begin() const
             {
-                return Iterator(_n.begin());
+                return ConstIterator(_n.begin());
             }
 
-            Iterator end() const
+            ConstIterator end() const
             {
-                return Iterator(_n.end());
+                return ConstIterator(_n.end());
             }
 
             ///\}
@@ -145,14 +145,14 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename Node_, typename Edge_>
-    class DirectedGraph<Node_, Edge_>::NodeIterator
+    class DirectedGraph<Node_, Edge_>::NodeConstIterator
     {
         friend class DirectedGraph<Node_, Edge_>;
 
         private:
             typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator _i;
 
-            NodeIterator(const typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator & i) :
+            NodeConstIterator(const typename std::map<Node_, std::map<Node_, Edge_> >::const_iterator & i) :
                 _i(i)
             {
             }
@@ -161,12 +161,12 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NodeIterator(const NodeIterator & other) :
+            NodeConstIterator(const NodeConstIterator & other) :
                 _i(other._i)
             {
             }
 
-            ~NodeIterator()
+            ~NodeConstIterator()
             {
             }
 
@@ -175,12 +175,12 @@ namespace paludis
             ///\name Comparison operators
             ///\{
 
-            bool operator== (const NodeIterator & other) const
+            bool operator== (const NodeConstIterator & other) const
             {
                 return _i == other._i;
             }
 
-            bool operator!= (const NodeIterator & other) const
+            bool operator!= (const NodeConstIterator & other) const
             {
                 return ! operator== (other);
             }
@@ -190,15 +190,15 @@ namespace paludis
             ///\name Advance operators
             ///\{
 
-            NodeIterator & operator++ ()
+            NodeConstIterator & operator++ ()
             {
                 ++_i;
                 return *this;
             }
 
-            NodeIterator operator++ (int)
+            NodeConstIterator operator++ (int)
             {
-                NodeIterator tmp(*this);
+                NodeConstIterator tmp(*this);
                 ++_i;
                 return tmp;
             }
@@ -222,17 +222,17 @@ namespace paludis
     };
 
     template <typename Node_, typename Edge_>
-    typename DirectedGraph<Node_, Edge_>::NodeIterator
+    typename DirectedGraph<Node_, Edge_>::NodeConstIterator
     DirectedGraph<Node_, Edge_>::begin_nodes() const
     {
-        return NodeIterator(_imp->store.begin());
+        return NodeConstIterator(_imp->store.begin());
     }
 
     template <typename Node_, typename Edge_>
-    typename DirectedGraph<Node_, Edge_>::NodeIterator
+    typename DirectedGraph<Node_, Edge_>::NodeConstIterator
     DirectedGraph<Node_, Edge_>::end_nodes() const
     {
-        return NodeIterator(_imp->store.end());
+        return NodeConstIterator(_imp->store.end());
     }
 
     template <typename Node_, typename Edge_>
@@ -313,9 +313,9 @@ namespace paludis
     }
 
     template <typename Node_, typename Edge_>
-    template <typename OutputIterator_>
+    template <typename OutputConstIterator_>
     void
-    DirectedGraph<Node_, Edge_>::topological_sort(OutputIterator_ x) const
+    DirectedGraph<Node_, Edge_>::topological_sort(OutputConstIterator_ x) const
     {
         struct Sorter
         {
@@ -327,7 +327,7 @@ namespace paludis
             {
             }
 
-            void do_one(OutputIterator_ & i, const Node_ & n)
+            void do_one(OutputConstIterator_ & i, const Node_ & n)
             {
                 if (done.end() != done.find(n))
                     return;
@@ -338,7 +338,7 @@ namespace paludis
                 *i++ = n;
                 done.insert(n);
 
-                for (typename DirectedGraph::NodeIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
+                for (typename DirectedGraph::NodeConstIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
                     if (g.has_edge(*m, n))
                     {
                         g.delete_edge(*m, n);
@@ -348,10 +348,10 @@ namespace paludis
                         ++m;
             }
 
-            void sort(OutputIterator_ & i)
+            void sort(OutputConstIterator_ & i)
             {
                 unsigned c(0);
-                for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
+                for (typename DirectedGraph::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
                 {
                     ++c;
                     do_one(i, *n++);
@@ -361,7 +361,7 @@ namespace paludis
                 {
                     tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
                             new NoGraphTopologicalOrderExistsError::RemainingNodes);
-                    for (typename DirectedGraph::NodeIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
+                    for (typename DirectedGraph::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                         if (done.end() == done.find(*n))
                             r->add(stringify(*n));
 

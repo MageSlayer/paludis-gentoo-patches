@@ -44,7 +44,7 @@ do_list_repositories(tr1::shared_ptr<Environment> env)
 
     Context context("When performing list-repositories action from command line:");
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
@@ -66,11 +66,11 @@ do_list_repositories(tr1::shared_ptr<Environment> env)
         std::cout << "* " << colour(cl_repository_name, r->name()) << std::endl;
 
         tr1::shared_ptr<const RepositoryInfo> ii(r->info(false));
-        for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
+        for (RepositoryInfo::SectionConstIterator i(ii->begin_sections()),
                 i_end(ii->end_sections()) ; i != i_end ; ++i)
         {
             std::cout << "    " << colour(cl_heading, (*i)->heading() + ":") << std::endl;
-            for (RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
+            for (RepositoryInfoSection::KeyValueConstIterator k((*i)->begin_kvs()),
                     k_end((*i)->end_kvs()) ; k != k_end ; ++k)
                 std::cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
                     << std::setw(0) << " " << k->second << std::endl;
@@ -90,7 +90,7 @@ do_list_categories(tr1::shared_ptr<Environment> env)
 
     std::map<CategoryNamePart, std::list<RepositoryName> > cats;
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
@@ -108,7 +108,7 @@ do_list_categories(tr1::shared_ptr<Environment> env)
                 continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
             cats[*c].push_back(r->name());
     }
@@ -143,7 +143,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
 
     std::map<QualifiedPackageName, std::list<RepositoryName> > pkgs;
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
@@ -161,7 +161,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                 continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
@@ -172,7 +172,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
                     continue;
 
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
                 pkgs[*p].push_back(r->name());
         }
@@ -208,7 +208,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
 
     std::map<SetName, std::list<std::string> > sets;
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
@@ -229,7 +229,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
                 continue;
 
         tr1::shared_ptr<const SetNameSet> set_names(r->sets_interface->sets_list());
-        for (SetNameSet::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back(stringify(r->name()));
     }
@@ -237,7 +237,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
     if (! CommandLine::get_instance()->a_repository.specified())
     {
         tr1::shared_ptr<const SetNameSet> set_names(env->set_names());
-        for (SetNameSet::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+        for (SetNameSet::ConstIterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
             sets[*s].push_back("environment");
     }

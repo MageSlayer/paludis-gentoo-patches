@@ -111,13 +111,13 @@ VersionsListModel::populate_in_paludis_thread()
                 query::Package(_imp->query_window->get_package_name()),
                 qo_order_by_version));
 
-    for (PackageIDSequence::ReverseIterator p(c->rbegin()), p_end(c->rend()) ;
+    for (PackageIDSequence::ReverseConstIterator p(c->rbegin()), p_end(c->rend()) ;
             p != p_end ; ++p)
     {
         bool prefer_default(true);
         std::string mr_string;
 
-        for (PackageID::MasksIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
+        for (PackageID::MasksConstIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
                 m != m_end ; ++m)
         {
             prefer_default = false;

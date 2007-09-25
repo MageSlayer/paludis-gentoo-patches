@@ -77,7 +77,7 @@ namespace
             + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
             + CommandLine::get_instance()->a_install.long_name();
 
-        for (PackageIDSequence::Iterator i(s.begin()), i_end(s.end()) ;
+        for (PackageIDSequence::ConstIterator i(s.begin()), i_end(s.end()) ;
                 i != i_end ; ++i)
             resume_command = resume_command + " '=" + stringify(**i) + "'";
 
@@ -95,7 +95,7 @@ namespace
         }
 
         if (CommandLine::get_instance()->a_destinations.specified())
-            for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
+            for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_destinations.begin_args()),
                     i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
                     i != i_end ; ++i)
                 resume_command = resume_command + " --" + CommandLine::get_instance()->a_destinations.long_name()
@@ -434,7 +434,7 @@ do_install(tr1::shared_ptr<Environment> env)
 
     if (CommandLine::get_instance()->dl_override_masks.specified())
     {
-        for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.begin_args()),
+        for (args::StringSetArg::ConstIterator a(CommandLine::get_instance()->dl_override_masks.begin_args()),
                 a_end(CommandLine::get_instance()->dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
             if (! options.override_masks)
@@ -517,7 +517,7 @@ do_install(tr1::shared_ptr<Environment> env)
         Context local_context("When building destinations collection:");
 
         tr1::shared_ptr<DestinationsSet> d(new DestinationsSet);
-        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
+        for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_destinations.begin_args()),
                 i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
                 i != i_end ; ++i)
         {
@@ -580,7 +580,7 @@ do_install(tr1::shared_ptr<Environment> env)
     InstallKilledCatcher install_killed_catcher(env, task);
 
     cout << "Building target list... " << std::flush;
-    for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+    for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
         task.add_target(*q);
     cout << endl;

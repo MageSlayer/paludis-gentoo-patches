@@ -39,7 +39,7 @@ OurStageBuilderTask::on_build_all_pre()
             << endl << endl;
 
     int num_stages(0), num_rebuilds(0);
-    for (StageIterator s(begin_stages()), s_end(end_stages()) ; s != s_end ; s++)
+    for (StageConstIterator s(begin_stages()), s_end(end_stages()) ; s != s_end ; s++)
     {
         cout << "o " << colour(cl_key_name, (*s)->short_name()) << endl
                 << "  " << colour(cl_tag, (*s)->description()) << endl;

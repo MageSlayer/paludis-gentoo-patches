@@ -84,45 +84,45 @@ namespace paludis
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
-            /// Tag for DisplayIfInstalledIterator.
-            struct DisplayIfInstalledIteratorTag;
+            /// Tag for DisplayIfInstalledConstIterator.
+            struct DisplayIfInstalledConstIteratorTag;
 
-            typedef libwrapiter::ForwardIterator<DisplayIfInstalledIteratorTag,
-                    const std::string> DisplayIfInstalledIterator;
+            typedef libwrapiter::ForwardIterator<DisplayIfInstalledConstIteratorTag,
+                    const std::string> DisplayIfInstalledConstIterator;
 
-            DisplayIfInstalledIterator begin_display_if_installed() const;
+            DisplayIfInstalledConstIterator begin_display_if_installed() const;
 
-            DisplayIfInstalledIterator end_display_if_installed() const;
+            DisplayIfInstalledConstIterator end_display_if_installed() const;
 
             ///\}
 
             ///\name Iterate over our Display-If-Keyword headers
             ///\{
 
-            /// Tag for DisplayIfKeywordIterator.
-            struct DisplayIfKeywordIteratorTag;
+            /// Tag for DisplayIfKeywordConstIterator.
+            struct DisplayIfKeywordConstIteratorTag;
 
-            typedef libwrapiter::ForwardIterator<DisplayIfKeywordIteratorTag,
-                    const std::string> DisplayIfKeywordIterator;
+            typedef libwrapiter::ForwardIterator<DisplayIfKeywordConstIteratorTag,
+                    const std::string> DisplayIfKeywordConstIterator;
 
-            DisplayIfKeywordIterator begin_display_if_keyword() const;
+            DisplayIfKeywordConstIterator begin_display_if_keyword() const;
 
-            DisplayIfKeywordIterator end_display_if_keyword() const;
+            DisplayIfKeywordConstIterator end_display_if_keyword() const;
 
             ///\}
 
             ///\name Iterate over our Display-If-Profile headers
             ///\{
 
-            /// Tag for DisplayIfProfileIterator.
-            struct DisplayIfProfileIteratorTag;
+            /// Tag for DisplayIfProfileConstIterator.
+            struct DisplayIfProfileConstIteratorTag;
 
-            typedef libwrapiter::ForwardIterator<DisplayIfProfileIteratorTag,
-                    const std::string> DisplayIfProfileIterator;
+            typedef libwrapiter::ForwardIterator<DisplayIfProfileConstIteratorTag,
+                    const std::string> DisplayIfProfileConstIterator;
 
-            DisplayIfProfileIterator begin_display_if_profile() const;
+            DisplayIfProfileConstIterator begin_display_if_profile() const;
 
-            DisplayIfProfileIterator end_display_if_profile() const;
+            DisplayIfProfileConstIterator end_display_if_profile() const;
 
             ///\}
     };

@@ -98,7 +98,7 @@ namespace
     };
 
     struct NodeVisitor :
-        MutableVisitor<NodeVisitorTypes>
+        Visitor<NodeVisitorTypes>
     {
         std::string r;
 

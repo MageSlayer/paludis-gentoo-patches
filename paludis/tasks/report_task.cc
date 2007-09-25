@@ -81,7 +81,7 @@ namespace
     {
         tr1::shared_ptr<const PackageIDSequence> insecure(
                 _env.package_database()->query(query::Matches(a), qo_order_by_version));
-        for (PackageIDSequence::Iterator i(insecure->begin()),
+        for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (a.tag())
                 _found.insert(std::make_pair(*i, a.tag()));
@@ -124,7 +124,7 @@ ReportTask::execute()
     bool once(true);
 
     VulnerableChecker vuln(*e);
-    for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
@@ -152,12 +152,12 @@ ReportTask::execute()
     UninstallList unused_list(e, UninstallListOptions());
     unused_list.add_unused();
     std::set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
-    for (UninstallList::Iterator i(unused_list.begin()), i_end(unused_list.end());
+    for (UninstallList::ConstIterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
         if (i->kind != ulk_virtual)
             unused.insert(i->package_id);
 
-    for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
@@ -165,17 +165,17 @@ ReportTask::execute()
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
         {
             tr1::shared_ptr<const QualifiedPackageNameSet> packages(rr->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(packages->begin()), p_end(packages->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 on_report_check_package_pre(*p);
 
                 tr1::shared_ptr<const PackageIDSequence> ids(rr->package_ids(*p));
-                for (PackageIDSequence::Iterator v(ids->begin()), v_end(ids->end()) ;
+                for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                         v != v_end ; ++v)
                 {
                     bool is_missing(false);

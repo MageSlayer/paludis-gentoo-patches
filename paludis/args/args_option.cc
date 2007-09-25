@@ -155,16 +155,16 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
             std::back_inserter(_imp->allowed_args));
 }
 
-StringSetArg::Iterator
+StringSetArg::ConstIterator
 StringSetArg::begin_args() const
 {
-    return Iterator(_imp->args.begin());
+    return ConstIterator(_imp->args.begin());
 }
 
-StringSetArg::Iterator
+StringSetArg::ConstIterator
 StringSetArg::end_args() const
 {
-    return Iterator(_imp->args.end());
+    return ConstIterator(_imp->args.end());
 }
 
 void
@@ -297,31 +297,31 @@ EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
     _imp->allowed_args = opts._imp->options;
 }
 
-EnumArg::AllowedArgIterator
+EnumArg::AllowedArgConstIterator
 EnumArg::begin_allowed_args() const
 {
-    return AllowedArgIterator(_imp->allowed_args.begin());
+    return AllowedArgConstIterator(_imp->allowed_args.begin());
 }
 
-EnumArg::AllowedArgIterator
+EnumArg::AllowedArgConstIterator
 EnumArg::end_allowed_args() const
 {
-    return AllowedArgIterator(_imp->allowed_args.end());
+    return AllowedArgConstIterator(_imp->allowed_args.end());
 }
 
 StringSetArg::~StringSetArg()
 {
 }
 
-StringSetArg::AllowedArgIterator
+StringSetArg::AllowedArgConstIterator
 StringSetArg::begin_allowed_args() const
 {
-    return AllowedArgIterator(_imp->allowed_args.begin());
+    return AllowedArgConstIterator(_imp->allowed_args.begin());
 }
 
-StringSetArg::AllowedArgIterator
+StringSetArg::AllowedArgConstIterator
 StringSetArg::end_allowed_args() const
 {
-    return AllowedArgIterator(_imp->allowed_args.end());
+    return AllowedArgConstIterator(_imp->allowed_args.end());
 }
 

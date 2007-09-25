@@ -225,16 +225,16 @@ LineConfigFile::~LineConfigFile()
 {
 }
 
-LineConfigFile::Iterator
+LineConfigFile::ConstIterator
 LineConfigFile::begin() const
 {
-    return Iterator(_imp->lines.begin());
+    return ConstIterator(_imp->lines.begin());
 }
 
-LineConfigFile::Iterator
+LineConfigFile::ConstIterator
 LineConfigFile::end() const
 {
-    return Iterator(_imp->lines.end());
+    return ConstIterator(_imp->lines.end());
 }
 
 namespace paludis
@@ -324,7 +324,7 @@ KeyValueConfigFile::Defaults::get(const std::string & k) const
         return _imp->kv->get(k);
     else if (_imp->a)
     {
-        Map<std::string, std::string>::Iterator x(_imp->a->find(k));
+        Map<std::string, std::string>::ConstIterator x(_imp->a->find(k));
         if (x == _imp->a->end())
             return "";
         else
@@ -341,26 +341,26 @@ namespace
     static std::map<std::string, std::string> empty_map;
 }
 
-KeyValueConfigFile::Defaults::Iterator
+KeyValueConfigFile::Defaults::ConstIterator
 KeyValueConfigFile::Defaults::begin() const
 {
     if (_imp->kv)
-        return Iterator(_imp->kv->begin());
+        return ConstIterator(_imp->kv->begin());
     else if (_imp->a)
-        return Iterator(_imp->a->begin());
+        return ConstIterator(_imp->a->begin());
     else
-        return Iterator(empty_map.begin());
+        return ConstIterator(empty_map.begin());
 }
 
-KeyValueConfigFile::Defaults::Iterator
+KeyValueConfigFile::Defaults::ConstIterator
 KeyValueConfigFile::Defaults::end() const
 {
     if (_imp->kv)
-        return Iterator(_imp->kv->end());
+        return ConstIterator(_imp->kv->end());
     else if (_imp->a)
-        return Iterator(_imp->a->end());
+        return ConstIterator(_imp->a->end());
     else
-        return Iterator(empty_map.end());
+        return ConstIterator(empty_map.end());
 }
 
 namespace paludis
@@ -741,16 +741,16 @@ KeyValueConfigFile::~KeyValueConfigFile()
 {
 }
 
-KeyValueConfigFile::Iterator
+KeyValueConfigFile::ConstIterator
 KeyValueConfigFile::begin() const
 {
-    return Iterator(_imp->keys.begin());
+    return ConstIterator(_imp->keys.begin());
 }
 
-KeyValueConfigFile::Iterator
+KeyValueConfigFile::ConstIterator
 KeyValueConfigFile::end() const
 {
-    return Iterator(_imp->keys.end());
+    return ConstIterator(_imp->keys.end());
 }
 
 std::string

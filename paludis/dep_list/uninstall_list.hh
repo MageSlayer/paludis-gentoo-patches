@@ -95,9 +95,9 @@ namespace paludis
             ///\name Iterate over our items to remove
             ///\{
 
-            typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> Iterator;
-            Iterator begin() const;
-            Iterator end() const;
+            typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> ConstIterator;
+            ConstIterator begin() const;
+            ConstIterator end() const;
 
             ///\}
     };

@@ -172,7 +172,7 @@ ConsoleInstallTask::on_display_merge_list_post()
     display_merge_list_post_tags();
 
     display_merge_list_post_use_descriptions("");
-    for (UseFlagNameSet::Iterator f(_all_expand_prefixes->begin()),
+    for (UseFlagNameSet::ConstIterator f(_all_expand_prefixes->begin()),
             f_end(_all_expand_prefixes->end()) ; f != f_end ; ++f)
         display_merge_list_post_use_descriptions(stringify(*f));
 }
@@ -479,7 +479,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
         return;
 
     std::set<std::string> tag_categories;
-    for (Set<DepTagEntry>::Iterator a(all_tags()->begin()),
+    for (Set<DepTagEntry>::ConstIterator a(all_tags()->begin()),
             a_end(all_tags()->end()) ; a != a_end ; ++a)
         tag_categories.insert(a->tag->category());
 
@@ -497,7 +497,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
         display_tag_summary_tag_title(*c);
         display_tag_summary_tag_pre_text(*c);
 
-        for (Set<DepTagEntry>::Iterator t(all_tags()->begin()),
+        for (Set<DepTagEntry>::ConstIterator t(all_tags()->begin()),
                 t_end(all_tags()->end()) ; t != t_end ; ++t)
         {
             if (t->tag->category() != *cat)
@@ -522,7 +522,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
 
     tr1::shared_ptr<Set<UseDescription, UseDescriptionComparator> > group(
             new Set<UseDescription, UseDescriptionComparator>);
-    for (Set<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
+    for (Set<UseDescription, UseDescriptionComparator>::ConstIterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
     {
         switch (i->state)
@@ -546,7 +546,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
         if (prefix.empty())
         {
             bool prefixed(false);
-            for (UseFlagNameSet::Iterator f(_all_expand_prefixes->begin()),
+            for (UseFlagNameSet::ConstIterator f(_all_expand_prefixes->begin()),
                     f_end(_all_expand_prefixes->end()) ; f != f_end && ! prefixed ; ++f)
                 if (stringify(*f).length() < stringify(i->flag).length())
                     if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
@@ -599,8 +599,8 @@ ConsoleInstallTask::display_use_summary_start(const std::string & prefix)
 
 void
 ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
-        Set<UseDescription, UseDescriptionComparator>::Iterator i,
-        Set<UseDescription, UseDescriptionComparator>::Iterator i_end)
+        Set<UseDescription, UseDescriptionComparator>::ConstIterator i,
+        Set<UseDescription, UseDescriptionComparator>::ConstIterator i_end)
 {
     Log::get_instance()->message(ll_debug, lc_context) << "display_use_summary_flag: prefix is '" << prefix
         << "', i->flag is '" << i->flag << "', i->package_id is '" << *i->package_id << "', i->state is '" << i->state
@@ -616,7 +616,7 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
     else
     {
         bool all_same(true);
-        for (Set<UseDescription, UseDescriptionComparator>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
+        for (Set<UseDescription, UseDescriptionComparator>::ConstIterator j(next(i)) ; all_same && j != i_end ; ++j)
             if (j->description != i->description)
                 all_same = false;
 
@@ -930,7 +930,7 @@ void
 ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
         const tr1::shared_ptr<const PackageID> & p, UseDescriptionState s)
 {
-    for (UseFlagNameSet::Iterator f(c->begin()), f_end(c->end()) ;
+    for (UseFlagNameSet::ConstIterator f(c->begin()), f_end(c->end()) ;
             f != f_end ; ++f)
     {
         std::string d;
@@ -945,7 +945,7 @@ ConsoleInstallTask::_add_descriptions(tr1::shared_ptr<const UseFlagNameSet> c,
                 .package_id(p)
                 .description(d));
 
-        Set<UseDescription, UseDescriptionComparator>::Iterator x(_all_use_descriptions->find(e));
+        Set<UseDescription, UseDescriptionComparator>::ConstIterator x(_all_use_descriptions->find(e));
         if (_all_use_descriptions->end() == x)
             _all_use_descriptions->insert(e);
         else
@@ -1000,7 +1000,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
 
     std::string tag_titles;
 
-    for (Set<DepTagEntry>::Iterator
+    for (Set<DepTagEntry>::ConstIterator
             tag(d.tags->begin()),
             tag_end(d.tags->end()) ;
             tag != tag_end ; ++tag)
@@ -1043,7 +1043,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
     std::set<std::string> dependents, unsatisfied_dependents;
     unsigned c(0), max_c(want_full_install_reasons() ? std::numeric_limits<long>::max() : 3);
 
-    for (Set<DepTagEntry>::Iterator
+    for (Set<DepTagEntry>::ConstIterator
             tag(d.tags->begin()),
             tag_end(d.tags->end()) ;
             tag != tag_end ; ++tag)
@@ -1157,7 +1157,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
     bool need_comma(false);
     output_no_endl("    Masked by: ");
 
-    for (PackageID::MasksIterator m(e.package_id->begin_masks()), m_end(e.package_id->end_masks()) ;
+    for (PackageID::MasksConstIterator m(e.package_id->begin_masks()), m_end(e.package_id->end_masks()) ;
             m != m_end ; ++m)
     {
         if (need_comma)
@@ -1177,7 +1177,7 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
     output_stream() << "Query error:" << endl;
     output_stream() << "  * " << e.backtrace("\n  * ");
     output_stream() << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-    for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+    for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
             o_end(e.end_options()) ; o != o_end ; ++o)
         output_stream() << "    * " << colour(cl_package_name, *o) << endl;
     output_stream() << endl;
@@ -1205,7 +1205,7 @@ ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
 
     if (e.failures())
     {
-        for (Sequence<FetchActionFailure>::Iterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+        for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
                 f != f_end ; ++f)
         {
             output_stream() << "  * File '" << f->target_file << "': ";
@@ -1270,13 +1270,13 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
             output_stream() << "Query error:" << endl;
             output_stream() << "  * " << e.backtrace("\n  * ");
             output_stream() << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
-            for (PackageIDSequence::Iterator pp(p->begin()), pp_end(p->end()) ;
+            for (PackageIDSequence::ConstIterator pp(p->begin()), pp_end(p->end()) ;
                     pp != pp_end ; ++pp)
             {
                 output_stream() << "    * " << colour(cl_package_name, **pp) << ": Masked by ";
 
                 bool need_comma(false);
-                for (PackageID::MasksIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
+                for (PackageID::MasksConstIterator m((*pp)->begin_masks()), m_end((*pp)->end_masks()) ;
                         m != m_end ; ++m)
                 {
                     if (need_comma)

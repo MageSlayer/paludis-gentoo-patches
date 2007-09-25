@@ -59,7 +59,7 @@ CategoriesListModel::populate_in_paludis_thread()
 
     if (repos)
     {
-        for (RepositoryNameSequence::Iterator r(repos->begin()), r_end(repos->end()) ;
+        for (RepositoryNameSequence::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                 r != r_end ; ++r)
         {
             paludis::tr1::shared_ptr<const CategoryNamePartSet> cats(
@@ -69,7 +69,7 @@ CategoriesListModel::populate_in_paludis_thread()
     }
     else
     {
-        for (IndirectIterator<PackageDatabase::RepositoryIterator>
+        for (IndirectIterator<PackageDatabase::RepositoryConstIterator>
                 r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
                 r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
                 r != r_end ; ++r)
@@ -87,7 +87,7 @@ void
 CategoriesListModel::populate_in_gui_thread(paludis::tr1::shared_ptr<const CategoryNamePartSet> names)
 {
     clear();
-    for (CategoryNamePartSet::Iterator n(names->begin()), n_end(names->end()) ;
+    for (CategoryNamePartSet::ConstIterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
         (*append())[_imp->columns.col_cat_name] = stringify(*n);
 }

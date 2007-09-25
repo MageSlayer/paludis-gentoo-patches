@@ -71,16 +71,16 @@ DepSpecFlattener::~DepSpecFlattener()
 {
 }
 
-DepSpecFlattener::Iterator
+DepSpecFlattener::ConstIterator
 DepSpecFlattener::begin() const
 {
-    return Iterator(_imp->specs.begin());
+    return ConstIterator(_imp->specs.begin());
 }
 
-DepSpecFlattener::Iterator
+DepSpecFlattener::ConstIterator
 DepSpecFlattener::end() const
 {
-    return Iterator(_imp->specs.end());
+    return ConstIterator(_imp->specs.end());
 }
 
 void DepSpecFlattener::visit_sequence(const UseDepSpec & u,

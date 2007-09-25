@@ -57,9 +57,9 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<AmbiguousUnmergeTargetError, const tr1::shared_ptr<const PackageID> > Iterator;
-            Iterator begin() const;
-            Iterator end() const;
+            typedef libwrapiter::ForwardIterator<AmbiguousUnmergeTargetError, const tr1::shared_ptr<const PackageID> > ConstIterator;
+            ConstIterator begin() const;
+            ConstIterator end() const;
 
             ///\}
 

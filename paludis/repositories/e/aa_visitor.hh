@@ -71,11 +71,11 @@ namespace paludis
 
                 /// \name Iterator functions
                 ///{
-                
-                typedef libwrapiter::ForwardIterator<AAVisitor, const std::string> Iterator;
 
-                Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                typedef libwrapiter::ForwardIterator<AAVisitor, const std::string> ConstIterator;
+
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///}
         };

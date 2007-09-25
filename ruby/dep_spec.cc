@@ -183,7 +183,7 @@ namespace
     {
         tr1::shared_ptr<CompositeDepSpec> * m_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<CompositeDepSpec>, m_ptr);
-        for (CompositeDepSpec::Iterator i((*m_ptr)->begin()), i_end((*m_ptr)->end()) ; i != i_end ; ++i)
+        for (CompositeDepSpec::ConstIterator i((*m_ptr)->begin()), i_end((*m_ptr)->end()) ; i != i_end ; ++i)
             rb_yield(dep_spec_to_value(*i));
         return self;
     }
@@ -265,7 +265,7 @@ namespace
         VALUE result(rb_ary_new());
         VALUE result_hash;
         if ((*ptr)->version_requirements_ptr())
-            for (VersionRequirements::Iterator i((*ptr)->version_requirements_ptr()->begin()),
+            for (VersionRequirements::ConstIterator i((*ptr)->version_requirements_ptr()->begin()),
                         i_end((*ptr)->version_requirements_ptr()->end()) ; i != i_end; ++i)
             {
                 result_hash = rb_hash_new();

@@ -68,7 +68,7 @@ PackagesRepositoryFilterModel::populate_in_paludis_thread()
 {
     paludis::tr1::shared_ptr<RepositoryNameSequence> columns(new RepositoryNameSequence);
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator>
             r(indirect_iterator(_imp->main_window->environment()->package_database()->begin_repositories())),
             r_end(indirect_iterator(_imp->main_window->environment()->package_database()->end_repositories())) ;
             r != r_end ; ++r)
@@ -85,7 +85,7 @@ PackagesRepositoryFilterModel::populate_in_gui_thread(paludis::tr1::shared_ptr<c
     (*repositories)[_imp->columns.col_text] = "Specific repository";
     (*repositories)[_imp->columns.col_sensitive] = false;
 
-    for (RepositoryNameSequence::Iterator n(names->begin()), n_end(names->end()) ;
+    for (RepositoryNameSequence::ConstIterator n(names->begin()), n_end(names->end()) ;
             n != n_end ; ++n)
     {
         iterator r(append(repositories->children()));

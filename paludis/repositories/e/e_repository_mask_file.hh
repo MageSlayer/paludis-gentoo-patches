@@ -54,9 +54,10 @@ namespace paludis
                 ///\name Iterate over our mask lines.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<MaskFile, const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > Iterator;
-                Iterator begin() const;
-                Iterator end() const;
+                typedef libwrapiter::ForwardIterator<MaskFile,
+                        const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
+                ConstIterator begin() const;
+                ConstIterator end() const;
 
                 ///\}
         };

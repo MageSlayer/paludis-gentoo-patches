@@ -75,9 +75,9 @@ namespace paludis
             ///\name Iterate over our archs.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSAPackage, const UseFlagName> ArchsIterator;
-            ArchsIterator begin_archs() const;
-            ArchsIterator end_archs() const;
+            typedef libwrapiter::ForwardIterator<GLSAPackage, const UseFlagName> ArchsConstIterator;
+            ArchsConstIterator begin_archs() const;
+            ArchsConstIterator end_archs() const;
 
             ///\}
 
@@ -89,11 +89,11 @@ namespace paludis
             ///\name Iterate over our ranges.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSAPackage, const GLSARange> RangesIterator;
-            RangesIterator begin_unaffected() const;
-            RangesIterator end_unaffected() const;
-            RangesIterator begin_vulnerable() const;
-            RangesIterator end_vulnerable() const;
+            typedef libwrapiter::ForwardIterator<GLSAPackage, const GLSARange> RangesConstIterator;
+            RangesConstIterator begin_unaffected() const;
+            RangesConstIterator end_unaffected() const;
+            RangesConstIterator begin_vulnerable() const;
+            RangesConstIterator end_vulnerable() const;
 
             ///\}
 
@@ -139,9 +139,9 @@ namespace paludis
             ///\name Iterate over our packages.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSA, const GLSAPackage> PackagesIterator;
-            PackagesIterator begin_packages() const;
-            PackagesIterator end_packages() const;
+            typedef libwrapiter::ForwardIterator<GLSA, const GLSAPackage> PackagesConstIterator;
+            PackagesConstIterator begin_packages() const;
+            PackagesConstIterator end_packages() const;
 
             ///\}
 

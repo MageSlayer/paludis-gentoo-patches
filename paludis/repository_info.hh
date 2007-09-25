@@ -52,12 +52,12 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<RepositoryInfoSection,
-                    const std::pair<const std::string, std::string> > KeyValueIterator;
+                    const std::pair<const std::string, std::string> > KeyValueConstIterator;
 
-            KeyValueIterator begin_kvs() const
+            KeyValueConstIterator begin_kvs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            KeyValueIterator end_kvs() const
+            KeyValueConstIterator end_kvs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
@@ -87,16 +87,16 @@ namespace paludis
 
             ///\}
 
-            ///\name Iterator over our sections
+            ///\name ConstIterator over our sections
             ///\{
 
             typedef libwrapiter::ForwardIterator<RepositoryInfo,
-                    const tr1::shared_ptr<const RepositoryInfoSection> > SectionIterator;
+                    const tr1::shared_ptr<const RepositoryInfoSection> > SectionConstIterator;
 
-            SectionIterator begin_sections() const
+            SectionConstIterator begin_sections() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            SectionIterator end_sections() const
+            SectionConstIterator end_sections() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

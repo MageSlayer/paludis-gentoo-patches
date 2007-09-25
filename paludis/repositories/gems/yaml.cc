@@ -90,16 +90,16 @@ SequenceNode::push_back(const Node * const n)
     _imp->nodes.push_back(n);
 }
 
-SequenceNode::Iterator
+SequenceNode::ConstIterator
 SequenceNode::begin() const
 {
-    return Iterator(_imp->nodes.begin());
+    return ConstIterator(_imp->nodes.begin());
 }
 
-SequenceNode::Iterator
+SequenceNode::ConstIterator
 SequenceNode::end() const
 {
-    return Iterator(_imp->nodes.end());
+    return ConstIterator(_imp->nodes.end());
 }
 
 namespace paludis
@@ -126,16 +126,16 @@ MapNode::push_back(const std::pair<const Node *, const Node *> & p)
     _imp->nodes.push_back(p);
 }
 
-MapNode::Iterator
+MapNode::ConstIterator
 MapNode::begin() const
 {
-    return Iterator(_imp->nodes.begin());
+    return ConstIterator(_imp->nodes.begin());
 }
 
-MapNode::Iterator
+MapNode::ConstIterator
 MapNode::end() const
 {
-    return Iterator(_imp->nodes.end());
+    return ConstIterator(_imp->nodes.end());
 }
 
 namespace
@@ -174,7 +174,7 @@ namespace
     }
 }
 
-MapNode::Iterator
+MapNode::ConstIterator
 MapNode::find(const std::string & s) const
 {
     using namespace tr1::placeholders;

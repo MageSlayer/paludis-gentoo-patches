@@ -77,7 +77,7 @@ namespace paludis
     template <typename F_>
     struct Implementation<ProfileFile<F_> >
     {
-        typedef std::list<typename tr1::remove_const<typename F_::Iterator::value_type>::type> Lines;
+        typedef std::list<typename tr1::remove_const<typename F_::ConstIterator::value_type>::type> Lines;
         Lines lines;
     };
 }
@@ -92,9 +92,9 @@ ProfileFile<F_>::add_file(const FSEntry & f)
         return;
 
     F_ file(f, LineConfigFileOptions());
-    for (typename F_::Iterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
+    for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        const std::string & key(FileEntryTraits<typename F_::Iterator::value_type>::extract_key(*line));
+        const std::string & key(FileEntryTraits<typename F_::ConstIterator::value_type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
             typename Implementation<ProfileFile>::Lines::iterator i(
@@ -127,17 +127,17 @@ ProfileFile<F_>::~ProfileFile()
 }
 
 template <typename F_>
-typename ProfileFile<F_>::Iterator
+typename ProfileFile<F_>::ConstIterator
 ProfileFile<F_>::begin() const
 {
-    return Iterator(this->_imp->lines.begin());
+    return ConstIterator(this->_imp->lines.begin());
 }
 
 template <typename F_>
-typename ProfileFile<F_>::Iterator
+typename ProfileFile<F_>::ConstIterator
 ProfileFile<F_>::end() const
 {
-    return Iterator(this->_imp->lines.end());
+    return ConstIterator(this->_imp->lines.end());
 }
 
 template class ProfileFile<LineConfigFile>;

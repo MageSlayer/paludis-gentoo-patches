@@ -737,7 +737,7 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
         {
             bool need_op(false);
             s << "[";
-            for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
+            for (VersionRequirements::ConstIterator r(a.version_requirements_ptr()->begin()),
                     r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
             {
                 if (need_op)
@@ -779,7 +779,7 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 
     if (a.use_requirements_ptr())
     {
-        for (UseRequirements::Iterator u(a.use_requirements_ptr()->begin()),
+        for (UseRequirements::ConstIterator u(a.use_requirements_ptr()->begin()),
                 u_end(a.use_requirements_ptr()->end()) ; u != u_end ; ++u)
             s << "[" << (u->second == use_disabled ? "-" + stringify(u->first) :
                     stringify(u->first)) << "]";
@@ -857,22 +857,22 @@ UseRequirements::~UseRequirements()
 {
 }
 
-UseRequirements::Iterator
+UseRequirements::ConstIterator
 UseRequirements::begin() const
 {
-    return Iterator(_imp->reqs.begin());
+    return ConstIterator(_imp->reqs.begin());
 }
 
-UseRequirements::Iterator
+UseRequirements::ConstIterator
 UseRequirements::end() const
 {
-    return Iterator(_imp->reqs.end());
+    return ConstIterator(_imp->reqs.end());
 }
 
-UseRequirements::Iterator
+UseRequirements::ConstIterator
 UseRequirements::find(const UseFlagName & u) const
 {
-    return Iterator(_imp->reqs.find(u));
+    return ConstIterator(_imp->reqs.find(u));
 }
 
 bool
@@ -884,7 +884,7 @@ UseRequirements::insert(const UseFlagName & u, UseFlagState s)
 UseFlagState
 UseRequirements::state(const UseFlagName & u) const
 {
-    Iterator i(find(u));
+    ConstIterator i(find(u));
     if (end() == i)
         return use_unspecified;
     return i->second;
@@ -1104,17 +1104,17 @@ LabelsDepSpec<T_>::clone() const
 }
 
 template <typename T_>
-typename LabelsDepSpec<T_>::Iterator
+typename LabelsDepSpec<T_>::ConstIterator
 LabelsDepSpec<T_>::begin() const
 {
-    return Iterator(indirect_iterator(_imp->items.begin()));
+    return ConstIterator(indirect_iterator(_imp->items.begin()));
 }
 
 template <typename T_>
-typename LabelsDepSpec<T_>::Iterator
+typename LabelsDepSpec<T_>::ConstIterator
 LabelsDepSpec<T_>::end() const
 {
-    return Iterator(indirect_iterator(_imp->items.end()));
+    return ConstIterator(indirect_iterator(_imp->items.end()));
 }
 
 template <typename T_>

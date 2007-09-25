@@ -63,7 +63,7 @@ EclassMtimes::mtime(const std::string & e) const
         return i->second;
 
     time_t r(0);
-    for (FSEntrySequence::Iterator d(_imp->eclass_dirs->begin()),
+    for (FSEntrySequence::ConstIterator d(_imp->eclass_dirs->begin()),
             d_end(_imp->eclass_dirs->end()) ; d != d_end ; ++d)
     {
         FSEntry f(*d / (e + ".eclass"));

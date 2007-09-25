@@ -103,11 +103,11 @@ namespace paludis
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> ParametersIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> ParametersConstIterator;
 
-                ParametersIterator begin_parameters() const;
+                ParametersConstIterator begin_parameters() const;
 
-                ParametersIterator end_parameters() const;
+                ParametersConstIterator end_parameters() const;
 
                 bool empty() const;
 
@@ -150,11 +150,11 @@ namespace paludis
                 ///\name Iterate over our usage lines (for documentation)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> UsageLineIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> UsageLineConstIterator;
 
-                UsageLineIterator begin_usage_lines() const;
+                UsageLineConstIterator begin_usage_lines() const;
 
-                UsageLineIterator end_usage_lines() const;
+                UsageLineConstIterator end_usage_lines() const;
 
                 ///\}
 
@@ -162,22 +162,22 @@ namespace paludis
                 ///\{
 
                 typedef libwrapiter::ForwardIterator<ArgsHandler,
-                        const std::pair<std::string, std::string> > EnvironmentLineIterator;
+                        const std::pair<std::string, std::string> > EnvironmentLineConstIterator;
 
-                EnvironmentLineIterator begin_environment_lines() const;
+                EnvironmentLineConstIterator begin_environment_lines() const;
 
-                EnvironmentLineIterator end_environment_lines() const;
+                EnvironmentLineConstIterator end_environment_lines() const;
 
                 ///\}
 
                 ///\name Iterate over our groups
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, ArgsGroup * const> ArgsGroupsIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, ArgsGroup * const> ArgsGroupsConstIterator;
 
-                ArgsGroupsIterator begin_args_groups() const;
+                ArgsGroupsConstIterator begin_args_groups() const;
 
-                ArgsGroupsIterator end_args_groups() const;
+                ArgsGroupsConstIterator end_args_groups() const;
 
                 ///\}
         };

@@ -64,15 +64,15 @@ ArgsGroup::~ArgsGroup()
 {
 }
 
-ArgsGroup::Iterator
+ArgsGroup::ConstIterator
 ArgsGroup::begin() const
 {
-    return Iterator(_imp->args_options.begin());
+    return ConstIterator(_imp->args_options.begin());
 }
 
-ArgsGroup::Iterator
+ArgsGroup::ConstIterator
 ArgsGroup::end() const
 {
-    return Iterator(_imp->args_options.end());
+    return ConstIterator(_imp->args_options.end());
 }
 

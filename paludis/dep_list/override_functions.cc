@@ -100,7 +100,7 @@ namespace
         void visit(const MetadataSetKey<KeywordNameSet> & k)
         {
             tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
-            for (KeywordNameSet::Iterator i(k.value()->begin()), i_end(k.value()->end()) ;
+            for (KeywordNameSet::ConstIterator i(k.value()->begin()), i_end(k.value()->end()) ;
                     i != i_end ; ++i)
             {
                 kk->insert(*i);
@@ -223,7 +223,7 @@ namespace
         void visit(const MetadataSetKey<KeywordNameSet> & k)
         {
             tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
-            for (KeywordNameSet::Iterator i(k.value()->begin()), i_end(k.value()->end()) ;
+            for (KeywordNameSet::ConstIterator i(k.value()->begin()), i_end(k.value()->end()) ;
                     i != i_end ; ++i)
                 if ('-' == stringify(*i).at(0))
                     kk->insert(KeywordName(stringify(*i).substr(1)));

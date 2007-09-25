@@ -109,14 +109,14 @@ namespace test_cases
             {
                 TEST_CHECK(true);
                 UninstallList d(&env, options());
-                for (PackageIDSequence::Iterator i(targets->begin()),
+                for (PackageIDSequence::ConstIterator i(targets->begin()),
                         i_end(targets->end()) ; i != i_end ; ++i)
                     d.add(*i);
                 TEST_CHECK(true);
 
                 unsigned n(0);
                 std::list<std::string>::const_iterator exp(expected.begin());
-                UninstallList::Iterator got(d.begin());
+                UninstallList::ConstIterator got(d.begin());
                 while (true)
                 {
                     TestMessageSuffix s(stringify(n++), true);

@@ -86,11 +86,11 @@ namespace paludis
             ///\name Iterate over our dep specs
             ///{
 
-            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const tr1::shared_ptr<const StringDepSpec> > Iterator;
+            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const tr1::shared_ptr<const StringDepSpec> > ConstIterator;
 
-            Iterator begin() const;
+            ConstIterator begin() const;
 
-            Iterator end() const;
+            ConstIterator end() const;
 
             ///\}
     };

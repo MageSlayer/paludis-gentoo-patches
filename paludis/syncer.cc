@@ -73,7 +73,7 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
     tr1::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
     FSEntry syncer("/var/empty");
     bool ok(false);
-    for (FSEntrySequence::Iterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
+    for (FSEntrySequence::ConstIterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
             d != d_end && ! ok; ++d)
     {
         syncer = FSEntry(*d) / ("do" + format);

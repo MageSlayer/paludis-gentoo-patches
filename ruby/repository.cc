@@ -173,13 +173,13 @@ namespace
             if (rb_block_given_p())
             {
                 tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
-                for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
-            for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
         }
@@ -209,13 +209,13 @@ namespace
             if (rb_block_given_p())
             {
                 tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
-                for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
-            for (CategoryNamePartSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
         }
@@ -245,13 +245,13 @@ namespace
             if (rb_block_given_p())
             {
                 tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
-                for (QualifiedPackageNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
-            for (QualifiedPackageNameSet::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
         }
@@ -282,13 +282,13 @@ namespace
             if (rb_block_given_p())
             {
                 tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
-                for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(package_id_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
-            for (PackageIDSequence::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
             return result;
         }
@@ -452,7 +452,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<const RepositoryInfo>, self_ptr);
 
             VALUE result(rb_ary_new());
-            for (RepositoryInfo::SectionIterator i((*self_ptr)->begin_sections()),
+            for (RepositoryInfo::SectionConstIterator i((*self_ptr)->begin_sections()),
                     i_end((*self_ptr)->end_sections()) ; i != i_end ; ++i)
             {
                 tr1::shared_ptr<const RepositoryInfoSection> * s(new tr1::shared_ptr<const RepositoryInfoSection>(*i));
@@ -481,7 +481,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<const RepositoryInfoSection>, self_ptr);
 
             VALUE result(rb_hash_new());
-            for (RepositoryInfoSection::KeyValueIterator i((*self_ptr)->begin_kvs()),
+            for (RepositoryInfoSection::KeyValueConstIterator i((*self_ptr)->begin_kvs()),
                     i_end((*self_ptr)->end_kvs()) ; i != i_end ; ++i)
                 rb_hash_aset(result, rb_str_new2(i->first.c_str()), rb_str_new2(i->second.c_str()));
             return result;
@@ -656,7 +656,7 @@ namespace
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
             if ((*self_ptr)->e_interface) {
                 VALUE result(rb_ary_new());
-                for (RepositoryEInterface::ProfilesIterator i((*self_ptr)->e_interface->begin_profiles()),
+                for (RepositoryEInterface::ProfilesConstIterator i((*self_ptr)->e_interface->begin_profiles()),
                         i_end((*self_ptr)->e_interface->end_profiles()) ; i != i_end ; ++i)
                 {
                     rb_ary_push(result, profiles_desc_line_to_value(*i));
@@ -690,7 +690,7 @@ namespace
 
             if ((*self_ptr)->e_interface)
             {
-                RepositoryEInterface::ProfilesIterator p((*self_ptr)->e_interface->find_profile(FSEntry(StringValuePtr(profile))));
+                RepositoryEInterface::ProfilesConstIterator p((*self_ptr)->e_interface->find_profile(FSEntry(StringValuePtr(profile))));
 
                 if (p == (*self_ptr)->e_interface->end_profiles())
                     return Qnil;

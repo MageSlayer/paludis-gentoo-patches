@@ -76,7 +76,7 @@ EnvironmentImplementation::default_destinations() const
 {
     tr1::shared_ptr<DestinationsSet> result(new DestinationsSet);
 
-    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->destination_interface)
@@ -107,7 +107,7 @@ EnvironmentImplementation::set(const SetName & s) const
         result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
     }
 
-    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {

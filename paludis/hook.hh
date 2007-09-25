@@ -76,12 +76,12 @@ namespace paludis
             ///\name Iterate over environment data
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Hook, const std::pair<const std::string, std::string> > Iterator;
+            typedef libwrapiter::ForwardIterator<Hook, const std::pair<const std::string, std::string> > ConstIterator;
 
-            Iterator begin() const
+            ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const
+            ConstIterator end() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

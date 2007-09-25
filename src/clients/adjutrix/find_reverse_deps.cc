@@ -142,7 +142,7 @@ namespace
 
         bool header_written = false;
 
-        for (IndirectIterator<PackageIDSequence::Iterator> e(dep_entries->begin()), e_end(dep_entries->end()) ;
+        for (IndirectIterator<PackageIDSequence::ConstIterator> e(dep_entries->begin()), e_end(dep_entries->end()) ;
                 e != e_end ; ++e)
         {
             if (indirect_iterator(_entries.end()) != std::find(indirect_iterator(_entries.begin()),
@@ -192,7 +192,7 @@ namespace
 
         bool found_matches(false);
 
-        for (IndirectIterator<PackageIDSequence::Iterator> e(p_entries->begin()), e_end(p_entries->end()) ;
+        for (IndirectIterator<PackageIDSequence::ConstIterator> e(p_entries->begin()), e_end(p_entries->end()) ;
                 e != e_end ; ++e)
         {
             try
@@ -249,7 +249,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         cerr << "Query error:" << endl;
         cerr << "  * " << e.backtrace("\n  * ");
         cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-        for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+        for (AmbiguousPackageNameError::OptionsConstIterator o(e.begin_options()),
                 o_end(e.end_options()) ; o != o_end ; ++o)
             cerr << "    * " << colour(cl_package_name, *o) << endl;
         cerr << endl;
@@ -267,7 +267,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 1;
     }
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -279,7 +279,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         write_repository_header(stringify(*spec), stringify(r->name()));
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
-        for (CategoryNamePartSet::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
             cerr << xterm_title("Checking " + stringify(*c) + " - adjutrix");
@@ -292,7 +292,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                     continue;
 
             tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
-            for (QualifiedPackageNameSet::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())

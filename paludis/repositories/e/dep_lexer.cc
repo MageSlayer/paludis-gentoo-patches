@@ -104,15 +104,15 @@ DepLexer::~DepLexer()
 {
 }
 
-DepLexer::Iterator
+DepLexer::ConstIterator
 DepLexer::begin() const
 {
-    return Iterator(_imp->tokens.begin());
+    return ConstIterator(_imp->tokens.begin());
 }
 
-DepLexer::Iterator
+DepLexer::ConstIterator
 DepLexer::end() const
 {
-    return Iterator(_imp->tokens.end());
+    return ConstIterator(_imp->tokens.end());
 }
 

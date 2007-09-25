@@ -67,7 +67,7 @@ namespace
     {
         std::string result;
         bool need_comma(false);
-        for (DestinationsSet::Iterator d(dd->begin()), d_end(dd->end()) ;
+        for (DestinationsSet::ConstIterator d(dd->begin()), d_end(dd->end()) ;
                 d != d_end ; ++d)
         {
             if (need_comma)

@@ -159,15 +159,15 @@ FakeRepository::do_some_ids_might_support_action(const SupportsActionTestBase & 
     return q.result;
 }
 
-FakeRepository::MirrorsIterator
+FakeRepository::MirrorsConstIterator
 FakeRepository::begin_mirrors(const std::string & s) const
 {
-    return MirrorsIterator(_imp->mirrors.equal_range(s).first);
+    return MirrorsConstIterator(_imp->mirrors.equal_range(s).first);
 }
 
-FakeRepository::MirrorsIterator
+FakeRepository::MirrorsConstIterator
 FakeRepository::end_mirrors(const std::string & s) const
 {
-    return MirrorsIterator(_imp->mirrors.equal_range(s).second);
+    return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
 }
 

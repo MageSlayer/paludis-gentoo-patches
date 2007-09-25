@@ -56,24 +56,24 @@ paludis::Map<K_, V_, C_>::~Map()
 }
 
 template <typename K_, typename V_, typename C_>
-typename paludis::Map<K_, V_, C_>::Iterator
+typename paludis::Map<K_, V_, C_>::ConstIterator
 paludis::Map<K_, V_, C_>::begin() const
 {
-    return Iterator(_imp->map.begin());
+    return ConstIterator(_imp->map.begin());
 }
 
 template <typename K_, typename V_, typename C_>
-typename paludis::Map<K_, V_, C_>::Iterator
+typename paludis::Map<K_, V_, C_>::ConstIterator
 paludis::Map<K_, V_, C_>::end() const
 {
-    return Iterator(_imp->map.end());
+    return ConstIterator(_imp->map.end());
 }
 
 template <typename K_, typename V_, typename C_>
-typename paludis::Map<K_, V_, C_>::Iterator
+typename paludis::Map<K_, V_, C_>::ConstIterator
 paludis::Map<K_, V_, C_>::find(const K_ & k) const
 {
-    return Iterator(_imp->map.find(k));
+    return ConstIterator(_imp->map.find(k));
 }
 
 template <typename K_, typename V_, typename C_>
@@ -106,7 +106,7 @@ paludis::Map<K_, V_, C_>::insert(const K_ & k, const V_ & v)
 
 template <typename K_, typename V_, typename C_>
 void
-paludis::Map<K_, V_, C_>::erase(const typename paludis::Map<K_, V_, C_>::Iterator & i)
+paludis::Map<K_, V_, C_>::erase(const typename paludis::Map<K_, V_, C_>::ConstIterator & i)
 {
     _imp->map.erase(i->first);
 }

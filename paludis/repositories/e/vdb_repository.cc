@@ -386,7 +386,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_uninstall);
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("unmerge"))
@@ -469,7 +469,7 @@ VDBRepository::perform_config(const tr1::shared_ptr<const ERepositoryID> & id) c
     tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_config);
 
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         EbuildConfigCommand config_cmd(EbuildCommandParams::create()
@@ -514,7 +514,7 @@ VDBRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) con
 
     EAPIPhases phases(id->eapi()->supported->ebuild_phases->ebuild_info);
 
-    for (EAPIPhases::Iterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("installed=false"))
@@ -542,7 +542,7 @@ VDBRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) con
         /* try to find an info_vars file from any repo */
         if (i == FSEntry("/dev/null"))
         {
-            for (PackageDatabase::RepositoryIterator r(_imp->params.environment->package_database()->begin_repositories()),
+            for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment->package_database()->begin_repositories()),
                     r_end(_imp->params.environment->package_database()->end_repositories()) ;
                     r != r_end ; ++r)
             {
@@ -605,7 +605,7 @@ VDBRepository::do_package_set(const SetName & s) const
 
         for (CategoryMap::const_iterator i(_imp->categories.begin()), i_end(_imp->categories.end()) ;
                 i != i_end ; ++i)
-            for (QualifiedPackageNameSet::Iterator e(i->second->begin()), e_end(i->second->end()) ;
+            for (QualifiedPackageNameSet::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                     e != e_end ; ++e)
             {
                 tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
@@ -881,7 +881,7 @@ VDBRepository::load_provided_using_cache() const
                     join(next(next(tokens.begin())), tokens.end(), " "), *EAPIData::get_instance()->eapi_from_string("paludis-1")));
         pp->accept(f);
 
-        for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        for (DepSpecFlattener::ConstIterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             result->push_back(RepositoryProvidesEntry::create()
                     .virtual_name(QualifiedPackageName((*p)->text()))
                     .provided_by(id));
@@ -914,7 +914,7 @@ VDBRepository::load_provided_the_slow_way() const
     for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
             i != i_end ; ++i)
     {
-        for (PackageIDSequence::Iterator e(i->second->begin()), e_end(i->second->end()) ;
+        for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                 e != e_end ; ++e)
         {
             Context loop_context("When loading VDB PROVIDEs entry for '" + stringify(**e) + "':");
@@ -928,7 +928,7 @@ VDBRepository::load_provided_the_slow_way() const
                 DepSpecFlattener f(_imp->params.environment, *e);
                 provide->accept(f);
 
-                for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+                for (DepSpecFlattener::ConstIterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
                 {
                     QualifiedPackageName pp((*p)->text());
 
@@ -1004,7 +1004,7 @@ VDBRepository::regenerate_provides_cache() const
     for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
             i != i_end ; ++i)
     {
-        for (PackageIDSequence::Iterator e(i->second->begin()), e_end(i->second->end()) ;
+        for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                 e != e_end ; ++e)
         {
             if (! (*e)->provide_key())
@@ -1253,7 +1253,7 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 
     using namespace tr1::placeholders;
 
-    PackageIDSequence::Iterator i(std::find_if(_imp->ids[q]->begin(), _imp->ids[q]->end(),
+    PackageIDSequence::ConstIterator i(std::find_if(_imp->ids[q]->begin(), _imp->ids[q]->end(),
                 tr1::bind(std::equal_to<VersionSpec>(), v, tr1::bind(tr1::mem_fn(&PackageID::version), _1))));
     if (_imp->ids[q]->end() == i)
         return tr1::shared_ptr<const ERepositoryID>();

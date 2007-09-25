@@ -40,7 +40,7 @@ TargetConfig::_parse_defaults()
     Context c("While parsing default configuration:");
 
     LineConfigFile defaults(FSEntry(DATADIR "/paludis/contrarius/default_config.txt"), LineConfigFileOptions());
-    for (LineConfigFile::Iterator l(defaults.begin()), l_end(defaults.end()) ;
+    for (LineConfigFile::ConstIterator l(defaults.begin()), l_end(defaults.end()) ;
             l != l_end ; ++l)
     {
         Context c2("While parsing line '" + *l + "'");

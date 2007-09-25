@@ -45,7 +45,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
             TEST_CHECK(i == l.end());
         }
     } test_dep_spec_parser_lexer_empty;
@@ -61,7 +61,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("   \n   \t");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_whitespace);
             TEST_CHECK_EQUAL(i->second, "   \n   \t");
@@ -80,7 +80,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("app-editors/vim");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "app-editors/vim");
@@ -99,7 +99,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("app-editors/vim app-misc/hilite   \nsys-apps/findutils");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_text);
@@ -136,7 +136,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("|| ( one/one two/two )");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_double_bar);
@@ -189,7 +189,7 @@ namespace test_cases
         void run()
         {
             DepLexer l("foo? ( one/one )");
-            DepLexer::Iterator i(l.begin());
+            DepLexer::ConstIterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_use_flag);

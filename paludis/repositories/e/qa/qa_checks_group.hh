@@ -43,9 +43,9 @@ namespace paludis
                 QAChecksGroup();
                 ~QAChecksGroup();
 
-                typedef libwrapiter::ForwardIterator<QAChecksGroup<T_>, T_> Iterator;
-                Iterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                Iterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                typedef libwrapiter::ForwardIterator<QAChecksGroup<T_>, T_> ConstIterator;
+                ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add_check(const std::string &, const T_ &);
                 void add_prerequirement(const std::string &, const std::string &);

@@ -782,7 +782,7 @@ namespace test_cases
             int count(0);
 
             tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> seq(repo->virtual_packages());
-            for (RepositoryVirtualsInterface::VirtualsSequence::Iterator it(seq->begin()),
+            for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                      it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify(it->virtual_name))
                 {
@@ -806,7 +806,7 @@ namespace test_cases
             count = 0;
 
             seq = repo->virtual_packages();
-            for (RepositoryVirtualsInterface::VirtualsSequence::Iterator it(seq->begin()),
+            for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator it(seq->begin()),
                      it_end(seq->end()); it_end != it; ++it, ++count)
                 if ("virtual/one" == stringify(it->virtual_name))
                 {

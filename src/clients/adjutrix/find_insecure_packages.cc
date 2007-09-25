@@ -84,7 +84,7 @@ namespace
             {
                 tr1::shared_ptr<const PackageIDSequence> insecure(
                         _env.package_database()->query(query::Matches(a), qo_order_by_version));
-                for (PackageIDSequence::Iterator i(insecure->begin()),
+                for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a.tag())
                         _found.insert(std::make_pair(*i, a.tag()->short_text()));
@@ -124,7 +124,7 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
 {
     Context context("When performing find-insecure-packages action:");
 
-    for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
+    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
