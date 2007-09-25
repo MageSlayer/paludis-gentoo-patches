@@ -381,6 +381,6 @@ ColourFormatter::newline() const
 std::string
 ColourFormatter::indent(const int i) const
 {
-    return std::string(4 * i, ' ');
+    return std::string(12 + (4 * i), ' ');
 }
 
