@@ -19,6 +19,13 @@
 export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
+old_set=$-
+set -a
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+[[ "${old_set}" == *a* ]] || set +a
+
 if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
 
     if [[ -f "${2}.-PARTIAL-" ]] ; then
