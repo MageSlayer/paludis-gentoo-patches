@@ -1230,11 +1230,18 @@ BUILDHOST=`hostname`
 AC_SUBST([BUILDHOST])
 BUILDDATE=`date +%Y-%m-%dT%H:%M:%S%z`
 AC_SUBST([BUILDDATE])
+
 if test -d "${ac_top_srcdir:-./}/.svn" ; then
 	SVNVERSION=`svnversion "${ac_top_srcdir:-./}"`
 else
 	SVNVERSION=
 fi
+AC_MSG_CHECKING([for svn revision])
+AC_ARG_WITH([svn-revision],
+	AS_HELP_STRING([--with-svn-revision], [Specify svn revision]),
+	SVNVERSION=`eval echo $withval`,
+	SVNVERSION=`eval echo $SVNVERSION`)
+AC_MSG_RESULT([$SVNVERSION])
 AC_SUBST([SVNVERSION])
 dnl }}}
 
