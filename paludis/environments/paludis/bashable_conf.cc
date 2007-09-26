@@ -18,7 +18,7 @@
  */
 
 #include "bashable_conf.hh"
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/is_file_with_extension.hh>

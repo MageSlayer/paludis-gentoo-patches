@@ -26,7 +26,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>

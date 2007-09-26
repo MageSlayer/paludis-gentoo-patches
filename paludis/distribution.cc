@@ -19,7 +19,7 @@
 
 #include <paludis/distribution.hh>
 #include <paludis/hashed_containers.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>

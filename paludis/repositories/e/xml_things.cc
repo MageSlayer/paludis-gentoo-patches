@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <set>
 #include <list>
 

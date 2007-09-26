@@ -22,7 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <list>
 #include <string>
 #include <vector>

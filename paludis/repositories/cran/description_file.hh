@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DESCRIPTION_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DESCRIPTION_FILE_HH 1
 
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis

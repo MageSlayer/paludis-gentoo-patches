@@ -40,7 +40,7 @@
 
 namespace paludis
 {
-#include <paludis/config_file-se.hh>
+#include <paludis/util/config_file-se.hh>
 
     class FSEntry;
 

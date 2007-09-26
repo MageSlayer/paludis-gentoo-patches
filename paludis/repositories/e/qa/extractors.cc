@@ -22,7 +22,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/qa.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>

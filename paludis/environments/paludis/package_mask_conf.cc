@@ -23,7 +23,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>

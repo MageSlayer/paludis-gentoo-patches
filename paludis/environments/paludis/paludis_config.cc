@@ -25,7 +25,7 @@
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/package_mask_conf.hh>
 
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>

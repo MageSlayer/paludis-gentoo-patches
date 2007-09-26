@@ -18,7 +18,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -45,7 +45,7 @@
 
 using namespace paludis;
 
-#include <paludis/config_file-se.cc>
+#include <paludis/util/config_file-se.cc>
 
 ConfigFileError::ConfigFileError(const std::string & f, const std::string & m) throw () :
     ConfigurationError("Configuration file error: " + (f.empty() ? m : f + ": " + m))

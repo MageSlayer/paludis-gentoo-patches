@@ -23,7 +23,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>

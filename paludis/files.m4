@@ -10,7 +10,6 @@ dnl on this file at present...
 
 add(`about',                             `hh', `test')
 add(`action',                            `hh', `cc', `fwd', `se', `sr')
-add(`config_file',                       `hh', `cc', `se', `test', `testscript')
 add(`contents',                          `hh', `cc', `fwd')
 add(`dep_label',                         `hh', `cc', `fwd')
 add(`dep_spec',                          `hh', `cc', `se', `test', `fwd')

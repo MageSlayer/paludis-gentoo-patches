@@ -19,7 +19,7 @@
  */
 
 #include <paludis/hashed_containers.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>

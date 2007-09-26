@@ -22,7 +22,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/mask.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-impl.hh>

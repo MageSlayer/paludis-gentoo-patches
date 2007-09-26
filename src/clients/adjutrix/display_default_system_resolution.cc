@@ -20,7 +20,7 @@
 #include "display_default_system_resolution.hh"
 #include "command_line.hh"
 #include <output/colour.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>

@@ -26,7 +26,7 @@
 #include <paludis/repositories/cran/normalise.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>

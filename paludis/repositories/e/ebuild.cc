@@ -35,7 +35,7 @@
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>

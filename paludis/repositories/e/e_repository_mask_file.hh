@@ -23,7 +23,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/mask-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>

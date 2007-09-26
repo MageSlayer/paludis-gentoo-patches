@@ -20,7 +20,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/query.hh>

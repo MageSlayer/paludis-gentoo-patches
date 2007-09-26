@@ -29,7 +29,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 
 #include <paludis/action.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_tag.hh>

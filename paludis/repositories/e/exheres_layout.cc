@@ -21,7 +21,7 @@
 #include <paludis/repositories/e/e_repository_entries.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>

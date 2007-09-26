@@ -22,7 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 

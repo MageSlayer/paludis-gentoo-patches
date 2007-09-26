@@ -32,7 +32,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repositories/repository_maker.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>

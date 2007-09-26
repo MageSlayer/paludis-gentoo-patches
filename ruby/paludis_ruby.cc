@@ -20,7 +20,7 @@
 
 #include <paludis/paludis.hh>
 #include <paludis_ruby.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>

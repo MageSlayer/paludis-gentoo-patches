@@ -31,7 +31,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 
 #include <map>
 #include <vector>

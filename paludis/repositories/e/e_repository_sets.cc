@@ -24,7 +24,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/query.hh>
 #include <paludis/set_file.hh>
 #include <paludis/dep_tag.hh>

@@ -10,6 +10,7 @@ dnl on this file at present...
 
 add(`action_queue',                      `hh', `cc', `test')
 add(`attributes',                        `hh')
+add(`config_file',                       `hh', `cc', `se', `test', `testscript')
 add(`clone',                             `hh', `impl')
 add(`condition_variable',                `hh', `cc', `test')
 add(`destringify',                       `hh', `cc', `test')

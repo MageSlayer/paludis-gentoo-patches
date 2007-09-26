@@ -24,7 +24,7 @@
 #include <paludis/repository_info.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/set_file.hh>
 #include <paludis/action.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>

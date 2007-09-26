@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>

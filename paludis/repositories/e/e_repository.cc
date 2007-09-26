@@ -38,7 +38,7 @@
 #endif
 
 #include <paludis/repository_info.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>

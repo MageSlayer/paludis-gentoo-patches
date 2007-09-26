@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/manifest2_reader.hh>
 
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>

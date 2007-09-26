@@ -22,7 +22,7 @@
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/config_file.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/mask.hh>
