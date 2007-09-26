@@ -1228,7 +1228,7 @@ ConsoleInstallTask::on_fetch_action_error(const FetchActionError & e)
             if (! f->failed_integrity_checks.empty())
             {
                 if (need_comma)
-                    output_stream() << "failed automatic fetching";
+                    output_stream() << ", ";
                 output_stream() << "failed integrity checks: " << f->failed_integrity_checks;
                 need_comma = true;
             }
