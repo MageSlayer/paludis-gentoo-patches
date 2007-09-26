@@ -5,7 +5,7 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
 #endif
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,8 +31,11 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
 define(`addhh', `dnl
 #include <paludis/util/$1.hh>
 ')dnl
-define(`addthis', `ifelse(`$2', `hh', `addhh(`$1')',`')')
-define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
+define(`addimpl', `dnl
+#include <paludis/util/$1-impl.hh>
+')dnl
+define(`addthis', `ifelse(`$2', `hh', `addhh(`$1')', ifelse(`$2', `impl', `addimpl(`$1')', `' ) )')
+define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')
 addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/util/files.m4')

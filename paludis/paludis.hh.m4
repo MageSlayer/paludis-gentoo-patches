@@ -31,8 +31,11 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
 define(`addhh', `dnl
 #include <paludis/$1.hh>
 ')dnl
-define(`addthis', `ifelse(`$2', `hh', `addhh(`$1')',`')')
-define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
+define(`addimpl', `dnl
+#include <paludis/$1-impl.hh>
+')dnl
+define(`addthis', `ifelse(`$2', `hh', `addhh(`$1')', ifelse(`$2', `impl', `addimpl(`$1')', `' ) )')
+define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')
 addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/files.m4')
