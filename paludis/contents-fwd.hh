@@ -23,6 +23,12 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/contents.hh .
+ *
+ * \ingroup g_contents
+ */
+
 namespace paludis
 {
     struct ContentsEntry;
@@ -38,16 +44,16 @@ namespace paludis
     struct ContentsVisitorTypes;
 
     /**
-     * Write a ContentsSymEntry to a stream
+     * Write a ContentsSymEntry to a stream.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      */
     std::ostream & operator<< (std::ostream &, const ContentsSymEntry &) PALUDIS_VISIBLE;
 
     /**
-     * Write a ContentsEntry to a stream
+     * Write a ContentsEntry to a stream.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      */
     std::ostream & operator<< (std::ostream &, const ContentsEntry &) PALUDIS_VISIBLE;
 }

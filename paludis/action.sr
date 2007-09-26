@@ -14,6 +14,8 @@ make_class_FetchActionOptions()
          * Options for FetchAction.
          *
          * \see FetchAction
+         * \ingroup g_actions
+         * \since 0.26
          * \nosubgrouping
          */
 END
@@ -35,6 +37,8 @@ make_class_InstallActionOptions()
          * Options for InstallAction.
          *
          * \see InstallAction
+         * \ingroup g_actions
+         * \since 0.26
          * \nosubgrouping
          */
 END
@@ -52,6 +56,8 @@ make_class_UninstallActionOptions()
          * Options for UninstallAction.
          *
          * \see UninstallAction
+         * \ingroup g_actions
+         * \since 0.26
          * \nosubgrouping
          */
 END
@@ -72,7 +78,9 @@ make_class_FetchActionFailure()
          * A failed fetch action part.
          *
          * \see FetchActionError
-         * \ingroup grpexceptions
+         * \ingroup g_actions
+         * \ingroup g_exceptions
+         * \ingroup g_actions
          * \nosubgrouping
          */
 END

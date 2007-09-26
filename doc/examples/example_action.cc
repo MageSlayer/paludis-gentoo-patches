@@ -1,0 +1,107 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/** \file
+ *
+ * Example \ref example_action.cc "example_action.cc" .
+ *
+ * \ingroup g_actions
+ */
+
+/** \example example_action.cc
+ *
+ * This example demonstrates how to use actions. It uses FetchAction to fetch
+ * source files for all versions of sys-apps/paludis that support fetching.
+ */
+
+#include <paludis/paludis.hh>
+#include <iostream>
+
+using namespace paludis;
+using std::cout;
+using std::endl;
+
+int main(int, char *[])
+{
+    int exit_status(0);
+
+    /* We start with an Environment. */
+    tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(""));
+
+    /* Fetch package IDs for 'sys-apps/paludis'. */
+    tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+                query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)),
+                qo_order_by_version));
+
+    /* For each ID: */
+    for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+    {
+        /* Do we support a FetchAction? We find out by creating a
+         * SupportsActionTest<FetchAction> object, and querying via the
+         * PackageID::supports_action method. */
+        SupportsActionTest<FetchAction> supports_fetch_action;
+        if (! (*i)->supports_action(supports_fetch_action))
+        {
+            cout << "ID '" << **i << "' does not support the fetch action." << endl;
+        }
+        else
+        {
+            cout << "ID '" << **i << "' supports the fetch action, trying to fetch:" << endl;
+
+            /* Carry out a FetchAction. We need to specify various options when
+             * creating a FetchAction, controlling whether safe resume is used
+             * and whether unneeded (e.g. due to disabled USE flags) source
+             * files should still be fetched. */
+            FetchAction fetch_action(FetchActionOptions::create()
+                    .fetch_unneeded(false)
+                    .safe_resume(true)
+                    );
+            try
+            {
+                (*i)->perform_action(fetch_action);
+            }
+            catch (const FetchActionError & e)
+            {
+                exit_status |= 1;
+
+                cout << "Caught FetchActionError, with the following details:" << endl;
+
+                /* We might get detailed information about individual fetch
+                 * failures.  */
+                for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+                        f != f_end ; ++f)
+                {
+                    cout << "  * File '" << f->target_file << "': ";
+
+                    bool need_comma(false);
+                    if (f->requires_manual_fetching)
+                    {
+                        cout << "requires manual fetching";
+                        need_comma = true;
+                    }
+
+                    if (f->failed_automatic_fetching)
+                    {
+                        if (need_comma)
+                            cout << ", ";
+                        cout << "failed automatic fetching";
+                        need_comma = true;
+                    }
+
+                    if (! f->failed_integrity_checks.empty())
+                    {
+                        if (need_comma)
+                            cout << ", ";
+                        cout << "failed integrity checks: " << f->failed_integrity_checks;
+                        need_comma = true;
+                    }
+                }
+
+                cout << endl;
+            }
+        }
+    }
+
+    return exit_status;
+}
+

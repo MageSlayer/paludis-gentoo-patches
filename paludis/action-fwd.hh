@@ -23,6 +23,12 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/action.hh .
+ *
+ * \ingroup g_actions
+ */
+
 namespace paludis
 {
     class Action;

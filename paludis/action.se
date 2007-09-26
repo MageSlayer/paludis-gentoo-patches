@@ -12,6 +12,13 @@ make_enum_InstallActionDebugOption()
     doxygen_comment << "END"
         /**
          * Debug build mode for an InstallAction.
+         *
+         * May be ignored by some repositories, and by packages where there
+         * isn't a sensible concept of debugging.
+         *
+         * \see InstallAction
+         * \ingroup g_actions
+         * \since 0.26
          */
 END
 }
@@ -23,5 +30,16 @@ make_enum_InstallActionChecksOption()
     key iaco_none               "No checks"
     key iaco_default            "Checks where they would usually be carried out"
     key iaco_always             "Always use checks"
+
+    doxygen_comment << "END"
+        /**
+         * Whether to run post-build checks (for example, 'make check' or 'src_test'),
+         * if they are available.
+         *
+         * \see InstallAction
+         * \ingroup g_actions
+         * \since 0.26
+         */
+END
 }
 

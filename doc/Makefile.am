@@ -26,7 +26,6 @@ htmlfiles = \
 	cachefiles.html \
 	configuration.html \
 	portagedifferences.html \
-	programmingwithpaludis.html \
 	sets.html \
 	hooks.html \
 	man-paludis.html \
@@ -41,11 +40,11 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css epydoc.css \
 	$(docfiles) $(tagfiles) $(images) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
-	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel \
+	configuration.html.skel portagedifferences.html.skel \
 	sets.html.skel hooks.html.skel man.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
+	migration.html cachefiles.html configuration.html portagedifferences.html \
 	sets.html hooks.html man-paludis.html man-qualudis.html man-contrarius.html man-adjutrix.html man-inquisitio.html \
 	man-accerso.html man-instruo.html \
 	cleannews cleanrecentnews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
@@ -208,26 +207,6 @@ portagedifferences.html : portagedifferences.html.skel htmlheader.html htmlfoote
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
 	    < $(srcdir)/portagedifferences.html.skel > portagedifferences.html
-
-cleanbasiccppapp : $(srcdir)/examples/pwp_basic_cplusplus_app.cc
-	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
-	    < $(srcdir)/examples/pwp_basic_cplusplus_app.cc > cleanbasiccppapp
-
-cleanbasicrubyapp : $(srcdir)/examples/pwp_basic_ruby_app.rb
-	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
-	    < $(srcdir)/examples/pwp_basic_ruby_app.rb > cleanbasicrubyapp
-
-programmingwithpaludis.html : programmingwithpaludis.html.skel htmlheader.html htmlfooter.html \
-		cleanbasiccppapp cleanbasicrubyapp
-	sed -e '/@HEADER@/r htmlheader.html' \
-	    -e '/@HEADER@/d' \
-	    -e '/@FOOTER@/r htmlfooter.html' \
-	    -e '/@FOOTER@/d' \
-	    -e '/@BASIC_CPP_APP@/r cleanbasiccppapp' \
-	    -e '/@BASIC_CPP_APP@/d' \
-	    -e '/@BASIC_RUBY_APP@/r cleanbasicrubyapp' \
-	    -e '/@BASIC_RUBY_APP@/d' \
-	    < $(srcdir)/programmingwithpaludis.html.skel > programmingwithpaludis.html
 
 cachefiles.html : cachefiles.html.skel htmlheader.html htmlfooter.html
 	sed -e '/@HEADER@/r htmlheader.html' \

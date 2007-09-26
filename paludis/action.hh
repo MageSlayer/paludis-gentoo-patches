@@ -30,11 +30,28 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sequence-fwd.hh>
 
+/** \file
+ * Declarations for action-related classes.
+ *
+ * \ingroup g_actions
+ *
+ * \section Examples
+ *
+ * - \ref example_action.cc "example_action.cc"
+ */
+
 namespace paludis
 {
 
 #include <paludis/action-sr.hh>
 
+    /**
+     * Types for visiting an action.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     struct ActionVisitorTypes :
         VisitorTypes<
             ActionVisitorTypes,
@@ -50,6 +67,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a supports action query.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     struct SupportsActionTestVisitorTypes :
         VisitorTypes<
             SupportsActionTestVisitorTypes,
@@ -65,80 +89,190 @@ namespace paludis
     {
     };
 
+    /**
+     * An Action represents an action that can be executed by a PackageID via
+     * PackageID::perform_action .
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE Action :
         public virtual AcceptInterface<ActionVisitorTypes>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~Action() = 0;
+
+            ///\}
     };
 
+    /**
+     * An InstallAction is used by InstallTask to perform a build / install on a
+     * PackageID.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE InstallAction :
         public Action,
         private PrivateImplementationPattern<InstallAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstallAction>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             InstallAction(const InstallActionOptions &);
             ~InstallAction();
 
+            ///\}
+
+            /// Options for the action.
             const InstallActionOptions & options;
     };
 
+    /**
+     * A FetchAction can be used to fetch source files for a PackageID using
+     * PackageID::perform_action .
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE FetchAction :
         public Action,
         private PrivateImplementationPattern<FetchAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, FetchAction>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             FetchAction(const FetchActionOptions &);
             ~FetchAction();
 
+            ///\}
+
+            /// Options for the action.
             const FetchActionOptions & options;
     };
 
+    /**
+     * An UninstallAction is used by UninstallTask to uninstall a PackageID.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
         private PrivateImplementationPattern<UninstallAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, UninstallAction>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             UninstallAction(const UninstallActionOptions &);
             ~UninstallAction();
 
+            ///\}
+
+            /// Options for the action.
             const UninstallActionOptions & options;
     };
 
+    /**
+     * InstalledAction is a dummy action used by SupportsActionTest and
+     * query::SupportsAction to determine whether a PackageID is installed.
+     *
+     * Performing an InstalledAction does not make sense and will do nothing.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE InstalledAction :
         public Action,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, InstalledAction>
     {
     };
 
+    /**
+     * A PretendAction is used by InstallTask to handle install-pretend-phase
+     * checks on a PackageID.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE PretendAction :
         public Action,
         private PrivateImplementationPattern<PretendAction>,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, PretendAction>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PretendAction();
             ~PretendAction();
 
+            ///\}
+
+            /// Did our pretend phase fail?
             const bool failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /// Mark the action as failed.
             void set_failed();
     };
 
+    /**
+     * A ConfigAction is used via PackageID::perform_action to execute
+     * post-install configuration (for example, via 'paludis --config')
+     * on a PackageID.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, ConfigAction>
     {
     };
 
+    /**
+     * An InfoAction is used via PackageID::perform_action to execute
+     * additional information (for example, via 'paludis --info')
+     * on a PackageID.
+     *
+     * This action potentially makes sense for both installed and
+     * installable packages. Unlike Ebuild EAPI-0 'pkg_info', this
+     * action is not specifically tied to installed packages.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE InfoAction:
         public Action,
         public AcceptInterfaceVisitsThis<ActionVisitorTypes, InfoAction>
     {
     };
 
+    /**
+     * Base class for SupportsActionTest<>.
+     *
+     * \see SupportsActionTest<>
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE SupportsActionTestBase :
         public virtual AcceptInterface<SupportsActionTestVisitorTypes>
     {
@@ -146,6 +280,21 @@ namespace paludis
             virtual ~SupportsActionTestBase() = 0;
     };
 
+    /**
+     * Instantiated with an Action subclass as its template parameter,
+     * SupportsActionTest<> is used by PackageID::supports_action and
+     * Repository::some_ids_might_support_action to query whether a
+     * particular action is supported by that PackageID or potentially
+     * supported by some IDs in that Repository.
+     *
+     * Use of a separate class, rather than a mere Action, avoids the
+     * need to create bogus options for the more complicated Action
+     * subclasses.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     template <typename A_>
     class PALUDIS_VISIBLE SupportsActionTest :
         public SupportsActionTestBase,
@@ -153,50 +302,81 @@ namespace paludis
     {
     };
 
+    /**
+     * An Action can be written to a std::ostream.
+     *
+     * \since 0.26
+     * \ingroup g_actions
+     * \nosubgrouping
+     */
     std::ostream & operator<< (std::ostream &, const Action &) PALUDIS_VISIBLE;
 
     /**
-     * Parent class for action errors.
+     * Parent class for Action related errors.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_actions
+     * \ingroup g_exceptions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ActionError :
         public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             ActionError(const std::string & msg) throw ();
+
+            ///\}
     };
 
+    /**
+     * Thrown if a PackageID is asked to perform an Action that it does
+     * not support.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE UnsupportedActionError :
         public ActionError
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             UnsupportedActionError(const PackageID &, const Action &) throw ();
+
+            ///\}
     };
 
     /**
-     * Thrown if an install fails.
+     * Thrown if a PackageID fails to perform an InstallAction.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE InstallActionError : public ActionError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             InstallActionError(const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**
-     * Thrown if a fetch fails.
+     * Thrown if a PackageID fails to perform a FetchAction.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FetchActionError :
@@ -206,55 +386,73 @@ namespace paludis
             const tr1::shared_ptr<const Sequence<FetchActionFailure> > _failures;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FetchActionError(const std::string &) throw ();
             FetchActionError(const std::string &, const tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
 
+            ///\}
+
+            /// More information about failed fetches.
             const tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
-     * Thrown if an uninstall fails.
+     * Thrown if a PackageID fails to perform an UninstallAction.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallActionError : public ActionError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             UninstallActionError(const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**
-     * Thrown if a configure fails.
+     * Thrown if a PackageID fails to perform a ConfigAction.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigActionError : public ActionError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             ConfigActionError(const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**
-     * Thrown if an info fails.
+     * Thrown if a PackageID fails to perform an InfoAction.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_actions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE InfoActionError : public ActionError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             InfoActionError(const std::string & msg) throw ();
+
+            ///\}
     };
 }
 

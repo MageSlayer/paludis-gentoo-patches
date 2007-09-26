@@ -33,7 +33,7 @@
 /** \file
  * Declarations for the Contents classes.
  *
- * \ingroup grpcontents
+ * \ingroup g_contents
  */
 
 namespace paludis
@@ -41,7 +41,8 @@ namespace paludis
     /**
      * Visit a contents heirarchy.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
+     * \nosubgrouping
      */
     struct ContentsVisitorTypes :
         VisitorTypes<
@@ -60,7 +61,7 @@ namespace paludis
     /**
      * Base class for a contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsEntry :
@@ -93,7 +94,7 @@ namespace paludis
     /**
      * A file contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsFileEntry :
@@ -112,7 +113,7 @@ namespace paludis
     /**
      * A directory contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsDirEntry :
@@ -131,7 +132,7 @@ namespace paludis
     /**
      * A misc contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsMiscEntry :
@@ -150,7 +151,7 @@ namespace paludis
     /**
      * A fifo contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsFifoEntry :
@@ -169,7 +170,7 @@ namespace paludis
     /**
      * A device contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsDevEntry :
@@ -188,7 +189,7 @@ namespace paludis
     /**
      * A sym contents entry.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
@@ -211,9 +212,9 @@ namespace paludis
     };
 
     /**
-     * A package's contents.
+     * A package's contents, obtainable by PackageID::contents_key.
      *
-     * \ingroup grpcontents
+     * \ingroup g_contents
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Contents :

@@ -78,10 +78,6 @@
         is also <a href="http://paludis.pioto.org/trac/browser">Trac's
             code browser</a> for viewing via the web.</li>
 
-        <li>An <a href="programmingwithpaludis.html">overview of
-            Programming with Paludis</a>, covering both the C++ and the
-        Ruby APIs, is available.</li>
-
         <li>There is <a href="doxygen/html"/>extensive C++ core API and implementation
             documentation</a>. This is also available via <code>make
             doxygen</code>.</li>

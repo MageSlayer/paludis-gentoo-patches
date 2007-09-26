@@ -9,20 +9,24 @@ DEFS= \
 
 SUBDIRS = .
 
-if ! MONOLITHIC
-
 noinst_PROGRAMS = \
-	pwp_basic_cplusplus_app
-
-noinst_SCRIPTS = \
-	pwp_basic_ruby_app.rb
-
-endif
+	example_about \
+	example_action \
+	example_dep_label
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
-pwp_basic_cplusplus_app_SOURCES = pwp_basic_cplusplus_app.cc
-pwp_basic_cplusplus_app_LDFLAGS = \
+example_about_SOURCES = example_about.cc
+example_about_LDFLAGS = \
+	$(top_builddir)/paludis/libpaludis.la
+
+example_action_SOURCES = example_action.cc
+example_action_LDFLAGS = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+
+example_dep_label_SOURCES = example_dep_label.cc
+example_dep_label_LDFLAGS = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
