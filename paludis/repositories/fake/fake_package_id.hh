@@ -105,6 +105,34 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    template <>
+    class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<URISpecTree> :
+        public MetadataSpecTreeKey<URISpecTree>,
+        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >
+    {
+        private:
+            Implementation<FakeMetadataSpecTreeKey<URISpecTree> > * const _imp;
+
+        public:
+            FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
+                    const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> &, const MetadataKeyType);
+            ~FakeMetadataSpecTreeKey();
+
+            virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void set_from_string(const std::string &);
+
+            virtual std::string pretty_print(const URISpecTree::Formatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     class PALUDIS_VISIBLE FakeMetadataPackageIDKey :
         public MetadataPackageIDKey,
         private PrivateImplementationPattern<FakeMetadataPackageIDKey>

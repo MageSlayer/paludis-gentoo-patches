@@ -23,6 +23,12 @@
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/dep_label.hh .
+ *
+ * \ingroup g_dep_spec
+ */
+
 namespace paludis
 {
     struct URILabelVisitorTypes;
@@ -36,6 +42,12 @@ namespace paludis
     typedef ConcreteURILabel<enum URILocalMirrorsOnlyLabelTag { }> URILocalMirrorsOnlyLabel;
     typedef ConcreteURILabel<enum URIManualOnlyLabelTag { }> URIManualOnlyLabel;
 
+    /**
+     * A URILabel can be written to a stream.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
 
     struct DependencyLabelVisitorTypes;
@@ -73,6 +85,12 @@ namespace paludis
     typedef ConcreteDependencyLabel<enum DependencyABILabelTag { },
             DependencyABIsLabel> DependencyABILabel;
 
+    /**
+     * A DependencyLabel can be written to a stream.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     std::ostream & operator<< (std::ostream &, const DependencyLabel &) PALUDIS_VISIBLE;
 }
 

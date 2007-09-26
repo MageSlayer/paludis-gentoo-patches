@@ -23,10 +23,12 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/formatter.hh>
+#include <paludis/dep_label.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 
 using namespace paludis;
@@ -387,6 +389,61 @@ struct MetadataSpecTreeKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
+    }
+};
+
+template <>
+struct MetadataSpecTreeKeyWrapper<URISpecTree> :
+    MetadataSpecTreeKey<URISpecTree>,
+    bp::wrapper<MetadataSpecTreeKey<URISpecTree> >
+{
+    MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSpecTreeKey<URISpecTree>(r, h, t)
+    {
+    }
+
+    virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = this->get_override("value"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+    }
+
+    virtual std::string pretty_print(const URISpecTree::Formatter &) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        // todo: use the formatter
+        if (bp::override f = this->get_override("pretty_print"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
+    }
+
+    virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        // todo: use the formatter
+        if (bp::override f = this->get_override("pretty_print_flat"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
+    }
+
+    virtual const tr1::shared_ptr<const URILabel> initial_label() const
+        PALUDIS_ATTRIBUTE((warn_unused_result))
+    {
+        Lock l(get_mutex());
+
+        // todo: override
+        return make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors"));
     }
 };
 

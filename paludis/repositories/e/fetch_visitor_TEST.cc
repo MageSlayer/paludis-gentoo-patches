@@ -23,6 +23,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
 #include <test/test_runner.hh>
@@ -55,7 +56,7 @@ namespace test_cases
             FetchVisitor v(&env, *env.package_database()->query(query::Matches(PackageDepSpec("=cat/pkg-1", pds_pm_permissive)),
                         qo_require_exactly_one)->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
-                    false, false, "test", false, false, false);
+                    false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);
             parse_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), *eapi)->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());

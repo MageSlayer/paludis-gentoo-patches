@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>

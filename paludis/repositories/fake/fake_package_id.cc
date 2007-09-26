@@ -135,6 +135,21 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct Implementation<FakeMetadataSpecTreeKey<URISpecTree> >
+    {
+        tr1::shared_ptr<const URISpecTree::ConstItem> value;
+        std::string string_value;
+        const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> func;
+        tr1::shared_ptr<const URILabel> initial_label;
+
+        Implementation(const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> & f) :
+            func(f),
+            initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors"))
+        {
+        }
+    };
 }
 
 template <typename C_>
@@ -179,6 +194,50 @@ std::string
 FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::Formatter &) const
 {
     return _imp->string_value;
+}
+
+FakeMetadataSpecTreeKey<URISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
+        const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
+    MetadataSpecTreeKey<URISpecTree>(r, h, t),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >(new Implementation<FakeMetadataSpecTreeKey<URISpecTree> >(f)),
+    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >::_imp.get())
+{
+    set_from_string(v);
+}
+
+FakeMetadataSpecTreeKey<URISpecTree>::~FakeMetadataSpecTreeKey()
+{
+}
+
+void
+FakeMetadataSpecTreeKey<URISpecTree>::set_from_string(const std::string & s)
+{
+    _imp->string_value = s;
+    _imp->value = _imp->func(s);
+}
+
+const tr1::shared_ptr<const URISpecTree::ConstItem>
+FakeMetadataSpecTreeKey<URISpecTree>::value() const
+{
+    return _imp->value;
+}
+
+std::string
+FakeMetadataSpecTreeKey<URISpecTree>::pretty_print(const URISpecTree::Formatter &) const
+{
+    return _imp->string_value;
+}
+
+std::string
+FakeMetadataSpecTreeKey<URISpecTree>::pretty_print_flat(const URISpecTree::Formatter &) const
+{
+    return _imp->string_value;
+}
+
+const tr1::shared_ptr<const URILabel>
+FakeMetadataSpecTreeKey<URISpecTree>::initial_label() const
+{
+    return _imp->initial_label;
 }
 
 namespace paludis

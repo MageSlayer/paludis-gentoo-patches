@@ -59,6 +59,12 @@ URIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
     return f.format(_v, format::Plain());
 }
 
+const tr1::shared_ptr<const URILabel>
+URIKey::initial_label() const
+{
+    return make_shared_ptr(new URIMirrorsThenListedLabel("mirrors-then-listed"));
+}
+
 StringKey::StringKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataStringKey(r, h, t),
     _v(v)

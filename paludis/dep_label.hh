@@ -26,8 +26,25 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for dependency label-related classes.
+ *
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_label.cc "example_dep_label.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * Types for visiting a URI label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct URILabelVisitorTypes :
         VisitorTypes<
             URILabelVisitorTypes,
@@ -42,6 +59,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a dependency label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct DependencyLabelVisitorTypes :
         VisitorTypes<
             DependencyLabelVisitorTypes,
@@ -54,6 +78,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a dependency system label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct DependencySystemLabelVisitorTypes :
         VisitorTypes<
             DependencySystemLabelVisitorTypes,
@@ -64,6 +95,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a dependency type label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct DependencyTypeLabelVisitorTypes :
         VisitorTypes<
             DependencyTypeLabelVisitorTypes,
@@ -76,6 +114,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a dependency suggests label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct DependencySuggestLabelVisitorTypes :
         VisitorTypes<
             DependencySuggestLabelVisitorTypes,
@@ -87,6 +132,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Types for visiting a dependency abi label.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct DependencyABIsLabelVisitorTypes :
         VisitorTypes<
             DependencyABIsLabelVisitorTypes,
@@ -99,16 +151,36 @@ namespace paludis
     {
     };
 
+    /**
+     * URI label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE URILabel :
         private InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>,
         public virtual ConstAcceptInterface<URILabelVisitorTypes>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~URILabel() = 0;
 
+            ///\}
+
+            /// Our text.
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
+    /**
+     * A concrete URI label class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     template <typename T_>
     class PALUDIS_VISIBLE ConcreteURILabel :
         public URILabel,
@@ -119,56 +191,114 @@ namespace paludis
             using PrivateImplementationPattern<ConcreteURILabel<T_> >::_imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             ConcreteURILabel(const std::string &);
             ~ConcreteURILabel();
 
+            ///\}
+
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;
     };
 
+    /**
+     * Dependency label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DependencyLabel :
         private InstantiationPolicy<DependencyLabel, instantiation_method::NonCopyableTag>,
         public virtual ConstAcceptInterface<DependencyLabelVisitorTypes>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~DependencyLabel() = 0;
 
+            ///\}
+
+            /// Our text.
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
+    /**
+     * System dependency label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct PALUDIS_VISIBLE DependencySystemLabel :
         public DependencyLabel,
         public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySystemLabel>,
         public virtual ConstAcceptInterface<DependencySystemLabelVisitorTypes>
     {
+        /// Convenience alias for our visitor types.
         typedef DependencySystemLabelVisitorTypes VisitorTypes;
     };
 
+    /**
+     * Type dependency label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct PALUDIS_VISIBLE DependencyTypeLabel :
         public DependencyLabel,
         public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyTypeLabel>,
         public virtual ConstAcceptInterface<DependencyTypeLabelVisitorTypes>
     {
+        /// Convenience alias for our visitor types.
         typedef DependencyTypeLabelVisitorTypes VisitorTypes;
     };
 
+    /**
+     * Suggest dependency label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct PALUDIS_VISIBLE DependencySuggestLabel :
         public DependencyLabel,
         public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencySuggestLabel>,
         public virtual ConstAcceptInterface<DependencySuggestLabelVisitorTypes>
     {
+        /// Convenience alias for our visitor types.
         typedef DependencySuggestLabelVisitorTypes VisitorTypes;
     };
 
+    /**
+     * ABI dependency label base class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     struct PALUDIS_VISIBLE DependencyABIsLabel :
         public DependencyLabel,
         public ConstAcceptInterfaceVisitsThis<DependencyLabelVisitorTypes, DependencyABIsLabel>,
         public virtual ConstAcceptInterface<DependencyABIsLabelVisitorTypes>
     {
+        /// Convenience alias for our visitor types.
         typedef DependencyABIsLabelVisitorTypes VisitorTypes;
     };
 
+    /**
+     * A concrete dependency label class.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
     template <typename T_, typename C_>
     class PALUDIS_VISIBLE ConcreteDependencyLabel :
         public C_,
@@ -179,11 +309,17 @@ namespace paludis
             using PrivateImplementationPattern<ConcreteDependencyLabel<T_, C_> >::_imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             ConcreteDependencyLabel(const std::string &);
             ~ConcreteDependencyLabel();
 
+            ///\}
+
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;
     };
 }

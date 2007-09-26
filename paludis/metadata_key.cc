@@ -122,6 +122,11 @@ MetadataSpecTreeKey<C_>::MetadataSpecTreeKey(const std::string & r, const std::s
 {
 }
 
+MetadataSpecTreeKey<URISpecTree>::MetadataSpecTreeKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t)
+{
+}
+
 template class MetadataSetKey<KeywordNameSet>;
 template class MetadataSetKey<IUseFlagSet>;
 template class MetadataSetKey<Set<std::string> >;

@@ -169,7 +169,7 @@ void
 CheckFetchedFilesVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
 {
     InNoFetchVisitor v;
-    std::for_each(l.begin(), l.end(), accept_visitor(v));
+    std::for_each(indirect_iterator(l.begin()), indirect_iterator(l.end()), accept_visitor(v));
     _imp->in_nofetch = v.result;
 }
 

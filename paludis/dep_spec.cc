@@ -791,14 +791,14 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 std::ostream &
 paludis::operator<< (std::ostream & s, const LabelsDepSpec<URILabelVisitorTypes> & l)
 {
-    s << join(l.begin(), l.end(), "+") << ":";
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), "+") << ":";
     return s;
 }
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const LabelsDepSpec<DependencyLabelVisitorTypes> & l)
 {
-    s << join(l.begin(), l.end(), ",") << ":";
+    s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
     return s;
 }
 
@@ -1107,14 +1107,14 @@ template <typename T_>
 typename LabelsDepSpec<T_>::ConstIterator
 LabelsDepSpec<T_>::begin() const
 {
-    return ConstIterator(indirect_iterator(_imp->items.begin()));
+    return ConstIterator(_imp->items.begin());
 }
 
 template <typename T_>
 typename LabelsDepSpec<T_>::ConstIterator
 LabelsDepSpec<T_>::end() const
 {
-    return ConstIterator(indirect_iterator(_imp->items.end()));
+    return ConstIterator(_imp->items.end());
 }
 
 template <typename T_>

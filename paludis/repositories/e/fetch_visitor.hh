@@ -47,8 +47,7 @@ namespace paludis
                         const bool fetch_unneeded,
                         const bool userpriv,
                         const std::string & mirrors_name,
-                        const bool fetch_restrict,
-                        const bool no_mirror,
+                        const tr1::shared_ptr<const URILabel> & initial_label,
                         const bool safe_resume);
 
                 ~FetchVisitor();

@@ -110,6 +110,9 @@ namespace paludis
 
                 virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class ERestrictKey :

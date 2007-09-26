@@ -239,7 +239,8 @@ namespace
         void
         visit_leaf(const DependencyLabelDepSpec & l)
         {
-            std::copy(l.begin(), l.end(), std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));
+            std::copy(indirect_iterator(l.begin()), indirect_iterator(l.end()),
+                    std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));
             s << ":";
         }
     };

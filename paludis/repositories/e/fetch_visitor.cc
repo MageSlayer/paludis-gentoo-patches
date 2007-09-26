@@ -54,12 +54,10 @@ namespace paludis
         const bool fetch_unneeded;
         const bool userpriv;
         const std::string mirrors_name;
-        const bool fetch_restrict;
-        const bool no_mirror;
+        tr1::shared_ptr<const URILabel> default_label;
         const bool safe_resume;
 
-        tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > default_label;
-        std::list<const LabelsDepSpec<URILabelVisitorTypes> *> labels;
+        std::list<const URILabel *> labels;
 
         Implementation(
                 const Environment * const e,
@@ -69,8 +67,7 @@ namespace paludis
                 const bool f,
                 const bool u,
                 const std::string & m,
-                const bool n,
-                const bool nm,
+                const tr1::shared_ptr<const URILabel> & n,
                 const bool sr) :
             env(e),
             id(i),
@@ -79,23 +76,9 @@ namespace paludis
             fetch_unneeded(f),
             userpriv(u),
             mirrors_name(m),
-            fetch_restrict(n),
-            no_mirror(nm),
+            default_label(n),
             safe_resume(sr)
         {
-            if (fetch_restrict)
-            {
-                default_label.reset(new LabelsDepSpec<URILabelVisitorTypes>);
-                default_label->add_label(make_shared_ptr(new URIManualOnlyLabel("fetch-restrict")));
-            }
-            else if (no_mirror)
-            {
-                default_label.reset(new LabelsDepSpec<URILabelVisitorTypes>);
-                default_label->add_label(make_shared_ptr(new URIListedOnlyLabel("mirror-restrict")));
-            }
-            else
-                default_label = parse_uri_label("default:", eapi);
-
             labels.push_front(default_label.get());
         }
     };
@@ -109,10 +92,9 @@ FetchVisitor::FetchVisitor(
         const bool f,
         const bool u,
         const std::string & m,
-        const bool n,
-        const bool nm,
+        const tr1::shared_ptr<const URILabel> & n,
         const bool sr) :
-    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, nm, sr))
+    PrivateImplementationPattern<FetchVisitor>(new Implementation<FetchVisitor>(e, i, p, d, f, u, m, n, sr))
 {
 }
 
@@ -146,7 +128,9 @@ FetchVisitor::visit_sequence(const AllDepSpec &,
 void
 FetchVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
 {
-    *_imp->labels.begin() = &l;
+    for (URILabelDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
+            i != i_end ; ++i)
+        *_imp->labels.begin() = i->get();
 }
 
 namespace
@@ -166,12 +150,10 @@ FetchVisitor::visit_leaf(const URIDepSpec & u)
 
     if (! *_imp->labels.begin())
         throw FetchActionError("No fetch action label available");
-    if (1 != std::distance((*_imp->labels.begin())->begin(), (*_imp->labels.begin())->end()))
-        throw FetchActionError("Fetch action label does not define exactly one behaviour");
 
     SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
             u.original_url(), u.filename(), _imp->mirrors_name);
-    (*_imp->labels.begin())->begin()->accept(source_uri_finder);
+    (*_imp->labels.begin())->accept(source_uri_finder);
     for (SourceURIFinder::ConstIterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
             i != i_end ; ++i)
     {

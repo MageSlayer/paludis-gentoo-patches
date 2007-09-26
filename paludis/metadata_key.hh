@@ -206,6 +206,28 @@ namespace paludis
             virtual std::string pretty_print_flat(const typename C_::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
+
+    template <>
+    class PALUDIS_VISIBLE MetadataSpecTreeKey<URISpecTree> :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<URISpecTree> >
+    {
+        protected:
+            MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
+
+        public:
+            virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string pretty_print(const URISpecTree::Formatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
 }
 
 #endif

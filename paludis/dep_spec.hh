@@ -487,7 +487,8 @@ namespace paludis
             ///\{
 
             void add_label(const tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
-            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>, const typename SpecTree_::BasicNode> ConstIterator;
+            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>,
+                    const tr1::shared_ptr<const typename SpecTree_::BasicNode> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

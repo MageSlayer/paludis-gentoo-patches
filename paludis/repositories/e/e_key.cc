@@ -299,6 +299,7 @@ namespace paludis
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable tr1::shared_ptr<const URISpecTree::ConstItem> value;
+        mutable tr1::shared_ptr<const URILabel> initial_label;
 
         Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
             env(e),
@@ -351,6 +352,17 @@ EURIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
     value()->accept(p);
     return stringify(p);
+}
+
+const tr1::shared_ptr<const URILabel>
+EURIKey::initial_label() const
+{
+    Lock l(_imp->value_mutex);
+
+    if (! _imp->initial_label)
+        _imp->initial_label = *parse_uri_label("default:", *_imp->id->eapi())->begin();
+
+    return _imp->initial_label;
 }
 
 namespace paludis
