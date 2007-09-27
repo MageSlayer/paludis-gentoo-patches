@@ -23,7 +23,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/repository_info-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/qa-fwd.hh>

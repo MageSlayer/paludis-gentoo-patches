@@ -42,6 +42,15 @@ namespace paludis
     typedef LabelsDepSpec<URILabelVisitorTypes> URILabelDepSpec;
     typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelDepSpec;
 
+    struct GenericSpecTree;
+    struct LicenseSpecTree;
+    struct URISpecTree;
+    struct FlattenableSpecTree;
+    struct ProvideSpecTree;
+    struct RestrictSpecTree;
+    struct DependencySpecTree;
+    struct SetSpecTree;
+
 #include <paludis/dep_spec-se.hh>
 
     /**
@@ -94,189 +103,6 @@ namespace paludis
      * \ingroup grpdepspecs
      */
     std::ostream & operator<< (std::ostream &, const UseDepSpec &) PALUDIS_VISIBLE;
-
-    /**
-     * A generic DepSpec heirarchy.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct GenericSpecTree :
-        VisitorTypes<
-            GenericSpecTree,
-            DepSpec,
-            TreeLeaf<GenericSpecTree, PlainTextDepSpec>,
-            TreeLeaf<GenericSpecTree, URIDepSpec>,
-            TreeLeaf<GenericSpecTree, PackageDepSpec>,
-            TreeLeaf<GenericSpecTree, BlockDepSpec>,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
-            ConstTreeSequence<GenericSpecTree, AllDepSpec>,
-            ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
-            ConstTreeSequence<GenericSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec,
-            URIDepSpec,
-            PackageDepSpec,
-            BlockDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for licenses.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct LicenseSpecTree :
-        VisitorTypes<
-            LicenseSpecTree,
-            DepSpec,
-            TreeLeaf<LicenseSpecTree, PlainTextDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, AllDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, AnyDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for URIs.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct URISpecTree :
-        VisitorTypes<
-            URISpecTree,
-            DepSpec,
-            TreeLeaf<URISpecTree, URIDepSpec>,
-            TreeLeaf<URISpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
-            ConstTreeSequence<URISpecTree, AllDepSpec>,
-            ConstTreeSequence<URISpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            URIDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things that can be flattened.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct FlattenableSpecTree :
-        VisitorTypes<
-            FlattenableSpecTree,
-            DepSpec,
-            TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>,
-            TreeLeaf<FlattenableSpecTree, URIDepSpec>,
-            TreeLeaf<FlattenableSpecTree, PackageDepSpec>,
-            TreeLeaf<FlattenableSpecTree, BlockDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, AllDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec,
-            URIDepSpec,
-            PackageDepSpec,
-            BlockDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for provides.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct ProvideSpecTree :
-        VisitorTypes<
-            ProvideSpecTree,
-            DepSpec,
-            TreeLeaf<ProvideSpecTree, PackageDepSpec>,
-            ConstTreeSequence<ProvideSpecTree, AllDepSpec>,
-            ConstTreeSequence<ProvideSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PackageDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for restricts.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct RestrictSpecTree :
-        VisitorTypes<
-            RestrictSpecTree,
-            DepSpec,
-            TreeLeaf<RestrictSpecTree, PlainTextDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, AllDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for dependencies.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct DependencySpecTree :
-        VisitorTypes<
-            DependencySpecTree,
-            DepSpec,
-            TreeLeaf<DependencySpecTree, PackageDepSpec>,
-            TreeLeaf<DependencySpecTree, BlockDepSpec>,
-            TreeLeaf<DependencySpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
-            ConstTreeSequence<DependencySpecTree, AllDepSpec>,
-            ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
-            ConstTreeSequence<DependencySpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PackageDepSpec,
-            BlockDepSpec,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for sets.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct SetSpecTree :
-        VisitorTypes<
-            SetSpecTree,
-            DepSpec,
-            TreeLeaf<SetSpecTree, PackageDepSpec>,
-            ConstTreeSequence<SetSpecTree, AllDepSpec>
-        >
-    {
-        typedef Formatter<
-            PackageDepSpec
-                > Formatter;
-    };
 }
 
 #endif

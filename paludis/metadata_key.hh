@@ -24,7 +24,7 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/formatter-fwd.hh>
