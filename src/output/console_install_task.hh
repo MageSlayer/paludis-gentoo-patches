@@ -126,6 +126,8 @@ namespace paludis
                     tr1::shared_ptr<const DestinationsSet>);
 
         public:
+            virtual void execute();
+
             virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
 
             virtual void on_build_deplist_pre();

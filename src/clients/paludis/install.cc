@@ -28,9 +28,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <signal.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -247,71 +245,6 @@ namespace
                 }
             }
     };
-
-    class InstallKilledCatcher
-    {
-        private:
-            static const ConsoleInstallTask * _task;
-
-            static tr1::shared_ptr<Environment> _env;
-
-            static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
-
-            sig_t _old;
-
-        public:
-            InstallKilledCatcher(tr1::shared_ptr<Environment> env, const ConsoleInstallTask & task) :
-                _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
-            {
-                _task = &task;
-                _env = env;
-            }
-
-            ~InstallKilledCatcher()
-            {
-                signal(SIGINT, _old);
-                _task = 0;
-            }
-    };
-
-    const ConsoleInstallTask * InstallKilledCatcher::_task(0);
-    tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
-
-    void
-    InstallKilledCatcher::_signal_handler(int sig)
-    {
-        // ignore further signals to avoid a race if
-        // a sigal arrives while this handler hasn't finished
-        signal(sig, SIG_IGN);
-
-        static bool recursing(false);
-
-        if (recursing)
-        {
-            cout << endl;
-            cerr << "Caught signal " << sig << " inside signal" << endl;
-            cerr << "NOT waiting for children any more..." << endl;
-            cerr << endl;
-            cerr << "Exiting with failure" << endl;
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            recursing = true;
-
-            cout << endl;
-            cerr << "Caught signal " << sig << endl;
-            cerr << "Waiting for children..." << endl;
-            while (-1 != wait(0))
-                ;
-            cerr << endl;
-            if (_task)
-                _task->show_resume_command();
-            cerr << endl;
-            cerr << "Exiting with failure" << endl;
-            exit(EXIT_FAILURE);
-        }
-    }
 
     DepListDepsOption
     enum_arg_to_dep_list_deps_option(const args::EnumArg & arg)
@@ -576,8 +509,6 @@ do_install(tr1::shared_ptr<Environment> env)
         else
             throw args::DoHelp("bad value for --continue-on-failure");
     }
-
-    InstallKilledCatcher install_killed_catcher(env, task);
 
     cout << "Building target list... " << std::flush;
     for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),

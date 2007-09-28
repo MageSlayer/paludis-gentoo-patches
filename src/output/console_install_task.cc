@@ -26,6 +26,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/iterator.hh>
@@ -44,14 +45,44 @@
 
 #include <algorithm>
 #include <set>
+#include <list>
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 using namespace paludis;
+using std::cout;
+using std::cerr;
 using std::endl;
 
 #include <src/output/console_install_task-sr.cc>
+
+namespace
+{
+    std::list<ConsoleInstallTask *> tasks;
+    Mutex tasks_mutex;
+
+    void sigterm_handler(int sig)
+    {
+        cout << endl;
+        cerr << "Caught signal " << sig << endl;
+        cerr << "Waiting for children..." << endl;
+        while (-1 != wait(0))
+            ;
+        cerr << endl;
+        {
+            Lock l(tasks_mutex);
+            if (! tasks.empty())
+                (*tasks.begin())->show_resume_command();
+        }
+        cerr << endl;
+        cerr << "Exiting with failure" << endl;
+        exit(EXIT_FAILURE);
+    }
+}
 
 bool
 UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescription & rhs) const
@@ -86,6 +117,30 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
     _all_expand_prefixes(new UseFlagNameSet)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
+}
+
+void
+ConsoleInstallTask::execute()
+{
+    struct sigaction act, oldact;
+    act.sa_handler = &sigterm_handler;
+    act.sa_flags = 0;
+    ::sigemptyset(&act.sa_mask);
+    ::sigaddset(&act.sa_mask, SIGTERM);
+
+    {
+        Lock l(tasks_mutex);
+        tasks.push_front(this);
+        ::sigaction(SIGTERM, &act, &oldact);
+    }
+
+    InstallTask::execute();
+
+    {
+        Lock l(tasks_mutex);
+        ::sigaction(SIGTERM, &oldact, 0);
+        tasks.remove(this);
+    }
 }
 
 void

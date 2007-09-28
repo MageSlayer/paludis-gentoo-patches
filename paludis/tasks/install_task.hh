@@ -190,7 +190,7 @@ namespace paludis
             /**
              * Run the task.
              */
-            void execute();
+            virtual void execute();
 
             /**
              * Fetch our deplist.
