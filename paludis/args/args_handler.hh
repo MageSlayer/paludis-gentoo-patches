@@ -119,6 +119,11 @@ namespace paludis
                 void add_option(ArgsOption * const, const std::string & long_name,
                         const char short_name = '\0');
 
+                /**
+                 * Remove an ArgsOption instance.
+                 */
+                void remove_option(const std::string & long_name, const char short_name = '\0');
+
                 ///\name About our application (for documentation)
                 ///\{
 

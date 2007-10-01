@@ -60,6 +60,12 @@ ArgsGroup::add(ArgsOption * const value)
     _imp->args_options.push_back(value);
 }
 
+void
+ArgsGroup::remove(ArgsOption * const value)
+{
+    _imp->args_options.remove(value);
+}
+
 ArgsGroup::~ArgsGroup()
 {
 }

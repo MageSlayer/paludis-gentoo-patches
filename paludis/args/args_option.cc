@@ -75,6 +75,13 @@ ArgsOption::~ArgsOption()
 {
 }
 
+void
+ArgsOption::remove()
+{
+    _group->remove(this);
+    _group->handler()->remove_option(_long_name, _short_name);
+}
+
 SwitchArg::SwitchArg(ArgsGroup * const our_group, std::string our_long_name, char our_short_name,
         std::string our_description) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description)
@@ -295,6 +302,13 @@ EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
     _default_arg(our_default_arg)
 {
     _imp->allowed_args = opts._imp->options;
+}
+
+void
+EnumArg::set_default_arg(const std::string & arg)
+{
+    _argument = arg;
+    _default_arg = arg;
 }
 
 EnumArg::AllowedArgConstIterator

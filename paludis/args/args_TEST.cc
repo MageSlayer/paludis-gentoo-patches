@@ -40,6 +40,7 @@ struct CommandLine : public ArgsHandler
     SwitchArg arg_foo;
     SwitchArg arg_bar;
     SwitchArg arg_dummy;
+    SwitchArg arg_removed;
 
     ArgsGroup group_two;
     SwitchArg arg_baz;
@@ -78,6 +79,7 @@ CommandLine::CommandLine() :
     arg_foo(&group_one, "foo", 'f', "Enable foo"),
     arg_bar(&group_one, "bar", 'b', "Enable bar"),
     arg_dummy(&group_one, "dummy", 'd', "Enable something else"),
+    arg_removed(&group_one, "removed", 'r', "Removed"),
 
     group_two(this, "Group two", "Description of group two"),
     arg_baz(&group_two, "baz", 'z', "Enable baz"),
@@ -154,6 +156,62 @@ namespace test_cases
             TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), MissingValue);
         }
     } test_args_no_param;
+
+    /**
+     * \test Removed arguments tests.
+     *
+     */
+    struct ArgsTestRemovedArg : TestCase
+    {
+        ArgsTestRemovedArg() : TestCase("Removed arguments") { }
+
+        void run()
+        {
+            const char *args1[] = { "program-name", "--removed" };
+            const char *args2[] = { "program-name", "-r" };
+            CommandLine c1;
+            c1.run(2, args1, "", "", "");
+            TEST_CHECK(true);
+            c1.run(2, args2, "", "", "");
+            TEST_CHECK(true);
+            c1.arg_removed.remove();
+            TEST_CHECK_THROWS(c1.run(2, args1, "", "", ""), BadArgument);
+            TEST_CHECK_THROWS(c1.run(2, args2, "", "", ""), BadArgument);
+        }
+    } test_args_removed_arg;
+
+    /**
+     * \test Default arguments tests.
+     *
+     */
+    struct ArgsTestDefaultArg : TestCase
+    {
+        ArgsTestDefaultArg() : TestCase("Default arguments") { }
+
+        void run()
+        {
+            const char *args1[] = { "program-name", "--enum", "three" };
+            const char *args2[] = { "program-name" };
+            CommandLine c1, c2, c3, c4;
+            c2.arg_enum.set_default_arg("one");
+            c4.arg_enum.set_default_arg("one");
+
+            c1.run(3, args1, "", "", "");
+            c2.run(3, args1, "", "", "");
+            c1.run(1, args2, "", "", "");
+            c2.run(1, args2, "", "", "");
+
+            TEST_CHECK(c1.arg_enum.specified());
+            TEST_CHECK(c2.arg_enum.specified());
+            TEST_CHECK(! c3.arg_enum.specified());
+            TEST_CHECK(! c4.arg_enum.specified());
+
+            TEST_CHECK_EQUAL(c1.arg_enum.argument(), "three");
+            TEST_CHECK_EQUAL(c2.arg_enum.argument(), "three");
+            TEST_CHECK_EQUAL(c3.arg_enum.argument(), "two");
+            TEST_CHECK_EQUAL(c4.arg_enum.argument(), "one");
+        }
+    } test_args_default_arg;
 
     /**
      * \test String tests.

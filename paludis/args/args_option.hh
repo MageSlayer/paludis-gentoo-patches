@@ -72,6 +72,11 @@ namespace paludis
 
             public:
                 /**
+                 * Remove this option.
+                 */
+                void remove();
+
+                /**
                  * Fetch our long name.
                  */
                 const std::string & long_name() const
@@ -357,7 +362,7 @@ namespace paludis
         {
             private:
                 std::string _argument;
-                const std::string _default_arg;
+                std::string _default_arg;
 
             public:
                 /**
@@ -412,7 +417,14 @@ namespace paludis
                 void set_argument(const std::string & arg);
 
                 /**
-                 * Fetch the default option, as specified to the constructor.
+                 * Change the default option (should be called before
+                 * set_argument()).
+                 */
+                void set_default_arg(const std::string & arg);
+
+                /**
+                 * Fetch the default option, as specified to the
+                 * constructor or set_default_arg().
                  */
                 const std::string & default_arg() const
                 {

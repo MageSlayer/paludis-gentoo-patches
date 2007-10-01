@@ -214,6 +214,14 @@ ArgsHandler::add_option(ArgsOption * const opt, const std::string & long_name,
         _imp->shortopts[short_name] = opt;
 }
 
+void
+ArgsHandler::remove_option(const std::string & long_name, const char short_name)
+{
+    _imp->longopts.erase(long_name);
+    if (short_name != '\0')
+        _imp->shortopts.erase(short_name);
+}
+
 ArgsHandler::UsageLineConstIterator
 ArgsHandler::begin_usage_lines() const
 {

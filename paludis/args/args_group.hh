@@ -71,6 +71,12 @@ namespace paludis
                  */
                 void add(ArgsOption * const value);
 
+                /**
+                 * Remove an ArgsOption instance (called by
+                 * ArgsOption::remove).
+                 */
+                void remove(ArgsOption * const value);
+
                 ///\name Iterate over our ArgsOptions.
                 ///\{
 
