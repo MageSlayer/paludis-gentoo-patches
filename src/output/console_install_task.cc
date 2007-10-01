@@ -65,6 +65,8 @@ namespace
     std::list<ConsoleInstallTask *> tasks;
     Mutex tasks_mutex;
 
+    void sigterm_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
+
     void sigterm_handler(int sig)
     {
         cout << endl;
