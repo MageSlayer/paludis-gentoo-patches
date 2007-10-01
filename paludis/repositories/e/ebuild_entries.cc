@@ -309,23 +309,18 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
     Context context("When fetching '" + stringify(*id) + "':");
 
-    bool fetch_restrict(false), no_mirror(false);
+    bool fetch_restrict(false);
     {
         DepSpecFlattener restricts(_imp->params.environment, id);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
-        fetch_restrict =
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "fetch")) ||
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nofetch"));
-
-        no_mirror =
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "mirror")) ||
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nomirror"));
+        for (DepSpecFlattener::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
+                i != i_end ; ++i)
+            if (id->eapi()->supported->ebuild_options->restrict_fetch->end() !=
+                    std::find(id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
+                        id->eapi()->supported->ebuild_options->restrict_fetch->end(), (*i)->text()))
+                fetch_restrict = true;
     }
 
     bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());

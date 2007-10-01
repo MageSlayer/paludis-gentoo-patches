@@ -26,6 +26,7 @@ using namespace paludis;
 using std::cout;
 using std::endl;
 using std::setw;
+using std::left;
 
 /* We store our results in a map from distfile name to whether it is fetch
  * restricted. */
@@ -125,7 +126,7 @@ namespace
                 /* When we encounter a URIDepSpec, store its distfile name.
                  * We handle 'a -> b' style specs by taking 'b' as the
                  * distfile name. */
-                _results.insert(std::make_pair(s.renamed_url_suffix(), _restricted.back()));
+                _results.insert(std::make_pair(s.filename(), _restricted.back()));
             }
 
             void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
@@ -175,10 +176,11 @@ int main(int, char *[])
     }
 
     /* Display summary of results */
-    cout << setw(60) << "Distfile Name" << ": " << "Fetch Restricted?" << endl;
+    cout << left << setw(59) << "Distfile Name" << "| " << "Fetch Restricted?" << endl;
+    cout << std::string(59, '-') << "+" << std::string(18, '-') << endl;
     for (ResultsMap::const_iterator r(results.begin()), r_end(results.end()) ;
             r != r_end ; ++r)
-        cout << setw(60) << r->first << ": " << (r->second ? "yes" : "no") << endl;
+        cout << left << setw(59) << r->first << "| " << (r->second ? "yes" : "no") << endl;
 
     return EXIT_SUCCESS;
 }

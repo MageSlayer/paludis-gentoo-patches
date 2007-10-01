@@ -40,6 +40,7 @@
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
+#include <paludis/dep_spec_flattener.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -360,7 +361,27 @@ EURIKey::initial_label() const
     Lock l(_imp->value_mutex);
 
     if (! _imp->initial_label)
-        _imp->initial_label = *parse_uri_label("default:", *_imp->id->eapi())->begin();
+    {
+        DepSpecFlattener f(_imp->env, _imp->id);
+        if (_imp->id->restrict_key())
+            _imp->id->restrict_key()->value()->accept(f);
+        for (DepSpecFlattener::ConstIterator i(f.begin()), i_end(f.end()) ;
+                i != i_end ; ++i)
+        {
+            if (_imp->id->eapi()->supported->ebuild_options->restrict_fetch->end() !=
+                    std::find(_imp->id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
+                        _imp->id->eapi()->supported->ebuild_options->restrict_fetch->end(), (*i)->text()))
+                _imp->initial_label = *parse_uri_label("default-restrict-fetch:", *_imp->id->eapi())->begin();
+
+            else if (_imp->id->eapi()->supported->ebuild_options->restrict_fetch->end() !=
+                    std::find(_imp->id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
+                        _imp->id->eapi()->supported->ebuild_options->restrict_fetch->end(), (*i)->text()))
+                _imp->initial_label = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
+        }
+
+        if (! _imp->initial_label)
+            _imp->initial_label = *parse_uri_label("default:", *_imp->id->eapi())->begin();
+    }
 
     return _imp->initial_label;
 }
