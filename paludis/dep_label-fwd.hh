@@ -58,30 +58,125 @@ namespace paludis
     struct DependencyABIsLabel;
 
     template <typename T_, typename Category_> struct ConcreteDependencyLabel;
+
+    /**
+     * A DependencyHostLabel specifies host requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyHostLabelTag { },
             DependencySystemLabel> DependencyHostLabel;
+
+    /**
+     * A DependencyTargetLabel specifies target requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyTargetLabelTag { },
             DependencySystemLabel> DependencyTargetLabel;
+
+    /**
+     * A DependencyBuildLabel specifies build-time requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyBuildLabelTag { },
             DependencyTypeLabel> DependencyBuildLabel;
+
+    /**
+     * A DependencyRunLabel specifies runtime requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyRunLabelTag { },
             DependencyTypeLabel> DependencyRunLabel;
+
+    /**
+     * A DependencyInstallLabel specifies install-time requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyInstallLabelTag { },
             DependencyTypeLabel> DependencyInstallLabel;
+
+    /**
+     * A DependencyCompileLabel specifies compiled-against requirements for building a package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyCompileLabelTag { },
             DependencyTypeLabel> DependencyCompileLabel;
+
+    /**
+     * A DependencySuggestLabel specifies that a dependency is suggested.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencySuggestedLabelTag { },
             DependencySuggestLabel> DependencySuggestedLabel;
+
+    /**
+     * A DependencyRecommendedLabel specifies that a dependency is recommended.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyRecommendedLabelTag { },
             DependencySuggestLabel> DependencyRecommendedLabel;
+
+    /**
+     * A DependencyRequiredLabel specifies that a dependency is required.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyRequiredLabelTag { },
             DependencySuggestLabel> DependencyRequiredLabel;
+
+    /**
+     * A DependencyAnyLabel specifies that a dependency can be satisfied by
+     * any ABI.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyAnyLabelTag { },
             DependencyABIsLabel> DependencyAnyLabel;
+
+    /**
+     * A DependencyMineLabel specifies that a dependency is satisfied by
+     * ABIs equal to those being used to create the depending package.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyMineLabelTag { },
             DependencyABIsLabel> DependencyMineLabel;
+
+    /**
+     * A DependencyPrimaryLabel specifies that a dependency can be satisfied by
+     * the primary ABI.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyPrimaryLabelTag { },
             DependencyABIsLabel> DependencyPrimaryLabel;
+
+    /**
+     * A DependencyABILabel specifies that a dependency can be satisfied by
+     * a named ABI.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     typedef ConcreteDependencyLabel<enum DependencyABILabelTag { },
             DependencyABIsLabel> DependencyABILabel;
 

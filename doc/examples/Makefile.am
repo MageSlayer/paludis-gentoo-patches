@@ -12,6 +12,7 @@ SUBDIRS = .
 noinst_PROGRAMS = \
 	example_about \
 	example_action \
+	example_contents \
 	example_dep_label
 
 EXTRA_DIST = $(noinst_SCRIPTS)
@@ -22,6 +23,11 @@ example_about_LDFLAGS = \
 
 example_action_SOURCES = example_action.cc
 example_action_LDFLAGS = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+
+example_contents_SOURCES = example_contents.cc
+example_contents_LDFLAGS = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 

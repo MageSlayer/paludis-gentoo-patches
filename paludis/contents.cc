@@ -23,12 +23,6 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <list>
 
-/** \file
- * Implementation for Contents classes.
- *
- * \ingroup grpcontents
- */
-
 using namespace paludis;
 
 template class ConstVisitor<ContentsVisitorTypes>;

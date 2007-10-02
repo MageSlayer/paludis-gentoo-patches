@@ -34,6 +34,10 @@
  * Declarations for the Contents classes.
  *
  * \ingroup g_contents
+ *
+ * \section Examples
+ *
+ * - \ref example_contents.cc "example_contents.cc"
  */
 
 namespace paludis

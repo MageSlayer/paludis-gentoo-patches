@@ -27,6 +27,12 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 
+/** \file
+ * Forward declarations for paludis/dep_spec.hh .
+ *
+ * \ingroup g_dep_spec
+ */
+
 namespace paludis
 {
     class DepSpec;

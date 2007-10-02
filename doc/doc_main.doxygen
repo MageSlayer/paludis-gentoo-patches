@@ -28,6 +28,18 @@
  * - \ref example_action.cc "example_action.cc"
  */
 
+/** \defgroup g_contents Contents
+ *
+ * \ingroup g_paludis
+ *
+ * Contents heirarchies can be used to iterate over the content of an installed
+ * or binary package.
+ *
+ * \section Examples
+ *
+ * - \ref example_contents.cc "example_contents.cc"
+ */
+
 /** \defgroup g_dep_spec Dependency specifications
  *
  * \ingroup g_paludis

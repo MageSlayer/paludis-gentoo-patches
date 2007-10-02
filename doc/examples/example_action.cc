@@ -100,6 +100,8 @@ int main(int, char *[])
                 cout << endl;
             }
         }
+
+        cout << endl;
     }
 
     return exit_status;

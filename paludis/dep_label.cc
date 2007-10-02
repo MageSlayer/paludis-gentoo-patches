@@ -137,3 +137,4 @@ template class ConcreteDependencyLabel<DependencyAnyLabel::Tag, DependencyABIsLa
 template class ConcreteDependencyLabel<DependencyMineLabel::Tag, DependencyABIsLabel>;
 template class ConcreteDependencyLabel<DependencyPrimaryLabel::Tag, DependencyABIsLabel>;
 template class ConcreteDependencyLabel<DependencyABILabel::Tag, DependencyABIsLabel>;
+
