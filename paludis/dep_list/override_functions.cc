@@ -77,7 +77,11 @@ namespace
         {
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
         }
 
@@ -204,7 +208,11 @@ namespace
         {
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
         }
 
@@ -356,7 +364,11 @@ namespace
         {
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
         {
         }
 

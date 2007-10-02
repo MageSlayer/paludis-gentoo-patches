@@ -524,11 +524,11 @@ namespace test_cases
                     TEST_CHECK(id1->short_description_key());
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pd(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::DepSpecPrettyPrinter pd(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id1->build_dependencies_key());
                     id1->build_dependencies_key()->value()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
-                    erepository::DepSpecPrettyPrinter pr(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::DepSpecPrettyPrinter pr(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id1->run_dependencies_key());
                     id1->run_dependencies_key()->value()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
@@ -539,11 +539,11 @@ namespace test_cases
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(id2->short_description_key());
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
-                    erepository::DepSpecPrettyPrinter pd2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::DepSpecPrettyPrinter pd2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id2->build_dependencies_key());
                     id2->build_dependencies_key()->value()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
-                    erepository::DepSpecPrettyPrinter pr2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::DepSpecPrettyPrinter pr2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     TEST_CHECK(id2->run_dependencies_key());
                     id2->run_dependencies_key()->value()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");

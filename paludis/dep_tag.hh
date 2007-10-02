@@ -27,7 +27,8 @@
  */
 
 #include <paludis/dep_tag-fwd.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>

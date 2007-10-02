@@ -20,7 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PROFILE_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>

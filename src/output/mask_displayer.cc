@@ -119,7 +119,13 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            ColourFormatter formatter;
+            s << k.pretty_print_flat(formatter);
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);

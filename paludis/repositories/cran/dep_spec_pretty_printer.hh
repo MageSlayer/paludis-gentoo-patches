@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DEP_SPEC_PRETTY_PRINTER_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment-fwd.hh>
 #include <iosfwd>

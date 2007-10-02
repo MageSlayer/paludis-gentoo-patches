@@ -25,10 +25,10 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
-#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/sequence.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
@@ -41,63 +41,6 @@
  */
 
 using namespace paludis;
-
-template class ConstVisitor<GenericSpecTree>;
-template class ConstAcceptInterface<GenericSpecTree>;
-template class TreeLeaf<GenericSpecTree, PackageDepSpec>;
-template class TreeLeaf<GenericSpecTree, BlockDepSpec>;
-template class TreeLeaf<GenericSpecTree, PlainTextDepSpec>;
-template class TreeLeaf<GenericSpecTree, URIDepSpec>;
-template class ConstTreeSequence<GenericSpecTree, AllDepSpec>;
-template class ConstTreeSequence<GenericSpecTree, AnyDepSpec>;
-template class ConstTreeSequence<GenericSpecTree, UseDepSpec>;
-
-template class ConstVisitor<LicenseSpecTree>;
-template class ConstAcceptInterface<LicenseSpecTree>;
-template class TreeLeaf<LicenseSpecTree, PlainTextDepSpec>;
-template class ConstTreeSequence<LicenseSpecTree, AllDepSpec>;
-template class ConstTreeSequence<LicenseSpecTree, AnyDepSpec>;
-template class ConstTreeSequence<LicenseSpecTree, UseDepSpec>;
-
-template class ConstVisitor<URISpecTree>;
-template class ConstAcceptInterface<URISpecTree>;
-template class TreeLeaf<URISpecTree, URIDepSpec>;
-template class ConstTreeSequence<URISpecTree, AllDepSpec>;
-template class ConstTreeSequence<URISpecTree, UseDepSpec>;
-
-template class ConstVisitor<FlattenableSpecTree>;
-template class ConstAcceptInterface<FlattenableSpecTree>;
-template class TreeLeaf<FlattenableSpecTree, PackageDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, BlockDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, URIDepSpec>;
-template class ConstTreeSequence<FlattenableSpecTree, AllDepSpec>;
-template class ConstTreeSequence<FlattenableSpecTree, UseDepSpec>;
-
-template class ConstVisitor<ProvideSpecTree>;
-template class ConstAcceptInterface<ProvideSpecTree>;
-template class TreeLeaf<ProvideSpecTree, PackageDepSpec>;
-template class ConstTreeSequence<ProvideSpecTree, AllDepSpec>;
-template class ConstTreeSequence<ProvideSpecTree, UseDepSpec>;
-
-template class ConstVisitor<RestrictSpecTree>;
-template class ConstAcceptInterface<RestrictSpecTree>;
-template class TreeLeaf<RestrictSpecTree, PlainTextDepSpec>;
-template class ConstTreeSequence<RestrictSpecTree, AllDepSpec>;
-template class ConstTreeSequence<RestrictSpecTree, UseDepSpec>;
-
-template class ConstVisitor<DependencySpecTree>;
-template class TreeLeaf<DependencySpecTree, PackageDepSpec>;
-template class TreeLeaf<DependencySpecTree, BlockDepSpec>;
-template class ConstTreeSequence<DependencySpecTree, AllDepSpec>;
-template class ConstTreeSequence<DependencySpecTree, AnyDepSpec>;
-template class ConstTreeSequence<DependencySpecTree, UseDepSpec>;
-template class ConstAcceptInterface<DependencySpecTree>;
-
-template class ConstVisitor<SetSpecTree>;
-template class ConstAcceptInterface<SetSpecTree>;
-template class TreeLeaf<SetSpecTree, PackageDepSpec>;
-template class ConstTreeSequence<SetSpecTree, AllDepSpec>;
 
 #include <paludis/dep_spec-se.cc>
 
@@ -647,6 +590,13 @@ paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & s, const LicenseDepSpec & a)
+{
+    s << a.text();
+    return s;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & s, const BlockDepSpec & a)
 {
     s << "!" << *a.blocked_spec();
@@ -663,13 +613,20 @@ paludis::operator<< (std::ostream & s, const UseDepSpec & a)
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const URIDepSpec & p)
+paludis::operator<< (std::ostream & s, const FetchableURIDepSpec & p)
 {
     if (! p.renamed_url_suffix().empty())
         s << p.original_url() << " -> " << p.renamed_url_suffix();
     else
         s << p.original_url();
 
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const SimpleURIDepSpec & p)
+{
+    s << p.text();
     return s;
 }
 
@@ -827,6 +784,29 @@ PlainTextDepSpec::clone() const
 {
     return tr1::shared_ptr<DepSpec>(new PlainTextDepSpec(text()));
 }
+
+LicenseDepSpec::LicenseDepSpec(const std::string & s) :
+    StringDepSpec(s)
+{
+}
+
+tr1::shared_ptr<DepSpec>
+LicenseDepSpec::clone() const
+{
+    return tr1::shared_ptr<DepSpec>(new LicenseDepSpec(text()));
+}
+
+SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
+    StringDepSpec(s)
+{
+}
+
+tr1::shared_ptr<DepSpec>
+SimpleURIDepSpec::clone() const
+{
+    return tr1::shared_ptr<DepSpec>(new SimpleURIDepSpec(text()));
+}
+
 
 namespace paludis
 {
@@ -1029,13 +1009,13 @@ BlockDepSpec::clone() const
     return tr1::shared_ptr<DepSpec>(new BlockDepSpec(tr1::static_pointer_cast<PackageDepSpec>(_spec->clone())));
 }
 
-URIDepSpec::URIDepSpec(const std::string & s) :
+FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
     StringDepSpec(s)
 {
 }
 
 std::string
-URIDepSpec::original_url() const
+FetchableURIDepSpec::original_url() const
 {
     std::string::size_type p(text().find(" -> "));
     if (std::string::npos == p)
@@ -1045,7 +1025,7 @@ URIDepSpec::original_url() const
 }
 
 std::string
-URIDepSpec::renamed_url_suffix() const
+FetchableURIDepSpec::renamed_url_suffix() const
 {
     std::string::size_type p(text().find(" -> "));
     if (std::string::npos == p)
@@ -1055,7 +1035,7 @@ URIDepSpec::renamed_url_suffix() const
 }
 
 std::string
-URIDepSpec::filename() const
+FetchableURIDepSpec::filename() const
 {
     std::string rus = renamed_url_suffix();
     if (! rus.empty())
@@ -1070,9 +1050,9 @@ URIDepSpec::filename() const
 }
 
 tr1::shared_ptr<DepSpec>
-URIDepSpec::clone() const
+FetchableURIDepSpec::clone() const
 {
-    return tr1::shared_ptr<URIDepSpec>(new URIDepSpec(text()));
+    return tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(text()));
 }
 
 namespace paludis

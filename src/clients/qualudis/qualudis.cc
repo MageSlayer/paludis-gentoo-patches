@@ -87,7 +87,12 @@ namespace
             stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
         }

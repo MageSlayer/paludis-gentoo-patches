@@ -239,8 +239,7 @@ namespace
                 if (reporter)
                 {
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(),
-                            ff, 0, false, 0);
+                    erepository::DepSpecPrettyPrinter printer(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     std::for_each(begin, end, accept_visitor(printer));
                     reporter->message(QAMessage(entry, qaml_normal, name, "No item in block '|| ( "
                                 + stringify(printer) + " )' visible for profile '"

@@ -21,6 +21,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 

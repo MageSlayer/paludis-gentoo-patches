@@ -19,6 +19,7 @@
 
 #include "range_rewriter.hh"
 #include <paludis/util/sequence.hh>
+#include <paludis/dep_spec.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 

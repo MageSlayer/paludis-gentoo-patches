@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_RANGE_REWRITER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_RANGE_REWRITER_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 
 namespace paludis
 {

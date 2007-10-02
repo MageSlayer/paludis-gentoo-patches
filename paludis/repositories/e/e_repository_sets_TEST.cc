@@ -98,7 +98,7 @@ namespace test_cases
 
             tr1::shared_ptr<SetSpecTree::ConstItem> set1(repo->sets_interface->package_set(SetName("set1")));
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             set1->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
@@ -133,7 +133,7 @@ namespace test_cases
 
             tr1::shared_ptr<SetSpecTree::ConstItem> insecurity(repo->sets_interface->package_set(SetName("insecurity")));
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             insecurity->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
@@ -175,7 +175,7 @@ namespace test_cases
 
             tr1::shared_ptr<const SetSpecTree::ConstItem> security(repo->sets_interface->package_set(SetName("security")));
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             security->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }

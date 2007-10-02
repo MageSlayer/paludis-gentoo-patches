@@ -46,7 +46,9 @@ template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonU
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPackageDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonBlockDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonPlainTextDepSpec>;
-template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonSimpleURIDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonFetchableURIDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonLicenseDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>;
 
@@ -56,7 +58,9 @@ template class Visits<const PythonUseDepSpec>;
 template class Visits<const PythonPackageDepSpec>;
 template class Visits<const PythonBlockDepSpec>;
 template class Visits<const PythonPlainTextDepSpec>;
-template class Visits<const PythonURIDepSpec>;
+template class Visits<const PythonSimpleURIDepSpec>;
+template class Visits<const PythonFetchableURIDepSpec>;
+template class Visits<const PythonLicenseDepSpec>;
 template class Visits<const PythonURILabelsDepSpec>;
 template class Visits<const PythonDependencyLabelsDepSpec>;
 
@@ -398,6 +402,26 @@ PythonPlainTextDepSpec::PythonPlainTextDepSpec(const PlainTextDepSpec & d) :
 {
 }
 
+PythonLicenseDepSpec::PythonLicenseDepSpec(const std::string & s) :
+    PythonStringDepSpec(s)
+{
+}
+
+PythonLicenseDepSpec::PythonLicenseDepSpec(const LicenseDepSpec & d) :
+    PythonStringDepSpec(d.text())
+{
+}
+
+PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const std::string & s) :
+    PythonStringDepSpec(s)
+{
+}
+
+PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const SimpleURIDepSpec & d) :
+    PythonStringDepSpec(d.text())
+{
+}
+
 PythonBlockDepSpec::PythonBlockDepSpec(tr1::shared_ptr<const PythonPackageDepSpec> & a) :
     PythonStringDepSpec("!" + a->text()),
     _spec(a)
@@ -416,18 +440,18 @@ PythonBlockDepSpec::blocked_spec() const
     return _spec;
 }
 
-PythonURIDepSpec::PythonURIDepSpec(const std::string & s) :
+PythonFetchableURIDepSpec::PythonFetchableURIDepSpec(const std::string & s) :
     PythonStringDepSpec(s)
 {
 }
 
-PythonURIDepSpec::PythonURIDepSpec(const URIDepSpec & d) :
+PythonFetchableURIDepSpec::PythonFetchableURIDepSpec(const FetchableURIDepSpec & d) :
     PythonStringDepSpec(d.text())
 {
 }
 
 std::string
-PythonURIDepSpec::original_url() const
+PythonFetchableURIDepSpec::original_url() const
 {
     std::string::size_type p(text().find(" -> "));
     if (std::string::npos == p)
@@ -437,7 +461,7 @@ PythonURIDepSpec::original_url() const
 }
 
 std::string
-PythonURIDepSpec::renamed_url_suffix() const
+PythonFetchableURIDepSpec::renamed_url_suffix() const
 {
     std::string::size_type p(text().find(" -> "));
     if (std::string::npos == p)
@@ -517,9 +541,21 @@ SpecTreeToPython::visit_leaf(const PlainTextDepSpec & d)
 }
 
 void
-SpecTreeToPython::visit_leaf(const URIDepSpec & d)
+SpecTreeToPython::visit_leaf(const LicenseDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonURIDepSpec>(new PythonURIDepSpec(d)));
+    _current_parent->add_child(tr1::shared_ptr<PythonLicenseDepSpec>(new PythonLicenseDepSpec(d)));
+}
+
+void
+SpecTreeToPython::visit_leaf(const SimpleURIDepSpec & d)
+{
+    _current_parent->add_child(tr1::shared_ptr<PythonSimpleURIDepSpec>(new PythonSimpleURIDepSpec(d)));
+}
+
+void
+SpecTreeToPython::visit_leaf(const FetchableURIDepSpec & d)
+{
+    _current_parent->add_child(tr1::shared_ptr<PythonFetchableURIDepSpec>(new PythonFetchableURIDepSpec(d)));
 }
 
 void
@@ -577,16 +613,24 @@ struct AllowedTypes<LicenseSpecTree>
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const AnyDepSpec &) {};
     AllowedTypes(const UseDepSpec &) {};
-    AllowedTypes(const PlainTextDepSpec &) {};
+    AllowedTypes(const LicenseDepSpec &) {};
 };
 
 template<>
-struct AllowedTypes<URISpecTree>
+struct AllowedTypes<FetchableURISpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const UseDepSpec &) {};
-    AllowedTypes(const URIDepSpec &) {};
+    AllowedTypes(const FetchableURISpecTree &) {};
     AllowedTypes(const LabelsDepSpec<URILabelVisitorTypes> &) {};
+};
+
+template<>
+struct AllowedTypes<SimpleURISpecTree>
+{
+    AllowedTypes(const AllDepSpec &) {};
+    AllowedTypes(const UseDepSpec &) {};
+    AllowedTypes(const SimpleURIDepSpec &) {};
 };
 
 template<>
@@ -670,6 +714,20 @@ struct NiceClassNames<PlainTextDepSpec>
 const char * NiceClassNames<PlainTextDepSpec>::name = "PlainTextDepSpec";
 
 template<>
+struct NiceClassNames<LicenseDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<LicenseDepSpec>::name = "LicenseDepSpec";
+
+template<>
+struct NiceClassNames<SimpleURIDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<SimpleURIDepSpec>::name = "SimpleURIDepSpec";
+
+template<>
 struct NiceClassNames<PackageDepSpec>
 {
         static const char * name;
@@ -677,11 +735,11 @@ struct NiceClassNames<PackageDepSpec>
 const char * NiceClassNames<PackageDepSpec>::name = "PackageDepSpec";
 
 template<>
-struct NiceClassNames<URIDepSpec>
+struct NiceClassNames<FetchableURIDepSpec>
 {
         static const char * name;
 };
-const char * NiceClassNames<URIDepSpec>::name = "URIDepSpec";
+const char * NiceClassNames<FetchableURIDepSpec>::name = "FetchableURIDepSpec";
 
 template<>
 struct NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >
@@ -719,11 +777,18 @@ struct NiceClassNames<LicenseSpecTree>
 const char * NiceClassNames<LicenseSpecTree>::name = "LicenseSpecTree";
 
 template<>
-struct NiceClassNames<URISpecTree>
+struct NiceClassNames<FetchableURISpecTree>
 {
         static const char * name;
 };
-const char * NiceClassNames<URISpecTree>::name = "URISpecTree";
+const char * NiceClassNames<FetchableURISpecTree>::name = "FetchableURISpecTree";
+
+template<>
+struct NiceClassNames<SimpleURISpecTree>
+{
+        static const char * name;
+};
+const char * NiceClassNames<SimpleURISpecTree>::name = "SimpleURISpecTree";
 
 template<>
 struct NiceClassNames<FlattenableSpecTree>
@@ -797,7 +862,6 @@ Dispatcher<H_, D_, PyD_, false>::do_dispatch(SpecTreeFromPython<H_> *, const PyD
             " are not allowed in a heirarchy of type '" + NiceClassNames<H_>::name + "'");
 }
 
-
 template <typename H_, typename D_, typename PyD_>
 void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
 {
@@ -846,6 +910,20 @@ SpecTreeFromPython<H_>::visit(const PythonPackageDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonSimpleURIDepSpec & d)
+{
+    dispatch<H_, SimpleURIDepSpec>(this, d);
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::visit(const PythonLicenseDepSpec & d)
+{
+    dispatch<H_, LicenseDepSpec>(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonPlainTextDepSpec & d)
 {
     dispatch<H_, PlainTextDepSpec>(this, d);
@@ -853,9 +931,9 @@ SpecTreeFromPython<H_>::visit(const PythonPlainTextDepSpec & d)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::visit(const PythonURIDepSpec & d)
+SpecTreeFromPython<H_>::visit(const PythonFetchableURIDepSpec & d)
 {
-    dispatch<H_, URIDepSpec>(this, d);
+    dispatch<H_, FetchableURIDepSpec>(this, d);
 }
 
 template <typename H_>
@@ -939,6 +1017,24 @@ SpecTreeFromPython<H_>::real_visit(const PythonPackageDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::real_visit(const PythonLicenseDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, LicenseDepSpec> >(
+               new TreeLeaf<H_, LicenseDepSpec>(tr1::shared_ptr<LicenseDepSpec>(
+                       new LicenseDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonSimpleURIDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, SimpleURIDepSpec> >(
+               new TreeLeaf<H_, SimpleURIDepSpec>(tr1::shared_ptr<SimpleURIDepSpec>(
+                       new SimpleURIDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
 {
     _add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(
@@ -948,11 +1044,11 @@ SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
 
 template <typename H_>
 void
-SpecTreeFromPython<H_>::real_visit(const PythonURIDepSpec & d)
+SpecTreeFromPython<H_>::real_visit(const PythonFetchableURIDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(
-                new TreeLeaf<H_, URIDepSpec>(tr1::shared_ptr<URIDepSpec>(
-                        new URIDepSpec(d.text())))));
+    _add(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(
+                new TreeLeaf<H_, FetchableURIDepSpec>(tr1::shared_ptr<FetchableURIDepSpec>(
+                        new FetchableURIDepSpec(d.text())))));
 }
 
 template <typename H_>
@@ -1169,16 +1265,20 @@ void expose_dep_spec()
     register_tree_to_python<DependencySpecTree>();
     register_tree_to_python<ProvideSpecTree>();
     register_tree_to_python<RestrictSpecTree>();
-    register_tree_to_python<URISpecTree>();
+    register_tree_to_python<FetchableURISpecTree>();
+    register_tree_to_python<SimpleURISpecTree>();
     register_tree_to_python<LicenseSpecTree>();
     register_tree_to_python<SetSpecTree>();
+    register_tree_to_python<FlattenableSpecTree>();
 
     RegisterSpecTreeSPTRFromPython<DependencySpecTree>();
     RegisterSpecTreeSPTRFromPython<ProvideSpecTree>();
     RegisterSpecTreeSPTRFromPython<RestrictSpecTree>();
-    RegisterSpecTreeSPTRFromPython<URISpecTree>();
+    RegisterSpecTreeSPTRFromPython<FetchableURISpecTree>();
+    RegisterSpecTreeSPTRFromPython<SimpleURISpecTree>();
     RegisterSpecTreeSPTRFromPython<LicenseSpecTree>();
     RegisterSpecTreeSPTRFromPython<SetSpecTree>();
+    RegisterSpecTreeSPTRFromPython<FlattenableSpecTree>();
 
     /**
      * DepSpec
@@ -1367,26 +1467,50 @@ void expose_dep_spec()
     bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
          "PlainTextDepSpec",
-         "A PlainTextDepSpec represents a plain text entry (for example, a URI in SRC_URI).",
+         "A PlainTextDepSpec represents a plain text entry (for example, a RESTRICT keyword).",
          bp::init<const std::string &>("__init__(string)")
         )
         .def("__str__", &PythonPlainTextDepSpec::text)
         ;
 
     /**
-     * URIDepSpec
+     * LicenseDepSpec
      */
-    bp::class_<PythonURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
+    bp::class_<PythonLicenseDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
-         "URIDepSpec",
-         "A URIDepSpec represents a URI part.",
+         "LicenseDepSpec",
+         "A LicenseDepSpec represents a license.",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .def("__str__", &PythonLicenseDepSpec::text)
+        ;
+
+    /**
+     * SimpleURIDepSpec
+     */
+    bp::class_<PythonSimpleURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
+        (
+         "SimpleURIDepSpec",
+         "A SimpleURIDepSpec represents a simple URI.",
+         bp::init<const std::string &>("__init__(string)")
+        )
+        .def("__str__", &PythonSimpleURIDepSpec::text)
+        ;
+
+    /**
+     * FetchableURIDepSpec
+     */
+    bp::class_<PythonFetchableURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
+        (
+         "FetchableURIDepSpec",
+         "A FetchableURIDepSpec represents a fetchable URI part.",
          bp::init<const std::string &>("__init__(str)")
         )
-        .add_property("original_url", &PythonURIDepSpec::original_url,
+        .add_property("original_url", &PythonFetchableURIDepSpec::original_url,
                 "[ro] str"
                 )
 
-        .add_property("renamed_url_suffix", &PythonURIDepSpec::renamed_url_suffix,
+        .add_property("renamed_url_suffix", &PythonFetchableURIDepSpec::renamed_url_suffix,
                 "[ro] str"
                 )
         ;

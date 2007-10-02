@@ -106,7 +106,17 @@ void DepSpecFlattener::visit_leaf(const BlockDepSpec & p)
     _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
 }
 
-void DepSpecFlattener::visit_leaf(const URIDepSpec & p)
+void DepSpecFlattener::visit_leaf(const SimpleURIDepSpec & p)
+{
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
+}
+
+void DepSpecFlattener::visit_leaf(const LicenseDepSpec & p)
+{
+    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
+}
+
+void DepSpecFlattener::visit_leaf(const FetchableURIDepSpec & p)
 {
     _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
 }

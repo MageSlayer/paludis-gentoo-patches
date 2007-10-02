@@ -24,7 +24,8 @@
 #include <paludis/mask-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/formatter-fwd.hh>
@@ -49,7 +50,8 @@ namespace paludis
             MetadataSetKey<PackageIDSequence>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,
-            MetadataSpecTreeKey<URISpecTree>,
+            MetadataSpecTreeKey<FetchableURISpecTree>,
+            MetadataSpecTreeKey<SimpleURISpecTree>,
             MetadataSpecTreeKey<ProvideSpecTree>,
             MetadataSpecTreeKey<RestrictSpecTree>,
             MetadataStringKey,
@@ -208,21 +210,21 @@ namespace paludis
     };
 
     template <>
-    class PALUDIS_VISIBLE MetadataSpecTreeKey<URISpecTree> :
+    class PALUDIS_VISIBLE MetadataSpecTreeKey<FetchableURISpecTree> :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<URISpecTree> >
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSpecTreeKey<FetchableURISpecTree> >
     {
         protected:
             MetadataSpecTreeKey(const std::string &, const std::string &, const MetadataKeyType);
 
         public:
-            virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+            virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::string pretty_print(const URISpecTree::Formatter &) const
+            virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+            virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual const tr1::shared_ptr<const URILabel> initial_label() const

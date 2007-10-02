@@ -23,7 +23,8 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
+#include <paludis/dep_spec-fwd.hh>
 
 namespace paludis
 {

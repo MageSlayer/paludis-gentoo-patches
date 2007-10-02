@@ -108,8 +108,8 @@ CheckFetchedFilesVisitor::~CheckFetchedFilesVisitor()
 
 void
 CheckFetchedFilesVisitor::visit_sequence(const UseDepSpec & u,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator end)
+        FetchableURISpecTree::ConstSequenceIterator cur,
+        FetchableURISpecTree::ConstSequenceIterator end)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
     if ((_imp->check_unneeded) || (_imp->env->query_use(u.flag(), *_imp->id) ^ u.inverse()))
@@ -118,8 +118,8 @@ CheckFetchedFilesVisitor::visit_sequence(const UseDepSpec & u,
 
 void
 CheckFetchedFilesVisitor::visit_sequence(const AllDepSpec &,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator end)
+        FetchableURISpecTree::ConstSequenceIterator cur,
+        FetchableURISpecTree::ConstSequenceIterator end)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
     std::for_each(cur, end, accept_visitor(*this));
@@ -321,7 +321,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
 }
 
 void
-CheckFetchedFilesVisitor::visit_leaf(const URIDepSpec & u)
+CheckFetchedFilesVisitor::visit_leaf(const FetchableURIDepSpec & u)
 {
     Context context("When visiting URI dep spec '" + stringify(u.text()) + "':");
 

@@ -27,6 +27,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -36,7 +37,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE FetchVisitor :
             private PrivateImplementationPattern<FetchVisitor>,
-            public ConstVisitor<URISpecTree>
+            public ConstVisitor<FetchableURISpecTree>
         {
             public:
                 FetchVisitor(
@@ -53,16 +54,16 @@ namespace paludis
                 ~FetchVisitor();
 
                 void visit_sequence(const AllDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
+                        FetchableURISpecTree::ConstSequenceIterator,
+                        FetchableURISpecTree::ConstSequenceIterator);
 
                 void visit_sequence(const UseDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
+                        FetchableURISpecTree::ConstSequenceIterator,
+                        FetchableURISpecTree::ConstSequenceIterator);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
 
-                void visit_leaf(const URIDepSpec &);
+                void visit_leaf(const FetchableURIDepSpec &);
         };
     }
 }

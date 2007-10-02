@@ -17,24 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_DEP_LIST_FWD_HH 1
-
-#include <paludis/util/tr1_memory.hh>
-#include <paludis/repository-fwd.hh>
-#include <paludis/dep_tree.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/environment-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_DEP_TREE_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_DEP_TREE_FWD_HH 1
 
 namespace paludis
 {
-    class DepListOptions;
-    class DepListEntryDestination;
-    class DepListEntry;
-    class DepList;
-
-    bool is_viable_any_child(const Environment & env, const tr1::shared_ptr<const PackageID> &,
-            const DependencySpecTree::ConstItem & i);
+    struct GenericSpecTree;
+    struct LicenseSpecTree;
+    struct FetchableURISpecTree;
+    struct SimpleURISpecTree;
+    struct FlattenableSpecTree;
+    struct ProvideSpecTree;
+    struct RestrictSpecTree;
+    struct DependencySpecTree;
+    struct SetSpecTree;
 }
 
 #endif

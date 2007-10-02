@@ -27,6 +27,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/fetch_visitor.hh>
 #include <paludis/repositories/e/check_fetched_files_visitor.hh>
+#include <paludis/repositories/e/aa_visitor.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -115,44 +116,12 @@ EbuildEntries::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 
 namespace
 {
-    class AAFinder :
-        private InstantiationPolicy<AAFinder, instantiation_method::NonCopyableTag>,
-        public ConstVisitor<URISpecTree>,
-        public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, AllDepSpec>,
-        public ConstVisitor<URISpecTree>::VisitConstSequence<AAFinder, UseDepSpec>
-    {
-        private:
-            std::list<const URIDepSpec *> _specs;
-
-        public:
-            void visit_leaf(const URIDepSpec & a)
-            {
-                _specs.push_back(&a);
-            }
-
-            void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
-            {
-            }
-
-            typedef std::list<const URIDepSpec *>::const_iterator ConstIterator;
-
-            ConstIterator begin()
-            {
-                return _specs.begin();
-            }
-
-            ConstIterator end() const
-            {
-                return _specs.end();
-            }
-    };
-
     class AFinder :
         private InstantiationPolicy<AFinder, instantiation_method::NonCopyableTag>,
-        public ConstVisitor<URISpecTree>
+        public ConstVisitor<FetchableURISpecTree>
     {
         private:
-            std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> > _specs;
+            std::list<std::pair<const FetchableURIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> > _specs;
             std::list<const LabelsDepSpec<URILabelVisitorTypes> *> _labels;
 
             const Environment * const env;
@@ -166,7 +135,7 @@ namespace
                 _labels.push_back(0);
             }
 
-            void visit_leaf(const URIDepSpec & a)
+            void visit_leaf(const FetchableURIDepSpec & a)
             {
                 _specs.push_back(std::make_pair(&a, *_labels.begin()));
             }
@@ -177,8 +146,8 @@ namespace
             }
 
             void visit_sequence(const AllDepSpec &,
-                    URISpecTree::ConstSequenceIterator cur,
-                    URISpecTree::ConstSequenceIterator e)
+                    FetchableURISpecTree::ConstSequenceIterator cur,
+                    FetchableURISpecTree::ConstSequenceIterator e)
             {
                 _labels.push_front(*_labels.begin());
                 std::for_each(cur, e, accept_visitor(*this));
@@ -186,8 +155,8 @@ namespace
             }
 
             void visit_sequence(const UseDepSpec & u,
-                    URISpecTree::ConstSequenceIterator cur,
-                    URISpecTree::ConstSequenceIterator e)
+                    FetchableURISpecTree::ConstSequenceIterator cur,
+                    FetchableURISpecTree::ConstSequenceIterator e)
             {
                 if (env->query_use(u.flag(), *id) ^ u.inverse())
                 {
@@ -197,7 +166,8 @@ namespace
                 }
             }
 
-            typedef std::list<std::pair<const URIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator ConstIterator;
+            typedef std::list<std::pair<const FetchableURIDepSpec *,
+                    const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator ConstIterator;
 
             ConstIterator begin()
             {
@@ -361,7 +331,7 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
+            const FetchableURIDepSpec * const spec(static_cast<const FetchableURIDepSpec *>(i->first));
 
             if (already_in_archives.end() == already_in_archives.find(spec->filename()))
             {
@@ -374,17 +344,17 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         /* make AA */
         if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
         {
-            AAFinder g;
+            AAVisitor g;
             if (id->src_uri_key())
                 id->src_uri_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
-            for (AAFinder::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+            for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
-                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
+                if (already_in_all_archives.end() == already_in_all_archives.find(*gg))
                 {
-                    all_archives.append((*gg)->filename());
-                    already_in_all_archives.insert((*gg)->filename());
+                    all_archives.append(*gg);
+                    already_in_all_archives.insert(*gg);
                 }
                 all_archives.append(" ");
             }
@@ -495,7 +465,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            const URIDepSpec * const spec(static_cast<const URIDepSpec *>(i->first));
+            const FetchableURIDepSpec * const spec(static_cast<const FetchableURIDepSpec *>(i->first));
 
             if (already_in_archives.end() == already_in_archives.find(spec->filename()))
             {
@@ -508,17 +478,17 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         /* make AA */
         if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
         {
-            AAFinder g;
+            AAVisitor g;
             if (id->src_uri_key())
                 id->src_uri_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
-            for (AAFinder::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+            for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
             {
-                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->filename()))
+                if (already_in_all_archives.end() == already_in_all_archives.find(*gg))
                 {
-                    all_archives.append((*gg)->filename());
-                    already_in_all_archives.insert((*gg)->filename());
+                    all_archives.append(*gg);
+                    already_in_all_archives.insert(*gg);
                 }
                 all_archives.append(" ");
             }

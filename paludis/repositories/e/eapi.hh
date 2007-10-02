@@ -26,6 +26,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 

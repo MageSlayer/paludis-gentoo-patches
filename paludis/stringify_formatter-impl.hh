@@ -34,7 +34,9 @@ namespace paludis
         const CanFormat<KeywordName> * const f_keyword;
         const CanFormat<PackageDepSpec> * const f_package;
         const CanFormat<BlockDepSpec> * const f_block;
-        const CanFormat<URIDepSpec> * const f_uri;
+        const CanFormat<FetchableURIDepSpec> * const f_f_uri;
+        const CanFormat<SimpleURIDepSpec> * const f_s_uri;
+        const CanFormat<LicenseDepSpec> * const f_license;
         const CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > * const f_dep_label;
         const CanFormat<LabelsDepSpec<URILabelVisitorTypes> > * const f_uri_label;
         const CanFormat<PlainTextDepSpec> * const f_plain;
@@ -47,7 +49,9 @@ namespace paludis
                 const CanFormat<KeywordName> * const f_keyword_v,
                 const CanFormat<PackageDepSpec> * const f_package_v,
                 const CanFormat<BlockDepSpec> * const f_block_v,
-                const CanFormat<URIDepSpec> * const f_uri_v,
+                const CanFormat<FetchableURIDepSpec> * const f_f_uri_v,
+                const CanFormat<SimpleURIDepSpec> * const f_s_uri_v,
+                const CanFormat<LicenseDepSpec> * const f_license_v,
                 const CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > * const f_dep_label_v,
                 const CanFormat<LabelsDepSpec<URILabelVisitorTypes> > * const f_uri_label_v,
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
@@ -59,7 +63,9 @@ namespace paludis
             f_keyword(f_keyword_v),
             f_package(f_package_v),
             f_block(f_block_v),
-            f_uri(f_uri_v),
+            f_f_uri(f_f_uri_v),
+            f_s_uri(f_s_uri_v),
+            f_license(f_license_v),
             f_dep_label(f_dep_label_v),
             f_uri_label(f_uri_label_v),
             f_plain(f_plain_v),
@@ -113,14 +119,24 @@ namespace paludis
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<URIDepSpec> *>::value, URIDepSpec>::get(&t),
+                        StringifyFormatterGetForwarder<
+                            tr1::is_convertible<T_ *, CanFormat<FetchableURIDepSpec> *>::value,
+                            FetchableURIDepSpec>::get(&t),
+                        StringifyFormatterGetForwarder<
+                            tr1::is_convertible<T_ *, CanFormat<SimpleURIDepSpec> *>::value,
+                            SimpleURIDepSpec>::get(&t),
+                        StringifyFormatterGetForwarder<
+                            tr1::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
+                            LicenseDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<
                             tr1::is_convertible<T_ *, CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > *>::value,
                             LabelsDepSpec<DependencyLabelVisitorTypes> >::get(&t),
                         StringifyFormatterGetForwarder<
                             tr1::is_convertible<T_ *, CanFormat<LabelsDepSpec<URILabelVisitorTypes> > *>::value,
                             LabelsDepSpec<URILabelVisitorTypes> >::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value, PlainTextDepSpec>::get(&t),
+                        StringifyFormatterGetForwarder<
+                            tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
+                            PlainTextDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseDepSpec> *>::value, UseDepSpec>::get(&t),
                         StringifyFormatterGetSpaceForwarder<tr1::is_convertible<T_ *, CanSpace *>::value>::get(&t)
                         ))

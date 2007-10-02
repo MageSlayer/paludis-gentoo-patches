@@ -82,8 +82,8 @@ namespace paludis
         tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrictions;
-        tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri;
-        tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage;
+        tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
+        tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         tr1::shared_ptr<const MetadataStringKey> short_description;
         tr1::shared_ptr<const MetadataContentsKey> contents;
         tr1::shared_ptr<const MetadataTimeKey> installed_time;
@@ -237,7 +237,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_src_uri.empty())
         if ((_imp->dir / vars->metadata_src_uri).exists())
         {
-            _imp->src_uri.reset(new EURIKey(_imp->environment, shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
+            _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->metadata_src_uri, vars->description_src_uri,
                         file_contents(_imp->dir / vars->metadata_src_uri), mkt_dependencies));
             add_metadata_key(_imp->src_uri);
         }
@@ -253,7 +253,7 @@ VDBID::need_keys_added() const
     if (! vars->metadata_homepage.empty())
         if ((_imp->dir / vars->metadata_homepage).exists())
         {
-            _imp->homepage.reset(new EURIKey(_imp->environment, shared_from_this(), vars->metadata_homepage, vars->description_homepage,
+            _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->metadata_homepage, vars->description_homepage,
                         file_contents(_imp->dir / vars->metadata_homepage), mkt_significant));
             add_metadata_key(_imp->homepage);
         }
@@ -516,24 +516,18 @@ VDBID::restrict_key() const
     return _imp->restrictions;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 VDBID::src_uri_key() const
 {
     need_keys_added();
     return _imp->src_uri;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 VDBID::homepage_key() const
 {
     need_keys_added();
     return _imp->homepage;
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-VDBID::bin_uri_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>

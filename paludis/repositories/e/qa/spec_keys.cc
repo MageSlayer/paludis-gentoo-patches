@@ -134,7 +134,11 @@ namespace
                             .with_associated_key(key));
         }
 
-        void visit_leaf(const URIDepSpec &)
+        void visit_leaf(const SimpleURIDepSpec &)
+        {
+        }
+
+        void visit_leaf(const FetchableURIDepSpec &)
         {
         }
 
@@ -147,6 +151,10 @@ namespace
         }
 
         void visit_leaf(const DependencyLabelDepSpec &)
+        {
+        }
+
+        void visit_leaf(const LicenseDepSpec &)
         {
         }
 
@@ -294,7 +302,24 @@ namespace
         {
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            try
+            {
+                Context context("When visiting metadata key '" + k.raw_name() + "':");
+                Checker c(entry, reporter, id, key, name, tr1::shared_ptr<const QualifiedPackageNameSet>());
+                k.value()->accept(c);
+            }
+            catch (const Exception & e)
+            {
+                reporter.message(QAMessage(entry, qaml_severe, name, "Caught exception '" + stringify(e.message()) + "' ("
+                            + stringify(e.what()) + ") when handling key '" + k.raw_name() + "'")
+                            .with_associated_id(id)
+                            .with_associated_key(key));
+            }
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             try
             {

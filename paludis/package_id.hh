@@ -30,11 +30,14 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+
+#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {
@@ -77,10 +80,8 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const = 0;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const = 0;
             virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const = 0;

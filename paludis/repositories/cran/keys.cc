@@ -35,34 +35,28 @@
 using namespace paludis;
 using namespace paludis::cranrepository;
 
-URIKey::URIKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSpecTreeKey<URISpecTree>(r, h, t),
+SimpleURIKey::SimpleURIKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
     _v(v)
 {
 }
 
-const tr1::shared_ptr<const URISpecTree::ConstItem>
-URIKey::value() const
+const tr1::shared_ptr<const SimpleURISpecTree::ConstItem>
+SimpleURIKey::value() const
 {
-    return make_shared_ptr(new TreeLeaf<URISpecTree, URIDepSpec>(make_shared_ptr(new URIDepSpec(_v))));
+    return make_shared_ptr(new TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(_v))));
 }
 
 std::string
-URIKey::pretty_print(const URISpecTree::Formatter & f) const
+SimpleURIKey::pretty_print(const SimpleURISpecTree::Formatter & f) const
 {
     return f.format(_v, format::Plain());
 }
 
 std::string
-URIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
+SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::Formatter & f) const
 {
     return f.format(_v, format::Plain());
-}
-
-const tr1::shared_ptr<const URILabel>
-URIKey::initial_label() const
-{
-    return make_shared_ptr(new URIMirrorsThenListedLabel("mirrors-then-listed"));
 }
 
 StringKey::StringKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :

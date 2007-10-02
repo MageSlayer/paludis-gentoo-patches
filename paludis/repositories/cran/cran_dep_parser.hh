@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CRAN_DEP_PARSER_HH
 #define PALUDIS_GUARD_PALUDIS_CRAN_DEP_PARSER_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <string>
 
 namespace paludis

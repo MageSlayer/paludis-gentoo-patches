@@ -20,7 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_AAVISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_AAVISITOR_HH 1
 
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declarations for the AAVisitor class.
@@ -39,7 +41,9 @@ namespace paludis
          * \ingroup grpaavisitor
          */
         class PALUDIS_VISIBLE AAVisitor :
-            public ConstVisitor<URISpecTree>,
+            public ConstVisitor<FetchableURISpecTree>,
+            public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<AAVisitor, AllDepSpec>,
+            public ConstVisitor<FetchableURISpecTree>::VisitConstSequence<AAVisitor, UseDepSpec>,
             private PrivateImplementationPattern<AAVisitor>
         {
             public:
@@ -55,15 +59,7 @@ namespace paludis
                 /// \name Visit functions
                 ///{
 
-                void visit_sequence(const AllDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
-
-                void visit_sequence(const UseDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
-
-                void visit_leaf(const URIDepSpec &);
+                void visit_leaf(const FetchableURIDepSpec &);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
 

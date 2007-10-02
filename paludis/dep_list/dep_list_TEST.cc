@@ -1740,7 +1740,7 @@ namespace test_cases
                     cat_three_has_tag_from_cat_one = true;
                     TEST_CHECK_STRINGIFY_EQUAL(*tag->dependency(), "cat/three");
                     StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                     tag->conditions()->accept(pretty);
                     TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat/three");
                 }
@@ -1751,7 +1751,7 @@ namespace test_cases
                     {
                         cat_three_has_first_tag_from_cat_two = true;
                         StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( <cat/three-1 ) )");
                     }
@@ -1759,7 +1759,7 @@ namespace test_cases
                     {
                         cat_three_has_second_tag_from_cat_two = true;
                         StringifyFormatter ff;
-                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                        erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
                         tag->conditions()->accept(pretty);
                         TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( cat/three:0 ) )");
                     }
@@ -1786,7 +1786,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             deptag->conditions()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "enabled? ( || ( =cat/four-1 ) )");
 

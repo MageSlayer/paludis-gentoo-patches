@@ -228,10 +228,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_restrict_spec_tree_key(TestKey())
 
-    def test_14_uri_spec_tree(self):
-        class TestKey(MetadataURISpecTreeKey):
+    def test_14_fetchable_uri_spec_tree(self):
+        class TestKey(MetadataFetchableURISpecTreeKey):
             def __init__(self):
-                MetadataURISpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+                MetadataFetchableURISpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
                 return AllDepSpec()
@@ -242,7 +242,23 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def pretty_print_flat(self):
                 return "str"
 
-        test_metadata_uri_spec_tree_key(TestKey())
+        test_metadata_fetchable_uri_spec_tree_key(TestKey())
+
+    def test_15_simple_uri_spec_tree(self):
+        class TestKey(MetadataSimpleURISpecTreeKey):
+            def __init__(self):
+                MetadataSimpleURISpecTreeKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+
+            def value(self):
+                return AllDepSpec()
+
+            def pretty_print(self):
+                return "str"
+
+            def pretty_print_flat(self):
+                return "str"
+
+        test_metadata_simple_uri_spec_tree_key(TestKey())
 
 
 if __name__ == "__main__":

@@ -84,7 +84,7 @@ namespace
      * of the stack, since labels recurse into subblocks. When we encounter
      * a label, we replace the top item of the stack. */
     class DistfilesCollector :
-        public ConstVisitor<URISpecTree>
+        public ConstVisitor<FetchableURISpecTree>
     {
         private:
             ResultsMap & _results;
@@ -98,8 +98,8 @@ namespace
             }
 
             void visit_sequence(const AllDepSpec &,
-                    URISpecTree::ConstSequenceIterator cur,
-                    URISpecTree::ConstSequenceIterator end)
+                    FetchableURISpecTree::ConstSequenceIterator cur,
+                    FetchableURISpecTree::ConstSequenceIterator end)
             {
                 /* When we encounter an AllDepSpec, duplicate the top item of
                  * our restricted stack, and then recurse over all of its
@@ -110,8 +110,8 @@ namespace
             }
 
             void visit_sequence(const UseDepSpec &,
-                    URISpecTree::ConstSequenceIterator cur,
-                    URISpecTree::ConstSequenceIterator end)
+                    FetchableURISpecTree::ConstSequenceIterator cur,
+                    FetchableURISpecTree::ConstSequenceIterator end)
             {
                 /* Always recurse over a UseDepSpec's children. In real world
                  * code, we would more likely check whether the use flag is
@@ -121,9 +121,9 @@ namespace
                 _restricted.pop_back();
             }
 
-            void visit_leaf(const URIDepSpec & s)
+            void visit_leaf(const FetchableURIDepSpec & s)
             {
-                /* When we encounter a URIDepSpec, store its distfile name.
+                /* When we encounter a FetchableURIDepSpec, store its distfile name.
                  * We handle 'a -> b' style specs by taking 'b' as the
                  * distfile name. */
                 _results.insert(std::make_pair(s.filename(), _restricted.back()));

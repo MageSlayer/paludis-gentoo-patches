@@ -281,7 +281,26 @@ namespace
                 }
             }
 
-            void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+            void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+            {
+                if (k.type() == type)
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":");
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":");
+                        task->output_stream() << k.pretty_print_flat(formatter);
+                        task->output_right_column("");
+                    }
+                }
+            }
+
+            void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
             {
                 if (k.type() == type)
                 {
@@ -570,12 +589,22 @@ namespace
             empty = false;
         }
 
-        void visit_leaf(const URIDepSpec &)
+        void visit_leaf(const SimpleURIDepSpec &)
+        {
+            empty = false;
+        }
+
+        void visit_leaf(const FetchableURIDepSpec &)
         {
             empty = false;
         }
 
         void visit_leaf(const PlainTextDepSpec &)
+        {
+            empty = false;
+        }
+
+        void visit_leaf(const LicenseDepSpec &)
         {
             empty = false;
         }

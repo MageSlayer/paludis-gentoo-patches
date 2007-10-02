@@ -57,7 +57,7 @@ namespace test_cases
                         qo_require_exactly_one)->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false);
-            parse_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), *eapi)->accept(v);
+            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), *eapi)->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());
             std::ifstream f(stringify(FSEntry("fetch_visitor_TEST_dir/out/input1")).c_str());

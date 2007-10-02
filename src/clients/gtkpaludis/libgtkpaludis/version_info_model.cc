@@ -132,7 +132,12 @@ namespace gtkpaludis
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            got_key(k, k.pretty_print_flat(formatter));
+        }
+
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }

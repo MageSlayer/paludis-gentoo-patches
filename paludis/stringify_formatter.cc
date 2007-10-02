@@ -27,7 +27,7 @@
 using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
-    PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 {
 }
 
@@ -188,10 +188,42 @@ StringifyFormatter::format(const BlockDepSpec & s, const format::Plain & k) cons
 }
 
 std::string
-StringifyFormatter::format(const URIDepSpec & s, const format::Plain & k) const
+StringifyFormatter::format(const SimpleURIDepSpec & s, const format::Plain & k) const
 {
-    if (_imp->f_uri)
-        return _imp->f_uri->format(s, k);
+    if (_imp->f_s_uri)
+        return _imp->f_s_uri->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const FetchableURIDepSpec & s, const format::Plain & k) const
+{
+    if (_imp->f_f_uri)
+        return _imp->f_f_uri->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const LicenseDepSpec & s, const format::Plain & k) const
+{
+    if (_imp->f_license)
+        return _imp->f_license->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const LicenseDepSpec & s, const format::Accepted & k) const
+{
+    if (_imp->f_license)
+        return _imp->f_license->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const LicenseDepSpec & s, const format::Unaccepted & k) const
+{
+    if (_imp->f_license)
+        return _imp->f_license->format(s, k);
     return stringify(s);
 }
 
@@ -213,22 +245,6 @@ StringifyFormatter::format(const LabelsDepSpec<URILabelVisitorTypes> & s, const 
 
 std::string
 StringifyFormatter::format(const PlainTextDepSpec & s, const format::Plain & k) const
-{
-    if (_imp->f_plain)
-        return _imp->f_plain->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const PlainTextDepSpec & s, const format::Accepted & k) const
-{
-    if (_imp->f_plain)
-        return _imp->f_plain->format(s, k);
-    return stringify(s);
-}
-
-std::string
-StringifyFormatter::format(const PlainTextDepSpec & s, const format::Unaccepted & k) const
 {
     if (_imp->f_plain)
         return _imp->f_plain->format(s, k);

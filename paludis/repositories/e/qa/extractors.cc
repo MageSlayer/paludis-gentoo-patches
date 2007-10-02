@@ -72,7 +72,7 @@ namespace
         std::set<UseFlagName> current;
         std::set<QualifiedPackageName> needed_packages;
 
-        void visit_leaf(const URIDepSpec & u)
+        void visit_leaf(const FetchableURIDepSpec & u)
         {
             std::string::size_type p(u.filename().rfind('.'));
             if (std::string::npos == p)
@@ -115,6 +115,14 @@ namespace
             Save<std::set<UseFlagName> > save_current(&current);
             current.insert(u.flag());
             std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit_leaf(const LicenseDepSpec &)
+        {
+        }
+
+        void visit_leaf(const SimpleURIDepSpec &)
+        {
         }
 
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AllDepSpec>::visit_sequence;
@@ -162,7 +170,7 @@ namespace
             requirements.insert(new_requirements.begin(), new_requirements.end());
         }
 
-        void visit_leaf(const URIDepSpec & u)
+        void visit_leaf(const FetchableURIDepSpec & u)
         {
             std::string::size_type p(u.filename().rfind('.'));
             if (std::string::npos == p)
@@ -173,6 +181,10 @@ namespace
                 return;
 
             add_requirements();
+        }
+
+        void visit_leaf(const SimpleURIDepSpec &)
+        {
         }
 
         void visit_leaf(const PackageDepSpec & p)
@@ -196,6 +208,10 @@ namespace
         }
 
         void visit_leaf(const PlainTextDepSpec &)
+        {
+        }
+
+        void visit_leaf(const LicenseDepSpec &)
         {
         }
 

@@ -22,6 +22,7 @@
 
 #include <iosfwd>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -68,16 +69,13 @@ namespace paludis
                  *   use_newlines is false.
                  *
                  * \param use_newlines Whether to format over multiple lines.
-                 *
-                 * \param plain_text_is_license Whether plain text is a license.
                  */
                 DepSpecPrettyPrinter(
                         const Environment * const env,
                         const tr1::shared_ptr<const PackageID> & id,
                         const GenericSpecTree::Formatter & formatter,
                         unsigned initial_indent,
-                        bool use_newlines,
-                        const bool plain_text_is_license);
+                        bool use_newlines);
 
                 ~DepSpecPrettyPrinter();
 
@@ -104,7 +102,11 @@ namespace paludis
 
                 void visit_leaf(const BlockDepSpec &);
 
-                void visit_leaf(const URIDepSpec &);
+                void visit_leaf(const FetchableURIDepSpec &);
+
+                void visit_leaf(const SimpleURIDepSpec &);
+
+                void visit_leaf(const LicenseDepSpec &);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
 

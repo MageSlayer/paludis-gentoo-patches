@@ -295,13 +295,19 @@ ColourFormatter::format(const PlainTextDepSpec & f, const format::Plain &) const
 }
 
 std::string
-ColourFormatter::format(const PlainTextDepSpec & f, const format::Accepted &) const
+ColourFormatter::format(const LicenseDepSpec & f, const format::Plain &) const
+{
+    return stringify(f);
+}
+
+std::string
+ColourFormatter::format(const LicenseDepSpec & f, const format::Accepted &) const
 {
     return colour(cl_flag_on, f);
 }
 
 std::string
-ColourFormatter::format(const PlainTextDepSpec & f, const format::Unaccepted &) const
+ColourFormatter::format(const LicenseDepSpec & f, const format::Unaccepted &) const
 {
     return colour(cl_flag_off, f);
 }
@@ -343,7 +349,13 @@ ColourFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & f, co
 }
 
 std::string
-ColourFormatter::format(const URIDepSpec & f, const format::Plain &) const
+ColourFormatter::format(const FetchableURIDepSpec & f, const format::Plain &) const
+{
+    return stringify(f);
+}
+
+std::string
+ColourFormatter::format(const SimpleURIDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }

@@ -192,26 +192,26 @@ namespace test_cases
         }
     } test_package_dep_spec;
 
-    struct URIDepSpecTest : TestCase
+    struct FetchableURIDepSpecTest : TestCase
     {
-        URIDepSpecTest() : TestCase("uri dep spec") { }
+        FetchableURIDepSpecTest() : TestCase("fetchable uri dep spec") { }
 
         void run()
         {
-            URIDepSpec a("foo");
+            FetchableURIDepSpec a("foo");
             TEST_CHECK_EQUAL(a.original_url(), "foo");
             TEST_CHECK_EQUAL(a.renamed_url_suffix(), "");
             TEST_CHECK_EQUAL(a.filename(), "foo");
 
-            URIDepSpec b("fnord -> bar");
+            FetchableURIDepSpec b("fnord -> bar");
             TEST_CHECK_EQUAL(b.original_url(), "fnord");
             TEST_CHECK_EQUAL(b.renamed_url_suffix(), "bar");
             TEST_CHECK_EQUAL(b.filename(), "bar");
 
-            URIDepSpec c("http://example.com/download/baz");
+            FetchableURIDepSpec c("http://example.com/download/baz");
             TEST_CHECK_EQUAL(c.filename(), "baz");
         }
-    } test_uri_dep_spec;
+    } test_fetchable_uri_dep_spec;
 
     struct PackageDepSpecUnspecificTest : TestCase
     {

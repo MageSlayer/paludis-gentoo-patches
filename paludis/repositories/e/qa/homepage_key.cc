@@ -34,12 +34,12 @@ using namespace paludis::erepository;
 namespace
 {
     struct HomepageChecker :
-        ConstVisitor<URISpecTree>,
-        ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>,
-        ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>
+        ConstVisitor<SimpleURISpecTree>,
+        ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>,
+        ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>
     {
-        using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>::visit_sequence;
-        using ConstVisitor<URISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
+        using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, UseDepSpec>::visit_sequence;
+        using ConstVisitor<SimpleURISpecTree>::VisitConstSequence<HomepageChecker, AllDepSpec>::visit_sequence;
 
         const tr1::shared_ptr<const MetadataKey> & key;
         const FSEntry entry;
@@ -69,26 +69,15 @@ namespace
                 reporter.message(QAMessage(entry, qaml_normal, name, "Homepage specifies no URIs"));
         }
 
-        void visit_leaf(const URIDepSpec & u)
+        void visit_leaf(const SimpleURIDepSpec & u)
         {
             found_one = true;
 
-            if (! u.renamed_url_suffix().empty())
-                reporter.message(
-                        QAMessage(entry, qaml_normal, name, "Homepage uses -> in part '" + u.text() + "'"));
-
-            if (0 == u.original_url().compare(0, 7, "http://") &&
-                    0 == u.original_url().compare(0, 8, "https://") &&
-                    0 == u.original_url().compare(0, 6, "ftp://"))
+            if (0 == u.text().compare(0, 7, "http://") &&
+                    0 == u.text().compare(0, 8, "https://") &&
+                    0 == u.text().compare(0, 6, "ftp://"))
                 reporter.message(QAMessage(entry, qaml_normal, name,
                             "Homepage uses no or unknown protocol in part '" + u.text() + "'")
-                        .with_associated_id(id)
-                        .with_associated_key(key));
-        }
-
-        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
-        {
-            reporter.message(QAMessage(entry, qaml_normal, name, "Homepage uses labels")
                         .with_associated_id(id)
                         .with_associated_key(key));
         }

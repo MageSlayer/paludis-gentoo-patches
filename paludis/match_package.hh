@@ -15,7 +15,8 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 

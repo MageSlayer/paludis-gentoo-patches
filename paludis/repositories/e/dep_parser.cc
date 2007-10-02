@@ -148,11 +148,29 @@ namespace
         }
     };
 
-    struct ParseURIDepSpec
+    struct ParseLicenseDepSpec
+    {
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        {
+            p(tr1::shared_ptr<TreeLeaf<H_, LicenseDepSpec> >(new TreeLeaf<H_, LicenseDepSpec>(
+                            tr1::shared_ptr<LicenseDepSpec>(new LicenseDepSpec(s)))));
+        }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        {
+            throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
+        }
+    };
+
+    struct ParseFetchableURIDepSpec
     {
         const bool _supports_arrow;
 
-        ParseURIDepSpec(bool a) :
+        ParseFetchableURIDepSpec(bool a) :
             _supports_arrow(a)
         {
         }
@@ -161,8 +179,8 @@ namespace
         void
         add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
-            p(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
-                            tr1::shared_ptr<URIDepSpec>(new URIDepSpec(s)))));
+            p(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
+                            tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(s)))));
         }
 
         template <typename H_>
@@ -170,10 +188,28 @@ namespace
         add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
         {
             if (_supports_arrow)
-                p(tr1::shared_ptr<TreeLeaf<H_, URIDepSpec> >(new TreeLeaf<H_, URIDepSpec>(
-                                tr1::shared_ptr<URIDepSpec>(new URIDepSpec(lhs + " -> " + rhs)))));
+                p(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(new TreeLeaf<H_, FetchableURIDepSpec>(
+                                tr1::shared_ptr<FetchableURIDepSpec>(new FetchableURIDepSpec(lhs + " -> " + rhs)))));
             else
                 throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this EAPI");
+        }
+    };
+
+    struct ParseSimpleURIDepSpec
+    {
+        template <typename H_>
+        void
+        add(const std::string & s, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> & p) const
+        {
+            p(tr1::shared_ptr<TreeLeaf<H_, SimpleURIDepSpec> >(new TreeLeaf<H_, SimpleURIDepSpec>(
+                            tr1::shared_ptr<SimpleURIDepSpec>(new SimpleURIDepSpec(s)))));
+        }
+
+        template <typename H_>
+        void
+        add_arrow(const std::string & lhs, const std::string & rhs, tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)> &) const
+        {
+            throw DepStringParseError(lhs + " -> " + rhs, "Arrows not allowed in this context");
         }
     };
 
@@ -676,16 +712,28 @@ paludis::erepository::parse_restrict(const std::string & s, const EAPI & e)
             ParseTextDepSpec(), e);
 }
 
-tr1::shared_ptr<URISpecTree::ConstItem>
-paludis::erepository::parse_uri(const std::string & s, const EAPI & e)
+tr1::shared_ptr<FetchableURISpecTree::ConstItem>
+paludis::erepository::parse_fetchable_uri(const std::string & s, const EAPI & e)
 {
-    Context c("When parsing URI string '" + s + "' using EAPI '" + e.name + "':");
+    Context c("When parsing fetchable URI string '" + s + "' using EAPI '" + e.name + "':");
 
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
 
-    return parse<URISpecTree, ParseURIDepSpec, false, true, LabelsAreURI>(s, false,
-            ParseURIDepSpec(e.supported->uri_supports_arrow), e);
+    return parse<FetchableURISpecTree, ParseFetchableURIDepSpec, false, true, LabelsAreURI>(s, false,
+            ParseFetchableURIDepSpec(e.supported->uri_supports_arrow), e);
+}
+
+tr1::shared_ptr<SimpleURISpecTree::ConstItem>
+paludis::erepository::parse_simple_uri(const std::string & s, const EAPI & e)
+{
+    Context c("When parsing simple URI string '" + s + "' using EAPI '" + e.name + "':");
+
+    if (! e.supported)
+        throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' URIs");
+
+    return parse<SimpleURISpecTree, ParseSimpleURIDepSpec, false, true, void>(s, false,
+            ParseSimpleURIDepSpec(), e);
 }
 
 tr1::shared_ptr<LicenseSpecTree::ConstItem>
@@ -696,8 +744,8 @@ paludis::erepository::parse_license(const std::string & s, const EAPI & e)
     if (! e.supported)
         throw DepStringParseError(s, "Don't know how to parse EAPI '" + e.name + "' licenses");
 
-    return parse<LicenseSpecTree, ParseTextDepSpec, true, true, void>(s,
-            true, ParseTextDepSpec(), e);
+    return parse<LicenseSpecTree, ParseLicenseDepSpec, true, true, void>(s,
+            true, ParseLicenseDepSpec(), e);
 }
 
 tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >

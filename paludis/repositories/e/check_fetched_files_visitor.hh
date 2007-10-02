@@ -26,7 +26,8 @@
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/action-fwd.hh>
@@ -37,10 +38,11 @@ namespace paludis
     {
         class PALUDIS_VISIBLE CheckFetchedFilesVisitor :
             private PrivateImplementationPattern<CheckFetchedFilesVisitor>,
-            public ConstVisitor<URISpecTree>
+            public ConstVisitor<FetchableURISpecTree>
         {
             private:
                 bool check_distfile_manifest(const FSEntry & distfile);
+
             public:
                 CheckFetchedFilesVisitor(
                         const Environment * const,
@@ -54,18 +56,19 @@ namespace paludis
                 ~CheckFetchedFilesVisitor();
 
                 void visit_sequence(const UseDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
+                        FetchableURISpecTree::ConstSequenceIterator,
+                        FetchableURISpecTree::ConstSequenceIterator);
 
                 void visit_sequence(const AllDepSpec &,
-                        URISpecTree::ConstSequenceIterator,
-                        URISpecTree::ConstSequenceIterator);
+                        FetchableURISpecTree::ConstSequenceIterator,
+                        FetchableURISpecTree::ConstSequenceIterator);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
 
-                void visit_leaf(const URIDepSpec &);
+                void visit_leaf(const FetchableURIDepSpec &);
 
                 const tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 bool need_nofetch() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

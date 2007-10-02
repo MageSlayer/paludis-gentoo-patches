@@ -91,7 +91,11 @@ namespace
         {
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
+        {
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
         }
 
@@ -167,9 +171,14 @@ namespace
             const tr1::shared_ptr<ProvideSpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const tr1::shared_ptr<URISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const tr1::shared_ptr<FetchableURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            const tr1::shared_ptr<SimpleURISpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -355,7 +364,8 @@ main(int argc, char *argv[])
                     }
                     catch (const Exception & e)
                     {
-                        results.insert(std::make_pair(*i, "Exception in metadata key '" + (*m)->raw_name() + "': '" + e.message() + "' (" + e.what() + ")"));
+                        results.insert(std::make_pair(*i, "Exception in metadata key '" + (*m)->raw_name() + "': '" + e.message() +
+                                    "' (" + e.what() + ")"));
                         metadata_errors = true;
                     }
                 }

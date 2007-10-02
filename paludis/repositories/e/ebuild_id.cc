@@ -92,8 +92,8 @@ namespace paludis
         mutable tr1::shared_ptr<const EDependenciesKey> post_dependencies;
         mutable tr1::shared_ptr<const EProvideKey> provide;
         mutable tr1::shared_ptr<const ERestrictKey> restrictions;
-        mutable tr1::shared_ptr<const EURIKey> src_uri;
-        mutable tr1::shared_ptr<const EURIKey> homepage;
+        mutable tr1::shared_ptr<const EFetchableURIKey> src_uri;
+        mutable tr1::shared_ptr<const ESimpleURIKey> homepage;
         mutable tr1::shared_ptr<const ELicenseKey> license;
         mutable tr1::shared_ptr<const EKeywordsKey> keywords;
         mutable tr1::shared_ptr<const EIUseKey> iuse;
@@ -332,7 +332,7 @@ namespace
                 std::for_each(begin, end, accept_visitor(*this));
         }
 
-        void visit_leaf(const PlainTextDepSpec & spec)
+        void visit_leaf(const LicenseDepSpec & spec)
         {
             if (! (env->*func)(spec.text(), *id))
                 ok = false;
@@ -549,24 +549,18 @@ EbuildID::restrict_key() const
     return _imp->restrictions;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 EbuildID::src_uri_key() const
 {
     need_keys_added();
     return _imp->src_uri;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::homepage_key() const
 {
     need_keys_added();
     return _imp->homepage;
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-EbuildID::bin_uri_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
@@ -696,7 +690,7 @@ void
 EbuildID::load_src_uri(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->src_uri.reset(new EURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies));
+    _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies));
     add_metadata_key(_imp->src_uri);
 }
 
@@ -704,7 +698,7 @@ void
 EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->homepage.reset(new EURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_significant));
+    _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_significant));
     add_metadata_key(_imp->homepage);
 }
 

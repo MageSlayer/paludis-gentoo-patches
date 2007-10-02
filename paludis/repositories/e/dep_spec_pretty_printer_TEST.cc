@@ -40,28 +40,28 @@ namespace test_cases
         {
             StringifyFormatter ff;
 
-            DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "foo/bar bar/baz");
 
-            DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "foo/bar moo? ( bar/baz )");
 
-            DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "|| ( a/b ( c/d e/f ) )");
 
-            DepSpecPrettyPrinter p4(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            DepSpecPrettyPrinter p4(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             parse_license("( ( ( ) a ) b )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
             TEST_CHECK_STRINGIFY_EQUAL(p4, "a b");
 
-            DepSpecPrettyPrinter p5(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            parse_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p5);
+            DepSpecPrettyPrinter p5(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            parse_fetchable_uri("( a -> b c x? ( d e ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p5);
             TEST_CHECK_STRINGIFY_EQUAL(p5, "a -> b c x? ( d e )");
 
-            DepSpecPrettyPrinter p6(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
-            parse_uri("a manual: b x? ( c mirrors-first: d manual: e ) f",
+            DepSpecPrettyPrinter p6(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
+            parse_fetchable_uri("a manual: b x? ( c mirrors-first: d manual: e ) f",
                     *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(p6);
             TEST_CHECK_STRINGIFY_EQUAL(p6, "a manual: b x? ( c mirrors-first: d manual: e ) f");
         }
@@ -75,25 +75,25 @@ namespace test_cases
         {
             StringifyFormatter ff;
 
-            DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 1, true, 0);
+            DepSpecPrettyPrinter p1(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
             parse_depend("foo/bar bar/baz", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p1);
             TEST_CHECK_STRINGIFY_EQUAL(p1, "    foo/bar\n    bar/baz\n");
 
-            DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 1, true, 0);
+            DepSpecPrettyPrinter p2(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
             parse_depend("foo/bar moo? ( bar/baz )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p2);
             TEST_CHECK_STRINGIFY_EQUAL(p2, "    foo/bar\n    moo? (\n        bar/baz\n    )\n");
 
-            DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 1, true, 0);
+            DepSpecPrettyPrinter p3(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
             parse_depend("|| ( a/b ( c/d e/f ) )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p3);
             TEST_CHECK_STRINGIFY_EQUAL(p3, "    || (\n        a/b\n        (\n            c/d\n"
                     "            e/f\n        )\n    )\n");
 
-            DepSpecPrettyPrinter p4(0, tr1::shared_ptr<const PackageID>(), ff, 1, true, 0);
+            DepSpecPrettyPrinter p4(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
             parse_license("( ( ( ) a ) b )", *EAPIData::get_instance()->eapi_from_string("paludis-1"))->accept(p4);
             TEST_CHECK_STRINGIFY_EQUAL(p4, "    a\n    b\n");
 
-            DepSpecPrettyPrinter p5(0, tr1::shared_ptr<const PackageID>(), ff, 1, true, 0);
-            parse_uri("a manual: b x? ( c mirrors-first: d manual: e ) f",
+            DepSpecPrettyPrinter p5(0, tr1::shared_ptr<const PackageID>(), ff, 1, true);
+            parse_fetchable_uri("a manual: b x? ( c mirrors-first: d manual: e ) f",
                     *EAPIData::get_instance()->eapi_from_string("exheres-0"))->accept(p5);
             TEST_CHECK_STRINGIFY_EQUAL(p5, "    a\n    manual:\n        b\n        x? (\n            c\n"
                     "            mirrors-first:\n                d\n            manual:\n                e\n        )\n        f\n");

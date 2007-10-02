@@ -23,15 +23,12 @@
 #include <paludis/formatter-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
 
 namespace paludis
 {
-    class PlainTextDepSpec;
-    class UseDepSpec;
-    class PackageDepSpec;
-
     namespace format
     {
         struct Plain
@@ -110,7 +107,7 @@ namespace paludis
         };
 
         template <>
-        struct CategorySelector<PlainTextDepSpec>
+        struct CategorySelector<LicenseDepSpec>
         {
             typedef AcceptableRoles Category;
         };

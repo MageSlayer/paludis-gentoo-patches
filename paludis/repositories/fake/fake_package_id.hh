@@ -106,27 +106,28 @@ namespace paludis
     };
 
     template <>
-    class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<URISpecTree> :
-        public MetadataSpecTreeKey<URISpecTree>,
-        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >
+    class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<FetchableURISpecTree> :
+        public MetadataSpecTreeKey<FetchableURISpecTree>,
+        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
         private:
-            Implementation<FakeMetadataSpecTreeKey<URISpecTree> > * const _imp;
+            Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> > * const _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> &, const MetadataKeyType);
+                    const tr1::function<const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> &,
+                    const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+            virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
 
-            virtual std::string pretty_print(const URISpecTree::Formatter &) const
+            virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+            virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const tr1::shared_ptr<const URILabel> initial_label() const
@@ -195,10 +196,8 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
             virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const;
@@ -217,7 +216,7 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
-            const tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > src_uri_key();
+            const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key();
 
             void set_slot(const SlotName &);
 

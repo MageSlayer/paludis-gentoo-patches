@@ -64,7 +64,7 @@ namespace paludis
         VersionSpec version;
 
         tr1::shared_ptr<FSLocationKey> fs_location_key;
-        tr1::shared_ptr<URIKey> homepage_key;
+        tr1::shared_ptr<SimpleURIKey> homepage_key;
         tr1::shared_ptr<StringKey> short_description_key;
         tr1::shared_ptr<StringKey> long_description_key;
         tr1::shared_ptr<PackageIDKey> contained_in_key;
@@ -153,7 +153,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (! file.get("URL").empty())
         {
             Context local_context("When handling URL: key:");
-            _imp->homepage_key.reset(new URIKey("URL", "URL", file.get("URL"), mkt_significant));
+            _imp->homepage_key.reset(new SimpleURIKey("URL", "URL", file.get("URL"), mkt_significant));
             add_metadata_key(_imp->homepage_key);
         }
 
@@ -368,25 +368,13 @@ CRANPackageID::suggested_dependencies_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
-CRANPackageID::restrict_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 CRANPackageID::src_uri_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-CRANPackageID::bin_uri_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 CRANPackageID::homepage_key() const
 {
     return _imp->homepage_key;

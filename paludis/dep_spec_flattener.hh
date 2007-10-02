@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
@@ -69,7 +70,11 @@ namespace paludis
 
             void visit_leaf(const BlockDepSpec &);
 
-            void visit_leaf(const URIDepSpec &);
+            void visit_leaf(const FetchableURIDepSpec &);
+
+            void visit_leaf(const SimpleURIDepSpec &);
+
+            void visit_leaf(const LicenseDepSpec &);
 
             ///}
 

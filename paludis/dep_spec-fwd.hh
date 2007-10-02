@@ -23,9 +23,9 @@
 #include <iosfwd>
 #include <string>
 #include <paludis/dep_label-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/formatter-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/visitor.hh>
 
 /** \file
  * Forward declarations for paludis/dep_spec.hh .
@@ -38,7 +38,9 @@ namespace paludis
     class DepSpec;
     class PackageDepSpec;
     class PlainTextDepSpec;
-    class URIDepSpec;
+    class LicenseDepSpec;
+    class FetchableURIDepSpec;
+    class SimpleURIDepSpec;
     class AllDepSpec;
     class AnyDepSpec;
     class UseDepSpec;
@@ -47,15 +49,6 @@ namespace paludis
     template <typename T_> class LabelsDepSpec;
     typedef LabelsDepSpec<URILabelVisitorTypes> URILabelDepSpec;
     typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelDepSpec;
-
-    struct GenericSpecTree;
-    struct LicenseSpecTree;
-    struct URISpecTree;
-    struct FlattenableSpecTree;
-    struct ProvideSpecTree;
-    struct RestrictSpecTree;
-    struct DependencySpecTree;
-    struct SetSpecTree;
 
 #include <paludis/dep_spec-se.hh>
 
@@ -97,11 +90,25 @@ namespace paludis
     std::ostream & operator<< (std::ostream &, const BlockDepSpec &) PALUDIS_VISIBLE;
 
     /**
-     * A URIDepSpec can be written to an ostream.
+     * A SimpleURIDepSpec can be written to an ostream.
      *
      * \ingroup grpdepspecs
      */
-    std::ostream & operator<< (std::ostream &, const URIDepSpec &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const SimpleURIDepSpec &) PALUDIS_VISIBLE;
+
+    /**
+     * A FetchableURIDepSpec can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const FetchableURIDepSpec &) PALUDIS_VISIBLE;
+
+    /**
+     * A LicenseDepSpec can be written to an ostream.
+     *
+     * \ingroup grpdepspecs
+     */
+    std::ostream & operator<< (std::ostream &, const LicenseDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A UseDepSpec can be written to an ostream.

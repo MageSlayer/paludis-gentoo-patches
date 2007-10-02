@@ -28,6 +28,7 @@
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
 

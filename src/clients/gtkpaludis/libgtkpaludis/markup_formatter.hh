@@ -19,7 +19,9 @@ namespace gtkpaludis
         public paludis::CanFormat<paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> >,
         public paludis::CanFormat<paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> >,
         public paludis::CanFormat<paludis::PlainTextDepSpec>,
-        public paludis::CanFormat<paludis::URIDepSpec>,
+        public paludis::CanFormat<paludis::SimpleURIDepSpec>,
+        public paludis::CanFormat<paludis::FetchableURIDepSpec>,
+        public paludis::CanFormat<paludis::LicenseDepSpec>,
         public paludis::CanFormat<paludis::tr1::shared_ptr<const paludis::PackageID> >,
         public paludis::CanFormat<std::string>,
         public paludis::CanSpace
@@ -50,8 +52,10 @@ namespace gtkpaludis
             std::string format(const paludis::PackageDepSpec &, const paludis::format::Installable &) const;
 
             std::string format(const paludis::PlainTextDepSpec &, const paludis::format::Plain &) const;
-            std::string format(const paludis::PlainTextDepSpec &, const paludis::format::Accepted &) const;
-            std::string format(const paludis::PlainTextDepSpec &, const paludis::format::Unaccepted &) const;
+
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Accepted &) const;
+            std::string format(const paludis::LicenseDepSpec &, const paludis::format::Unaccepted &) const;
 
             std::string format(const paludis::KeywordName &, const paludis::format::Plain &) const;
             std::string format(const paludis::KeywordName &, const paludis::format::Accepted &) const;
@@ -63,7 +67,9 @@ namespace gtkpaludis
 
             std::string format(const paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> &, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::URIDepSpec &, const paludis::format::Plain &) const;
+            std::string format(const paludis::SimpleURIDepSpec &, const paludis::format::Plain &) const;
+
+            std::string format(const paludis::FetchableURIDepSpec &, const paludis::format::Plain &) const;
 
             std::string format(const paludis::BlockDepSpec &, const paludis::format::Plain &) const;
 

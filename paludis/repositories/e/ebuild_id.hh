@@ -73,10 +73,8 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > src_uri_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > bin_uri_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> > homepage_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
                 virtual const tr1::shared_ptr<const MetadataContentsKey> contents_key() const;
@@ -88,6 +86,7 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
 
                 const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > inherited_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > restrict_key() const;
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

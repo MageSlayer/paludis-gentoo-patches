@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_E_DEP_PARSER_HH 1
 
 #include <paludis/repositories/e/dep_parser-fwd.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/repositories/e/dep_lexer.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/exception.hh>
@@ -96,9 +96,15 @@ namespace paludis
                 const EAPI &) PALUDIS_VISIBLE;
 
         /**
-         * Parse a uri heirarchy.
+         * Parse a fetchable uri heirarchy.
          */
-        tr1::shared_ptr<URISpecTree::ConstItem> parse_uri(const std::string & s,
+        tr1::shared_ptr<FetchableURISpecTree::ConstItem> parse_fetchable_uri(const std::string & s,
+                const EAPI &) PALUDIS_VISIBLE;
+
+        /**
+         * Parse a simple uri heirarchy.
+         */
+        tr1::shared_ptr<SimpleURISpecTree::ConstItem> parse_simple_uri(const std::string & s,
                 const EAPI &) PALUDIS_VISIBLE;
 
         /**

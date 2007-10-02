@@ -104,8 +104,8 @@ FetchVisitor::~FetchVisitor()
 
 void
 FetchVisitor::visit_sequence(const UseDepSpec & u,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator end)
+        FetchableURISpecTree::ConstSequenceIterator cur,
+        FetchableURISpecTree::ConstSequenceIterator end)
 {
     if ((_imp->fetch_unneeded) || (_imp->env->query_use(u.flag(), *_imp->id) ^ u.inverse()))
     {
@@ -117,8 +117,8 @@ FetchVisitor::visit_sequence(const UseDepSpec & u,
 
 void
 FetchVisitor::visit_sequence(const AllDepSpec &,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator end)
+        FetchableURISpecTree::ConstSequenceIterator cur,
+        FetchableURISpecTree::ConstSequenceIterator end)
 {
     _imp->labels.push_front(* _imp->labels.begin());
     std::for_each(cur, end, accept_visitor(*this));
@@ -144,7 +144,7 @@ namespace
 }
 
 void
-FetchVisitor::visit_leaf(const URIDepSpec & u)
+FetchVisitor::visit_leaf(const FetchableURIDepSpec & u)
 {
     Context context("When visiting URI dep spec '" + stringify(u.text()) + "':");
 

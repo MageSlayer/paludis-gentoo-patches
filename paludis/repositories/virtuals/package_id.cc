@@ -319,28 +319,16 @@ VirtualsPackageID::long_description_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
-VirtualsPackageID::restrict_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 VirtualsPackageID::src_uri_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 VirtualsPackageID::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-VirtualsPackageID::bin_uri_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
 const tr1::shared_ptr<const MetadataContentsKey>

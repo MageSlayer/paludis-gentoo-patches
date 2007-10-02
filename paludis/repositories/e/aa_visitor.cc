@@ -51,23 +51,7 @@ AAVisitor::~AAVisitor()
 }
 
 void
-AAVisitor::visit_sequence(const AllDepSpec &,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator e)
-{
-    std::for_each(cur, e, accept_visitor(*this));
-}
-
-void
-AAVisitor::visit_sequence(const UseDepSpec &,
-        URISpecTree::ConstSequenceIterator cur,
-        URISpecTree::ConstSequenceIterator e)
-{
-    std::for_each(cur, e, accept_visitor(*this));
-}
-
-void
-AAVisitor::visit_leaf(const URIDepSpec & p)
+AAVisitor::visit_leaf(const FetchableURIDepSpec & p)
 {
     _imp->aa.push_back(p.filename());
 }

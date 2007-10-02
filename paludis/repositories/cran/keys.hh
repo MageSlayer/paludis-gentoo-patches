@@ -31,25 +31,22 @@ namespace paludis
     {
         class CRANPackageID;
 
-        class URIKey :
-            public MetadataSpecTreeKey<URISpecTree>
+        class SimpleURIKey :
+            public MetadataSpecTreeKey<SimpleURISpecTree>
         {
             private:
                 const std::string _v;
 
             public:
-                URIKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                SimpleURIKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
 
-                virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+                virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const URISpecTree::Formatter &) const
+                virtual std::string pretty_print(const SimpleURISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                virtual std::string pretty_print_flat(const SimpleURISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

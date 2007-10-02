@@ -25,7 +25,9 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/name.hh>
-#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tag-fwd.hh>
 #include <iosfwd>
 
 namespace paludis

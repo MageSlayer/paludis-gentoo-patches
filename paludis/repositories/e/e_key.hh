@@ -89,29 +89,52 @@ namespace paludis
                 IdleActionResult idle_load() const;
         };
 
-        class EURIKey :
-            public MetadataSpecTreeKey<URISpecTree>,
-            private PrivateImplementationPattern<EURIKey>
+        class EFetchableURIKey :
+            public MetadataSpecTreeKey<FetchableURISpecTree>,
+            private PrivateImplementationPattern<EFetchableURIKey>
         {
             private:
-                Implementation<EURIKey> * const _imp;
+                Implementation<EFetchableURIKey> * const _imp;
 
             public:
-                EURIKey(const Environment * const,
+                EFetchableURIKey(const Environment * const,
                         const tr1::shared_ptr<const ERepositoryID> &,
                         const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EURIKey();
+                ~EFetchableURIKey();
 
-                virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+                virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const URISpecTree::Formatter &) const
+                virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const tr1::shared_ptr<const URILabel> initial_label() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class ESimpleURIKey :
+            public MetadataSpecTreeKey<SimpleURISpecTree>,
+            private PrivateImplementationPattern<ESimpleURIKey>
+        {
+            private:
+                Implementation<ESimpleURIKey> * const _imp;
+
+            public:
+                ESimpleURIKey(const Environment * const,
+                        const tr1::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                ~ESimpleURIKey();
+
+                virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print(const SimpleURISpecTree::Formatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat(const SimpleURISpecTree::Formatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

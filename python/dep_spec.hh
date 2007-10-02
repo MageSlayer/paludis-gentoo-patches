@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PYTHON_DEP_SPEC_HH 1
 
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/util/tr1_functional.hh>
 
 namespace paludis
@@ -34,8 +35,10 @@ namespace paludis
         class PythonUseDepSpec;
         class PythonStringDepSpec;
         class PythonPlainTextDepSpec;
+        class PythonLicenseDepSpec;
         class PythonPackageDepSpec;
-        class PythonURIDepSpec;
+        class PythonFetchableURIDepSpec;
+        class PythonSimpleURIDepSpec;
         class PythonBlockDepSpec;
         class PythonURILabelsDepSpec;
         class PythonDependencyLabelsDepSpec;
@@ -49,8 +52,10 @@ namespace paludis
                 PythonUseDepSpec,
                 PythonBlockDepSpec,
                 PythonPlainTextDepSpec,
+                PythonLicenseDepSpec,
                 PythonPackageDepSpec,
-                PythonURIDepSpec,
+                PythonFetchableURIDepSpec,
+                PythonSimpleURIDepSpec,
                 PythonURILabelsDepSpec,
                 PythonDependencyLabelsDepSpec
             >
@@ -187,13 +192,31 @@ namespace paludis
                 PythonPlainTextDepSpec(const PlainTextDepSpec &);
         };
 
-        class PALUDIS_VISIBLE PythonURIDepSpec :
+        class PALUDIS_VISIBLE PythonSimpleURIDepSpec :
             public PythonStringDepSpec,
-            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURIDepSpec>
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonSimpleURIDepSpec>
         {
             public:
-                PythonURIDepSpec(const std::string &);
-                PythonURIDepSpec(const URIDepSpec &);
+                PythonSimpleURIDepSpec(const std::string &);
+                PythonSimpleURIDepSpec(const SimpleURIDepSpec &);
+        };
+
+        class PALUDIS_VISIBLE PythonLicenseDepSpec :
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonLicenseDepSpec>
+        {
+            public:
+                PythonLicenseDepSpec(const std::string &);
+                PythonLicenseDepSpec(const LicenseDepSpec &);
+        };
+
+        class PALUDIS_VISIBLE PythonFetchableURIDepSpec :
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonFetchableURIDepSpec>
+        {
+            public:
+                PythonFetchableURIDepSpec(const std::string &);
+                PythonFetchableURIDepSpec(const FetchableURIDepSpec &);
 
                 std::string original_url() const;
                 std::string renamed_url_suffix() const;
@@ -266,7 +289,11 @@ namespace paludis
 
                 void visit_leaf(const BlockDepSpec &);
 
-                void visit_leaf(const URIDepSpec &);
+                void visit_leaf(const SimpleURIDepSpec &);
+
+                void visit_leaf(const FetchableURIDepSpec &);
+
+                void visit_leaf(const LicenseDepSpec &);
 
                 void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
 
@@ -298,7 +325,9 @@ namespace paludis
                 void visit(const PythonPackageDepSpec &);
                 void visit(const PythonPlainTextDepSpec &);
                 void visit(const PythonBlockDepSpec &);
-                void visit(const PythonURIDepSpec &);
+                void visit(const PythonSimpleURIDepSpec &);
+                void visit(const PythonFetchableURIDepSpec &);
+                void visit(const PythonLicenseDepSpec &);
                 void visit(const PythonURILabelsDepSpec &);
                 void visit(const PythonDependencyLabelsDepSpec &);
 
@@ -308,9 +337,11 @@ namespace paludis
                 void real_visit(const PythonPackageDepSpec &);
                 void real_visit(const PythonPlainTextDepSpec &);
                 void real_visit(const PythonBlockDepSpec &);
-                void real_visit(const PythonURIDepSpec &);
+                void real_visit(const PythonFetchableURIDepSpec &);
+                void real_visit(const PythonSimpleURIDepSpec &);
                 void real_visit(const PythonURILabelsDepSpec &);
                 void real_visit(const PythonDependencyLabelsDepSpec &);
+                void real_visit(const PythonLicenseDepSpec &);
         };
     }
 }

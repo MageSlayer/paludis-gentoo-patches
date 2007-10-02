@@ -53,7 +53,6 @@ namespace paludis
         unsigned indent;
         bool extra_label_indent;
         bool use_newlines;
-        bool plain_text_is_license;
         bool outer_block;
         bool need_space;
 
@@ -62,15 +61,13 @@ namespace paludis
                 const tr1::shared_ptr<const PackageID> & i,
                 const GenericSpecTree::Formatter & f,
                 unsigned in,
-                bool b,
-                bool c) :
+                bool b) :
             env(e),
             id(i),
             formatter(f),
             indent(in),
             extra_label_indent(false),
             use_newlines(b),
-            plain_text_is_license(c),
             outer_block(true),
             need_space(false)
         {
@@ -83,9 +80,8 @@ DepSpecPrettyPrinter::DepSpecPrettyPrinter(
         const tr1::shared_ptr<const PackageID> & id,
         const GenericSpecTree::Formatter & f,
         unsigned i,
-        bool b,
-        bool c) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b, c))
+        bool b) :
+    PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, id, f, i, b))
 {
 }
 
@@ -252,7 +248,23 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
     else if (_imp->need_space)
         _imp->s << " ";
 
-    if (_imp->env && _imp->id && _imp->plain_text_is_license)
+    _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+}
+
+void
+DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
+{
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    if (_imp->env && _imp->id)
     {
         if (_imp->env->accept_license(p.text(), *_imp->id))
             _imp->s << _imp->formatter.format(p, format::Accepted());
@@ -269,7 +281,23 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const URIDepSpec & p)
+DepSpecPrettyPrinter::visit_leaf(const FetchableURIDepSpec & p)
+{
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+}
+
+void
+DepSpecPrettyPrinter::visit_leaf(const SimpleURIDepSpec & p)
 {
     if (_imp->use_newlines)
         _imp->s << _imp->formatter.indent(_imp->indent);

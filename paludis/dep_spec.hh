@@ -20,22 +20,21 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_SPEC_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_SPEC_HH 1
 
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tag-fwd.hh>
-#include <paludis/dep_label.hh>
-#include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/version_requirements-fwd.hh>
+#include <paludis/util/tr1_memory.hh>
+
+#include <paludis/dep_label.hh>
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tag-fwd.hh>
+#include <paludis/name.hh>
 #include <paludis/version_operator-fwd.hh>
+#include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
-#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Declarations for the DepSpec classes.
@@ -45,189 +44,6 @@
 
 namespace paludis
 {
-    /**
-     * A generic DepSpec heirarchy.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct GenericSpecTree :
-        VisitorTypes<
-            GenericSpecTree,
-            DepSpec,
-            TreeLeaf<GenericSpecTree, PlainTextDepSpec>,
-            TreeLeaf<GenericSpecTree, URIDepSpec>,
-            TreeLeaf<GenericSpecTree, PackageDepSpec>,
-            TreeLeaf<GenericSpecTree, BlockDepSpec>,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
-            ConstTreeSequence<GenericSpecTree, AllDepSpec>,
-            ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
-            ConstTreeSequence<GenericSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec,
-            URIDepSpec,
-            PackageDepSpec,
-            BlockDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for licenses.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct LicenseSpecTree :
-        VisitorTypes<
-            LicenseSpecTree,
-            DepSpec,
-            TreeLeaf<LicenseSpecTree, PlainTextDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, AllDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, AnyDepSpec>,
-            ConstTreeSequence<LicenseSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for URIs.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct URISpecTree :
-        VisitorTypes<
-            URISpecTree,
-            DepSpec,
-            TreeLeaf<URISpecTree, URIDepSpec>,
-            TreeLeaf<URISpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
-            ConstTreeSequence<URISpecTree, AllDepSpec>,
-            ConstTreeSequence<URISpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            URIDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things that can be flattened.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct FlattenableSpecTree :
-        VisitorTypes<
-            FlattenableSpecTree,
-            DepSpec,
-            TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>,
-            TreeLeaf<FlattenableSpecTree, URIDepSpec>,
-            TreeLeaf<FlattenableSpecTree, PackageDepSpec>,
-            TreeLeaf<FlattenableSpecTree, BlockDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, AllDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec,
-            URIDepSpec,
-            PackageDepSpec,
-            BlockDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for provides.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct ProvideSpecTree :
-        VisitorTypes<
-            ProvideSpecTree,
-            DepSpec,
-            TreeLeaf<ProvideSpecTree, PackageDepSpec>,
-            ConstTreeSequence<ProvideSpecTree, AllDepSpec>,
-            ConstTreeSequence<ProvideSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PackageDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for restricts.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct RestrictSpecTree :
-        VisitorTypes<
-            RestrictSpecTree,
-            DepSpec,
-            TreeLeaf<RestrictSpecTree, PlainTextDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, AllDepSpec>,
-            ConstTreeSequence<RestrictSpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for dependencies.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct DependencySpecTree :
-        VisitorTypes<
-            DependencySpecTree,
-            DepSpec,
-            TreeLeaf<DependencySpecTree, PackageDepSpec>,
-            TreeLeaf<DependencySpecTree, BlockDepSpec>,
-            TreeLeaf<DependencySpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
-            ConstTreeSequence<DependencySpecTree, AllDepSpec>,
-            ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
-            ConstTreeSequence<DependencySpecTree, UseDepSpec>
-        >
-    {
-        typedef Formatter<
-            UseDepSpec,
-            PackageDepSpec,
-            BlockDepSpec,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
-                > Formatter;
-    };
-
-    /**
-     * A DepSpec heirarchy containing things meaningful for sets.
-     *
-     * \ingroup grpdepspecs
-     */
-    struct SetSpecTree :
-        VisitorTypes<
-            SetSpecTree,
-            DepSpec,
-            TreeLeaf<SetSpecTree, PackageDepSpec>,
-            ConstTreeSequence<SetSpecTree, AllDepSpec>
-        >
-    {
-        typedef Formatter<
-            PackageDepSpec
-                > Formatter;
-    };
-
     /**
      * Base class for a dependency spec.
      *
@@ -570,25 +386,65 @@ namespace paludis
     };
 
     /**
-     * A URIDepSpec represents a URI part.
+     * A LicenseDepSpec represents a license entry.
      *
      * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE URIDepSpec :
+    class PALUDIS_VISIBLE LicenseDepSpec :
         public StringDepSpec
     {
         public:
             ///\name Basic operations
             ///\{
 
-            URIDepSpec(const std::string &);
+            LicenseDepSpec(const std::string &);
+
+            ///\}
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * A FetchableURIDepSpec represents a fetchable URI part.
+     *
+     * \ingroup grpdepspecs
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE FetchableURIDepSpec :
+        public StringDepSpec
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            FetchableURIDepSpec(const std::string &);
 
             ///\}
 
             std::string original_url() const;
             std::string renamed_url_suffix() const;
             std::string filename() const;
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * A SimpleURIDepSpec represents a simple URI part.
+     *
+     * \ingroup grpdepspecs
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE SimpleURIDepSpec :
+        public StringDepSpec
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            SimpleURIDepSpec(const std::string &);
+
+            ///\}
 
             virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

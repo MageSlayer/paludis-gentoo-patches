@@ -137,14 +137,14 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<FakeMetadataSpecTreeKey<URISpecTree> >
+    struct Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
-        tr1::shared_ptr<const URISpecTree::ConstItem> value;
+        tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value;
         std::string string_value;
-        const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> func;
+        const tr1::function<const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> func;
         tr1::shared_ptr<const URILabel> initial_label;
 
-        Implementation(const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> & f) :
+        Implementation(const tr1::function<const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> & f) :
             func(f),
             initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors"))
         {
@@ -196,46 +196,47 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::Formatter &) c
     return _imp->string_value;
 }
 
-FakeMetadataSpecTreeKey<URISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const tr1::function<const tr1::shared_ptr<const URISpecTree::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
-    MetadataSpecTreeKey<URISpecTree>(r, h, t),
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >(new Implementation<FakeMetadataSpecTreeKey<URISpecTree> >(f)),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<URISpecTree> >::_imp.get())
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
+        const tr1::function<const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
+    MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
+    PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
+            new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f)),
+    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp.get())
 {
     set_from_string(v);
 }
 
-FakeMetadataSpecTreeKey<URISpecTree>::~FakeMetadataSpecTreeKey()
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::~FakeMetadataSpecTreeKey()
 {
 }
 
 void
-FakeMetadataSpecTreeKey<URISpecTree>::set_from_string(const std::string & s)
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::set_from_string(const std::string & s)
 {
     _imp->string_value = s;
     _imp->value = _imp->func(s);
 }
 
-const tr1::shared_ptr<const URISpecTree::ConstItem>
-FakeMetadataSpecTreeKey<URISpecTree>::value() const
+const tr1::shared_ptr<const FetchableURISpecTree::ConstItem>
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
 {
     return _imp->value;
 }
 
 std::string
-FakeMetadataSpecTreeKey<URISpecTree>::pretty_print(const URISpecTree::Formatter &) const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print(const FetchableURISpecTree::Formatter &) const
 {
     return _imp->string_value;
 }
 
 std::string
-FakeMetadataSpecTreeKey<URISpecTree>::pretty_print_flat(const URISpecTree::Formatter &) const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat(const FetchableURISpecTree::Formatter &) const
 {
     return _imp->string_value;
 }
 
 const tr1::shared_ptr<const URILabel>
-FakeMetadataSpecTreeKey<URISpecTree>::initial_label() const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 {
     return _imp->initial_label;
 }
@@ -339,9 +340,8 @@ namespace paludis
         tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<RestrictSpecTree> > restrictions;
-        tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > src_uri;
-        tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > bin_uri;
-        tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> > homepage;
+        tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
+        tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
 
         mutable bool has_masks;
 
@@ -372,8 +372,8 @@ namespace paludis
             suggested_dependencies(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
                         "", tr1::bind(&erepository::parse_depend, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
-            src_uri(new FakeMetadataSpecTreeKey<URISpecTree>("SRC_URI", "Source URIs",
-                        "", tr1::bind(&erepository::parse_uri, _1,
+            src_uri(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URIs",
+                        "", tr1::bind(&erepository::parse_fetchable_uri, _1,
                             *erepository::EAPIData::get_instance()->eapi_from_string("0")), mkt_dependencies)),
             has_masks(false)
         {
@@ -499,12 +499,6 @@ FakePackageID::suggested_dependencies_key() const
     return _imp->suggested_dependencies;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
-FakePackageID::restrict_key() const
-{
-    return _imp->restrictions;
-}
-
 const tr1::shared_ptr<FakeMetadataKeywordSetKey>
 FakePackageID::keywords_key()
 {
@@ -547,28 +541,22 @@ FakePackageID::suggested_dependencies_key()
     return _imp->suggested_dependencies;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::src_uri_key() const
 {
     return _imp->src_uri;
 }
 
-const tr1::shared_ptr<FakeMetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::src_uri_key()
 {
     return _imp->src_uri;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 FakePackageID::homepage_key() const
 {
     return _imp->homepage;
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-FakePackageID::bin_uri_key() const
-{
-    return _imp->bin_uri;
 }
 
 const tr1::shared_ptr<const MetadataStringKey>
@@ -688,7 +676,7 @@ namespace
                 std::for_each(begin, end, accept_visitor(*this));
         }
 
-        void visit_leaf(const PlainTextDepSpec & spec)
+        void visit_leaf(const LicenseDepSpec & spec)
         {
             if (! (env->*func)(spec.text(), *id))
                 ok = false;
@@ -944,7 +932,8 @@ template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<RestrictSpecTree>;
-template class FakeMetadataSpecTreeKey<URISpecTree>;
+template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
+template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class FakeMetadataSetKey<KeywordNameSet>;
 template class FakeMetadataSetKey<IUseFlagSet>;

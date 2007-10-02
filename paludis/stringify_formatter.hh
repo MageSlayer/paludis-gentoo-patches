@@ -35,10 +35,12 @@ namespace paludis
         public CanFormat<KeywordName>,
         public CanFormat<PackageDepSpec>,
         public CanFormat<BlockDepSpec>,
-        public CanFormat<URIDepSpec>,
+        public CanFormat<FetchableURIDepSpec>,
+        public CanFormat<SimpleURIDepSpec>,
         public CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> >,
         public CanFormat<LabelsDepSpec<URILabelVisitorTypes> >,
         public CanFormat<PlainTextDepSpec>,
+        public CanFormat<LicenseDepSpec>,
         public CanFormat<UseDepSpec>,
         public CanSpace
     {
@@ -76,15 +78,19 @@ namespace paludis
 
             virtual std::string format(const BlockDepSpec &, const format::Plain &) const;
 
-            virtual std::string format(const URIDepSpec &, const format::Plain &) const;
+            virtual std::string format(const FetchableURIDepSpec &, const format::Plain &) const;
+
+            virtual std::string format(const SimpleURIDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const LabelsDepSpec<DependencyLabelVisitorTypes> &, const format::Plain &) const;
 
             virtual std::string format(const LabelsDepSpec<URILabelVisitorTypes> &, const format::Plain &) const;
 
             virtual std::string format(const PlainTextDepSpec &, const format::Plain &) const;
-            virtual std::string format(const PlainTextDepSpec &, const format::Accepted &) const;
-            virtual std::string format(const PlainTextDepSpec &, const format::Unaccepted &) const;
+
+            virtual std::string format(const LicenseDepSpec &, const format::Plain &) const;
+            virtual std::string format(const LicenseDepSpec &, const format::Accepted &) const;
+            virtual std::string format(const LicenseDepSpec &, const format::Unaccepted &) const;
 
             virtual std::string format(const UseDepSpec &, const format::Enabled &) const;
             virtual std::string format(const UseDepSpec &, const format::Disabled &) const;

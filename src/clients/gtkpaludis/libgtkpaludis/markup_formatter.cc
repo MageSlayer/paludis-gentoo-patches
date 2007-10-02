@@ -137,13 +137,19 @@ MarkupFormatter::format(const PlainTextDepSpec & f, const format::Plain &) const
 }
 
 std::string
-MarkupFormatter::format(const PlainTextDepSpec & f, const format::Accepted &) const
+MarkupFormatter::format(const LicenseDepSpec & f, const format::Plain &) const
+{
+    return markup_escape(stringify(f));
+}
+
+std::string
+MarkupFormatter::format(const LicenseDepSpec & f, const format::Accepted &) const
 {
     return markup_foreground("green", markup_escape(stringify(f)));
 }
 
 std::string
-MarkupFormatter::format(const PlainTextDepSpec & f, const format::Unaccepted &) const
+MarkupFormatter::format(const LicenseDepSpec & f, const format::Unaccepted &) const
 {
     return markup_foreground("red", markup_escape(stringify(f)));
 }
@@ -185,7 +191,13 @@ MarkupFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & f, co
 }
 
 std::string
-MarkupFormatter::format(const URIDepSpec & f, const format::Plain &) const
+MarkupFormatter::format(const FetchableURIDepSpec & f, const format::Plain &) const
+{
+    return markup_escape(stringify(f));
+}
+
+std::string
+MarkupFormatter::format(const SimpleURIDepSpec & f, const format::Plain &) const
 {
     return markup_escape(stringify(f));
 }

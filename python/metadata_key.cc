@@ -119,9 +119,14 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<URISpecTree> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(_m_ptr));
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(_m_ptr));
         }
 
         void visit(const MetadataSetKey<PackageIDSequence> & k)
@@ -393,16 +398,16 @@ struct MetadataSpecTreeKeyWrapper :
 };
 
 template <>
-struct MetadataSpecTreeKeyWrapper<URISpecTree> :
-    MetadataSpecTreeKey<URISpecTree>,
-    bp::wrapper<MetadataSpecTreeKey<URISpecTree> >
+struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
+    MetadataSpecTreeKey<FetchableURISpecTree>,
+    bp::wrapper<MetadataSpecTreeKey<FetchableURISpecTree> >
 {
     MetadataSpecTreeKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSpecTreeKey<URISpecTree>(r, h, t)
+        MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t)
     {
     }
 
-    virtual const tr1::shared_ptr<const URISpecTree::ConstItem> value() const
+    virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -413,7 +418,7 @@ struct MetadataSpecTreeKeyWrapper<URISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const URISpecTree::Formatter &) const
+    virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -425,7 +430,7 @@ struct MetadataSpecTreeKeyWrapper<URISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat(const URISpecTree::Formatter &) const
+    virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -684,6 +689,7 @@ void expose_metadata_key()
     class_spec_tree_key<ProvideSpecTree>("ProvideSpecTree");
     class_spec_tree_key<DependencySpecTree>("DependencySpecTree");
     class_spec_tree_key<RestrictSpecTree>("RestrictSpecTree");
-    class_spec_tree_key<URISpecTree>("URISpecTree");
+    class_spec_tree_key<SimpleURISpecTree>("SimpleURISpecTree");
+    class_spec_tree_key<FetchableURISpecTree>("FetchableURISpecTree");
 }
 

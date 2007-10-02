@@ -155,7 +155,7 @@ std::string
 EDependenciesKey::pretty_print(const DependencySpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -164,7 +164,7 @@ std::string
 EDependenciesKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -253,7 +253,7 @@ std::string
 ELicenseKey::pretty_print(const LicenseSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -262,7 +262,7 @@ std::string
 ELicenseKey::pretty_print_flat(const LicenseSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -293,13 +293,13 @@ ELicenseKey::idle_load() const
 namespace paludis
 {
     template <>
-    struct Implementation<EURIKey>
+    struct Implementation<EFetchableURIKey>
     {
         const Environment * const env;
         const tr1::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable tr1::shared_ptr<const URISpecTree::ConstItem> value;
+        mutable tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value;
         mutable tr1::shared_ptr<const URILabel> initial_label;
 
         Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
@@ -311,21 +311,21 @@ namespace paludis
     };
 }
 
-EURIKey::EURIKey(const Environment * const e,
+EFetchableURIKey::EFetchableURIKey(const Environment * const e,
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSpecTreeKey<URISpecTree>(r, h, t),
-    PrivateImplementationPattern<EURIKey>(new Implementation<EURIKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<EURIKey>::_imp.get())
+    MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
+    PrivateImplementationPattern<EFetchableURIKey>(new Implementation<EFetchableURIKey>(e, id, v)),
+    _imp(PrivateImplementationPattern<EFetchableURIKey>::_imp.get())
 {
 }
 
-EURIKey::~EURIKey()
+EFetchableURIKey::~EFetchableURIKey()
 {
 }
 
-const tr1::shared_ptr<const URISpecTree::ConstItem>
-EURIKey::value() const
+const tr1::shared_ptr<const FetchableURISpecTree::ConstItem>
+EFetchableURIKey::value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -333,30 +333,30 @@ EURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_uri(_imp->string_value, *_imp->id->eapi());
+    _imp->value = parse_fetchable_uri(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
 }
 
 std::string
-EURIKey::pretty_print(const URISpecTree::Formatter & f) const
+EFetchableURIKey::pretty_print(const FetchableURISpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
     value()->accept(p);
     return stringify(p);
 }
 
 std::string
-EURIKey::pretty_print_flat(const URISpecTree::Formatter & f) const
+EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }
 
 const tr1::shared_ptr<const URILabel>
-EURIKey::initial_label() const
+EFetchableURIKey::initial_label() const
 {
     Lock l(_imp->value_mutex);
 
@@ -384,6 +384,70 @@ EURIKey::initial_label() const
     }
 
     return _imp->initial_label;
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<ESimpleURIKey>
+    {
+        const Environment * const env;
+        const tr1::shared_ptr<const ERepositoryID> id;
+        const std::string string_value;
+        mutable Mutex value_mutex;
+        mutable tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value;
+
+        Implementation(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & i, const std::string & v) :
+            env(e),
+            id(i),
+            string_value(v)
+        {
+        }
+    };
+}
+
+ESimpleURIKey::ESimpleURIKey(const Environment * const e,
+        const tr1::shared_ptr<const ERepositoryID> & id,
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
+    PrivateImplementationPattern<ESimpleURIKey>(new Implementation<ESimpleURIKey>(e, id, v)),
+    _imp(PrivateImplementationPattern<ESimpleURIKey>::_imp.get())
+{
+}
+
+ESimpleURIKey::~ESimpleURIKey()
+{
+}
+
+const tr1::shared_ptr<const SimpleURISpecTree::ConstItem>
+ESimpleURIKey::value() const
+{
+    Lock l(_imp->value_mutex);
+
+    if (_imp->value)
+        return _imp->value;
+
+    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
+    _imp->value = parse_simple_uri(_imp->string_value, *_imp->id->eapi());
+    return _imp->value;
+}
+
+std::string
+ESimpleURIKey::pretty_print(const SimpleURISpecTree::Formatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
+    value()->accept(p);
+    return stringify(p);
+}
+
+std::string
+ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::Formatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
+    value()->accept(p);
+    return stringify(p);
 }
 
 namespace paludis
@@ -436,7 +500,7 @@ std::string
 ERestrictKey::pretty_print(const RestrictSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -445,7 +509,7 @@ std::string
 ERestrictKey::pretty_print_flat(const RestrictSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }
@@ -499,7 +563,7 @@ std::string
 EProvideKey::pretty_print(const ProvideSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
     value()->accept(p);
     return stringify(p);
 }
@@ -508,7 +572,7 @@ std::string
 EProvideKey::pretty_print_flat(const ProvideSpecTree::Formatter & f) const
 {
     StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, false);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
 }

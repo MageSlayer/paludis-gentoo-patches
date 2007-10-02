@@ -439,28 +439,16 @@ GemSpecification::post_dependencies_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >
-GemSpecification::restrict_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 GemSpecification::src_uri_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+    return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
+const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 GemSpecification::homepage_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
-}
-
-const tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >
-GemSpecification::bin_uri_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<URISpecTree> >();
+    return tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

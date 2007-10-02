@@ -1012,7 +1012,7 @@ VDBRepository::regenerate_provides_cache() const
 
             tr1::shared_ptr<const ProvideSpecTree::ConstItem> provide((*e)->provide_key()->value());
             StringifyFormatter ff;
-            DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false, 0);
+            DepSpecPrettyPrinter p(0, tr1::shared_ptr<const PackageID>(), ff, 0, false);
             provide->accept(p);
             std::string provide_str(strip_leading(strip_trailing(stringify(p), " \t\r\n"), " \t\r\n"));
             if (provide_str.empty())

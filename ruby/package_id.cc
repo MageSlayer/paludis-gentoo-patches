@@ -145,7 +145,12 @@ namespace
             value = Qnil;
         }
 
-        void visit(const MetadataSpecTreeKey<URISpecTree> &)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
+        {
+            value = Qnil;
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
             value = Qnil;
         }
