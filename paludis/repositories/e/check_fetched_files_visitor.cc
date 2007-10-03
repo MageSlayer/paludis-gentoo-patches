@@ -166,7 +166,7 @@ namespace
 }
 
 void
-CheckFetchedFilesVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+CheckFetchedFilesVisitor::visit_leaf(const URILabelsDepSpec & l)
 {
     InNoFetchVisitor v;
     std::for_each(indirect_iterator(l.begin()), indirect_iterator(l.end()), accept_visitor(v));

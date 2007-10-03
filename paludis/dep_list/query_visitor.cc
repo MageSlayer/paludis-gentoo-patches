@@ -167,7 +167,7 @@ QueryVisitor::visit_sequence(const AllDepSpec &,
 }
 
 void
-QueryVisitor::visit_leaf(const DependencyLabelDepSpec &)
+QueryVisitor::visit_leaf(const DependencyLabelsDepSpec &)
 {
     // XXX implement
 }

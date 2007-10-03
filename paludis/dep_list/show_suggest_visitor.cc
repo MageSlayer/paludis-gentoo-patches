@@ -132,7 +132,7 @@ ShowSuggestVisitor::visit_leaf(const PackageDepSpec & a)
 }
 
 void
-ShowSuggestVisitor::visit_leaf(const DependencyLabelDepSpec &)
+ShowSuggestVisitor::visit_leaf(const DependencyLabelsDepSpec &)
 {
     // XXX implement
 }

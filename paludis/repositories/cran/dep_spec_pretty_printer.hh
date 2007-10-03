@@ -78,7 +78,7 @@ namespace paludis
 
                 void visit_leaf(const BlockDepSpec &);
 
-                void visit_leaf(const DependencyLabelDepSpec &);
+                void visit_leaf(const DependencyLabelsDepSpec &);
         };
 
         std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p) PALUDIS_VISIBLE;

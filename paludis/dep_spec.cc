@@ -746,14 +746,14 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const LabelsDepSpec<URILabelVisitorTypes> & l)
+paludis::operator<< (std::ostream & s, const URILabelsDepSpec & l)
 {
     s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), "+") << ":";
     return s;
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const LabelsDepSpec<DependencyLabelVisitorTypes> & l)
+paludis::operator<< (std::ostream & s, const DependencyLabelsDepSpec & l)
 {
     s << join(indirect_iterator(l.begin()), indirect_iterator(l.end()), ",") << ":";
     return s;

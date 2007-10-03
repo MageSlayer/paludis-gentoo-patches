@@ -474,7 +474,7 @@ PythonURILabelsDepSpec::PythonURILabelsDepSpec(const std::string &)
 {
 }
 
-PythonURILabelsDepSpec::PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisitorTypes> &)
+PythonURILabelsDepSpec::PythonURILabelsDepSpec(const URILabelsDepSpec &)
 {
 }
 
@@ -482,7 +482,7 @@ PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const std::string &
 {
 }
 
-PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const LabelsDepSpec<DependencyLabelVisitorTypes> &)
+PythonDependencyLabelsDepSpec::PythonDependencyLabelsDepSpec(const DependencyLabelsDepSpec &)
 {
 }
 
@@ -565,13 +565,13 @@ SpecTreeToPython::visit_leaf(const BlockDepSpec & d)
 }
 
 void
-SpecTreeToPython::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & d)
+SpecTreeToPython::visit_leaf(const URILabelsDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonURILabelsDepSpec>(new PythonURILabelsDepSpec(d)));
 }
 
 void
-SpecTreeToPython::visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> & d)
+SpecTreeToPython::visit_leaf(const DependencyLabelsDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonDependencyLabelsDepSpec>(new PythonDependencyLabelsDepSpec(d)));
 }
@@ -622,7 +622,7 @@ struct AllowedTypes<FetchableURISpecTree>
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const UseDepSpec &) {};
     AllowedTypes(const FetchableURISpecTree &) {};
-    AllowedTypes(const LabelsDepSpec<URILabelVisitorTypes> &) {};
+    AllowedTypes(const URILabelsDepSpec &) {};
 };
 
 template<>
@@ -657,7 +657,7 @@ struct AllowedTypes<DependencySpecTree>
     AllowedTypes(const UseDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
-    AllowedTypes(const LabelsDepSpec<DependencyLabelVisitorTypes> &) {};
+    AllowedTypes(const DependencyLabelsDepSpec &) {};
 };
 
 template<>
@@ -742,18 +742,18 @@ struct NiceClassNames<FetchableURIDepSpec>
 const char * NiceClassNames<FetchableURIDepSpec>::name = "FetchableURIDepSpec";
 
 template<>
-struct NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >
+struct NiceClassNames<URILabelsDepSpec>
 {
         static const char * name;
 };
-const char * NiceClassNames<LabelsDepSpec<URILabelVisitorTypes> >::name = "URILabelsDepSpec";
+const char * NiceClassNames<URILabelsDepSpec>::name = "URILabelsDepSpec";
 
 template<>
-struct NiceClassNames<LabelsDepSpec<DependencyLabelVisitorTypes> >
+struct NiceClassNames<DependencyLabelsDepSpec>
 {
         static const char * name;
 };
-const char * NiceClassNames<LabelsDepSpec<DependencyLabelVisitorTypes> >::name = "DependencyLabelsDepSpec";
+const char * NiceClassNames<DependencyLabelsDepSpec>::name = "DependencyLabelsDepSpec";
 
 template<>
 struct NiceClassNames<BlockDepSpec>
@@ -940,14 +940,14 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::visit(const PythonURILabelsDepSpec & d)
 {
-    dispatch<H_, LabelsDepSpec<URILabelVisitorTypes> >(this, d);
+    dispatch<H_, URILabelsDepSpec>(this, d);
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::visit(const PythonDependencyLabelsDepSpec & d)
 {
-    dispatch<H_, LabelsDepSpec<DependencyLabelVisitorTypes> >(this, d);
+    dispatch<H_, DependencyLabelsDepSpec>(this, d);
 }
 
 template <typename H_>
@@ -1055,18 +1055,18 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> > >(
-                new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >(
-                        new LabelsDepSpec<URILabelVisitorTypes>))));
+    _add(tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
+                new TreeLeaf<H_, URILabelsDepSpec>(tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >(
+                        new URILabelsDepSpec))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonDependencyLabelsDepSpec &)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<DependencyLabelVisitorTypes> > >(
-                new TreeLeaf<H_, LabelsDepSpec<DependencyLabelVisitorTypes> >(tr1::shared_ptr<LabelsDepSpec<DependencyLabelVisitorTypes> >(
-                        new LabelsDepSpec<DependencyLabelVisitorTypes>))));
+    _add(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
+                new TreeLeaf<H_, DependencyLabelsDepSpec>(tr1::shared_ptr<DependencyLabelsDepSpec>(
+                        new DependencyLabelsDepSpec))));
 }
 
 template <typename H_>

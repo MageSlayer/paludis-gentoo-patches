@@ -80,7 +80,7 @@ namespace paludis
         /**
          * Parse a dep spec label.
          */
-        tr1::shared_ptr<DependencyLabelDepSpec> parse_dependency_label(const std::string & s,
+        tr1::shared_ptr<DependencyLabelsDepSpec> parse_dependency_label(const std::string & s,
                 const EAPI &) PALUDIS_VISIBLE;
 
         /**
@@ -116,7 +116,7 @@ namespace paludis
         /**
          * Parse a URI label.
          */
-        tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > parse_uri_label(const std::string & s,
+        tr1::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s,
                 const EAPI &) PALUDIS_VISIBLE;
     }
 }

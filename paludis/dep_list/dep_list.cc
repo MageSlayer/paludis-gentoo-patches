@@ -311,7 +311,7 @@ struct DepList::AddVisitor :
 
     void visit_leaf(const BlockDepSpec &);
 
-    void visit_leaf(const DependencyLabelDepSpec &);
+    void visit_leaf(const DependencyLabelsDepSpec &);
 };
 
 void
@@ -879,7 +879,7 @@ DepList::AddVisitor::visit_leaf(const BlockDepSpec & a)
 }
 
 void
-DepList::AddVisitor::visit_leaf(const DependencyLabelDepSpec &)
+DepList::AddVisitor::visit_leaf(const DependencyLabelsDepSpec &)
 {
     // XXX implement
 }

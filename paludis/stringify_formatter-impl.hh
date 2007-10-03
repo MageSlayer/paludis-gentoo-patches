@@ -37,8 +37,8 @@ namespace paludis
         const CanFormat<FetchableURIDepSpec> * const f_f_uri;
         const CanFormat<SimpleURIDepSpec> * const f_s_uri;
         const CanFormat<LicenseDepSpec> * const f_license;
-        const CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > * const f_dep_label;
-        const CanFormat<LabelsDepSpec<URILabelVisitorTypes> > * const f_uri_label;
+        const CanFormat<DependencyLabelsDepSpec> * const f_dep_label;
+        const CanFormat<URILabelsDepSpec> * const f_uri_label;
         const CanFormat<PlainTextDepSpec> * const f_plain;
         const CanFormat<UseDepSpec> * const f_use_dep;
         const CanSpace * const f_space;
@@ -52,8 +52,8 @@ namespace paludis
                 const CanFormat<FetchableURIDepSpec> * const f_f_uri_v,
                 const CanFormat<SimpleURIDepSpec> * const f_s_uri_v,
                 const CanFormat<LicenseDepSpec> * const f_license_v,
-                const CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > * const f_dep_label_v,
-                const CanFormat<LabelsDepSpec<URILabelVisitorTypes> > * const f_uri_label_v,
+                const CanFormat<DependencyLabelsDepSpec> * const f_dep_label_v,
+                const CanFormat<URILabelsDepSpec> * const f_uri_label_v,
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
                 const CanFormat<UseDepSpec> * const f_use_dep_v,
                 const CanSpace * const f_space_v
@@ -129,11 +129,11 @@ namespace paludis
                             tr1::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
                             LicenseDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> > *>::value,
-                            LabelsDepSpec<DependencyLabelVisitorTypes> >::get(&t),
+                            tr1::is_convertible<T_ *, CanFormat<DependencyLabelsDepSpec> *>::value,
+                            DependencyLabelsDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<LabelsDepSpec<URILabelVisitorTypes> > *>::value,
-                            LabelsDepSpec<URILabelVisitorTypes> >::get(&t),
+                            tr1::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
+                            URILabelsDepSpec>::get(&t),
                         StringifyFormatterGetForwarder<
                             tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
                             PlainTextDepSpec>::get(&t),

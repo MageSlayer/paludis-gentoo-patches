@@ -101,7 +101,7 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec &)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const DependencyLabelDepSpec &)
+DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec &)
 {
 }
 

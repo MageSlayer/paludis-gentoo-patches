@@ -57,7 +57,7 @@ AAVisitor::visit_leaf(const FetchableURIDepSpec & p)
 }
 
 void
-AAVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+AAVisitor::visit_leaf(const URILabelsDepSpec &)
 {
 }
 

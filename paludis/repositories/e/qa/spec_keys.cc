@@ -146,11 +146,11 @@ namespace
         {
         }
 
-        void visit_leaf(const URILabelDepSpec &)
+        void visit_leaf(const URILabelsDepSpec &)
         {
         }
 
-        void visit_leaf(const DependencyLabelDepSpec &)
+        void visit_leaf(const DependencyLabelsDepSpec &)
         {
         }
 

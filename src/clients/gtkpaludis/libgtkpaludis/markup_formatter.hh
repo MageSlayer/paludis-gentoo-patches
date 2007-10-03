@@ -16,8 +16,8 @@ namespace gtkpaludis
         public paludis::CanFormat<paludis::UseDepSpec>,
         public paludis::CanFormat<paludis::PackageDepSpec>,
         public paludis::CanFormat<paludis::BlockDepSpec>,
-        public paludis::CanFormat<paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> >,
-        public paludis::CanFormat<paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> >,
+        public paludis::CanFormat<paludis::DependencyLabelsDepSpec>,
+        public paludis::CanFormat<paludis::URILabelsDepSpec>,
         public paludis::CanFormat<paludis::PlainTextDepSpec>,
         public paludis::CanFormat<paludis::SimpleURIDepSpec>,
         public paludis::CanFormat<paludis::FetchableURIDepSpec>,
@@ -63,9 +63,9 @@ namespace gtkpaludis
 
             std::string format(const std::string &, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::LabelsDepSpec<paludis::URILabelVisitorTypes> &, const paludis::format::Plain &) const;
+            std::string format(const paludis::URILabelsDepSpec &, const paludis::format::Plain &) const;
 
-            std::string format(const paludis::LabelsDepSpec<paludis::DependencyLabelVisitorTypes> &, const paludis::format::Plain &) const;
+            std::string format(const paludis::DependencyLabelsDepSpec &, const paludis::format::Plain &) const;
 
             std::string format(const paludis::SimpleURIDepSpec &, const paludis::format::Plain &) const;
 

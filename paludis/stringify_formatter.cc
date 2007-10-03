@@ -228,7 +228,7 @@ StringifyFormatter::format(const LicenseDepSpec & s, const format::Unaccepted & 
 }
 
 std::string
-StringifyFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & s, const format::Plain & k) const
+StringifyFormatter::format(const DependencyLabelsDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_dep_label)
         return _imp->f_dep_label->format(s, k);
@@ -236,7 +236,7 @@ StringifyFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & s,
 }
 
 std::string
-StringifyFormatter::format(const LabelsDepSpec<URILabelVisitorTypes> & s, const format::Plain & k) const
+StringifyFormatter::format(const URILabelsDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_uri_label)
         return _imp->f_uri_label->format(s, k);

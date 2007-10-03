@@ -291,8 +291,8 @@ namespace
                 const EAPI & e)
         {
             if (e.supported && e.supported->uri_labels)
-                p(tr1::shared_ptr<TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> > >(
-                            new TreeLeaf<H_, LabelsDepSpec<URILabelVisitorTypes> >(parse_uri_label(s, e))));
+                p(tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
+                            new TreeLeaf<H_, URILabelsDepSpec>(parse_uri_label(s, e))));
             else
                 throw DepStringParseError(s, "URI labels not allowed in this EAPI");
         }
@@ -305,8 +305,8 @@ namespace
                 const EAPI & e)
         {
             if (e.supported && e.supported->dependency_labels)
-                p(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelDepSpec> >(
-                            new TreeLeaf<H_, DependencyLabelDepSpec>(parse_dependency_label(s, e))));
+                p(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
+                            new TreeLeaf<H_, DependencyLabelsDepSpec>(parse_dependency_label(s, e))));
             else
                 throw DepStringParseError(s, "Dependency labels not allowed in this EAPI");
         }
@@ -748,7 +748,7 @@ paludis::erepository::parse_license(const std::string & s, const EAPI & e)
             true, ParseLicenseDepSpec(), e);
 }
 
-tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >
+tr1::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
@@ -760,7 +760,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     if (c.empty())
         throw DepStringParseError(s, "Unknown label");
 
-    tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> > l(new LabelsDepSpec<URILabelVisitorTypes>);
+    tr1::shared_ptr<URILabelsDepSpec> l(new LabelsDepSpec<URILabelVisitorTypes>);
 
     if (c == "URIMirrorsThenListedLabel")
         l->add_label(make_shared_ptr(new URIMirrorsThenListedLabel(s.substr(0, s.length() - 1))));
@@ -780,7 +780,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     return l;
 }
 
-tr1::shared_ptr<DependencyLabelDepSpec>
+tr1::shared_ptr<DependencyLabelsDepSpec>
 paludis::erepository::parse_dependency_label(const std::string & s, const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e.name + "':");
@@ -792,7 +792,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
     std::string label(s.substr(0, s.length() - 1));
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(",+").tokenise(label, std::inserter(labels, labels.end()));
 
-    tr1::shared_ptr<DependencyLabelDepSpec> l(new DependencyLabelDepSpec);
+    tr1::shared_ptr<DependencyLabelsDepSpec> l(new DependencyLabelsDepSpec);
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {

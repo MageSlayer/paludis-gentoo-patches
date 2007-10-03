@@ -79,7 +79,7 @@ namespace paludis
 
             void visit_leaf(const BlockDepSpec &);
 
-            void visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> &);
+            void visit_leaf(const DependencyLabelsDepSpec &);
 
             ///\}
     };

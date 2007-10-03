@@ -179,13 +179,13 @@ MarkupFormatter::format(const std::string & f, const format::Plain &) const
 }
 
 std::string
-MarkupFormatter::format(const LabelsDepSpec<URILabelVisitorTypes> & f, const format::Plain &) const
+MarkupFormatter::format(const URILabelsDepSpec & f, const format::Plain &) const
 {
     return markup_escape(stringify(f));
 }
 
 std::string
-MarkupFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & f, const format::Plain &) const
+MarkupFormatter::format(const DependencyLabelsDepSpec & f, const format::Plain &) const
 {
     return markup_escape(stringify(f));
 }

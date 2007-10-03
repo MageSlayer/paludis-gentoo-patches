@@ -121,8 +121,8 @@ namespace
         public ConstVisitor<FetchableURISpecTree>
     {
         private:
-            std::list<std::pair<const FetchableURIDepSpec *, const LabelsDepSpec<URILabelVisitorTypes> *> > _specs;
-            std::list<const LabelsDepSpec<URILabelVisitorTypes> *> _labels;
+            std::list<std::pair<const FetchableURIDepSpec *, const URILabelsDepSpec *> > _specs;
+            std::list<const URILabelsDepSpec *> _labels;
 
             const Environment * const env;
             const tr1::shared_ptr<const PackageID> id;
@@ -140,7 +140,7 @@ namespace
                 _specs.push_back(std::make_pair(&a, *_labels.begin()));
             }
 
-            void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+            void visit_leaf(const URILabelsDepSpec & l)
             {
                 *_labels.begin() = &l;
             }
@@ -167,7 +167,7 @@ namespace
             }
 
             typedef std::list<std::pair<const FetchableURIDepSpec *,
-                    const LabelsDepSpec<URILabelVisitorTypes> *> >::const_iterator ConstIterator;
+                    const URILabelsDepSpec *> >::const_iterator ConstIterator;
 
             ConstIterator begin()
             {

@@ -133,8 +133,8 @@ ConditionTracker::visit_leaf(const BlockDepSpec &)
 }
 
 void
-ConditionTracker::visit_leaf(const DependencyLabelDepSpec &)
+ConditionTracker::visit_leaf(const DependencyLabelsDepSpec &)
 {
-    throw InternalError(PALUDIS_HERE, "ConditionTracker saw a DependencyLabelDepSpec");
+    throw InternalError(PALUDIS_HERE, "ConditionTracker saw a DependencyLabelsDepSpec");
 }
 

@@ -47,15 +47,29 @@ namespace paludis
     class BlockDepSpec;
     class StringDepSpec;
     template <typename T_> class LabelsDepSpec;
-    typedef LabelsDepSpec<URILabelVisitorTypes> URILabelDepSpec;
-    typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelDepSpec;
+
+    /**
+     * A URILabelsDepSpec represents labels in a FetchableURISpecTree.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef LabelsDepSpec<URILabelVisitorTypes> URILabelsDepSpec;
+
+    /**
+     * A DependencyLabelsDepSpec represents labels in a DependencySpecTree.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    typedef LabelsDepSpec<DependencyLabelVisitorTypes> DependencyLabelsDepSpec;
 
 #include <paludis/dep_spec-se.hh>
 
     /**
      * A PlainTextDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      */
     std::ostream & operator<< (std::ostream &, const PlainTextDepSpec &) PALUDIS_VISIBLE;
 
@@ -64,56 +78,63 @@ namespace paludis
     /**
      * A PackageDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      */
     std::ostream & operator<< (std::ostream &, const PackageDepSpec &) PALUDIS_VISIBLE;
 
     /**
-     * A LabelsDepSpec<URILabelVisitorTypes> can be written to an ostream.
+     * A URILabelsDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
-    std::ostream & operator<< (std::ostream &, const LabelsDepSpec<URILabelVisitorTypes> &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const URILabelsDepSpec &) PALUDIS_VISIBLE;
 
     /**
-     * A LabelsDepSpec<DependencyLabelVisitorTypes> can be written to an ostream.
+     * A DependencyLabelsDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
-    std::ostream & operator<< (std::ostream &, const LabelsDepSpec<DependencyLabelVisitorTypes> &) PALUDIS_VISIBLE;
+    std::ostream & operator<< (std::ostream &, const DependencyLabelsDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A BlockDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const BlockDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A SimpleURIDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const SimpleURIDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A FetchableURIDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const FetchableURIDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A LicenseDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const LicenseDepSpec &) PALUDIS_VISIBLE;
 
     /**
      * A UseDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const UseDepSpec &) PALUDIS_VISIBLE;
 }

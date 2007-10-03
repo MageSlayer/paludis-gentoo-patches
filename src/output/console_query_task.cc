@@ -609,11 +609,11 @@ namespace
             empty = false;
         }
 
-        void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &)
+        void visit_leaf(const URILabelsDepSpec &)
         {
         }
 
-        void visit_leaf(const DependencyLabelDepSpec &)
+        void visit_leaf(const DependencyLabelsDepSpec &)
         {
         }
     };

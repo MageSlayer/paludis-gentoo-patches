@@ -129,11 +129,11 @@ namespace
                 _results.insert(std::make_pair(s.filename(), _restricted.back()));
             }
 
-            void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+            void visit_leaf(const URILabelsDepSpec & l)
             {
                 /* Find out whether the label represents a fetch restriction.
                  * Change the top item of the stack as appropriate. Although
-                 * a LabelsDepSpec can contain multiple labels, only the last
+                 * a URILabelsDepSpec can contain multiple labels, only the last
                  * one is relevant. */
                 IsLabelRestrictedVisitor v(_restricted.back());
                 std::for_each(indirect_iterator(l.begin()), indirect_iterator(l.end()), accept_visitor(v));

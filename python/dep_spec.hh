@@ -242,7 +242,7 @@ namespace paludis
         {
             public:
                 PythonURILabelsDepSpec(const std::string &);
-                PythonURILabelsDepSpec(const LabelsDepSpec<URILabelVisitorTypes> &);
+                PythonURILabelsDepSpec(const URILabelsDepSpec &);
         };
 
         class PALUDIS_VISIBLE PythonDependencyLabelsDepSpec :
@@ -251,7 +251,7 @@ namespace paludis
         {
             public:
                 PythonDependencyLabelsDepSpec(const std::string &);
-                PythonDependencyLabelsDepSpec(const LabelsDepSpec<DependencyLabelVisitorTypes> &);
+                PythonDependencyLabelsDepSpec(const DependencyLabelsDepSpec &);
         };
 
         /**
@@ -295,9 +295,9 @@ namespace paludis
 
                 void visit_leaf(const LicenseDepSpec &);
 
-                void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
+                void visit_leaf(const URILabelsDepSpec &);
 
-                void visit_leaf(const LabelsDepSpec<DependencyLabelVisitorTypes> &);
+                void visit_leaf(const DependencyLabelsDepSpec &);
         };
 
         /**

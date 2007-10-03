@@ -337,13 +337,13 @@ ColourFormatter::format(const std::string & f, const format::Plain &) const
 }
 
 std::string
-ColourFormatter::format(const LabelsDepSpec<URILabelVisitorTypes> & f, const format::Plain &) const
+ColourFormatter::format(const URILabelsDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }
 
 std::string
-ColourFormatter::format(const LabelsDepSpec<DependencyLabelVisitorTypes> & f, const format::Plain &) const
+ColourFormatter::format(const DependencyLabelsDepSpec & f, const format::Plain &) const
 {
     return stringify(f);
 }

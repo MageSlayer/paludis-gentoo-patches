@@ -126,9 +126,9 @@ FetchVisitor::visit_sequence(const AllDepSpec &,
 }
 
 void
-FetchVisitor::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+FetchVisitor::visit_leaf(const URILabelsDepSpec & l)
 {
-    for (URILabelDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
+    for (URILabelsDepSpec::ConstIterator i(l.begin()), i_end(l.end()) ;
             i != i_end ; ++i)
         *_imp->labels.begin() = i->get();
 }

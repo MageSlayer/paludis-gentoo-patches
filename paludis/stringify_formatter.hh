@@ -37,8 +37,8 @@ namespace paludis
         public CanFormat<BlockDepSpec>,
         public CanFormat<FetchableURIDepSpec>,
         public CanFormat<SimpleURIDepSpec>,
-        public CanFormat<LabelsDepSpec<DependencyLabelVisitorTypes> >,
-        public CanFormat<LabelsDepSpec<URILabelVisitorTypes> >,
+        public CanFormat<DependencyLabelsDepSpec>,
+        public CanFormat<URILabelsDepSpec>,
         public CanFormat<PlainTextDepSpec>,
         public CanFormat<LicenseDepSpec>,
         public CanFormat<UseDepSpec>,
@@ -82,9 +82,9 @@ namespace paludis
 
             virtual std::string format(const SimpleURIDepSpec &, const format::Plain &) const;
 
-            virtual std::string format(const LabelsDepSpec<DependencyLabelVisitorTypes> &, const format::Plain &) const;
+            virtual std::string format(const DependencyLabelsDepSpec &, const format::Plain &) const;
 
-            virtual std::string format(const LabelsDepSpec<URILabelVisitorTypes> &, const format::Plain &) const;
+            virtual std::string format(const URILabelsDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const PlainTextDepSpec &, const format::Plain &) const;
 

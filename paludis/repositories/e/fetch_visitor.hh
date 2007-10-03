@@ -61,7 +61,7 @@ namespace paludis
                         FetchableURISpecTree::ConstSequenceIterator,
                         FetchableURISpecTree::ConstSequenceIterator);
 
-                void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
+                void visit_leaf(const URILabelsDepSpec &);
 
                 void visit_leaf(const FetchableURIDepSpec &);
         };

@@ -61,7 +61,7 @@ namespace paludis
 
                 void visit_leaf(const FetchableURIDepSpec &);
 
-                void visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> &);
+                void visit_leaf(const URILabelsDepSpec &);
 
                 ///}
 

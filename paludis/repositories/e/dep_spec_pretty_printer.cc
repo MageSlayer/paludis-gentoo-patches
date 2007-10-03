@@ -329,7 +329,7 @@ DepSpecPrettyPrinter::visit_leaf(const BlockDepSpec & b)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
+DepSpecPrettyPrinter::visit_leaf(const URILabelsDepSpec & l)
 {
     if (_imp->extra_label_indent)
     {
@@ -357,7 +357,7 @@ DepSpecPrettyPrinter::visit_leaf(const LabelsDepSpec<URILabelVisitorTypes> & l)
 }
 
 void
-DepSpecPrettyPrinter::visit_leaf(const DependencyLabelDepSpec & l)
+DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec & l)
 {
     if (_imp->extra_label_indent)
     {

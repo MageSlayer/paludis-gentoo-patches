@@ -305,7 +305,7 @@ namespace
         {
         }
 
-        void visit_leaf(const DependencyLabelDepSpec &)
+        void visit_leaf(const DependencyLabelsDepSpec &)
         {
         }
     };

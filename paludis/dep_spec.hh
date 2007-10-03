@@ -502,7 +502,10 @@ namespace paludis
      * A LabelsDepSpec represents a labels entry using a particular visitor
      * types class.
      *
-     * \ingroup grpdepspecs
+     * \see DependencyLabelsDepSpec
+     * \see URILabelsDepSpec
+     * \since 0.26
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     template <typename SpecTree_>

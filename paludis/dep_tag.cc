@@ -232,12 +232,12 @@ namespace
         }
 
         void
-        visit_leaf(const URILabelDepSpec &)
+        visit_leaf(const URILabelsDepSpec &)
         {
         }
 
         void
-        visit_leaf(const DependencyLabelDepSpec & l)
+        visit_leaf(const DependencyLabelsDepSpec & l)
         {
             std::copy(indirect_iterator(l.begin()), indirect_iterator(l.end()),
                     std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));

@@ -41,8 +41,8 @@ namespace paludis
             TreeLeaf<GenericSpecTree, LicenseDepSpec>,
             TreeLeaf<GenericSpecTree, PackageDepSpec>,
             TreeLeaf<GenericSpecTree, BlockDepSpec>,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<URILabelVisitorTypes> >,
-            TreeLeaf<GenericSpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
+            TreeLeaf<GenericSpecTree, URILabelsDepSpec>,
+            TreeLeaf<GenericSpecTree, DependencyLabelsDepSpec>,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
             ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
@@ -56,8 +56,8 @@ namespace paludis
             LicenseDepSpec,
             PackageDepSpec,
             BlockDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
+            URILabelsDepSpec,
+            DependencyLabelsDepSpec
                 > Formatter;
     };
 
@@ -100,7 +100,7 @@ namespace paludis
         typedef Formatter<
             UseDepSpec,
             FetchableURIDepSpec,
-            LabelsDepSpec<URILabelVisitorTypes>
+            URILabelsDepSpec
                 > Formatter;
     };
 
@@ -205,7 +205,7 @@ namespace paludis
             DepSpec,
             TreeLeaf<DependencySpecTree, PackageDepSpec>,
             TreeLeaf<DependencySpecTree, BlockDepSpec>,
-            TreeLeaf<DependencySpecTree, LabelsDepSpec<DependencyLabelVisitorTypes> >,
+            TreeLeaf<DependencySpecTree, DependencyLabelsDepSpec>,
             ConstTreeSequence<DependencySpecTree, AllDepSpec>,
             ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
             ConstTreeSequence<DependencySpecTree, UseDepSpec>
@@ -215,7 +215,7 @@ namespace paludis
             UseDepSpec,
             PackageDepSpec,
             BlockDepSpec,
-            LabelsDepSpec<DependencyLabelVisitorTypes>
+            DependencyLabelsDepSpec
                 > Formatter;
     };
 

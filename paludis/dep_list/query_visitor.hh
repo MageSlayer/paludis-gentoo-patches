@@ -66,7 +66,7 @@ namespace paludis
 
             void visit_leaf(const BlockDepSpec &);
 
-            void visit_leaf(const DependencyLabelDepSpec &);
+            void visit_leaf(const DependencyLabelsDepSpec &);
 
             ///\}
 
