@@ -37,7 +37,6 @@ contrarius_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 contrarius_stage_options-sr.hh : contrarius_stage_options.sr $(top_srcdir)/misc/make_sr.bash
@@ -80,7 +79,6 @@ man_contrarius_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda

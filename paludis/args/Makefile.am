@@ -8,15 +8,20 @@ TESTS = \
 paludis_args_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/args/
 
 paludis_args_include_HEADERS = \
-	args.hh           \
-	args_error.hh     \
-	args_group.hh     \
-	args_handler.hh   \
-	args_option.hh    \
-	bad_argument.hh   \
-	args_visitor.hh   \
-	args_dumper.hh    \
-	man.hh
+	args.hh            \
+	args_error.hh      \
+	args_group.hh      \
+	args_handler.hh    \
+	args_option.hh     \
+	bad_argument.hh    \
+	args_visitor.hh    \
+	args_dumper.hh     \
+	man.hh             \
+	checks_arg.hh      \
+	debug_build_arg.hh \
+	deps_option_arg.hh \
+	log_level_arg.hh   \
+	do_help.hh
 
 libpaludisargs_la_SOURCES = \
 	args.cc \
@@ -26,7 +31,11 @@ libpaludisargs_la_SOURCES = \
 	args_option.cc \
 	bad_argument.cc \
 	args_visitor.cc \
-	args_dumper.cc
+	args_dumper.cc \
+	checks_arg.cc \
+	debug_build_arg.cc \
+	deps_option_arg.cc \
+	log_level_arg.cc
 
 libpaludisman_a_SOURCES = \
 	man.cc

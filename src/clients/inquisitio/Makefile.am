@@ -27,7 +27,6 @@ man_inquisitio_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludismanpagethings.la \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS)
@@ -50,7 +49,6 @@ inquisitio_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS)
 

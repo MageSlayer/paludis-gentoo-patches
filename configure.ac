@@ -1310,7 +1310,6 @@ AC_OUTPUT(
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
 	src/clients/qualudis/Makefile
-	src/common_args/Makefile
 	src/output/Makefile
 	test/Makefile
 	vim/Makefile

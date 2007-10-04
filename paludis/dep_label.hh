@@ -34,6 +34,8 @@
  * \section Examples
  *
  * - \ref example_dep_label.cc "example_dep_label.cc"
+ * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
+ * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
  */
 
 namespace paludis

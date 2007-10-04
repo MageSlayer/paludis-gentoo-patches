@@ -6,7 +6,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/qa-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <src/common_args/log_level_arg.hh>
+#include <paludis/args/log_level_arg.hh>
 
 class QualudisCommandLine :
     public paludis::args::ArgsHandler,

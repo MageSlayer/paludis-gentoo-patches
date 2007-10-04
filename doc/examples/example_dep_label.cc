@@ -15,6 +15,7 @@
  */
 
 #include <paludis/paludis.hh>
+#include "example_command_line.hh"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -23,6 +24,8 @@
 #include <map>
 
 using namespace paludis;
+using namespace examples;
+
 using std::cout;
 using std::endl;
 using std::setw;
@@ -142,45 +145,76 @@ namespace
     };
 }
 
-int main(int, char *[])
+int main(int argc, char * argv[])
 {
-    /* We start with an Environment. */
-    tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(""));
-
-    /* Fetch package IDs for all installed packages. */
-    tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                query::SupportsAction<InstalledAction>(),
-                qo_whatever));
-
-    /* Store a map from distfile name to whether it is fetch restricted. */
-    ResultsMap results;
-
-    /* For each ID: */
-    for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    try
     {
-        /* If we don't have a src_uri key, skip this package. All PackageID
-         * _key() functions can potentially return zero pointers, so checking is
-         * essential. */
-        if (! (*i)->src_uri_key())
-            continue;
+        CommandLine::get_instance()->run(argc, argv,
+                "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
 
-        /* We need to know whether the default label for this package's src_uri
-         * is restricted. */
-        IsLabelRestrictedVisitor is_initial_label_restricted(false);
-        (*i)->src_uri_key()->initial_label()->accept(is_initial_label_restricted);
+        /* We start with an Environment, respecting the user's '--environment' choice. */
+        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+                    CommandLine::get_instance()->a_environment.argument()));
 
-        /* Create a visitor that will collect distfiles, and do the collecting. */
-        DistfilesCollector collector(results, is_initial_label_restricted.result);
-        (*i)->src_uri_key()->value()->accept(collector);
+        /* Fetch package IDs for all installed packages. */
+        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+                    query::SupportsAction<InstalledAction>(),
+                    qo_whatever));
+
+        /* Store a map from distfile name to whether it is fetch restricted. */
+        ResultsMap results;
+
+        /* For each ID: */
+        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            /* If we don't have a src_uri key, skip this package. All PackageID
+             * _key() functions can potentially return zero pointers, so checking is
+             * essential. */
+            if (! (*i)->src_uri_key())
+                continue;
+
+            /* We need to know whether the default label for this package's src_uri
+             * is restricted. */
+            IsLabelRestrictedVisitor is_initial_label_restricted(false);
+            (*i)->src_uri_key()->initial_label()->accept(is_initial_label_restricted);
+
+            /* Create a visitor that will collect distfiles, and do the collecting. */
+            DistfilesCollector collector(results, is_initial_label_restricted.result);
+            (*i)->src_uri_key()->value()->accept(collector);
+        }
+
+        /* Display summary of results */
+        cout << left << setw(59) << "Distfile Name" << "| " << "Fetch Restricted?" << endl;
+        cout << std::string(59, '-') << "+" << std::string(18, '-') << endl;
+        for (ResultsMap::const_iterator r(results.begin()), r_end(results.end()) ;
+                r != r_end ; ++r)
+            cout << left << setw(59) << r->first << "| " << (r->second ? "yes" : "no") << endl;
     }
-
-    /* Display summary of results */
-    cout << left << setw(59) << "Distfile Name" << "| " << "Fetch Restricted?" << endl;
-    cout << std::string(59, '-') << "+" << std::string(18, '-') << endl;
-    for (ResultsMap::const_iterator r(results.begin()), r_end(results.end()) ;
-            r != r_end ; ++r)
-        cout << left << setw(59) << r->first << "| " << (r->second ? "yes" : "no") << endl;
+    catch (const Exception & e)
+    {
+        /* Paludis exceptions can provide a handy human-readable backtrace and
+         * an explanation message. Where possible, these should be displayed. */
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")" << endl;
+        return EXIT_FAILURE;
+    }
+    catch (const std::exception & e)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * Unknown exception type. Ouch..." << endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }

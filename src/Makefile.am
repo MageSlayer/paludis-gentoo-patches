@@ -1,4 +1,4 @@
-SUBDIRS = output common_args clients
+SUBDIRS = output clients
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in

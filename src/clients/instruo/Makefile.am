@@ -29,7 +29,6 @@ man_instruo_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludismanpagethings.la \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -44,7 +43,6 @@ instruo_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \

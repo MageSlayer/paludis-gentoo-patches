@@ -31,7 +31,6 @@ man_paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisman.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludismanpagethings.la \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -50,22 +49,6 @@ paludis_SOURCES = \
 	report.hh            report.cc            \
 	paludis.cc
 
-if MONOLITHIC
-
-paludis_LDADD = \
-	$(top_builddir)/paludis/tasks/libpaludistasks.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
-	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
-	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
-	$(DYNAMIC_LD_LIBS)
-
-else
-
 paludis_LDADD = \
 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -74,10 +57,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
-
-endif
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

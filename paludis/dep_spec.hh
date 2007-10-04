@@ -37,9 +37,15 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
- * Declarations for the DepSpec classes.
+ * Declarations for dependency spec classes.
  *
- * \ingroup grpdepspecs
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
+ * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
+ * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
  */
 
 namespace paludis
@@ -47,7 +53,7 @@ namespace paludis
     /**
      * Base class for a dependency spec.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
@@ -88,7 +94,7 @@ namespace paludis
     /**
      * Represents a "|| ( )" dependency block.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AnyDepSpec :
@@ -109,7 +115,7 @@ namespace paludis
      * Represents a ( first second third ) or top level group of dependency
      * specs.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AllDepSpec :
@@ -129,7 +135,7 @@ namespace paludis
     /**
      * Represents a use? ( ) dependency spec.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UseDepSpec :
@@ -163,10 +169,9 @@ namespace paludis
     };
 
     /**
-     * A StringDepSpec represents a non-composite dep spec with an associated
-     * piece of text.
+     * A StringDepSpec represents a dep spec with an associated piece of text.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE StringDepSpec :
@@ -200,7 +205,7 @@ namespace paludis
     /**
      * A selection of USE flag requirements.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UseRequirements :
@@ -238,6 +243,10 @@ namespace paludis
             /// What state is desired for a particular use flag?
             UseFlagState state(const UseFlagName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /// Are we empty?
+            bool empty() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -245,7 +254,7 @@ namespace paludis
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PackageDepSpec :
@@ -296,17 +305,17 @@ namespace paludis
             ///\}
 
             /**
-             * Fetch the package name.
+             * Fetch the package name (may be a zero pointer).
              */
             tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
 
             /**
-             * Fetch the package name part, if wildcarded.
+             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
              */
             tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
 
             /**
-             * Fetch the category name part, if wildcarded.
+             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
              */
             tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
 
@@ -368,7 +377,7 @@ namespace paludis
     /**
      * A PlainTextDepSpec represents a plain text entry.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PlainTextDepSpec :
@@ -388,7 +397,8 @@ namespace paludis
     /**
      * A LicenseDepSpec represents a license entry.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE LicenseDepSpec :
@@ -408,7 +418,12 @@ namespace paludis
     /**
      * A FetchableURIDepSpec represents a fetchable URI part.
      *
-     * \ingroup grpdepspecs
+     * It differs from a SimpleURIDepSpec in that it supports arrow notation. Arrows
+     * are used by exheres to allow downloading to a filename other than that used by
+     * the original URL.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FetchableURIDepSpec :
@@ -422,8 +437,22 @@ namespace paludis
 
             ///\}
 
+            /**
+             * The original URL (that is, the text to the left of the arrow, if present,
+             * or the entire text otherwise).
+             */
             std::string original_url() const;
+
+            /**
+             * The renamed URL filename (that is, the text to the right of the arrow,
+             * if present, or an empty string otherwise).
+             */
             std::string renamed_url_suffix() const;
+
+            /**
+             * The filename (that is, the renamed URL suffix, if present, or the text
+             * after the final / in the original URL otherwise).
+             */
             std::string filename() const;
 
             virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -432,7 +461,10 @@ namespace paludis
     /**
      * A SimpleURIDepSpec represents a simple URI part.
      *
-     * \ingroup grpdepspecs
+     * Unlike FetchableURIDepSpec, arrow notation is not supported.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SimpleURIDepSpec :
@@ -452,8 +484,8 @@ namespace paludis
     /**
      * Thrown if an invalid package dep spec specification is encountered.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpdepspecs
+     * \ingroup g_exceptions
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PackageDepSpecError :
@@ -473,7 +505,7 @@ namespace paludis
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE BlockDepSpec :

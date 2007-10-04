@@ -96,7 +96,7 @@ namespace paludis
                  * to the command line arguments. The fifth argument is used as
                  * a prefix to export our command line via the environment.
                  */
-                void run(const int, const char * const * const,
+                virtual void run(const int, const char * const * const,
                         const std::string & client, const std::string & env_var,
                         const std::string & env_prefix);
 

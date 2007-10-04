@@ -14,10 +14,13 @@
  */
 
 #include <paludis/paludis.hh>
+#include "example_command_line.hh"
 #include <iostream>
 #include <iomanip>
 
 using namespace paludis;
+using namespace examples;
+
 using std::cout;
 using std::endl;
 using std::left;
@@ -62,47 +65,77 @@ namespace
     };
 }
 
-int main(int, char *[])
+int main(int argc, char * argv[])
 {
     int exit_status(0);
 
-    /* We start with an Environment. */
-    tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(""));
-
-    /* Fetch package IDs for installed 'sys-apps/paludis'. */
-    tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)) &
-                query::SupportsAction<InstalledAction>(),
-                qo_order_by_version));
-
-    /* For each ID: */
-    for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    try
     {
-        /* Do we have a contents key? PackageID _key() methods can return
-         * a zero pointer. */
-        if (! (*i)->contents_key())
-        {
-            cout << "ID '" << **i << "' does not provide a contents key." << endl;
-        }
-        else
-        {
-            cout << "ID '" << **i << "' provides contents key:" << endl;
+        CommandLine::get_instance()->run(argc, argv,
+                "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
 
-            /* Visit the contents key's value's entries with our visitor. We use
-             * indirect_iterator because value()->begin() and ->end() return
-             * iterators to tr1::shared_ptr<>s rather than raw objects. */
-            ContentsPrinter p;
-            std::for_each(
-                    indirect_iterator((*i)->contents_key()->value()->begin()),
-                    indirect_iterator((*i)->contents_key()->value()->end()),
-                    accept_visitor(p));
-        }
+        /* We start with an Environment, respecting the user's '--environment' choice. */
+        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+                    CommandLine::get_instance()->a_environment.argument()));
 
+        /* Fetch package IDs for installed 'sys-apps/paludis'. */
+        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+                    query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)) &
+                    query::SupportsAction<InstalledAction>(),
+                    qo_order_by_version));
+
+        /* For each ID: */
+        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            /* Do we have a contents key? PackageID _key() methods can return
+             * a zero pointer. */
+            if (! (*i)->contents_key())
+            {
+                cout << "ID '" << **i << "' does not provide a contents key." << endl;
+            }
+            else
+            {
+                cout << "ID '" << **i << "' provides contents key:" << endl;
+
+                /* Visit the contents key's value's entries with our visitor. We use
+                 * indirect_iterator because value()->begin() and ->end() return
+                 * iterators to tr1::shared_ptr<>s rather than raw objects. */
+                ContentsPrinter p;
+                std::for_each(
+                        indirect_iterator((*i)->contents_key()->value()->begin()),
+                        indirect_iterator((*i)->contents_key()->value()->end()),
+                        accept_visitor(p));
+            }
+
+            cout << endl;
+        }
+    }
+    catch (const Exception & e)
+    {
+        /* Paludis exceptions can provide a handy human-readable backtrace and
+         * an explanation message. Where possible, these should be displayed. */
         cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")" << endl;
+        return EXIT_FAILURE;
+    }
+    catch (const std::exception & e)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * Unknown exception type. Ouch..." << endl;
+        return EXIT_FAILURE;
     }
 
     return exit_status;
 }
-
 

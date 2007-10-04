@@ -25,7 +25,6 @@ qualudis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
@@ -63,7 +62,6 @@ man_qualudis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludismanpagethings.la \
 	$(top_builddir)/src/output/liboutput.a \
-	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda

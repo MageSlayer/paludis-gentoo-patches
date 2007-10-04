@@ -41,7 +41,7 @@
 
 #include "qualudis_command_line.hh"
 #include <src/output/colour.hh>
-#include <src/common_args/do_help.hh>
+#include <paludis/args/do_help.hh>
 
 #include "config.h"
 

@@ -34,12 +34,6 @@
 #include <list>
 #include <map>
 
-/** \file
- * Implementation for dep_spec.hh things.
- *
- * \ingroup grpdepspecs
- */
-
 using namespace paludis;
 
 #include <paludis/dep_spec-se.cc>
@@ -847,6 +841,12 @@ UseRequirements::ConstIterator
 UseRequirements::end() const
 {
     return ConstIterator(_imp->reqs.end());
+}
+
+bool
+UseRequirements::empty() const
+{
+    return _imp->reqs.empty();
 }
 
 UseRequirements::ConstIterator

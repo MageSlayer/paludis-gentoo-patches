@@ -29,7 +29,7 @@
 #include <paludis/environments/environment_maker.hh>
 
 #include <src/output/colour.hh>
-#include <src/common_args/do_help.hh>
+#include <paludis/args/do_help.hh>
 
 using namespace paludis;
 using std::cout;

@@ -18,7 +18,7 @@
  */
 
 #include <output/colour.hh>
-#include <src/common_args/do_help.hh>
+#include <paludis/args/do_help.hh>
 #include "command_line.hh"
 #include <paludis/about.hh>
 #include <paludis/action.hh>

@@ -13,9 +13,19 @@ noinst_PROGRAMS = \
 	example_about \
 	example_action \
 	example_contents \
-	example_dep_label
+	example_dep_label \
+	example_dep_spec
 
 EXTRA_DIST = $(noinst_SCRIPTS)
+
+noinst_LIBRARIES = libpaludisexamples.a
+
+libpaludisexamples_a_SOURCES = \
+	example_command_line.hh \
+	example_command_line.cc
+
+libpaludisexamples_a_LIBADD = \
+	$(top_builddir)/paludis/args/libpaludisargs.la
 
 example_about_SOURCES = example_about.cc
 example_about_LDFLAGS = \
@@ -23,17 +33,30 @@ example_about_LDFLAGS = \
 
 example_action_SOURCES = example_action.cc
 example_action_LDFLAGS = \
+	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
 example_contents_SOURCES = example_contents.cc
 example_contents_LDFLAGS = \
+	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
 example_dep_label_SOURCES = example_dep_label.cc
 example_dep_label_LDFLAGS = \
+	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+
+example_dep_spec_SOURCES = example_dep_spec.cc
+example_dep_spec_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la
 
 built-sources : $(BUILT_SOURCES)

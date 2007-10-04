@@ -17,9 +17,8 @@ make_enum_PackageDepSpecParseMode()
          * How to parse a PackageDepSpec string.
          *
          * \see PackageDepSpec
-         * \ingroup grpdepspecs
+         * \ingroup g_dep_spec
          */
 END
 }
-
 

@@ -14,94 +14,128 @@
  */
 
 #include <paludis/paludis.hh>
+#include "example_command_line.hh"
 #include <iostream>
 
 using namespace paludis;
+using namespace examples;
+
 using std::cout;
 using std::endl;
 
-int main(int, char *[])
+int main(int argc, char * argv[])
 {
     int exit_status(0);
 
-    /* We start with an Environment. */
-    tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(""));
-
-    /* Fetch package IDs for 'sys-apps/paludis'. */
-    tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
-                query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)),
-                qo_order_by_version));
-
-    /* For each ID: */
-    for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    try
     {
-        /* Do we support a FetchAction? We find out by creating a
-         * SupportsActionTest<FetchAction> object, and querying via the
-         * PackageID::supports_action method. */
-        SupportsActionTest<FetchAction> supports_fetch_action;
-        if (! (*i)->supports_action(supports_fetch_action))
-        {
-            cout << "ID '" << **i << "' does not support the fetch action." << endl;
-        }
-        else
-        {
-            cout << "ID '" << **i << "' supports the fetch action, trying to fetch:" << endl;
+        CommandLine::get_instance()->run(argc, argv,
+                "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
 
-            /* Carry out a FetchAction. We need to specify various options when
-             * creating a FetchAction, controlling whether safe resume is used
-             * and whether unneeded (e.g. due to disabled USE flags) source
-             * files should still be fetched. */
-            FetchAction fetch_action(FetchActionOptions::create()
-                    .fetch_unneeded(false)
-                    .safe_resume(true)
-                    );
-            try
+        /* We start with an Environment, respecting the user's '--environment' choice. */
+        tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(
+                    CommandLine::get_instance()->a_environment.argument()));
+
+        /* Fetch package IDs for 'sys-apps/paludis'. */
+        tr1::shared_ptr<const PackageIDSequence> ids(env->package_database()->query(
+                    query::Matches(PackageDepSpec("sys-apps/paludis", pds_pm_permissive)),
+                    qo_order_by_version));
+
+        /* For each ID: */
+        for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+        {
+            /* Do we support a FetchAction? We find out by creating a
+             * SupportsActionTest<FetchAction> object, and querying via the
+             * PackageID::supports_action method. */
+            SupportsActionTest<FetchAction> supports_fetch_action;
+            if (! (*i)->supports_action(supports_fetch_action))
             {
-                (*i)->perform_action(fetch_action);
+                cout << "ID '" << **i << "' does not support the fetch action." << endl;
             }
-            catch (const FetchActionError & e)
+            else
             {
-                exit_status |= 1;
+                cout << "ID '" << **i << "' supports the fetch action, trying to fetch:" << endl;
 
-                cout << "Caught FetchActionError, with the following details:" << endl;
-
-                /* We might get detailed information about individual fetch
-                 * failures.  */
-                for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
-                        f != f_end ; ++f)
+                /* Carry out a FetchAction. We need to specify various options when
+                 * creating a FetchAction, controlling whether safe resume is used
+                 * and whether unneeded (e.g. due to disabled USE flags) source
+                 * files should still be fetched. */
+                FetchAction fetch_action(FetchActionOptions::create()
+                        .fetch_unneeded(false)
+                        .safe_resume(true)
+                        );
+                try
                 {
-                    cout << "  * File '" << f->target_file << "': ";
-
-                    bool need_comma(false);
-                    if (f->requires_manual_fetching)
-                    {
-                        cout << "requires manual fetching";
-                        need_comma = true;
-                    }
-
-                    if (f->failed_automatic_fetching)
-                    {
-                        if (need_comma)
-                            cout << ", ";
-                        cout << "failed automatic fetching";
-                        need_comma = true;
-                    }
-
-                    if (! f->failed_integrity_checks.empty())
-                    {
-                        if (need_comma)
-                            cout << ", ";
-                        cout << "failed integrity checks: " << f->failed_integrity_checks;
-                        need_comma = true;
-                    }
+                    (*i)->perform_action(fetch_action);
                 }
+                catch (const FetchActionError & e)
+                {
+                    exit_status |= 1;
 
-                cout << endl;
+                    cout << "Caught FetchActionError, with the following details:" << endl;
+
+                    /* We might get detailed information about individual fetch
+                     * failures.  */
+                    for (Sequence<FetchActionFailure>::ConstIterator f(e.failures()->begin()), f_end(e.failures()->end()) ;
+                            f != f_end ; ++f)
+                    {
+                        cout << "  * File '" << f->target_file << "': ";
+
+                        bool need_comma(false);
+                        if (f->requires_manual_fetching)
+                        {
+                            cout << "requires manual fetching";
+                            need_comma = true;
+                        }
+
+                        if (f->failed_automatic_fetching)
+                        {
+                            if (need_comma)
+                                cout << ", ";
+                            cout << "failed automatic fetching";
+                            need_comma = true;
+                        }
+
+                        if (! f->failed_integrity_checks.empty())
+                        {
+                            if (need_comma)
+                                cout << ", ";
+                            cout << "failed integrity checks: " << f->failed_integrity_checks;
+                            need_comma = true;
+                        }
+                    }
+
+                    cout << endl;
+                }
             }
-        }
 
+            cout << endl;
+        }
+    }
+    catch (const Exception & e)
+    {
+        /* Paludis exceptions can provide a handy human-readable backtrace and
+         * an explanation message. Where possible, these should be displayed. */
         cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")" << endl;
+        return EXIT_FAILURE;
+    }
+    catch (const std::exception & e)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * Unknown exception type. Ouch..." << endl;
+        return EXIT_FAILURE;
     }
 
     return exit_status;

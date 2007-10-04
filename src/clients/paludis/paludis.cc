@@ -31,7 +31,7 @@
 #include "sync.hh"
 #include "uninstall.hh"
 
-#include <src/common_args/do_help.hh>
+#include <paludis/args/do_help.hh>
 #include <src/output/colour.hh>
 
 #include <paludis/paludis.hh>

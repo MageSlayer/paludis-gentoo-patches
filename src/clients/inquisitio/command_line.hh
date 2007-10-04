@@ -22,7 +22,7 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <src/common_args/log_level_arg.hh>
+#include <paludis/args/log_level_arg.hh>
 
 /** \file
  * Declarations for the CommandLine class.
