@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_TREE_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_TREE_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/dep_tree.hh .
+ *
+ * \ingroup g_dep_spec
+ */
+
 namespace paludis
 {
     struct GenericSpecTree;

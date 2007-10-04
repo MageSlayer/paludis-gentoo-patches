@@ -24,12 +24,30 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/visitor.hh>
 
+/** \file
+ * Declarations for dependency spec trees.
+ *
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
+ * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
+ * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
+ */
+
 namespace paludis
 {
     /**
-     * A generic DepSpec heirarchy.
+     * A generic dep tree heirarchy.
      *
-     * \ingroup grpdepspecs
+     * Heirarchies conforming to this type will likely not ever be created.
+     * However, the heirarchy is useful for creating generic visitors that can
+     * handle any of the subheirarchies.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct GenericSpecTree :
         VisitorTypes<
@@ -48,6 +66,14 @@ namespace paludis
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * GenericSpecTree.
+         *
+         * \since 0.26
+         * \ingroup g_dep_spec
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             PlainTextDepSpec,
@@ -62,9 +88,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for licenses.
+     * A heirarchy for licence specifications.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct LicenseSpecTree :
         VisitorTypes<
@@ -76,6 +104,14 @@ namespace paludis
             ConstTreeSequence<LicenseSpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * LicenseSpecTree.
+         *
+         * \since 0.26
+         * \ingroup g_dep_spec
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             LicenseDepSpec
@@ -83,9 +119,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for fetchable URIs.
+     * A heirarchy for fetchable URI heirarchies.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct FetchableURISpecTree :
         VisitorTypes<
@@ -97,6 +135,14 @@ namespace paludis
             ConstTreeSequence<FetchableURISpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * FetchableURIDepSpec.
+         *
+         * \since 0.26
+         * \ingroup g_dep_spec
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             FetchableURIDepSpec,
@@ -105,9 +151,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for simple URIs.
+     * A heirarchy for simple URI heirarchies.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct SimpleURISpecTree :
         VisitorTypes<
@@ -118,6 +166,14 @@ namespace paludis
             ConstTreeSequence<SimpleURISpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * SimpleURISpecTree.
+         *
+         * \since 0.26
+         * \ingroup g_dep_spec
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             SimpleURIDepSpec
@@ -125,9 +181,15 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things that can be flattened.
+     * A heirarchy of things that can be flattened.
      *
-     * \ingroup grpdepspecs
+     * This heirarchy is not constructed; it is only used for declaring
+     * certain visitors (e.g. DepSpecFlattener).
+     *
+     * \see DepSpecFlattener
+     * \since 0.26
+     * \ingroup g_dep_spec
+     * \nosubgrouping
      */
     struct FlattenableSpecTree :
         VisitorTypes<
@@ -143,6 +205,14 @@ namespace paludis
             ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * FlattenableSpecTree.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             PlainTextDepSpec,
@@ -155,9 +225,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for provides.
+     * A heirarchy of provided packages.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct ProvideSpecTree :
         VisitorTypes<
@@ -168,6 +240,14 @@ namespace paludis
             ConstTreeSequence<ProvideSpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * ProvideSpecTree.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             PackageDepSpec
@@ -175,9 +255,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for restricts.
+     * A heirarchy of restrict keywords.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct RestrictSpecTree :
         VisitorTypes<
@@ -188,6 +270,14 @@ namespace paludis
             ConstTreeSequence<RestrictSpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * RestrictSpecTree.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             PlainTextDepSpec
@@ -195,9 +285,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for dependencies.
+     * A heirarchy for dependencies.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct DependencySpecTree :
         VisitorTypes<
@@ -211,6 +303,14 @@ namespace paludis
             ConstTreeSequence<DependencySpecTree, UseDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * DependencySpecTree.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         typedef Formatter<
             UseDepSpec,
             PackageDepSpec,
@@ -220,9 +320,11 @@ namespace paludis
     };
 
     /**
-     * A DepSpec heirarchy containing things meaningful for sets.
+     * A heirarchy for things that can be found in package sets.
      *
-     * \ingroup grpdepspecs
+     * \ingroup g_dep_spec
+     * \since 0.26
+     * \nosubgrouping
      */
     struct SetSpecTree :
         VisitorTypes<
@@ -232,6 +334,14 @@ namespace paludis
             ConstTreeSequence<SetSpecTree, AllDepSpec>
         >
     {
+        /**
+         * A formatter that can handle any formattable type found in a
+         * SetSpecTree.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         typedef Formatter<
             PackageDepSpec
                 > Formatter;

@@ -12,6 +12,9 @@
  * This example demonstrates how to handle dependency labels. It produces a
  * summary of distfiles for all installed packages, together with a notice of
  * whether that distfile is fetch-restricted.
+ *
+ * See \ref example_dep_tree.cc "example_dep_tree.cc" for trees.
+ * See \ref example_dep_spec.cc "example_dep_spec.cc" for specs.
  */
 
 #include <paludis/paludis.hh>
