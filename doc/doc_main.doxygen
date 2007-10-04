@@ -53,6 +53,7 @@
  * - \ref example_dep_label.cc "example_dep_label.cc"
  * - \ref example_dep_spec.cc "example_dep_spec.cc"
  * - \ref example_dep_tree.cc "example_dep_tree.cc"
+ * - \ref example_dep_spec_flattener.cc "example_dep_spec_flattener.cc"
  */
 
 /** \defgroup g_exceptions Exceptions
@@ -61,3 +62,4 @@
  *
  * \ingroup g_paludis
  */
+

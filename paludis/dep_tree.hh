@@ -181,50 +181,6 @@ namespace paludis
     };
 
     /**
-     * A heirarchy of things that can be flattened.
-     *
-     * This heirarchy is not constructed; it is only used for declaring
-     * certain visitors (e.g. DepSpecFlattener).
-     *
-     * \see DepSpecFlattener
-     * \since 0.26
-     * \ingroup g_dep_spec
-     * \nosubgrouping
-     */
-    struct FlattenableSpecTree :
-        VisitorTypes<
-            FlattenableSpecTree,
-            DepSpec,
-            TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>,
-            TreeLeaf<FlattenableSpecTree, SimpleURIDepSpec>,
-            TreeLeaf<FlattenableSpecTree, FetchableURIDepSpec>,
-            TreeLeaf<FlattenableSpecTree, PackageDepSpec>,
-            TreeLeaf<FlattenableSpecTree, BlockDepSpec>,
-            TreeLeaf<FlattenableSpecTree, LicenseDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, AllDepSpec>,
-            ConstTreeSequence<FlattenableSpecTree, UseDepSpec>
-        >
-    {
-        /**
-         * A formatter that can handle any formattable type found in a
-         * FlattenableSpecTree.
-         *
-         * \ingroup g_dep_spec
-         * \since 0.26
-         * \nosubgrouping
-         */
-        typedef Formatter<
-            UseDepSpec,
-            PlainTextDepSpec,
-            SimpleURIDepSpec,
-            FetchableURIDepSpec,
-            LicenseDepSpec,
-            PackageDepSpec,
-            BlockDepSpec
-                > Formatter;
-    };
-
-    /**
      * A heirarchy of provided packages.
      *
      * \ingroup g_dep_spec

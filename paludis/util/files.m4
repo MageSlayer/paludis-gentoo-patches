@@ -57,4 +57,5 @@ add(`util',                              `hh')
 add(`validated',                         `hh', `fwd', `test')
 add(`virtual_constructor',               `hh', `impl', `test')
 add(`visitor',                           `hh', `impl', `fwd', `test')
+add(`visitor_cast',                      `hh', `test')
 

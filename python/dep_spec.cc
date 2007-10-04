@@ -791,13 +791,6 @@ struct NiceClassNames<SimpleURISpecTree>
 const char * NiceClassNames<SimpleURISpecTree>::name = "SimpleURISpecTree";
 
 template<>
-struct NiceClassNames<FlattenableSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<FlattenableSpecTree>::name = "FlattenableSpecTree";
-
-template<>
 struct NiceClassNames<ProvideSpecTree>
 {
         static const char * name;
@@ -1269,7 +1262,6 @@ void expose_dep_spec()
     register_tree_to_python<SimpleURISpecTree>();
     register_tree_to_python<LicenseSpecTree>();
     register_tree_to_python<SetSpecTree>();
-    register_tree_to_python<FlattenableSpecTree>();
 
     RegisterSpecTreeSPTRFromPython<DependencySpecTree>();
     RegisterSpecTreeSPTRFromPython<ProvideSpecTree>();
@@ -1278,7 +1270,6 @@ void expose_dep_spec()
     RegisterSpecTreeSPTRFromPython<SimpleURISpecTree>();
     RegisterSpecTreeSPTRFromPython<LicenseSpecTree>();
     RegisterSpecTreeSPTRFromPython<SetSpecTree>();
-    RegisterSpecTreeSPTRFromPython<FlattenableSpecTree>();
 
     /**
      * DepSpec

@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv,
-                "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
+                "example_dep_label", "EXAMPLE_DEP_LABEL_OPTIONS", "EXAMPLE_DEP_LABEL_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(

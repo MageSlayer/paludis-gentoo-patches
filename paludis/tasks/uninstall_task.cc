@@ -82,7 +82,7 @@ namespace paludis
         UninstallActionOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        std::list<tr1::shared_ptr<PackageDepSpec> > targets;
+        std::list<tr1::shared_ptr<const PackageDepSpec> > targets;
 
         bool pretend;
         bool preserve_world;
@@ -175,11 +175,9 @@ UninstallTask::add_target(const std::string & target)
                     throw MultipleSetTargetsSpecified();
 
                 _imp->had_set_targets = true;
-                DepSpecFlattener f(_imp->env, tr1::shared_ptr<const PackageID>());
+                DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env, tr1::shared_ptr<const PackageID>());
                 spec->accept(f);
-                for (DepSpecFlattener::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
-                    _imp->targets.push_back(tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    stringify((*i)->text()), pds_pm_permissive)));
+                std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
             }
             else
             {
@@ -242,7 +240,7 @@ UninstallTask::execute()
     if (_imp->unused)
         list.add_unused();
     else
-        for (std::list<tr1::shared_ptr<PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
+        for (std::list<tr1::shared_ptr<const PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");

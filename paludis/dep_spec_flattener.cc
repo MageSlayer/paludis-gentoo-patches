@@ -17,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_tree.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -26,29 +27,18 @@
 #include <list>
 #include <algorithm>
 
-/** \file
- * Implementation of dep_spec_flattener.hh.
- *
- * \ingroup grpdepspecflattener
- */
-
 using namespace paludis;
 
 namespace paludis
 {
-    /**
-     * Implementation data for DepSpecFlattener.
-     *
-     * \ingroup grpdepspecflattener
-     */
-    template<>
-    struct Implementation<DepSpecFlattener>
+    template <>
+    template <typename Heirarchy_, typename Item_>
+    struct Implementation<DepSpecFlattener<Heirarchy_, Item_> >
     {
         const Environment * const env;
-
         const tr1::shared_ptr<const PackageID> pkg;
 
-        std::list<tr1::shared_ptr<const StringDepSpec > > specs;
+        std::list<tr1::shared_ptr<const Item_> > specs;
 
         Implementation(const Environment * const e,
                 const tr1::shared_ptr<const PackageID> p) :
@@ -59,65 +49,53 @@ namespace paludis
     };
 }
 
-DepSpecFlattener::DepSpecFlattener(
+template <typename Heirarchy_, typename Item_>
+DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         const Environment * const env,
         const tr1::shared_ptr<const PackageID> & pkg) :
-    PrivateImplementationPattern<DepSpecFlattener>(new Implementation<DepSpecFlattener>(
-                env, pkg))
+    PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(
+            new Implementation<DepSpecFlattener<Heirarchy_, Item_> >(env, pkg))
 {
 }
 
-DepSpecFlattener::~DepSpecFlattener()
+template <typename Heirarchy_, typename Item_>
+DepSpecFlattener<Heirarchy_, Item_>::~DepSpecFlattener()
 {
 }
 
-DepSpecFlattener::ConstIterator
-DepSpecFlattener::begin() const
+template <typename Heirarchy_, typename Item_>
+typename DepSpecFlattener<Heirarchy_, Item_>::ConstIterator
+DepSpecFlattener<Heirarchy_, Item_>::begin() const
 {
     return ConstIterator(_imp->specs.begin());
 }
 
-DepSpecFlattener::ConstIterator
-DepSpecFlattener::end() const
+template <typename Heirarchy_, typename Item_>
+typename DepSpecFlattener<Heirarchy_, Item_>::ConstIterator
+DepSpecFlattener<Heirarchy_, Item_>::end() const
 {
     return ConstIterator(_imp->specs.end());
 }
 
-void DepSpecFlattener::visit_sequence(const UseDepSpec & u,
-        FlattenableSpecTree::ConstSequenceIterator cur,
-        FlattenableSpecTree::ConstSequenceIterator e)
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit_sequence(const UseDepSpec & u,
+        typename Heirarchy_::ConstSequenceIterator cur,
+        typename Heirarchy_::ConstSequenceIterator e)
 {
     if (_imp->env->query_use(u.flag(), *_imp->pkg) ^ u.inverse())
         std::for_each(cur, e, accept_visitor(*this));
 }
 
-void DepSpecFlattener::visit_leaf(const PlainTextDepSpec & p)
+template <typename Heirarchy_, typename Item_>
+void
+DepSpecFlattener<Heirarchy_, Item_>::visit_leaf(const Item_ & p)
 {
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
+    _imp->specs.push_back(tr1::static_pointer_cast<const Item_>(p.clone()));
 }
 
-void DepSpecFlattener::visit_leaf(const PackageDepSpec & p)
-{
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
-}
-
-void DepSpecFlattener::visit_leaf(const BlockDepSpec & p)
-{
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
-}
-
-void DepSpecFlattener::visit_leaf(const SimpleURIDepSpec & p)
-{
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
-}
-
-void DepSpecFlattener::visit_leaf(const LicenseDepSpec & p)
-{
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
-}
-
-void DepSpecFlattener::visit_leaf(const FetchableURIDepSpec & p)
-{
-    _imp->specs.push_back(tr1::static_pointer_cast<const StringDepSpec>(p.clone()));
-}
+template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
+template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
+template class DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>;
+template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 

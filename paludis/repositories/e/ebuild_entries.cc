@@ -281,11 +281,11 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
     bool fetch_restrict(false);
     {
-        DepSpecFlattener restricts(_imp->params.environment, id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, id);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
-        for (DepSpecFlattener::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
+        for (DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
             if (id->eapi()->supported->ebuild_options->restrict_fetch->end() !=
                     std::find(id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
@@ -443,7 +443,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener restricts(_imp->params.environment, id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, id);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 
@@ -637,7 +637,7 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener restricts(_imp->params.environment, id);
+        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, id);
         if (id->restrict_key())
             id->restrict_key()->value()->accept(restricts);
 

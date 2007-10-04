@@ -20,20 +20,25 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
-#include <paludis/dep_spec.hh>
-#include <paludis/dep_tree.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/visitor.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for DepSpecFlattener.
  *
- * \ingroup grpdepspecflattener
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_spec_flattener.cc "example_dep_spec_flattener.cc"
  */
 
 namespace paludis
@@ -42,39 +47,41 @@ namespace paludis
      * Extract the enabled components of a dep heirarchy for a particular
      * package.
      *
-     * This is useful for picking out SRC_URI, PROVIDE etc components. It is
-     * <b>not</b> suitable for heirarchies that can contain || ( ) blocks.
+     * This template can be instantiated as:
      *
-     * \ingroup grpdepspecflattener
+     * - DepSpecFlattener<ProvideSpecTree, PlainTextDepSpec>
+     * - DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec>
+     * - DepSpecFlattener<SetSpecTree, PackageDepSpec>
+     * - DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>
+     *
+     * It is <b>not</b> suitable for heirarchies that can contain AnyDepSpec
+     * or any kind of label.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
      * \nosubgrouping
      */
+    template <typename Heirarchy_, typename Item_>
     class PALUDIS_VISIBLE DepSpecFlattener :
-        private InstantiationPolicy<DepSpecFlattener, instantiation_method::NonCopyableTag>,
-        public ConstVisitor<FlattenableSpecTree>,
-        public ConstVisitor<FlattenableSpecTree>::VisitConstSequence<DepSpecFlattener, AllDepSpec>,
-        private PrivateImplementationPattern<DepSpecFlattener>
+        private InstantiationPolicy<DepSpecFlattener<Heirarchy_, Item_>, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >,
+        public ConstVisitor<Heirarchy_>,
+        public ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>
     {
+        private:
+            using PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp;
+
         public:
             ///\name Visit methods
             ///{
 
-            using ConstVisitor<FlattenableSpecTree>::VisitConstSequence<DepSpecFlattener, AllDepSpec>::visit_sequence;
+            using ConstVisitor<Heirarchy_>::template VisitConstSequence<DepSpecFlattener<Heirarchy_, Item_>, AllDepSpec>::visit_sequence;
 
             void visit_sequence(const UseDepSpec &,
-                    FlattenableSpecTree::ConstSequenceIterator,
-                    FlattenableSpecTree::ConstSequenceIterator);
+                    typename Heirarchy_::ConstSequenceIterator,
+                    typename Heirarchy_::ConstSequenceIterator);
 
-            void visit_leaf(const PackageDepSpec &);
-
-            void visit_leaf(const PlainTextDepSpec &);
-
-            void visit_leaf(const BlockDepSpec &);
-
-            void visit_leaf(const FetchableURIDepSpec &);
-
-            void visit_leaf(const SimpleURIDepSpec &);
-
-            void visit_leaf(const LicenseDepSpec &);
+            void visit_leaf(const Item_ &);
 
             ///}
 
@@ -89,12 +96,12 @@ namespace paludis
             ///\}
 
             ///\name Iterate over our dep specs
-            ///{
+            ///\{
 
-            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const tr1::shared_ptr<const StringDepSpec> > ConstIterator;
+            typedef libwrapiter::ForwardIterator<DepSpecFlattener<Heirarchy_, Item_>,
+                    const tr1::shared_ptr<const Item_> > ConstIterator;
 
             ConstIterator begin() const;
-
             ConstIterator end() const;
 
             ///\}

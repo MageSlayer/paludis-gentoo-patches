@@ -53,17 +53,6 @@ template class TreeLeaf<SimpleURISpecTree, SimpleURIDepSpec>;
 template class ConstTreeSequence<SimpleURISpecTree, AllDepSpec>;
 template class ConstTreeSequence<SimpleURISpecTree, UseDepSpec>;
 
-template class ConstVisitor<FlattenableSpecTree>;
-template class ConstAcceptInterface<FlattenableSpecTree>;
-template class TreeLeaf<FlattenableSpecTree, PackageDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, BlockDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, PlainTextDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, SimpleURIDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, FetchableURIDepSpec>;
-template class TreeLeaf<FlattenableSpecTree, LicenseDepSpec>;
-template class ConstTreeSequence<FlattenableSpecTree, AllDepSpec>;
-template class ConstTreeSequence<FlattenableSpecTree, UseDepSpec>;
-
 template class ConstVisitor<ProvideSpecTree>;
 template class ConstAcceptInterface<ProvideSpecTree>;
 template class TreeLeaf<ProvideSpecTree, PackageDepSpec>;

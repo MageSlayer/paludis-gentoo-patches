@@ -1000,7 +1000,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
     /* add provides */
     if (p->provide_key())
     {
-        DepSpecFlattener f(_imp->env, _imp->current_package_id());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, _imp->current_package_id());
         p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! DistributionData::get_instance()->distribution_from_string(
@@ -1008,7 +1008,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
             throw DistributionConfigurationError("Package '" + stringify(*p) + "' has PROVIDEs, but this distribution "
                     "does not support old style virtuals");
 
-        for (DepSpecFlattener::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             tr1::shared_ptr<VersionRequirements> v(new VersionRequirements);
             v->push_back(VersionRequirement(vo_equal, p->version()));

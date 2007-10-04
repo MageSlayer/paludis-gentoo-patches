@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv,
-                "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
+                "example_contents", "EXAMPLE_CONTENTS_OPTIONS", "EXAMPLE_CONTENTS_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(

@@ -87,10 +87,10 @@ FakeInstalledRepository::provided_packages() const
                 if (! (*v)->provide_key())
                     continue;
 
-                DepSpecFlattener f(environment(), *v);
+                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment(), *v);
                 (*v)->provide_key()->value()->accept(f);
 
-                for (DepSpecFlattener::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
+                for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(RepositoryProvidesEntry::create()
                             .virtual_name(QualifiedPackageName((*q)->text()))
                             .provided_by(*v));
