@@ -934,10 +934,6 @@ namespace
                 task->on_update_world(a);
             }
         }
-
-        void visit_leaf(const BlockDepSpec &)
-        {
-        }
     };
 }
 
