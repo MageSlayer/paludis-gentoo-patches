@@ -35,7 +35,7 @@
 #include <src/output/colour.hh>
 
 #include <paludis/paludis.hh>
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>

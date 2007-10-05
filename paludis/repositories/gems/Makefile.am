@@ -39,7 +39,6 @@ libpaludisgemsrepository_la_SOURCES = \
 	$(paludis_repositories_gems_include_HEADERS)
 
 libpaludisgemsrepository_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	-lsyck

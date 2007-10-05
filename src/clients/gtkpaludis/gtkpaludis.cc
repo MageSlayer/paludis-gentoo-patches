@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/util/log.hh>
 #include <libgtkpaludis/main_window.hh>
 #include <gtkmm.h>

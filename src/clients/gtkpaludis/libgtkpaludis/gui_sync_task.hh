@@ -3,7 +3,7 @@
 #ifndef GTKPALUDIS_GUARD_LIBGTKPALUDIS_GUI_SYNC_TASK_HH
 #define GTKPALUDIS_GUARD_LIBGTKPALUDIS_GUI_SYNC_TASK_HH 1
 
-#include <paludis/tasks/sync_task.hh>
+#include <paludis/sync_task.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <libgtkpaludis/gui_task.hh>
 

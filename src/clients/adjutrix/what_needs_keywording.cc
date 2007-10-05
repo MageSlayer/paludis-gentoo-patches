@@ -26,9 +26,9 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/dep_list/exceptions.hh>
-#include <paludis/dep_list/dep_list.hh>
-#include <paludis/dep_list/override_functions.hh>
+#include <paludis/dep_list_exceptions.hh>
+#include <paludis/dep_list.hh>
+#include <paludis/override_functions.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>

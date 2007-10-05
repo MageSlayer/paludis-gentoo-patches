@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/environments/portage/portage_environment.hh>
 
 using namespace paludis;

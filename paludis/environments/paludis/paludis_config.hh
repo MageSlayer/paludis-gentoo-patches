@@ -27,7 +27,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 
 #include <string>
 

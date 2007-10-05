@@ -20,10 +20,10 @@
 #include <src/output/colour.hh>
 #include "uninstall.hh"
 
-#include <paludis/tasks/uninstall_task.hh>
-#include <paludis/tasks/exceptions.hh>
+#include <paludis/uninstall_task.hh>
+#include <paludis/tasks_exceptions.hh>
 #include <paludis/util/set.hh>
-#include <paludis/dep_list/uninstall_list.hh>
+#include <paludis/uninstall_list.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 

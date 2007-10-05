@@ -82,7 +82,7 @@ DEFS= \
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt hooker.bash
-SUBDIRS = digests distributions fetchers syncers util selinux . dep_list merger repositories environments args tasks
+SUBDIRS = distributions fetchers syncers util selinux . repositories environments args
 BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist
@@ -106,12 +106,28 @@ libpaludissohooks_TEST_la_LDFLAGS = -rpath /nowhere -version-info @VERSION_LIB_C
 libpaludissohooks_TEST_la_LIBADD = libpaludis.la
 
 libpaludis_la_LIBADD = \
+	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
 
 libpaludismanpagethings_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
+
+dep_list_TEST_SOURCES += dep_list_TEST.hh
+define(`testlist', testlist `dep_list_TEST_blockers')dnl
+dep_list_TEST_blockers_SOURCES = dep_list_TEST_blockers.cc dep_list_TEST.hh
+dep_list_TEST_blockers_LDADD = \
+	ihateautomake.o \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+dep_list_TEST_blockers_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS)
 
 TESTS = testlist
 

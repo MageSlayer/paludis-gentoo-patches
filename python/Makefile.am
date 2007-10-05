@@ -152,16 +152,12 @@ endif
 libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-	$(top_builddir)/paludis/tasks/libpaludistasks.la \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/adapted/libpaludisadaptedenvironment.la \
-	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
-	$(top_builddir)/paludis/environments/libpaludisenvironments.la
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la
 
 libadditionaltests_la_SOURCES = additional_tests.hh additional_tests.cc
 libadditionaltests_la_LIBADD = $(libpaludispython_la_LIBADD)

@@ -28,7 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/virtual_constructor-impl.hh>
-#include <paludis/repositories/repository_maker.hh>
+#include <paludis/repository_maker.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <string>

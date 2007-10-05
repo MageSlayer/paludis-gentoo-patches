@@ -26,7 +26,7 @@ AC_LANG([C++])
 PALUDIS_CXXFLAGS=
 
 PALUDIS_PC_CFLAGS=
-PALUDIS_PC_LIBS="-lpaludis -lpaludisutil -lpaludisenvironments"
+PALUDIS_PC_LIBS="-lpaludis -lpaludisutil"
 PALUDIS_PC_VERSION=
 dnl }}}
 
@@ -1260,8 +1260,6 @@ AC_OUTPUT(
 	paludis/Makefile
 	paludis/about.hh
 	paludis/args/Makefile
-	paludis/dep_list/Makefile
-	paludis/digests/Makefile
 	paludis/distributions/Makefile
 	paludis/environments/Makefile
 	paludis/environments/adapted/Makefile
@@ -1270,7 +1268,6 @@ AC_OUTPUT(
 	paludis/environments/portage/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
-	paludis/merger/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile
 	paludis/repositories/cran/cran/Makefile
@@ -1290,7 +1287,6 @@ AC_OUTPUT(
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
-	paludis/tasks/Makefile
 	paludis/util/Makefile
 	pkg-config/Makefile
 	python/Makefile

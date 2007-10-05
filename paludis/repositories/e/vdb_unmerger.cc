@@ -23,7 +23,7 @@
 using namespace paludis;
 
 #include <paludis/util/destringify.hh>
-#include <paludis/digests/md5.hh>
+#include <paludis/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>

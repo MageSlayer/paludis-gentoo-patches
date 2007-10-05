@@ -26,7 +26,7 @@
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 
 #include <src/output/colour.hh>
 #include <paludis/args/do_help.hh>

@@ -25,7 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/merger/unmerger.hh>
+#include <paludis/unmerger.hh>
 
 namespace paludis
 {

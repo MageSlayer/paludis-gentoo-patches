@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/repository_maker.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
 #include "config.h"

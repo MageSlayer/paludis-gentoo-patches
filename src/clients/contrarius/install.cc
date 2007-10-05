@@ -26,13 +26,13 @@
 #include <limits>
 #include <set>
 
-#include <paludis/tasks/install_task.hh>
+#include <paludis/install_task.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
-#include <paludis/dep_list/exceptions.hh>
+#include <paludis/dep_list_exceptions.hh>
 #include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/tasks/stage_builder_task.hh>
+#include <paludis/stage_builder_task.hh>
 #include <paludis/environment.hh>
 #include <src/clients/contrarius/stage.hh>
 #include <src/clients/contrarius/stage_builder.hh>

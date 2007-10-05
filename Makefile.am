@@ -23,7 +23,6 @@ automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C paludis/args
 	$(MAKE) -C paludis/ libpaludismanpagethings.la
 	$(MAKE) -C src/output liboutput.a
-	$(MAKE) -C src/common_args libcommonargs.a
 	$(MAKE) -C src/clients/paludis paludis.1 paludis.html
 	$(MAKE) -C src/clients/qualudis qualudis.1 qualudis.html
 	$(MAKE) -C src/clients/contrarius contrarius.1 contrarius.html

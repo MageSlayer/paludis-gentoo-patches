@@ -23,7 +23,7 @@
 #include <paludis/name.hh>
 #include <paludis/host_tuple_name.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/tasks/stage_builder_task.hh>
+#include <paludis/stage_builder_task.hh>
 
 #include <string>
 

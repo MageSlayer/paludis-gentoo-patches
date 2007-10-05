@@ -21,7 +21,7 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 
-#include <paludis/tasks/find_unused_packages_task.hh>
+#include <paludis/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>

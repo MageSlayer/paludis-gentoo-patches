@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CONTRARIUS_STAGE_BUILDER_HH
 #define PALUDIS_GUARD_SRC_CONTRARIUS_STAGE_BUILDER_HH 1
 
-#include <paludis/tasks/stage_builder_task.hh>
+#include <paludis/stage_builder_task.hh>
 #include <src/clients/contrarius/stage.hh>
 #include <string>
 

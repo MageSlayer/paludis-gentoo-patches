@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_COMMON_ARGS_DEPS_OPTION_ARG_HH 1
 
 #include <paludis/args/args_option.hh>
-#include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list.hh>
 
 namespace paludis
 {

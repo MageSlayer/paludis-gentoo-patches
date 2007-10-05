@@ -26,7 +26,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/repositories/repository_maker.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/repository_info.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>

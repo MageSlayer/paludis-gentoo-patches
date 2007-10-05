@@ -15,7 +15,6 @@ libpaludisadaptedenvironment_la_SOURCES = \
 libpaludisadaptedenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 libpaludisadaptedenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 

@@ -22,7 +22,7 @@
 #include <python/iterable.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>

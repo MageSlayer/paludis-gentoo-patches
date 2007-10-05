@@ -41,7 +41,6 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 include(`paludis/files.m4')
 
 #include <paludis/util/util.hh>
-#include <paludis/environments/environment_maker.hh>
 #include <libwrapiter/libwrapiter.hh>
 
 #endif

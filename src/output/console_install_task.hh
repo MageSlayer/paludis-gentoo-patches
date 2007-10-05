@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH
 #define PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH 1
 
-#include <paludis/tasks/install_task.hh>
+#include <paludis/install_task.hh>
 #include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <src/output/console_task.hh>

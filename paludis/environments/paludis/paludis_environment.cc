@@ -25,7 +25,7 @@
 #include <paludis/environments/paludis/licenses_conf.hh>
 #include <paludis/environments/paludis/mirrors_conf.hh>
 
-#include <paludis/repositories/repository_maker.hh>
+#include <paludis/repository_maker.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>

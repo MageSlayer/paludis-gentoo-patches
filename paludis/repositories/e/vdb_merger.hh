@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_MERGER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_MERGER_HH 1
 
-#include <paludis/merger/merger.hh>
+#include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 

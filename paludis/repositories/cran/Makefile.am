@@ -52,7 +52,6 @@ libpaludiscranrepository_la_SOURCES = \
 	$(paludis_repositories_cran_include_HEADERS)
 
 libpaludiscranrepository_la_LIBADD = \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)

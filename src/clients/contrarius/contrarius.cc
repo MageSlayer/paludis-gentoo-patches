@@ -19,7 +19,7 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
-#include <paludis/environments/environment_maker.hh>
+#include <paludis/environment_maker.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/util/util.hh>
 

@@ -71,8 +71,8 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 
-#include <paludis/digests/rmd160.hh>
-#include <paludis/digests/sha256.hh>
+#include <paludis/rmd160.hh>
+#include <paludis/sha256.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>

@@ -37,7 +37,6 @@ accerso_SOURCES = \
 	accerso.cc
 
 accerso_LDADD = \
-	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
