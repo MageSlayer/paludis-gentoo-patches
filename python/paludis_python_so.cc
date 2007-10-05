@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <boost/python.hpp>
 #include <boost/version.hpp>
 #include <python/paludis_python.hh>
@@ -46,6 +48,8 @@ BOOST_PYTHON_MODULE(paludis)
     expose_action();
     expose_package_database();
     expose_repository();
+#ifdef ENABLE_QA
     expose_qa();
+#endif
 }
 
