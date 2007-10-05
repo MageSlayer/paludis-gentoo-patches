@@ -28,6 +28,17 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/tr1_memory.hh>
 
+/** \file
+ * Declarations for distributions.
+ *
+ * \ingroup g_distribution
+ *
+ * \section Examples
+ *
+ * - None at this time. The Distribution classes are of little direct use to
+ *   clients; they are mainly used by Repository and Environment implementations.
+ */
+
 namespace paludis
 {
 #include <paludis/distribution-sr.hh>
@@ -35,8 +46,9 @@ namespace paludis
     /**
      * Thrown if an invalid distribution file is encountered.
      *
-     * \ingroup grpdistributions
-     * \ingroup grpexceptions
+     * \ingroup g_distribution
+     * \ingroup g_exceptions
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DistributionConfigurationError :
@@ -54,7 +66,14 @@ namespace paludis
     /**
      * Fetch information about a distribution.
      *
-     * \ingroup grpdistributions
+     * Paludis avoids hardcoding certain distribution-related information to
+     * make things easier for other distributions. Instead, DistributionData
+     * is used to fetch a Distribution class instance. The
+     * distribution_from_string method is almost always called with the return
+     * value of Environment::default_distribution as its parameter.
+     *
+     * \ingroup g_distribution
+     * \since 0.26
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DistributionData :

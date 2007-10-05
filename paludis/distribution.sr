@@ -34,6 +34,8 @@ make_class_Distribution()
          * Information about a distribution.
          *
          * \see DistributionData
+         * \ingroup g_distribution
+         * \since 0.26
          * \nosubgrouping
          */
 END

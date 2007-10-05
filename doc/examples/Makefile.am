@@ -15,8 +15,10 @@ noinst_PROGRAMS = \
 	example_contents \
 	example_dep_label \
 	example_dep_spec \
+	example_dep_tag \
 	example_dep_tree \
-	example_dep_spec_flattener
+	example_dep_spec_flattener \
+	example_environment
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
@@ -63,8 +65,20 @@ example_dep_tree_LDFLAGS = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la
 
+example_dep_tag_SOURCES = example_dep_tag.cc
+example_dep_tag_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
 example_dep_spec_flattener_SOURCES = example_dep_spec_flattener.cc
 example_dep_spec_flattener_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_environment_SOURCES = example_environment.cc
+example_environment_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

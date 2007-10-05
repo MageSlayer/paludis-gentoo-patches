@@ -16,7 +16,7 @@ make_class_DepTagEntry()
          * to outside clients.
          *
          * \see DepListEntry
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          * \nosubgrouping
          */
 END

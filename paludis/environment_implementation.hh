@@ -23,19 +23,33 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id-fwd.hh>
 
+/** \file
+ * Declarations for the Environment class.
+ *
+ * \ingroup g_environment
+ *
+ * \section Examples
+ *
+ * - None at this time. The EnvironmentImplementation class is of no relevance
+ *   to clients.
+ */
+
 namespace paludis
 {
     /**
      * Simplifies implementing the Environment interface.
      *
-     * \ingroup grpenvironment
+     * Most Environment subclasses derive from this class, rather than directly
+     * from the abstract base. It provides default implementations for many
+     * methods.
+     *
+     * \ingroup g_environment
      * \see Environment
      */
     class PALUDIS_VISIBLE EnvironmentImplementation :
         public Environment
     {
         protected:
-
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> local_set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 

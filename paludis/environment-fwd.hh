@@ -21,31 +21,22 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_FWD_HH 1
 
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/options-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/sequence-fwd.hh>
-#include <iosfwd>
+#include <string>
+
+/** \file
+ * Forward declarations for paludis/environment.hh .
+ *
+ * \ingroup g_environment
+ */
 
 namespace paludis
 {
-    class PackageDatabase;
-
-#include <paludis/environment-se.hh>
-
-    /**
-     * Options for Environment::mask_reasons().
-     *
-     * \see Environment
-     * \see MaskReasonsOption
-     * \ingroup grpenvironment
-     */
-    typedef Options<MaskReasonsOption> MaskReasonsOptions;
-
     /**
      * A collection of mirror prefixes.
      *
      * \see Environment
-     * \ingroup grpenvironment
+     * \ingroup g_environment
      */
     typedef Sequence<std::string> MirrorsSequence;
 

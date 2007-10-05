@@ -21,9 +21,16 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_TAG_HH 1
 
 /** \file
- * Declarations for the DepTag and DepTagCategory classes.
+ * Declarations for dependency tags.
  *
- * \ingroup grpdeptag
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_tag.cc "example_dep_tag.cc" (for tags)
+ * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
+ * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
+ * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
  */
 
 #include <paludis/dep_tag-fwd.hh>
@@ -46,7 +53,9 @@ namespace paludis
     /**
      * Visitor class for visiting the different DepTag subclasses.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     * \since 0.26
      * \see DepTag
      */
     struct DepTagVisitorTypes :
@@ -70,7 +79,7 @@ namespace paludis
      * \see DepTagCategoryMaker
      * \see DepTag
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTagCategory :
@@ -126,8 +135,8 @@ namespace paludis
     /**
      * Thrown if DepTagCategoryMaker cannot find the named DepTagCategory.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpdeptag
+     * \ingroup g_exceptions
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchDepTagCategory :
@@ -145,7 +154,8 @@ namespace paludis
     /**
      * Virtual constructor for accessing DepTagCategory instances.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTagCategoryMaker :
         public VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
@@ -158,12 +168,6 @@ namespace paludis
             DepTagCategoryMaker();
     };
 
-    class DepTag;
-    class GLSADepTag;
-    class GeneralSetDepTag;
-    class DependencyDepTag;
-    class TargetDepTag;
-
     /**
      * A DepTag can be associated with a PackageDepSpec, and is transferred
      * onto any associated DepListEntry instances.
@@ -171,7 +175,7 @@ namespace paludis
      * It is used for tagging dep list entries visually, for example to
      * indicate an associated GLSA.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTag :
@@ -213,7 +217,7 @@ namespace paludis
     /**
      * DepTag subclass for GLSAs.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSADepTag :
@@ -247,7 +251,7 @@ namespace paludis
     /**
      * DepTag subclass for general sets.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
@@ -277,7 +281,7 @@ namespace paludis
     /**
      * DepTag subclass for dependencies.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DependencyDepTag :
@@ -314,7 +318,8 @@ namespace paludis
             const tr1::shared_ptr<const PackageDepSpec> dependency() const;
 
             /**
-             * The AllDepSpecs and UseDepSpecs that our dependency is conditional upon.
+             * The AllDepSpec instances and UseDepSpec instances that our dependency
+             * is conditional upon.
              */
             const tr1::shared_ptr<const DependencySpecTree::ConstItem> conditions() const;
     };
@@ -322,7 +327,7 @@ namespace paludis
     /**
      * DepTag subclass for explicit targets.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE TargetDepTag :

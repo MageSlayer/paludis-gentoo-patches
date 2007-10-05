@@ -24,8 +24,6 @@
 
 using namespace paludis;
 
-#include <paludis/environment-se.cc>
-
 template class Sequence<std::string>;
 
 Environment::~Environment()

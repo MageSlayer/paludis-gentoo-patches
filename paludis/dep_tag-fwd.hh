@@ -24,6 +24,12 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/dep_tag.hh .
+ *
+ * \ingroup g_dep_spec
+ */
+
 namespace paludis
 {
     class DepTagCategory;
@@ -44,7 +50,7 @@ namespace paludis
     /**
      * Tags attached to a DepListEntry.
      *
-     * \ingroup grpdeptag
+     * \ingroup g_dep_spec
      */
     typedef Set<DepTagEntry> DepListEntryTags;
 }

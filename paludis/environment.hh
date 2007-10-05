@@ -31,11 +31,16 @@
 #include <paludis/dep_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
+#include <paludis/package_database-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
  *
- * \ingroup grpenvironment
+ * \ingroup g_environment
+ *
+ * \section Examples
+ *
+ * - \ref example_environment.cc "example_environment.cc"
  */
 
 namespace paludis
@@ -49,11 +54,12 @@ namespace paludis
      * instances.
      *
      * Environment itself is purely an interface class. Actual Environment
-     * implementations descend from EnvironmentImplementation, which provides
-     * much of the common implementation details. EnvironmentMaker is often
-     * used to create the appropriate Environment subclass for an application.
+     * implementations usually descend from EnvironmentImplementation, which
+     * provides much of the common implementation details. EnvironmentMaker is
+     * often used to create the appropriate Environment subclass for an
+     * application.
      *
-     * \ingroup grpenvironment
+     * \ingroup g_environment
      * \see PackageDatabase
      * \see EnvironmentMaker
      * \see EnvironmentImplementation
@@ -98,6 +104,9 @@ namespace paludis
 
             /**
              * Do we accept a particular license for a particular package?
+             *
+             * Used by PackageID implementations. Generally PackageID's masks methods
+             * should be used rather than calling this directly.
              */
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -106,6 +115,9 @@ namespace paludis
              * Do we accept any of the specified keywords for a particular package?
              *
              * If the collection includes "*", should return true.
+             *
+             * Used by PackageID implementations. Generally PackageID's masks methods
+             * should be used rather than calling this directly.
              */
             virtual bool accept_keywords(tr1::shared_ptr<const KeywordNameSet>, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -114,6 +126,9 @@ namespace paludis
              * Do we have a 'breaks' mask for a particular package?
              *
              * Returns a zero pointer if no.
+             *
+             * Used by PackageID implementations. Generally PackageID's masks methods
+             * should be used rather than calling this directly.
              */
             virtual const tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -122,6 +137,9 @@ namespace paludis
              * Do we have a 'user' mask for a particular package?
              *
              * Returns a zero pointer if no.
+             *
+             * Used by PackageID implementations. Generally PackageID's masks methods
+             * should be used rather than calling this directly.
              */
             virtual const tr1::shared_ptr<const Mask> mask_for_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -131,6 +149,9 @@ namespace paludis
              *
              * This is only applied to repository and profile style masks, not
              * keywords, licences etc. If true, user_mask shouldn't be used.
+             *
+             * Used by PackageID implementations. Generally PackageID's masks methods
+             * should be used rather than calling this directly.
              */
             virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -208,7 +229,8 @@ namespace paludis
              * Used by InstallTask to decide whether to exec() after installing
              * a package.
              */
-            virtual bool is_paludis_package(const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual bool is_paludis_package(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 

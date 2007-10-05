@@ -105,7 +105,7 @@ namespace
         try
         {
             int mr = NUM2INT(qa_check_property);
-            if (mr < 0 || mr >= last_mro)
+            if (mr < 0 || mr >= last_qacp)
                 rb_raise(rb_eArgError, "QACheckProperty out of range");
             *m_ptr += static_cast<QACheckProperty>(mr);
             return Qnil;

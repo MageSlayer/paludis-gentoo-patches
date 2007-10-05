@@ -46,6 +46,7 @@
  * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
  * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
  * - \ref example_dep_tree.cc "example_dep_tree.cc" (for specification trees)
+ * - \ref example_dep_tag.cc "example_dep_tag.cc" (for tags)
  */
 
 namespace paludis

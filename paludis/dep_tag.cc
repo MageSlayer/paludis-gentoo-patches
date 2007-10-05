@@ -29,12 +29,6 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sstream>
 
-/** \file
- * Implementation for DepTag, DepTagCategory etc.
- *
- * \ingroup grpdeptag
- */
-
 using namespace paludis;
 
 template class VirtualConstructor<std::string, tr1::shared_ptr<const DepTagCategory> (*) (),
@@ -61,11 +55,6 @@ template class Set<DepTagEntry>;
 
 namespace
 {
-    /**
-     * Create the DepTagCategory for GLSAs.
-     *
-     * \ingroup grpdeptag
-     */
     tr1::shared_ptr<const DepTagCategory>
     make_glsa_dep_tag()
     {
@@ -77,11 +66,6 @@ namespace
                     "Please read the advisories carefully and take appropriate action."));
     }
 
-    /**
-     * Create the DepTagCategory for general sets.
-     *
-     * \ingroup grpdeptag
-     */
     tr1::shared_ptr<const DepTagCategory>
     make_general_set_dep_tag()
     {
@@ -93,11 +77,6 @@ namespace
                     ""));
     }
 
-    /**
-     * Create the DepTagCategory for dependency sets.
-     *
-     * \ingroup grpdeptag
-     */
     tr1::shared_ptr<const DepTagCategory>
     make_dependency_set_dep_tag()
     {
@@ -109,11 +88,6 @@ namespace
                     ""));
     }
 
-    /**
-     * Create the DepTagCategory for targets.
-     *
-     * \ingroup grpdeptag
-     */
     tr1::shared_ptr<const DepTagCategory>
     make_target_dep_tag()
     {
