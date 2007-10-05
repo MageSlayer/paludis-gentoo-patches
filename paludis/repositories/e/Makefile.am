@@ -156,6 +156,20 @@ e_repository_TEST_LDADD = \
 
 e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
+vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
+
+vdb_repository_TEST_LDADD = \
+	libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
+
 vdb_merger_TEST_SOURCES = vdb_merger_TEST.cc
 
 vdb_merger_TEST_LDADD = \
@@ -493,7 +507,8 @@ TESTS = \
 	e_repository_sets_TEST \
 	aa_visitor_TEST \
 	fetch_visitor_TEST \
-	source_uri_finder_TEST
+	source_uri_finder_TEST \
+	vdb_repository_TEST
 
 check_PROGRAMS = $(TESTS)
 

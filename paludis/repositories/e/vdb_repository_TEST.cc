@@ -17,13 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/vdb/vdb_repository.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/query.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <fstream>
 #include <iterator>
+
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace test;
 using namespace paludis;
@@ -46,8 +50,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -68,8 +71,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -94,25 +97,21 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
-            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
-                        &env, keys));
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(&env, keys));
+            env.package_database()->add_repository(1, repo);
 
-            PackageDatabaseEntry e1(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"),
-                    VersionSpec("1"), RepositoryName("installed"));
-            PackageDatabaseEntry e2(CategoryNamePart("cat-one") + PackageNamePart("pkg-neither"),
-                    VersionSpec("1"), RepositoryName("installed"));
+            tr1::shared_ptr<const PackageID> e1(*env.package_database()->query(query::Matches(
+                            PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
 
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag1"), &e1) == use_enabled);
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag2"), &e1) == use_enabled);
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag3"), &e1) == use_disabled);
-
-            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag4"), &e2) == use_unspecified);
+            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag1"), *e1) == use_enabled);
+            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag2"), *e1) == use_enabled);
+            TEST_CHECK(repo->use_interface->query_use(UseFlagName("flag3"), *e1) == use_disabled);
         }
     } test_vdb_repository_query_use;
 
@@ -126,8 +125,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -152,8 +151,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -178,8 +177,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -204,8 +203,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(
+                    new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -230,8 +229,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
