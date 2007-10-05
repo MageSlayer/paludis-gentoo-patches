@@ -32,6 +32,8 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/fd_output_stream.hh>
+#include <paludis/util/system.hh>
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -39,6 +41,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
+#include <paludis/hook.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -52,6 +55,10 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 
 using namespace paludis;
 using std::cout;
@@ -143,6 +150,19 @@ ConsoleInstallTask::execute()
         ::sigaction(SIGTERM, &oldact, 0);
         tasks.remove(this);
     }
+}
+
+int
+ConsoleInstallTask::exit_status() const
+{
+    int return_code(0);
+    if (dep_list().has_errors())
+        return_code |= 1;
+    if (had_resolution_failures())
+        return_code |= 3;
+    if (had_action_failures())
+        return_code |= 7;
+    return return_code;
 }
 
 void
@@ -1464,5 +1484,103 @@ ConsoleInstallTask::make_x_of_y(const int x, const int y, const int s, const int
     if (f > 0)
         result.append(", " + stringify(f) + " failed");
     return result;
+}
+
+void
+ConsoleInstallTask::show_resume_command() const
+{
+    show_resume_command("");
+}
+
+void
+ConsoleInstallTask::show_resume_command(const std::string & resume_command_template) const
+{
+    const tr1::shared_ptr<const PackageIDSequence> p(packages_not_yet_installed_successfully());
+    if (! p->empty())
+    {
+        std::string resume_command(make_resume_command(*p));
+        if (resume_command.empty())
+            return;
+
+        if (! resume_command_template.empty())
+        {
+            std::string file_name(resume_command_template);
+            int fd;
+            if (std::string::npos == file_name.find("XXXXXX"))
+                fd = open(file_name.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+            else
+            {
+                char * resume_template = strdup(file_name.c_str());
+                fd = mkstemp(resume_template);
+                file_name = resume_template;
+                std::free(resume_template);
+            }
+
+            if (-1 != fd)
+            {
+                ::fchmod(fd, 0644);
+                FDOutputStream resume_command_file(fd);
+                resume_command_file << resume_command << endl;
+
+                if (resume_command_file)
+                {
+                    cerr << endl;
+                    cerr << "Resume command saved to file: " << file_name;
+                    cerr << endl;
+                }
+                else
+                {
+                    cerr << "Resume command NOT saved to file: " << file_name << " due to error "
+                        << strerror(errno) << endl;
+                    cerr << "Resume command: " << file_name << endl;
+                }
+            }
+            else
+            {
+                cerr << "Resume command NOT saved to file: " << file_name << " due to error "
+                    << strerror(errno) << endl;
+                cerr << "Resume command: " << resume_command << endl;
+            }
+        }
+        else
+        {
+            cerr << endl;
+            cerr << "Resume command: " << resume_command << endl;
+        }
+    }
+}
+
+void
+ConsoleInstallTask::on_installed_paludis()
+{
+    std::string r(stringify(environment()->root()));
+    std::string exec_mode(getenv_with_default("PALUDIS_EXEC_PALUDIS", ""));
+
+    if ("always" != exec_mode)
+    {
+        if ("never" == exec_mode)
+            return;
+        else if (! (r.empty() || r == "/"))
+            return;
+    }
+
+    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+    if (resume_command.empty())
+        return;
+
+    output_heading("Paludis has just upgraded Paludis");
+    output_starred_item("Using '" + resume_command + "' to start a new Paludis instance...");
+    output_endl();
+
+    execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
+}
+
+HookResult
+ConsoleInstallTask::perform_hook(const Hook & hook) const
+{
+    std::string resume_command(make_resume_command(*packages_not_yet_installed_successfully()));
+    if (resume_command.empty())
+        return InstallTask::perform_hook(hook);
+    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
 }
 

@@ -80,36 +80,6 @@ CommandLine::CommandLine() :
 
     install_args(this, "Install, Uninstall options",
             "Options which are relevant for --install, --uninstall or --uninstall-unused."),
-    a_pretend(&install_args, "pretend", 'p', "Pretend only"),
-    a_destinations(&install_args, "destinations", 'd', "Use specified destinations instead of defaults"),
-    a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
-    a_add_to_world_spec(&install_args, "add-to-world-spec", '\0',
-            "Use this spec, rather than all targets, for updating world (for resume commands)"),
-    a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
-    a_debug_build(&install_args, "debug-build", '\0'),
-    a_checks(&install_args, "checks", '\0'),
-    a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
-    a_no_safe_resume(&install_args, "no-safe-resume", '\0', "Do not allow interrupted downloads to be resumed"),
-    a_show_reasons(&install_args, "show-reasons", '\0', "Show why packages are being (un)installed",
-            args::EnumArg::EnumArgOptions
-            ("none",    "Don't show any information")
-            ("summary", "Show a summary")
-            ("full",    "Show full output (can be very verbose)"),
-            "none"),
-    a_show_use_descriptions(&install_args, "show-use-descriptions", '\0', "Show descriptions of USE flags",
-            args::EnumArg::EnumArgOptions
-            ("none",       "Don't show any descriptions")
-            ("new",        "Show for new use flags")
-            ("changed",    "Show for new and changed flags")
-            ("all",        "Show for all flags"),
-            "none"),
-    a_continue_on_faillure(&install_args, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
-            args::EnumArg::EnumArgOptions
-            ("if-fetch-only",       "If fetching only")
-            ("never",               "Never")
-            ("if-satisfied",        "If remaining packages' dependencies are satisfied")
-            ("always",              "Always (UNSAFE)"),
-            "if-fetch-only"),
 
     uninstall_args(this, "Uninstall options",
             "Options which are relevant for --uninstall."),
@@ -122,105 +92,7 @@ CommandLine::CommandLine() :
     a_permit_unsafe_uninstalls(&uninstall_args, "permit-unsafe-uninstalls", '\0',
             "Allow depended-upon packages to uninstalled"),
 
-    dl_args(this, "DepList behaviour",
-            "Modify dependency list generation behaviour. Use with caution."),
-
-    dl_reinstall(&dl_args, "dl-reinstall", '\0', "When to reinstall packages",
-            args::EnumArg::EnumArgOptions
-            ("never",          "Never")
-            ("always",         "Always")
-            ("if-use-changed", "If USE flags have changed"),
-            "never"),
-    dl_reinstall_scm(&dl_args, "dl-reinstall-scm", '\0', "When to reinstall scm packages",
-            args::EnumArg::EnumArgOptions
-            ("never",          "Never")
-            ("always",         "Always")
-            ("daily",          "If they are over a day old")
-            ("weekly",         "If they are over a week old"),
-            "never"),
-    dl_reinstall_targets(&dl_args, "dl-reinstall-targets", '\0', "Whether to reinstall targets",
-            args::EnumArg::EnumArgOptions
-            ("auto",           "If the target is a set, never, otherwise always")
-            ("never",          "Never")
-            ("always",         "Always"),
-            "auto"),
-
-    dl_upgrade(&dl_args, "dl-upgrade", '\0', "When to upgrade packages",
-            args::EnumArg::EnumArgOptions
-            ("always",        "Always")
-            ("as-needed",     "As needed"),
-            "always"),
-    dl_new_slots(&dl_args, "dl-new-slots", '\0', "When to pull in new slots (works with --dl-upgrade)",
-            args::EnumArg::EnumArgOptions
-            ("always",        "Always")
-            ("as-needed",     "As needed"),
-            "always"),
-    dl_downgrade(&dl_args, "dl-downgrade", '\0', "When to downgrade packages",
-            args::EnumArg::EnumArgOptions
-            ("as-needed",     "As needed")
-            ("warning",       "As needed, but warn when doing so")
-            ("error",         "Downgrades should be treated as errors"),
-            "as-needed"),
-
-    dl_deps_default(&dl_args, "dl-deps-default", '\0',
-            "Override default behaviour for all dependency classes",
-            static_cast<DepListDepsOption>(-1)),
-
-    dl_installed_deps_pre(&dl_args, "dl-installed-deps-pre", '\0',
-            "How to handle pre dependencies for installed packages",
-            dl_deps_discard),
-    dl_installed_deps_runtime(&dl_args, "dl-installed-deps-runtime", '\0',
-            "How to handle runtime dependencies for installed packages",
-            dl_deps_try_post),
-    dl_installed_deps_post(&dl_args, "dl-installed-deps-post", '\0',
-            "How to handle post dependencies for installed packages",
-            dl_deps_try_post),
-
-    dl_uninstalled_deps_pre(&dl_args, "dl-uninstalled-deps-pre", '\0',
-            "How to handle pre dependencies for uninstalled packages",
-            dl_deps_pre),
-    dl_uninstalled_deps_runtime(&dl_args, "dl-uninstalled-deps-runtime", '\0',
-            "How to handle runtime dependencies for uninstalled packages",
-            dl_deps_pre_or_post),
-    dl_uninstalled_deps_post(&dl_args, "dl-uninstalled-deps-post", '\0',
-            "How to handle post dependencies for uninstalled packages",
-            dl_deps_post),
-    dl_uninstalled_deps_suggested(&dl_args, "dl-uninstalled-deps-suggested", '\0',
-            "How to handle suggested dependencies for uninstalled packages (only with --dl-suggested install)",
-            dl_deps_post),
-
-    dl_suggested(&dl_args, "dl-suggested", '\0', "How to handle suggested dependencies",
-            args::EnumArg::EnumArgOptions
-            ("show",         "Display, but do not install")
-            ("install",      "Install")
-            ("discard",      "Discard"),
-            "show"),
-    dl_circular(&dl_args, "dl-circular", '\0', "How to handle circular dependencies",
-            args::EnumArg::EnumArgOptions
-            ("error",         "Raise an error")
-            ("discard",       "Discard"),
-            "error"),
-    dl_blocks(&dl_args, "dl-blocks", '\0', "How to handle blocks",
-            args::EnumArg::EnumArgOptions
-            ("accumulate",         "Accumulate and show in the dependency list")
-            ("error",              "Error straight away")
-            ("discard",            "Discard (dangerous)"),
-            "error"),
-    dl_override_masks(&dl_args, "dl-override-masks", '\0',
-            "Zero or more mask kinds that can be overridden as necessary",
-            args::StringSetArg::StringSetArgOptions
-            ("tilde-keyword",           "Keyword masks where accepting ~ would work")
-            ("unkeyworded",             "Keyword masks where a package is unkeyworded")
-            ("repository",              "Repository masks")
-            ("profile",                 "Deprecated synonym for repository")
-            ("license",                 "License masks")),
-
-    dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",
-            args::EnumArg::EnumArgOptions
-            ("as-needed-except-targets", "Where necessary, but not for target packages")
-            ("as-needed",                "Where necessary, including for target packages")
-            ("never",                    "Never"),
-            "as-needed-except-targets"),
+    dl_args(this),
 
     list_args(this, "List options",
             "Options relevant for one or more of the --list actions."),

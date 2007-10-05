@@ -19,24 +19,14 @@
  */
 
 #include "install.hh"
-#include <src/output/colour.hh>
 #include <src/output/console_install_task.hh>
 
 #include <iostream>
-#include <limits>
-#include <set>
 
 #include <paludis/install_task.hh>
-#include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/environment.hh>
-#include <paludis/dep_list_exceptions.hh>
-#include <paludis/query.hh>
-#include <paludis/metadata_key.hh>
-#include <paludis/mask.hh>
-#include <paludis/action.hh>
 #include <paludis/package_id.hh>
 
 /** \file
@@ -96,40 +86,13 @@ namespace
                 return false;
             }
 
+            virtual std::string make_resume_command(const PackageIDSequence & p) const
+            {
+                return "";
+            }
+
             virtual void show_resume_command() const
             {
-                if (CommandLine::get_instance()->a_fetch.specified() ||
-                        CommandLine::get_instance()->a_pretend.specified())
-                    return;
-
-                const tr1::shared_ptr<const PackageIDSequence> p(packages_not_yet_installed_successfully());
-                if (! p->empty())
-                {
-                    std::string resume_command = environment()->paludis_command() + " "
-                        "--dl-installed-deps-pre discard "
-                        "--dl-installed-deps-runtime discard "
-                        "--dl-installed-deps-post discard "
-                        "--dl-uninstalled-deps-pre discard "
-                        "--dl-uninstalled-deps-runtime discard "
-                        "--dl-uninstalled-deps-post discard "
-                        "--install --preserve-world";
-                    for (PackageIDSequence::ConstIterator i(p->begin()), i_end(p->end()) ; i != i_end ; ++i)
-                        resume_command = resume_command + " '=" + stringify(**i) + "'";
-
-                    if (CommandLine::get_instance()->a_resume_command_template.specified())
-                    {
-                        std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
-                        char* resume_template = strdup(file_name.c_str());
-                        FDOutputStream resume_command_file(mkstemp(resume_template));
-                        cerr << endl;
-                        cerr << "Resume command saved to file: " << resume_template;
-                        cerr << endl;
-                        resume_command_file << resume_command << endl;
-                        std::free(resume_template);
-                    }
-                    else
-                        cerr << "Resume command: " << resume_command << endl;
-                }
             }
     };
 }
@@ -137,8 +100,6 @@ namespace
 int
 do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
 {
-    int return_code(0);
-
     Context context("When performing install action from command line:");
 
     DepListOptions options;
@@ -176,15 +137,6 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
 
     cout << endl;
 
-    if (task.dep_list().has_errors())
-        return_code |= 1;
-
-    if (task.had_resolution_failures())
-        return_code |= 3;
-
-    if (task.had_action_failures())
-        return_code |= 7;
-
-    return return_code;
+    return task.exit_status();
 }
 

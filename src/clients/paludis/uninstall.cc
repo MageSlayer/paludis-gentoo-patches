@@ -92,7 +92,7 @@ namespace
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
                 if (d.kind == ulk_virtual)
-                    if (CommandLine::get_instance()->a_show_reasons.argument() != "full")
+                    if (CommandLine::get_instance()->install_args.a_show_reasons.argument() != "full")
                         return;
 
                 switch (d.kind)
@@ -115,13 +115,13 @@ namespace
                         break;
                 }
 
-                if ((CommandLine::get_instance()->a_show_reasons.argument() == "summary") ||
-                        (CommandLine::get_instance()->a_show_reasons.argument() == "full") ||
+                if ((CommandLine::get_instance()->install_args.a_show_reasons.argument() == "summary") ||
+                        (CommandLine::get_instance()->install_args.a_show_reasons.argument() == "full") ||
                         ulk_required == d.kind)
                 {
                     std::string deps;
                     unsigned count(0), max_count;
-                    if (CommandLine::get_instance()->a_show_reasons.argument() == "summary")
+                    if (CommandLine::get_instance()->install_args.a_show_reasons.argument() == "summary")
                         max_count = 3;
                     else
                         max_count = std::numeric_limits<long>::max();
@@ -222,9 +222,9 @@ namespace
 
         OurUninstallTask task(env);
 
-        task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
-        task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
-        task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+        task.set_pretend(CommandLine::get_instance()->install_args.a_pretend.specified());
+        task.set_no_config_protect(CommandLine::get_instance()->install_args.a_no_config_protection.specified());
+        task.set_preserve_world(CommandLine::get_instance()->install_args.a_preserve_world.specified());
         task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
         task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
         task.set_check_safety(! CommandLine::get_instance()->a_permit_unsafe_uninstalls.specified());

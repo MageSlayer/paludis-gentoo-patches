@@ -104,48 +104,48 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-no-unnecessary-upgrades / -U is deprecated");
-            CommandLine::get_instance()->dl_upgrade.set_argument("as-needed");
-            CommandLine::get_instance()->dl_upgrade.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_upgrade.set_argument("as-needed");
+            CommandLine::get_instance()->dl_args.dl_upgrade.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_dl_drop_all.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-drop-all / -0 is deprecated");
-            CommandLine::get_instance()->dl_installed_deps_pre.set_argument("discard");
-            CommandLine::get_instance()->dl_installed_deps_pre.set_specified(true);
-            CommandLine::get_instance()->dl_installed_deps_post.set_argument("discard");
-            CommandLine::get_instance()->dl_installed_deps_post.set_specified(true);
-            CommandLine::get_instance()->dl_installed_deps_runtime.set_argument("discard");
-            CommandLine::get_instance()->dl_installed_deps_runtime.set_specified(true);
-            CommandLine::get_instance()->dl_uninstalled_deps_pre.set_argument("discard");
-            CommandLine::get_instance()->dl_uninstalled_deps_pre.set_specified(true);
-            CommandLine::get_instance()->dl_uninstalled_deps_post.set_argument("discard");
-            CommandLine::get_instance()->dl_uninstalled_deps_post.set_specified(true);
-            CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_argument("discard");
-            CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_installed_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_installed_deps_pre.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_installed_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_installed_deps_post.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_installed_deps_runtime.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_installed_deps_runtime.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_pre.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_post.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_runtime.set_argument("discard");
+            CommandLine::get_instance()->dl_args.dl_uninstalled_deps_runtime.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_dl_ignore_installed.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-ignore-installed / -e is deprecated");
-            CommandLine::get_instance()->dl_reinstall.set_argument("always");
-            CommandLine::get_instance()->dl_reinstall.set_specified(true);
+            CommandLine::get_instance()->dl_args.dl_reinstall.set_argument("always");
+            CommandLine::get_instance()->dl_args.dl_reinstall.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_show_install_reasons.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--show-install-reasons is deprecated, use --show-reasons");
-            CommandLine::get_instance()->a_show_reasons.set_argument(
+            CommandLine::get_instance()->install_args.a_show_reasons.set_argument(
                     CommandLine::get_instance()->a_show_install_reasons.argument());
-            CommandLine::get_instance()->a_show_reasons.set_specified(true);
+            CommandLine::get_instance()->install_args.a_show_reasons.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_add_to_world_atom.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--add-to-world-atom is deprecated, use --add-to-world-spec");
-            CommandLine::get_instance()->a_add_to_world_spec.set_argument(
+            CommandLine::get_instance()->install_args.a_add_to_world_spec.set_argument(
                     CommandLine::get_instance()->a_add_to_world_atom.argument());
-            CommandLine::get_instance()->a_add_to_world_spec.set_specified(true);
+            CommandLine::get_instance()->install_args.a_add_to_world_spec.set_specified(true);
         }
 
         if (CommandLine::get_instance()->a_safe_resume.specified())
@@ -276,18 +276,8 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_no_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
 
-        if (CommandLine::get_instance()->a_no_config_protection.specified())
-            paludis_command.append(" --" + CommandLine::get_instance()->a_no_config_protection.long_name());
-
-        if (CommandLine::get_instance()->a_preserve_world.specified())
-            paludis_command.append(" --" + CommandLine::get_instance()->a_preserve_world.long_name());
-
-        if (CommandLine::get_instance()->a_debug_build.specified())
-            paludis_command.append(" --" + CommandLine::get_instance()->a_debug_build.long_name() + " "
-                    + CommandLine::get_instance()->a_debug_build.argument());
-
-        if (CommandLine::get_instance()->a_no_safe_resume.specified())
-            paludis_command.append(" --" + CommandLine::get_instance()->a_no_safe_resume.long_name());
+        paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
+        paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());
 
         tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
         env->set_paludis_command(paludis_command);

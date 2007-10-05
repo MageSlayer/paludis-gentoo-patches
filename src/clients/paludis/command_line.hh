@@ -22,10 +22,9 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/args/debug_build_arg.hh>
-#include <paludis/args/checks_arg.hh>
+#include <paludis/args/dep_list_args_group.hh>
+#include <paludis/args/install_args_group.hh>
 #include <paludis/args/log_level_arg.hh>
-#include <paludis/args/deps_option_arg.hh>
 
 /** \file
  * Declarations for the CommandLine class.
@@ -184,48 +183,7 @@ class CommandLine :
         /// }
 
         /// \name (Un)Install arguments
-        /// {
-
-        /// Install arguments.
-        paludis::args::ArgsGroup install_args;
-
-        /// --pretend
-        paludis::args::SwitchArg a_pretend;
-
-        /// --destinations
-        paludis::args::StringSetArg a_destinations;
-
-        /// --preserve-world
-        paludis::args::SwitchArg a_preserve_world;
-
-        /// --add-to-world-spec
-        paludis::args::StringArg a_add_to_world_spec;
-
-        /// --no-config-protection
-        paludis::args::SwitchArg a_no_config_protection;
-
-        /// --debug-build
-        paludis::args::DebugBuildArg a_debug_build;
-
-        /// --checks
-        paludis::args::ChecksArg a_checks;
-
-        /// --fetch
-        paludis::args::SwitchArg a_fetch;
-
-        /// --no-safe-resume
-        paludis::args::SwitchArg a_no_safe_resume;
-
-        /// --show-reasons
-        paludis::args::EnumArg a_show_reasons;
-
-        /// --show-use-descriptions
-        paludis::args::EnumArg a_show_use_descriptions;
-
-        /// --continue-on-failure
-        paludis::args::EnumArg a_continue_on_faillure;
-
-        /// }
+        paludis::args::InstallArgsGroup install_args;
 
         /// \name Uninstall arguments
         ///\{
@@ -246,38 +204,8 @@ class CommandLine :
 
         ///\}
 
-        /// \name DepList behaviour arguments
-        /// {
-
         /// DepList behaviour arguments.
-        paludis::args::ArgsGroup dl_args;
-
-        paludis::args::EnumArg dl_reinstall;
-        paludis::args::EnumArg dl_reinstall_scm;
-        paludis::args::EnumArg dl_reinstall_targets;
-        paludis::args::EnumArg dl_upgrade;
-        paludis::args::EnumArg dl_new_slots;
-        paludis::args::EnumArg dl_downgrade;
-
-        paludis::args::DepsOptionArg dl_deps_default;
-
-        paludis::args::DepsOptionArg dl_installed_deps_pre;
-        paludis::args::DepsOptionArg dl_installed_deps_runtime;
-        paludis::args::DepsOptionArg dl_installed_deps_post;
-
-        paludis::args::DepsOptionArg dl_uninstalled_deps_pre;
-        paludis::args::DepsOptionArg dl_uninstalled_deps_runtime;
-        paludis::args::DepsOptionArg dl_uninstalled_deps_post;
-        paludis::args::DepsOptionArg dl_uninstalled_deps_suggested;
-
-        paludis::args::EnumArg dl_suggested;
-        paludis::args::EnumArg dl_circular;
-        paludis::args::EnumArg dl_blocks;
-        paludis::args::StringSetArg dl_override_masks;
-
-        paludis::args::EnumArg dl_fall_back;
-
-        /// }
+        paludis::args::DepListArgsGroup dl_args;
 
         /// \name List arguments
         /// {

@@ -127,6 +127,7 @@ namespace paludis
 
         public:
             virtual void execute();
+            int exit_status() const;
 
             virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
 
@@ -238,7 +239,11 @@ namespace paludis
                     Set<UseDescription, UseDescriptionComparator>::ConstIterator);
             virtual void display_use_summary_end();
 
-            virtual void show_resume_command() const = 0;
+            virtual void show_resume_command() const;
+            void show_resume_command(const std::string &) const;
+            virtual std::string make_resume_command(const PackageIDSequence &) const = 0;
+            virtual void on_installed_paludis();
+            virtual HookResult perform_hook(const Hook &) const;
 
             ///\}
 
