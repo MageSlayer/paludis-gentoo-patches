@@ -86,7 +86,7 @@ namespace
                 return false;
             }
 
-            virtual std::string make_resume_command(const PackageIDSequence & p) const
+            virtual std::string make_resume_command(const PackageIDSequence &) const
             {
                 return "";
             }
