@@ -170,6 +170,45 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
 
 namespace
 {
+    class ComplexLicenseFinder :
+        public ConstVisitor<LicenseSpecTree>,
+        public ConstVisitor<LicenseSpecTree>::VisitConstSequence<ComplexLicenseFinder, AllDepSpec>
+    {
+        private:
+            bool _is_complex;
+
+        public:
+            ComplexLicenseFinder() :
+                _is_complex(false)
+            {
+            }
+
+            using ConstVisitor<LicenseSpecTree>::VisitConstSequence<ComplexLicenseFinder, AllDepSpec>::visit_sequence;
+
+            void visit_leaf(const LicenseDepSpec &)
+            {
+            }
+
+            void visit_sequence(const AnyDepSpec &,
+                    LicenseSpecTree::ConstSequenceIterator,
+                    LicenseSpecTree::ConstSequenceIterator)
+            {
+                _is_complex = true;
+            }
+
+            void visit_sequence(const UseDepSpec &,
+                    LicenseSpecTree::ConstSequenceIterator,
+                    LicenseSpecTree::ConstSequenceIterator)
+            {
+                _is_complex = true;
+            }
+
+            operator bool () const
+            {
+                return _is_complex;
+            }
+    };
+
     class Displayer :
         public ConstVisitor<MetadataKeyVisitorTypes>
     {
@@ -276,7 +315,6 @@ namespace
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
-                        task->output_endl();
                     }
                 }
             }
@@ -332,9 +370,15 @@ namespace
                     else
                     {
                         task->output_left_column(k.human_name() + ":");
-                        task->output_right_column("");
-                        task->output_stream() << k.pretty_print(formatter);
-                        task->output_endl();
+                        ComplexLicenseFinder is_complex;
+                        k.value()->accept(is_complex);
+                        if (is_complex)
+                        {
+                            task->output_right_column("");
+                            task->output_stream() << k.pretty_print(formatter);
+                        }
+                        else
+                            task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
             }
@@ -354,7 +398,6 @@ namespace
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
-                        task->output_endl();
                     }
                 }
             }
@@ -374,7 +417,6 @@ namespace
                         task->output_left_column(k.human_name() + ":");
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
-                        task->output_endl();
                     }
                 }
             }
