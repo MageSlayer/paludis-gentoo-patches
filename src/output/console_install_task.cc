@@ -72,9 +72,9 @@ namespace
     std::list<ConsoleInstallTask *> tasks;
     Mutex tasks_mutex;
 
-    void sigterm_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
+    void signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
 
-    void sigterm_handler(int sig)
+    void signal_handler(int sig)
     {
         cout << endl;
         cerr << "Caught signal " << sig << endl;
@@ -131,23 +131,26 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
 void
 ConsoleInstallTask::execute()
 {
-    struct sigaction act, oldact;
-    act.sa_handler = &sigterm_handler;
+    struct sigaction act, oldint, oldterm;
+    act.sa_handler = &signal_handler;
     act.sa_flags = 0;
     ::sigemptyset(&act.sa_mask);
+    ::sigaddset(&act.sa_mask, SIGINT);
     ::sigaddset(&act.sa_mask, SIGTERM);
 
     {
         Lock l(tasks_mutex);
         tasks.push_front(this);
-        ::sigaction(SIGTERM, &act, &oldact);
+        ::sigaction(SIGINT,  &act, &oldint);
+        ::sigaction(SIGTERM, &act, &oldterm);
     }
 
     InstallTask::execute();
 
     {
         Lock l(tasks_mutex);
-        ::sigaction(SIGTERM, &oldact, 0);
+        ::sigaction(SIGINT,  &oldint,  0);
+        ::sigaction(SIGTERM, &oldterm, 0);
         tasks.remove(this);
     }
 }
