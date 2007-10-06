@@ -36,6 +36,7 @@ namespace paludis
         class Category;
         class NotMasked;
         template <typename A_> class SupportsAction;
+        template <typename A_> class MaybeSupportsAction;
         class InstalledAtRoot;
         class All;
     }

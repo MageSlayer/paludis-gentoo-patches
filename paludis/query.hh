@@ -291,6 +291,32 @@ namespace paludis
         };
 
         /**
+         * Fetch packages that maybe support a particular action.
+         *
+         * A full SupportsAction<> on an ebuild ID requires a metadata load,
+         * since unsupported EAPIs don't support any actions. MaybeSupportsAction,
+         * on the other hand, only uses Repository::some_ids_might_support_action,
+         * so it does not incur a penalty but may return additional results.
+         *
+         * \see Query
+         * \see PackageDatabase::query
+         * \ingroup grpquery
+         * \nosubgrouping
+         */
+        template <typename A_>
+        class PALUDIS_VISIBLE MaybeSupportsAction :
+            public Query
+        {
+            public:
+                ///\name Basic operations
+                ///\{
+
+                MaybeSupportsAction();
+
+                ///\}
+        };
+
+        /**
          * Fetch packages that are installed at a particular root.
          *
          * \see Query

@@ -26,6 +26,7 @@
 #include <paludis/handled_information.hh>
 
 #include <paludis/dep_spec.hh>
+#include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/distribution.hh>
 #include <paludis/hashed_containers.hh>
@@ -384,13 +385,13 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     tr1::shared_ptr<const PackageID> best_visible_candidate;
     tr1::shared_ptr<const PackageIDSequence> installable_candidates(
             d->_imp->env->package_database()->query(
-                query::SupportsAction<InstallAction>() &
+                query::MaybeSupportsAction<InstallAction>() &
                 query::Matches(a),
                 qo_order_by_version));
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
-        if (! (*p)->masked())
+        if ((*p)->supports_action(SupportsActionTest<InstallAction>()) && ! (*p)->masked())
         {
             best_visible_candidate = *p;
             break;
@@ -408,6 +409,9 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
             for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
                     p_end(installable_candidates->rend()) ; p != p_end ; ++p)
             {
+                if (! (*p)->supports_action(SupportsActionTest<InstallAction>()))
+                    continue;
+
                 bool success(true);
                 for (PackageID::MasksConstIterator m((*p)->begin_masks()), m_end((*p)->end_masks()) ;
                         m != m_end ; ++m)

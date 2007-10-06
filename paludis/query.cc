@@ -559,6 +559,32 @@ namespace
             return result;
         }
     };
+
+    template <typename T_>
+    struct MaybeSupportsDelegate :
+        QueryDelegate
+    {
+        std::string
+        as_human_readable_string() const
+        {
+            return "maybe " + SupportsNames<T_>::name();
+        }
+
+        tr1::shared_ptr<RepositoryNameSequence>
+        repositories(const Environment & e) const
+        {
+            SupportsActionTest<T_> t;
+
+            tr1::shared_ptr<RepositoryNameSequence> result(new RepositoryNameSequence);
+
+            for (PackageDatabase::RepositoryConstIterator i(e.package_database()->begin_repositories()),
+                    i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
+                if ((*i)->some_ids_might_support_action(t))
+                    result->push_back((*i)->name());
+
+            return result;
+        }
+    };
 }
 
 template <typename A_>
@@ -567,9 +593,21 @@ query::SupportsAction<A_>::SupportsAction() :
 {
 }
 
+template <typename A_>
+query::MaybeSupportsAction<A_>::MaybeSupportsAction() :
+    Query(tr1::shared_ptr<QueryDelegate>(new MaybeSupportsDelegate<A_>))
+{
+}
+
 template class query::SupportsAction<InstallAction>;
 template class query::SupportsAction<UninstallAction>;
 template class query::SupportsAction<InstalledAction>;
 template class query::SupportsAction<PretendAction>;
 template class query::SupportsAction<ConfigAction>;
+
+template class query::MaybeSupportsAction<InstallAction>;
+template class query::MaybeSupportsAction<UninstallAction>;
+template class query::MaybeSupportsAction<InstalledAction>;
+template class query::MaybeSupportsAction<PretendAction>;
+template class query::MaybeSupportsAction<ConfigAction>;
 
