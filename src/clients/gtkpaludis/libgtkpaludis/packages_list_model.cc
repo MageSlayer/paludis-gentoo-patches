@@ -253,7 +253,7 @@ PackagesListModel::populate_in_paludis_thread()
     }
     else if (_imp->packages_page->get_set())
     {
-        DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->main_window->environment(), tr1::shared_ptr<const PackageID>());
+        DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->main_window->environment());
         _imp->main_window->environment()->set(*_imp->packages_page->get_set())->accept(f);
         std::set<std::string> a;
         std::transform(indirect_iterator(f.begin()), indirect_iterator(f.end()), std::inserter(a, a.begin()),

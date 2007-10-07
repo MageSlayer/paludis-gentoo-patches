@@ -52,7 +52,7 @@ namespace
         public ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>
     {
         private:
-            tr1::shared_ptr<const PackageDatabase> _db;
+            const Environment * const _env;
             const PackageIDSequence & _entries;
             std::string _depname;
             std::string _p;
@@ -63,13 +63,15 @@ namespace
 
             bool _found_matches;
 
+            std::set<SetName> _recursing_sets;
+
         public:
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ReverseDepChecker, AllDepSpec>::visit_sequence;
 
-            ReverseDepChecker(tr1::shared_ptr<const PackageDatabase> db,
+            ReverseDepChecker(const Environment * const e,
                     const PackageIDSequence & entries,
                     const std::string & p) :
-                _db(db),
+                _env(e),
                 _entries(entries),
                 _depname(""),
                 _p(p),
@@ -107,6 +109,29 @@ namespace
             void visit_leaf(const DependencyLabelsDepSpec &)
             {
             }
+
+            void visit_leaf(const NamedSetDepSpec & s)
+            {
+                Context context("When expanding named set '" + stringify(s) + "':");
+
+                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(s.name()));
+
+                if (! set)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    return;
+                }
+
+                if (! _recursing_sets.insert(s.name()).second)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    return;
+                }
+
+                set->accept(*this);
+
+                _recursing_sets.erase(s.name());
+            }
     };
 
     void
@@ -136,7 +161,7 @@ namespace
     void
     ReverseDepChecker::visit_leaf(const PackageDepSpec & a)
     {
-        tr1::shared_ptr<const PackageIDSequence> dep_entries(_db->query(
+        tr1::shared_ptr<const PackageIDSequence> dep_entries(_env->package_database()->query(
                     query::Matches(a), qo_order_by_version));
         tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
@@ -197,7 +222,7 @@ namespace
         {
             try
             {
-                ReverseDepChecker checker(env.package_database(), entries, stringify(p) + "-" + stringify(e->canonical_form(idcf_version)));
+                ReverseDepChecker checker(&env, entries, stringify(p) + "-" + stringify(e->canonical_form(idcf_version)));
 
                 if (e->build_dependencies_key())
                     checker.check(e->build_dependencies_key()->value(), e->build_dependencies_key()->raw_name());

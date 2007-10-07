@@ -27,7 +27,8 @@
 using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
-    PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 {
 }
 
@@ -288,6 +289,14 @@ StringifyFormatter::format(const UseDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const NamedSetDepSpec & s, const format::Plain & k) const
+{
+    if (_imp->f_named)
+        return _imp->f_named->format(s, k);
     return stringify(s);
 }
 

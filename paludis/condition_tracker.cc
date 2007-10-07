@@ -138,3 +138,9 @@ ConditionTracker::visit_leaf(const DependencyLabelsDepSpec &)
     throw InternalError(PALUDIS_HERE, "ConditionTracker saw a DependencyLabelsDepSpec");
 }
 
+void
+ConditionTracker::visit_leaf(const NamedSetDepSpec &)
+{
+    throw InternalError(PALUDIS_HERE, "ConditionTracker saw a NamedSetDepSpec");
+}
+

@@ -158,6 +158,10 @@ namespace
         {
         }
 
+        void visit_leaf(const NamedSetDepSpec &)
+        {
+        }
+
         void visit_sequence(const UseDepSpec & u,
                 GenericSpecTree::ConstSequenceIterator cur,
                 GenericSpecTree::ConstSequenceIterator end)

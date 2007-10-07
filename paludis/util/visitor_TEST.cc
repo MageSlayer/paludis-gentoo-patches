@@ -21,6 +21,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/no_type.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -139,6 +140,9 @@ namespace test_cases
             TEST_CHECK_EQUAL(c.r, "");
             std::for_each(indirect_iterator(v.begin()), indirect_iterator(v.end()), accept_visitor(c));
             TEST_CHECK_EQUAL(c.r, "c_fooc_barc_foo");
+
+            TEST_CHECK((ConstVisitor<NodeVisitorTypes>::Contains<const TreeLeaf<NodeVisitorTypes, FooNode> >::value));
+            TEST_CHECK((! ConstVisitor<NodeVisitorTypes>::Contains<const TreeLeaf<NodeVisitorTypes, NoType<12345u> > >::value));
         }
     } test_const_visitor;
 
@@ -165,6 +169,9 @@ namespace test_cases
             TEST_CHECK_EQUAL(c.r, "");
             std::for_each(indirect_iterator(v.begin()), indirect_iterator(v.end()), accept_visitor(c));
             TEST_CHECK_EQUAL(c.r, "foobarfoo");
+
+            TEST_CHECK((ConstVisitor<NodeVisitorTypes>::Contains<TreeLeaf<NodeVisitorTypes, FooNode> >::value));
+            TEST_CHECK((! ConstVisitor<NodeVisitorTypes>::Contains<TreeLeaf<NodeVisitorTypes, NoType<12345u> > >::value));
         }
     } test_visitor;
 }

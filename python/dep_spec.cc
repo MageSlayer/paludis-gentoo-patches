@@ -51,6 +51,7 @@ template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonF
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonLicenseDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonURILabelsDepSpec>;
 template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonDependencyLabelsDepSpec>;
+template class ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonNamedSetDepSpec>;
 
 template class Visits<const PythonAllDepSpec>;
 template class Visits<const PythonAnyDepSpec>;
@@ -63,6 +64,7 @@ template class Visits<const PythonFetchableURIDepSpec>;
 template class Visits<const PythonLicenseDepSpec>;
 template class Visits<const PythonURILabelsDepSpec>;
 template class Visits<const PythonDependencyLabelsDepSpec>;
+template class Visits<const PythonNamedSetDepSpec>;
 
 PythonDepSpec::PythonDepSpec()
 {
@@ -402,6 +404,24 @@ PythonPlainTextDepSpec::PythonPlainTextDepSpec(const PlainTextDepSpec & d) :
 {
 }
 
+PythonNamedSetDepSpec::PythonNamedSetDepSpec(const SetName & s) :
+    PythonStringDepSpec(stringify(s)),
+    _name(s)
+{
+}
+
+const SetName
+PythonNamedSetDepSpec::name() const
+{
+    return _name;
+}
+
+PythonNamedSetDepSpec::PythonNamedSetDepSpec(const NamedSetDepSpec & d) :
+    PythonStringDepSpec(d.text()),
+    _name(d.name())
+{
+}
+
 PythonLicenseDepSpec::PythonLicenseDepSpec(const std::string & s) :
     PythonStringDepSpec(s)
 {
@@ -541,6 +561,12 @@ SpecTreeToPython::visit_leaf(const PlainTextDepSpec & d)
 }
 
 void
+SpecTreeToPython::visit_leaf(const NamedSetDepSpec & d)
+{
+    _current_parent->add_child(tr1::shared_ptr<PythonNamedSetDepSpec>(new PythonNamedSetDepSpec(d)));
+}
+
+void
 SpecTreeToPython::visit_leaf(const LicenseDepSpec & d)
 {
     _current_parent->add_child(tr1::shared_ptr<PythonLicenseDepSpec>(new PythonLicenseDepSpec(d)));
@@ -658,6 +684,7 @@ struct AllowedTypes<DependencySpecTree>
     AllowedTypes(const PackageDepSpec &) {};
     AllowedTypes(const BlockDepSpec &) {};
     AllowedTypes(const DependencyLabelsDepSpec &) {};
+    AllowedTypes(const NamedSetDepSpec &) {};
 };
 
 template<>
@@ -665,6 +692,7 @@ struct AllowedTypes<SetSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const PackageDepSpec &) {};
+    AllowedTypes(const NamedSetDepSpec &) {};
 };
 
 
@@ -712,6 +740,13 @@ struct NiceClassNames<PlainTextDepSpec>
         static const char * name;
 };
 const char * NiceClassNames<PlainTextDepSpec>::name = "PlainTextDepSpec";
+
+template<>
+struct NiceClassNames<NamedSetDepSpec>
+{
+        static const char * name;
+};
+const char * NiceClassNames<NamedSetDepSpec>::name = "NamedSetDepSpec";
 
 template<>
 struct NiceClassNames<LicenseDepSpec>
@@ -924,6 +959,13 @@ SpecTreeFromPython<H_>::visit(const PythonPlainTextDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonNamedSetDepSpec & d)
+{
+    dispatch<H_, NamedSetDepSpec>(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonFetchableURIDepSpec & d)
 {
     dispatch<H_, FetchableURIDepSpec>(this, d);
@@ -1033,6 +1075,15 @@ SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
     _add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(
                new TreeLeaf<H_, PlainTextDepSpec>(tr1::shared_ptr<PlainTextDepSpec>(
                        new PlainTextDepSpec(d.text())))));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonNamedSetDepSpec & d)
+{
+    _add(tr1::shared_ptr<TreeLeaf<H_, NamedSetDepSpec> >(
+               new TreeLeaf<H_, NamedSetDepSpec>(tr1::shared_ptr<NamedSetDepSpec>(
+                       new NamedSetDepSpec(d.name())))));
 }
 
 template <typename H_>
@@ -1462,6 +1513,21 @@ void expose_dep_spec()
          bp::init<const std::string &>("__init__(string)")
         )
         .def("__str__", &PythonPlainTextDepSpec::text)
+        ;
+
+    /**
+     * NamedSetDepSpec
+     */
+    bp::class_<PythonNamedSetDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
+        (
+         "NamedSetDepSpec",
+         "A NamedSetDepSpec represents a named package set.",
+         bp::init<const SetName &>("__init__(SetName)")
+        )
+        .def("__str__", &PythonNamedSetDepSpec::text)
+        .add_property("name", &PythonNamedSetDepSpec::name,
+                "[ro] SetName"
+                )
         ;
 
     /**

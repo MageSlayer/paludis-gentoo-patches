@@ -38,6 +38,7 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::SimpleURIDepSpec>,
     public paludis::CanFormat<paludis::FetchableURIDepSpec>,
     public paludis::CanFormat<paludis::LicenseDepSpec>,
+    public paludis::CanFormat<paludis::NamedSetDepSpec>,
     public paludis::CanFormat<paludis::tr1::shared_ptr<const paludis::PackageID> >,
     public paludis::CanFormat<std::string>,
     public paludis::CanSpace,
@@ -95,6 +96,8 @@ class ColourFormatter :
         std::string format(const paludis::FetchableURIDepSpec &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::SimpleURIDepSpec &, const paludis::format::Plain &) const;
+
+        std::string format(const paludis::NamedSetDepSpec &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::BlockDepSpec &, const paludis::format::Plain &) const;
 

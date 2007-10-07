@@ -64,6 +64,7 @@ namespace paludis
             void visit_leaf(const PackageDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
             void visit_leaf(const BlockDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
             void visit_leaf(const DependencyLabelsDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
+            void visit_leaf(const NamedSetDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
     };
 }
 

@@ -46,6 +46,7 @@ namespace paludis
     class UseDepSpec;
     class BlockDepSpec;
     class StringDepSpec;
+    class NamedSetDepSpec;
     template <typename T_> class LabelsDepSpec;
 
     /**
@@ -137,6 +138,14 @@ namespace paludis
      * \since 0.26
      */
     std::ostream & operator<< (std::ostream &, const UseDepSpec &) PALUDIS_VISIBLE;
+
+    /**
+     * A NamedSetDepSpec can be written to an ostream.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
+    std::ostream & operator<< (std::ostream &, const NamedSetDepSpec &) PALUDIS_VISIBLE;
 }
 
 #endif

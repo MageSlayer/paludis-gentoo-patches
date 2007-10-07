@@ -175,7 +175,7 @@ UninstallTask::add_target(const std::string & target)
                     throw MultipleSetTargetsSpecified();
 
                 _imp->had_set_targets = true;
-                DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env, tr1::shared_ptr<const PackageID>());
+                DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
                 spec->accept(f);
                 std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
             }
@@ -425,26 +425,31 @@ namespace
     {
         using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
 
+        Environment * const env;
         UninstallTask * const task;
-        std::list<const PackageDepSpec *> items;
-        bool inside_any;
-        bool inside_use;
 
-        WorldTargetFinder(UninstallTask * const t) :
-            task(t),
-            inside_any(false),
-            inside_use(false)
+        WorldTargetFinder(Environment * const e, UninstallTask * const t) :
+            env(e),
+            task(t)
         {
         }
 
         void visit_leaf(const PackageDepSpec & a)
         {
-            if (! (inside_any || inside_use || a.slot_ptr() ||
-                        (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
+            if (! (a.slot_ptr() || (a.version_requirements_ptr() && ! a.version_requirements_ptr()->empty())))
             {
-                items.push_back(&a);
+                for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+                        r_end(env->package_database()->end_repositories()) ;
+                        r != r_end ; ++r)
+                    if ((*r)->world_interface && a.package_ptr())
+                        (*r)->world_interface->remove_from_world(*a.package_ptr());
+
                 task->on_update_world(a);
             }
+        }
+
+        void visit_leaf(const NamedSetDepSpec &)
+        {
         }
     };
 }
@@ -452,16 +457,7 @@ namespace
 void
 UninstallTask::world_remove_packages(tr1::shared_ptr<const SetSpecTree::ConstItem> a)
 {
-    WorldTargetFinder w(this);
+    WorldTargetFinder w(_imp->env, this);
     a->accept(w);
-    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
-            i_end(w.items.end()) ; i != i_end ; ++i)
-    {
-        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                r_end(_imp->env->package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-            if ((*r)->world_interface && (*i)->package_ptr())
-                (*r)->world_interface->remove_from_world(*(*i)->package_ptr());
-    }
 }
 

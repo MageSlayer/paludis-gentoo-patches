@@ -26,6 +26,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.ptds = PlainTextDepSpec("foo")
         self.pds = PackageDepSpec(">=foo/bar-1:100::testrepo", PackageDepSpecParseMode.PERMISSIVE)
         self.bds = BlockDepSpec(self.pds)
+        self.nds = NamedSetDepSpec("system")
 
     def test_01_init(self):
         self.get_depspecs()
@@ -41,6 +42,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assertEqual(str(self.ptds), "foo")
         self.assertEqual(str(self.pds), ">=foo/bar-1:100::testrepo")
         self.assertEqual(str(self.bds.blocked_spec), ">=foo/bar-1:100::testrepo")
+        self.assertEqual(str(self.nds), "system")
 
     def test_04_slot(self):
         self.get_depspecs()
@@ -77,6 +79,10 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         pds = spec.without_use_requirements()
         self.assertEquals(pds.use_requirements, None)
         self.assertEquals(str(pds), "foo/monkey")
+
+    def test_11_name(self):
+        self.get_depspecs()
+        self.assertEqual(str(self.nds.text), "system")
 
 ###    def test_11_composites(self):
 ###        eapi = EAPIData.instance.eapi_from_string("0")

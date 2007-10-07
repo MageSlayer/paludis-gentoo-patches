@@ -42,6 +42,7 @@
 #include <functional>
 #include <algorithm>
 #include <list>
+#include <set>
 
 using namespace paludis;
 
@@ -910,15 +911,12 @@ namespace
     {
         using ConstVisitor<SetSpecTree>::VisitConstSequence<WorldTargetFinder, AllDepSpec>::visit_sequence;
 
+        Environment * const env;
         InstallTask * const task;
-        std::list<const PackageDepSpec *> items;
-        bool inside_any;
-        bool inside_use;
 
-        WorldTargetFinder(InstallTask * const t) :
-            task(t),
-            inside_any(false),
-            inside_use(false)
+        WorldTargetFinder(Environment * const e, InstallTask * const t) :
+            env(e),
+            task(t)
         {
         }
 
@@ -930,9 +928,17 @@ namespace
                 task->on_update_world_skip(a, "version restrictions");
             else
             {
-                items.push_back(&a);
+                for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+                        r_end(env->package_database()->end_repositories()) ;
+                        r != r_end ; ++r)
+                    if ((*r)->world_interface && a.package_ptr())
+                        (*r)->world_interface->add_to_world(*a.package_ptr());
                 task->on_update_world(a);
             }
+        }
+
+        void visit_leaf(const NamedSetDepSpec &)
+        {
         }
     };
 }
@@ -940,17 +946,8 @@ namespace
 void
 InstallTask::world_update_packages(tr1::shared_ptr<const SetSpecTree::ConstItem> a)
 {
-    WorldTargetFinder w(this);
+    WorldTargetFinder w(_imp->env, this);
     a->accept(w);
-    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
-            i_end(w.items.end()) ; i != i_end ; ++i)
-    {
-        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                r_end(_imp->env->package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-            if ((*r)->world_interface && (*i)->package_ptr())
-                (*r)->world_interface->add_to_world(*(*i)->package_ptr());
-    }
 }
 
 bool
@@ -982,6 +979,7 @@ namespace
         const Environment * const env;
         const PackageID & id;
         tr1::shared_ptr<const PackageDepSpec> failure;
+        std::set<SetName> recursing_sets;
 
         CheckSatisfiedVisitor(const Environment * const e,
                 const PackageID & i) :
@@ -1028,6 +1026,27 @@ namespace
                 if (! failure)
                     break;
             }
+        }
+
+        void visit_leaf(const NamedSetDepSpec & s)
+        {
+            tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+
+            if (! set)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                return;
+            }
+
+            if (! recursing_sets.insert(s.name()).second)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                return;
+            }
+
+            set->accept(*this);
+
+            recursing_sets.erase(s.name());
         }
     };
 }

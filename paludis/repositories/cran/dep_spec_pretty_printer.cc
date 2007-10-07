@@ -105,6 +105,22 @@ DepSpecPrettyPrinter::visit_leaf(const DependencyLabelsDepSpec &)
 {
 }
 
+void
+DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
+{
+    if (_imp->multiline)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_comma)
+        _imp->s << ", ";
+    else
+        _imp->need_comma = true;
+
+    _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->multiline)
+        _imp->s << _imp->formatter.newline();
+}
+
 std::ostream &
 paludis::cranrepository::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 {

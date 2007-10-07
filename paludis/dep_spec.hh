@@ -396,6 +396,32 @@ namespace paludis
     };
 
     /**
+     * A NamedSetDepSpec represents a named package set.
+     *
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE NamedSetDepSpec :
+        public StringDepSpec
+    {
+        private:
+            const SetName _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            NamedSetDepSpec(const SetName &);
+
+            ///\}
+
+            /// Fetch the name of our set.
+            const SetName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
      * A LicenseDepSpec represents a license entry.
      *
      * \ingroup g_dep_spec

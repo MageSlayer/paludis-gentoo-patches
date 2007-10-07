@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <list>
 #include <map>
+#include <set>
 
 using namespace paludis;
 using namespace examples;
@@ -54,6 +55,7 @@ namespace
             const tr1::shared_ptr<const Environment> _env;
             const tr1::shared_ptr<const PackageID> _id;
             ResultsMap & _results;
+            std::set<SetName> _recursing_sets;
 
         public:
             DependenciesCollector(
@@ -85,6 +87,36 @@ namespace
                  * wildcarded dep. */
                 if (spec.package_ptr() && *spec.package_ptr() == QualifiedPackageName("app-arch/unzip"))
                     _results[stringify(*_id)].first = true;
+            }
+
+            void visit_leaf(const NamedSetDepSpec & spec)
+            {
+                /* For named set specs, we visit the set. */
+                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env->set(spec.name()));
+
+                /* First complication: we might have a name referring to a set
+                 * that doesn't exist. */
+                if (! set)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << spec << "'";
+                    return;
+                }
+
+                /* Second complication: we need to handle sets that contain
+                 * themselves. Although this shouldn't happen, user-defined
+                 * sets can be made to include themselves, possibly with
+                 * other sets inbetween (a includes b includes a). */
+                if (! _recursing_sets.insert(spec.name()).second)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << spec << "'";
+                    return;
+                }
+
+                /* Now that we have the set, we can handle it simply by
+                 * visiting it. */
+                set->accept(*this);
+
+                _recursing_sets.erase(spec.name());
             }
 
             void visit_leaf(const BlockDepSpec &)

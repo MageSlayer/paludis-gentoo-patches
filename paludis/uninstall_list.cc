@@ -40,6 +40,7 @@
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <algorithm>
+#include <set>
 
 using namespace paludis;
 
@@ -256,7 +257,7 @@ namespace
         const tr1::shared_ptr<const PackageID> pkg;
         tr1::shared_ptr<DepListEntryTags> matches;
         tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
-
+        std::set<SetName> recursing_sets;
 
         DepCollector(const Environment * const ee, const tr1::shared_ptr<const PackageID> & e) :
             env(ee),
@@ -307,6 +308,29 @@ namespace
 
         void visit_leaf(const DependencyLabelsDepSpec &)
         {
+        }
+
+        void visit_leaf(const NamedSetDepSpec & s)
+        {
+            Context context("When expanding named set '" + stringify(s) + "':");
+
+            tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+
+            if (! set)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                return;
+            }
+
+            if (! recursing_sets.insert(s.name()).second)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                return;
+            }
+
+            set->accept(*this);
+
+            recursing_sets.erase(s.name());
         }
     };
 }

@@ -343,6 +343,12 @@ ColourFormatter::format(const URILabelsDepSpec & f, const format::Plain &) const
 }
 
 std::string
+ColourFormatter::format(const NamedSetDepSpec & f, const format::Plain &) const
+{
+    return stringify(f);
+}
+
+std::string
 ColourFormatter::format(const DependencyLabelsDepSpec & f, const format::Plain &) const
 {
     return stringify(f);

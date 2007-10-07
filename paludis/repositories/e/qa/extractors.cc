@@ -125,6 +125,10 @@ namespace
         {
         }
 
+        void visit_leaf(const NamedSetDepSpec &)
+        {
+        }
+
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AllDepSpec>::visit_sequence;
         using ConstVisitor<GenericSpecTree>::VisitConstSequence<FlagExtractor, AnyDepSpec>::visit_sequence;
     };
@@ -212,6 +216,10 @@ namespace
         }
 
         void visit_leaf(const LicenseDepSpec &)
+        {
+        }
+
+        void visit_leaf(const NamedSetDepSpec &)
         {
         }
 

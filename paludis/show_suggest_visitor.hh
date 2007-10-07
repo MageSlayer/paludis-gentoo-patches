@@ -57,6 +57,8 @@ namespace paludis
 
             void visit_leaf(const DependencyLabelsDepSpec &);
 
+            void visit_leaf(const NamedSetDepSpec &);
+
             void visit_sequence(const UseDepSpec &,
                     DependencySpecTree::ConstSequenceIterator,
                     DependencySpecTree::ConstSequenceIterator);

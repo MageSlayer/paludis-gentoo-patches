@@ -45,6 +45,7 @@ namespace
         private:
             std::multimap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepTag>, PackageIDSetComparator> _found;
             const Environment & _env;
+            std::set<SetName> _recursing_sets;
 
         public:
             typedef std::multimap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepTag>,
@@ -64,6 +65,28 @@ namespace
             ///{
 
             void visit_leaf(const PackageDepSpec &);
+
+            void visit_leaf(const NamedSetDepSpec & s)
+            {
+                Context context("When expanding named set '" + stringify(s) + "':");
+
+                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
+                if (! set)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    return;
+                }
+
+                if (! _recursing_sets.insert(s.name()).second)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    return;
+                }
+
+                set->accept(*this);
+
+                _recursing_sets.erase(s.name());
+            }
 
             ///}
 

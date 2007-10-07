@@ -496,7 +496,13 @@ namespace paludis
         typename T6_,
         typename T7_,
         typename T8_,
-        typename T9_
+        typename T9_,
+        typename T10_,
+        typename T11_,
+        typename T12_,
+        typename T13_,
+        typename T14_,
+        typename T15_
         >
     class PALUDIS_VISIBLE Formatter :
         public FormatFunctionsByProxy<T1_, typename format::CategorySelector<T1_>::Category, 1>,
@@ -508,6 +514,12 @@ namespace paludis
         public FormatFunctionsByProxy<T7_, typename format::CategorySelector<T7_>::Category, 7>,
         public FormatFunctionsByProxy<T8_, typename format::CategorySelector<T8_>::Category, 8>,
         public FormatFunctionsByProxy<T9_, typename format::CategorySelector<T9_>::Category, 9>,
+        public FormatFunctionsByProxy<T10_, typename format::CategorySelector<T10_>::Category, 10>,
+        public FormatFunctionsByProxy<T11_, typename format::CategorySelector<T11_>::Category, 11>,
+        public FormatFunctionsByProxy<T12_, typename format::CategorySelector<T12_>::Category, 12>,
+        public FormatFunctionsByProxy<T13_, typename format::CategorySelector<T13_>::Category, 13>,
+        public FormatFunctionsByProxy<T14_, typename format::CategorySelector<T14_>::Category, 14>,
+        public FormatFunctionsByProxy<T15_, typename format::CategorySelector<T15_>::Category, 15>,
         public CanSpace
     {
         private:
@@ -525,6 +537,12 @@ namespace paludis
                 FormatFunctionsByProxy<T7_, typename format::CategorySelector<T7_>::Category, 7>(&t),
                 FormatFunctionsByProxy<T8_, typename format::CategorySelector<T8_>::Category, 8>(&t),
                 FormatFunctionsByProxy<T9_, typename format::CategorySelector<T9_>::Category, 9>(&t),
+                FormatFunctionsByProxy<T10_, typename format::CategorySelector<T10_>::Category, 10>(&t),
+                FormatFunctionsByProxy<T11_, typename format::CategorySelector<T11_>::Category, 11>(&t),
+                FormatFunctionsByProxy<T12_, typename format::CategorySelector<T12_>::Category, 12>(&t),
+                FormatFunctionsByProxy<T13_, typename format::CategorySelector<T13_>::Category, 13>(&t),
+                FormatFunctionsByProxy<T14_, typename format::CategorySelector<T14_>::Category, 14>(&t),
+                FormatFunctionsByProxy<T15_, typename format::CategorySelector<T15_>::Category, 15>(&t),
                 _proxy(&t)
             {
             }
@@ -539,6 +557,12 @@ namespace paludis
                 FormatFunctionsByProxy<T7_, typename format::CategorySelector<T7_>::Category, 7>(other),
                 FormatFunctionsByProxy<T8_, typename format::CategorySelector<T8_>::Category, 8>(other),
                 FormatFunctionsByProxy<T9_, typename format::CategorySelector<T9_>::Category, 9>(other),
+                FormatFunctionsByProxy<T10_, typename format::CategorySelector<T10_>::Category, 10>(other),
+                FormatFunctionsByProxy<T11_, typename format::CategorySelector<T11_>::Category, 11>(other),
+                FormatFunctionsByProxy<T12_, typename format::CategorySelector<T12_>::Category, 12>(other),
+                FormatFunctionsByProxy<T13_, typename format::CategorySelector<T13_>::Category, 13>(other),
+                FormatFunctionsByProxy<T14_, typename format::CategorySelector<T14_>::Category, 14>(other),
+                FormatFunctionsByProxy<T15_, typename format::CategorySelector<T15_>::Category, 15>(other),
                 CanSpace(other),
                 _proxy(other._proxy)
             {
@@ -553,6 +577,12 @@ namespace paludis
             using FormatFunctionsByProxy<T7_, typename format::CategorySelector<T7_>::Category, 7>::format;
             using FormatFunctionsByProxy<T8_, typename format::CategorySelector<T8_>::Category, 8>::format;
             using FormatFunctionsByProxy<T9_, typename format::CategorySelector<T9_>::Category, 9>::format;
+            using FormatFunctionsByProxy<T10_, typename format::CategorySelector<T10_>::Category, 10>::format;
+            using FormatFunctionsByProxy<T11_, typename format::CategorySelector<T11_>::Category, 11>::format;
+            using FormatFunctionsByProxy<T12_, typename format::CategorySelector<T12_>::Category, 12>::format;
+            using FormatFunctionsByProxy<T13_, typename format::CategorySelector<T13_>::Category, 13>::format;
+            using FormatFunctionsByProxy<T14_, typename format::CategorySelector<T14_>::Category, 14>::format;
+            using FormatFunctionsByProxy<T15_, typename format::CategorySelector<T15_>::Category, 15>::format;
 
             virtual std::string newline() const
             {

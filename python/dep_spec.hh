@@ -42,6 +42,7 @@ namespace paludis
         class PythonBlockDepSpec;
         class PythonURILabelsDepSpec;
         class PythonDependencyLabelsDepSpec;
+        class PythonNamedSetDepSpec;
 
         struct PythonDepSpecVisitorTypes :
             VisitorTypes<
@@ -57,7 +58,8 @@ namespace paludis
                 PythonFetchableURIDepSpec,
                 PythonSimpleURIDepSpec,
                 PythonURILabelsDepSpec,
-                PythonDependencyLabelsDepSpec
+                PythonDependencyLabelsDepSpec,
+                PythonNamedSetDepSpec
             >
         {
         };
@@ -192,6 +194,20 @@ namespace paludis
                 PythonPlainTextDepSpec(const PlainTextDepSpec &);
         };
 
+        class PALUDIS_VISIBLE PythonNamedSetDepSpec :
+            public PythonStringDepSpec,
+            public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonNamedSetDepSpec>
+        {
+            private:
+                const SetName _name;
+
+            public:
+                PythonNamedSetDepSpec(const SetName &);
+                PythonNamedSetDepSpec(const NamedSetDepSpec &);
+
+                const SetName name() const;
+        };
+
         class PALUDIS_VISIBLE PythonSimpleURIDepSpec :
             public PythonStringDepSpec,
             public ConstAcceptInterfaceVisitsThis<PythonDepSpecVisitorTypes, PythonSimpleURIDepSpec>
@@ -298,6 +314,8 @@ namespace paludis
                 void visit_leaf(const URILabelsDepSpec &);
 
                 void visit_leaf(const DependencyLabelsDepSpec &);
+
+                void visit_leaf(const NamedSetDepSpec &);
         };
 
         /**
@@ -330,6 +348,7 @@ namespace paludis
                 void visit(const PythonLicenseDepSpec &);
                 void visit(const PythonURILabelsDepSpec &);
                 void visit(const PythonDependencyLabelsDepSpec &);
+                void visit(const PythonNamedSetDepSpec &);
 
                 void real_visit(const PythonAllDepSpec &);
                 void real_visit(const PythonAnyDepSpec &);
@@ -342,6 +361,7 @@ namespace paludis
                 void real_visit(const PythonURILabelsDepSpec &);
                 void real_visit(const PythonDependencyLabelsDepSpec &);
                 void real_visit(const PythonLicenseDepSpec &);
+                void real_visit(const PythonNamedSetDepSpec &);
         };
     }
 }

@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
             if ((*i)->provide_key())
             {
                 /* Create our flattener... */
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> provides(env.get(), *i);
+                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> provides(env.get(), **i);
 
                 /* Populate it by making it visit the key's value */
                 (*i)->provide_key()->value()->accept(provides);
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
             /* Again for homepage */
             if ((*i)->homepage_key())
             {
-                DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), *i);
+                DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), **i);
                 (*i)->homepage_key()->value()->accept(homepages);
 
                 cout << "    " << left << setw(24) << "Homepages:" << " "
@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
             if ((*i)->end_metadata() != (*i)->find_metadata("RESTRICT") &&
                     visitor_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(**(*i)->find_metadata("RESTRICT")))
             {
-                DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(env.get(), *i);
+                DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(env.get(), **i);
 
                 visitor_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(
                         **(*i)->find_metadata("RESTRICT"))->value()->accept(restricts);

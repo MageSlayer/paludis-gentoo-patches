@@ -427,16 +427,18 @@ Implementation<ERepositoryProfile>::make_vars_from_file_vars()
 {
     try
     {
-        for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
-        {
-            if (0 != i->compare(0, 1, "*", 0, 1))
-                continue;
+        if (! repository->params().master_repository)
+            for (erepository::ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
+                    i_end(packages_file.end()) ; i != i_end ; ++i)
+            {
+                if (0 != i->compare(0, 1, "*", 0, 1))
+                    continue;
 
-            Context context_spec("When parsing '" + *i + "':");
-            tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
-            spec->set_tag(system_tag);
-            system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
-        }
+                Context context_spec("When parsing '" + *i + "':");
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
+                spec->set_tag(system_tag);
+                system_packages->add(tr1::shared_ptr<SetSpecTree::ConstItem>(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            }
     }
     catch (const Exception & e)
     {

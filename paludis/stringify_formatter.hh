@@ -42,6 +42,7 @@ namespace paludis
         public CanFormat<PlainTextDepSpec>,
         public CanFormat<LicenseDepSpec>,
         public CanFormat<UseDepSpec>,
+        public CanFormat<NamedSetDepSpec>,
         public CanSpace
     {
         private:
@@ -83,6 +84,8 @@ namespace paludis
             virtual std::string format(const SimpleURIDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const DependencyLabelsDepSpec &, const format::Plain &) const;
+
+            virtual std::string format(const NamedSetDepSpec &, const format::Plain &) const;
 
             virtual std::string format(const URILabelsDepSpec &, const format::Plain &) const;
 

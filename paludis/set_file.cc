@@ -272,14 +272,11 @@ SimpleHandler::_create_contents() const
 
         try
         {
-            if (_p.environment && std::string::npos == i->find('/'))
+            if (std::string::npos == i->find('/'))
             {
-                tr1::shared_ptr<SetSpecTree::ConstItem> p(_p.environment->set(SetName(*i)));
-                if (p)
-                    _contents->add(p);
-                else
-                    Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '" + stringify(*i) +
-                            "' because it does not contain a known set name");
+                tr1::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
+                _contents->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, NamedSetDepSpec> >(
+                            new TreeLeaf<SetSpecTree, NamedSetDepSpec>(p)));
             }
             else
             {

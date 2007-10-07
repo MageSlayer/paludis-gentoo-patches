@@ -286,6 +286,7 @@ struct DepList::AddVisitor :
     DepList * const d;
     tr1::shared_ptr<const DestinationsSet> destinations;
     tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions;
+    std::set<SetName> recursing_sets;
 
     AddVisitor(DepList * const dd, tr1::shared_ptr<const DestinationsSet> ddd,
                tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > c =
@@ -313,6 +314,8 @@ struct DepList::AddVisitor :
     void visit_leaf(const BlockDepSpec &);
 
     void visit_leaf(const DependencyLabelsDepSpec &);
+
+    void visit_leaf(const NamedSetDepSpec &);
 };
 
 void
@@ -582,6 +585,27 @@ DepList::AddVisitor::visit_leaf(const PackageDepSpec & a)
     }
 
     d->add_package(best_visible_candidate, a.tag(), a, conditions, destinations);
+}
+
+void
+DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
+{
+    Context context("When adding NamedSetDepSpec '" + stringify(a) + "':");
+
+    tr1::shared_ptr<const SetSpecTree::ConstItem> set(d->_imp->env->set(a.name()));
+
+    if (! set)
+        throw NoSuchPackageError(stringify(a.name()));
+
+    if (! recursing_sets.insert(a.name()).second)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << a.name() << "'";
+        throw NoSuchPackageError(stringify(a.name()));
+    }
+
+    set->accept(*this);
+
+    recursing_sets.erase(a.name());
 }
 
 void
@@ -1004,7 +1028,7 @@ DepList::add_package(const tr1::shared_ptr<const PackageID> & p, tr1::shared_ptr
     /* add provides */
     if (p->provide_key())
     {
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, _imp->current_package_id());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, *_imp->current_package_id());
         p->provide_key()->value()->accept(f);
 
         if (f.begin() != f.end() && ! DistributionData::get_instance()->distribution_from_string(

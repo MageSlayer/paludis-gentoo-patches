@@ -96,6 +96,10 @@ namespace
         {
         }
 
+        void visit_leaf(const NamedSetDepSpec &)
+        {
+        }
+
         void visit_leaf(const PackageDepSpec & orig_p)
         {
             success = false;

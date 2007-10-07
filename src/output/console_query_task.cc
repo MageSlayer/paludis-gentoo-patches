@@ -651,6 +651,11 @@ namespace
             empty = false;
         }
 
+        void visit_leaf(const NamedSetDepSpec &)
+        {
+            empty = false;
+        }
+
         void visit_leaf(const URILabelsDepSpec &)
         {
         }

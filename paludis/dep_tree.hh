@@ -62,6 +62,7 @@ namespace paludis
             TreeLeaf<GenericSpecTree, BlockDepSpec>,
             TreeLeaf<GenericSpecTree, URILabelsDepSpec>,
             TreeLeaf<GenericSpecTree, DependencyLabelsDepSpec>,
+            TreeLeaf<GenericSpecTree, NamedSetDepSpec>,
             ConstTreeSequence<GenericSpecTree, AllDepSpec>,
             ConstTreeSequence<GenericSpecTree, AnyDepSpec>,
             ConstTreeSequence<GenericSpecTree, UseDepSpec>
@@ -84,7 +85,8 @@ namespace paludis
             PackageDepSpec,
             BlockDepSpec,
             URILabelsDepSpec,
-            DependencyLabelsDepSpec
+            DependencyLabelsDepSpec,
+            NamedSetDepSpec
                 > Formatter;
     };
 
@@ -255,6 +257,7 @@ namespace paludis
             TreeLeaf<DependencySpecTree, PackageDepSpec>,
             TreeLeaf<DependencySpecTree, BlockDepSpec>,
             TreeLeaf<DependencySpecTree, DependencyLabelsDepSpec>,
+            TreeLeaf<DependencySpecTree, NamedSetDepSpec>,
             ConstTreeSequence<DependencySpecTree, AllDepSpec>,
             ConstTreeSequence<DependencySpecTree, AnyDepSpec>,
             ConstTreeSequence<DependencySpecTree, UseDepSpec>
@@ -272,6 +275,7 @@ namespace paludis
             UseDepSpec,
             PackageDepSpec,
             BlockDepSpec,
+            NamedSetDepSpec,
             DependencyLabelsDepSpec
                 > Formatter;
     };
@@ -288,6 +292,7 @@ namespace paludis
             SetSpecTree,
             DepSpec,
             TreeLeaf<SetSpecTree, PackageDepSpec>,
+            TreeLeaf<SetSpecTree, NamedSetDepSpec>,
             ConstTreeSequence<SetSpecTree, AllDepSpec>
         >
     {
@@ -300,7 +305,8 @@ namespace paludis
          * \nosubgrouping
          */
         typedef Formatter<
-            PackageDepSpec
+            PackageDepSpec,
+            NamedSetDepSpec
                 > Formatter;
     };
 }

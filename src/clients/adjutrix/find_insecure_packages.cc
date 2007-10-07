@@ -71,6 +71,7 @@ namespace
         private:
             const Environment & _env;
             std::multimap<tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
+            std::set<SetName> recursing_sets;
 
         public:
             using ConstVisitor<SetSpecTree>::VisitConstSequence<ListInsecureVisitor, AllDepSpec>::visit;
@@ -90,6 +91,29 @@ namespace
                         _found.insert(std::make_pair(*i, a.tag()->short_text()));
                     else
                         throw InternalError(PALUDIS_HERE, "didn't get a tag");
+            }
+
+            void visit_leaf(const NamedSetDepSpec & s)
+            {
+                Context context("When expanding named set '" + stringify(s) + "':");
+
+                tr1::shared_ptr<const SetSpecTree::ConstItem> set(_env.set(s.name()));
+
+                if (! set)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                    return;
+                }
+
+                if (! recursing_sets.insert(s.name()).second)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                    return;
+                }
+
+                set->accept(*this);
+
+                recursing_sets.erase(s.name());
             }
 
             friend std::ostream & operator<< (std::ostream &, const ListInsecureVisitor &);

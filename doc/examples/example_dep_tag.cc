@@ -91,7 +91,7 @@ namespace
         /* The set isn't necessarily flat. We use DepSpecFlattener to make it
          * so, rather than writing a full visitor ourselves. We don't need to
          * supply a package, since a SetSpecTree cannot contain a UseDepSpec. */
-        DepSpecFlattener<SetSpecTree, PackageDepSpec> set_flat(env.get(), tr1::shared_ptr<const PackageID>());
+        DepSpecFlattener<SetSpecTree, PackageDepSpec> set_flat(env.get());
         set->accept(set_flat);
 
         cout << "Set '" << name << "':" << endl;

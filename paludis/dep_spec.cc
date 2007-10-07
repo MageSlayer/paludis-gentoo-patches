@@ -158,6 +158,24 @@ StringDepSpec::text() const
     return _str;
 }
 
+NamedSetDepSpec::NamedSetDepSpec(const SetName & n) :
+    StringDepSpec(stringify(n)),
+    _name(n)
+{
+}
+
+const SetName
+NamedSetDepSpec::name() const
+{
+    return _name;
+}
+
+tr1::shared_ptr<DepSpec>
+NamedSetDepSpec::clone() const
+{
+    return tr1::shared_ptr<NamedSetDepSpec>(new NamedSetDepSpec(_name));
+}
+
 const PackageDepSpec *
 PackageDepSpec::as_package_dep_spec() const
 {
@@ -587,6 +605,13 @@ std::ostream &
 paludis::operator<< (std::ostream & s, const LicenseDepSpec & a)
 {
     s << a.text();
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const NamedSetDepSpec & a)
+{
+    s << a.name();
     return s;
 }
 

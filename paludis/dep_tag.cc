@@ -217,6 +217,12 @@ namespace
                     std::ostream_iterator<DependencyLabelVisitorTypes::BasicNode>(s, ","));
             s << ":";
         }
+
+        void
+        visit_leaf(const NamedSetDepSpec & p)
+        {
+            s << p << " ";
+        }
     };
 
     struct DepTagComparator :

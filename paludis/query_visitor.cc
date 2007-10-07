@@ -25,9 +25,12 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
+#include <set>
 
 using namespace paludis;
 
@@ -41,6 +44,7 @@ namespace paludis
         tr1::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
         const tr1::shared_ptr<const PackageID> id;
+        std::set<SetName> recursing_sets;
 
         Implementation(const DepList * const d, tr1::shared_ptr<const DestinationsSet> dd,
                 const Environment * const e, const tr1::shared_ptr<const PackageID> & p) :
@@ -98,6 +102,31 @@ QueryVisitor::visit_leaf(const PackageDepSpec & a)
         _imp->result = true;
         return;
     }
+}
+
+void
+QueryVisitor::visit_leaf(const NamedSetDepSpec & s)
+{
+    Context context("When expanding named set '" + stringify(s) + "':");
+
+    tr1::shared_ptr<const SetSpecTree::ConstItem> set(_imp->environment->set(s.name()));
+
+    if (! set)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+        _imp->result = false;
+        return;
+    }
+
+    if (! _imp->recursing_sets.insert(s.name()).second)
+    {
+        Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+        return;
+    }
+
+    set->accept(*this);
+
+    _imp->recursing_sets.erase(s.name());
 }
 
 void
@@ -171,3 +200,4 @@ QueryVisitor::visit_leaf(const DependencyLabelsDepSpec &)
 {
     // XXX implement
 }
+

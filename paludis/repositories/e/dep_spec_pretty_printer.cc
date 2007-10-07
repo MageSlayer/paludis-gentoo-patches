@@ -257,6 +257,22 @@ DepSpecPrettyPrinter::visit_leaf(const PlainTextDepSpec & p)
 }
 
 void
+DepSpecPrettyPrinter::visit_leaf(const NamedSetDepSpec & p)
+{
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.indent(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+
+    _imp->s << _imp->formatter.format(p, format::Plain());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->formatter.newline();
+    else
+        _imp->need_space = true;
+}
+
+void
 DepSpecPrettyPrinter::visit_leaf(const LicenseDepSpec & p)
 {
     if (_imp->use_newlines)

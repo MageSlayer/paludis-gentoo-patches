@@ -51,6 +51,11 @@ namespace
             s << p << " ";
         }
 
+        void
+        visit_leaf(const NamedSetDepSpec & p)
+        {
+            s << p << " ";
+        }
     };
 }
 

@@ -122,14 +122,11 @@ EnvironmentImplementation::set(const SetName & s) const
                 result.reset(new ConstTreeSequence<SetSpecTree, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
             result->add(add);
         }
-
-        if ("everything" == s.data() || "world" == s.data())
-        {
-            add = (*r)->sets_interface->package_set(SetName("system"));
-            if (add)
-                result->add(add);
-        }
     }
+
+    if ("everything" == s.data() || "world" == s.data())
+        result->add(make_shared_ptr(new TreeLeaf<SetSpecTree, NamedSetDepSpec>(
+                        make_shared_ptr(new NamedSetDepSpec(SetName("system"))))));
 
     if (! result)
         Log::get_instance()->message(ll_debug, lc_context) << "No match for set '" << s << "'";

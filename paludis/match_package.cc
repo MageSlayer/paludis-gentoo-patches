@@ -19,11 +19,13 @@
 
 #include <paludis/match_package.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
 
@@ -112,59 +114,18 @@ paludis::match_package(
     return true;
 }
 
-namespace
-{
-    struct IsInHeirarchy :
-        ConstVisitor<SetSpecTree>
-    {
-        const Environment & env;
-        const SetSpecTree::ConstItem & target;
-        const PackageID * id;
-        bool matched;
-
-        IsInHeirarchy(const Environment & e, const SetSpecTree::ConstItem & t) :
-            env(e),
-            target(t),
-            matched(false)
-        {
-        }
-
-        bool operator() (const PackageID & e)
-        {
-            id = &e;
-            matched = false;
-            target.accept(*this);
-            return matched;
-        }
-
-        void visit_sequence(const AllDepSpec &,
-                SetSpecTree::ConstSequenceIterator begin,
-                SetSpecTree::ConstSequenceIterator end)
-        {
-            if (matched)
-                return;
-
-            std::for_each(begin, end, accept_visitor(*this));
-        }
-
-        void visit_leaf(const PackageDepSpec & a)
-        {
-            if (matched)
-                return;
-
-            if (match_package(env, a, *id))
-                matched = true;
-        }
-    };
-}
-
 bool
 paludis::match_package_in_set(
         const Environment & env,
         const SetSpecTree::ConstItem & target,
         const PackageID & entry)
 {
-    IsInHeirarchy h(env, target);
-    return h(entry);
+    using namespace tr1::placeholders;
+
+    DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env, entry);
+    target.accept(f);
+    return indirect_iterator(f.end()) != std::find_if(
+            indirect_iterator(f.begin()), indirect_iterator(f.end()),
+            tr1::bind(&match_package, tr1::cref(env), _1, tr1::cref(entry)));
 }
 

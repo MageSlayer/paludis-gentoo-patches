@@ -1138,6 +1138,43 @@ namespace paludis
                     ///\}
                 };
 
+                /**
+                 * Query whether we contain a particular type.
+                 *
+                 * \ingroup grpvisitor
+                 * \nosubgrouping
+                 */
+                template <typename A_>
+                struct Contains
+                {
+                    /**
+                     * Do we contain the queried type?
+                     */
+                    enum {
+                        value =
+                            (tr1::is_same<const A_, const typename H_::ContainedItem1>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem2>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem3>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem4>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem5>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem6>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem7>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem8>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem9>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem10>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem11>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem12>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem13>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem14>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem15>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem16>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem17>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem18>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem19>::value ? 1 : 0) |
+                            (tr1::is_same<const A_, const typename H_::ContainedItem20>::value ? 1 : 0)
+                    };
+                };
+
                 ///\}
         };
 
@@ -1197,6 +1234,43 @@ namespace paludis
                             typename TreeSequenceIteratorTypes<Heirarchy>::Iterator e);
 
                     ///\}
+                };
+
+                /**
+                 * Query whether we contain a particular type.
+                 *
+                 * \ingroup grpvisitor
+                 * \nosubgrouping
+                 */
+                template <typename A_>
+                struct Contains
+                {
+                    /**
+                     * Do we contain the queried type?
+                     */
+                    enum {
+                        value =
+                            (tr1::is_same<A_, typename H_::ContainedItem1>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem2>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem3>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem4>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem5>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem6>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem7>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem8>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem9>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem10>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem11>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem12>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem13>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem14>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem15>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem16>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem17>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem18>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem19>::value ? 1 : 0) |
+                            (tr1::is_same<A_, typename H_::ContainedItem20>::value ? 1 : 0)
+                    };
                 };
 
                 ///\}

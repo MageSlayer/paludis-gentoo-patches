@@ -109,3 +109,10 @@ RangeRewriter::visit_leaf(const DependencyLabelsDepSpec &)
 {
     _invalid = true;
 }
+
+void
+RangeRewriter::visit_leaf(const NamedSetDepSpec &)
+{
+    _invalid = true;
+}
+

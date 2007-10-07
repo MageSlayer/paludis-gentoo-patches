@@ -33,7 +33,13 @@ namespace paludis
         typename T6_ = NoType<6u>,
         typename T7_ = NoType<7u>,
         typename T8_ = NoType<8u>,
-        typename T9_ = NoType<9u>
+        typename T9_ = NoType<9u>,
+        typename T10_ = NoType<10u>,
+        typename T11_ = NoType<11u>,
+        typename T12_ = NoType<12u>,
+        typename T13_ = NoType<13u>,
+        typename T14_ = NoType<14u>,
+        typename T15_ = NoType<15u>
         >
     class Formatter;
 }

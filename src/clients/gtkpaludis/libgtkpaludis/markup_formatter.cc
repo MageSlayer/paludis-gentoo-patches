@@ -191,6 +191,12 @@ MarkupFormatter::format(const DependencyLabelsDepSpec & f, const format::Plain &
 }
 
 std::string
+MarkupFormatter::format(const NamedSetDepSpec & f, const format::Plain &) const
+{
+    return markup_escape(stringify(f));
+}
+
+std::string
 MarkupFormatter::format(const FetchableURIDepSpec & f, const format::Plain &) const
 {
     return markup_escape(stringify(f));

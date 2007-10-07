@@ -22,6 +22,7 @@ namespace gtkpaludis
         public paludis::CanFormat<paludis::SimpleURIDepSpec>,
         public paludis::CanFormat<paludis::FetchableURIDepSpec>,
         public paludis::CanFormat<paludis::LicenseDepSpec>,
+        public paludis::CanFormat<paludis::NamedSetDepSpec>,
         public paludis::CanFormat<paludis::tr1::shared_ptr<const paludis::PackageID> >,
         public paludis::CanFormat<std::string>,
         public paludis::CanSpace
@@ -66,6 +67,8 @@ namespace gtkpaludis
             std::string format(const paludis::URILabelsDepSpec &, const paludis::format::Plain &) const;
 
             std::string format(const paludis::DependencyLabelsDepSpec &, const paludis::format::Plain &) const;
+
+            std::string format(const paludis::NamedSetDepSpec &, const paludis::format::Plain &) const;
 
             std::string format(const paludis::SimpleURIDepSpec &, const paludis::format::Plain &) const;
 

@@ -81,6 +81,8 @@ namespace paludis
 
             void visit_leaf(const DependencyLabelsDepSpec &);
 
+            void visit_leaf(const NamedSetDepSpec &);
+
             ///\}
     };
 }

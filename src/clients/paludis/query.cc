@@ -83,6 +83,11 @@ namespace
             stream << "            " << d << std::endl;
         }
 
+        void visit_leaf(const NamedSetDepSpec & d)
+        {
+            stream << "            " << d << std::endl;
+        }
+
         void visit_sequence(const AllDepSpec &,
                 SetSpecTree::ConstSequenceIterator cur,
                 SetSpecTree::ConstSequenceIterator end)
