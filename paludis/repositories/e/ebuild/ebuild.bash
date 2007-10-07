@@ -59,6 +59,11 @@ export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
     export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
 done
+
+# Force a few more things into PATH, since some users have crazy setups.
+# See ticket:374.
+export PATH="${PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
+
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
     echo "${EBUILD_MODULES_DIR} is not a directory" 1>&2
