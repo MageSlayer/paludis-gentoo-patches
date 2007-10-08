@@ -26,8 +26,36 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
+/** \file
+ * Declarations for the StringifyFormatter class.
+ *
+ * \ingroup g_formatters
+ *
+ * \section Examples
+ *
+ * - \ref example_stringify_formatter.cc "example_stringify_formatter.cc"
+ * - \ref example_formatter.cc "example_formatter.cc"
+ */
+
 namespace paludis
 {
+    /**
+     * A StringifyFormatter is a Formatter that implements every format function
+     * by calling paludis::stringify().
+     *
+     * A StringifyFormatter can also act as a wrapper class around another
+     * Formatter. Any CanFormat<> interface implemented by that other formatter
+     * is used; any not implemented by the other formatter is implemented using
+     * paludis::stringify().
+     *
+     * Indenting is done via simple spaces; newlines are done via a newline
+     * character. Again, when used as a wrapper, this can be overridden by the
+     * wrapped class.
+     *
+     * \ingroup g_formatters
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE StringifyFormatter :
         private PrivateImplementationPattern<StringifyFormatter>,
         public CanFormat<UseFlagName>,
@@ -49,11 +77,20 @@ namespace paludis
             StringifyFormatter(const StringifyFormatter &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             StringifyFormatter();
 
-            template <typename T_> StringifyFormatter(const T_ &);
+            /**
+             * StringifyFormatter can be constructed as a wrapper around another
+             * formatter.
+             */
+            template <typename T_> explicit StringifyFormatter(const T_ &);
 
             ~StringifyFormatter();
+
+            ///\}
 
             virtual std::string format(const UseFlagName &, const format::Enabled &) const;
             virtual std::string format(const UseFlagName &, const format::Disabled &) const;

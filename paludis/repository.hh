@@ -39,9 +39,13 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
- * Declarations for the Repository class.
+ * Declarations for Repository classes.
  *
- * \ingroup grprepository
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - \ref example_repository.cc "example_repository.cc" (for package IDs)
  */
 
 namespace paludis
@@ -53,7 +57,7 @@ namespace paludis
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
      *
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Repository :
@@ -246,7 +250,7 @@ namespace paludis
      * Interface for handling USE flags for the Repository class.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryUseInterface
@@ -360,7 +364,7 @@ namespace paludis
      * Interface for handling actions for installed repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryInstalledInterface
@@ -384,7 +388,7 @@ namespace paludis
      * Interface for package sets for repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositorySetsInterface
@@ -428,7 +432,7 @@ namespace paludis
      * Interface for syncing for repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositorySyncableInterface
@@ -464,7 +468,7 @@ namespace paludis
      * Interface for world handling for repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryWorldInterface
@@ -502,7 +506,7 @@ namespace paludis
      * Interface for environment variable querying for repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryEnvironmentVariableInterface
@@ -528,7 +532,7 @@ namespace paludis
      * Interface for mirror querying for repositories.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryMirrorsInterface
@@ -559,7 +563,7 @@ namespace paludis
      * Interface for repositories that define virtuals.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryVirtualsInterface
@@ -570,8 +574,6 @@ namespace paludis
 
             /**
              * A collection of virtuals.
-             *
-             * \ingroup grprepository
              */
             typedef Sequence<RepositoryVirtualsEntry> VirtualsSequence;
 
@@ -590,7 +592,7 @@ namespace paludis
      * Interface for repositories that can make virtuals on the fly.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryMakeVirtualsInterface
@@ -607,7 +609,7 @@ namespace paludis
      * Interface for repositories that provide packages.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryProvidesInterface
@@ -618,8 +620,6 @@ namespace paludis
 
             /**
              * A collection of provided packages.
-             *
-             * \ingroup grprepository
              */
             typedef Sequence<RepositoryProvidesEntry> ProvidesSequence;
 
@@ -638,7 +638,7 @@ namespace paludis
      * Interface for repositories that can be used as an install destination.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryDestinationInterface
@@ -684,7 +684,7 @@ namespace paludis
      * Interface for handling actions relating to licenses.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryLicensesInterface
@@ -723,8 +723,7 @@ namespace paludis
      * Interface for handling ERepository specific functionality.
      *
      * \see Repository
-     * \see ERepository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryEInterface
@@ -771,12 +770,15 @@ namespace paludis
      * Interface for handling QA tasks.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryQAInterface
     {
         public:
+            /**
+             * Perform QA checks on the repository.
+             */
             virtual void check_qa(
                     QAReporter &,
                     const QACheckProperties &,
@@ -785,14 +787,19 @@ namespace paludis
                     const FSEntry &
                     ) const = 0;
 
+            ///\name Basic operations
+            ///\{
+
             virtual ~RepositoryQAInterface();
+
+            ///\}
     };
 
     /**
      * Interface for making and verifying Manifest2-style manifests
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryManifestInterface
@@ -804,14 +811,19 @@ namespace paludis
              */
             virtual void make_manifest(const QualifiedPackageName &) = 0;
 
+            ///\name Basic operations
+            ///\{
+
             virtual ~RepositoryManifestInterface();
+
+            ///\}
     };
 
     /**
      * Interface for handling hooks.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryHookInterface
@@ -823,7 +835,12 @@ namespace paludis
             virtual HookResult perform_hook(const Hook & hook) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
+            ///\name Basic operations
+            ///\{
+
             virtual ~RepositoryHookInterface();
+
+            ///\}
     };
 }
 

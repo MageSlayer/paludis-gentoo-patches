@@ -27,7 +27,7 @@ make_class_RepositoryCapabilities()
          * Optional interfaces that may be provided by a Repository.
          *
          * \see Repository
-         * \ingroup grprepository
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END
@@ -51,6 +51,7 @@ make_class_RepositoryEInterfaceProfilesDescLine()
          *
          * \see Repository
          * \see RepositoryEInterface
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END
@@ -71,6 +72,7 @@ make_class_RepositoryProvidesEntry()
          *
          * \see Repository
          * \see RepositoryProvidesInterface
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END
@@ -91,6 +93,7 @@ make_class_RepositoryVirtualsEntry()
          *
          * \see Repository
          * \see RepositoryVirtualsInterface
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END
@@ -111,7 +114,7 @@ make_class_MergeOptions()
          * Parameters for RepositoryDestinationInterface::merge.
          *
          * \see RepositoryDestinationInterface
-         * \ingroup grprepository
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END

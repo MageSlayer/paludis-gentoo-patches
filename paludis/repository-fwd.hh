@@ -23,6 +23,12 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
+/** \file
+ * Forward declarations for paludis/repository.hh .
+ *
+ * \ingroup g_repository
+ */
+
 namespace paludis
 {
     class Environment;
@@ -52,9 +58,10 @@ namespace paludis
     class MergeOptions;
 
     /**
-     * A set of destinations.
+     * A set of destinations, used to decide whether a PackageID can be
+     * installed to a particular Repository.
      *
-     * \ingroup grpdepresolver
+     * \ingroup g_repository
      */
     typedef Set<paludis::tr1::shared_ptr<Repository> > DestinationsSet;
 }

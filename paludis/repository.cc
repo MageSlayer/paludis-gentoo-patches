@@ -38,12 +38,6 @@
 #include <algorithm>
 #include <ctype.h>
 
-/** \file
- * Implementation of Repository.
- *
- * \ingroup grprepository
- */
-
 using namespace paludis;
 
 #include <paludis/repository-sr.cc>

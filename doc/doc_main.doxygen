@@ -20,7 +20,7 @@ using namespace paludis;
 
 /** \defgroup g_actions Actions
  *
- * \ingroup g_paludis
+ * \ingroup g_package_id
  *
  * Action-related classes are used to provide the information needed by a
  * PackageID to perform operations such as installing, uninstalling and fetching.
@@ -32,7 +32,7 @@ using namespace paludis;
 
 /** \defgroup g_contents Contents
  *
- * \ingroup g_paludis
+ * \ingroup g_metadata_key
  *
  * Contents heirarchies can be used to iterate over the content of an installed
  * or binary package.
@@ -78,5 +78,60 @@ using namespace paludis;
  * Exceptions and related utility classes.
  *
  * \ingroup g_paludis
+ */
+
+/** \defgroup g_formatters Formatters
+ *
+ * \ingroup g_metadata_key
+ *
+ * Formatters are used in various places (such as MetadataKey pretty_print methods)
+ * to apply user-defined formatting to parts of text generated for display. They
+ * allow clients to, for example, display accepted and unaccepted use flag names
+ * in different colours, without needing to rewrite the entire pretty printing
+ * system.
+ *
+ * \section Examples
+ *
+ * - \ref example_formatter.cc "example_formatter.cc"
+ * - \ref example_stringify_formatter.cc "example_stringify_formatter.cc"
+ */
+
+/** \defgroup g_package_id Package IDs
+ *
+ * \ingroup g_paludis
+ *
+ * A PackageID represents a particular package version in a Repository. It has
+ * various pieces of associated information, including a name, a version, an
+ * owning repository, a slot, a collection of metadata keys and a collection of
+ * masks.
+ *
+ * \section Examples
+ *
+ * - \ref example_package_id.cc "example_package_id.cc"
+ * - \ref example_action.cc "example_action.cc"
+ * - \ref example_mask.cc "example_mask.cc"
+ * - \ref example_metadata_key.cc "example_metadata_key.cc"
+ */
+
+/** \defgroup g_mask Masks
+ *
+ * \ingroup g_package_id
+ *
+ * A mask represents one reason why a PackageID is masked (not installable).
+ *
+ * \section Examples
+ *
+ * - \ref example_mask.cc "example_mask.cc"
+ */
+
+/** \defgroup g_metadata_key Metadata Keys
+ *
+ * \ingroup g_package_id
+ *
+ * A metadata key hold a piece of information about a PackageID.
+ *
+ * \section Examples
+ *
+ * - \ref example_metadata_key.cc "example_metadata_key.cc"
  */
 

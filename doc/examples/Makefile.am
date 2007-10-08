@@ -18,7 +18,12 @@ noinst_PROGRAMS = \
 	example_dep_tag \
 	example_dep_tree \
 	example_dep_spec_flattener \
-	example_environment
+	example_environment \
+	example_formatter \
+	example_stringify_formatter \
+	example_package_id \
+	example_metadata_key \
+	example_mask
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
@@ -79,6 +84,36 @@ example_dep_spec_flattener_LDFLAGS = \
 
 example_environment_SOURCES = example_environment.cc
 example_environment_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_formatter_SOURCES = example_formatter.cc
+example_formatter_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_stringify_formatter_SOURCES = example_stringify_formatter.cc
+example_stringify_formatter_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_package_id_SOURCES = example_package_id.cc
+example_package_id_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_mask_SOURCES = example_mask.cc
+example_mask_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_metadata_key_SOURCES = example_metadata_key.cc
+example_metadata_key_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

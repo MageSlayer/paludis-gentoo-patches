@@ -22,6 +22,12 @@
 
 #include <paludis/util/no_type.hh>
 
+/** \file
+ * Forward declarations for paludis/formatter.hh .
+ *
+ * \ingroup g_formatters
+ */
+
 namespace paludis
 {
     template <

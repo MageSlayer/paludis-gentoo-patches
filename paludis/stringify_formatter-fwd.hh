@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STRINGIFY_FORMATTER_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_FORMATTER_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/stringify_formatter.hh .
+ *
+ * \ingroup g_formatters
+ */
+
 namespace paludis
 {
     class StringifyFormatter;

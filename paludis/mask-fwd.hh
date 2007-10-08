@@ -22,6 +22,12 @@
 
 #include <paludis/util/visitor-fwd.hh>
 
+/** \file
+ * Forward declarations for paludis/mask.hh .
+ *
+ * \ingroup g_mask
+ */
+
 namespace paludis
 {
     class Mask;

@@ -24,8 +24,21 @@
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 
+/** \file
+ * Implementation for paludis/stringify_formatter.hh .
+ *
+ * \ingroup g_formatters
+ */
+
 namespace paludis
 {
+    /**
+     * Implementation data for StringifyFormatter.
+     *
+     * \ingroup g_formatters
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <>
     struct Implementation<StringifyFormatter>
     {
@@ -78,36 +91,80 @@ namespace paludis
         }
     };
 
+    /**
+     * Internal use by StringifyFormatter: get a CanFormat<> interface, or 0 if
+     * not implemented.
+     *
+     * \ingroup g_formatters
+     * \nosubgrouping
+     * \since 0.26
+     */
     template <bool b_, typename T_>
     struct StringifyFormatterGetForwarder
     {
+        /**
+         * Get a CanFormat<> interface, or 0 if not implemented.
+         */
         static const CanFormat<T_> * get(const CanFormat<T_> * const t)
         {
             return t;
         }
     };
 
+    /**
+     * Internal use by StringifyFormatter: get a CanFormat<> interface, or 0 if
+     * not implemented.
+     *
+     * \ingroup g_formatters
+     * \nosubgrouping
+     * \since 0.26
+     */
     template <typename T_>
     struct StringifyFormatterGetForwarder<false, T_>
     {
+        /**
+         * Get a CanFormat<> interface, or 0 if not implemented.
+         */
         static const CanFormat<T_> * get(const void * const)
         {
             return 0;
         }
     };
 
+    /**
+     * Internal use by StringifyFormatter: get a CanSpace<> interface, or 0 if
+     * not implemented.
+     *
+     * \ingroup g_formatters
+     * \nosubgrouping
+     * \since 0.26
+     */
     template <bool b_>
     struct StringifyFormatterGetSpaceForwarder
     {
+        /**
+         * Get a CanSpace interface, or 0 if not implemented.
+         */
         static const CanSpace * get(const CanSpace * const t)
         {
             return t;
         }
     };
 
+    /**
+     * Internal use by StringifyFormatter: get a CanSpace<> interface, or 0 if
+     * not implemented.
+     *
+     * \ingroup g_formatters
+     * \nosubgrouping
+     * \since 0.26
+     */
     template <>
     struct StringifyFormatterGetSpaceForwarder<false>
     {
+        /**
+         * Get a CanSpace interface, or 0 if not implemented.
+         */
         static const CanSpace * get(const void * const)
         {
             return 0;

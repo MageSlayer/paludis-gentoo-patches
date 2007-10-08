@@ -26,17 +26,44 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/tr1_memory.hh>
 
+/** \file
+ * Forward declarations for paludis/package_id.hh .
+ *
+ * \ingroup g_package_id
+ */
+
 namespace paludis
 {
     class PackageID;
     class PackageIDSetComparator;
     class PackageIDComparator;
 
+    /**
+     * A PackageIDSequence holds a collection of PackageID instances that may
+     * or may not have been ordered in a meaningful way.
+     *
+     * \ingroup g_package_id
+     * \since 0.26
+     */
     typedef Sequence<tr1::shared_ptr<const PackageID> > PackageIDSequence;
+
+    /**
+     * A PackageIDSet holds a collection of PackageID instances that have no
+     * meaningful ordering.
+     *
+     * \ingroup g_package_id
+     * \since 0.26
+     */
     typedef Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
 
 #include <paludis/package_id-se.hh>
 
+    /**
+     * A PackageID can be written to a stream.
+     *
+     * \ingroup g_package_id
+     * \since 0.26
+     */
     std::ostream & operator<< (std::ostream &, const PackageID &) PALUDIS_VISIBLE;
 }
 

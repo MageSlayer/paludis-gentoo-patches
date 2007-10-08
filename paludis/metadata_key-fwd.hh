@@ -24,6 +24,12 @@
 #include <paludis/name-fwd.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/metadata_key.hh .
+ *
+ * \ingroup g_metadata_key
+ */
+
 namespace paludis
 {
     class MetadataKeyVisitorTypes;

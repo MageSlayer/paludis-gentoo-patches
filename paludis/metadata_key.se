@@ -15,6 +15,9 @@ make_enum_MetadataKeyType()
          * The significance of a MetadataKey to a user.
          *
          * \see MetadataKey
+         * \ingroup g_metadata_key
+         * \since 0.26
+         * \nosubgrouping
          */
 END
 }

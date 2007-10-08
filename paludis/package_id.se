@@ -11,9 +11,13 @@ make_enum_PackageIDCanonicalForm()
 
     doxygen_comment << "END"
         /**
-         * How to generate paludis::PackageID::canonical_form().
+         * What to include when generating the string for
+         * paludis::PackageID::canonical_form().
          *
          * \see PackageID
+         * \ingroup g_package_id
+         * \since 0.26
+         * \nosubgrouping
          */
 END
 }
