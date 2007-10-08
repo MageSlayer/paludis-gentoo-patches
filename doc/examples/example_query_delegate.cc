@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Make some queries, and display what they give. */
-        show_query(env, DescriptionContains("goat"));
+        show_query(env, DescriptionContains("duck"));
 
         /* We can combine custom queries too. */
         show_query(env,
