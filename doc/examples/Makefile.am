@@ -23,7 +23,8 @@ noinst_PROGRAMS = \
 	example_stringify_formatter \
 	example_package_id \
 	example_metadata_key \
-	example_mask
+	example_mask \
+	example_repository
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
@@ -114,6 +115,12 @@ example_mask_LDFLAGS = \
 
 example_metadata_key_SOURCES = example_metadata_key.cc
 example_metadata_key_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_repository_SOURCES = example_repository.cc
+example_repository_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

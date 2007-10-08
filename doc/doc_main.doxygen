@@ -135,3 +135,15 @@ using namespace paludis;
  * - \ref example_metadata_key.cc "example_metadata_key.cc"
  */
 
+/** \defgroup g_repository "Repository"
+ *
+ * \ingroup g_paludis
+ *
+ * A Repository subclass represents a repository that holds a collection of
+ * packages.
+ *
+ * \section Examples
+ *
+ * - \ref example_repository.cc "example_repository.cc"
+ */
+
