@@ -1,16 +1,33 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
+/*
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef PALUDIS_GUARD_PALUDIS_MATCH_PACKAGE_HH
 #define PALUDIS_GUARD_PALUDIS_MATCH_PACKAGE_HH 1
 
 /** \file
- * Declare the match_package function.
+ * Declarations for match_package and match_package_in_set.
  *
- * Do not merge this file into dep_spec. It will cause all sorts of horrible
- * circular dependency issues. Avoid including this file in headers if at all
- * possible.
+ * \ingroup g_query
  *
- * \ingroup grpmatchpackage
+ * \section Examples
+ *
+ * - \ref example_match_package.cc "example_match_package.cc"
  */
 
 #include <paludis/util/attributes.hh>
@@ -23,9 +40,10 @@
 namespace paludis
 {
     /**
-     * Return whether the specified spec matches the specified target.
+     * Return whether the specified PackageID matches the specified
+     * PackageDepSpec.
      *
-     * \ingroup grpmatchpackage
+     * \ingroup g_query
      */
     bool match_package(
             const Environment & env,
@@ -34,9 +52,12 @@ namespace paludis
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**
-     * Return whether the specified spec matches the specified target, for heirarchies.
+     * Return whether the specified PackageID matches any of the items in the
+     * specified set.
      *
-     * \ingroup grpmatchpackage
+     * Named sets inside the set are expanded.
+     *
+     * \ingroup g_query
      */
     bool match_package_in_set(
             const Environment & env,

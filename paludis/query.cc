@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "query.hh"
+#include <paludis/query.hh>
+#include <paludis/query_delegate.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
@@ -36,40 +37,6 @@
 
 using namespace paludis;
 
-QueryDelegate::QueryDelegate()
-{
-}
-
-QueryDelegate::~QueryDelegate()
-{
-}
-
-tr1::shared_ptr<RepositoryNameSequence>
-QueryDelegate::repositories(const Environment &) const
-{
-    return tr1::shared_ptr<RepositoryNameSequence>();
-}
-
-tr1::shared_ptr<CategoryNamePartSet>
-QueryDelegate::categories(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>) const
-{
-    return tr1::shared_ptr<CategoryNamePartSet>();
-}
-
-tr1::shared_ptr<QualifiedPackageNameSet>
-QueryDelegate::packages(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
-        tr1::shared_ptr<const CategoryNamePartSet>) const
-{
-    return tr1::shared_ptr<QualifiedPackageNameSet>();
-}
-
-tr1::shared_ptr<PackageIDSequence>
-QueryDelegate::ids(const Environment &, tr1::shared_ptr<const RepositoryNameSequence>,
-        tr1::shared_ptr<const QualifiedPackageNameSet>) const
-{
-    return tr1::shared_ptr<PackageIDSequence>();
-}
-
 Query::Query(tr1::shared_ptr<const QueryDelegate> d) :
     _d(d)
 {
@@ -77,6 +44,34 @@ Query::Query(tr1::shared_ptr<const QueryDelegate> d) :
 
 Query::~Query()
 {
+}
+
+tr1::shared_ptr<RepositoryNameSequence>
+Query::repositories(const Environment & e) const
+{
+    return _d->repositories(e);
+}
+
+tr1::shared_ptr<CategoryNamePartSet>
+Query::categories(const Environment & e, tr1::shared_ptr<const RepositoryNameSequence> r) const
+{
+    return _d->categories(e, r);
+}
+
+tr1::shared_ptr<QualifiedPackageNameSet>
+Query::packages(const Environment & e,
+        tr1::shared_ptr<const RepositoryNameSequence> r,
+        tr1::shared_ptr<const CategoryNamePartSet> c) const
+{
+    return _d->packages(e, r, c);
+}
+
+tr1::shared_ptr<PackageIDSequence>
+Query::ids(const Environment & e,
+        tr1::shared_ptr<const RepositoryNameSequence> r,
+        tr1::shared_ptr<const QualifiedPackageNameSet> q) const
+{
+    return _d->ids(e, r, q);
 }
 
 namespace

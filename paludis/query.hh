@@ -25,85 +25,24 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/query_delegate-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <iosfwd>
 
 /** \file
- * Query and related classes.
+ * Declarations for Query and the various query:: classes.
  *
- * \ingroup grpquery
+ * \ingroup g_query
+ *
+ * \section Examples
+ *
+ * - \ref example_query.cc "example_query.cc"
+ * - \ref example_query_delegate.cc "example_query_delegate.cc"
+ * - \ref example_match_package.cc "example_match_package.cc"
  */
 
 namespace paludis
 {
-    /**
-     * A QueryDelegate subclass is used by Query to provide the information
-     * needed by PackageDatabase::query.
-     *
-     * \see Query
-     * \ingroup grpquery
-     */
-    class PALUDIS_VISIBLE QueryDelegate
-    {
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            QueryDelegate();
-
-        public:
-            virtual ~QueryDelegate();
-
-            ///\}
-
-            /**
-             * Fetch the names of repositories potentially containing matches.
-             * All returned repositories must exist.
-             *
-             * Default behaviour: return all repositories.
-             */
-            virtual tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment &) const;
-
-            /**
-             * Fetch the names of categories potentially containing matches.
-             *
-             * Default behaviour: return all categories in the provided
-             * repository collection.
-             */
-            virtual tr1::shared_ptr<CategoryNamePartSet> categories(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>) const;
-
-            /**
-             * Fetch the names of packages potentially containing matches.
-             *
-             * Default behaviour: return all packages in the provided repository
-             * in the provided categories.
-             *
-             * Note that some entries in the categories collection (but not in
-             * the repositories collection) may not exist.
-             */
-            virtual tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>,
-                    tr1::shared_ptr<const CategoryNamePartSet>) const;
-
-            /**
-             * Fetch the IDs of matching packages.
-             *
-             * Default behaviour: return all IDs in the provided packages.
-             *
-             * Note that some entries in the qualified package name collection
-             * (but not in the repositories collection) may not exist.
-             */
-            virtual tr1::shared_ptr<PackageIDSequence> ids(const Environment &,
-                    tr1::shared_ptr<const RepositoryNameSequence>,
-                    tr1::shared_ptr<const QualifiedPackageNameSet>) const;
-
-            /**
-             * Fetch a string representation of our query.
-             */
-            virtual std::string as_human_readable_string() const = 0;
-    };
-
     /**
      * Parameter for a PackageDatabase query.
      *
@@ -112,7 +51,7 @@ namespace paludis
      *
      * \see QueryDelegate
      * \see PackageDatabase::query
-     * \ingroup grpquery
+     * \ingroup g_query
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Query
@@ -137,30 +76,18 @@ namespace paludis
             ///\name Delegate-implemented functions
             ///\{
 
-            tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const
-            {
-                return _d->repositories(e);
-            }
+            tr1::shared_ptr<RepositoryNameSequence> repositories(const Environment & e) const;
 
             tr1::shared_ptr<CategoryNamePartSet> categories(const Environment & e,
-                    tr1::shared_ptr<const RepositoryNameSequence> r) const
-            {
-                return _d->categories(e, r);
-            }
+                    tr1::shared_ptr<const RepositoryNameSequence> r) const;
 
             tr1::shared_ptr<QualifiedPackageNameSet> packages(const Environment & e,
                     tr1::shared_ptr<const RepositoryNameSequence> r,
-                    tr1::shared_ptr<const CategoryNamePartSet> c) const
-            {
-                return _d->packages(e, r, c);
-            }
+                    tr1::shared_ptr<const CategoryNamePartSet> c) const;
 
             tr1::shared_ptr<PackageIDSequence> ids(const Environment & e,
                     tr1::shared_ptr<const RepositoryNameSequence> r,
-                    tr1::shared_ptr<const QualifiedPackageNameSet> q) const
-            {
-                return _d->ids(e, r, q);
-            }
+                    tr1::shared_ptr<const QualifiedPackageNameSet> q) const;
 
             ///\}
     };
@@ -169,7 +96,7 @@ namespace paludis
      * Various Query classes.
      *
      * \see Query
-     * \ingroup grpquery
+     * \ingroup g_query
      */
     namespace query
     {
@@ -178,7 +105,7 @@ namespace paludis
          *
          * \see Query
          * \see PackageDatabase::query
-         * \ingroup grpquery
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Matches :
@@ -197,7 +124,8 @@ namespace paludis
          * Fetch packages with a given package name.
          *
          * \see Query
-         * \ingroup grpquerybase::query
+         * \see PackageDatabase::query
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Package :
@@ -216,7 +144,8 @@ namespace paludis
          * Fetch packages in a given repository.
          *
          * \see Query
-         * \ingroup grpquerybase::query
+         * \see PackageDatabase::query
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Repository :
@@ -235,7 +164,8 @@ namespace paludis
          * Fetch packages in a given category.
          *
          * \see Query
-         * \ingroup grpquerybase::query
+         * \see PackageDatabase::query
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Category :
@@ -254,7 +184,8 @@ namespace paludis
          * Fetch packages that are not masked.
          *
          * \see Query
-         * \ingroup grpquery
+         * \see PackageDatabase::query
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE NotMasked :
@@ -274,7 +205,7 @@ namespace paludis
          *
          * \see Query
          * \see PackageDatabase::query
-         * \ingroup grpquery
+         * \ingroup g_query
          * \nosubgrouping
          */
         template <typename A_>
@@ -300,7 +231,7 @@ namespace paludis
          *
          * \see Query
          * \see PackageDatabase::query
-         * \ingroup grpquery
+         * \ingroup g_query
          * \nosubgrouping
          */
         template <typename A_>
@@ -321,7 +252,7 @@ namespace paludis
          *
          * \see Query
          * \see PackageDatabase::query
-         * \ingroup grpquery
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE InstalledAtRoot :
@@ -341,7 +272,7 @@ namespace paludis
          *
          * \see Query
          * \see PackageDatabase::query
-         * \ingroup grpquery
+         * \ingroup g_query
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE All :

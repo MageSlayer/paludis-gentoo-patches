@@ -24,7 +24,10 @@ noinst_PROGRAMS = \
 	example_package_id \
 	example_metadata_key \
 	example_mask \
-	example_repository
+	example_repository \
+	example_match_package \
+	example_query \
+	example_query_delegate
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
@@ -121,6 +124,24 @@ example_metadata_key_LDFLAGS = \
 
 example_repository_SOURCES = example_repository.cc
 example_repository_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_match_package_SOURCES = example_match_package.cc
+example_match_package_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_query_SOURCES = example_query.cc
+example_query_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_query_delegate_SOURCES = example_query_delegate.cc
+example_query_delegate_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

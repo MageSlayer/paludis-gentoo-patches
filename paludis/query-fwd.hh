@@ -23,9 +23,14 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/query.hh .
+ *
+ * \ingroup g_query
+ */
+
 namespace paludis
 {
-    class QueryDelegate;
     class Query;
 
     namespace query
@@ -47,7 +52,7 @@ namespace paludis
      *
      * \see Query
      * \see PackageDatabase::query
-     * \ingroup grpquery
+     * \ingroup g_query
      */
     Query operator& (const Query &, const Query &) PALUDIS_VISIBLE;
 
@@ -55,7 +60,7 @@ namespace paludis
      * Output a human-readable description of a Query.
      *
      * \see Query
-     * \ingroup grpquery
+     * \ingroup g_query
      */
     std::ostream & operator<< (std::ostream &, const Query &) PALUDIS_VISIBLE;
 }
