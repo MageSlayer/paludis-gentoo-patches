@@ -38,7 +38,8 @@ IF_PYTHON_TESTS = \
 	metadata_key_TEST.py \
 	mask_TEST.py \
 	package_id_TEST.py \
-	dep_list_TEST.py
+	dep_list_TEST.py \
+	formatter_TEST.py
 
 IF_PYTHON_QA_TESTS = \
 	qa_TEST.py
@@ -55,11 +56,13 @@ IF_PYTHON_SOURCES = \
 	dep_tag.cc \
 	environment.cc \
 	exception.hh exception.cc \
+	formatter.cc \
 	fs_entry.cc \
 	mask.cc \
 	metadata_key.cc \
 	mutex.hh mutex.cc \
 	name.cc \
+	nice_names-nn.hh nice_names-nn.cc \
 	log.cc \
 	package_database.cc \
 	package_id.cc \
@@ -68,6 +71,9 @@ IF_PYTHON_SOURCES = \
 	version_operator.cc \
 	version_requirements.cc \
 	version_spec.cc
+
+BUILT_SOURCES = \
+	nice_names-nn.hh nice_names-nn.cc
 
 IF_PYTHON_QA_SOURCES = \
 	qa.cc
@@ -80,6 +86,7 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	mask_TEST_setup.sh mask_TEST_cleanup.sh \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
+	nice_names.nn \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	query_TEST_setup.sh query_TEST_cleanup.sh \
@@ -148,6 +155,12 @@ libpaludispython_la_SOURCES = $(IF_PYTHON_SOURCES)
 TESTS = $(IF_PYTHON_TESTS)
 
 endif
+
+nice_names-nn.hh : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --header $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
+
+nice_names-nn.cc : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --source $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
 
 libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \

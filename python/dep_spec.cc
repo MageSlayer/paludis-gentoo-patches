@@ -20,6 +20,7 @@
 #include "dep_spec.hh"
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
+#include <python/nice_names-nn.hh>
 
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
@@ -404,6 +405,11 @@ PythonPlainTextDepSpec::PythonPlainTextDepSpec(const PlainTextDepSpec & d) :
 {
 }
 
+PythonPlainTextDepSpec::PythonPlainTextDepSpec(const PythonPlainTextDepSpec & d) :
+    PythonStringDepSpec(d.text())
+{
+}
+
 PythonNamedSetDepSpec::PythonNamedSetDepSpec(const SetName & s) :
     PythonStringDepSpec(stringify(s)),
     _name(s)
@@ -695,165 +701,6 @@ struct AllowedTypes<SetSpecTree>
     AllowedTypes(const NamedSetDepSpec &) {};
 };
 
-
-template <typename>
-struct NiceClassNames;
-
-template<>
-struct NiceClassNames<DepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<DepSpec>::name = "DepSpec";
-
-template<>
-struct NiceClassNames<AllDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<AllDepSpec>::name = "AllDepSpec";
-
-template<>
-struct NiceClassNames<AnyDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<AnyDepSpec>::name = "AnyDepSpec";
-
-template<>
-struct NiceClassNames<UseDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<UseDepSpec>::name = "UseDepSpec";
-
-template<>
-struct NiceClassNames<StringDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<StringDepSpec>::name = "StringDepSpec";
-
-template<>
-struct NiceClassNames<PlainTextDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<PlainTextDepSpec>::name = "PlainTextDepSpec";
-
-template<>
-struct NiceClassNames<NamedSetDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<NamedSetDepSpec>::name = "NamedSetDepSpec";
-
-template<>
-struct NiceClassNames<LicenseDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<LicenseDepSpec>::name = "LicenseDepSpec";
-
-template<>
-struct NiceClassNames<SimpleURIDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<SimpleURIDepSpec>::name = "SimpleURIDepSpec";
-
-template<>
-struct NiceClassNames<PackageDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<PackageDepSpec>::name = "PackageDepSpec";
-
-template<>
-struct NiceClassNames<FetchableURIDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<FetchableURIDepSpec>::name = "FetchableURIDepSpec";
-
-template<>
-struct NiceClassNames<URILabelsDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<URILabelsDepSpec>::name = "URILabelsDepSpec";
-
-template<>
-struct NiceClassNames<DependencyLabelsDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<DependencyLabelsDepSpec>::name = "DependencyLabelsDepSpec";
-
-template<>
-struct NiceClassNames<BlockDepSpec>
-{
-        static const char * name;
-};
-const char * NiceClassNames<BlockDepSpec>::name = "BlockDepSpec";
-
-template<>
-struct NiceClassNames<GenericSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<GenericSpecTree>::name = "GenericSpecTree";
-
-template<>
-struct NiceClassNames<LicenseSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<LicenseSpecTree>::name = "LicenseSpecTree";
-
-template<>
-struct NiceClassNames<FetchableURISpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<FetchableURISpecTree>::name = "FetchableURISpecTree";
-
-template<>
-struct NiceClassNames<SimpleURISpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<SimpleURISpecTree>::name = "SimpleURISpecTree";
-
-template<>
-struct NiceClassNames<ProvideSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<ProvideSpecTree>::name = "ProvideSpecTree";
-
-template<>
-struct NiceClassNames<RestrictSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<RestrictSpecTree>::name = "RestrictSpecTree";
-
-template<>
-struct NiceClassNames<DependencySpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<DependencySpecTree>::name = "DependencySpecTree";
-
-template<>
-struct NiceClassNames<SetSpecTree>
-{
-        static const char * name;
-};
-const char * NiceClassNames<SetSpecTree>::name = "SetSpecTree";
-
-
 class PALUDIS_VISIBLE NotAllowedInThisHeirarchy :
     public Exception
 {
@@ -886,8 +733,8 @@ template <typename H_, typename D_, typename PyD_>
 void
 Dispatcher<H_, D_, PyD_, false>::do_dispatch(SpecTreeFromPython<H_> *, const PyD_ &)
 {
-    throw NotAllowedInThisHeirarchy(std::string("Spec parts of type '") + NiceClassNames<D_>::name +
-            " are not allowed in a heirarchy of type '" + NiceClassNames<H_>::name + "'");
+    throw NotAllowedInThisHeirarchy(std::string("Spec parts of type '") + NiceNames<D_>::name +
+            " are not allowed in a heirarchy of type '" + NiceNames<H_>::name + "'");
 }
 
 template <typename H_, typename D_, typename PyD_>
@@ -1149,8 +996,15 @@ void register_tree_to_python()
             tree_to_python<tr1::shared_ptr<typename T_::ConstItem> > >();
 }
 
-struct sp_package_dep_spec_to_python
+struct package_dep_spec_to_python
 {
+    static PyObject *
+    convert(const PackageDepSpec & d)
+    {
+        PythonPackageDepSpec pyd(d);
+        return bp::incref(bp::object(pyd).ptr());
+    }
+
     static PyObject *
     convert(const tr1::shared_ptr<const PackageDepSpec> & d)
     {
@@ -1159,11 +1013,26 @@ struct sp_package_dep_spec_to_python
     }
 };
 
-void register_sp_package_dep_spec_to_python()
+void register_package_dep_spec_to_python()
 {
-    bp::to_python_converter<tr1::shared_ptr<const PackageDepSpec>, sp_package_dep_spec_to_python>();
+    bp::to_python_converter<PackageDepSpec, package_dep_spec_to_python>();
+    bp::to_python_converter<tr1::shared_ptr<const PackageDepSpec>, package_dep_spec_to_python>();
 }
 
+struct plain_text_dep_spec_to_python
+{
+    static PyObject *
+    convert(const PlainTextDepSpec & d)
+    {
+        PythonPlainTextDepSpec pyd(d);
+        return bp::incref(bp::object(pyd).ptr());
+    }
+};
+
+void register_plain_text_dep_spec_to_python()
+{
+    bp::to_python_converter<PlainTextDepSpec, plain_text_dep_spec_to_python>();
+}
 
 template <typename H_>
 struct RegisterSpecTreeSPTRFromPython
@@ -1442,7 +1311,7 @@ void expose_dep_spec()
     RegisterPackageDepSpecSPTRFromPython();
 
     bp::implicitly_convertible<PackageDepSpec, PythonPackageDepSpec>();
-    register_sp_package_dep_spec_to_python();
+    register_package_dep_spec_to_python();
 
     bp::class_<PythonPackageDepSpec, tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
         (
@@ -1506,7 +1375,9 @@ void expose_dep_spec()
     /**
      * PlainTextDepSpec
      */
-    bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
+    bp::implicitly_convertible<PlainTextDepSpec, PythonPlainTextDepSpec>();
+    register_plain_text_dep_spec_to_python();
+    bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec> >
         (
          "PlainTextDepSpec",
          "A PlainTextDepSpec represents a plain text entry (for example, a RESTRICT keyword).",

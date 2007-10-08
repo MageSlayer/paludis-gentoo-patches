@@ -1,0 +1,95 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+include_hh << END
+#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_tree-fwd.hh>
+#include <paludis/formatter.hh>
+END
+
+include_cc << END
+#include "nice_names-nn.hh"
+END
+
+use_namespace "paludis"
+
+make_nn_NiceNames() {
+    namespace "paludis::python"
+
+    # paludis/dep_spec-fwd.hh
+    name "DepSpec"
+    name "PackageDepSpec"
+    name "PlainTextDepSpec"
+    name "LicenseDepSpec"
+    name "FetchableURIDepSpec"
+    name "SimpleURIDepSpec"
+    name "AllDepSpec"
+    name "AnyDepSpec"
+    name "UseDepSpec"
+    name "BlockDepSpec"
+    name "StringDepSpec"
+    name "NamedSetDepSpec"
+    name "URILabelsDepSpec"
+    name "DependencyLabelsDepSpec"
+
+    # paludis/dep_tree-fwd.hh
+    name "GenericSpecTree"
+    name "LicenseSpecTree"
+    name "FetchableURISpecTree"
+    name "SimpleURISpecTree"
+    name "FlattenableSpecTree"
+    name "ProvideSpecTree"
+    name "RestrictSpecTree"
+    name "DependencySpecTree"
+    name "SetSpecTree"
+
+
+    # paludis/name-fwd.hh
+    name "PackageNamePart"
+    name "PackageNamePartSet"
+    name "CategoryNamePart"
+    name "CategoryNamePartSet"
+    name "UseFlagName"
+    name "UseFlagNameSet"
+    name "QualifiedPackageName"
+    name "IUseFlag"
+    name "QualifiedPackageNameSet"
+    name "SlotName"
+    name "RepositoryName"
+    name "RepositoryNameSequence"
+    name "KeywordName"
+    name "KeywordNameSet"
+    name "SetName"
+    name "SetNameSet"
+    name "IUseFlagSet"
+}
+
+make_nn_LowercaseNiceNames() {
+    namespace "paludis::python"
+
+    name "UseFlagName" "use_flag_name"
+    name "IUseFlag" "iuse_flag"
+    name "KeywordName" "keyword_name"
+    name "PackageDepSpec" "package_dep_spec"
+    name "BlockDepSpec" "block_dep_spec"
+    name "FetchableURIDepSpec" "fetchable_uri_dep_spec"
+    name "SimpleURIDepSpec" "simple_uri_dep_spec"
+    name "DependencyLabelsDepSpec" "dependency_labels_dep_spec"
+    name "URILabelsDepSpec" "uri_labels_dep_spec"
+    name "PlainTextDepSpec" "plain_text_dep_spec"
+    name "LicenseDepSpec" "license_dep_spec"
+    name "UseDepSpec" "use_dep_spec"
+    name "NamedSetDepSpec" "named_set_dep_spec"
+
+    name "format::Plain" "plain"
+    name "format::Enabled" "enabled"
+    name "format::Disabled" "disabled"
+    name "format::Masked" "masked"
+    name "format::Forced" "forced"
+    name "format::Changed" "changed"
+    name "format::Added" "added"
+    name "format::Accepted" "accepted"
+    name "format::Unaccepted" "unaccepted"
+    name "format::Installed" "installed"
+    name "format::Installable" "installable"
+}

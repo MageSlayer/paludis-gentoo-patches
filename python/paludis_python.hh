@@ -164,6 +164,7 @@ void expose_dep_spec() PALUDIS_VISIBLE;
 void expose_dep_tag() PALUDIS_VISIBLE;
 void expose_environment() PALUDIS_VISIBLE;
 void expose_exception() PALUDIS_VISIBLE;
+void expose_formatter() PALUDIS_VISIBLE;
 void expose_fs_entry() PALUDIS_VISIBLE;
 void expose_log() PALUDIS_VISIBLE;
 void expose_mask() PALUDIS_VISIBLE;

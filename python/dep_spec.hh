@@ -192,6 +192,7 @@ namespace paludis
             public:
                 PythonPlainTextDepSpec(const std::string &);
                 PythonPlainTextDepSpec(const PlainTextDepSpec &);
+                PythonPlainTextDepSpec(const PythonPlainTextDepSpec &);
         };
 
         class PALUDIS_VISIBLE PythonNamedSetDepSpec :

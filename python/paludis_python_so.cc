@@ -48,6 +48,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_action();
     expose_package_database();
     expose_repository();
+    expose_formatter();
 #ifdef ENABLE_QA
     expose_qa();
 #endif

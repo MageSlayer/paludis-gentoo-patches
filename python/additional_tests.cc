@@ -29,6 +29,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
+#include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 
 using namespace paludis;
@@ -187,6 +188,66 @@ namespace metadata_key
     }
 }
 
+namespace formatter
+{
+    using namespace format;
+
+    // CanFormat for PlainRoles
+    void test_plain_roles(CanFormat<PlainTextDepSpec> & f)
+    {
+        PlainTextDepSpec d("foo");
+        f.format(d, Plain());
+    }
+
+    // CanFormat for AcceptableRoles
+    void test_acceptable_roles(CanFormat<KeywordName> & f)
+    {
+        KeywordName k("keyword");
+        f.format(k, Plain());
+        f.format(k, Accepted());
+        f.format(k, Unaccepted());
+    }
+
+    // CanFormat for UseRoles
+    void test_use_roles(CanFormat<UseFlagName> & f)
+    {
+        UseFlagName u("use");
+        f.format(u, Plain());
+        f.format(u, Enabled());
+        f.format(u, Disabled());
+        f.format(u, Forced());
+        f.format(u, Masked());
+    }
+
+    // CanFormat for IUseRoles
+    void test_iuse_roles(CanFormat<IUseFlag> & f)
+    {
+        IUseFlag u("iuse_flag", iuse_pm_permissive, 1);
+        f.format(u, Plain());
+        f.format(u, Enabled());
+        f.format(u, Disabled());
+        f.format(u, Forced());
+        f.format(u, Masked());
+        f.decorate(u, "%", Added());
+        f.decorate(u, "*", Changed());
+    }
+
+    // CanFormat for PackageRoles
+    void test_package_roles(CanFormat<PackageDepSpec> & f)
+    {
+        PackageDepSpec p("cat/pkg", pds_pm_permissive);
+        f.format(p, Plain());
+        f.format(p, Installed());
+        f.format(p, Installable());
+    }
+
+    // CanSpace
+    void test_can_space(CanSpace & f)
+    {
+        f.newline();
+        f.indent(1);
+    }
+}
 
 void expose_additional_tests()
 {
@@ -222,4 +283,14 @@ void expose_additional_tests()
     bp::def("test_metadata_restrict_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<RestrictSpecTree>);
     bp::def("test_metadata_fetchable_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<FetchableURISpecTree>);
     bp::def("test_metadata_simple_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<SimpleURISpecTree>);
+
+    /**
+     * Formatter tests
+     */
+    bp::def("test_plain_roles", &formatter::test_plain_roles);
+    bp::def("test_acceptable_roles", &formatter::test_acceptable_roles);
+    bp::def("test_use_roles", &formatter::test_use_roles);
+    bp::def("test_iuse_roles", &formatter::test_iuse_roles);
+    bp::def("test_package_roles", &formatter::test_package_roles);
+    bp::def("test_can_space", &formatter::test_can_space);
 }
