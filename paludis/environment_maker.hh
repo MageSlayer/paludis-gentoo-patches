@@ -25,6 +25,17 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/environment.hh>
 
+
+/** \file
+ * Declarations for the EnvironmentMaker class.
+ *
+ * \ingroup g_environment
+ *
+ * \section Examples
+ *
+ * - \ref example_environment.cc "example_environment.cc"
+ */
+
 namespace paludis
 {
     class FSEntry;
@@ -32,37 +43,45 @@ namespace paludis
     /**
      * Thrown if an environment of the specified type does not exist.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpenvironment
+     * \ingroup g_exceptions
+     * \ingroup g_environment
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchEnvironmentTypeError : public ConfigurationError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             NoSuchEnvironmentTypeError(const std::string & format) throw ();
+
+            ///\}
     };
 
     /**
      * Thrown if PALUDIS_ENVIRONMENT_SO_DIR is not a directory.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpenvironment
+     * \ingroup g_exceptions
+     * \ingroup g_environment
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PaludisEnvironmentSoDirNotADirectoryError :
         public Exception
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             PaludisEnvironmentSoDirNotADirectoryError() throw ();
+
+            ///\}
     };
 
     /**
      * Thrown if an environment .so cannot be used.
      *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup g_exceptions
+     * \ingroup g_environment
      */
     class PALUDIS_VISIBLE PaludisEnvironmentSoDirCannotDlopenError :
         public Exception
@@ -89,7 +108,8 @@ namespace paludis
      * If an EnvironmentMaker default call fails with an exception of this type,
      * it is ok to fall back and try another maker.
      *
-     * \ingroup grpenvironment
+     * \ingroup g_environment
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FallBackToAnotherMakerError
@@ -106,7 +126,7 @@ namespace paludis
     /**
      * Virtual constructor for environments.
      *
-     * \ingroup grpenvironment
+     * \ingroup g_environment
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE EnvironmentMaker :
@@ -147,8 +167,9 @@ namespace paludis
              *
              * \throw NoSuchEnvironmentTypeError if an invalid environment type
              *     is specified.
+             *
              * \see Environment
-             * \ingroup grpenvironment
+             * \ingroup g_environment
              */
             tr1::shared_ptr<Environment> make_from_spec(const std::string & spec) const;
     };
