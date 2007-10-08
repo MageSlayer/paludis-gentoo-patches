@@ -45,7 +45,7 @@
  *
  * \section Examples
  *
- * - \ref example_repository.cc "example_repository.cc" (for package IDs)
+ * - \ref example_repository.cc "example_repository.cc"
  */
 
 namespace paludis
