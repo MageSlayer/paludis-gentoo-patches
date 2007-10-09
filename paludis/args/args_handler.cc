@@ -29,12 +29,6 @@
 #include <list>
 #include <map>
 
-/** \file
- * Implementation for ArgsHandler.
- *
- * \ingroup grplibpaludisargs
- */
-
 using namespace paludis::args;
 
 namespace paludis

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,13 @@
 #include <paludis/args/args_error.hh>
 
 /** \file
- * Declaration for BadArgument.
+ * Declarations for BadArgument.
  *
- * \ingroup grplibpaludisargs
- * \ingroup grpexceptions
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -36,8 +39,8 @@ namespace paludis
         /**
          * Thrown if an unrecognised command line argument is specified.
          *
-         * \ingroup grplibpaludisargs
-         * \ingroup grpexceptions
+         * \ingroup g_args
+         * \ingroup g_exceptions
          */
         class PALUDIS_VISIBLE BadArgument :
             public ArgsError

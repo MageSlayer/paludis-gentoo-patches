@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,9 +24,13 @@
 #include <string>
 
 /** \file
- * Declaration for ArgsError.
+ * Declarations for argument exception classes.
  *
- * \ingroup grplibpaludisargs
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -36,8 +40,8 @@ namespace paludis
         /**
          * Thrown if an invalid command line argument is provided.
          *
-         * \ingroup grplibpaludisargs
-         * \ingroup grpexceptions
+         * \ingroup g_exceptions
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsError :
             public paludis::Exception
@@ -52,8 +56,8 @@ namespace paludis
         /**
          * Thrown if an invalid parameter is passed to a valid command line argument.
          *
-         * \ingroup grplibpaludisargs
-         * \ingroup grpexceptions
+         * \ingroup g_args
+         * \ingroup g_exceptions
          */
         class PALUDIS_VISIBLE BadValue :
             public ArgsError
@@ -69,8 +73,8 @@ namespace paludis
          * Thrown if an argument is specified that needs a parameter,
          * but no parameter is given.
          *
-         * \ingroup grplibpaludisargs
-         * \ingroup grpexceptions
+         * \ingroup g_args
+         * \ingroup g_exceptions
          */
         class PALUDIS_VISIBLE MissingValue :
             public ArgsError

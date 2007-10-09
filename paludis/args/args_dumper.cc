@@ -23,12 +23,6 @@
 
 #include <sstream>
 
-/** \file
- * Implementation of ArgsDumper.
- *
- * \ingroup grplibpaludisargs
- */
-
 using namespace paludis;
 using namespace paludis::args;
 

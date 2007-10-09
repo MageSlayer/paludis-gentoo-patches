@@ -28,9 +28,13 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
- * Declaration for ArgsGroup.
+ * Declarations for ArgsGroup.
  *
- * \ingroup grplibpaludisargs
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -43,7 +47,7 @@ namespace paludis
         /**
          * Contains a related group of command line arguments.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsGroup :

@@ -21,12 +21,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <list>
 
-/** \file
- * Implementation for ArgsGroup.
- *
- * \ingroup grplibpaludisargs
- */
-
 using namespace paludis::args;
 
 namespace paludis

@@ -29,12 +29,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-/** \file
- * Implementation for ArgsVisitor.
- *
- * \ingroup grplibpaludisargs
- */
-
 using namespace paludis;
 using namespace paludis::args;
 

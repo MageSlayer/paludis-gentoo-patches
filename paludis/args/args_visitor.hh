@@ -28,9 +28,13 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
- * Declaration for ArgsVisitor
+ * Declarations for ArgsVisitor.
  *
- * \ingroup grplibpaludisargs
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -48,7 +52,7 @@ namespace paludis
         /**
          * Visitor types for visitors that can visit Args.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         struct ArgsVisitorTypes :
             VisitorTypes<
@@ -66,7 +70,7 @@ namespace paludis
         /**
          * Visitor class. Processes command-line options as they are found.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsVisitor :
             public Visitor<ArgsVisitorTypes>

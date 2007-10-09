@@ -30,9 +30,13 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
- * Declaration for ArgsHandler.
+ * Declarations for ArgsHandler.
  *
- * \ingroup grplibpaludisargs
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -42,7 +46,7 @@ namespace paludis
         /**
          * Handles command line arguments.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsHandler :
@@ -190,7 +194,7 @@ namespace paludis
         /**
          * Output an ArgsHandler to an ostream, for --help output.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         std::ostream & operator<< (std::ostream &, const ArgsHandler &) PALUDIS_VISIBLE;
     }

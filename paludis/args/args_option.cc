@@ -24,22 +24,11 @@
 #include <vector>
 #include <algorithm>
 
-/** \file
- * Implementation for ArgsOption.
- *
- * \ingroup grplibpaludisargs
- */
-
 using namespace paludis;
 using namespace paludis::args;
 
 namespace
 {
-    /**
-     * Is an arg a particular value?
-     *
-     * \ingroup grplibpaludisargs
-     */
     struct ArgIs
     {
         /// The argument.
@@ -116,11 +105,6 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
 
 namespace paludis
 {
-    /**
-     * Implementation data for StringSetArg.
-     *
-     * \ingroup grplibpaludisargs
-     */
     template<>
     struct Implementation<StringSetArg>
     {
@@ -128,11 +112,6 @@ namespace paludis
         std::vector<std::pair<std::string, std::string> > allowed_args;
     };
 
-    /**
-     * Implementation data for StringSetArg::StringSetArgOptions.
-     *
-     * \ingroup grplibpaludisargs
-     */
     template<>
     struct Implementation<StringSetArg::StringSetArgOptions>
     {
@@ -198,22 +177,12 @@ IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long
 
 namespace paludis
 {
-    /**
-     * Implementation data for EnumArg.
-     *
-     * \ingroup grplibpaludisargs
-     */
     template<>
     struct Implementation<EnumArg>
     {
         std::vector<std::pair<std::string, std::string> > allowed_args;
     };
 
-    /**
-     * Implementation data for EnumArg::EnumArgOptions.
-     *
-     * \ingroup grplibpaludisargs
-     */
     template<>
     struct Implementation<EnumArg::EnumArgOptions>
     {

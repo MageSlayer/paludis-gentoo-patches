@@ -24,6 +24,16 @@
 #include <paludis/args/args_visitor.hh>
 #include <paludis/util/visitor.hh>
 
+/** \file
+ * Declarations for the ArgsDumper class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
@@ -36,9 +46,9 @@ namespace paludis
         class EnumArg;
 
         /**
-         * Visitor class. Prints help text appropriate to each command line option.
+         * Prints help text appropriate to each command line option.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsDumper :
             public ConstVisitor<ArgsVisitorTypes>

@@ -25,9 +25,13 @@
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
- * Declaration for ArgsOption.
+ * Declarations for ArgsOption.
  *
- * \ingroup grplibpaludisargs
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -39,7 +43,7 @@ namespace paludis
         /**
          * Base class for a command line option.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsOption :
             public virtual AcceptInterface<ArgsVisitorTypes>
@@ -130,7 +134,7 @@ namespace paludis
          * A SwitchArg is an option that can either be specified or not
          * specified, and that takes no value (for example, --help).
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE SwitchArg :
             public ArgsOption,
@@ -149,7 +153,7 @@ namespace paludis
         /**
          * An option that takes a string argument.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE StringArg :
             public ArgsOption,
@@ -187,7 +191,7 @@ namespace paludis
         /**
          * An option that takes a set of strings.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE StringSetArg :
@@ -286,7 +290,7 @@ namespace paludis
         /**
          * An AliasArg is an alias for another argument.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          */
         class PALUDIS_VISIBLE AliasArg :
             public ArgsOption,
@@ -352,7 +356,7 @@ namespace paludis
         /**
          * An option that takes one of a predefined set of string arguments.
          *
-         * \ingroup grplibpaludisargs
+         * \ingroup g_args
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE EnumArg :
