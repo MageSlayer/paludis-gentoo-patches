@@ -1195,10 +1195,10 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             v != v_end ; ++v)
     {
         tr1::shared_ptr<const PackageID> id = (*v);
-        if (! id->src_uri_key())
+        if (! id->fetches_key())
             continue;
         paludis::erepository::AAVisitor aa;
-        id->src_uri_key()->value()->accept(aa);
+        id->fetches_key()->value()->accept(aa);
 
         for (paludis::erepository::AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)

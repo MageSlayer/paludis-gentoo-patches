@@ -190,13 +190,12 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
             virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
             virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;
@@ -208,6 +207,7 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
             virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
 
+            const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
             const tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
             const tr1::shared_ptr<FakeMetadataIUseSetKey> iuse_key();
 
@@ -216,7 +216,7 @@ namespace paludis
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
             const tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
-            const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key();
+            const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
 
             void set_slot(const SlotName &);
 

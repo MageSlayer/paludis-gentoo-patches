@@ -171,20 +171,20 @@ int main(int argc, char * argv[])
         for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            /* If we don't have a src_uri key, skip this package. All PackageID
+            /* If we don't have a fetches key, skip this package. All PackageID
              * _key() functions can potentially return zero pointers, so checking is
              * essential. */
-            if (! (*i)->src_uri_key())
+            if (! (*i)->fetches_key())
                 continue;
 
             /* We need to know whether the default label for this package's src_uri
              * is restricted. */
             IsLabelRestrictedVisitor is_initial_label_restricted(false);
-            (*i)->src_uri_key()->initial_label()->accept(is_initial_label_restricted);
+            (*i)->fetches_key()->initial_label()->accept(is_initial_label_restricted);
 
             /* Create a visitor that will collect distfiles, and do the collecting. */
             DistfilesCollector collector(results, is_initial_label_restricted.result);
-            (*i)->src_uri_key()->value()->accept(collector);
+            (*i)->fetches_key()->value()->accept(collector);
         }
 
         /* Display summary of results */

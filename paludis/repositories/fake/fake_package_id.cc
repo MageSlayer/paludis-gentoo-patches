@@ -542,13 +542,13 @@ FakePackageID::suggested_dependencies_key()
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-FakePackageID::src_uri_key() const
+FakePackageID::fetches_key() const
 {
     return _imp->src_uri;
 }
 
 const tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
-FakePackageID::src_uri_key()
+FakePackageID::fetches_key()
 {
     return _imp->src_uri;
 }

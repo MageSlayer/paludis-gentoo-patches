@@ -184,8 +184,6 @@ namespace paludis
              */
             virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const = 0;
 
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
-
             /**
              * The provide_key, if non-zero, indicates that a package provides
              * certain old-style virtuals. This affects dependency resolution.
@@ -228,10 +226,10 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const = 0;
 
             /**
-             * The src_uri_key, if non-zero, indicates files that have to be fetched
+             * The fetches_key, if non-zero, indicates files that have to be fetched
              * in order to install a package.
              */
-            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const = 0;
 
             /**
              * The homepage_key, if non-zero, describes a package's homepages.

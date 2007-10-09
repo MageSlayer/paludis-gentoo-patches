@@ -326,8 +326,8 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
 
         /* make A */
         AFinder f(_imp->params.environment, id);
-        if (id->src_uri_key())
-            id->src_uri_key()->value()->accept(f);
+        if (id->fetches_key())
+            id->fetches_key()->value()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -345,8 +345,8 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
         if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
         {
             AAVisitor g;
-            if (id->src_uri_key())
-                id->src_uri_key()->value()->accept(g);
+            if (id->fetches_key())
+                id->fetches_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -370,19 +370,19 @@ EbuildEntries::fetch(const tr1::shared_ptr<const ERepositoryID> & id,
     archives = strip_trailing(archives, " ");
     all_archives = strip_trailing(all_archives, " ");
 
-    if (id->src_uri_key())
+    if (id->fetches_key())
     {
         std::string mirrors_name(_imp->e_repository->params().master_repository ?
                 stringify(_imp->e_repository->params().master_repository->name()) :
                 stringify(_imp->e_repository->name()));
         FetchVisitor f(_imp->params.environment, id, *id->eapi(),
                 _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_userpriv_ok, mirrors_name,
-                id->src_uri_key()->initial_label(), o.safe_resume);
-        id->src_uri_key()->value()->accept(f);
+                id->fetches_key()->initial_label(), o.safe_resume);
+        id->fetches_key()->value()->accept(f);
         CheckFetchedFilesVisitor c(_imp->environment, id, _imp->e_repository->params().distdir, o.fetch_unneeded, fetch_restrict,
                 ((_imp->e_repository->layout()->package_directory(id->name())) / "Manifest"),
                 _imp->e_repository->params().use_manifest);
-        id->src_uri_key()->value()->accept(c);
+        id->fetches_key()->value()->accept(c);
 
         if (c.need_nofetch())
         {
@@ -460,8 +460,8 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
 
         /* make A */
         AFinder f(_imp->params.environment, id);
-        if (id->src_uri_key())
-            id->src_uri_key()->value()->accept(f);
+        if (id->fetches_key())
+            id->fetches_key()->value()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -479,8 +479,8 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
         if (! id->eapi()->supported->ebuild_environment_variables->env_aa.empty())
         {
             AAVisitor g;
-            if (id->src_uri_key())
-                id->src_uri_key()->value()->accept(g);
+            if (id->fetches_key())
+                id->fetches_key()->value()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)

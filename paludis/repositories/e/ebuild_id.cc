@@ -550,7 +550,7 @@ EbuildID::restrict_key() const
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-EbuildID::src_uri_key() const
+EbuildID::fetches_key() const
 {
     need_keys_added();
     return _imp->src_uri;

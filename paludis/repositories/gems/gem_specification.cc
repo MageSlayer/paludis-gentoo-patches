@@ -409,12 +409,6 @@ GemSpecification::iuse_key() const
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
-GemSpecification::license_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 GemSpecification::provide_key() const
 {
@@ -440,7 +434,7 @@ GemSpecification::post_dependencies_key() const
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-GemSpecification::src_uri_key() const
+GemSpecification::fetches_key() const
 {
     return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }

@@ -96,13 +96,12 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
                 virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri_key() const;
+                virtual const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> short_description_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> long_description_key() const;

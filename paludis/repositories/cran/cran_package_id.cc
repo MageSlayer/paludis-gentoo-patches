@@ -332,12 +332,6 @@ CRANPackageID::iuse_key() const
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
-CRANPackageID::license_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 CRANPackageID::provide_key() const
 {
@@ -369,7 +363,7 @@ CRANPackageID::suggested_dependencies_key() const
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-CRANPackageID::src_uri_key() const
+CRANPackageID::fetches_key() const
 {
     return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }

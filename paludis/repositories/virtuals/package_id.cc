@@ -271,12 +271,6 @@ VirtualsPackageID::iuse_key() const
     return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
-VirtualsPackageID::license_key() const
-{
-    return tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >();
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 VirtualsPackageID::provide_key() const
 {
@@ -320,7 +314,7 @@ VirtualsPackageID::long_description_key() const
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-VirtualsPackageID::src_uri_key() const
+VirtualsPackageID::fetches_key() const
 {
     return tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }

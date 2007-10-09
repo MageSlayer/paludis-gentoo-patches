@@ -196,8 +196,8 @@ EbuildFlatMetadataCache::save(const tr1::shared_ptr<const EbuildID> & id)
 
         cache << normalise(id->slot()) << std::endl;
 
-        if (id->src_uri_key())
-            cache << flatten(id->src_uri_key()->value()) << std::endl;
+        if (id->fetches_key())
+            cache << flatten(id->fetches_key()->value()) << std::endl;
         else
             cache << std::endl;
 

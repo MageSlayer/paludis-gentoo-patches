@@ -468,13 +468,6 @@ VDBID::inherited_key() const
     return _imp->inherited;
 }
 
-const tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
-VDBID::license_key() const
-{
-    need_keys_added();
-    return _imp->license;
-}
-
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 VDBID::provide_key() const
 {
@@ -517,7 +510,7 @@ VDBID::restrict_key() const
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
-VDBID::src_uri_key() const
+VDBID::fetches_key() const
 {
     need_keys_added();
     return _imp->src_uri;

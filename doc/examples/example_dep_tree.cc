@@ -229,8 +229,8 @@ int main(int argc, char * argv[])
             FileExtensionsCollector extensions_collector(env, *i, results);
 
             /* Again, we check for a zero pointer and visit otherwise: */
-            if ((*i)->src_uri_key())
-                (*i)->src_uri_key()->value()->accept(extensions_collector);
+            if ((*i)->fetches_key())
+                (*i)->fetches_key()->value()->accept(extensions_collector);
         }
 
         /* Display our results */

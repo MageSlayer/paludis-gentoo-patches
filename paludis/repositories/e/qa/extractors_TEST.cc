@@ -64,7 +64,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("app-arch/unzip");
-            id->src_uri_key()->set_from_string("foo.zip");
+            id->fetches_key()->set_from_string("foo.zip");
 
             TestReporter r;
             TEST_CHECK(extractors_check(FSEntry("/var/empty"), r, id, "spec keys"));
@@ -83,7 +83,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("app-misc/foo");
-            id->src_uri_key()->set_from_string("foo.tar.bz2");
+            id->fetches_key()->set_from_string("foo.tar.bz2");
 
             TestReporter r;
             TEST_CHECK(extractors_check(FSEntry("/var/empty"), r, id, "spec keys"));
@@ -102,7 +102,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("oink? ( app-arch/unzip ) !oink? ( bar? ( app-arch/unzip ) foo? ( app-arch/unzip ) )");
-            id->src_uri_key()->set_from_string("foo? ( foo.zip ) bar? ( baz? ( moo.zip ) )");
+            id->fetches_key()->set_from_string("foo? ( foo.zip ) bar? ( baz? ( moo.zip ) )");
 
             TestReporter r;
             TEST_CHECK(extractors_check(FSEntry("/var/empty"), r, id, "spec keys"));
@@ -122,7 +122,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("app-arch/blah");
-            id->src_uri_key()->set_from_string("foo.zip");
+            id->fetches_key()->set_from_string("foo.zip");
 
             TestReporter r;
             TEST_CHECK(extractors_check(FSEntry("/var/empty"), r, id, "spec keys"));
@@ -141,7 +141,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             tr1::shared_ptr<FakePackageID> id(repo->add_version("cat", "pkg", "1"));
             id->build_dependencies_key()->set_from_string("foo? ( baz? ( app-arch/unzip ) !baz? ( app-arch/unzip ) ) ");
-            id->src_uri_key()->set_from_string("oink? ( a.zip ) !oink? ( bar? ( a.zip ) )");
+            id->fetches_key()->set_from_string("oink? ( a.zip ) !oink? ( bar? ( a.zip ) )");
 
             TestReporter r;
             TEST_CHECK(extractors_check(FSEntry("/var/empty"), r, id, "spec keys"));
