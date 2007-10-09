@@ -5,12 +5,12 @@ SUBDIRS = .
 noinst_LIBRARIES = liblittlelf.a
 
 liblittlelf_a_SOURCES = \
-	Elf.cc                  Elf.cc                  \
-	ElfSections.cc          ElfSections.cc          \
-	ElfDynamicSection.cc    ElfDynamicSection.cc    \
-	ElfRelocationSection.cc ElfRelocationSection.cc \
-	ElfSymbolSection.cc     ElfSymbolSection.cc     \
-	ElfTypes.hh
+	elf.cc                    elf.cc                    \
+	elf_sections.cc           elf_sections.cc           \
+	elf_dynamic_section.cc    elf_dynamic_section.cc    \
+	elf_relocation_section.cc elf_relocation_section.cc \
+	elf_symbol_section.cc     elf_symbol_section.cc     \
+	elf_types.hh
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

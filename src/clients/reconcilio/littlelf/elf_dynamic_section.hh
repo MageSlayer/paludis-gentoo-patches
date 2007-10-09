@@ -1,7 +1,7 @@
 #ifndef ELFDYNAMICSECTION_HH_
 #define ELFDYNAMICSECTION_HH_
 
-#include "ElfSections.hh"
+#include "elf_sections.hh"
 
 #include <paludis/util/clone.hh>
 #include <paludis/util/instantiation_policy.hh>

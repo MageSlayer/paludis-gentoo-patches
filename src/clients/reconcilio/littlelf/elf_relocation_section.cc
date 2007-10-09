@@ -1,6 +1,6 @@
 
-#include "ElfRelocationSection.hh"
-#include "ElfTypes.hh"
+#include "elf_relocation_section.hh"
+#include "elf_types.hh"
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>

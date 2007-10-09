@@ -1,9 +1,9 @@
 
-#include "Elf.hh"
-#include "ElfDynamicSection.hh"
-#include "ElfRelocationSection.hh"
-#include "ElfSymbolSection.hh"
-#include "ElfTypes.hh"
+#include "elf.hh"
+#include "elf_dynamic_section.hh"
+#include "elf_relocation_section.hh"
+#include "elf_symbol_section.hh"
+#include "elf_types.hh"
 
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>

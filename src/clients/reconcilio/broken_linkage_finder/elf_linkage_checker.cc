@@ -21,9 +21,9 @@
 
 #include <src/clients/reconcilio/util/iterator.hh>
 
-#include <src/clients/reconcilio/littlelf/Elf.hh>
-#include <src/clients/reconcilio/littlelf/ElfDynamicSection.hh>
-#include <src/clients/reconcilio/littlelf/ElfTypes.hh>
+#include <src/clients/reconcilio/littlelf/elf.hh>
+#include <src/clients/reconcilio/littlelf/elf_dynamic_section.hh>
+#include <src/clients/reconcilio/littlelf/elf_types.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>

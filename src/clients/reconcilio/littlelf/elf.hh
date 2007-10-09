@@ -1,7 +1,7 @@
 #ifndef ELF_HH_
 #define ELF_HH_
 
-#include "ElfSections.hh"
+#include "elf_sections.hh"
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>

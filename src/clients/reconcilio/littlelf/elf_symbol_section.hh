@@ -1,7 +1,7 @@
 #ifndef ELFSYMBOLSECTION_HH_
 #define ELFSYMBOLSECTION_HH_
 
-#include "ElfSections.hh"
+#include "elf_sections.hh"
 
 #include <paludis/util/private_implementation_pattern.hh>
 

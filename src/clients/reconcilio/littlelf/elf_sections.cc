@@ -1,6 +1,6 @@
 
-#include "ElfSections.hh"
-#include "ElfTypes.hh"
+#include "elf_sections.hh"
+#include "elf_types.hh"
 
 #include <paludis/util/visitor-impl.hh>
 

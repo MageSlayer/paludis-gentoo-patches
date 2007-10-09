@@ -1,6 +1,6 @@
 
-#include "ElfDynamicSection.hh"
-#include "ElfTypes.hh"
+#include "elf_dynamic_section.hh"
+#include "elf_types.hh"
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
