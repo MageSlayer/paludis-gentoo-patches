@@ -156,12 +156,6 @@ TESTS = $(IF_PYTHON_TESTS)
 
 endif
 
-nice_names-nn.hh : nice_names.nn $(top_srcdir)/misc/make_nn.bash
-	if ! $(top_srcdir)/misc/make_nn.bash --header $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
-
-nice_names-nn.cc : nice_names.nn $(top_srcdir)/misc/make_nn.bash
-	if ! $(top_srcdir)/misc/make_nn.bash --source $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
-
 libpaludispython_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -208,6 +202,12 @@ paludis.so : libpaludispython.la paludis_python_so.o
 	    -L$(top_builddir)/python/.libs -ladditionaltests
 
 endif
+
+nice_names-nn.hh : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --header $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
+
+nice_names-nn.cc : nice_names.nn $(top_srcdir)/misc/make_nn.bash
+	if ! $(top_srcdir)/misc/make_nn.bash --source $(srcdir)/nice_names.nn > $@ ; then rm -f $@ ; exit 1 ; fi
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
