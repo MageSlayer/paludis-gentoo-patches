@@ -18,7 +18,7 @@ END
         /**
          * Represents a category plus package name.
          *
-         * \ingroup grpnames
+         * \ingroup g_names
          * \nosubgrouping
          */
 END
@@ -42,7 +42,7 @@ END
         /**
          * Represents an IUse flag.
          *
-         * \ingroup grpnames
+         * \ingroup g_names
          * \nosubgrouping
          */
 END

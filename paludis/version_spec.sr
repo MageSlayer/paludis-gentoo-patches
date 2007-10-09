@@ -10,7 +10,7 @@ make_class_Part()
         /**
          * Internal use by VersionSpec.
          *
-         * \ingroup grpversions
+         * \ingroup g_names
          * \nosubgrouping
          */
 END

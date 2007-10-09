@@ -26,6 +26,12 @@
 #include <paludis/util/attributes.hh>
 #include <string>
 
+/** \file
+ * Forward declarations for paludis/name.hh .
+ *
+ * \ingroup g_names
+ */
+
 namespace paludis
 {
     class PackageNamePartError;
@@ -35,14 +41,14 @@ namespace paludis
      * A PackageNamePart holds a std::string that is a valid name for the
      * package part of a QualifiedPackageName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, PackageNamePartValidator> PackageNamePart;
 
     /**
      * Holds a set of PackageNamePart instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<PackageNamePart> PackageNamePartSet;
 
@@ -53,14 +59,14 @@ namespace paludis
      * A CategoryNamePart holds a std::string that is a valid name for the
      * category part of a QualifiedPackageName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, CategoryNamePartValidator> CategoryNamePart;
 
     /**
      * Holds a set of CategoryNamePart instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<CategoryNamePart> CategoryNamePartSet;
 
@@ -71,14 +77,14 @@ namespace paludis
     /**
      * A UseFlagName holds a std::string that is a valid name for a USE flag.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
 
     /**
      * A collection of UseFlagName instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<UseFlagName> UseFlagNameSet;
 
@@ -90,26 +96,31 @@ namespace paludis
     /**
      * Output a QualifiedPackageName to a stream.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &) PALUDIS_VISIBLE;
 
     /**
      * Output an IUseFlag to a stream.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     std::ostream & operator<< (std::ostream &, const IUseFlag &) PALUDIS_VISIBLE;
 
     /**
      * Holds a collection of QualifiedPackageName instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<QualifiedPackageName> QualifiedPackageNameSet;
 
     class QualifiedPackageNameError;
 
+    /**
+     * A CategoryNamePart plus a PackageNamePart is a QualifiedPackageName.
+     *
+     * \ingroup g_names
+     */
     inline const QualifiedPackageName
     operator+ (const CategoryNamePart & c, const PackageNamePart & p) PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -119,7 +130,7 @@ namespace paludis
     /**
      * A SlotName holds a std::string that is a valid name for a SLOT.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, SlotNameValidator> SlotName;
 
@@ -130,14 +141,14 @@ namespace paludis
      * A RepositoryName holds a std::string that is a valid name for a
      * Repository.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, RepositoryNameValidator, false> RepositoryName;
 
     /**
      * Holds a collection of RepositoryName instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Sequence<RepositoryName> RepositoryNameSequence;
 
@@ -149,14 +160,14 @@ namespace paludis
     /**
      * A KeywordName holds a std::string that is a valid name for a KEYWORD.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, KeywordNameValidator> KeywordName;
 
     /**
      * Holds a collection of KeywordName instances.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<KeywordName> KeywordNameSet;
 
@@ -166,21 +177,21 @@ namespace paludis
     /**
      * A SetName holds a std::string that is a valid name for a set.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Validated<std::string, SetNameValidator> SetName;
 
     /**
      * A collection of set names.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<SetName> SetNameSet;
 
     /**
      * A collection of use flags.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     typedef Set<IUseFlag> IUseFlagSet;
 }

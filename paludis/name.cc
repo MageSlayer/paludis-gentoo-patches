@@ -26,12 +26,6 @@
 #include <ostream>
 #include <utility>
 
-/** \file
- * Implementation of name.hh things.
- *
- * \ingroup grpnames
- */
-
 using namespace paludis;
 
 #include <paludis/name-sr.cc>

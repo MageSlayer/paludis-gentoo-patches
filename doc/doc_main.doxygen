@@ -149,7 +149,7 @@ using namespace paludis;
 
 /** \defgroup g_query "Query"
  *
- * \ingroup g_paludis
+ * \ingroup g_package_database
  *
  * Queries are used by PackageDatabase::query. They provide a flexible, mergeable,
  * efficient way of specifying which IDs should be returned in the result.
@@ -160,4 +160,34 @@ using namespace paludis;
  * - \ref example_query_delegate.cc "example_query_delegate.cc"
  * - \ref example_match_package.cc "example_match_package.cc"
  */
+
+/** \defgroup g_package_database "Package Database"
+ *
+ * \ingroup g_paludis
+ *
+ * A PackageDatabase, which is owned by an Environment, contains a number of
+ * Repository instances and supports various querying methods.
+ *
+ * \section Examples
+ *
+ * - \ref example_package_database.cc "example_package_database.cc"
+ * - \ref example_query.cc "example_query.cc"
+ * - \ref example_query_delegate.cc "example_query_delegate.cc"
+ */
+
+/** \defgroup g_names "Names and Versions"
+ *
+ * \ingroup g_names
+ *
+ * Paludis uses 'smart' classes for holding names and versions, allowing for
+ * substantially more static checking and much more convenient and useful
+ * runtime checking of data.
+ *
+ * \section Examples
+ *
+ * - \ref example_name.cc "example_name.cc"
+ * - \ref example_version_spec.cc "example_version_spec.cc"
+ * - \ref example_version_operator.cc "example_version_operator.cc"
+ */
+
 

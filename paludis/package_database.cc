@@ -39,10 +39,6 @@
 #include <map>
 #include <set>
 
-/** \file
- * Implementation of PackageDatabase.
- */
-
 using namespace paludis;
 
 #include "package_database-se.cc"
@@ -98,17 +94,9 @@ NoSuchRepositoryError::name() const
     return _name;
 }
 
-/**
- * Name data for an AmbiguousPackageNameError.
- *
- * \ingroup grpexceptions
- */
 struct AmbiguousPackageNameError::NameData
 {
-    /// Our query name
     std::string name;
-
-    /// Our match names
     std::list<std::string> names;
 };
 
@@ -157,25 +145,11 @@ AmbiguousPackageNameError::name() const
 
 namespace paludis
 {
-    /**
-     * Implementation data for a PackageDatabase.
-     *
-     * \ingroup grppackagedatabase
-     */
     template<>
     struct Implementation<PackageDatabase>
     {
-        /**
-         * Our Repository instances.
-         */
         std::list<tr1::shared_ptr<Repository> > repositories;
-
-        /**
-         * Repository importances.
-         */
         std::multimap<int, std::list<tr1::shared_ptr<Repository> >::iterator> repository_importances;
-
-        /// Our environment.
         const Environment * environment;
     };
 }

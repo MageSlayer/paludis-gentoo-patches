@@ -23,6 +23,12 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/version_operator.hh .
+ *
+ * \ingroup g_names
+ */
+
 namespace paludis
 {
 #include <paludis/version_operator-se.hh>
@@ -33,7 +39,7 @@ namespace paludis
     /**
      * A VersionOperator can be written to an ostream.
      *
-     * \ingroup grpversions
+     * \ingroup g_names
      */
     std::ostream & operator<< (std::ostream & s, const VersionOperator &) PALUDIS_VISIBLE;
 }

@@ -27,7 +27,11 @@ noinst_PROGRAMS = \
 	example_repository \
 	example_match_package \
 	example_query \
-	example_query_delegate
+	example_query_delegate \
+	example_package_database \
+	example_version_operator \
+	example_version_spec \
+	example_name
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 
@@ -134,14 +138,38 @@ example_match_package_LDFLAGS = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la
 
+example_query_delegate_SOURCES = example_query_delegate.cc
+example_query_delegate_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
 example_query_SOURCES = example_query.cc
 example_query_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la
 
-example_query_delegate_SOURCES = example_query_delegate.cc
-example_query_delegate_LDFLAGS = \
+example_package_database_SOURCES = example_package_database.cc
+example_package_database_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_version_operator_SOURCES = example_version_operator.cc
+example_version_operator_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_version_spec_SOURCES = example_version_spec.cc
+example_version_spec_LDFLAGS = \
+	libpaludisexamples.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la
+
+example_name_SOURCES = example_name.cc
+example_name_LDFLAGS = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la

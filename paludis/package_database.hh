@@ -38,9 +38,15 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
- * Declarations for the PackageDatabase class and related utilities.
+ * Declarations for PackageDatabase.
  *
- * \ingroup grppackagedatabase
+ * \ingroup g_package_database
+ *
+ * \section Examples
+ *
+ * - \ref example_package_database.cc "example_package_database.cc"
+ * - \ref example_query.cc "example_query.cc"
+ * - \ref example_query_delegate.cc "example_query_delegate.cc"
  */
 
 namespace paludis
@@ -49,10 +55,11 @@ namespace paludis
      * A PackageDatabaseError is an error that occurs when performing some
      * operation upon a PackageDatabase.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      */
-    class PALUDIS_VISIBLE PackageDatabaseError : public Exception
+    class PALUDIS_VISIBLE PackageDatabaseError :
+        public Exception
     {
         protected:
             /**
@@ -65,10 +72,11 @@ namespace paludis
      * A PackageDatabaseLookupError descendent is thrown if an error occurs
      * when looking for something in a PackageDatabase.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      */
-    class PALUDIS_VISIBLE PackageDatabaseLookupError : public PackageDatabaseError
+    class PALUDIS_VISIBLE PackageDatabaseLookupError :
+        public PackageDatabaseError
     {
         protected:
             /**
@@ -81,8 +89,8 @@ namespace paludis
      * Thrown if a PackageDatabase query results in more than one matching
      * Package.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AmbiguousPackageNameError :
@@ -129,10 +137,12 @@ namespace paludis
      * Thrown if a Repository with the same name as an existing member is added
      * to a PackageDatabase.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
+     * \nosubgrouping
      */
-    class PALUDIS_VISIBLE DuplicateRepositoryError : public PackageDatabaseError
+    class PALUDIS_VISIBLE DuplicateRepositoryError :
+        public PackageDatabaseError
     {
         public:
             /**
@@ -145,26 +155,26 @@ namespace paludis
      * Thrown if there is no Package in a PackageDatabase with the given
      * name.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      */
-    class PALUDIS_VISIBLE NoSuchPackageError : public PackageDatabaseLookupError
+    class PALUDIS_VISIBLE NoSuchPackageError :
+        public PackageDatabaseLookupError
     {
         private:
             std::string _name;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             NoSuchPackageError(const std::string & name) throw ();
 
-            /**
-             * Destructor.
-             */
             virtual ~NoSuchPackageError() throw ()
             {
             }
+
+            ///\}
 
             /**
              * Name of the package.
@@ -179,8 +189,8 @@ namespace paludis
      * Thrown if a PackageDatabase::query() with qo_require_exactly_one does not
      * get exactly one result.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE NonUniqueQueryResultError :
         public PackageDatabaseLookupError
@@ -196,8 +206,8 @@ namespace paludis
      * Thrown if there is no Repository in a RepositoryDatabase with the given
      * name.
      *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
+     * \ingroup g_exceptions
+     * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE NoSuchRepositoryError : public PackageDatabaseLookupError
     {
@@ -228,24 +238,24 @@ namespace paludis
     };
 
     /**
-     * A PackageDatabase can be queried for Package instances.
+     * A PackageDatabase, which is owned by an Environment, contains a number of
+     * Repository instances and supports various querying methods.
      *
-     * \ingroup grppackagedatabase
+     * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE PackageDatabase :
         private PrivateImplementationPattern<PackageDatabase>,
         private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             explicit PackageDatabase(const Environment * const);
 
-            /**
-             * Destructor.
-             */
             ~PackageDatabase();
+
+            ///\}
 
             /**
              * Add a repository.
@@ -287,6 +297,9 @@ namespace paludis
 
             /**
              * Disambiguate a package name.
+             *
+             * \throw AmbiguousPackageNameError if there is no unambiguous
+             * disabmiguation.
              */
             QualifiedPackageName fetch_unique_qualified_package_name(
                     const PackageNamePart &) const

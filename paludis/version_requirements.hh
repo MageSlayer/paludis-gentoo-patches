@@ -25,6 +25,16 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
+/** \file
+ * Declarations for version requirements classes.
+ *
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
+ */
+
 namespace paludis
 {
 #include <paludis/version_requirements-sr.hh>

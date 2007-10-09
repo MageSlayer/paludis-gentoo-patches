@@ -29,9 +29,14 @@
 #include <string>
 
 /** \file
- * Declarations of the VersionSpec class.
+ * Declarations for VersionSpec classes.
  *
- * \ingroup grpversions
+ * \ingroup g_names
+ *
+ * \section Examples
+ *
+ * - \ref example_version_spec.cc "example_version_spec.cc"
+ * - \ref example_version_operator.cc "example_version_operator.cc"
  */
 
 namespace paludis
@@ -39,8 +44,8 @@ namespace paludis
     /**
      * Thrown if a VersionSpec is created from an invalid version string.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpversions
+     * \ingroup g_exceptions
+     * \ingroup g_names
      */
     class PALUDIS_VISIBLE BadVersionSpecError :
         public NameError
@@ -58,7 +63,7 @@ namespace paludis
     /**
      * A VersionSpec represents a version number (for example, 1.2.3b-r1).
      *
-     * \ingroup grpversions
+     * \ingroup g_names
      */
     class PALUDIS_VISIBLE VersionSpec :
         private PrivateImplementationPattern<VersionSpec>,
@@ -67,6 +72,9 @@ namespace paludis
         friend std::ostream & operator<< (std::ostream &, const VersionSpec &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              */
@@ -86,6 +94,8 @@ namespace paludis
              * Assignment.
              */
             const VersionSpec & operator= (const VersionSpec & other);
+
+            ///\}
 
             ///\name Comparison operators
             ///\{

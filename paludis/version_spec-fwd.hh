@@ -23,6 +23,12 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/version_spec.hh .
+ *
+ * \ingroup g_names
+ */
+
 namespace paludis
 {
     class BadVersionSpecError;

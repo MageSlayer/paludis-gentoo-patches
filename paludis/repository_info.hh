@@ -22,13 +22,23 @@
 
 #include <paludis/repository_info-fwd.hh>
 
+/** \file
+ * Declarations for RepositoryInfo classes.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - \ref example_repository.cc "example_repository.cc"
+ */
+
 namespace paludis
 {
     /**
      * A section of information about a Repository.
      *
      * \see RepositoryInfo
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryInfoSection :
@@ -72,7 +82,7 @@ namespace paludis
     /**
      * Information about a Repository, for the end user.
      *
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryInfo :

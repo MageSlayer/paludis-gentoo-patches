@@ -28,9 +28,14 @@
 #include <string>
 
 /** \file
- * Declarations for the VersionOperator class.
+ * Declarations for VersionOperator classes.
  *
- * \ingroup grpversions
+ * \ingroup g_names
+ *
+ * \section Examples
+ *
+ * - \ref example_version_operator.cc "example_version_operator.cc"
+ * - \ref example_version_spec.cc "example_version_spec.cc"
  */
 
 namespace paludis
@@ -38,7 +43,7 @@ namespace paludis
     /**
      * An operator attached to a VersionSpec, validated.
      *
-     * \ingroup grpversions
+     * \ingroup g_names
      */
     class PALUDIS_VISIBLE VersionOperator :
         public equality_operators::HasEqualityOperators
@@ -51,6 +56,9 @@ namespace paludis
             VersionOperatorValue _v;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              */
@@ -84,6 +92,8 @@ namespace paludis
                 return *this;
             }
 
+            ///\}
+
             /**
              * Return value.
              */
@@ -116,8 +126,8 @@ namespace paludis
     /**
      * Thrown if a bad version operator is encountered.
      *
-     * \ingroup grpversions
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE BadVersionOperatorError :
         public Exception

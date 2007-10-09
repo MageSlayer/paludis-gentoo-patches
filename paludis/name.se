@@ -13,7 +13,7 @@ make_enum_UseFlagState()
         /**
          * A USE flag can be on, off or unspecified.
          *
-         * \ingroup grpnames
+         * \ingroup g_names
          */
 END
 }
@@ -33,7 +33,7 @@ make_enum_IUseFlagParseMode()
          * How to parse an IUSE flag string.
          *
          * \see IUseFlag
-         * \ingroup grpnames
+         * \ingroup g_names
          */
 END
 }

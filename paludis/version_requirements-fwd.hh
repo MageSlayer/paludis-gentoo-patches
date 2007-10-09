@@ -26,6 +26,12 @@
 #include <paludis/version_spec-fwd.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/version_requirements.hh .
+ *
+ * \ingroup g_dep_spec
+ */
+
 namespace paludis
 {
     class VersionRequirement;
@@ -35,7 +41,7 @@ namespace paludis
      * PackageDepSpec.
      *
      * \see PackageDepSpec
-     * \ingroup grpversions
+     * \ingroup g_dep_spec
      */
     typedef Sequence<VersionRequirement> VersionRequirements;
 
@@ -44,7 +50,7 @@ namespace paludis
      * single entry.
      *
      * \see VersionRequirements
-     * \ingroup grpversions
+     * \ingroup g_dep_spec
      */
     tr1::shared_ptr<VersionRequirements> make_equal_to_version_requirements(const VersionSpec &) PALUDIS_VISIBLE;
 
@@ -52,7 +58,7 @@ namespace paludis
      * Whether our version requirements are an 'and' or an 'or' set.
      *
      * \see PackageDepSpec
-     * \ingroup grpversions
+     * \ingroup g_dep_spec
      */
     enum VersionRequirementsMode
     {
@@ -64,7 +70,7 @@ namespace paludis
     /**
      * Write a VersionRequirementsMode to a stream.
      *
-     * \ingroup grpversions
+     * \ingroup g_dep_spec
      */
     std::ostream &
     operator<< (std::ostream &, const VersionRequirementsMode &) PALUDIS_VISIBLE;

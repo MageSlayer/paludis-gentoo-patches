@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_INFO_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_INFO_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/repository_info.hh .
+ *
+ * \ingroup g_package_database
+ */
+
 namespace paludis
 {
     class RepositoryInfo;

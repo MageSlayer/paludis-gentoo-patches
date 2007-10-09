@@ -1,0 +1,99 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/** \file
+ *
+ * Example \ref example_version_spec.cc "example_version_spec.cc" .
+ *
+ * \ingroup g_names
+ */
+
+/** \example example_version_spec.cc
+ *
+ * This example demonstrates how to use VersionSpec.
+ */
+
+#include <paludis/paludis.hh>
+#include "example_command_line.hh"
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <set>
+
+using namespace paludis;
+using namespace examples;
+
+using std::cout;
+using std::endl;
+using std::setw;
+using std::left;
+using std::boolalpha;
+using std::hex;
+
+int main(int argc, char * argv[])
+{
+    try
+    {
+        CommandLine::get_instance()->run(argc, argv,
+                "example_version_spec", "EXAMPLE_VERSION_SPEC_OPTIONS", "EXAMPLE_VERSION_SPEC_CMDLINE");
+
+        /* Make a set of versions */
+        std::set<VersionSpec> versions;
+        versions.insert(VersionSpec("1.0"));
+        versions.insert(VersionSpec("1.1"));
+        versions.insert(VersionSpec("1.2"));
+        versions.insert(VersionSpec("1.2-r1"));
+        versions.insert(VersionSpec("2.0"));
+        versions.insert(VersionSpec("2.0-try1"));
+        versions.insert(VersionSpec("2.0-scm"));
+        versions.insert(VersionSpec("9999"));
+
+        /* For each version... */
+        for (std::set<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
+                v != v_end ; ++v)
+        {
+            /* Versions are stringifiable */
+            cout << *v << ":" << endl;
+
+            /* Show the output of various members. Not all of these are of much
+             * direct use. */
+            cout << "    " << left << setw(24) << "Hash value:" << " " << "0x" << hex << v->hash_value() << endl;
+            cout << "    " << left << setw(24) << "Remove revision:" << " " << v->remove_revision() << endl;
+            cout << "    " << left << setw(24) << "Revision only:" << " " << v->revision_only() << endl;
+            cout << "    " << left << setw(24) << "Bump:" << " " << v->bump() << endl;
+            cout << "    " << left << setw(24) << "Is scm?" << " " << boolalpha << v->is_scm() << endl;
+            cout << "    " << left << setw(24) << "Has -try?" << " " << boolalpha << v->has_try_part() << endl;
+            cout << "    " << left << setw(24) << "Has -scm?" << " " << boolalpha << v->has_scm_part() << endl;
+            cout << endl;
+        }
+    }
+    catch (const Exception & e)
+    {
+        /* Paludis exceptions can provide a handy human-readable backtrace and
+         * an explanation message. Where possible, these should be displayed. */
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")" << endl;
+        return EXIT_FAILURE;
+    }
+    catch (const std::exception & e)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        cout << endl;
+        cout << "Unhandled exception:" << endl
+            << "  * Unknown exception type. Ouch..." << endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+
+

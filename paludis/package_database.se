@@ -17,7 +17,7 @@ make_enum_QueryOrder()
          * How to order paludis::PackageDatabase::query() results.
          *
          * \see PackageDatabase
-         * \ingroup grppackagedatabase
+         * \ingroup g_package_database
          */
 END
 }

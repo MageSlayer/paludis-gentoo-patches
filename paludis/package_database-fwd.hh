@@ -23,6 +23,12 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/package_database.hh .
+ *
+ * \ingroup g_package_database
+ */
+
 namespace paludis
 {
     class PackageDatabaseError;

@@ -22,12 +22,6 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
-/** \file
- * Implementation for VersionOperator.
- *
- * \ingroup grpversions
- */
-
 using namespace paludis;
 
 #include <paludis/version_operator-se.cc>

@@ -30,12 +30,6 @@
 #include <vector>
 #include <limits>
 
-/** \file
- * Implementation of VersionSpec.
- *
- * \ingroup grpversions
- */
-
 using namespace paludis;
 
 BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
@@ -50,11 +44,6 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::st
 
 namespace
 {
-    /**
-     * Type of a Part in a VersionSpec data vector.
-     *
-     * \ingroup grpversions
-     */
     enum PartKind
     {
         alpha,
@@ -77,24 +66,16 @@ namespace
 
 namespace paludis
 {
-    /**
-     * Implementation data for a VersionSpec.
-     */
     template<>
     struct Implementation<VersionSpec>
     {
-        /// Our raw string representation.
         std::string text;
-
-        /// Our parts.
         std::vector<Part> parts;
 
-        /// Our hash
         mutable Mutex hash_mutex;
         mutable bool has_hash;
         mutable std::size_t hash;
 
-        /// Our is_scm
         mutable Mutex is_scm_mutex;
         mutable bool has_is_scm;
         mutable bool is_scm;

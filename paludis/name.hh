@@ -30,9 +30,13 @@
 #include <iosfwd>
 
 /** \file
- * Declarations for various Name classes.
+ * Declarations for Name classes.
  *
- * \ingroup grpnames
+ * \ingroup g_names
+ *
+ * \section Examples
+ *
+ * - \ref example_name.cc "example_name.cc"
  */
 
 namespace paludis
@@ -41,10 +45,11 @@ namespace paludis
      * A PackageNamePartError is thrown if an invalid value is assigned to
      * a PackageNamePart.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
-    class PALUDIS_VISIBLE PackageNamePartError : public NameError
+    class PALUDIS_VISIBLE PackageNamePartError :
+        public NameError
     {
         public:
             /**
@@ -57,7 +62,7 @@ namespace paludis
      * A PackageNamePartValidator handles validation rules for the value
      * of a PackageNamePart.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE PackageNamePartValidator :
         private InstantiationPolicy<PackageNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -73,10 +78,11 @@ namespace paludis
      * A CategoryNamePartError is thrown if an invalid value is assigned to
      * a CategoryNamePart.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpnames
+     * \ingroup g_exceptions
+     * \ingroup g_names
      */
-    class PALUDIS_VISIBLE CategoryNamePartError : public NameError
+    class PALUDIS_VISIBLE CategoryNamePartError :
+        public NameError
     {
         public:
             /**
@@ -89,7 +95,7 @@ namespace paludis
      * A CategoryNamePartValidator handles validation rules for the value
      * of a CategoryNamePart.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE CategoryNamePartValidator :
         private InstantiationPolicy<CategoryNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -105,10 +111,11 @@ namespace paludis
      * A UseFlagNameError is thrown if an invalid value is assigned to
      * a UseFlagName.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
-    class PALUDIS_VISIBLE UseFlagNameError : public NameError
+    class PALUDIS_VISIBLE UseFlagNameError :
+        public NameError
     {
         public:
             /**
@@ -121,10 +128,11 @@ namespace paludis
      * An IUseFlagNameError is thrown if an invalid value is assigned to
      * an IUseFlagName.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
-    class PALUDIS_VISIBLE IUseFlagNameError : public NameError
+    class PALUDIS_VISIBLE IUseFlagNameError :
+        public NameError
     {
         public:
             ///\name Basic operations
@@ -141,7 +149,7 @@ namespace paludis
      * A UseFlagNameValidator handles validation rules for the value of a
      * UseFlagName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE UseFlagNameValidator :
         private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
@@ -160,8 +168,8 @@ namespace paludis
      * assigned to a QualifiedPackageName (alternatively, the exception
      * raised may be a PackageNamePartError or a CategoryNamePartError).
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE QualifiedPackageNameError : public NameError
     {
@@ -172,12 +180,6 @@ namespace paludis
             QualifiedPackageNameError(const std::string &) throw ();
     };
 
-    /**
-     * Convenience operator to make a QualifiedPackageName from a
-     * PackageNamePart and a CategoryNamePart.
-     *
-     * \ingroup grpnames
-     */
     inline const QualifiedPackageName
     operator+ (const CategoryNamePart & c, const PackageNamePart & p)
     {
@@ -188,8 +190,8 @@ namespace paludis
      * A SlotNameError is thrown if an invalid value is assigned to
      * a SlotName.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE SlotNameError : public NameError
     {
@@ -204,7 +206,7 @@ namespace paludis
      * A SlotNameValidator handles validation rules for the value of a
      * SlotName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE SlotNameValidator :
         private InstantiationPolicy<SlotNameValidator, instantiation_method::NonInstantiableTag>
@@ -220,8 +222,8 @@ namespace paludis
      * A RepositoryNameError is thrown if an invalid value is assigned to
      * a RepositoryName.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpnames
+     * \ingroup g_exceptions
+     * \ingroup g_names
      */
     class PALUDIS_VISIBLE RepositoryNameError : public NameError
     {
@@ -236,7 +238,7 @@ namespace paludis
      * A RepositoryNameValidator handles validation rules for the value
      * of a RepositoryName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE RepositoryNameValidator :
         private InstantiationPolicy<RepositoryNameValidator, instantiation_method::NonInstantiableTag>
@@ -251,7 +253,7 @@ namespace paludis
     /**
      * Arbitrary useless comparator for RepositoryName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE RepositoryNameComparator
     {
@@ -268,7 +270,7 @@ namespace paludis
      * A KeywordNameValidator handles validation rules for the value of a
      * KeywordName.
      *
-     * \ingroup grpnames
+     * \ingroup g_names
      */
     struct PALUDIS_VISIBLE KeywordNameValidator :
         private InstantiationPolicy<KeywordNameValidator, instantiation_method::NonInstantiableTag>
@@ -284,8 +286,8 @@ namespace paludis
      * A KeywordNameError is thrown if an invalid value is assigned to
      * a KeywordName.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_names
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE KeywordNameError : public NameError
     {
@@ -300,7 +302,7 @@ namespace paludis
      * A SetNameValidator handles validation rules for the value of a
      * SetName.
      *
-     * \ingroup grpnames
+     * \ingroup g_exceptions
      */
     struct PALUDIS_VISIBLE SetNameValidator :
         private InstantiationPolicy<SetNameValidator, instantiation_method::NonInstantiableTag>
@@ -316,8 +318,8 @@ namespace paludis
      * A SetNameError is thrown if an invalid value is assigned to
      * a SetName.
      *
-     * \ingroup grpnames
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_names
      */
     class PALUDIS_VISIBLE SetNameError : public NameError
     {

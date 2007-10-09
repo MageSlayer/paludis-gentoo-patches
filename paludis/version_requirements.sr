@@ -16,7 +16,8 @@ make_class_VersionRequirement()
          * A requirement for a version, consisting of a VersionOperator and an associated
          * VersionSpec.
          *
-         * \ingroup grpversions
+         * \ingroup g_dep_spec
+         * \see PackageDepSpec
          * \see VersionSpec
          * \see VersionOperator
          * \see VersionRequirements
