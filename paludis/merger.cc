@@ -29,6 +29,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <cstring>
 
 using namespace paludis;
 
@@ -634,7 +636,10 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     char buf[4096];
     ssize_t count;
     while ((count = read(input_fd, buf, 4096)) > 0)
-        write(output_fd, buf, count);
+        if (-1 == write(output_fd, buf, count))
+            throw MergerError("write failed: " + stringify(::strerror(errno)));
+    if (-1 == count)
+        throw MergerError("read failed: " + stringify(::strerror(errno)));
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_file_post")
