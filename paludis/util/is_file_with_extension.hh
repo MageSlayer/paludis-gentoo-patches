@@ -26,9 +26,13 @@
 #include <string>
 
 /** \file
- * Declarations for the IsFileWithExtension class.
+ * Declarations for the is_file_with_extension function.
  *
- * \ingroup grpfilesystem
+ * \ingroup g_fs
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -42,7 +46,7 @@ namespace paludis
      * \see IsFileWithOption
      * \see is_file_with_prefix_extension
      * \see is_file_with_extension
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     typedef Options<IsFileWithOption> IsFileWithOptions;
 
@@ -51,7 +55,7 @@ namespace paludis
      *
      * \see is_file_with_prefix_extension()
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     bool is_file_with_extension(const FSEntry &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 
@@ -61,7 +65,7 @@ namespace paludis
      *
      * \see is_file_with_extension()
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 
@@ -70,7 +74,7 @@ namespace paludis
      * FSEntry instance is a file with a given extension and (optionally) a
      * given filename prefix.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      * \deprecated Use is_file_with_extension and tr1::bind.
      */
 #ifdef DOXYGEN

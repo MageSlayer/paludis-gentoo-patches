@@ -26,6 +26,12 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
+/** \file
+ * Forward declarations for paludis/dep_list.hh .
+ *
+ * \ingroup g_dep_list
+ */
+
 namespace paludis
 {
     class DepListOptions;
@@ -33,6 +39,11 @@ namespace paludis
     class DepListEntry;
     class DepList;
 
+    /**
+     * Is an item a valid child in an AnyDepSpec?
+     *
+     * \ingroup g_dep_list
+     */
     bool is_viable_any_child(const Environment & env, const tr1::shared_ptr<const PackageID> &,
             const DependencySpecTree::ConstItem & i);
 }

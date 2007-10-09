@@ -25,12 +25,22 @@
 #include <inttypes.h>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for the MD5 digest class.
+ *
+ * \ingroup g_digests
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * MD5 digest class.
      *
-     * \ingroup grplibpaludisdigests
+     * \ingroup g_digests
      */
     class PALUDIS_VISIBLE MD5
     {

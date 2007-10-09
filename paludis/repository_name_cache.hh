@@ -24,6 +24,17 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/name.hh>
 
+/** \file
+ * Declarations for RepositoryNameCache, which is used by some Repository
+ * subclasses to implement a names class.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class FSEntry;
@@ -33,7 +44,7 @@ namespace paludis
      * Used by various Repository subclasses to implement a names cache.
      *
      * \see Repository
-     * \ingroup grprepository
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RepositoryNameCache :

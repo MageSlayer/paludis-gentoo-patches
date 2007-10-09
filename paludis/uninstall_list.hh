@@ -28,6 +28,16 @@
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declarations for UninstallList and related classes.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time. Use UninstallTask if you need to uninstall things.
+ */
+
 namespace paludis
 {
 
@@ -39,7 +49,7 @@ namespace paludis
     /**
      * Work out uninstall ordering for packages.
      *
-     * \ingroup grpuninstalllist
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallList :

@@ -30,6 +30,16 @@
 #include <paludis/package_database-fwd.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declarations for InstallTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -39,7 +49,7 @@ namespace paludis
     /**
      * Task used to install one or more targets.
      *
-     * \ingroup grptasks
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE InstallTask :

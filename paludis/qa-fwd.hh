@@ -24,12 +24,24 @@
 #include <paludis/util/options-fwd.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/qa.hh .
+ *
+ * \ingroup g_repository
+ */
+
 namespace paludis
 {
     class QAReporter;
 
 #include <paludis/qa-se.hh>
 
+    /**
+     * A collection of properties for a QA check.
+     *
+     * \since 0.26
+     * \ingroup g_repository
+     */
     typedef Options<QACheckProperty> QACheckProperties;
 }
 

@@ -22,4 +22,16 @@ make_class_QAMessage()
 END
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a QA message.
+         *
+         * \see RepositoryQAInterface
+         * \ingroup g_repository
+         * \since 0.26
+         * \nosubgrouping
+         */
+END
 }
+

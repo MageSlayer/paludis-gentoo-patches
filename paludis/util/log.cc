@@ -35,12 +35,6 @@
 #  endif
 #endif
 
-/** \file
- * Implementation for Log.
- *
- * \ingroup grplog
- */
-
 using namespace paludis;
 
 #include <paludis/util/log-se.cc>
@@ -49,11 +43,6 @@ template class InstantiationPolicy<Log, instantiation_method::SingletonTag>;
 
 namespace paludis
 {
-    /**
-     * Implementation data for Log.
-     *
-     * \ingroup grplog
-     */
     template<>
     struct Implementation<Log>
     {

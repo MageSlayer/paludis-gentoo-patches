@@ -25,12 +25,6 @@
 #include <sys/types.h>
 #include <set>
 
-/** \file
- * Implementation of paludis::DirIterator.
- *
- * \ingroup grpfilesystem
- */
-
 using namespace paludis;
 
 namespace paludis

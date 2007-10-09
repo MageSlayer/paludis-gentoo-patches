@@ -35,7 +35,11 @@
 /** \file
  * Declarations for the ConfigFile classes.
  *
- * \ingroup grpconfigfile
+ * \ingroup g_config_file
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -47,8 +51,8 @@ namespace paludis
     /**
      * Raised if an error is encountered parsing a configuration file.
      *
-     * \ingroup grpconfigfile
-     * \ingroup grpexceptions
+     * \ingroup g_config_file
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigFileError :
@@ -86,7 +90,7 @@ namespace paludis
      * \see KeyValueConfigFile
      * \see LineConfigFile
      *
-     * \ingroup grpconfigfile
+     * \ingroup g_config_file
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigFile :
@@ -97,7 +101,7 @@ namespace paludis
              * A source (for example, a file or a string) usable by ConfigFile.
              *
              * \see ConfigFile
-             * \ingroup grpconfigfile
+             * \ingroup g_config_file
              * \nosubgrouping
              */
             class PALUDIS_VISIBLE Source :
@@ -151,7 +155,7 @@ namespace paludis
      *
      * \see LineConfigFileOption
      * \see LineConfigFile
-     * \ingroup grplineconfigfile
+     * \ingroup g_config_file
      */
     typedef Options<LineConfigFileOption> LineConfigFileOptions;
 
@@ -165,7 +169,7 @@ namespace paludis
      * - Unless lcfo_preserve_whitespace, leading and trailing whitespace is stripped
      * - Unless lcfo_no_skip_blank_lines, blank lines are skipped.
      *
-     * \ingroup grplineconfigfile
+     * \ingroup g_config_file
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE LineConfigFile :
@@ -227,7 +231,7 @@ namespace paludis
      * - Unless kvcfo_disallow_source, source path is legal.
      * - Unless kvcfo_preserve_whitespace, leading and trailing whitespace on values is stripped.
      *
-     * \ingroup grpkvconfigfile
+     * \ingroup g_config_file
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE KeyValueConfigFile :
@@ -238,7 +242,7 @@ namespace paludis
             /**
              * A source of default values for a KeyValueConfigFile.
              *
-             * \ingroup grpkvconfigfile
+             * \ingroup g_config_file
              * \see KeyValueConfigFile
              * \nosubgrouping
              */
@@ -333,7 +337,7 @@ namespace paludis
     /**
      * Use another KeyValueConfigFile for defaults.
      *
-     * \ingroup grpkvconfigfile
+     * \ingroup g_config_file
      */
     template<>
     KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const KeyValueConfigFile>);
@@ -341,7 +345,7 @@ namespace paludis
     /**
      * Use a string pair collection for defaults.
      *
-     * \ingroup grpkvconfigfile
+     * \ingroup g_config_file
      */
     template<>
     KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<const Map<std::string, std::string> >);
@@ -349,7 +353,7 @@ namespace paludis
     /**
      * Use another KeyValueConfigFile for defaults (non-const).
      *
-     * \ingroup grpkvconfigfile
+     * \ingroup g_config_file
      */
     template<>
     KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<KeyValueConfigFile>);
@@ -357,7 +361,7 @@ namespace paludis
     /**
      * Use a string pair collection for defaults (non-const).
      *
-     * \ingroup grpkvconfigfile
+     * \ingroup g_config_file
      */
     template<>
     KeyValueConfigFile::Defaults::Defaults(tr1::shared_ptr<Map<std::string, std::string> >);

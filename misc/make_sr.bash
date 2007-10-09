@@ -320,7 +320,7 @@ while read a ; do
             echo " * Named arguments for the constructor for ${current_class}."
             echo " *"
             echo " * \\see ${current_class}"
-            echo " * \\ingroup grpnamedarguments"
+            echo " * \\ingroup g_named_arguments"
             echo " * \\nosubgrouping"
             echo " */"
 

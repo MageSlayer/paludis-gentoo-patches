@@ -22,6 +22,16 @@
 
 #include <paludis/dep_tree.hh>
 
+/** \file
+ * Declarations for RangeRewriter, which is used internally by Deplist.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
@@ -29,7 +39,7 @@ namespace paludis
      * collections of PackageDepSpec with a single PackageDepSpec using ranged
      * dependencies.
      *
-     * \ingroup grpdepresolver
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RangeRewriter :

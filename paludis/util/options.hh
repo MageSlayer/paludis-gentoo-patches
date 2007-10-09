@@ -23,6 +23,16 @@
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
+/** \file
+ * Declarations for the Options<> class.
+ *
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
@@ -32,7 +42,7 @@ namespace paludis
      * underlying size.
      *
      * \see Options<>
-     * \ingroup grpoptions
+     * \ingroup g_data_structures
      */
     class PALUDIS_VISIBLE OptionsStore :
         private PrivateImplementationPattern<OptionsStore>
@@ -93,7 +103,7 @@ namespace paludis
      * Holds a series of true/false values mapped on an enum type, like a
      * std::bitset<> without the static size requirement.
      *
-     * \ingroup grpoptions
+     * \ingroup g_data_structures
      */
     template <typename E_>
     class Options

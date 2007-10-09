@@ -16,7 +16,7 @@ make_enum_LineConfigFileOption()
          *
          * \see LineConfigFile
          * \see LineConfigFileOptions
-         * \ingroup grplineconfigfile
+         * \ingroup g_config_file
          */
 END
 }
@@ -43,7 +43,7 @@ make_enum_KeyValueConfigFileOption()
          *
          * \see KeyValueConfigFile
          * \see KeyValueConfigFileOptions
-         * \ingroup grpkvconfigfile
+         * \ingroup g_config_file
          */
 END
 }

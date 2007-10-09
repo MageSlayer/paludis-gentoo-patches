@@ -27,6 +27,12 @@
 #include <list>
 #include <iterator>
 
+/** \file
+ * Implementation for paludis/util/sequence.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     template <>

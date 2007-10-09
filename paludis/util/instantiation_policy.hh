@@ -25,7 +25,11 @@
 /** \file
  * InstantiationPolicy patterns.
  *
- * \ingroup grpinstance
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -33,28 +37,28 @@ namespace paludis
     /**
      * Instantiation policies for paludis::InstantiationPolicy.
      *
-     * \ingroup grpinstance
+     * \ingroup g_oo
      */
     namespace instantiation_method
     {
         /**
          * Cannot be copied or assigned to.
          *
-         * \ingroup grpinstance
+         * \ingroup g_oo
          */
         struct NonCopyableTag;
 
         /**
          * Cannot be instantiated
          *
-         * \ingroup grpinstance
+         * \ingroup g_oo
          */
         struct NonInstantiableTag;
 
         /**
          * Single instance.
          *
-         * \ingroup grpinstance
+         * \ingroup g_oo
          */
         struct SingletonTag;
     }
@@ -63,7 +67,7 @@ namespace paludis
      * InstantiationPolicy is used to specify behaviour of classes that have
      * something other than the default C++ instantiation behaviour.
      *
-     * \ingroup grpinstance
+     * \ingroup g_oo
      */
     template <typename OurType_, typename InstantiationMethodTag_>
     struct InstantiationPolicy;
@@ -72,7 +76,7 @@ namespace paludis
      * InstantiationPolicy: specialisation for classes that cannot be copied
      * or assigned to.
      *
-     * \ingroup grpinstance
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template<typename OurType_>
@@ -91,7 +95,7 @@ namespace paludis
     /**
      * InstantiationPolicy: specialisation for classes that cannot be created.
      *
-     * \ingroup grpinstance
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template<typename OurType_>
@@ -107,7 +111,7 @@ namespace paludis
      * InstantiationPolicy: specialisation for singleton classes that are
      * created as needed.
      *
-     * \ingroup grpinstance
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template<typename OurType_>

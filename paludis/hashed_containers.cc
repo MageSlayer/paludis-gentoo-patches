@@ -23,12 +23,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 
-/** \file
- * Implementation for hashed_containers.hh.
- *
- * \ingroup grphashedcontainers
- */
-
 using namespace paludis;
 
 #if defined(PALUDIS_HASH_IS_STD_TR1_UNORDERED) || defined(PALUDIS_HASH_IS_GNU_CXX_HASH) || defined(PALUDIS_HASH_IS_STD_HASH)

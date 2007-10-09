@@ -26,8 +26,26 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
 
+/** \file
+ * Declarations for DepListEntryHandled classes, which are used by DepList and
+ * InstallTask to keep track of whether a DepListEntry has been handled yet.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * Types for a visitor that can visit a DepListEntry subclass.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     struct DepListEntryHandledVisitorTypes :
         VisitorTypes<
             DepListEntryHandledVisitorTypes,
@@ -41,6 +59,13 @@ namespace paludis
     {
     };
 
+    /**
+     * Represents a DepListEntry that has been handled.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryHandled :
         public virtual ConstAcceptInterface<DepListEntryHandledVisitorTypes>
     {
@@ -48,36 +73,81 @@ namespace paludis
             virtual ~DepListEntryHandled() = 0;
     };
 
+    /**
+     * Represents a DepListEntry that has not been handled.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryUnhandled :
         public DepListEntryHandled,
         public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryUnhandled>
     {
     };
 
+    /**
+     * Represents a DepListEntry that requires no handling.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryNoHandlingRequired :
         public DepListEntryHandled,
         public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryNoHandlingRequired>
     {
     };
 
+    /**
+     * Represents a DepListEntry that has been handled successfully.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryHandledSuccess :
         public DepListEntryHandled,
         public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSuccess>
     {
     };
 
+    /**
+     * Represents a DepListEntry that was skipped because of unsatisfied
+     * dependencies.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryHandledSkippedUnsatisfied :
         public DepListEntryHandled,
         public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSkippedUnsatisfied>,
         private PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             DepListEntryHandledSkippedUnsatisfied(const PackageDepSpec &);
             ~DepListEntryHandledSkippedUnsatisfied();
 
+            ///\}
+
+            /**
+             * What PackageDepSpec was unsatisfied? If multiple specs were
+             * unsatisfied, returns one of them.
+             */
             const PackageDepSpec spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * Represents a DepListEntry that failed.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE DepListEntryHandledFailed :
         public DepListEntryHandled,
         public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledFailed>

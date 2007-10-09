@@ -28,6 +28,12 @@
 #include <iterator>
 #include <functional>
 
+/** \file
+ * Implementation for paludis/util/map.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     template <typename T_>

@@ -30,7 +30,11 @@
 /** \file
  * Various system utilities.
  *
- * \ingroup grpsystem
+ * \ingroup g_system
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -40,8 +44,8 @@ namespace paludis
     /**
      * Thrown if getenv_or_error fails.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpsystem
+     * \ingroup g_exceptions
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GetenvError : public Exception
@@ -58,8 +62,8 @@ namespace paludis
     /**
      * Thrown if fork, wait or chdir fail when running a command.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpsystem
+     * \ingroup g_exceptions
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RunCommandError : public Exception
@@ -75,7 +79,7 @@ namespace paludis
      * Fetch the value of environment variable key, or def if the variable is
      * not defined.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     std::string getenv_with_default(const std::string & key, const std::string & def) PALUDIS_VISIBLE;
 
@@ -83,14 +87,14 @@ namespace paludis
      * Fetch the value of environment variable key, or throw a GetenvError if
      * the variable is not defined.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     std::string getenv_or_error(const std::string & key) PALUDIS_VISIBLE;
 
     /**
      * Fetch the kernel version, for $KV.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     std::string kernel_version() PALUDIS_VISIBLE;
 
@@ -99,7 +103,7 @@ namespace paludis
      *
      * \see PStream
      * \see run_command
-     * \ingroup grpsystem
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Command :
@@ -229,13 +233,12 @@ namespace paludis
             ///\}
     };
 
-
     /**
      * Run a command, wait for it to terminate and return its exit status.
      *
      * Use PStream instead if you need to capture stdout.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     int run_command(const Command & cmd) PALUDIS_VISIBLE
         PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -244,7 +247,7 @@ namespace paludis
      * Set the stderr and close for stdout fds used by run_command and
      * run_command_in_directory.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     void set_run_command_stdout_fds(const int, const int) PALUDIS_VISIBLE;
 
@@ -252,21 +255,21 @@ namespace paludis
      * Set the stderr and close for stderr fds used by run_command and
      * run_command_in_directory.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     void set_run_command_stderr_fds(const int, const int) PALUDIS_VISIBLE;
 
     /**
      * Fetch the username for a uid, or the uid as a string if not available.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     std::string get_user_name(const uid_t) PALUDIS_VISIBLE;
 
     /**
      * Fetch the group name for a gid, or the gid as a string if not available.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     std::string get_group_name(const gid_t) PALUDIS_VISIBLE;
 }

@@ -12,7 +12,7 @@ make_enum_LogContext()
         /**
          * Specifies whether a log message has context.
          *
-         * \ingroup grplog
+         * \ingroup g_log
          */
 END
 }

@@ -22,6 +22,12 @@
 
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/util/validated.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     template <typename, typename, bool = true>

@@ -30,8 +30,26 @@
 
 #include <utility>
 
+/** \file
+ * Declarations for the Map<> class.
+ *
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * A wrapper around a map, avoiding the need to include lots of STL bloat
+     * everywhere.
+     *
+     * \ingroup g_data_structures
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <typename K_, typename V_, typename C_>
     class PALUDIS_VISIBLE Map :
         private PrivateImplementationPattern<Map<K_, V_, C_> >,
@@ -41,8 +59,16 @@ namespace paludis
             using PrivateImplementationPattern<Map<K_, V_, C_> >::_imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             Map();
             ~Map();
+
+            ///\}
+
+            ///\name Iteration
+            ///\{
 
             typedef libwrapiter::ForwardIterator<Map<K_, V_, C_>, const std::pair<const K_, V_> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -52,12 +78,24 @@ namespace paludis
             typedef libwrapiter::OutputIterator<Map<K_, V_, C_>, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            ///\}
+
+            ///\name Content information
+            ///\{
+
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
             unsigned size() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+            ///\name Content modification
+            ///\{
 
             void insert(const K_ &, const V_ &);
             void erase(const ConstIterator &);
             void erase(const K_ &);
+
+            ///\}
     };
 }
 

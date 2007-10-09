@@ -21,10 +21,23 @@
 #define PALUDIS_GUARD_PALUDIS_HASHED_CONTAINERS_HH 1
 
 /** \file
- * Declarations for the MakeHashedMap and MakeHashedSet classes, and related
- * utilities.
+ * Declarations for various hashed container things.
  *
- * \ingroup grphashedcontainers
+ * These are more complicated than they should be for two reasons:
+ *
+ * - There is no standard hashed container in C++. There is one in TR1, but not
+ *   all compilers support TR1 yet. Most pre-TR1 standard library
+ *   implementations do include hashed containers, but with various different
+ *   class names and in different header files. For performance reasons, we need
+ *   hashed containers if at all possible.
+ *
+ * - The current C++ standard doesn't have template typedefs.
+ *
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 #include <paludis/util/validated.hh>
@@ -56,7 +69,7 @@ namespace paludis
     /**
      * Hash function base template.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename T_>
     struct CRCHash;
@@ -64,7 +77,7 @@ namespace paludis
     /**
      * Make a hashed map of some kind from Key_ to Value_.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename Key_, typename Value_>
     struct MakeHashedMap
@@ -90,7 +103,7 @@ namespace paludis
     /**
      * Make a hashed map of some kind from Key_ to Value_.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename Key_, typename Value_>
     struct MakeHashedMultiMap
@@ -116,7 +129,7 @@ namespace paludis
     /**
      * Make a hashed set of some kind of Key_.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename Key_>
     struct MakeHashedSet
@@ -142,7 +155,7 @@ namespace paludis
     /**
      * Make a hashed set of some kind of Key_.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename Key_>
     struct MakeHashedMultiSet
@@ -171,7 +184,7 @@ namespace paludis
         /**
          * Base definitions for our CRCHash.
          *
-         * \ingroup grphashedcontainers
+         * \ingroup g_data_structures
          */
         struct CRCHashBase
         {
@@ -186,7 +199,7 @@ namespace paludis
     /**
      * Hash, for QualifiedPackageName.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <>
     class PALUDIS_VISIBLE CRCHash<QualifiedPackageName> :
@@ -214,7 +227,7 @@ namespace paludis
     /**
      * Hash, for PackageID.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <>
     class PALUDIS_VISIBLE CRCHash<PackageID> :
@@ -239,7 +252,7 @@ namespace paludis
     /**
      * Hash, for a validated string type.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename Validated_, bool b_>
     class CRCHash<Validated<std::string, Validated_, b_> > :
@@ -269,7 +282,7 @@ namespace paludis
     /**
      * Hash, for a string.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template<>
     class PALUDIS_VISIBLE CRCHash<std::string> :
@@ -297,7 +310,7 @@ namespace paludis
     /**
      * Hash, for a QualifiedPackageName + VersionSpec pair.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <>
     class PALUDIS_VISIBLE CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
@@ -326,7 +339,7 @@ namespace paludis
     /**
      * Hash, for a shared pointer.
      *
-     * \ingroup grphashedcontainers
+     * \ingroup g_data_structures
      */
     template <typename T_>
     class PALUDIS_VISIBLE CRCHash<tr1::shared_ptr<T_> > :

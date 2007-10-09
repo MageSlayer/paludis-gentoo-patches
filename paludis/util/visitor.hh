@@ -20,12 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_VISITOR_HH 1
 
-/** \file
- * Declares the Visitor and related classes.
- *
- * \ingroup grpvisitor
- */
-
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
@@ -34,11 +28,21 @@
 #include <paludis/util/operators.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declares the Visitor and related classes.
+ *
+ * \ingroup g_visitors
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * \namespace visitor_internals
-     * \ingroup grpvisitor
+     * \ingroup g_visitors
      *
      * For internal use by visitor classes.
      */
@@ -47,7 +51,7 @@ namespace paludis
         /**
          * Derived classes can accept a const visitor of heirarchy H_.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_>
@@ -113,7 +117,7 @@ namespace paludis
         /**
          * Implementation of ConstAcceptInterface for class T_.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -132,7 +136,7 @@ namespace paludis
         /**
          * Derived classes can accept a const or non-const visitor of heirarchy H_.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_>
@@ -207,7 +211,7 @@ namespace paludis
         /**
          * Implementation of ConstAcceptInterface for class T_.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -229,7 +233,7 @@ namespace paludis
          * Used to contain a node with no children in a detached visitable
          * heirarchy.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeLeaf :
@@ -275,7 +279,7 @@ namespace paludis
          * Used to contain a node with a sequence of children in a detached visitable
          * heirarchy.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE TreeSequence :
@@ -341,7 +345,7 @@ namespace paludis
          * Used to contain a node with a sequence of children in a detached visitable
          * heirarchy, where children can only be created in const form.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          */
         template <typename H_, typename T_>
         class PALUDIS_VISIBLE ConstTreeSequence :
@@ -398,7 +402,7 @@ namespace paludis
         /**
          * Derived classes can visit an item of type T_.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename T_>
@@ -424,7 +428,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * NoType).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <unsigned u_>
@@ -436,7 +440,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * NoType).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <unsigned u_>
@@ -448,7 +452,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * TreeLeaf).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -476,7 +480,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * TreeLeaf).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -504,7 +508,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * TreeSequence).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -534,7 +538,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * TreeSequence).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -564,7 +568,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * ConstTreeSequence).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -594,7 +598,7 @@ namespace paludis
          * Derived classes can visit an item of type T_ (specialisation for
          * ConstTreeSequence).
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename T_>
@@ -624,7 +628,7 @@ namespace paludis
          * Container class providing convenience typedefs for iterators over a
          * TreeSequence.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_>
@@ -642,7 +646,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -654,7 +658,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, unsigned u_>
@@ -665,7 +669,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, unsigned u_>
@@ -676,7 +680,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -702,7 +706,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -728,7 +732,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -756,7 +760,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -784,7 +788,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_, typename T_>
@@ -812,7 +816,7 @@ namespace paludis
         /**
          * Proxy visitor.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
@@ -861,7 +865,7 @@ namespace paludis
         /**
          * Proxy visitor adapter.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
@@ -910,7 +914,7 @@ namespace paludis
         /**
          * Proxy visitor adapter iterator.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
@@ -951,7 +955,7 @@ namespace paludis
         /**
          * Proxy visitor adapter iterator.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename H_, typename LargerH_>
@@ -994,7 +998,7 @@ namespace paludis
         /**
          * Define policy for a set of visitor types.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <
@@ -1063,7 +1067,7 @@ namespace paludis
          * A ConstVisitor visits a visitable heirarchy.
          *
          * \nosubgrouping
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          */
         template <typename H_>
         class ConstVisitor :
@@ -1100,7 +1104,7 @@ namespace paludis
                  * Derived classes visit a ConstTreeSequence by visiting all of
                  * its children.
                  *
-                 * \ingroup grpvisitor
+                 * \ingroup g_visitors
                  * \nosubgrouping
                  */
                 template <typename A_, typename B_>
@@ -1121,7 +1125,7 @@ namespace paludis
                  * Derived classes visit a TreeSequence by visiting all of
                  * its children.
                  *
-                 * \ingroup grpvisitor
+                 * \ingroup g_visitors
                  * \nosubgrouping
                  */
                 template <typename A_, typename B_>
@@ -1141,7 +1145,7 @@ namespace paludis
                 /**
                  * Query whether we contain a particular type.
                  *
-                 * \ingroup grpvisitor
+                 * \ingroup g_visitors
                  * \nosubgrouping
                  */
                 template <typename A_>
@@ -1182,7 +1186,7 @@ namespace paludis
          * A ConstVisitor visits a visitable heirarchy.
          *
          * \nosubgrouping
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          */
         template <typename H_>
         class Visitor :
@@ -1219,7 +1223,7 @@ namespace paludis
                  * Derived classes visit a TreeSequence by visiting all of
                  * its children.
                  *
-                 * \ingroup grpvisitor
+                 * \ingroup g_visitors
                  * \nosubgrouping
                  */
                 template <typename A_, typename B_>
@@ -1239,7 +1243,7 @@ namespace paludis
                 /**
                  * Query whether we contain a particular type.
                  *
-                 * \ingroup grpvisitor
+                 * \ingroup g_visitors
                  * \nosubgrouping
                  */
                 template <typename A_>
@@ -1279,7 +1283,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_, typename H_, typename T_>
@@ -1288,7 +1292,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_, typename H_, unsigned u_>
@@ -1299,7 +1303,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_, typename T_, typename H_>
@@ -1317,7 +1321,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_, typename H_, typename T_>
@@ -1337,7 +1341,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_, typename H_, typename T_>
@@ -1357,7 +1361,7 @@ namespace paludis
         /**
          * For use by get_const_item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_>
@@ -1397,7 +1401,7 @@ namespace paludis
         /**
          * Given a heirarchy node, fetch the associated item.
          *
-         * \ingroup grpvisitor
+         * \ingroup g_visitors
          * \nosubgrouping
          */
         template <typename I_>
@@ -1409,7 +1413,7 @@ namespace paludis
      * Used by accept_visitor.
      *
      * \nosubgrouping
-     * \ingroup grpvisitor
+     * \ingroup g_visitors
      */
     template <typename Visitor_>
     class PALUDIS_VISIBLE AcceptVisitor
@@ -1440,7 +1444,7 @@ namespace paludis
     /**
      * Convenience function for using a visitor with a standard algorithm.
      *
-     * \ingroup grpvisitor
+     * \ingroup g_visitors
      */
     template <typename Visitor_>
     AcceptVisitor<Visitor_> PALUDIS_VISIBLE accept_visitor(Visitor_ & v)

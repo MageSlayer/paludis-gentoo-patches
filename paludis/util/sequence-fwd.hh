@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_SEQUENCE_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_SEQUENCE_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/util/sequence.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     template <typename T_>

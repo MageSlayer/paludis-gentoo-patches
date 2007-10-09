@@ -31,15 +31,26 @@
 #include <string>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declarations for the Hook classes.
+ *
+ * \ingroup g_hooks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
 
 #include <paludis/hook-sr.hh>
 
     /**
-     * Represents the data for an Environment hook call.
+     * Represents the data for a hook call.
      *
-     * \ingroup grpenvironment
+     * \see Environment::perform_hook
+     * \ingroup g_hooks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hook :
@@ -91,18 +102,32 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * Hooks with grabbed output can specify that only certain output values are
+     * allowed.
+     *
+     * \ingroup g_hooks
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE Hook::AllowedOutputValues :
         private PrivateImplementationPattern<Hook::AllowedOutputValues>
     {
         friend class Hook;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             AllowedOutputValues();
 
             AllowedOutputValues(const AllowedOutputValues & other);
 
             ~AllowedOutputValues();
 
+            ///\}
+
+            /// Add a new allowed value.
             AllowedOutputValues operator() (const std::string & v) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -110,6 +135,7 @@ namespace paludis
 
 extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run(
     const paludis::Environment *, const paludis::Hook &);
+
 extern "C" void PALUDIS_VISIBLE paludis_hook_add_dependencies(
     const paludis::Environment *, const paludis::Hook &, paludis::DirectedGraph<std::string, int> &);
 

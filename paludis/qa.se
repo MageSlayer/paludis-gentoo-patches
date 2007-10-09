@@ -16,7 +16,8 @@ make_enum_QAMessageLevel()
          * The importance of a QA notice.
          *
          * \see RepositoryQAInterface
-         * \ingroup grprepository
+         * \since 0.26
+         * \ingroup g_repository
          */
 END
 }
@@ -34,6 +35,8 @@ make_enum_QACheckProperty()
          *
          * \see RepositoryQAInterface
          * \see QACheckProperties
+         * \since 0.26
+         * \ingroup g_repository
          */
 END
 }

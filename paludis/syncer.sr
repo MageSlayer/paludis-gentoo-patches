@@ -13,7 +13,7 @@ make_class_SyncOptions()
          * Options used by Syncer.
          *
          * \see Syncer
-         * \ingroup grpsyncer
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END
@@ -33,7 +33,7 @@ make_class_SyncerParams()
          * Parameters for a Syncer.
          *
          * \see Syncer
-         * \ingroup grpsyncer
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END

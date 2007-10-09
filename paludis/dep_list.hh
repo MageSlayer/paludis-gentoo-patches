@@ -38,8 +38,23 @@
 
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declarations for DepList and related classes.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time. Use InstallTask if you need to install things.
+ */
+
 namespace paludis
 {
+    /**
+     * A sequence of functions to try, in order, when overriding masks.
+     *
+     * \ingroup g_dep_list
+     */
     typedef Sequence<tr1::function<bool (const PackageID &, const Mask &)> > DepListOverrideMasksFunctions;
 
 #include <paludis/dep_list-sr.hh>
@@ -47,7 +62,7 @@ namespace paludis
     /**
      * Holds a list of dependencies in merge order.
      *
-     * \ingroup grpdepresolver
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepList :

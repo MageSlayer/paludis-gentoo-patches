@@ -190,4 +190,169 @@ using namespace paludis;
  * - \ref example_version_operator.cc "example_version_operator.cc"
  */
 
+/** \defgroup g_dep_list "Dependency Resolution"
+ *
+ * \ingroup g_paludis
+ *
+ * There are two classes that provide dependency resolution: DepList (for
+ * installing) and UninstallList (for uninstalling). Actual installing and
+ * uninstalling is usually done by InstallTask and UninstallTask respectively.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_tasks "Tasks"
+ *
+ * \ingroup g_paludis
+ *
+ * Tasks simplify certain common operations. For example, when installing a
+ * group of packages, a client has to handle target and dependency resolution,
+ * fetching and uninstalling appropriate packages with error handling, and all
+ * the hooks that should be called. Rather than doing this by hand, a client
+ * will typically subclass InstallTask.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_hooks "Hooks"
+ *
+ * \ingroup g_paludis
+ *
+ * Hooks can be used to run additional commands at various well-defined trigger
+ * points.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_digests "Digests"
+ *
+ * \ingroup g_paludis
+ *
+ * Paludis includes some basic digest algorithms to avoid external dependencies.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_utils "Utilities"
+ *
+ * \ingroup g_paludis
+ *
+ * The utilities library contains various classes that are not core package
+ * management functionality.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_config_file "Configuration Files"
+ *
+ * \ingroup g_utils
+ *
+ * The various ConfigFile subclasses simplify handling configuration files in
+ * various common formats.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_strings "Strings"
+ *
+ * \ingroup g_utils
+ *
+ * We provide various functions and classes that simplify common string handling
+ * operations.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_fs "Filesystem"
+ *
+ * \ingroup g_utils
+ *
+ * We provide various functions and classes that simplify various common
+ * filesystem operations.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_data_structures "Data Structures"
+ *
+ * \ingroup g_utils
+ *
+ * Various data structures.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_iterator "Iterators"
+ *
+ * \ingroup g_utils
+ *
+ * Various iterator utilities.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_oo "OO Design Helpers"
+ *
+ * \ingroup g_utils
+ *
+ * Various OO utility classes.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_log "Logging"
+ *
+ * \ingroup g_utils
+ *
+ * Paludis includes a basic logging facility.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_system "System"
+ *
+ * \ingroup g_utils
+ *
+ * Various utilities for interacting with lower-level system things.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
+/** \defgroup g_visitors "Visitors"
+ *
+ * \ingroup g_utils
+ *
+ * Visitors are a way of providing subtype-polymorphic behaviour without
+ * modifying the visitable class.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
 

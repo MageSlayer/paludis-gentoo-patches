@@ -22,12 +22,22 @@
 
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for various sr-related utility classes.
+ *
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Metaprogramming: an empty class.
      *
-     * \ingroup grpsr
+     * \ingroup g_oo
      */
     struct Empty
     {
@@ -41,7 +51,7 @@ namespace paludis
     /**
      * Metaprogramming: select a type based upon a condition.
      *
-     * \ingroup grpsr
+     * \ingroup g_oo
      */
     template <typename IfTrue_, typename IfFalse_>
     struct Select<true, IfTrue_, IfFalse_>
@@ -53,7 +63,7 @@ namespace paludis
     /**
      * Metaprogramming: select a type based upon a condition.
      *
-     * \ingroup grpsr
+     * \ingroup g_oo
      */
     template <typename IfTrue_, typename IfFalse_>
     struct Select<false, IfTrue_, IfFalse_>

@@ -28,15 +28,34 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sr.hh>
 
+/** \file
+ * Declarations for Repository QA classes.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - \ref example_repository.cc "example_repository.cc"
+ */
+
 namespace paludis
 {
 #include <paludis/qa-sr.hh>
 
+    /**
+     * A QAReporter subclass is passed to RepositoryQAInterface::check_qa to do
+     * the reporting.
+     *
+     * \ingroup g_repository
+     */
     class PALUDIS_VISIBLE QAReporter
     {
         public:
             virtual ~QAReporter() = 0;
 
+            /**
+             * Report a QA message.
+             */
             virtual void message(const QAMessage &) = 0;
     };
 }

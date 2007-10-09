@@ -27,14 +27,20 @@
 #include <set>
 #include <list>
 
+/** \file
+ * Implementation for paludis/util/graph.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     /**
      * Holds the remaining nodes list for a NoGraphTopologicalOrderExistsError.
      *
      * \see NoGraphTopologicalOrderExistsError
-     * \ingroup grpexceptions
-     * \ingroup grpgraph
+     * \ingroup g_exceptions
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoGraphTopologicalOrderExistsError::RemainingNodes
@@ -73,7 +79,7 @@ namespace paludis
      * Implementation data for a DirectedGraph.
      *
      * \see DirectedGraph
-     * \ingroup grpgraph
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     template<>
@@ -141,7 +147,7 @@ namespace paludis
      * Iterate over the nodes in a DirectedGraph.
      *
      * \see DirectedGraph
-     * \ingroup grpgraph
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename Node_, typename Edge_>

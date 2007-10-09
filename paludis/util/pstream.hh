@@ -34,7 +34,11 @@
  * Declarations for the PStream and PStreamInBuf classes, and related
  * utilities.
  *
- * \ingroup grpsystem
+ * \ingroup g_system
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -42,8 +46,8 @@ namespace paludis
     /**
      * Thrown if a PStream or PStreamInBuf encounters an error.
      *
-     * \ingroup grpsystem
-     * \ingroup grpexceptions
+     * \ingroup g_system
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStreamError :
@@ -67,7 +71,7 @@ namespace paludis
      * See \ref TCppSL Ch. 13.13 for what we're doing here. The buffer code is
      * based upon the "io/inbuf1.hpp" example in section 13.13.3.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStreamInBuf :
@@ -141,14 +145,14 @@ namespace paludis
     /**
      * For internal use by PStream classes.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      */
     namespace pstream_internals
     {
         /**
          * Avoid base from member issues for PStream.
          *
-         * \ingroup grpsystem
+         * \ingroup g_system
          */
         struct PALUDIS_VISIBLE PStreamInBufBase :
             private paludis::InstantiationPolicy<PStreamInBufBase, instantiation_method::NonCopyableTag>
@@ -172,7 +176,7 @@ namespace paludis
      * A PStream class is a standard input stream class whose contents comes
      * from the output of an executed command.
      *
-     * \ingroup grpsystem
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStream :

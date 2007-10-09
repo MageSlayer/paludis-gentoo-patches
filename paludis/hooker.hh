@@ -25,6 +25,16 @@
 #include <paludis/util/graph-fwd.hh>
 #include <string>
 
+/** \file
+ * Declarations for the Hooker class, which is used to run hooks.
+ *
+ * \ingroup g_hooks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class FSEntry;
@@ -32,13 +42,22 @@ namespace paludis
     class Hook;
     class HookResult;
 
-    class HookFile :
+    /**
+     * A HookFile provides an abstraction of a hook file.
+     *
+     * \ingroup g_hooks
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE HookFile :
         private InstantiationPolicy<HookFile, instantiation_method::NonCopyableTag>
     {
         public:
-            virtual ~HookFile()
-            {
-            }
+            ///\name Basic operations
+            ///\{
+
+            virtual ~HookFile();
+
+            ///\}
 
             virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual const FSEntry file_name() const = 0;
@@ -46,9 +65,9 @@ namespace paludis
     };
 
     /**
-     * Handles executing hooks for an Environment.
+     * Handles executing hooks.
      *
-     * \ingroup grphooker
+     * \ingroup g_hooks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hooker :

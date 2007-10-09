@@ -26,6 +26,16 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/repository.hh>
 
+/** \file
+ * Declarations for the RepositoryMaker.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - \ref example_repository.cc "example_repository.cc"
+ */
+
 namespace paludis
 {
     class FSEntry;
@@ -33,8 +43,8 @@ namespace paludis
     /**
      * Thrown if a repository of the specified type does not exist.
      *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup g_exceptions
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchRepositoryTypeError : public ConfigurationError
@@ -49,8 +59,8 @@ namespace paludis
     /**
      * Thrown if PALUDIS_REPOSITORY_SO_DIR is not a directory.
      *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup g_exceptions
+     * \ingroup g_repository
      */
     class PALUDIS_VISIBLE PaludisRepositorySoDirNotADirectoryError :
         public Exception
@@ -62,8 +72,8 @@ namespace paludis
     /**
      * Thrown if a repository .so cannot be used.
      *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup g_exceptions
+     * \ingroup g_repository
      */
     class PALUDIS_VISIBLE PaludisRepositorySoDirCannotDlopenError :
         public Exception
@@ -89,7 +99,7 @@ namespace paludis
     /**
      * Virtual constructor for repositories.
      *
-     * \ingroup grprepository
+     * \ingroup g_repository
      */
     class PALUDIS_VISIBLE RepositoryMaker :
         public VirtualConstructor<std::string,

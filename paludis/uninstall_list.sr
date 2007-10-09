@@ -20,7 +20,7 @@ END
          * Parameters for an UninstallList.
          *
          * \see UninstallList
-         * \ingroup grpuninstalllist
+         * \ingroup g_dep_list
          * \nosubgrouping
          */
 END
@@ -41,7 +41,7 @@ make_class_UninstallListEntry()
          * An entry in an UninstallList.
          *
          * \see UninstallList
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          * \nosubgrouping
          */
 END

@@ -23,10 +23,31 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/tr1_type_traits.hh>
 
+/** \file
+ * Declarations for the visitor_cast function.
+ *
+ * \ingroup g_visitors
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * For internal use by visitor_cast.
+     *
+     * \ingroup g_visitors
+     */
     namespace visitor_cast_internals
     {
+        /**
+         * Internal use by visitor_cast: fetch the result, or zero.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         */
         template <typename T_, bool b_>
         struct GetResult
         {
@@ -36,6 +57,12 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: fetch the result, or zero.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         */
         template <typename T_>
         struct GetResult<T_, true>
         {
@@ -45,6 +72,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: implement the visit functions.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_, typename Item_>
         struct VisitorCastVisitorVisits :
             virtual visitor_internals::Visits<const Item_>
@@ -62,6 +96,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: implement the visit functions.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_, unsigned u_>
         struct VisitorCastVisitorVisits<Result_, Heirarchy_, const NoType<u_> >
         {
@@ -70,6 +111,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: implement the visit functions.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_, typename Item_>
         struct VisitorCastVisitorVisits<Result_, Heirarchy_, const TreeLeaf<Heirarchy_, Item_> > :
             virtual visitor_internals::Visits<const TreeLeaf<Heirarchy_, Item_> >
@@ -87,6 +135,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: implement the visit functions.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_, typename Item_>
         struct VisitorCastVisitorVisits<Result_, Heirarchy_, const ConstTreeSequence<Heirarchy_, Item_> > :
             virtual visitor_internals::Visits<const ConstTreeSequence<Heirarchy_, Item_> >
@@ -106,6 +161,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: implement the visit functions.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_, typename Item_>
         struct VisitorCastVisitorVisits<Result_, Heirarchy_, const TreeSequence<Heirarchy_, Item_> > :
             virtual visitor_internals::Visits<const TreeSequence<Heirarchy_, Item_> >
@@ -125,6 +187,13 @@ namespace paludis
             }
         };
 
+        /**
+         * Internal use by visitor_cast: the visitor used to do the casting.
+         *
+         * \ingroup g_visitors
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename Result_, typename Heirarchy_>
         struct VisitorCastVisitor :
             ConstVisitor<Heirarchy_>,
@@ -178,6 +247,13 @@ namespace paludis
         };
     }
 
+    /**
+     * Use a visitor to return either a pointer to the parameter as type Item_,
+     * or a zero pointer if the item is not of the correct type.
+     *
+     * \ingroup g_visitors
+     * \since 0.26
+     */
     template <typename Result_, typename Item_>
     Result_ *
     visitor_cast(const Item_ & h)

@@ -27,7 +27,11 @@
 /** \file
  * Declarations for the join function.
  *
- * \ingroup grpjoin
+ * \ingroup g_strings
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -35,7 +39,7 @@ namespace paludis
     /**
      * Join together the items from i to end using joiner.
      *
-     * \ingroup grpjoin
+     * \ingroup g_strings
      */
     template <typename I_, typename T_>
     T_ join(I_ i, I_ end, const T_ & joiner)
@@ -56,7 +60,7 @@ namespace paludis
      * Join together the items from i to end using joiner, using
      * a function other than stringify.
      *
-     * \ingroup grpjoin
+     * \ingroup g_strings
      */
     template <typename I_, typename T_, typename F_>
     T_ join(I_ i, I_ end, const T_ & joiner, const F_ & f)
@@ -77,7 +81,7 @@ namespace paludis
      * Convenience alternative join allowing a char * to be used for a
      * string.
      *
-     * \ingroup grpjoin
+     * \ingroup g_strings
      */
     template <typename I_>
     std::string join(I_ begin, const I_ end, const char * const t)
@@ -89,7 +93,7 @@ namespace paludis
      * Convenience alternative join allowing a char * to be used for a
      * string, using a function other than stringify.
      *
-     * \ingroup grpjoin
+     * \ingroup g_strings
      */
     template <typename I_, typename F_>
     std::string join(I_ begin, const I_ end, const char * const t, const F_ & f)

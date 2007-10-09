@@ -17,7 +17,7 @@ make_enum_InstallTaskContinueOnFailure()
          * How to handle a failure when executing InstallTask.
          *
          * \see InstallTask
-         * \ingroup grptasks
+         * \ingroup g_tasks
          */
 END
 }

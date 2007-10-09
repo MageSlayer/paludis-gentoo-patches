@@ -24,12 +24,22 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
 
+/** \file
+ * Declarations for QueryVisitor, which is used internally by DepList.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Used by DepList to check for existing deps.
      *
-     * \ingroup grpdepresolver
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class QueryVisitor :

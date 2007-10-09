@@ -37,7 +37,7 @@ namespace paludis
     /**
      * Output a VersionSpec to a stream.
      *
-     * \ingroup grpversions
+     * \ingroup g_names
      */
     std::ostream & operator<< (std::ostream &, const VersionSpec &) PALUDIS_VISIBLE;
 }

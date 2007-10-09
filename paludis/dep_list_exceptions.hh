@@ -24,13 +24,23 @@
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 
+/** \file
+ * Declarations for DepList exceptions.
+ *
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Thrown if an error occurs whilst building a DepList.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_dep_list
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepListError : public Exception
@@ -47,8 +57,8 @@ namespace paludis
     /**
      * Thrown if all versions of a particular spec are masked.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_dep_list
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE AllMaskedError : public DepListError
@@ -81,8 +91,8 @@ namespace paludis
      * Thrown if all versions of a particular spec are masked,
      * but would not be if use requirements were not in effect.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_dep_list
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UseRequirementsNotMetError : public DepListError
@@ -114,8 +124,8 @@ namespace paludis
     /**
      * Thrown if a downgrade is forced and we're not allowed to downgrade.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpdepresolver
+     * \ingroup g_exceptions
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DowngradeNotAllowedError : public DepListError
@@ -134,8 +144,8 @@ namespace paludis
     /**
      * Thrown if a block is encountered.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE BlockError : public DepListError
@@ -152,8 +162,8 @@ namespace paludis
     /**
      * Thrown if a circular dependency is encountered.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_dep_list
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE CircularDependencyError : public DepListError
@@ -170,8 +180,8 @@ namespace paludis
     /**
      * Thrown if no destination can be found.
      *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
+     * \ingroup g_dep_list
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoDestinationError : public DepListError

@@ -26,8 +26,25 @@
 #include <paludis/dep_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 
+/** \file
+ * Declarations for ConditionTracker, which is used internally by DepList.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * ConditionTracker is used by DepList to track the conditions under which a
+     * dependency was pulled in.
+     *
+     * \ingroup g_dep_list
+     * \nosubgrouping
+     */
     class ConditionTracker :
         public ConstVisitor<DependencySpecTree>,
         public ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>
@@ -47,14 +64,27 @@ namespace paludis
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > do_add_leaf(const T_ &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             ConditionTracker(tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> >);
 
             virtual ~ConditionTracker();
+
+            ///\}
+
+            ///\name Add a condition
+            ///\{
 
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const AnyDepSpec &);
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const UseDepSpec &);
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const PackageDepSpec &);
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > add_condition(const BlockDepSpec &);
+
+            ///\}
+
+            ///\name Visit methods
+            ///\{
 
             using ConstVisitor<DependencySpecTree>::VisitConstSequence<ConditionTracker, AllDepSpec>::visit_sequence;
 
@@ -65,6 +95,8 @@ namespace paludis
             void visit_leaf(const BlockDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
             void visit_leaf(const DependencyLabelsDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
             void visit_leaf(const NamedSetDepSpec &) PALUDIS_ATTRIBUTE((noreturn));
+
+            ///\}
     };
 }
 

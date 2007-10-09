@@ -25,9 +25,13 @@
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
- * Declarations for paludis::DirIterator.
+ * Declarations for DirIterator.
  *
- * \ingroup grpfilesystem
+ * \ingroup g_fs
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -35,8 +39,8 @@ namespace paludis
     /**
      * Raised when a directory open fails.
      *
-     * \ingroup grpfilesystem
-     * \ingroup grpexceptions
+     * \ingroup g_fs
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirOpenError :
@@ -52,13 +56,9 @@ namespace paludis
     };
 
     /**
-     * An iterator that iterates over the contents of a directory. At present,
-     * we read in all the entries at creation time and maintain a CountedPtr
-     * to an ordered set of FSEntry instances. This may change at some point,
-     * if it turns out that it's quicker to use opendir and seekdir for each
-     * instance.
+     * An iterator that iterates over the contents of a directory.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirIterator :

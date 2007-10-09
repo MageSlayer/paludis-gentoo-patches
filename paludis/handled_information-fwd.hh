@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_HANDLED_INFORMATION_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_HANDLED_INFORMATION_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/handled_information.hh .
+ *
+ * \ingroup g_dep_list
+ */
+
 namespace paludis
 {
     class DepListEntryHandled;

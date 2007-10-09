@@ -23,6 +23,16 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for DepList options.
+ *
+ * \ingroup g_dep_spec
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
 #include <paludis/dep_list_options-se.hh>

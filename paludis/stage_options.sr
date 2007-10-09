@@ -14,7 +14,7 @@ make_class_StageOptions()
          * Represents the options passed to a descendant of StageBase on execution.
          *
          * \see StageBase
-         * \ingroup grpstagehandlertask
+         * \ingroup g_tasks
          * \nosubgrouping
          */
 END

@@ -23,6 +23,16 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/make_shared_ptr-fwd.hh>
 
+/** \file
+ * Declarations for the make_shared_ptr function.
+ *
+ * \ingroup g_utils
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     template <typename T_>

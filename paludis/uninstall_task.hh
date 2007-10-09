@@ -28,6 +28,16 @@
 #include <paludis/util/exception.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
+/** \file
+ * Declarations for UninstallTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -36,7 +46,8 @@ namespace paludis
     /**
      * Thrown if an ambiguous unmerge target is supplied.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_tasks
      */
     class PALUDIS_VISIBLE AmbiguousUnmergeTargetError :
         public Exception
@@ -74,7 +85,7 @@ namespace paludis
     /**
      * Task used to uninstall one or more targets.
      *
-     * \ingroup grptasks
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallTask :

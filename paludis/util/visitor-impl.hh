@@ -25,6 +25,12 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/iterator.hh>
 
+/** \file
+ * Implementation for paludis/util/visitor.hh .
+ *
+ * \ingroup g_visitors
+ */
+
 namespace paludis
 {
     namespace visitor_internals

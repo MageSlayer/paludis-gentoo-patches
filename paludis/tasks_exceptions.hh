@@ -22,12 +22,24 @@
 
 #include <paludis/util/exception.hh>
 
+/** \file
+ * Declarations for exceptions for tasks.
+ *
+ * \ingroup g_tasks
+ * \ingroup g_exceptions
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Thrown if multiple set targets are specified.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_tasks
      */
     class PALUDIS_VISIBLE MultipleSetTargetsSpecified :
         public Exception
@@ -39,7 +51,8 @@ namespace paludis
     /**
      * Thrown if both sets and packages are specified as targets.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_tasks
      */
     class PALUDIS_VISIBLE HadBothPackageAndSetTargets :
         public Exception

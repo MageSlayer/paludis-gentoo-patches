@@ -23,7 +23,11 @@
 /** \file
  * Declarations for the Save class.
  *
- * \ingroup grpsave
+ * \ingroup g_utils
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -33,7 +37,7 @@ namespace paludis
      * duration of the Save instance's lifetime (RAII, see \ref EffCpp item 13 or
      * \ref TCppPL section 14.4).
      *
-     * \ingroup grpsave
+     * \ingroup g_utils
      * \nosubgrouping
      */
     template <typename T_>

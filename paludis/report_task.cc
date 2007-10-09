@@ -53,16 +53,10 @@ namespace
 
             using ConstVisitor<SetSpecTree>::VisitConstSequence<VulnerableChecker, AllDepSpec>::visit;
 
-            /**
-             * Constructor.
-             */
             VulnerableChecker(const Environment & e) :
                 _env(e)
             {
             }
-
-            /// \name Visit functions
-            ///{
 
             void visit_leaf(const PackageDepSpec &);
 
@@ -88,11 +82,6 @@ namespace
                 _recursing_sets.erase(s.name());
             }
 
-            ///}
-
-            /**
-             * Return whether a PDE is insecure or not
-             */
             std::pair<ConstIterator, ConstIterator> insecure_tags(const tr1::shared_ptr<const PackageID> & id) const
             {
                 return _found.equal_range(id);

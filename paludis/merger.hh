@@ -26,6 +26,17 @@
 #include <paludis/merger_entry_type.hh>
 #include <iosfwd>
 
+/** \file
+ * Declarations for the Merger class, which can be used by Repository
+ * implementations to perform to-filesystem merging.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -36,8 +47,8 @@ namespace paludis
     /**
      * Thrown if an error occurs during a Merger operation.
      *
-     * \ingroup grpmerger
-     * \ingroup grpexceptions
+     * \ingroup g_repository
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE MergerError :
@@ -55,8 +66,8 @@ namespace paludis
     /**
      * Handles merging an image to a live filesystem.
      *
-     * \ingroup grpmerger
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Merger

@@ -29,7 +29,11 @@
  * Declaration for the Exception base class, the InternalError exception
  * class, the NameError class and related utilities.
  *
- * \ingroup grpexceptions
+ * \ingroup g_exceptions
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -37,7 +41,7 @@ namespace paludis
     /**
      * Backtrace context class.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Context
@@ -68,7 +72,7 @@ namespace paludis
     /**
      * Base exception class.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Exception :
@@ -125,7 +129,7 @@ namespace paludis
      * An InternalError is an Exception that is thrown if something that is
      * never supposed to happen happens.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE InternalError :
@@ -157,7 +161,7 @@ namespace paludis
      * not available (for example due to compile time configure options or platform
      * limitations) is used.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NotAvailableError :
@@ -174,8 +178,8 @@ namespace paludis
      * A NameError is an Exception that is thrown when some kind of invalid
      * name is encountered.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpnames
+     * \ingroup g_exceptions
+     * \ingroup g_names
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NameError :
@@ -204,7 +208,7 @@ namespace paludis
     /**
      * A ConfigurationError is thrown when an invalid configuration occurs.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigurationError :
@@ -221,7 +225,7 @@ namespace paludis
      * Expands to the current function name, file and line, for use with
      * paludis::InternalError.
      *
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
      */
 #define PALUDIS_HERE (std::string(__PRETTY_FUNCTION__) + " at " + \
         std::string(__FILE__) + ":" + paludis::stringify(__LINE__))

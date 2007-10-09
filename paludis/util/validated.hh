@@ -28,7 +28,12 @@
 /** \file
  * Validated declarations.
  *
- * \ingroup grpvalidated
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - \ref example_name.cc "example_name.cc" shows basic usage of various defined
+ *   Validated classes.
  */
 
 namespace paludis
@@ -37,7 +42,7 @@ namespace paludis
      * A Validated wraps a particular class instance, ensuring that it always
      * meets certain validation criteria.
      *
-     * \ingroup grpvalidated
+     * \ingroup g_data_structures
      */
     template <typename ValidatedDataType_, typename Validator_, bool full_comparison_>
     class Validated :
@@ -118,7 +123,7 @@ namespace paludis
     /**
      * Writing a Validated instance to a stream is done by its data.
      *
-     * \ingroup grpvalidated
+     * \ingroup g_data_structures
      */
     template <typename D_, typename V_, bool c_>
     std::ostream &

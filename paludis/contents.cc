@@ -96,11 +96,6 @@ ContentsSymEntry::target() const
 
 namespace paludis
 {
-    /**
-     * Implementation data for Contents.
-     *
-     * \ingroup grpcontents
-     */
     template<>
     struct Implementation<Contents>
     {

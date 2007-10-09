@@ -12,7 +12,7 @@ make_enum_HookOutputDestination()
         /**
          * Determines what to do with hook's output.
          *
-         * \ingroup grpenvironment
+         * \ingroup g_hooks
          */
 END
 }

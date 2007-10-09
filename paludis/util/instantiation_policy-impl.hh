@@ -26,6 +26,12 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 
+/** \file
+ * Implementation for paludis/util/instantiation_policy.hh .
+ *
+ * \ingroup g_oo
+ */
+
 template <typename OurType_>
 void
 paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::_delete(OurType_ * const p)

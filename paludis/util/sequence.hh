@@ -27,8 +27,26 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <libwrapiter/libwrapiter_output_iterator-fwd.hh>
 
+/** \file
+ * Declarations for the Sequence<> class.
+ *
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * Wrapper around a list, avoiding the need to include standard library
+     * headers everywhere.
+     *
+     * \ingroup g_data_structures
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <typename T_>
     class PALUDIS_VISIBLE Sequence :
         private PrivateImplementationPattern<Sequence<T_> >,
@@ -38,12 +56,25 @@ namespace paludis
             using PrivateImplementationPattern<Sequence<T_> >::_imp;
 
         public:
+            ///\name Standard library typedefs
+            ///\{
+
             typedef T_ value_type;
             typedef T_ & reference;
             typedef const T_ & const_reference;
 
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             Sequence();
             ~Sequence();
+
+            ///\}
+
+            ///\name Iteration
+            ///\{
 
             typedef libwrapiter::ForwardIterator<Sequence<T_>, const T_> ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -55,17 +86,30 @@ namespace paludis
             ReverseConstIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ReverseConstIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             typedef libwrapiter::OutputIterator<Sequence<T_>, T_> Inserter;
             Inserter back_inserter();
             Inserter front_inserter();
+
+            ///\}
+
+            ///\name Content information
+            ///\{
+
+            bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+
+            ///\name Content modification
+            ///\{
 
             void push_back(const T_ &);
             void push_front(const T_ &);
 
             template <typename C_>
             void sort(const C_ &);
+
+            ///\}
+
     };
 }
 

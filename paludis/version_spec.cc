@@ -544,11 +544,6 @@ VersionSpec::hash_value() const
 
 namespace
 {
-    /**
-     * Identify Part instances that are of a certain kind.
-     *
-     * \ingroup grpversions
-     */
     template <PartKind p_>
     struct IsPart :
         std::unary_function<Part, bool>

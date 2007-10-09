@@ -26,6 +26,12 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 
+/** \file
+ * Forward declarations for paludis/util/fs_entry.hh .
+ *
+ * \ingroup g_fs
+ */
+
 namespace paludis
 {
     class FSError;
@@ -33,7 +39,7 @@ namespace paludis
     /**
      * File permissions used by FSEntry.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     enum FSPermission
     {
@@ -45,7 +51,7 @@ namespace paludis
     /**
      * User classes used by FSEntry.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     enum FSUserGroup
     {
@@ -59,21 +65,21 @@ namespace paludis
     /**
      * An FSEntry can be written to an ostream.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
 
     /**
      * A sequence of FSEntry instances.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     typedef Sequence<FSEntry> FSEntrySequence;
 
     /**
      * A set of FSEntry instances.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     typedef Set<FSEntry> FSEntrySet;
 }

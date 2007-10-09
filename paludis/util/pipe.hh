@@ -25,7 +25,11 @@
 /** \file
  * Declaration for the Pipe class.
  *
- * \ingroup grppipe
+ * \ingroup g_system
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -33,7 +37,7 @@ namespace paludis
     /**
      * Wrapper around pipe file descriptors.
      *
-     * \ingroup grppipe
+     * \ingroup g_system
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Pipe :

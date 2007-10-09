@@ -25,7 +25,11 @@
 /** \file
  * Declarations for the PrivateImplementationPattern pattern.
  *
- * \ingroup grppimp
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -34,7 +38,7 @@ namespace paludis
      * Private implementation data, to be specialised for any class that
      * uses PrivateImplementationPattern.
      *
-     * \ingroup grppimp
+     * \ingroup g_oo
      */
     template <typename C_>
     struct Implementation;
@@ -43,7 +47,7 @@ namespace paludis
      * A class descended from PrivateImplementationPattern has an associated
      * Implementation instance.
      *
-     * \ingroup grppimp
+     * \ingroup g_oo
      */
     template <typename C_>
     class PrivateImplementationPattern :
@@ -54,7 +58,7 @@ namespace paludis
              * Smart pointer to our implementation.
              *
              * \see PrivateImplementationPattern
-             * \ingroup grppimp
+             * \ingroup g_oo
              */
             class ImpPtr
             {

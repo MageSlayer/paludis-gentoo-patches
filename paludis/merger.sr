@@ -17,7 +17,7 @@ make_class_MergerOptions()
          * Options for a basic Merger.
          *
          * \see Merger
-         * \ingroup grpmerger
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END

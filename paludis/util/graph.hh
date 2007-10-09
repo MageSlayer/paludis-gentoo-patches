@@ -29,7 +29,11 @@
 /** \file
  * Declarations for DirectedGraph and related utilities.
  *
- * \ingroup grpgraph
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -37,8 +41,8 @@ namespace paludis
     /**
      * Base class for DirectedGraph errors.
      *
-     * \ingroup grpgraph
-     * \ingroup grpexceptions
+     * \ingroup g_data_structures
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GraphError :
@@ -56,8 +60,8 @@ namespace paludis
     /**
      * Thrown if a DirectedGraph operation relies upon a node being present when it is not.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpgraph
+     * \ingroup g_exceptions
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchGraphNodeError :
@@ -79,8 +83,8 @@ namespace paludis
     /**
      * Thrown if a DirectedGraph operation relies upon an edge being present when it is not.
      *
-     * \ingroup grpgraph
-     * \ingroup grpexceptions
+     * \ingroup g_exceptions
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchGraphEdgeError :
@@ -102,8 +106,8 @@ namespace paludis
     /**
      * Thrown if no ordering is available for a DirectedGraph::topological_sort.
      *
-     * \ingroup grpgraph
-     * \ingroup grpexceptions
+     * \ingroup g_data_structures
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoGraphTopologicalOrderExistsError :
@@ -131,7 +135,7 @@ namespace paludis
     /**
      * A simple directed graph.
      *
-     * \ingroup grpgraph
+     * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename Node_, typename Edge_>

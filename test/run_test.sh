@@ -38,10 +38,6 @@ fi
 
 if [[ 0 != ${code} ]] ; then
     echo ">>> test ${testname} returned ${code}"
-    if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
-        echo ">>> cleanup for test ${testname}"
-        "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh"
-    fi
     echo ">>> exiting with error for test ${testname}"
     exit 255
 fi

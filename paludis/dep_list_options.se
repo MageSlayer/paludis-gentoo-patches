@@ -13,7 +13,7 @@ make_enum_DepListTargetType()
          * Type of target being handled at the top level.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -31,7 +31,7 @@ make_enum_DepListReinstallOption()
          * When we should reinstall.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -49,7 +49,7 @@ make_enum_DepListFallBackOption()
          * When we should fall back to an installed package.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -68,7 +68,7 @@ make_enum_DepListReinstallScmOption()
          * When we should reinstall SCM packages.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -85,7 +85,7 @@ make_enum_DepListUpgradeOption()
          * When we should upgrade.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -102,7 +102,7 @@ make_enum_DepListDowngradeOption()
          * What to do when we downgrade.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -119,7 +119,7 @@ make_enum_DepListNewSlotsOption()
          * When we should pull in a new slot.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -139,7 +139,7 @@ make_enum_DepListDepsOption()
          * How we should handle a dep class.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -156,7 +156,7 @@ make_enum_DepListSuggestedOption()
          * How we should handle suggested deps.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -174,7 +174,7 @@ make_enum_DepListCircularOption()
          * How we should handle circular deps.
          *
          * \see DepListOptions
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -192,7 +192,7 @@ make_enum_DepListBlocksOption()
         /**
          * How we handle blocks.
          *
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -209,7 +209,7 @@ make_enum_DepListUseOption()
          *
          * Not for end user use. Used by adjutrix and qa.
          *
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -226,7 +226,7 @@ make_enum_DepListEntryState()
         /**
          * State of a DepListEntry.
          *
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }
@@ -248,7 +248,7 @@ make_enum_DepListEntryKind()
         /**
          * Kind of a DepListEntry.
          *
-         * \ingroup grpdepresolver
+         * \ingroup g_dep_list
          */
 END
 }

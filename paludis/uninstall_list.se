@@ -13,7 +13,7 @@ make_enum_UninstallListEntryKind()
         /**
          * Kind of an UninstallListEntry.
          *
-         * \ingroup grpuninstalllist
+         * \ingroup g_dep_list
          */
 END
 }

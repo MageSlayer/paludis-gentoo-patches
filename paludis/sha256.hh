@@ -25,12 +25,22 @@
 #include <paludis/util/attributes.hh>
 #include <inttypes.h>
 
+/** \file
+ * Declarations for the SHA256 digest class.
+ *
+ * \ingroup g_digests
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * SHA256 digest class.
      *
-     * \ingroup grplibpaludisdigests
+     * \ingroup g_digests
      */
     class PALUDIS_VISIBLE SHA256
     {

@@ -20,8 +20,25 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_NO_TYPE_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_NO_TYPE_HH 1
 
+/** \file
+ * Declarations for the NoType<> class.
+ *
+ * \ingroup g_utils
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * Dummy class with no real meaning, used for template voodoo in various
+     * places.
+     *
+     * \ingroup g_utils
+     * \since 0.26
+     */
     template <unsigned u_>
     class NoType;
 }

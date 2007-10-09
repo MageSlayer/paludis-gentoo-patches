@@ -25,9 +25,14 @@
 #include <string>
 
 /** \file
- * Declarations for the Syncer classes.
+ * Declarations for the Syncer class, which can be used by repositories to
+ * simplify syncing.
  *
- * \ingroup grpsyncer
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -38,7 +43,7 @@ namespace paludis
     /**
      * A Syncer subclass handles syncing Repository instances.
      *
-     * \ingroup grpsyncer
+     * \ingroup g_repository
      */
     class PALUDIS_VISIBLE Syncer :
         private InstantiationPolicy<Syncer, instantiation_method::NonCopyableTag>
@@ -68,7 +73,7 @@ namespace paludis
     /**
      * A Syncer subclass that uses a program from the syncers/ directory.
      *
-     * \ingroup grpsyncer
+     * \ingroup g_repository
      */
     class PALUDIS_VISIBLE DefaultSyncer :
         public Syncer
@@ -101,8 +106,8 @@ namespace paludis
     /**
      * Thrown if a sync fails.
      *
-     * \ingroup grpsyncer
-     * \ingroup grpexceptions
+     * \ingroup g_repository
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE SyncFailedError :
         public Exception
@@ -122,8 +127,8 @@ namespace paludis
     /**
      * Thrown if a syncer of the specified type does not exist.
      *
-     * \ingroup grpsyncer
-     * \ingroup grpexceptions
+     * \ingroup g_repository
+     * \ingroup g_exceptions
      */
     class PALUDIS_VISIBLE NoSuchSyncerError : public SyncFailedError
     {

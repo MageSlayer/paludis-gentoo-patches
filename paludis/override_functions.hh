@@ -25,17 +25,51 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
 
+/** \file
+ * Declarations for various override functions for DepList.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * Override a mask if it is a ~keyword mask, and keyword is accepted.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     */
     bool override_tilde_keywords(const Environment * const e, const PackageID & i, const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
+    /**
+     * Override a mask if it is due to a missing keyword.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     */
     bool override_unkeyworded(const Environment * const e, const PackageID & i, const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
+    /**
+     * Override a mask if it is a repository mask.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     */
     bool override_repository_masks(const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
+    /**
+     * Override a mask if it is a license mask.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     */
     bool override_license(const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }

@@ -30,9 +30,13 @@
 #include <paludis/util/tr1_memory.hh>
 
 /** \file
- * Declarations for paludis::Filesystem.
+ * Declarations for FSEntry.
  *
- * \ingroup grpfilesystem
+ * \ingroup g_fs
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 struct stat;
@@ -42,8 +46,8 @@ namespace paludis
     /**
      * Generic filesystem error class.
      *
-     * \ingroup grpexceptions
-     * \ingroup grpfilesystem
+     * \ingroup g_exceptions
+     * \ingroup g_fs
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FSError :
@@ -61,7 +65,7 @@ namespace paludis
     /**
      * Represents an entry (which may or may not exist) in the filesystem.
      *
-     * \ingroup grpfilesystem
+     * \ingroup g_fs
      */
     class PALUDIS_VISIBLE FSEntry :
         public relational_operators::HasRelationalOperators,
@@ -346,8 +350,6 @@ namespace paludis
 
             ///\}
     };
-
-    std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
 }
 
 #endif

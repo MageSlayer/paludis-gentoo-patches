@@ -21,35 +21,39 @@
 #define PALUDIS_GUARD_PALUDIS_ATTRIBUTES_HH 1
 
 /** \file
- * Declare the PALUDIS_ATTRIBUTE macro.
+ * Declare the PALUDIS_ATTRIBUTE macros.
  *
- * \ingroup grplibpaludisutil
+ * \ingroup g_utils
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 /** \def PALUDIS_ATTRIBUTE
  * If we're using a recent GCC or ICC, expands to __attribute__, otherwise
  * discards its arguments.
  *
- * \ingroup grplibpaludisutil
+ * \ingroup g_utils
  */
 
 /** \def PALUDIS_CAN_USE_ATTRIBUTE
  * Defined if we can rely upon PALUDIS_ATTRIBUTE working (for example, for
  * weak).
  *
- * \ingroup grplibpaludisutil
+ * \ingroup g_utils
  */
 
 /** \def PALUDIS_VISIBLE
  * Marker used to represent 'make visible', if visibility is enabled.
  *
- * \ingroup grplibpaludisutil
+ * \ingroup g_utils
  */
 
 /** \def PALUDIS_HIDDEN
  * Marker used to represent 'make hidden', if visibility is enabled.
  *
- * \ingroup grplibpaludisutil
+ * \ingroup g_utils
  */
 
 #if (defined(__GNUC__) || defined(DOXYGEN))

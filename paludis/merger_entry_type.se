@@ -16,7 +16,7 @@ make_enum_EntryType()
         * The type of file.
          *
          * \see Merger
-         * \ingroup grpdepresolver
+         * \ingroup g_repository
          */
 END
 }

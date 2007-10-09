@@ -22,6 +22,12 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 
+/** \file
+ * Implementation for paludis/util/private_implementation_pattern.hh .
+ *
+ * \ingroup g_oo
+ */
+
 template <typename C_>
 paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(Implementation<C_> * p) :
     _ptr(p)

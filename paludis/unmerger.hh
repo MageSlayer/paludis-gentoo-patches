@@ -27,6 +27,17 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/merger_entry_type.hh>
 
+/** \file
+ * Declarations for the Unmerger class, which can be used by Repository
+ * to implement from-filesystem unmerging.
+ *
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Hook;
@@ -37,8 +48,8 @@ namespace paludis
     /**
      * Thrown if an error occurs during an unmerge.
      *
-     * \ingroup grpunmerger
-     * \ingroup grpexceptions
+     * \ingroup g_repository
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UnmergerError :
@@ -56,7 +67,7 @@ namespace paludis
     /**
      * Handles unmerging items.
      *
-     * \ingroup grpunmerger
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Unmerger :
@@ -74,7 +85,7 @@ namespace paludis
              * Base class for extra information associated with a file
              * to be unmerged.
              *
-             * \ingroup grpunmerger
+             * \ingroup g_repository
              * \nosubgrouping
              */
             class PALUDIS_VISIBLE ExtraInfo

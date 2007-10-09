@@ -15,7 +15,7 @@ make_class_HookResult()
          * Result of a Hook.
          *
          * \see Hook
-         * \ingroup grpenvironment
+         * \ingroup g_hooks
          * \nosubgrouping
          */
 END

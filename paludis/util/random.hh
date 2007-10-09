@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,16 @@
 #include <inttypes.h>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for the Random class.
+ *
+ * \ingroup g_utils
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
@@ -33,7 +43,7 @@ namespace paludis
      * See \ref TCppPL 22.7 for justification. See \ref TaoCP2 3.2.1 for the
      * basic algorithm and \ref AppCrypt 16.1 for the choice of numbers.
      *
-     * \ingroup grprandom
+     * \ingroup g_utils
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Random

@@ -24,6 +24,16 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repository.hh>
 
+/** \file
+ * Declarations for ReportTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -31,7 +41,7 @@ namespace paludis
     /**
      * Task to report the current state of the system.
      *
-     * \ingroup grptasks
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ReportTask :

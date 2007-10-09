@@ -27,7 +27,11 @@
 /** \file
  * Declarations for VirtualConstructor and related classes.
  *
- * \ingroup grpvc
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -36,7 +40,7 @@ namespace paludis
      * Behaviour policy classes for what to do if an appropriate constructor
      * cannot be found for a VirtualConstructor::find_maker call.
      *
-     * \ingroup grpvc
+     * \ingroup g_oo
      */
     namespace virtual_constructor_not_found
     {
@@ -44,7 +48,7 @@ namespace paludis
          * Throw an exception of type ExceptionType_, which should have a
          * constructor that takes a single parameter of KeyType_.
          *
-         * \ingroup grpvc
+         * \ingroup g_oo
          */
         template <typename ExceptionType_>
         struct ThrowException
@@ -52,7 +56,7 @@ namespace paludis
             /**
              * Internal use: provide handle_not_found.
              *
-             * \ingroup grpvc
+             * \ingroup g_oo
              */
             template <typename KeyType_, typename ValueType_>
             struct Parent
@@ -70,7 +74,7 @@ namespace paludis
      * some key type (often a string) to the construction of some kind of
      * class (possibly via a functor) is required.
      *
-     * \ingroup grpvc
+     * \ingroup g_oo
      */
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
     class PALUDIS_VISIBLE VirtualConstructor :

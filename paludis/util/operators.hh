@@ -22,13 +22,23 @@
 
 #include <paludis/util/attributes.hh>
 
+/**
+ * Various classes that simplify implementing operators for classes.
+ *
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Classes with a base in this namespace define comparison operators via
      * operator==.
      *
-     * \ingroup grpoperators
+     * \ingroup g_oo
      */
     namespace equality_operators
     {
@@ -36,7 +46,7 @@ namespace paludis
          * Classes inheriting this define relational operators via
          * operator==.
          *
-         * \ingroup grpoperators
+         * \ingroup g_oo
          */
         struct HasEqualityOperators
         {
@@ -69,7 +79,7 @@ namespace paludis
      * Classes with a base in this namespace define comparison operators via
      * operator< and operator==.
      *
-     * \ingroup grpoperators
+     * \ingroup g_oo
      */
     namespace relational_operators
     {
@@ -77,7 +87,7 @@ namespace paludis
          * Classes inheriting this define relational operators via
          * operator< and operator==.
          *
-         * \ingroup grpoperators
+         * \ingroup g_oo
          */
         struct HasRelationalOperators :
             public equality_operators::HasEqualityOperators
@@ -137,7 +147,7 @@ namespace paludis
      * Classes with a base in this namespace define arithmetic operators via
      * operator+= etc.
      *
-     * \ingroup grpoperators
+     * \ingroup g_oo
      */
     namespace arithmetic_operators
     {
@@ -145,7 +155,7 @@ namespace paludis
          * Classes inheriting this define arithmetic operators via
          * via operator+= etc.
          *
-         * \ingroup grpoperators
+         * \ingroup g_oo
          */
         struct HasArithmeticOperators
         {

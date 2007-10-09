@@ -25,12 +25,22 @@
 #include <inttypes.h>
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Declarations for the RMD160 digest class.
+ *
+ * \ingroup g_digests
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * RMD160 digest class.
      *
-     * \ingroup grplibpaludisdigests
+     * \ingroup g_digests
      */
     class PALUDIS_VISIBLE RMD160
     {

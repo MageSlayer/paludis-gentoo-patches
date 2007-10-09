@@ -27,7 +27,11 @@
 /** \file
  * Destringify functions.
  *
- * \ingroup grpdestringify
+ * \ingroup g_strings
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -35,8 +39,8 @@ namespace paludis
     /**
      * Default exception type thrown by destringify when it fails.
      *
-     * \ingroup grpdestringify
-     * \ingroup grpexceptions
+     * \ingroup g_strings
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DestringifyError :
@@ -54,14 +58,14 @@ namespace paludis
     /**
      * For internal use by destringify.
      *
-     * \ingroup grpdestringify
+     * \ingroup g_strings
      */
     namespace destringify_internals
     {
         /**
          * Basic destringifier.
          *
-         * \ingroup grpdestringify
+         * \ingroup g_strings
          */
         template <typename Type_, typename Exception_>
         struct Destringifier
@@ -83,7 +87,7 @@ namespace paludis
         /**
          * Specialised destringify for std::string.
          *
-         * \ingroup grpdestringify
+         * \ingroup g_strings
          */
         template <typename Exception_>
         struct Destringifier<std::string, Exception_>
@@ -100,7 +104,7 @@ namespace paludis
         /**
          * Specialised destringify for bool.
          *
-         * \ingroup grpdestringify
+         * \ingroup g_strings
          */
         template <typename Exception_>
         struct Destringifier<bool, Exception_>
@@ -135,7 +139,7 @@ namespace paludis
         /**
          * Specialised destringify for char.
          *
-         * \ingroup grpdestringify
+         * \ingroup g_strings
          */
         template <typename Exception_>
         struct Destringifier<char, Exception_>
@@ -156,7 +160,7 @@ namespace paludis
     /**
      * Extract a value of some type from a string.
      *
-     * \ingroup grpdestringify
+     * \ingroup g_strings
      */
     template <typename Type_, typename Exception_>
     Type_ destringify(const std::string & s)

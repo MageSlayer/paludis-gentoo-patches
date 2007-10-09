@@ -26,7 +26,11 @@
 /** \file
  * Declares the Cloneable class and helpers.
  *
- * \ingroup grpclone
+ * \ingroup g_oo
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -34,7 +38,7 @@ namespace paludis
     /**
      * Base class for objects that can be cloned.
      *
-     * \ingroup grpclone
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template <typename T_>
@@ -63,7 +67,7 @@ namespace paludis
      * Helper class implementing the clone() method using the copy
      * contructor.
      *
-     * \ingroup grpclone
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template <typename Base_, typename Child_>

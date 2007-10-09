@@ -28,8 +28,25 @@
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <libwrapiter/libwrapiter_output_iterator-fwd.hh>
 
+/** \file
+ * Declarations for the Set<> class.
+ *
+ * \ingroup g_data_structures
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * A wrapper around a set, avoiding the need to include lots of STL bloat
+     * all over the place.
+     *
+     * \ingroup g_data_structures
+     * \since 0.26
+     */
     template <typename T_, typename C_>
     class PALUDIS_VISIBLE Set :
         private PrivateImplementationPattern<Set<T_, C_> >,
@@ -39,27 +56,52 @@ namespace paludis
             using PrivateImplementationPattern<Set<T_, C_> >::_imp;
 
         public:
+            ///\name Standard library typedefs
+            ///\{
+
             typedef T_ value_type;
             typedef T_ & reference;
             typedef const T_ & const_reference;
 
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             Set();
             ~Set();
+
+            ///\}
+
+            ///\name Iteration
+            ///\{
 
             typedef libwrapiter::ForwardIterator<Set<T_, C_>, const T_> ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            typedef libwrapiter::OutputIterator<Set<T_, C_>, T_> Inserter;
+            Inserter inserter();
+
+            ///\}
+
+            ///\name Content information
+            ///\{
+
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
             unsigned size() const PALUDIS_ATTRIBUTE((warn_unused_result));
             unsigned count(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef libwrapiter::OutputIterator<Set<T_, C_>, T_> Inserter;
-            Inserter inserter();
+            ///\}
+
+            ///\name Content modification
+            ///\{
 
             void insert(const T_ &);
             void erase(const T_ &);
+
+            ///\}
     };
 }
 

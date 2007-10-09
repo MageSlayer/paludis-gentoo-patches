@@ -28,7 +28,11 @@
 /** \file
  * Declarations for Log and related classes.
  *
- * \ingroup grplog
+ * \ingroup g_log
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -43,7 +47,7 @@ namespace paludis
      * When modifying this, you will probably also want to take a look at
      * ebuild/echo_functions.bash and the command_line source files.
      *
-     * \ingroup grplog
+     * \ingroup g_log
      */
     enum LogLevel
     {
@@ -62,7 +66,7 @@ namespace paludis
     /**
      * Singleton class that handles log messages.
      *
-     * \ingroup grplog
+     * \ingroup g_log
      */
     class PALUDIS_VISIBLE Log :
         public InstantiationPolicy<Log, instantiation_method::SingletonTag>,
@@ -128,7 +132,7 @@ namespace paludis
      * Used by Log::message().
      *
      * \see Log
-     * \ingroup grplog
+     * \ingroup g_log
      */
     class PALUDIS_VISIBLE LogMessageHandler
     {
@@ -169,7 +173,7 @@ namespace paludis
     /**
      * Stringify a LogLevel constant.
      *
-     * \ingroup grplog
+     * \ingroup g_log
      */
     std::ostream &
     operator<< (std::ostream &, const LogLevel &) PALUDIS_VISIBLE;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,16 @@
 #include <ostream>
 #include <unistd.h>
 
+/** \file
+ * Declarations for FDOutputStreamBuf.
+ *
+ * \ingroup g_fs
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
@@ -31,7 +41,7 @@ namespace paludis
      * See \ref TCppSL Ch. 13.13 for what we're doing here. The buffer code is
      * based upon the "io/outbuf2.hpp" example in section 13.13.3.
      *
-     * \ingroup grpfdotputstream
+     * \ingroup g_fs
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FDOutputStreamBuf :
@@ -74,7 +84,7 @@ namespace paludis
     /**
      * Member from base initialisation for FDOutputStream.
      *
-     * \ingroup grpfdotputstream
+     * \ingroup g_fs
      */
     class PALUDIS_VISIBLE FDOutputStreamBase
     {
@@ -97,7 +107,7 @@ namespace paludis
     /**
      * Output stream buffer class that's opened via an FD.
      *
-     * \ingroup grpfdotputstream
+     * \ingroup g_fs
      */
     class PALUDIS_VISIBLE FDOutputStream :
         protected FDOutputStreamBase,

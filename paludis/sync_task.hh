@@ -25,6 +25,16 @@
 #include <paludis/dep_list.hh>
 #include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
+/** \file
+ * Declarations for SyncTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -33,7 +43,7 @@ namespace paludis
     /**
      * Task to handle syncing some or all repositories.
      *
-     * \ingroup grptasks
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SyncTask :

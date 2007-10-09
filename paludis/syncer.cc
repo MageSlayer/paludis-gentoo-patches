@@ -31,12 +31,6 @@
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 
-/** \file
- * Implementation for Syncer classes.
- *
- * \ingroup grpsyncer
- */
-
 using namespace paludis;
 
 #include <paludis/syncer-sr.cc>

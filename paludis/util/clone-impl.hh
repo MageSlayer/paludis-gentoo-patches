@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_CLONE_IMPL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_CLONE_IMPL_HH 1
 
+/** \file
+ * Implementation for paludis/clone.hh .
+ *
+ * \ingroup g_oo
+ */
+
 namespace paludis
 {
     template<typename T_>

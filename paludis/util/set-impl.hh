@@ -27,6 +27,12 @@
 #include <functional>
 #include <iterator>
 
+/** \file
+ * Implementation for paludis/util/set.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     template <typename T_>

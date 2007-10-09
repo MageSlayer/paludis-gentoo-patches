@@ -19,12 +19,6 @@
 
 #include <paludis/util/destringify.hh>
 
-/** \file
- * Implementation for DestringifyError.
- *
- * \ingroup grpdestringify
- */
-
 using namespace paludis;
 
 DestringifyError::DestringifyError(const std::string & str) throw () :

@@ -24,6 +24,12 @@
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
 
+/** \file
+ * Forward declarations for paludis/hook.hh .
+ *
+ * \ingroup g_hooks
+ */
+
 namespace paludis
 {
 

@@ -30,6 +30,18 @@
 #include <paludis/dep_tag-fwd.hh>
 #include <iosfwd>
 
+/** \file
+ * Declarations for the SetFile classes, which are used by Environment and
+ * Repository implementations for files containing a package set.
+ *
+ * \ingroup g_environment
+ * \ingroup g_repository
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     class Environment;
@@ -40,7 +52,9 @@ namespace paludis
     /**
      * Thrown if there is a problem reading or writing a SetFile.
      *
-     * \ingroup grpsetfile
+     * \ingroup g_environment
+     * \ingroup g_repository
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SetFileError :
@@ -66,7 +80,8 @@ namespace paludis
      *
      * The file can be modified if it is sft_paludis_conf or sft_simple.
      *
-     * \ingroup grpsetfile
+     * \ingroup g_environment
+     * \ingroup g_repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SetFile :
@@ -99,8 +114,6 @@ namespace paludis
 
             /**
              * Remove any matching lines.
-             *
-             * \return True if we removed anything.
              */
             void remove(const std::string &);
     };

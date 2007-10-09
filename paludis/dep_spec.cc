@@ -829,11 +829,6 @@ SimpleURIDepSpec::clone() const
 
 namespace paludis
 {
-    /**
-     * Implementation data for UseRequirements.
-     *
-     * \ingroup grpdepspecs
-     */
     template<>
     struct Implementation<UseRequirements>
     {

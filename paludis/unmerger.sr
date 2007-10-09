@@ -15,7 +15,7 @@ make_class_UnmergerOptions()
          * Options for a basic Unmerger.
          *
          * \see Unmerger
-         * \ingroup grpmerger
+         * \ingroup g_repository
          * \nosubgrouping
          */
 END

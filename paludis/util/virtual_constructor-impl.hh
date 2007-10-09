@@ -28,9 +28,9 @@
 #include <vector>
 
 /** \file
- * Declarations for VirtualConstructor and related classes.
+ * Implementation for paludis/util/virtual_constructor.hh .
  *
- * \ingroup grpvc
+ * \ingroup g_oo
  */
 
 namespace paludis
@@ -50,14 +50,14 @@ namespace paludis
     /**
      * For internal use by VirtualConstructor.
      *
-     * \ingroup grpvc
+     * \ingroup g_oo
      */
     namespace virtual_constructor_internals
     {
         /**
          * Comparator class for our entries.
          *
-         * \ingroup grpvc
+         * \ingroup g_oo
          */
         template <typename First_, typename Second_>
         struct ComparePairByFirst
@@ -84,7 +84,7 @@ namespace paludis
      * Holds the entries for a VirtualConstructor.
      *
      * \see VirtualConstructor
-     * \ingroup grpvc
+     * \ingroup g_oo
      * \nosubgrouping
      */
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>

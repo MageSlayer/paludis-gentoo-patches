@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_FWD_HH 1
 
+/** \file
+ * Forward declarations for paludis/util/graph.hh .
+ *
+ * \ingroup g_data_structures
+ */
+
 namespace paludis
 {
     class GraphError;

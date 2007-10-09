@@ -26,24 +26,30 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 
+/** \file
+ * Declarations for FindUnusedPackagesTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Task to find unused package versions for a given package name.
      *
-     * \ingroup grptasks
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FindUnusedPackagesTask :
         InstantiationPolicy<FindUnusedPackagesTask, instantiation_method::NonCopyableTag>
     {
         private:
-            /// Our environment
             const Environment * const _env;
-
-            /// Our repository
             const Repository * const _repo;
-
 
         public:
             ///\name Basic operations

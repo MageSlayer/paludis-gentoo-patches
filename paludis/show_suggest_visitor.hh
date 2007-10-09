@@ -24,12 +24,22 @@
 #include <paludis/dep_list-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 
+/** \file
+ * Declarations for ShowSuggestVisitor, which is used internally by DepList.
+ *
+ * \ingroup g_dep_list
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Used by DepList to add suggested deps.
      *
-     * \ingroup grpdepresolver
+     * \ingroup g_dep_list
      * \nosubgrouping
      */
     class ShowSuggestVisitor :

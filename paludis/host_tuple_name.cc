@@ -26,12 +26,6 @@
 #include <vector>
 #include <ostream>
 
-/** \file
- * Implementation of host_tuple_name.hh things.
- *
- * \ingroup grpnames
- */
-
 using namespace paludis;
 
 #include <paludis/host_tuple_name-sr.cc>
@@ -237,3 +231,4 @@ UserlandNamePartError::UserlandNamePartError(const std::string & name) throw () 
     HostTupleNameError(name, "userland name part")
 {
 }
+

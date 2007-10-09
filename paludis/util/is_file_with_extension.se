@@ -14,7 +14,7 @@ make_enum_IsFileWithOption()
          * \see IsFileWithOptions
          * \see is_file_with_extension()
          * \see is_file_with_prefix_extension()
-         * \ingroup grpfilesystem
+         * \ingroup g_fs
          */
 END
 }

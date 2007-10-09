@@ -22,6 +22,12 @@
 
 #include <paludis/util/attributes.hh>
 
+/** \file
+ * Forward declarations for paludis/make_shared_ptr.hh .
+ *
+ * \ingroup g_utils
+ */
+
 namespace paludis
 {
     namespace tr1
@@ -30,6 +36,16 @@ namespace paludis
         class shared_ptr;
     }
 
+    /**
+     * Convenience function for creating a tr1::shared_ptr<> from a newly
+     * constructed object.
+     *
+     * Use this only with <code>new T_(whatever)</code> as the parameter. Do not
+     * use it to try to create a tr1::shared_ptr<> from something that is not
+     * newly allocated.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     tr1::shared_ptr<T_>
     make_shared_ptr(T_ * const t) PALUDIS_ATTRIBUTE((warn_unused_result));

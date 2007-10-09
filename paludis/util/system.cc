@@ -36,12 +36,6 @@
 #include <iostream>
 #include "config.h"
 
-/** \file
- * Implementation of various system utilities.
- *
- * \ingroup grpsystem
- */
-
 using namespace paludis;
 
 namespace

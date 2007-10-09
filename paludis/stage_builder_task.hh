@@ -28,12 +28,23 @@
 
 #include <paludis/util/tr1_memory.hh>
 
+/** \file
+ * Declarations for StageBuilderTask.
+ *
+ * \ingroup g_tasks
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     /**
      * Thrown if a stage build fails.
      *
-     * \ingroup grpstagebuildertask
+     * \ingroup g_tasks
+     * \ingroup g_exceptions
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE StageBuildError :
@@ -48,14 +59,13 @@ namespace paludis
             StageBuildError(const std::string & message) throw ();
     };
 
-    #include <paludis/stage_options-sr.hh>
+#include <paludis/stage_options-sr.hh>
 
     /**
      * Represents the base class for all stages which can be build by
      * StageBuilderTask.
      *
-     * \ingroup grptask
-     * \ingroup grpstagebuildertask
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE StageBase
@@ -79,8 +89,7 @@ namespace paludis
     /**
      * Task to handle building for of one or more descendants of StageBase.
      *
-     * \ingroup grptasks
-     * \ingroup grpstagehandlertask
+     * \ingroup g_tasks
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE StageBuilderTask :

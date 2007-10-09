@@ -42,6 +42,10 @@
 
 using namespace paludis;
 
+HookFile::~HookFile()
+{
+}
+
 namespace
 {
     class BashHookFile :

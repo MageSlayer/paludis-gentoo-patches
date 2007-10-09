@@ -31,7 +31,11 @@
 /** \file
  * Declarations for various iterator helpers.
  *
- * \ingroup grpiterators
+ * \ingroup g_iterator
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -39,7 +43,7 @@ namespace paludis
     /**
      * Return a new iterator pointing to the item after i.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     T_ next(const T_ & i)
@@ -51,7 +55,7 @@ namespace paludis
      /**
      * Return a new iterator advanced by a distance of n.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     T_ next(const T_ & i, const int & n)
@@ -64,7 +68,7 @@ namespace paludis
     /**
      * Return a new iterator pointing to the item before i.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     T_ previous(const T_ & i)
@@ -76,7 +80,7 @@ namespace paludis
     /**
      * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     struct RemoveSharedPointer
@@ -88,7 +92,7 @@ namespace paludis
     /**
      * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     struct RemoveSharedPointer<tr1::shared_ptr<T_> >
@@ -100,7 +104,7 @@ namespace paludis
     /**
      * Like tr1::remove_pointer, for tr1::shared_ptr.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename T_>
     struct RemoveSharedPointer<const tr1::shared_ptr<T_> >
@@ -117,7 +121,7 @@ namespace paludis
      * An IndirectIterator is an iterator adapter that does one additional level
      * of dereferencing.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      * \nosubgrouping
      */
     template <typename Iter_, typename Value_>
@@ -205,7 +209,7 @@ namespace paludis
     /**
      * Convenience constructor for an IndirectIterator.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename Iter_>
     IndirectIterator<Iter_,
@@ -221,7 +225,7 @@ namespace paludis
      * if a particular predicate function returns true for the object to be
      * inserted.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      * \nosubgrouping
      */
     template <typename Iter_, typename Pred_>
@@ -304,7 +308,7 @@ namespace paludis
     /**
      * Convenience function: make a FilterInsertIterator.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename Iter_, typename Pred_>
     FilterInsertIterator<Iter_, Pred_> filter_inserter(
@@ -317,7 +321,7 @@ namespace paludis
      * A TransformInsertIterator is an insert iterator that calls some function
      * upon an item before inserting it.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      * \nosubgrouping
      */
     template <typename Iter_, typename Trans_>
@@ -397,7 +401,7 @@ namespace paludis
     /**
      * Convenience function: make a TransformInsertIterator.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename Iter_, typename Trans_>
     TransformInsertIterator<Iter_, Trans_> transform_inserter(
@@ -410,7 +414,7 @@ namespace paludis
      * A CreateInsertIterator is an insert iterator that creates an object of
      * the specified type using the provided value.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      * \nosubgrouping
      */
     template <typename Iter_, typename Type_>
@@ -487,7 +491,7 @@ namespace paludis
     /**
      * Convenience function: make a CreateInsertIterator.
      *
-     * \ingroup grpiterators
+     * \ingroup g_iterator
      */
     template <typename Type_, typename Iter_>
     CreateInsertIterator<Iter_, Type_> create_inserter(const Iter_ & i)

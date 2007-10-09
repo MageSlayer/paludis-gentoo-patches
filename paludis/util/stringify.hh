@@ -28,7 +28,11 @@
 /** \file
  * Stringify functions.
  *
- * \ingroup grpstringify
+ * \ingroup g_strings
+ *
+ * \section Examples
+ *
+ * - None at this time.
  */
 
 namespace paludis
@@ -36,14 +40,14 @@ namespace paludis
     /**
      * For use by stringify.
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     namespace stringify_internals
     {
         /**
          * Check that T_ is a sane type to be stringified.
          *
-         * \ingroup grpstringify
+         * \ingroup g_strings
          */
         template <typename T_>
         struct CheckType
@@ -56,7 +60,7 @@ namespace paludis
          * Check that T_ is a sane type to be stringified, which it isn't
          * if it's a pointer unless it's a char * pointer.
          *
-         * \ingroup grpstringify
+         * \ingroup g_strings
          */
         template <typename T_>
         struct CheckType<T_ *>
@@ -67,7 +71,7 @@ namespace paludis
          * Check that T_ is a sane type to be stringified, which it isn't
          * if it's a CountedPtr.
          *
-         * \ingroup grpstringify
+         * \ingroup g_strings
          */
         template <typename T_>
         struct CheckType<tr1::shared_ptr<T_> >
@@ -78,7 +82,7 @@ namespace paludis
          * Check that T_ is a sane type to be stringified, which it isn't
          * if it's a pointer unless it's a char * pointer.
          *
-         * \ingroup grpstringify
+         * \ingroup g_strings
          */
         template <>
         struct CheckType<char *>
@@ -91,7 +95,7 @@ namespace paludis
     /**
      * Convert item to a string.
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     template <typename T_>
     std::string
@@ -109,7 +113,7 @@ namespace paludis
     /**
      * Convert item to a string (overload for std::string).
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     inline std::string
     stringify(const std::string & item)
@@ -120,7 +124,7 @@ namespace paludis
     /**
      * Convert item to a string (overload for char).
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     inline std::string
     stringify(const char & item)
@@ -131,7 +135,7 @@ namespace paludis
     /**
      * Convert item to a string (overload for unsigned char).
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     inline std::string
     stringify(const unsigned char & item)
@@ -142,7 +146,7 @@ namespace paludis
     /**
      * Convert item to a string (overload for bool).
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     inline std::string
     stringify(const bool & item)
@@ -154,7 +158,7 @@ namespace paludis
      * Convert item to a string (overload for char *, which isn't a
      * screwup like other pointers).
      *
-     * \ingroup grpstringify
+     * \ingroup g_strings
      */
     inline std::string
     stringify(const char * const item)

@@ -22,6 +22,12 @@
 
 #include <paludis/util/no_type.hh>
 
+/** \file
+ * Forward declarations for paludis/util/visitor.hh .
+ *
+ * \ingroup g_visitors
+ */
+
 namespace paludis
 {
     namespace visitor_internals

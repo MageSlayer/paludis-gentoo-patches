@@ -31,12 +31,6 @@
 #include <unistd.h>
 #include <grp.h>
 
-/** \file
- * Implementation for PStream.
- *
- * \ingroup grpsystem
- */
-
 using namespace paludis;
 
 PStreamError::PStreamError(const std::string & our_message) throw () :
