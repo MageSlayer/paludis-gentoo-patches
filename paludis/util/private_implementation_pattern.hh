@@ -80,9 +80,9 @@ namespace paludis
                     ///\name Dereference operators
                     //\{
 
-                    Implementation<C_> * operator-> ();
+                    inline Implementation<C_> * operator-> ();
 
-                    const Implementation<C_> * operator-> () const;
+                    inline const Implementation<C_> * operator-> () const;
 
                     Implementation<C_> * get();
                     const Implementation<C_> * get() const;
@@ -108,6 +108,20 @@ namespace paludis
 
             ~PrivateImplementationPattern();
     };
+}
+
+template <typename C_>
+paludis::Implementation<C_> *
+paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> ()
+{
+    return _ptr;
+}
+
+template <typename C_>
+const paludis::Implementation<C_> *
+paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> () const
+{
+    return _ptr;
 }
 
 #endif

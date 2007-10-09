@@ -42,20 +42,6 @@ paludis::PrivateImplementationPattern<C_>::ImpPtr::~ImpPtr()
 
 template <typename C_>
 paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> ()
-{
-    return _ptr;
-}
-
-template <typename C_>
-const paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> () const
-{
-    return _ptr;
-}
-
-template <typename C_>
-paludis::Implementation<C_> *
 paludis::PrivateImplementationPattern<C_>::ImpPtr::get()
 {
     return _ptr;
