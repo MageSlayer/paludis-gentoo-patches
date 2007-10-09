@@ -48,13 +48,13 @@ namespace test_cases
             v.push_back(std::pair<std::string, std::string>("four", "IV"));
             v.push_back(std::pair<std::string, std::string>("five", "V"));
 
-            MemberIterator<std::string, V::iterator> it = first_iterator(v.begin());
+            FirstIterator<V::iterator>::Type it = first_iterator(v.begin());
             TEST_CHECK(it == it);
             TEST_CHECK(! (it != it));
             TEST_CHECK_EQUAL(*it, "one");
             TEST_CHECK_EQUAL(it->length(), 3U);
 
-            MemberIterator<std::string, V::iterator> it2(it);
+            FirstIterator<V::iterator>::Type it2(it);
             TEST_CHECK(it == it2);
             TEST_CHECK(! (it != it2));
             TEST_CHECK_EQUAL(*++it2, "two");
@@ -63,7 +63,7 @@ namespace test_cases
             TEST_CHECK(it != it2);
             TEST_CHECK(! (it == it2));
 
-            MemberIterator<std::string, V::iterator> it3(it2);
+            FirstIterator<V::iterator>::Type it3(it2);
             TEST_CHECK(it2 == it3++);
             TEST_CHECK(it2 != it3);
             TEST_CHECK_EQUAL(*it3, "three");
@@ -93,13 +93,13 @@ namespace test_cases
             m["IV"] = "four";
             m["V"] = "five";
 
-            MemberIterator<std::string, M::iterator> it = second_iterator(m.begin());
+            SecondIterator<M::iterator>::Type it = second_iterator(m.begin());
             TEST_CHECK(it == it);
             TEST_CHECK(! (it != it));
             TEST_CHECK_EQUAL(*it, "one");
             TEST_CHECK_EQUAL(it->length(), 3U);
 
-            MemberIterator<std::string, M::iterator> it2(it);
+            SecondIterator<M::iterator>::Type it2(it);
             TEST_CHECK(it == it2);
             TEST_CHECK(! (it != it2));
             TEST_CHECK_EQUAL(*++it2, "two");
@@ -108,7 +108,7 @@ namespace test_cases
             TEST_CHECK(it != it2);
             TEST_CHECK(! (it == it2));
 
-            MemberIterator<std::string, M::iterator> it3(it2);
+            SecondIterator<M::iterator>::Type it3(it2);
             TEST_CHECK(it2 == it3++);
             TEST_CHECK(it2 != it3);
             TEST_CHECK_EQUAL(*it3, "three");
