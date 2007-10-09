@@ -1,0 +1,382 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "broken_linkage_finder.hh"
+#include "configuration.hh"
+#include "elf_linkage_checker.hh"
+#include "libtool_linkage_checker.hh"
+#include "linkage_checker.hh"
+
+#include <src/clients/reconcilio/util/iterator.hh>
+#include <src/clients/reconcilio/util/realpath.hh>
+
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/parallel_for_each.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/set-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/visitor-impl.hh>
+
+#include <paludis/contents.hh>
+#include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/package_database.hh>
+#include <paludis/package_id.hh>
+#include <paludis/query.hh>
+
+#include <algorithm>
+#include <iterator>
+#include <map>
+#include <set>
+#include <vector>
+
+using namespace paludis;
+using namespace broken_linkage_finder;
+
+typedef std::multimap<FSEntry, tr1::shared_ptr<const PackageID> > Files;
+typedef std::map<FSEntry, std::set<std::string> > PackageBreakage;
+typedef std::map<tr1::shared_ptr<const PackageID>, PackageBreakage, PackageIDSetComparator> Breakage;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<BrokenLinkageFinder>
+    {
+        const Environment * env;
+        const Configuration config;
+        std::string library;
+
+        std::vector<tr1::shared_ptr<LinkageChecker> > checkers;
+
+        Mutex mutex;
+
+        bool has_files;
+        Files files;
+
+        Breakage breakage;
+        PackageBreakage orphan_breakage;
+
+        Implementation(const Environment * the_env, const std::string & the_library) :
+            env(the_env),
+            config(the_env->root()),
+            library(the_library),
+            has_files(false)
+        {
+        }
+    };
+}
+
+namespace
+{
+    std::set<FSEntry> no_files;
+    std::set<std::string> no_reqs;
+
+    struct ParentOf : std::unary_function<FSEntry, bool>
+    {
+        const FSEntry & _child;
+
+        ParentOf(const FSEntry & child) :
+            _child(child)
+        {
+        }
+
+        bool operator() (const FSEntry & parent)
+        {
+            std::string child_str(stringify(_child)), parent_str(stringify(parent));
+            return 0 == parent_str.compare(0, parent_str.length(), child_str) &&
+                (parent_str.length() == child_str.length() || '/' == child_str[parent_str.length()]);
+        }
+    };
+}
+
+BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::string & library) :
+    PrivateImplementationPattern<BrokenLinkageFinder>(new Implementation<BrokenLinkageFinder>(env, library))
+{
+    using namespace tr1::placeholders;
+
+    Context ctx("When checking for broken linkage in '" + stringify(env->root()) + "':");
+
+    _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new ElfLinkageChecker(library)));
+    if (library.empty())
+        _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new LibtoolLinkageChecker(env->root())));
+
+    std::vector<FSEntry> search_dirs_nosyms, search_dirs_pruned;
+    std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
+                   std::back_inserter(search_dirs_nosyms),
+                   tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
+    std::sort(search_dirs_nosyms.begin(), search_dirs_nosyms.end());
+
+    for (std::vector<FSEntry>::const_iterator it(search_dirs_nosyms.begin()),
+             it_end(search_dirs_nosyms.end()); it_end != it; ++it)
+        if (search_dirs_pruned.end() ==
+            std::find_if(search_dirs_pruned.begin(), search_dirs_pruned.end(),
+                         ParentOf(*it)))
+            search_dirs_pruned.push_back(*it);
+    Log::get_instance()->message(
+        ll_debug, lc_context, "After resolving symlinks and pruning subdirectories, SEARCH_DIRS=\"" +
+        join(search_dirs_pruned.begin(), search_dirs_pruned.end(), " ") + "\"");
+
+    parallel_for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
+                      tr1::bind(&BrokenLinkageFinder::search_directory, this, _1));
+
+    tr1::function<void (const FSEntry &, const std::string &)> callback(
+        tr1::bind(&BrokenLinkageFinder::add_breakage, this, _1, _2));
+    std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
+                  tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
+
+    _imp->checkers.clear();
+}
+
+BrokenLinkageFinder::~BrokenLinkageFinder()
+{
+}
+
+void
+BrokenLinkageFinder::search_directory(const FSEntry & directory)
+{
+    FSEntry dir(directory);
+    do
+    {
+        dir = dir.dirname();
+        if (_imp->config.dir_is_masked(dir))
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(directory) + "' because '" + stringify(dir) + "' is search-masked");
+            return;
+        }
+    }
+    while (FSEntry("/") != dir);
+
+    FSEntry with_root(_imp->env->root() / directory);
+    if (with_root.is_directory())
+        walk_directory(with_root);
+    else
+        Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(directory) + "' is missing or not a directory");
+}
+
+void
+BrokenLinkageFinder::walk_directory(const FSEntry & directory)
+{
+    using namespace tr1::placeholders;
+
+    if (_imp->config.dir_is_masked(directory.strip_leading(_imp->env->root())))
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(directory) + "' is search-masked");
+        return;
+    }
+
+    Log::get_instance()->message(ll_debug, lc_context, "Entering directory '" + stringify(directory) + "'");
+    try
+    {
+        parallel_for_each(DirIterator(directory, false), DirIterator(),
+                          tr1::bind(&BrokenLinkageFinder::check_file, this, _1));
+    }
+    catch (const FSError & ex)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, ex.message());
+    }
+}
+
+void
+BrokenLinkageFinder::check_file(const FSEntry & file)
+{
+    using namespace tr1::placeholders;
+
+    try
+    {
+        if (file.is_symbolic_link())
+        {
+            FSEntry target(dereference_with_root(file, _imp->env->root()));
+            if (target.is_regular_file())
+                std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
+                              tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
+        }
+
+        else if (file.is_directory())
+            walk_directory(file);
+
+        else if (file.is_regular_file())
+            if (_imp->checkers.end() ==
+                std::find_if(_imp->checkers.begin(), _imp->checkers.end(),
+                             tr1::bind(&LinkageChecker::check_file, _1, file)))
+                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a recognised file type");
+    }
+    catch (const FSError & ex)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, ex.message());
+    }
+}
+
+void
+BrokenLinkageFinder::add_breakage(const FSEntry & file, const std::string & req)
+{
+    using namespace tr1::placeholders;
+
+    if (_imp->library.empty() && _imp->config.lib_is_masked(req))
+        return;
+
+    if (! _imp->has_files)
+    {
+        _imp->has_files = true;
+
+        Context ctx("When building map from files to packages:");
+
+        tr1::shared_ptr<const PackageDatabase> db(_imp->env->package_database());
+        tr1::shared_ptr<const PackageIDSequence> pkgs(
+            db->query(query::InstalledAtRoot(_imp->env->root()), qo_whatever));
+
+        parallel_for_each(pkgs->begin(), pkgs->end(),
+                          tr1::bind(&BrokenLinkageFinder::gather_package, this, _1));
+    }
+
+    FSEntry without_root(file.strip_leading(_imp->env->root()));
+    std::pair<Files::const_iterator, Files::const_iterator> range(_imp->files.equal_range(without_root));
+    if (range.first == range.second)
+        _imp->orphan_breakage[without_root].insert(req);
+    else
+        while (range.first != range.second)
+        {
+            _imp->breakage[range.first->second][without_root].insert(req);
+            ++range.first;
+        }
+}
+
+void
+BrokenLinkageFinder::gather_package(const tr1::shared_ptr<const PackageID> & pkg)
+{
+    using namespace tr1::placeholders;
+
+    Context ctx("When gathering the contents of " + stringify(*pkg) + ":");
+
+    tr1::shared_ptr<const MetadataContentsKey> key(pkg->contents_key());
+    if (! key)
+        return;
+    tr1::shared_ptr<const Contents> contents(key->value());
+    if (! contents)
+        return;
+
+    for (Contents::ConstIterator it(contents->begin()),
+             it_end(contents->end()); it_end != it; ++it)
+    {
+        const ContentsFileEntry * file(visitor_cast<const ContentsFileEntry>(**it));
+        if (0 != file)
+        {
+            Lock l(_imp->mutex);
+            _imp->files.insert(std::make_pair(file->name(), pkg));
+        }
+    }
+}
+
+BrokenLinkageFinder::BrokenPackageConstIterator
+BrokenLinkageFinder::begin_broken_packages() const
+{
+    return BrokenPackageConstIterator(first_iterator(_imp->breakage.begin()));
+}
+
+BrokenLinkageFinder::BrokenPackageConstIterator
+BrokenLinkageFinder::end_broken_packages() const
+{
+    return BrokenPackageConstIterator(first_iterator(_imp->breakage.end()));
+}
+
+BrokenLinkageFinder::BrokenFileConstIterator
+BrokenLinkageFinder::begin_broken_files(const tr1::shared_ptr<const PackageID> & pkg) const
+{
+    if (pkg)
+    {
+        Breakage::const_iterator it(_imp->breakage.find(pkg));
+        if (_imp->breakage.end() == it)
+            return BrokenFileConstIterator(no_files.begin());
+
+        return BrokenFileConstIterator(first_iterator(it->second.begin()));
+    }
+    else
+        return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.begin()));
+}
+
+BrokenLinkageFinder::BrokenFileConstIterator
+BrokenLinkageFinder::end_broken_files(const tr1::shared_ptr<const PackageID> & pkg) const
+{
+    if (pkg)
+    {
+        Breakage::const_iterator it(_imp->breakage.find(pkg));
+        if (_imp->breakage.end() == it)
+            return BrokenFileConstIterator(no_files.end());
+
+        return BrokenFileConstIterator(first_iterator(it->second.end()));
+    }
+    else
+        return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.end()));
+}
+
+BrokenLinkageFinder::MissingRequirementConstIterator
+BrokenLinkageFinder::begin_missing_requirements(
+    const tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
+{
+    if (pkg)
+    {
+        Breakage::const_iterator pkg_it(_imp->breakage.find(pkg));
+        if (_imp->breakage.end() == pkg_it)
+            return MissingRequirementConstIterator(no_reqs.begin());
+
+        PackageBreakage::const_iterator file_it(pkg_it->second.find(file));
+        if (pkg_it->second.end() == file_it)
+            return MissingRequirementConstIterator(no_reqs.begin());
+
+        return MissingRequirementConstIterator(file_it->second.begin());
+    }
+    else
+    {
+        PackageBreakage::const_iterator file_it(_imp->orphan_breakage.find(file));
+        if (_imp->orphan_breakage.end() == file_it)
+            return MissingRequirementConstIterator(no_reqs.begin());
+
+        return MissingRequirementConstIterator(file_it->second.begin());
+    }
+}
+
+BrokenLinkageFinder::MissingRequirementConstIterator
+BrokenLinkageFinder::end_missing_requirements(
+    const tr1::shared_ptr<const PackageID> & pkg, const FSEntry & file) const
+{
+    if (pkg)
+    {
+        Breakage::const_iterator pkg_it(_imp->breakage.find(pkg));
+        if (_imp->breakage.end() == pkg_it)
+            return MissingRequirementConstIterator(no_reqs.end());
+
+        PackageBreakage::const_iterator file_it(pkg_it->second.find(file));
+        if (pkg_it->second.end() == file_it)
+            return MissingRequirementConstIterator(no_reqs.end());
+
+        return MissingRequirementConstIterator(file_it->second.end());
+    }
+    else
+    {
+        PackageBreakage::const_iterator file_it(_imp->orphan_breakage.find(file));
+        if (_imp->orphan_breakage.end() == file_it)
+            return MissingRequirementConstIterator(no_reqs.end());
+
+        return MissingRequirementConstIterator(file_it->second.end());
+    }
+}
+

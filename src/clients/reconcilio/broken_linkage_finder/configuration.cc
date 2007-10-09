@@ -1,0 +1,303 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "configuration.hh"
+
+#include <src/clients/reconcilio/util/realpath.hh>
+#include <src/clients/reconcilio/util/wildcard_expander.hh>
+
+#include <paludis/util/config_file.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/tr1_functional.hh>
+
+#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <vector>
+
+using namespace paludis;
+using namespace broken_linkage_finder;
+
+namespace paludis
+{
+    template <>
+    struct Implementation<Configuration>
+    {
+        std::vector<std::string> ld_library_mask;
+        std::vector<FSEntry> search_dirs;
+        std::vector<FSEntry> search_dirs_mask;
+    };
+}
+
+namespace
+{
+    struct IsGarbageFile : std::unary_function<const FSEntry &, bool>
+    {
+        bool operator() (const FSEntry & file)
+        {
+            std::string basename(file.basename());
+            return '#' == basename[0] || '~' == basename[basename.length() - 1];
+        }
+    };
+
+    template <typename T_, typename DelimKind_, typename DelimMode_, typename Char_>
+    void
+    from_string(const tr1::function<std::string (const std::string &)> & source,
+                const std::string & varname, std::vector<T_> & vec,
+                const Tokeniser<DelimKind_, DelimMode_, Char_> & tokeniser)
+    {
+        std::string str(source(varname));
+        if (! str.empty())
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
+            tokeniser.tokenise(str, std::back_inserter(vec));
+        }
+    }
+
+    template <typename T_>
+    inline void
+    from_string(const tr1::function<std::string (const std::string &)> & source,
+                const std::string & varname, std::vector<T_> & vec)
+    {
+        from_string(source, varname, vec, *WhitespaceTokeniser::get_instance());
+    }
+
+    inline void
+    do_wildcards(std::vector<std::string> &, const FSEntry &)
+    {
+    }
+
+    inline void
+    do_wildcards(std::vector<FSEntry> & vec, const FSEntry & root)
+    {
+        std::vector<FSEntry> scratch;
+
+        for (std::vector<FSEntry>::const_iterator it(vec.begin()), it_end(vec.end()); it_end != it; ++it)
+            std::copy(WildcardExpander(stringify(*it), root), WildcardExpander(),
+                      std::back_inserter(scratch));
+
+        using std::swap;
+        swap(vec, scratch);
+    }
+
+    template <typename T_>
+    void
+    cleanup(const std::string & varname, std::vector<T_> & vec, const FSEntry & root)
+    {
+        vec.erase(std::find(vec.begin(), vec.end(), T_("-*")), vec.end());
+
+        do_wildcards(vec, root);
+
+        std::sort(vec.begin(), vec.end());
+        vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+
+        Log::get_instance()->message(
+            ll_debug, lc_context, "Final " + varname + "=\""  +
+            join(vec.begin(), vec.end(),  " ") + "\"");
+    }
+}
+
+Configuration::Configuration(const FSEntry & root) :
+    PrivateImplementationPattern<Configuration>(new Implementation<Configuration>)
+{
+    Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
+
+    load_from_environment();
+    load_from_etc_revdep_rebuild(root);
+    load_from_etc_profile_env(root);
+    load_from_etc_ld_so_conf(root);
+    add_defaults();
+
+    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root);
+    cleanup("SEARCH_DIRS",      _imp->search_dirs,      root);
+    cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root);
+}
+
+Configuration::~Configuration()
+{
+}
+
+void
+Configuration::load_from_environment()
+{
+    using namespace tr1::placeholders;
+
+    Context ctx("When checking environment variables:");
+
+    tr1::function<std::string (const std::string &)> fromenv(
+        tr1::bind(getenv_with_default, _1, ""));
+
+    from_string(fromenv, "LD_LIBRARY_MASK",  _imp->ld_library_mask);
+    from_string(fromenv, "SEARCH_DIRS",      _imp->search_dirs);
+    from_string(fromenv, "SEARCH_DIRS_MASK", _imp->search_dirs_mask);
+}
+
+void
+Configuration::load_from_etc_revdep_rebuild(const FSEntry & root)
+{
+    using namespace tr1::placeholders;
+
+    FSEntry etc_revdep_rebuild(root / "etc" / "revdep-rebuild");
+    Context ctx("When reading '" + stringify(etc_revdep_rebuild) + "':");
+
+    if (etc_revdep_rebuild.is_directory_or_symlink_to_directory())
+    {
+        std::vector<FSEntry> conf_files = std::vector<FSEntry>(
+            DirIterator(etc_revdep_rebuild), DirIterator());
+        conf_files.erase(std::remove_if(conf_files.begin(), conf_files.end(),
+                                        IsGarbageFile()),
+                         conf_files.end());
+        std::sort(conf_files.begin(), conf_files.end());
+
+        KeyValueConfigFileOptions opts;
+        opts += kvcfo_disallow_space_around_equals;
+        opts += kvcfo_disallow_space_inside_unquoted_values;
+
+        for (std::vector<FSEntry>::iterator it(conf_files.begin()),
+                 it_end(conf_files.end()); it_end != it; ++it)
+        {
+            Context ctx_file("When reading '" + stringify(*it) + "':");
+
+            if (it->is_regular_file_or_symlink_to_regular_file())
+            {
+                KeyValueConfigFile kvs(*it, opts);
+
+                tr1::function<std::string (const std::string &)> fromfile(
+                    tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
+
+                from_string(fromfile, "LD_LIBRARY_MASK",  _imp->ld_library_mask);
+                from_string(fromfile, "SEARCH_DIRS",      _imp->search_dirs);
+                from_string(fromfile, "SEARCH_DIRS_MASK", _imp->search_dirs_mask);
+            }
+            else
+                Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(*it) + "' is not a regular file");
+        }
+    }
+    else if (etc_revdep_rebuild.exists())
+        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_revdep_rebuild) + "' exists but is not a directory");
+}
+
+void
+Configuration::load_from_etc_profile_env(const FSEntry & root)
+{
+    using namespace tr1::placeholders;
+
+    FSEntry etc_profile_env(root / "etc" / "profile.env");
+    Context ctx("When reading '" + stringify(etc_profile_env) + "':");
+
+    if (etc_profile_env.is_regular_file_or_symlink_to_regular_file())
+    {
+        KeyValueConfigFileOptions opts;
+        opts += kvcfo_disallow_space_around_equals;
+        opts += kvcfo_disallow_space_inside_unquoted_values;
+        opts += kvcfo_ignore_export;
+
+        KeyValueConfigFile kvs(etc_profile_env, opts);
+        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(":");
+
+        tr1::function<std::string (const std::string &)> fromfile(
+            tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
+
+        from_string(fromfile, "PATH",     _imp->search_dirs, tokeniser);
+        from_string(fromfile, "ROOTPATH", _imp->search_dirs, tokeniser);
+    }
+    else if (etc_profile_env.exists())
+        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_profile_env) + "' exists but is not a regular file");
+}
+
+void
+Configuration::load_from_etc_ld_so_conf(const FSEntry & root)
+{
+    FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
+    Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
+
+    if (etc_ld_so_conf.is_regular_file_or_symlink_to_regular_file())
+    {
+        LineConfigFileOptions opts;
+        opts += lcfo_disallow_continuations;
+
+        LineConfigFile lines(etc_ld_so_conf, opts);
+        if (lines.begin() != lines.end())
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "Got " + join(lines.begin(), lines.end(), " "));
+            std::copy(lines.begin(), lines.end(), std::back_inserter(_imp->search_dirs));
+        }
+    }
+    else if (etc_ld_so_conf.exists())
+        Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_ld_so_conf) + "' exists but is not a regular file");
+}
+
+void
+Configuration::add_defaults()
+{
+    Context ctx("When adding default settings:");
+
+    static const std::string ld_library_mask(
+        "libodbcinst.so libodbc.so libjava.so libjvm.so");
+    static const std::string search_dirs(
+        "/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*");
+    static const std::string search_dirs_mask(
+        "/opt/OpenOffice /usr/lib*/openoffice /lib*/modules");
+
+    Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + ld_library_mask + "\"");
+    WhitespaceTokeniser::get_instance()->tokenise(
+        ld_library_mask, std::back_inserter(_imp->ld_library_mask));
+
+    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + search_dirs + "\"");
+    WhitespaceTokeniser::get_instance()->tokenise(
+        search_dirs, std::back_inserter(_imp->search_dirs));
+
+    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + search_dirs_mask + "\"");
+    WhitespaceTokeniser::get_instance()->tokenise(
+        search_dirs_mask, std::back_inserter(_imp->search_dirs_mask));
+}
+
+Configuration::DirsIterator
+Configuration::begin_search_dirs() const
+{
+    return DirsIterator(_imp->search_dirs.begin());
+}
+
+Configuration::DirsIterator
+Configuration::end_search_dirs() const
+{
+    return DirsIterator(_imp->search_dirs.end());
+}
+
+bool
+Configuration::dir_is_masked(const FSEntry & dir) const
+{
+    return std::binary_search(_imp->search_dirs_mask.begin(), _imp->search_dirs_mask.end(), dir);
+}
+
+bool
+Configuration::lib_is_masked(const std::string & lib) const
+{
+    return std::binary_search(_imp->ld_library_mask.begin(), _imp->ld_library_mask.end(), lib);
+}
+

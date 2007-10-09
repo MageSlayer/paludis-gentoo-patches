@@ -1002,8 +1002,8 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio instruo paludis qualudis"
-DEFAULT_CLIENTS="adjutrix paludis"
+ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio instruo paludis qualudis reconcilio"
+DEFAULT_CLIENTS="adjutrix paludis reconcilio"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
 fi
@@ -1022,6 +1022,7 @@ AC_ARG_WITH([clients],
 			  inquisitio      A search client
 			  instruo         A metadata generation client
 			  paludis         The Paludis console client
+			  reconcilio      A linkage repair tool
 			  qualudis        The QA console client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
@@ -1306,6 +1307,10 @@ AC_OUTPUT(
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
 	src/clients/qualudis/Makefile
+	src/clients/reconcilio/Makefile
+	src/clients/reconcilio/broken_linkage_finder/Makefile
+	src/clients/reconcilio/littlelf/Makefile
+	src/clients/reconcilio/util/Makefile
 	src/output/Makefile
 	test/Makefile
 	vim/Makefile

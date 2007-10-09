@@ -222,6 +222,7 @@ ebuild_scrub_environment()
         unset -v ${!GTKPALUDIS_CMDLINE_*} GTKPALUDIS_OPTIONS
         unset -v ${!ADJUTRIX_CMDLINE_*} ADJUTRIX_OPTIONS
         unset -v ${!QUALUDIS_CMDLINE_*} QUALUDIS_OPTIONS
+        unset -v ${!RECONCILIO_CMDLINE_*} RECONCILIO_OPTIONS
 
         unset -v PALUDIS_HOME PALUDIS_PID EBUILD_KILL_PID ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
