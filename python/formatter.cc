@@ -36,6 +36,10 @@ struct PythonCanFormatBase
 {
     virtual bp::override get_override(const char *) const = 0;
 
+    virtual ~PythonCanFormatBase()
+    {
+    }
+
     template <typename F_>
     std::string do_format(const T_ & t, const F_ &) const
     {
