@@ -35,6 +35,12 @@
 
 namespace paludis
 {
+    /**
+     * Implementation data for a Sequence.
+     *
+     * \ingroup g_data_structures
+     * \nosubgrouping
+     */
     template <>
     template <typename T_>
     struct Implementation<Sequence<T_> >

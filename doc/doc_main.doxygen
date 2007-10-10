@@ -356,3 +356,15 @@ using namespace paludis;
  * - None at this time.
  */
 
+/** \defgroup g_threads "Threads"
+ *
+ * \ingroup g_utils
+ *
+ * Paludis includes some basic thread classes. Most users will not have threads
+ * enabled at the moment.
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+

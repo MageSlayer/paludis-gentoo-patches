@@ -24,16 +24,44 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
+/** \file
+ * Declarations for the ThreadPool class.
+ *
+ * \ingroup g_threads
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
 namespace paludis
 {
+    /**
+     * A thread pool holds a number of related threads.
+     *
+     * \ingroup g_threads
+     * \nosubgrouping
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE ThreadPool :
         private PrivateImplementationPattern<ThreadPool>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             ThreadPool();
             ~ThreadPool();
 
+            ///\}
+
+            /**
+             * Create a new thread in our pool.
+             */
             void create_thread(const tr1::function<void () throw ()> &);
+
+            /**
+             * How many threads does our pool contain?
+             */
             unsigned number_of_threads() const;
     };
 }

@@ -75,6 +75,11 @@ namespace paludis
     template <bool value_>
     struct SelectValue;
 
+    /**
+     * Metaprogramming: select a value based upon a condition.
+     *
+     * \ingroup g_oo
+     */
     template <>
     struct SelectValue<true>
     {
@@ -85,6 +90,11 @@ namespace paludis
         }
     };
 
+    /**
+     * Metaprogramming: select a value based upon a condition.
+     *
+     * \ingroup g_oo
+     */
     template <>
     struct SelectValue<false>
     {

@@ -29,10 +29,27 @@
 #include <paludis/dep_list-fwd.hh>
 #include <paludis/install_task.hh>
 
+/** \file
+ * Declarations for the InstallArgsGroup class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * Standard install arguments.
+         *
+         * \ingroup g_args
+         * \since 0.26
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE InstallArgsGroup : public ArgsGroup
         {
             public:
@@ -83,9 +100,23 @@ namespace paludis
 
                 /// }
 
+                /**
+                 * Populate a DepListOptions from our values.
+                 */
                 void populate_dep_list_options(const Environment *, DepListOptions &) const;
+
+                /**
+                 * Fetch our specified destinations set.
+                 */
                 tr1::shared_ptr<const DestinationsSet> destinations(Environment *) const;
+
+                /**
+                 * Populate an InstallTask from our values.
+                 */
                 void populate_install_task(const Environment *, InstallTask &) const;
+
+                ///\name Assorted options
+                ///\{
 
                 bool want_full_install_reasons() const;
                 bool want_install_reasons() const;
@@ -96,7 +127,16 @@ namespace paludis
                 bool want_changed_use_flags() const;
                 bool want_new_use_flags() const;
 
+                ///\}
+
+                /**
+                 * Create a fragment for Environment::paludis_command.
+                 */
                 std::string paludis_command_fragment() const;
+
+                /**
+                 * Create a fragment for a resume command.
+                 */
                 std::string resume_command_fragment(const InstallTask &) const;
         };
     }

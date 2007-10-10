@@ -23,17 +23,42 @@
 #include <paludis/args/args_option.hh>
 #include <paludis/repository.hh>
 
+/** \file
+ * Declarations for the DebugBuildArg class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * The '--debug-build' standard command line argument.
+         *
+         * \since 0.26
+         * \ingroup g_args
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE DebugBuildArg :
             public EnumArg
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 DebugBuildArg(ArgsGroup * const, const std::string &, char);
                 ~DebugBuildArg();
 
+                ///\}
+
+                /**
+                 * Our selected value, as an InstallActionDebugOption.
+                 */
                 InstallActionDebugOption option() const;
         };
     }

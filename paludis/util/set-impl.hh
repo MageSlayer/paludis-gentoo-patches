@@ -35,12 +35,24 @@
 
 namespace paludis
 {
+    /**
+     * The default comparator for a Set is std::less<>.
+     *
+     * \ingroup g_data_structures
+     * \nosubgrouping
+     */
     template <typename T_>
     struct PALUDIS_VISIBLE DefaultSetComparator :
         std::less<T_>
     {
     };
 
+    /**
+     * Implementation data for a Set.
+     *
+     * \ingroup g_data_structures
+     * \nosubgrouping
+     */
     template <>
     template <typename T_, typename C_>
     struct Implementation<Set<T_, C_> >

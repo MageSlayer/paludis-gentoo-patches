@@ -20,18 +20,41 @@
 #ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DO_HELP_HH
 #define PALUDIS_GUARD_SRC_COMMON_ARGS_DO_HELP_HH 1
 
+/** \file
+ * Declarations for the DoHelp class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * Convenience struct for --help handling.
+         *
+         * \ingroup g_args
+         */
         struct PALUDIS_VISIBLE DoHelp
         {
+            /**
+             * Our message, if one is necessary.
+             */
             const std::string message;
+
+            ///\name Basic operations
+            ///\{
 
             DoHelp(const std::string & m = "") :
                 message(m)
             {
             }
+
+            ///\}
         };
     }
 }

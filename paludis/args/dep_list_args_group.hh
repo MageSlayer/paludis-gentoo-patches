@@ -30,6 +30,13 @@ namespace paludis
 {
     namespace args
     {
+        /**
+         * The standard dep command line arguments.
+         *
+         * \since 0.26
+         * \ingroup g_args
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE DepListArgsGroup : public ArgsGroup
         {
             public:
@@ -69,10 +76,25 @@ namespace paludis
 
                 /// }
 
+                /**
+                 * Populate a DepListOptions from our values.
+                 */
                 void populate_dep_list_options(const paludis::Environment *, DepListOptions &) const;
+
+                /**
+                 * Populate an InstallTask from our values.
+                 */
                 void populate_install_task(const paludis::Environment *, InstallTask &) const;
 
+                /**
+                 * Fetch a fragment for Environment::paludis_command for our
+                 * values.
+                 */
                 std::string paludis_command_fragment() const;
+
+                /**
+                 * Fetch a fragment for a resume command for our values.
+                 */
                 std::string resume_command_fragment(const InstallTask &) const;
         };
     }

@@ -36,12 +36,23 @@
 
 namespace paludis
 {
+    /**
+     * The default comparator for a Map is std::less<>.
+     *
+     * \ingroup g_data_structures
+     */
     template <typename T_>
     struct PALUDIS_VISIBLE DefaultMapComparator :
         std::less<T_>
     {
     };
 
+    /**
+     * Implementation data for a Map.
+     *
+     * \ingroup g_data_structures
+     * \nosubgrouping
+     */
     template <>
     template <typename K_, typename V_, typename C_>
     struct Implementation<Map<K_, V_, C_> >

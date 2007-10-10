@@ -36,6 +36,12 @@ namespace paludis
             tr1::shared_ptr<Mutex> mutex,
             tr1::shared_ptr<ConditionVariable> condition);
 
+    /**
+     * Implementation data for a Future.
+     *
+     * \ingroup g_threads
+     * \nosubgrouping
+     */
     template <>
     template <typename T_>
     struct Implementation<Future<T_> >

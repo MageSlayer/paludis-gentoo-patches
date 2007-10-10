@@ -32,6 +32,14 @@
 
 namespace paludis
 {
+    /**
+     * Advance an iterator by up to the specified amount, not going past another
+     * iterator.
+     *
+     * \ingroup g_iterator
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <typename I_, bool is_random_access_>
     struct CappedAdvance
     {
@@ -44,6 +52,14 @@ namespace paludis
         }
     };
 
+    /**
+     * Advance an iterator by up to the specified amount, not going past another
+     * iterator.
+     *
+     * \ingroup g_iterator
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <typename I_>
     struct CappedAdvance<I_, true>
     {
@@ -57,6 +73,12 @@ namespace paludis
         }
     };
 
+    /**
+     * Used by parallel_for_each to do one thread's work.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     */
     template <typename I_, typename P_>
     void parallel_for_each_worker(I_ cur, const I_ & end, const unsigned partition_size, const P_ & op)
     {
@@ -68,6 +90,12 @@ namespace paludis
         }
     }
 
+    /**
+     * Execute op on every item in the provided range, possibly in parallel.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     */
     template <typename I_, typename P_>
     void parallel_for_each(I_ cur, const I_ & end, const P_ & op,
 #ifdef PALUDIS_ENABLE_THREADS

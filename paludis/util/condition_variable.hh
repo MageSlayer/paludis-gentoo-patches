@@ -27,8 +27,27 @@
 #  include <pthread.h>
 #endif
 
+/** \file
+ * Declarations for the ConditionVariable class.
+ *
+ * \ingroup g_threads
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * A basic condition variable.
+     *
+     * If threading is disabled, waiting and signalling are no-ops.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE ConditionVariable
     {
         private:
@@ -40,13 +59,32 @@ namespace paludis
 #endif
 
         public:
+            ///\name Basic operations
+            ///\{
+
             ConditionVariable();
             ~ConditionVariable();
 
+            ///\}
+
+            /**
+             * Broadcast to all waiting threads.
+             */
             void broadcast();
+
+            /**
+             * Signal one waiting thread.
+             */
             void signal();
+
+            /**
+             * Acquire the specified Mutex, then signal.
+             */
             void acquire_then_signal(Mutex &);
 
+            /**
+             * Wait, using the specified Mutex for synchronisation.
+             */
             void wait(Mutex &);
     };
 }

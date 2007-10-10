@@ -23,17 +23,42 @@
 #include <paludis/args/args_option.hh>
 #include <paludis/util/log.hh>
 
+/** \file
+ * Declarations for the LogLevelArg class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * The '--log-level' standard command line argument.
+         *
+         * \since 0.26
+         * \ingroup g_args
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE LogLevelArg :
             public EnumArg
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 LogLevelArg(ArgsGroup * const, const std::string &, char);
                 ~LogLevelArg();
 
+                ///\}
+
+                /**
+                 * Our selected value, as a LogLevel.
+                 */
                 LogLevel option() const;
         };
 

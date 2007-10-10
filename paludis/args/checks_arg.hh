@@ -23,17 +23,42 @@
 #include <paludis/args/args_option.hh>
 #include <paludis/action-fwd.hh>
 
+/** \file
+ * Declarations for the Checks class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * The '--checks' standard command line argument.
+         *
+         * \since 0.26
+         * \ingroup g_args
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE ChecksArg :
             public EnumArg
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 ChecksArg(ArgsGroup * const, const std::string &, char);
                 ~ChecksArg();
 
+                ///\}
+
+                /**
+                 * Our selected value, as an InstallActionChecksOption.
+                 */
                 InstallActionChecksOption option() const;
         };
     }

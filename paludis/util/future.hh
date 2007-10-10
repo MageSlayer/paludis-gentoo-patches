@@ -26,8 +26,25 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/action_queue.hh>
 
+/** \file
+ * Declarations for the Future class.
+ *
+ * \ingroup g_threads
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * Internal use by Future.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE FutureActionQueue :
         public ActionQueue,
         public InstantiationPolicy<FutureActionQueue, instantiation_method::SingletonTag>
@@ -35,10 +52,30 @@ namespace paludis
         friend class InstantiationPolicy<FutureActionQueue, instantiation_method::SingletonTag>;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FutureActionQueue();
             ~FutureActionQueue();
+
+            ///\}
     };
 
+    /**
+     * A Future<T_> holds an expression whose result will be needed sometime in the
+     * future.
+     *
+     * If threading is disabled, the result is calculated when it is needed.
+     *
+     * If threading is enabled, the expression is queued in FutureActionQueue,
+     * where it will be executed at some point in the future. If it is needed
+     * before FutureActionQueue has executed, it is executed at that point in
+     * the active thread.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <typename T_>
     class PALUDIS_VISIBLE Future :
         private PrivateImplementationPattern<Future<T_> >
@@ -47,12 +84,28 @@ namespace paludis
             using PrivateImplementationPattern<Future<T_> >::_imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             Future(const tr1::function<T_ () throw ()> &);
             ~Future();
 
+            ///\}
+
+            /**
+             * Fetch a copy of our result. If our result has not yet been
+             * calculated, calculate it first.
+             */
             T_ operator() () const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * Specialisation of Future for expressions with no result.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     template <>
     class PALUDIS_VISIBLE Future<void> :
         private PrivateImplementationPattern<Future<void> >
@@ -61,9 +114,17 @@ namespace paludis
             using PrivateImplementationPattern<Future<void> >::_imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             Future(const tr1::function<void () throw ()> &);
             ~Future();
 
+            ///\}
+
+            /**
+             * Evaluate our expression, if it has not already been evaluated.
+             */
             void operator() () const;
     };
 }

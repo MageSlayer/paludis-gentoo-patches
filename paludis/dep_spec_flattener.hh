@@ -45,14 +45,35 @@
 
 namespace paludis
 {
+    /** \namespace dep_spec_flattener_internals
+     *
+     * For internal use by DepSpecFlattener.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.26
+     */
     namespace dep_spec_flattener_internals
     {
+        /**
+         * Implement visit for NamedSetDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename H_, typename I_, bool b_>
         struct VisitNamedSetDepSpec
         {
             void visit_leaf(const NoType<0u> &);
         };
 
+        /**
+         * Implement visit for NamedSetDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename H_, typename I_>
         class VisitNamedSetDepSpec<H_, I_, true> :
             public virtual visitor_internals::Visits<const TreeLeaf<H_, NamedSetDepSpec> >,
@@ -69,12 +90,26 @@ namespace paludis
                 void visit_leaf(const NamedSetDepSpec &);
         };
 
+        /**
+         * Implement visit for UseDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename H_, typename I_, bool b_>
         struct VisitUseDepSpec
         {
             void visit_sequence(const NoType<0u> &);
         };
 
+        /**
+         * Implement visit for UseDepSpec, if necessary.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.26
+         * \nosubgrouping
+         */
         template <typename H_, typename I_>
         struct VisitUseDepSpec<H_, I_, true> :
             virtual visitor_internals::Visits<const ConstTreeSequence<H_, UseDepSpec> >

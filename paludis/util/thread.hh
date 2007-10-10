@@ -27,8 +27,28 @@
 #  include <pthread.h>
 #endif
 
+/** \file
+ * Declarations for the Thread class.
+ *
+ * \ingroup g_threads
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * A basic thread class.
+     *
+     * If threading is disabled, the threaded function is executed immediately
+     * in the current context.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE Thread
     {
         private:
@@ -40,9 +60,17 @@ namespace paludis
 #endif
 
         public:
+            ///\name Basic operations
+            ///\{
+
             Thread(const tr1::function<void () throw ()> &);
             ~Thread();
 
+            ///\}
+
+            /**
+             * Adapt a function for use in IdleActionPool.
+             */
             static void idle_adapter(const tr1::function<void () throw ()> &);
     };
 }

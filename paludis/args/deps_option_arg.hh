@@ -23,18 +23,43 @@
 #include <paludis/args/args_option.hh>
 #include <paludis/dep_list.hh>
 
+/** \file
+ * Declarations for the DepsOptionArg class.
+ *
+ * \ingroup g_args
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
     namespace args
     {
+        /**
+         * A '--dl-deps-' standard command line argument.
+         *
+         * \since 0.26
+         * \ingroup g_args
+         * \nosubgrouping
+         */
         class PALUDIS_VISIBLE DepsOptionArg :
             public EnumArg
         {
             public:
+                ///\name Basic operations
+                ///\{
+
                 DepsOptionArg(ArgsGroup * const, const std::string &, char,
                         const std::string &, const DepListDepsOption);
                 ~DepsOptionArg();
 
+                ///\}
+
+                /**
+                 * Our selected value, as a DepListDepsOption.
+                 */
                 DepListDepsOption option() const;
         };
 

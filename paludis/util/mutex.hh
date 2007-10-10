@@ -26,8 +26,24 @@
 #  include <pthread.h>
 #endif
 
+/**
+ * Declarations for Mutex, Lock and TryLock.
+ *
+ * \ingroup g_threads
+ *
+ * \section Examples
+ *
+ * - None at this time.
+ */
+
 namespace paludis
 {
+    /**
+     * A simple mutex class, which can be locked using Lock and TryLock.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE Mutex
     {
         private:
@@ -40,14 +56,28 @@ namespace paludis
 #endif
 
         public:
+            ///\name Basic operations
+            ///\{
+
             explicit Mutex();
             ~Mutex();
+
+            ///\}
 
 #ifdef PALUDIS_ENABLE_THREADS
             pthread_mutex_t * const posix_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
 #endif
     };
 
+    /**
+     * A RAII lock for a Mutex.
+     *
+     * If threading is disabled, locking is a no-op.
+     *
+     * \ingroup g_threads
+     * \nosubgrouping
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE Lock
     {
         private:
@@ -59,10 +89,24 @@ namespace paludis
 #endif
 
         public:
+            ///\name Basic operations
+            ///\{
+
             explicit Lock(Mutex &);
             ~Lock();
+
+            ///\}
     };
 
+    /**
+     * A RAII trylock for a Mutex.
+     *
+     * If threading is disabled, locking is a no-op and the try always succeeds.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE TryLock
     {
         private:
@@ -74,9 +118,17 @@ namespace paludis
 #endif
 
         public:
+            ///\name Basic operations
+            ///\{
+
             explicit TryLock(Mutex &);
             ~TryLock();
 
+            ///\}
+
+            /**
+             * Did the lock succeed?
+             */
             bool operator() () const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

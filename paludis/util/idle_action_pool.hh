@@ -27,6 +27,14 @@
 
 namespace paludis
 {
+    /**
+     * An IdleActionPool is an ActionQueue holding actions that can be executed
+     * if there is idle CPU time available.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE IdleActionPool :
         public InstantiationPolicy<IdleActionPool, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<IdleActionPool>
@@ -40,10 +48,25 @@ namespace paludis
             void _count_result(const tr1::function<IdleActionResult () throw ()> &);
 
         public:
+            /**
+             * The specified function must be executed at some point, but it
+             * doesn't matter when.
+             */
             void required_idle_action(const tr1::function<IdleActionResult () throw ()> &);
+
+            /**
+             * The specified function can be executed at some point.
+             */
             void optional_idle_action(const tr1::function<IdleActionResult () throw ()> &);
 
+            /**
+             * Increment the 'unused' stat.
+             */
             void increase_used_stat();
+
+            /**
+             * Increment the 'unprepared' stat.
+             */
             void increase_unprepared_stat();
     };
 }

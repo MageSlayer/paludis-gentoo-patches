@@ -25,17 +25,46 @@
 
 namespace paludis
 {
+    /**
+     * An ActionQueue consists of a number of threads that take tasks from a
+     * queue.
+     *
+     * If threads are disabled, enqueueing an item executes it immediately.
+     *
+     * \ingroup g_threads
+     * \since 0.26
+     * \nosubgrouping
+     */
     class PALUDIS_VISIBLE ActionQueue :
         private PrivateImplementationPattern<ActionQueue>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             ActionQueue(const unsigned n_threads = 1, const bool nice = false);
             ~ActionQueue();
 
+            ///\}
+
+            /**
+             * Enqueue an item.
+             */
             void enqueue(const tr1::function<void () throw ()> &);
+
+            /**
+             * Complete any pending tasks.
+             */
             void complete_pending();
+
+            /**
+             * Forget any pending tasks.
+             */
             void forget_pending();
 
+            /**
+             * How many threads do we have?
+             */
             unsigned number_of_threads() const;
     };
 }
