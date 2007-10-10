@@ -117,10 +117,10 @@ template <typename ElfType_>
 bool
 ElfObject<ElfType_>::is_valid_elf(std::istream & stream)
 {
-    StreamExceptions exns(stream, std::ios::eofbit | std::ios::failbit | std::ios::badbit);
-
     try
     {
+        StreamExceptions exns(stream, std::ios::eofbit | std::ios::failbit | std::ios::badbit);
+
         stream.seekg(0, std::ios::beg);
         if (stream.fail())
             return false;
@@ -156,10 +156,10 @@ template <typename ElfType_>
 ElfObject<ElfType_>::ElfObject(std::istream & stream) :
     PrivateImplementationPattern<ElfObject>(new Implementation<ElfObject>)
 {
-    StreamExceptions exns(stream, std::ios::eofbit | std::ios::failbit | std::ios::badbit);
-
     try
     {
+        StreamExceptions exns(stream, std::ios::eofbit | std::ios::failbit | std::ios::badbit);
+
         stream.seekg(0, std::ios::beg);
         stream.read(reinterpret_cast<char *>(&_hdr), sizeof(typename ElfType_::Header));
         stream.seekg(_hdr.e_shoff, std::ios::beg);
