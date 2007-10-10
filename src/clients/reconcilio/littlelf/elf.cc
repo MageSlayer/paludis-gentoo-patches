@@ -122,8 +122,6 @@ ElfObject<ElfType_>::is_valid_elf(std::istream & stream)
         StreamExceptions exns(stream, std::ios::eofbit | std::ios::failbit | std::ios::badbit);
 
         stream.seekg(0, std::ios::beg);
-        if (stream.fail())
-            return false;
 
         std::vector<char> ident(EI_NIDENT,0);
         stream.read(&ident.front(), EI_NIDENT);
