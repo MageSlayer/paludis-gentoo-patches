@@ -177,7 +177,7 @@ using namespace paludis;
 
 /** \defgroup g_names "Names and Versions"
  *
- * \ingroup g_names
+ * \ingroup g_paludis
  *
  * Paludis uses 'smart' classes for holding names and versions, allowing for
  * substantially more static checking and much more convenient and useful
