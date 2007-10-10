@@ -4,7 +4,7 @@ SUBDIRS = .
 
 noinst_LIBRARIES = libbrokenlinkagefinder.a
 
-nodist_libbrokenlinkagefinder_a_SOURCES = \
+libbrokenlinkagefinder_a_SOURCES = \
 	broken_linkage_finder.cc   broken_linkage_finder.hh   \
 	configuration.cc           configuration.hh           \
 	linkage_checker.cc         linkage_checker.hh         \
@@ -20,9 +20,9 @@ TESTS = configuration_TEST
 check_PROGRAMS = $(TESTS)
 
 EXTRA_DIST = \
-	$(TESTS) \
 	configuration_TEST_setup.sh configuration_TEST_cleanup.sh
 
+configuration_TEST_SOURCES = configuration_TEST.cc
 configuration_TEST_LDADD = \
 	libbrokenlinkagefinder.a \
 	../util/libreconcilioutil.a \

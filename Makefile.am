@@ -20,6 +20,7 @@ BUILT_SOURCES = automake-deps-built-hack.tmp
 
 automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C paludis/util
+	$(MAKE) -C paludis/selinux
 	$(MAKE) -C paludis libpaludis.la
 	$(MAKE) -C paludis/args
 	$(MAKE) -C paludis/ libpaludismanpagethings.la

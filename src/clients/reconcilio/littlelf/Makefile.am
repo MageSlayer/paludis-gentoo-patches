@@ -5,11 +5,11 @@ SUBDIRS = .
 noinst_LIBRARIES = liblittlelf.a
 
 liblittlelf_a_SOURCES = \
-	elf.cc                    elf.cc                    \
-	elf_sections.cc           elf_sections.cc           \
-	elf_dynamic_section.cc    elf_dynamic_section.cc    \
-	elf_relocation_section.cc elf_relocation_section.cc \
-	elf_symbol_section.cc     elf_symbol_section.cc     \
+	elf.cc                    elf.hh                    \
+	elf_sections.cc           elf_sections.hh           \
+	elf_dynamic_section.cc    elf_dynamic_section.hh    \
+	elf_relocation_section.cc elf_relocation_section.hh \
+	elf_symbol_section.cc     elf_symbol_section.hh     \
 	elf_types.hh
 
 TESTS_ENVIRONMENT = env \
