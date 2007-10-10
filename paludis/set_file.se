@@ -15,7 +15,6 @@ make_enum_SetFileType()
          *
          * \see SetFile
          * \ingroup g_repository
-         * \ingroup g_environment
          */
 END
 }
