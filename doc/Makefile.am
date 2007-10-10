@@ -1,8 +1,18 @@
 SUBDIRS = examples .
 
+if HAVE_DOXYGEN_TAGS
+
 tagfiles = \
 	libstdc++.tag \
 	libwrapiter.tag
+
+libstdc++.tag :
+	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
+
+libwrapiter.tag :
+	wget -O $@ http://libwrapiter.pioto.org/libwrapiter.tag
+
+endif
 
 docfiles = \
 	doc_main.doxygen \
@@ -37,7 +47,7 @@ htmlfiles = \
 	man-inquisitio.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css epydoc.css \
-	$(docfiles) $(tagfiles) $(images) htaccess \
+	$(docfiles) $(images) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
 	configuration.html.skel portagedifferences.html.skel \
@@ -50,12 +60,6 @@ CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html fa
 	cleannews cleanrecentnews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
-
-libstdc++.tag :
-	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
-
-libwrapiter.tag :
-	wget -O $@ http://libwrapiter.pioto.org/libwrapiter.tag
 
 www :
 	mkdir -p www

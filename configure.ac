@@ -652,6 +652,24 @@ AC_ARG_ENABLE([doxygen],
 			   AC_CHECK_PROG(HAVE_DOXYGEN, [doxygen], [yes], [no])])
 AC_SUBST([HAVE_DOXYGEN])
 AM_CONDITIONAL([HAVE_DOXYGEN], test "x$HAVE_DOXYGEN" = "xyes")
+
+AC_MSG_CHECKING([whether to use external Doxygen tags])
+AC_ARG_ENABLE([doxygen-tags],
+			  AS_HELP_STRING([--enable-doxygen-tags], [Use 'wget' to fetch external Doxygen tags]),
+			  [HAVE_DOXYGEN_TAGS=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [AC_MSG_RESULT([no])])
+AC_SUBST([HAVE_DOXYGEN_TAGS])
+AM_CONDITIONAL([HAVE_DOXYGEN_TAGS], test "x$HAVE_DOXYGEN_TAGS" = "xyes")
+
+if test "x$HAVE_DOXYGEN_TAGS" = xyes ; then
+	DOXYGEN_TAG_FILES="\
+		libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen \
+		libwrapiter.tag = http://libwrapiter.pioto.org/"
+else
+	DOXYGEN_TAG_FILES=""
+fi
+AC_SUBST([DOXYGEN_TAG_FILES])
 dnl }}}
 
 dnl {{{ check for whether to build qa stuff
