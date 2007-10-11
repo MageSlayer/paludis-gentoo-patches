@@ -91,7 +91,7 @@ namespace paludis
 
     /**
      * An Action represents an action that can be executed by a PackageID via
-     * PackageID::perform_action .
+     * PackageID::perform_action.
      *
      * \since 0.26
      * \ingroup g_actions
@@ -137,7 +137,7 @@ namespace paludis
 
     /**
      * A FetchAction can be used to fetch source files for a PackageID using
-     * PackageID::perform_action .
+     * PackageID::perform_action.
      *
      * \since 0.26
      * \ingroup g_actions

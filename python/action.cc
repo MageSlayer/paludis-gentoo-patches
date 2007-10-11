@@ -36,7 +36,10 @@ class class_supports_action_test :
         class_supports_action_test(const std::string & action) :
             bp::class_<SupportsActionTest<A_>, bp::bases<SupportsActionTestBase> >(
                     ("Supports" + action + "ActionTest").c_str(),
-                    "NEED_DOC",
+                    "SupportsActionTest is used by PackageID::supports_action and\n"
+                    "Repository::some_ids_might_support_action to query whether a\n"
+                    "particular action is supported by that PackageID or potentially\n"
+                    "supported by some IDs in that Repository.",
                     bp::init<>("__init__()")
                     )
         {
@@ -53,7 +56,7 @@ void expose_action()
          "Parent class for action errors.");
     ExceptionRegister::get_instance()->add_exception<UnsupportedActionError>
         ("UnsupportedActionError", "ActionError",
-         "NEED_DOC");
+         "Thrown if a PackageID is asked to perform an Action that it does not support.");
     ExceptionRegister::get_instance()->add_exception<InstallActionError>
         ("InstallActionError", "ActionError",
          "Thrown if an install fails.");
@@ -71,9 +74,13 @@ void expose_action()
      * Enums
      */
     enum_auto("InstallActionDebugOption", last_iado,
-            "Debug build mode for an InstallAction.");
+            "Debug build mode for an InstallAction.\n\n"
+            "May be ignored by some repositories, and by packages where there\n"
+            "isn't a sensible concept of debugging.\n");
+
     enum_auto("InstallActionChecksOption", last_iaco,
-            "NEED_DOC");
+            "Whether to run post-build checks (for example, 'make check' or 'src_test'),\n"
+            "if they are available.");
 
     /**
      * InstallActionOptions
@@ -84,7 +91,7 @@ void expose_action()
          "Options for InstallAction.",
          bp::init<const bool &, const InstallActionDebugOption &, const InstallActionChecksOption &,
                 const tr1::shared_ptr<paludis::Repository> &>(
-                    "__init__(no_config_protect_bool, InstallActionDebugOption, "
+                    "__init__(no_config_protect_bool, InstallActionDebugOption,\n"
                     "InstallActionChecksOption, Repository)"
                     )
         )
@@ -146,7 +153,8 @@ void expose_action()
     bp::class_<Action, boost::noncopyable>
         (
          "Action",
-         "NEED_DOC",
+         "An Action represents an action that can be executed by a PackageID via\n"
+         "PackageID::perform_action.",
          bp::no_init
         );
 
@@ -156,7 +164,8 @@ void expose_action()
     bp::class_<InstallAction, bp::bases<Action>, boost::noncopyable>
         (
          "InstallAction",
-         "NEED_DOC",
+         "An InstallAction is used by InstallTask to perform a build / install on a\n"
+         "PackageID.",
          bp::init<const InstallActionOptions &>("__init__(InstallActionOptions)")
         );
 
@@ -166,7 +175,8 @@ void expose_action()
     bp::class_<FetchAction, bp::bases<Action>, boost::noncopyable>
         (
          "FetchAction",
-         "NEED_DOC",
+         "A FetchAction can be used to fetch source files for a PackageID using\n"
+         "PackageID::perform_action.",
          bp::init<const FetchActionOptions &>("__init__(FetchActionOptions)")
         );
 
@@ -176,7 +186,7 @@ void expose_action()
     bp::class_<UninstallAction, bp::bases<Action>, boost::noncopyable>
         (
          "UninstallAction",
-         "NEED_DOC",
+         "An UninstallAction is used by UninstallTask to uninstall a PackageID.",
          bp::init<const UninstallActionOptions &>("__init__(UninstallActionOptions)")
         );
 
@@ -186,7 +196,8 @@ void expose_action()
     bp::class_<InstalledAction, bp::bases<Action>, boost::noncopyable>
         (
          "InstalledAction",
-         "NEED_DOC",
+         "InstalledAction is a dummy action used by SupportsActionTest and\n"
+         "query::SupportsAction to determine whether a PackageID is installed.",
          bp::init<>("__init__()")
         );
 
@@ -196,12 +207,13 @@ void expose_action()
     bp::class_<PretendAction, bp::bases<Action>, boost::noncopyable>
         (
          "PretendAction",
-         "NEED_DOC",
+         "A PretendAction is used by InstallTask to handle install-pretend-phase\n"
+         "checks on a PackageID.",
          bp::init<>("__init__()")
         )
         .add_property("failed", &PretendAction::failed,
                 "[ro] bool\n"
-                "NEED_DOC"
+                "Did our pretend phase fail?"
                 )
         ;
 
@@ -211,7 +223,21 @@ void expose_action()
     bp::class_<ConfigAction, bp::bases<Action>, boost::noncopyable>
         (
          "ConfigAction",
-         "NEED_DOC",
+         "A ConfigAction is used via PackageID::perform_action to execute\n"
+         "post-install configuration (for example, via 'paludis --config')\n"
+         "on a PackageID.",
+         bp::init<>("__init__()")
+        );
+
+    /**
+     * ConfigAction
+     */
+    bp::class_<InfoAction, bp::bases<Action>, boost::noncopyable>
+        (
+         "InfoAction",
+         "An InfoAction is used via PackageID::perform_action to execute\n"
+         "additional information (for example, via 'paludis --info')\n"
+         "on a PackageID.",
          bp::init<>("__init__()")
         );
 
@@ -221,7 +247,7 @@ void expose_action()
     bp::class_<SupportsActionTestBase, boost::noncopyable>
         (
          "SupportsActionTestBase",
-         "NEED_DOC",
+         "Base class for SupportsActionTests.",
          bp::no_init
         );
 
