@@ -230,7 +230,7 @@ void expose_action()
         );
 
     /**
-     * ConfigAction
+     * InfoAction
      */
     bp::class_<InfoAction, bp::bases<Action>, boost::noncopyable>
         (
@@ -260,5 +260,6 @@ void expose_action()
     class_supports_action_test<InstalledAction>("Installed");
     class_supports_action_test<PretendAction>("Pretend");
     class_supports_action_test<ConfigAction>("Config");
+    class_supports_action_test<InfoAction>("Info");
 
 }

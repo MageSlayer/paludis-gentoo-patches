@@ -108,6 +108,10 @@ class TestCase_09_ConfigAction(unittest.TestCase):
     def test_01_create(self):
         ConfigAction()
 
+class TestCase_10_InfoAction(unittest.TestCase):
+    def test_01_create(self):
+        InfoAction()
+
 class TestCase_10_SupportsActionTests(unittest.TestCase):
     def test_01_create(self):
         SupportsInstallActionTest()
@@ -116,6 +120,7 @@ class TestCase_10_SupportsActionTests(unittest.TestCase):
         SupportsInstalledActionTest()
         SupportsPretendActionTest()
         SupportsConfigActionTest()
+        SupportsInfoActionTest()
 
 
 if __name__ == "__main__":
