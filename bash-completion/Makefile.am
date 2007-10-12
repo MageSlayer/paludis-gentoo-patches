@@ -1,5 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
-noinst_DATA = paludis adjutrix qualudis contrarius inquisitio
+noinst_DATA = paludis adjutrix qualudis \
+	      contrarius inquisitio \
+	      accerso instruo reconcilio
 EXTRA_DIST = $(noinst_DATA)
 
 built-sources : $(BUILT_SOURCES)

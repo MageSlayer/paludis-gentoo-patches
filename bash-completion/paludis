@@ -52,6 +52,7 @@ _paludis() {
         --help -h \
         --has-version \
         --best-version \
+        --match \
         --environment-variable \
         --configuration-variable \
         --list-repositories \
@@ -61,7 +62,6 @@ _paludis() {
         --list-sync-protocols \
         --list-repository-formats \
         --list-dep-tag-categories \
-        --update-news \
         --regenerate-installed-cache \
         --regenerate-installable-cache"
     general_opts="--log-level \
@@ -98,10 +98,12 @@ _paludis() {
         --add-to-world-spec \
         --no-config-protection \
         --debug-build \
+        --checks \
         --fetch -f \
-        --safe-resume \
+        --no-safe-resume \
         --show-reasons \
         --show-use-descriptions \
+        --continue-on-failure \
         ${deplist_opts}"
     uninstall_opts="--pretend -p \
         --destinations -d \
@@ -127,10 +129,9 @@ _paludis() {
         --category \
         --package \
         --set"
-    regen_news_opts=""
     regen_repos_opts=""
         
-    all_opts="${action_opts} ${general_opts} ${query_opts} ${install_opts} ${uninstall_opts} ${sync_opts} ${report_opts} ${contents_opts} ${owner_opts} ${version_query_opts} ${variable_query_opts} ${list_opts} ${regen_news_opts} ${regen_repos_opts}"
+    all_opts="${action_opts} ${general_opts} ${query_opts} ${install_opts} ${uninstall_opts} ${sync_opts} ${report_opts} ${contents_opts} ${owner_opts} ${version_query_opts} ${variable_query_opts} ${list_opts} ${regen_repos_opts}"
 
     local x
     for x in "${COMP_WORDS[@]}" ; do
@@ -171,7 +172,7 @@ _paludis() {
                 action="info"
                 break
                 ;;
-            --has-version|--best-version)
+            --has-version|--best-version|--match)
                 action="version_query"
                 break
                 ;;
@@ -185,10 +186,6 @@ _paludis() {
                 ;;
             --list-repositories|--list-categories|--list-packages|--list-sets|--list-sync-protocols|--list-repository-formats|--list-dep-tag-categories)
                 action="list"
-                break
-                ;;
-            --update-news)
-                action="regen_news"
                 break
                 ;;
             --regenerate-installed-cache|--regenerate-installable-cache)
@@ -218,12 +215,20 @@ _paludis() {
                     COMPREPLY=($(compgen -W "none split internal" -- "${cur}"))
                     return 0
                     ;;
+                --checks)
+                    COMPREPLY=($(compgen -W "none default always" -- "${cur}"))
+                    return 0
+                    ;;
                 --show-reasons)
                     COMPREPLY=($(compgen -W "none summary full" -- "${cur}"))
                     return 0
                     ;;
                 --show-use-descriptions)
                     COMPREPLY=($(compgen -W "none new changed all" -- "${cur}"))
+                    return 0
+                    ;;
+                --continue-on-failure)
+                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied always" -- "${cur}"))
                     return 0
                     ;;
 
@@ -312,7 +317,7 @@ _paludis() {
                             COMPREPLY=($(compgen -W "$(_paludis_dolist repositories)" -- "${cur}"))
                             return 0
                             ;;
-                        report|info|list|regen_news)
+                        report|info|list)
                             return 0
                             ;;
                         owner)

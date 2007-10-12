@@ -26,19 +26,13 @@ _qualudis() {
     [[ -d ${cur} ]] && repodir="$(_qualudis_get_repodir "${cur}")"
     [[ -z "${repodir}" ]] && repodir="$(_qualudis_get_repodir "$(pwd)")"
 
-    opts="--describe -d \
-        --version -V \
+    opts="--version -V \
         --help -h \
-        --qa-check -c \
-        --exclude-qa-check -C \
-        --archs -a \
-        --excluded-arches -A \
-        --verbose -v \
-        --quiet -q \
         --log-level -L \
         --message-level -M \
         --write-cache-dir \
-        --master-repository-dir"
+        --master-repository-dir \
+        --use-repository-cache"
 
     case "${cur}" in
         -*)
@@ -53,17 +47,7 @@ _qualudis() {
                     return 0
                     ;;
                 --message-level|-M)
-                    COMPREPLY=($(compgen -W "info minor major fatal" -- "${cur}"))
-                    return 0
-                    ;;
-
-                --qa-check|-c|--exclude-qa-check|-C)
-                    COMPREPLY=($(compgen -W "$(qualudis --log-level silent --describe |sed -n 's/^  \(.*\):$/\1/p')" -- "${cur}"))
-                    return 0
-                    ;;
-
-                --arches|-a|--exclude-arches|-A)
-                    COMPREPLY=($(compgen -W "$(< "${repodir}/profiles/arch.list")" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "debug maybe minor normal severe" -- "${cur}"))
                     return 0
                     ;;
 

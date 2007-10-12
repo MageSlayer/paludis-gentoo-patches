@@ -39,7 +39,6 @@ _adjutrix() {
         --keyword-graph -k \
         --reverse-deps -r \
         --what-needs-keywording -w \
-        --display-profiles-use -u \
         --display-default-system-resolution -S \
         --build-downgrade-check-list \
         --downgrade-check \
@@ -53,7 +52,8 @@ _adjutrix() {
         --package -P \
         --profile \
         --unstable \
-        --write-cache-dir"
+        --write-cache-dir \
+        --master-repository-dir"
 
     case "${cur}" in
         -*)
@@ -97,7 +97,7 @@ _adjutrix() {
                     return 0
                     ;;
 
-                --repository-dir|-D|--write-cache-dir)
+                --repository-dir|-D|--write-cache-dir|--master-repository-dir)
                     _filedir -d
                     return 0
                     ;;
