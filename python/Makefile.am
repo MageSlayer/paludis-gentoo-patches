@@ -18,7 +18,8 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o paludis.so *-nn.hh *-nn.cc
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o paludis.so
+DISTCLEANFILES = *-nn.hh *-nn.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_PYTHON_TESTS = \
