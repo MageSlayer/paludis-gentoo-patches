@@ -93,7 +93,7 @@ EXTRA_DIST = \
 	unpackaged_repository.sr \
 	unpackaged_repository-sr.hh \
 	unpackaged_repository-sr.cc \
-	installed_unpackaged_repository_TEST.cc
+	installed_unpackaged_repository_TEST.cc \
 	installed_unpackaged_repository_TEST_setup.sh \
 	installed_unpackaged_repository_TEST_cleanup.sh \
 	installed_unpackaged_repository.sr \
