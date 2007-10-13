@@ -119,8 +119,10 @@ repository_config_entry-sr.hh : repository_config_entry.sr $(top_srcdir)/misc/ma
 repository_config_entry-sr.cc : repository_config_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/repository_config_entry.sr > $@
 
-distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+distcheck-deps-local : $(DISTCHECK_DEPS)
+
+distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
-
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
