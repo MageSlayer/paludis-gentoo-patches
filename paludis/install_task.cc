@@ -923,7 +923,7 @@ void
 InstallTask::world_update_set(const SetName & s)
 {
     if (s == SetName("world") || s == SetName("system") || s == SetName("security")
-            || s == SetName("everything") || s == SetName("insecurity"))
+            || s == SetName("everything") || s == SetName("insecurity") || s == SetName("ununused"))
     {
         on_update_world_skip(s, "special sets cannot be added to world");
         return;

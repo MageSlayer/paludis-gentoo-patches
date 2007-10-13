@@ -797,6 +797,8 @@ DepTagSummaryDisplayer::visit(const GeneralSetDepTag & tag)
     std::string desc;
     if (tag.short_text() == "world")
         desc = ":           Packages that have been explicitly installed";
+    else if (tag.short_text() == "ununused")
+        desc = ":           Packages that have been explicitly marked as not unused";
     else if (tag.short_text() == "everything")
         desc = ":      All installed packages";
     else if (tag.short_text() == "system")

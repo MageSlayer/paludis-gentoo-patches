@@ -416,12 +416,15 @@ UninstallList::add_unused_dependencies()
                 depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter(),
                 PackageIDSetComparator());
 
-        /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
+        /* if any of them aren't already on the list, and aren't in world or ununused, add them and recurse */
+        tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world"))),
+            ununused(_imp->env->set(SetName("ununused")));
         for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
             if (match_package_in_set(*_imp->env, *world, **i))
+                continue;
+            if (ununused && match_package_in_set(*_imp->env, *ununused, **i))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -494,11 +497,16 @@ UninstallList::collect_world() const
     tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
     tr1::shared_ptr<const PackageIDSet> everything(collect_all_installed());
 
-    tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world")));
+    tr1::shared_ptr<SetSpecTree::ConstItem> world(_imp->env->set(SetName("world"))),
+        ununused(_imp->env->set(SetName("ununused")));
     for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
+    {
         if (match_package_in_set(*_imp->env, *world, **i))
             result->insert(*i);
+        else if (ununused && match_package_in_set(*_imp->env, *ununused, **i))
+            result->insert(*i);
+    }
 
     return result;
 }
