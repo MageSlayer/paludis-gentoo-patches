@@ -952,7 +952,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran e fake gems virtuals"
+ALL_REPOSITORIES="cran e fake gems unpackaged virtuals"
 DEFAULT_REPOSITORIES="e fake virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
@@ -965,6 +965,7 @@ AC_ARG_WITH([repositories],
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby gems (experimental)
+			  unpackaged      Unpackaged (experimental, for importare)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
@@ -1022,7 +1023,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis inquisitio instruo paludis qualudis reconcilio"
+ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis importare inquisitio instruo paludis qualudis reconcilio"
 DEFAULT_CLIENTS="adjutrix paludis reconcilio"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -1039,6 +1040,7 @@ AC_ARG_WITH([clients],
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
 			  gtkpaludis      GUI client (experimental)
+			  importare       On-the-fly unpackaged installer
 			  inquisitio      A search client
 			  instruo         A metadata generation client
 			  paludis         The Paludis console client
@@ -1305,6 +1307,7 @@ AC_OUTPUT(
 	paludis/repositories/e/qa/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
+	paludis/repositories/unpackaged/Makefile
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
@@ -1323,6 +1326,7 @@ AC_OUTPUT(
 	src/clients/gtkpaludis/vtemm/Makefile
 	src/clients/gtkpaludis/vtemm/converts/Makefile
 	src/clients/gtkpaludis/vtemm/defs/Makefile
+	src/clients/importare/Makefile
 	src/clients/inquisitio/Makefile
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
