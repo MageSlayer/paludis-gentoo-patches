@@ -41,7 +41,7 @@ Mutex::~Mutex()
     delete _attr;
 }
 
-pthread_mutex_t * const
+pthread_mutex_t *
 Mutex::posix_mutex()
 {
     return _mutex;
