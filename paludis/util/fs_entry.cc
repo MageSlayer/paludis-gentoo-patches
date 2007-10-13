@@ -517,6 +517,23 @@ FSEntry::mkdir(mode_t mode)
 }
 
 bool
+FSEntry::symlink(const std::string & target)
+{
+    if (0 == ::symlink(target.c_str(), _imp->path.c_str()))
+        return true;
+
+    int e(errno);
+    if (e == EEXIST)
+    {
+        if (is_symbolic_link() && target == readlink())
+            return false;
+        throw FSError("symlink '" + _imp->path + "' to '" + target + "' failed: target exists");
+    }
+    else
+        throw FSError("symlink '" + _imp->path + "' to '" + target + "' failed: " + ::strerror(e));
+}
+
+bool
 FSEntry::unlink()
 {
 #ifdef HAVE_LCHFLAGS

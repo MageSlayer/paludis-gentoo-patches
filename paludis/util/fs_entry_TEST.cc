@@ -242,6 +242,20 @@ namespace test_cases
         }
     } test_fs_entry_size;
 
+    struct FSEntrySymlink : TestCase
+    {
+        FSEntrySymlink() : TestCase("symlink") {}
+
+        void run()
+        {
+            FSEntry f("fs_entry_TEST_dir/new_sym");
+            TEST_CHECK(f.symlink("the_target"));
+            TEST_CHECK(f.is_symbolic_link());
+            TEST_CHECK_EQUAL(f.readlink(), "the_target");
+            f.unlink();
+        }
+    } test_fs_symlink;
+
     /**
      * \test Test FSEntry basename and dirname methods
      *

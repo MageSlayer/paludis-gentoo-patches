@@ -306,6 +306,17 @@ namespace paludis
             bool mkdir(const mode_t mode = 0755);
 
             /**
+             * Try to make a symlink.
+             *
+             * \return True, if we succeeded, and false if the target already
+             *   exists and is a symlink to the same target.
+             *
+             * \exception FSError If an error other than the symlink already
+             *   existing occurs, or if the symlink exists and points elsewhere.
+             */
+            bool symlink(const std::string & target);
+
+            /**
              * Try to unlink.
              *
              * \return True, if we succeeded, and false if we don't exist
