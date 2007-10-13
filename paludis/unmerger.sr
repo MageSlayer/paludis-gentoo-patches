@@ -5,7 +5,7 @@ make_class_UnmergerOptions()
 {
     visible
 
-    key environment "Environment *"
+    key environment "const Environment *"
     key root "FSEntry"
 
     allow_named_args
