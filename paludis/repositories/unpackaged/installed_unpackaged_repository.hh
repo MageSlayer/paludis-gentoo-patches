@@ -35,7 +35,8 @@ namespace paludis
         private PrivateImplementationPattern<InstalledUnpackagedRepository>,
         public Repository,
         public RepositoryDestinationInterface,
-        public RepositoryInstalledInterface
+        public RepositoryInstalledInterface,
+        public RepositorySetsInterface
     {
         protected:
             virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
@@ -60,6 +61,9 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             InstalledUnpackagedRepository(
@@ -86,6 +90,9 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void deindex(const QualifiedPackageName &) const;
+
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

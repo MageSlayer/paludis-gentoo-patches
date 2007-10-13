@@ -24,12 +24,15 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
@@ -70,7 +73,7 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
     PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
     Repository(n, RepositoryCapabilities::create()
             .installed_interface(this)
-            .sets_interface(0)
+            .sets_interface(this)
             .syncable_interface(0)
             .use_interface(0)
             .world_interface(0)
@@ -322,5 +325,50 @@ void
 InstalledUnpackagedRepository::deindex(const QualifiedPackageName & q) const
 {
     _imp->ndbam.deindex(q);
+}
+
+tr1::shared_ptr<SetSpecTree::ConstItem>
+InstalledUnpackagedRepository::do_package_set(const SetName & s) const
+{
+    using namespace tr1::placeholders;
+
+    Context context("When fetching package set '" + stringify(s) + "' from '" +
+            stringify(name()) + "':");
+
+    if ("everything" == s.data() || "ununused" == s.data())
+    {
+        tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
+                    make_shared_ptr(new AllDepSpec)));
+        tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(name())));
+
+        tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+        for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
+                c != c_end ; ++c)
+        {
+            tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
+            for (QualifiedPackageNameSet::ConstIterator e(pkgs->begin()), e_end(pkgs->end()) ;
+                    e != e_end ; ++e)
+            {
+                tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_shared_ptr(new QualifiedPackageName(*e))));
+                spec->set_tag(tag);
+                result->add(make_shared_ptr(new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            }
+        }
+
+        return result;
+    }
+    else
+        return tr1::shared_ptr<SetSpecTree::ConstItem>();
+}
+
+tr1::shared_ptr<const SetNameSet>
+InstalledUnpackagedRepository::sets_list() const
+{
+    Context context("While generating the list of sets:");
+
+    tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    result->insert(SetName("everything"));
+    result->insert(SetName("ununused"));
+    return result;
 }
 
