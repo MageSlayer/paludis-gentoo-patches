@@ -65,7 +65,7 @@ namespace paludis
             ///\}
 
 #ifdef PALUDIS_ENABLE_THREADS
-            pthread_mutex_t * const posix_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
+            pthread_mutex_t * posix_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
 #endif
     };
 
