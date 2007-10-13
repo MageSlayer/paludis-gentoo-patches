@@ -14,3 +14,9 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
+

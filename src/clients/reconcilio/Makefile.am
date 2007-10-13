@@ -91,4 +91,11 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+DISTCHECK_DEPS = reconcilio.1 reconcilio.html
+
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
 

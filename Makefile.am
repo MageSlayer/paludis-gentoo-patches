@@ -18,20 +18,7 @@ automake-deps-built-hack.tmp : built-sources-subdirs
 
 BUILT_SOURCES = automake-deps-built-hack.tmp
 
-automake-deps-dist-hack.tmp : built-sources-subdirs
-	$(MAKE) -C paludis/util
-	$(MAKE) -C paludis/selinux
-	$(MAKE) -C paludis libpaludis.la
-	$(MAKE) -C paludis/args
-	$(MAKE) -C paludis/ libpaludismanpagethings.la
-	$(MAKE) -C src/output liboutput.a
-	$(MAKE) -C src/clients/paludis paludis.1 paludis.html
-	$(MAKE) -C src/clients/qualudis qualudis.1 qualudis.html
-	$(MAKE) -C src/clients/contrarius contrarius.1 contrarius.html
-	$(MAKE) -C src/clients/adjutrix adjutrix.1 adjutrix.html
-	$(MAKE) -C src/clients/inquisitio inquisitio.1 inquisitio.html
-	$(MAKE) -C src/clients/accerso accerso.1 accerso.html
-	$(MAKE) -C src/clients/instruo instruo.1 instruo.html
+automake-deps-dist-hack.tmp : built-sources-subdirs distcheck-deps-subdirs
 	touch $@
 
 dist-hook :
@@ -55,4 +42,10 @@ built-sources : $(BUILT_SOURCES) built-sources-subdirs
 
 built-sources-subdirs :
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
 

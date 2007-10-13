@@ -83,3 +83,9 @@ no_config_environment-sr.cc : no_config_environment.sr $(top_srcdir)/misc/make_s
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
+

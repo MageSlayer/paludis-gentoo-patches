@@ -7,6 +7,11 @@ CLEANFILES = paludis.pc
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
 paludis.pc : paludis.pc.in Makefile
 	sed \
 	    -e "s,#PALUDIS_PC_PREFIX#,$(prefix)," \

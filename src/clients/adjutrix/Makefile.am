@@ -112,4 +112,11 @@ downgrade_check-sr.cc : downgrade_check.sr $(top_srcdir)/misc/make_sr.bash
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+DISTCHECK_DEPS = adjutrix.1 adjutrix.html
+
+distcheck-deps : $(DISTCHECK_DEPS) distcheck-deps-subdirs
+
+distcheck-deps-subdirs :
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
+
 
