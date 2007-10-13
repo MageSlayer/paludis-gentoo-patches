@@ -184,14 +184,14 @@ FakeMetadataSpecTreeKey<C_>::value() const
 
 template <typename C_>
 std::string
-FakeMetadataSpecTreeKey<C_>::pretty_print(const typename C_::Formatter &) const
+FakeMetadataSpecTreeKey<C_>::pretty_print(const typename C_::ItemFormatter &) const
 {
     return _imp->string_value;
 }
 
 template <typename C_>
 std::string
-FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::Formatter &) const
+FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter &) const
 {
     return _imp->string_value;
 }
@@ -224,13 +224,13 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
 }
 
 std::string
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print(const FetchableURISpecTree::Formatter &) const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print(const FetchableURISpecTree::ItemFormatter &) const
 {
     return _imp->string_value;
 }
 
 std::string
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat(const FetchableURISpecTree::Formatter &) const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
 {
     return _imp->string_value;
 }

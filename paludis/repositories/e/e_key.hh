@@ -80,10 +80,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const DependencySpecTree::Formatter &) const
+                virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const DependencySpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 IdleActionResult idle_load() const;
@@ -105,10 +105,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const FetchableURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
+                virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const tr1::shared_ptr<const URILabel> initial_label() const
@@ -131,10 +131,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const SimpleURISpecTree::Formatter &) const
+                virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const SimpleURISpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -154,10 +154,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const RestrictSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const RestrictSpecTree::Formatter &) const
+                virtual std::string pretty_print(const RestrictSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const RestrictSpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const RestrictSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -177,10 +177,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const ProvideSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const ProvideSpecTree::Formatter &) const
+                virtual std::string pretty_print(const ProvideSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const ProvideSpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const ProvideSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -203,10 +203,10 @@ namespace paludis
 
                 IdleActionResult idle_load() const;
 
-                virtual std::string pretty_print(const LicenseSpecTree::Formatter &) const
+                virtual std::string pretty_print(const LicenseSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const LicenseSpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const LicenseSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

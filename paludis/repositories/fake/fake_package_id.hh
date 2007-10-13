@@ -98,10 +98,10 @@ namespace paludis
 
             void set_from_string(const std::string &);
 
-            virtual std::string pretty_print(const typename C_::Formatter &) const
+            virtual std::string pretty_print(const typename C_::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const typename C_::Formatter &) const
+            virtual std::string pretty_print_flat(const typename C_::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
@@ -124,10 +124,10 @@ namespace paludis
 
             void set_from_string(const std::string &);
 
-            virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
+            virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
+            virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const tr1::shared_ptr<const URILabel> initial_label() const

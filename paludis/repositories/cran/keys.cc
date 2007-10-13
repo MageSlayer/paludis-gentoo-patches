@@ -48,13 +48,13 @@ SimpleURIKey::value() const
 }
 
 std::string
-SimpleURIKey::pretty_print(const SimpleURISpecTree::Formatter & f) const
+SimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
 {
     return f.format(_v, format::Plain());
 }
 
 std::string
-SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::Formatter & f) const
+SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
 {
     return f.format(_v, format::Plain());
 }
@@ -149,7 +149,7 @@ DepKey::value() const
 }
 
 std::string
-DepKey::pretty_print(const DependencySpecTree::Formatter & f) const
+DepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_env, ff, 12, true);
@@ -158,7 +158,7 @@ DepKey::pretty_print(const DependencySpecTree::Formatter & f) const
 }
 
 std::string
-DepKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
+DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_env, ff, 0, false);

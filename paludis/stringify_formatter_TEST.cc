@@ -37,7 +37,7 @@ namespace
     }
 
     std::string format_three(const PackageDepSpec & k, const BlockDepSpec & d, const UseDepSpec & u,
-            const GenericSpecTree::Formatter & f)
+            const GenericSpecTree::ItemFormatter & f)
     {
         return f.format(k, format::Plain()) + " " + f.format(d, format::Plain()) + " " + f.format(u, format::Enabled());
     }

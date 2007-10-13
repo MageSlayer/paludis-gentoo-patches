@@ -73,7 +73,7 @@ namespace paludis
                 DepSpecPrettyPrinter(
                         const Environment * const env,
                         const tr1::shared_ptr<const PackageID> & id,
-                        const GenericSpecTree::Formatter & formatter,
+                        const GenericSpecTree::ItemFormatter & formatter,
                         unsigned initial_indent,
                         bool use_newlines);
 

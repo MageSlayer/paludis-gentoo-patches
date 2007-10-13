@@ -118,7 +118,7 @@ VirtualsDepKey::value() const
 }
 
 std::string
-VirtualsDepKey::pretty_print(const DependencySpecTree::Formatter & f) const
+VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {
@@ -136,7 +136,7 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::Formatter & f) const
 }
 
 std::string
-VirtualsDepKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
+VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {

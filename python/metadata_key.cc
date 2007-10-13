@@ -372,7 +372,7 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const typename C_::Formatter &) const
+    virtual std::string pretty_print(const typename C_::ItemFormatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -384,7 +384,7 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat(const typename C_::Formatter &) const
+    virtual std::string pretty_print_flat(const typename C_::ItemFormatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -418,7 +418,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
+    virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -430,7 +430,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
+    virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());

@@ -87,7 +87,7 @@ namespace paludis
             URILabelsDepSpec,
             DependencyLabelsDepSpec,
             NamedSetDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -118,7 +118,7 @@ namespace paludis
         typedef Formatter<
             UseDepSpec,
             LicenseDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -150,7 +150,7 @@ namespace paludis
             UseDepSpec,
             FetchableURIDepSpec,
             URILabelsDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -180,7 +180,7 @@ namespace paludis
         typedef Formatter<
             UseDepSpec,
             SimpleURIDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -210,7 +210,7 @@ namespace paludis
         typedef Formatter<
             UseDepSpec,
             PackageDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -240,7 +240,7 @@ namespace paludis
         typedef Formatter<
             UseDepSpec,
             PlainTextDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -277,7 +277,7 @@ namespace paludis
             BlockDepSpec,
             NamedSetDepSpec,
             DependencyLabelsDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 
     /**
@@ -307,7 +307,7 @@ namespace paludis
         typedef Formatter<
             PackageDepSpec,
             NamedSetDepSpec
-                > Formatter;
+                > ItemFormatter;
     };
 }
 

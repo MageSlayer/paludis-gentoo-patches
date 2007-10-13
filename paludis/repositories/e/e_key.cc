@@ -152,7 +152,7 @@ EDependenciesKey::value() const
 }
 
 std::string
-EDependenciesKey::pretty_print(const DependencySpecTree::Formatter & f) const
+EDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -161,7 +161,7 @@ EDependenciesKey::pretty_print(const DependencySpecTree::Formatter & f) const
 }
 
 std::string
-EDependenciesKey::pretty_print_flat(const DependencySpecTree::Formatter & f) const
+EDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
@@ -250,7 +250,7 @@ ELicenseKey::value() const
 }
 
 std::string
-ELicenseKey::pretty_print(const LicenseSpecTree::Formatter & f) const
+ELicenseKey::pretty_print(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -259,7 +259,7 @@ ELicenseKey::pretty_print(const LicenseSpecTree::Formatter & f) const
 }
 
 std::string
-ELicenseKey::pretty_print_flat(const LicenseSpecTree::Formatter & f) const
+ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
@@ -338,7 +338,7 @@ EFetchableURIKey::value() const
 }
 
 std::string
-EFetchableURIKey::pretty_print(const FetchableURISpecTree::Formatter & f) const
+EFetchableURIKey::pretty_print(const FetchableURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -347,7 +347,7 @@ EFetchableURIKey::pretty_print(const FetchableURISpecTree::Formatter & f) const
 }
 
 std::string
-EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::Formatter & f) const
+EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
@@ -433,7 +433,7 @@ ESimpleURIKey::value() const
 }
 
 std::string
-ESimpleURIKey::pretty_print(const SimpleURISpecTree::Formatter & f) const
+ESimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -442,7 +442,7 @@ ESimpleURIKey::pretty_print(const SimpleURISpecTree::Formatter & f) const
 }
 
 std::string
-ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::Formatter & f) const
+ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
@@ -497,7 +497,7 @@ ERestrictKey::value() const
 }
 
 std::string
-ERestrictKey::pretty_print(const RestrictSpecTree::Formatter & f) const
+ERestrictKey::pretty_print(const RestrictSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -506,7 +506,7 @@ ERestrictKey::pretty_print(const RestrictSpecTree::Formatter & f) const
 }
 
 std::string
-ERestrictKey::pretty_print_flat(const RestrictSpecTree::Formatter & f) const
+ERestrictKey::pretty_print_flat(const RestrictSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
@@ -560,7 +560,7 @@ EProvideKey::value() const
 }
 
 std::string
-EProvideKey::pretty_print(const ProvideSpecTree::Formatter & f) const
+EProvideKey::pretty_print(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true);
@@ -569,7 +569,7 @@ EProvideKey::pretty_print(const ProvideSpecTree::Formatter & f) const
 }
 
 std::string
-EProvideKey::pretty_print_flat(const ProvideSpecTree::Formatter & f) const
+EProvideKey::pretty_print_flat(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);

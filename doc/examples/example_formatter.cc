@@ -65,7 +65,7 @@ namespace
 
     /* This formatter outputs information about dependencies in HTML. We need
      * to implement CanFormat<> for all of the things that can be found in
-     * DependencySpecTree::Formatter, as well as CanSpace. */
+     * DependencySpecTree::ItemFormatter, as well as CanSpace. */
     class HTMLFormatter :
         public CanSpace,
         public CanFormat<PackageDepSpec>,

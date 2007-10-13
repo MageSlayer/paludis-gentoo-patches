@@ -419,14 +419,14 @@ namespace paludis
              * Return a multiline-line indented and formatted version of our
              * value, using the supplied Formatter to format individual items.
              */
-            virtual std::string pretty_print(const typename C_::Formatter &) const
+            virtual std::string pretty_print(const typename C_::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a single-line formatted version of our value, using the
              * supplied Formatter to format individual items.
              */
-            virtual std::string pretty_print_flat(const typename C_::Formatter &) const
+            virtual std::string pretty_print_flat(const typename C_::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -465,14 +465,14 @@ namespace paludis
              * Return a multiline-line indented and formatted version of our
              * value, using the supplied Formatter to format individual items.
              */
-            virtual std::string pretty_print(const FetchableURISpecTree::Formatter &) const
+            virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a single-line formatted version of our value, using the
              * supplied Formatter to format individual items.
              */
-            virtual std::string pretty_print_flat(const FetchableURISpecTree::Formatter &) const
+            virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

@@ -43,10 +43,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const SimpleURISpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const SimpleURISpecTree::Formatter &) const
+                virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const SimpleURISpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -125,10 +125,10 @@ namespace paludis
                 virtual const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const DependencySpecTree::Formatter &) const
+                virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const DependencySpecTree::Formatter &) const
+                virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

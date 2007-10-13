@@ -37,14 +37,14 @@ namespace paludis
     {
         std::stringstream s;
         const Environment * const env;
-        GenericSpecTree::Formatter formatter;
+        GenericSpecTree::ItemFormatter formatter;
         const unsigned indent;
         const bool multiline;
         bool need_comma;
 
         Implementation(
                 const Environment * const e,
-                const GenericSpecTree::Formatter & f,
+                const GenericSpecTree::ItemFormatter & f,
                 const unsigned u,
                 const bool m) :
             env(e),
@@ -58,7 +58,7 @@ namespace paludis
 }
 
 DepSpecPrettyPrinter::DepSpecPrettyPrinter(const Environment * const e,
-        const GenericSpecTree::Formatter & f, const unsigned initial_indent, const bool multiline) :
+        const GenericSpecTree::ItemFormatter & f, const unsigned initial_indent, const bool multiline) :
     PrivateImplementationPattern<DepSpecPrettyPrinter>(new Implementation<DepSpecPrettyPrinter>(e, f, initial_indent, multiline))
 {
 }
