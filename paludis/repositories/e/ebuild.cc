@@ -116,7 +116,7 @@ EbuildCommand::operator() ()
             .with_setenv("EAPI", stringify(params.package_id->eapi()->name))
             .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
-                stringify(PALUDIS_VERSION_MICRO) +
+                stringify(PALUDIS_VERSION_MICRO) + stringify(PALUDIS_VERSION_SUFFIX) +
                 (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
                  std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
             .with_setenv("PALUDIS_TMPDIR", stringify(params.builddir))
