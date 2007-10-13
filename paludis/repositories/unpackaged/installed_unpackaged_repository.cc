@@ -41,6 +41,14 @@ using namespace paludis::unpackaged_repositories;
 
 #include <paludis/repositories/unpackaged/installed_unpackaged_repository-sr.cc>
 
+namespace
+{
+    bool supported_installed_unpackaged(const std::string & s)
+    {
+        return s == "installed_unpackaged-1";
+    }
+}
+
 namespace paludis
 {
     template <>
@@ -51,7 +59,7 @@ namespace paludis
 
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
-            ndbam(p.location)
+            ndbam(p.location, &supported_installed_unpackaged, "installed_unpackaged-1")
         {
         }
     };

@@ -17,6 +17,10 @@ type=dir path=/stilton
 type=file path=/stilton/cheese md5=1234567812345678 mtime=1234
 type=file path=/stilton/is\ delicious md5=8765432187654321 mtime=2345
 END
+cat <<"END" > repo1/ndbam.conf
+ndbam_format = 1
+repository_format = installed_unpackaged-1
+END
 
 mkdir -p root2
 cat <<"END" > root2/first
@@ -34,6 +38,10 @@ cat <<END > repo2/data/asdf/1.2.3:fred:ghjk/contents
 type=file path=/first md5=c0ba8bfb6501abb1b7105ec79536b848 mtime=$(${PALUDIS_EBUILD_DIR}/utils/getmtime "root2/first")
 type=file path=/first md5=0 mtime=$(${PALUDIS_EBUILD_DIR}/utils/getmtime "root2/second")
 END
+cat <<"END" > repo2/ndbam.conf
+ndbam_format = 1
+repository_format = installed_unpackaged-1
+END
 
 mkdir -p root3
 mkdir -p repo3/indices/{categories/cat-one,packages/foo}
@@ -42,6 +50,10 @@ mkdir -p repo3/data/asdf/3.2.1:barney:qwerty
 ln -s ../../../data/asdf repo3/indices/categories/cat-one/foo
 ln -s ../../../data/asdf repo3/indices/packages/foo/cat-one
 cat <<END > repo3/data/asdf/1.2.3:fred:ghjk/contents
+END
+cat <<"END" > repo3/ndbam.conf
+ndbam_format = 1
+repository_format = installed_unpackaged-1
 END
 
 mkdir -p root4

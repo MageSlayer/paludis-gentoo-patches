@@ -44,7 +44,9 @@ namespace paludis
             private PrivateImplementationPattern<NDBAM>
         {
             public:
-                NDBAM(const FSEntry &);
+                NDBAM(const FSEntry &,
+                        const tr1::function<bool (const std::string &)> & check_format,
+                        const std::string & preferred_format);
                 ~NDBAM();
 
                 tr1::shared_ptr<const CategoryNamePartSet> category_names()

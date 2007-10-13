@@ -36,6 +36,7 @@
 #include <functional>
 #include <vector>
 #include <map>
+#include <fstream>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -99,14 +100,37 @@ namespace paludis
     };
 }
 
-NDBAM::NDBAM(const FSEntry & l) :
+NDBAM::NDBAM(const FSEntry & l,
+        const tr1::function<bool (const std::string &)> & check_format,
+        const std::string & preferred_format) :
     PrivateImplementationPattern<NDBAM>(new Implementation<NDBAM>(l))
 {
-    Context c("When creating skeleton NDBAM layout at '" + stringify(l) + "':");
-    (l / "indices").mkdir();
-    (l / "indices" / "categories").mkdir();
-    (l / "indices" / "packages").mkdir();
-    (l / "data").mkdir();
+    Context c("When checking NDBAM layout at '" + stringify(l) + "':");
+    if ((l / "ndbam.conf").exists())
+    {
+        Context cc("When reading '" + stringify(l / "ndbam.conf") + "':");
+        KeyValueConfigFile k(l / "ndbam.conf", KeyValueConfigFileOptions());
+        if (k.get("ndbam_format") != "1")
+            throw ConfigurationError("Unsupported NDBAM format '" + k.get("ndbam_format") + "'");
+        if (! check_format(k.get("repository_format")))
+            throw ConfigurationError("Unsupported NDBAM repository format '" + k.get("ndbam_format") + "'");
+    }
+    else if (DirIterator(l) != DirIterator())
+        throw ConfigurationError("No NDBAM repository found at '" + stringify(l) +
+                "', and it is not an empty directory");
+    else
+    {
+        Context cc("When creating skeleton NDBAM layout at '" + stringify(l) + "':");
+        (l / "indices").mkdir();
+        (l / "indices" / "categories").mkdir();
+        (l / "indices" / "packages").mkdir();
+        (l / "data").mkdir();
+        std::ofstream n(stringify(l / "ndbam.conf").c_str());
+        n << "ndbam_format = 1" << std::endl;
+        n << "repository_format = " << preferred_format << std::endl;
+        if (! n)
+            throw FSError("Could not write to '" + stringify(l / "ndbam.conf") + "'");
+    }
 }
 
 NDBAM::~NDBAM()

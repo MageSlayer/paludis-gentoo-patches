@@ -10,6 +10,5 @@ This is the first file.
 END
 
 mkdir -p root
-
-mkdir -p installed/{indices/{categories,packages},data/}
+mkdir -p installed
 
