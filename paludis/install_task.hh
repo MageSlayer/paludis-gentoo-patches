@@ -103,6 +103,8 @@ namespace paludis
             ///\{
 
             void add_target(const std::string &);
+            void add_exact_package(const tr1::shared_ptr<const PackageID> &);
+
             void clear();
             bool had_set_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));

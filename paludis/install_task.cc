@@ -206,6 +206,37 @@ InstallTask::add_target(const std::string & target)
 }
 
 void
+InstallTask::add_exact_package(const tr1::shared_ptr<const PackageID> & target)
+{
+    Context context("When adding install target '" + stringify(*target) + "' from ID:");
+
+    if (_imp->had_set_targets)
+    {
+        _imp->had_resolution_failures = true;
+        throw HadBothPackageAndSetTargets();
+    }
+
+    _imp->had_package_targets = true;
+    if (! _imp->override_target_type)
+        _imp->dep_list.options()->target_type = dl_target_package;
+
+    tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(target->name())),
+                tr1::shared_ptr<CategoryNamePart>(),
+                tr1::shared_ptr<PackageNamePart>(),
+                make_equal_to_version_requirements(target->version()),
+                vr_and,
+                tr1::shared_ptr<SlotName>(new SlotName(target->slot())),
+                tr1::shared_ptr<RepositoryName>(new RepositoryName(target->repository()->name()))));
+
+    spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+    _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+
+    _imp->raw_targets.push_back(stringify(*spec));
+}
+
+void
 InstallTask::_build_dep_list()
 {
     Context context("When building dependency list:");
@@ -405,8 +436,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     /* fetch / install one item */
     try
     {
-        FetchAction fetch_action(_imp->fetch_options);
-        dep->package_id->perform_action(fetch_action);
+        SupportsActionTest<FetchAction> test_fetch;
+        if (dep->package_id->supports_action(test_fetch))
+        {
+            FetchAction fetch_action(_imp->fetch_options);
+            dep->package_id->perform_action(fetch_action);
+        }
 
         if (! _imp->fetch_only)
         {
