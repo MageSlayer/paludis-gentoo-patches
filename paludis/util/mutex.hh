@@ -85,7 +85,7 @@ namespace paludis
             Lock & operator= (const Lock &);
 
 #ifdef PALUDIS_ENABLE_THREADS
-            Mutex * const _mutex;
+            Mutex * _mutex;
 #endif
 
         public:
@@ -96,6 +96,14 @@ namespace paludis
             ~Lock();
 
             ///\}
+
+            /**
+             * Acquire a lock on the provided Mutex, and then release our
+             * previously owned lock.
+             *
+             * Use with caution -- this is a good way of creating deadlocks.
+             */
+            void acquire_then_release_old(Mutex &);
     };
 
     /**

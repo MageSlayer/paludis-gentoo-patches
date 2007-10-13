@@ -58,6 +58,14 @@ Lock::~Lock()
     pthread_mutex_unlock(_mutex->posix_mutex());
 }
 
+void
+Lock::acquire_then_release_old(Mutex & m)
+{
+    pthread_mutex_lock(m.posix_mutex());
+    pthread_mutex_unlock(_mutex->posix_mutex());
+    _mutex = &m;
+}
+
 TryLock::TryLock(Mutex & m) :
     _mutex(&m)
 {
@@ -88,6 +96,11 @@ Mutex::~Mutex()
 }
 
 Lock::Lock(Mutex &)
+{
+}
+
+void
+Lock::acquire_then_release_old(Mutex &)
 {
 }
 
