@@ -44,11 +44,11 @@ namespace
 
     void display_version()
     {
-        cout << "inquisitio" << " " << PALUDIS_VERSION_MAJOR << "."
+        cout << "inquisitio, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             cout << " svn " << PALUDIS_SUBVERSION_REVISION;
-        cout << endl << endl;
+        cout << endl;
     }
 }
 

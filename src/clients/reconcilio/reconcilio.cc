@@ -42,11 +42,11 @@ namespace
 
     void display_version()
     {
-        std::cout << "reconcilio" << " " << PALUDIS_VERSION_MAJOR << "."
-                  << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
+        std::cout << "reconcilio, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
+            << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             std::cout << " svn " << PALUDIS_SUBVERSION_REVISION;
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl;
     }
 }
 

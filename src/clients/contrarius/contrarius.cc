@@ -133,34 +133,6 @@ int main(int argc, char *argv[])
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             cout << " svn " << PALUDIS_SUBVERSION_REVISION;
         cout << endl << endl;
-        cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
-            << " on " << PALUDIS_BUILD_DATE << endl;
-        cout << "CXX:         " << PALUDIS_BUILD_CXX
-#if defined(__ICC)
-            << " " << __ICC
-#elif defined(__VERSION__)
-            << " " << __VERSION__
-#endif
-            << endl;
-        cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
-        cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
-        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
-        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
-        cout << "BIGTEMPDIR:  " << BIGTEMPDIR << endl;
-        cout << "stdlib:      "
-#if defined(__GLIBCXX__)
-#  define XSTRINGIFY(x) #x
-#  define STRINGIFY(x) XSTRINGIFY(x)
-            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
-#endif
-            << endl;
-
-        cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
-            << "." << LIBEBT_VERSION_MICRO << endl;
-        cout << "libwrapiter: " << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR
-            << "." << LIBWRAPITER_VERSION_MICRO << endl;
-
-        cout << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;
         cout << "License, version 2." << endl;

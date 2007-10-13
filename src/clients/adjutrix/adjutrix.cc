@@ -73,33 +73,11 @@ namespace
 
     void display_version()
     {
-        cout << "adjutrix " << PALUDIS_VERSION_MAJOR << "."
+        cout << "adjutrix, part of " << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             cout << " svn " << PALUDIS_SUBVERSION_REVISION;
-        cout << endl << endl;
-        cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
-            << " on " << PALUDIS_BUILD_DATE << endl;
-        cout << "CXX:         " << PALUDIS_BUILD_CXX
-#if defined(__ICC)
-            << " " << __ICC
-#elif defined(__VERSION__)
-            << " " << __VERSION__
-#endif
-            << endl;
-        cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
-        cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
-        cout << "DATADIR:     " << DATADIR << endl;
-        cout << "LIBDIR:      " << LIBDIR << endl;
-        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
-        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
-        cout << "stdlib:      "
-#if defined(__GLIBCXX__)
-#  define XSTRINGIFY(x) #x
-#  define STRINGIFY(x) XSTRINGIFY(x)
-            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
-#endif
-            << endl;
+        cout << endl;
     }
 
     struct DoVersion
