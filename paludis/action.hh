@@ -225,7 +225,7 @@ namespace paludis
             ///\}
 
             /// Did our pretend phase fail?
-            const bool failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool failed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Mark the action as failed.
             void set_failed();

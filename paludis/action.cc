@@ -145,7 +145,7 @@ PretendAction::~PretendAction()
 {
 }
 
-const bool
+bool
 PretendAction::failed() const
 {
     return _imp->failed;
