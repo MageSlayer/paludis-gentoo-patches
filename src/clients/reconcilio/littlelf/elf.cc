@@ -46,7 +46,13 @@ namespace
 
             ~StreamExceptions()
             {
-                _stream.exceptions(_old);
+                try
+                {
+                    _stream.exceptions(_old);
+                }
+                catch (const std::ios_base::failure &)
+                {
+                }
             }
     };
 
@@ -146,6 +152,7 @@ ElfObject<ElfType_>::is_valid_elf(std::istream & stream)
     }
     catch (const std::ios_base::failure &)
     {
+        stream.clear();
         return false;
     }
 }
