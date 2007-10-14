@@ -29,6 +29,7 @@ IF_PYTHON_TESTS = \
 	contents_TEST.py \
 	dep_spec_TEST.py \
 	dep_tag_TEST.py \
+	dep_label_TEST.py \
 	log_TEST.py \
 	name_TEST.py \
 	query_TEST.py \
@@ -52,6 +53,7 @@ IF_PYTHON_SOURCES = \
 	validated.hh \
 	action.cc \
 	contents.cc \
+	dep_label.cc \
 	dep_list.cc \
 	dep_spec.hh dep_spec.cc \
 	dep_tag.cc \

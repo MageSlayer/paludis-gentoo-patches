@@ -140,7 +140,7 @@ namespace paludis
     {
         /**
          * A formatter that can handle any formattable type found in a
-         * FetchableURIDepSpec.
+         * FetchableURISpecTree.
          *
          * \since 0.26
          * \ingroup g_dep_spec

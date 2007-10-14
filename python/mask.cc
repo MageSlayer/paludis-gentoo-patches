@@ -290,13 +290,13 @@ void expose_mask()
         .add_property("mask_file", bp::make_getter(&RepositoryMaskInfo::mask_file,
                     bp::return_value_policy<bp::return_by_value>()),
                 "[ro] str\n"
-                "NEED_DOC"
+                "Holds the file whence the mask originates."
                 )
 
         .add_property("comment", bp::make_getter(&RepositoryMaskInfo::comment,
                     bp::return_value_policy<bp::return_by_value>()),
                 "[ro] Iterable of str\n"
-                "NEED_DOC"
+                "Sequence of lines explaining the mask."
                 )
         ;
 
@@ -308,17 +308,28 @@ void expose_mask()
     bp::class_<MaskWrapper, boost::noncopyable>
         (
          "Mask",
-         "NEED_DOC",
+         "A Mask represents one reason why a PackageID is masked (not available to\n"
+         "be installed).\n\n"
+
+         "A basic Mask has:\n\n"
+
+         "- A single character key, which can be used by clients if they need a\n"
+         "  very compact way of representing a mask.\n\n"
+
+         "- A description.\n\n"
+
+         "Subclasses provide additional information.",
          bp::no_init
         )
         .def("key", bp::pure_virtual(&Mask::key),
                 "key() -> string\n"
-                "NEED_DOC"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
                 "description() -> string\n"
-                "NEED_DOC"
+                "A description of the mask."
                 )
         ;
 
@@ -331,17 +342,20 @@ void expose_mask()
                 bp::bases<Mask>, boost::noncopyable>
         (
          "UserMask",
-         "NEED_DOC",
+         "A UserMask is a Mask due to user configuration.\n\n"
+
+         "Can be subclassed in Python.",
          bp::init<>()
         )
         .def("key", bp::pure_virtual(&Mask::key),
-                "[ro] str\n"
-                "NEED_DOC"
+                "key() -> string\n"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
-                "[ro] str\n"
-                "NEED_DOC"
+                "description() -> string\n"
+                "A description of the mask."
                 )
         ;
 
@@ -354,22 +368,27 @@ void expose_mask()
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnacceptedMask",
-         "NEED_DOC",
+         "An UnacceptedMask is a Mask that signifies that a particular value or\n"
+         "combination of values in (for example) a MetadataSetKey or\n"
+         "MetadataSpecTreeKey is not accepted by user configuration.\n\n"
+
+         "Can be subclassed in Python.",
          bp::init<>()
         )
         .def("unaccepted_key", bp::pure_virtual(&UnacceptedMask::unaccepted_key),
-                "[ro] MetadataKey\n"
-                "NEED_DOC"
+                "unaccepted_key() -> MetadataKey\n"
+                "Fetch the metadata key that is not accepted."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),
-                "[ro] str\n"
-                "NEED_DOC"
+                "key() -> string\n"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
-                "[ro] str\n"
-                "NEED_DOC"
+                "description() -> string\n"
+                "A description of the mask."
                 )
         ;
 
@@ -382,22 +401,27 @@ void expose_mask()
             bp::bases<Mask>, boost::noncopyable>
         (
          "RepositoryMask",
-         "NEED_DOC",
+         "A RepositoryMask is a Mask that signifies that a PackageID has been\n"
+         "marked as masked by a Repository.\n\n"
+
+         "Can be subclassed in Python.",
          bp::init<>()
         )
         .def("mask_key", bp::pure_virtual(&RepositoryMask::mask_key),
-                "[ro] MetadataKey\n"
-                "NEED_DOC"
+                "mask_key() -> MetadataKey\n"
+                "Fetch a metadata key explaining the mask. May return None,\n"
+                "if no more information is available."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),
-                "[ro] str\n"
-                "NEED_DOC"
+                "key() -> string\n"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
-                "[ro] str\n"
-                "NEED_DOC"
+                "description() -> string\n"
+                "A description of the mask."
                 )
         ;
 
@@ -410,22 +434,27 @@ void expose_mask()
             bp::bases<Mask>, boost::noncopyable>
         (
          "UnsupportedMask",
-         "NEED_DOC",
+         "An UnsupportedMask is a Mask that signifies that a PackageID is not\n"
+         "supported, for example because it is broken or because it uses an\n"
+         "unrecognised EAPI.\n\n"
+
+         "Can be subclassed in Python.",
          bp::init<>()
         )
         .def("explanation", bp::pure_virtual(&UnsupportedMask::explanation),
-                "[ro] str\n"
-                "NEED_DOC"
+                "explanation() -> str\n"
+                "An explanation of why we are unsupported."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),
-                "[ro] str\n"
-                "NEED_DOC"
+                "key() -> string\n"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
-                "[ro] str\n"
-                "NEED_DOC"
+                "description() -> string\n"
+                "A description of the mask."
                 )
         ;
 
@@ -438,22 +467,29 @@ void expose_mask()
             bp::bases<Mask>, boost::noncopyable>
         (
          "AssociationMask",
-         "NEED_DOC",
+         "An AssociationMask is a Mask that signifies that a PackageID is masked\n"
+         "because of its association with another PackageID that is itself masked.\n\n"
+
+         "This is used by old-style virtuals. If the provider of a virtual is\n"
+         "masked then the virtual itself is masked by association.\n\n"
+
+         "Can be subclassed in Python.",
          bp::init<>()
         )
         .def("associated_package", bp::pure_virtual(&AssociationMask::associated_package),
-                "[ro] PackageID\n"
-                "NEED_DOC"
+                "associated_package() -> PackageID\n"
+                "Fetch the associated package."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),
-                "[ro] str\n"
-                "NEED_DOC"
+                "key() -> string\n"
+                "A single character key, which can be used by clients if they need\n"
+                "a very compact way of representing a mask."
                 )
 
         .def("description", bp::pure_virtual(&Mask::description),
-                "[ro] str\n"
-                "NEED_DOC"
+                "description() -> string\n"
+                "A description of the mask."
                 )
         ;
 }

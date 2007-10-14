@@ -16,6 +16,8 @@ use_namespace "paludis"
 make_nn_NiceNames() {
     namespace "paludis::python"
 
+    name "std::string" "String"
+
     # paludis/dep_spec-fwd.hh
     name "DepSpec"
     name "PackageDepSpec"
@@ -66,6 +68,8 @@ make_nn_NiceNames() {
 
 make_nn_LowercaseNiceNames() {
     namespace "paludis::python"
+
+    name "std::string" "string"
 
     name "UseFlagName" "use_flag_name"
     name "IUseFlag" "iuse_flag"

@@ -24,6 +24,7 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/set.hh>
 #include <paludis/environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -138,6 +139,7 @@ namespace metadata_key
     {
         m.raw_name();
         m.human_name();
+        MetadataKeyType foo(m.type());
     }
 
     void test_metadata_package_id_key(MetadataPackageIDKey & m)
@@ -175,6 +177,23 @@ namespace metadata_key
     {
         test_metadata_key(m);
         m.value();
+        StringifyFormatter ff;
+        m.pretty_print_flat(ff);
+    }
+
+    template <>
+    void test_metadata_set_key(MetadataSetKey<IUseFlagSet> & m)
+    {
+        test_metadata_key(m);
+        m.value();
+        StringifyFormatter ff;
+        m.pretty_print_flat(ff);
+
+        TestEnvironment e;
+        tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&e, RepositoryName("fakerepo")));
+        tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
+
+        m.pretty_print_flat_with_comparison(&e, pid, ff);
     }
 
     template <typename C_>
@@ -185,6 +204,17 @@ namespace metadata_key
         StringifyFormatter ff;
         m.pretty_print(ff);
         m.pretty_print_flat(ff);
+    }
+
+    template <>
+    void test_metadata_spec_tree_key(MetadataSpecTreeKey<FetchableURISpecTree> & m)
+    {
+        test_metadata_key(m);
+        m.value();
+        StringifyFormatter ff;
+        m.pretty_print(ff);
+        m.pretty_print_flat(ff);
+        m.initial_label();
     }
 }
 

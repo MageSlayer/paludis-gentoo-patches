@@ -131,6 +131,9 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return ["keyword"]
 
+            def pretty_print_flat(self, f):
+                return "foo"
+
         test_metadata_keyword_name_set_key(TestKey())
 
     def test_07_use_flag_name_iterable(self):
@@ -140,6 +143,9 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
             def value(self):
                 return ["use"]
+
+            def pretty_print_flat(self, f):
+                return "foo"
 
         test_metadata_use_flag_name_set_key(TestKey())
 
@@ -151,6 +157,12 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return [IUseFlag("iuse", IUseFlagParseMode.PERMISSIVE, -1)]
 
+            def pretty_print_flat(self, f):
+                return "foo"
+
+            def pretty_print_flat_with_comparison(self, e, pid, f):
+                return "foo"
+
         test_metadata_iuse_flag_set_key(TestKey())
 
     def test_09_string_iterable(self):
@@ -159,7 +171,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataStringIterableKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
 
             def value(self):
-                return ["keyword"]
+                return ["string"]
+
+            def pretty_print_flat(self, f):
+                return "foo"
 
         test_metadata_string_set_key(TestKey())
 
@@ -171,10 +186,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
 
         test_metadata_license_spec_tree_key(TestKey())
@@ -187,10 +202,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
 
         test_metadata_provide_spec_tree_key(TestKey())
@@ -203,10 +218,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
 
         test_metadata_dependency_spec_tree_key(TestKey())
@@ -220,10 +235,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
 
         test_metadata_restrict_spec_tree_key(TestKey())
@@ -236,11 +251,14 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
+
+            def initial_label(self):
+                return URIMirrorsOnlyLabel("foo")
 
         test_metadata_fetchable_uri_spec_tree_key(TestKey())
 
@@ -252,10 +270,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def value(self):
                 return AllDepSpec()
 
-            def pretty_print(self):
+            def pretty_print(self, f):
                 return "str"
 
-            def pretty_print_flat(self):
+            def pretty_print_flat(self, f):
                 return "str"
 
         test_metadata_simple_uri_spec_tree_key(TestKey())

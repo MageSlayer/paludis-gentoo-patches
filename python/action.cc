@@ -76,7 +76,7 @@ void expose_action()
     enum_auto("InstallActionDebugOption", last_iado,
             "Debug build mode for an InstallAction.\n\n"
             "May be ignored by some repositories, and by packages where there\n"
-            "isn't a sensible concept of debugging.\n");
+            "isn't a sensible concept of debugging.");
 
     enum_auto("InstallActionChecksOption", last_iaco,
             "Whether to run post-build checks (for example, 'make check' or 'src_test'),\n"

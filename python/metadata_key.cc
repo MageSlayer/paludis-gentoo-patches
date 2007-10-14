@@ -24,9 +24,9 @@
 #include <paludis/name.hh>
 #include <paludis/formatter.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/join.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
@@ -298,13 +298,15 @@ struct MetadataSetKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSetKey", "value");
     }
 
-    std::string pretty_print_flat(const Formatter<typename C_::value_type> &) const
+    std::string pretty_print_flat(const Formatter<typename C_::value_type> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        /* todo: make an override */
-        return join(value()->begin(), value()->end(), " ");
+        if (bp::override f = this->get_override("pretty_print_flat"))
+            return f(boost::cref(formatter));
+        else
+            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat");
     }
 };
 
@@ -329,25 +331,29 @@ struct MetadataSetKeyWrapper<IUseFlagSet> :
             throw PythonMethodNotImplemented("MetadataSetKey", "value");
     }
 
-    std::string pretty_print_flat(const Formatter<IUseFlag> &) const
+    std::string pretty_print_flat(const Formatter<IUseFlag> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        /* todo: make an override */
-        return join(value()->begin(), value()->end(), " ");
+        if (bp::override f = this->get_override("pretty_print_flat"))
+            return f(boost::cref(formatter));
+        else
+            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat");
     }
 
     std::string pretty_print_flat_with_comparison(
-            const Environment * const,
-            const tr1::shared_ptr<const PackageID> &,
-            const Formatter<IUseFlag> &) const
+            const Environment * const e,
+            const tr1::shared_ptr<const PackageID> & pid,
+            const Formatter<IUseFlag> & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        /* todo: make an override */
-        return join(value()->begin(), value()->end(), " ");
+        if (bp::override f = this->get_override("pretty_print_flat_with_comparison"))
+            return f(boost::cref(e), pid, boost::cref(formatter));
+        else
+            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat_with_comparison");
     }
 };
 
@@ -372,26 +378,24 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const typename C_::ItemFormatter &) const
+    virtual std::string pretty_print(const typename C_::ItemFormatter & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print"))
-            return f();
+            return f(boost::cref(formatter));
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat(const typename C_::ItemFormatter &) const
+    virtual std::string pretty_print_flat(const typename C_::ItemFormatter & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print_flat"))
-            return f();
+            return f(boost::cref(formatter));
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
@@ -418,26 +422,24 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
+    virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print"))
-            return f();
+            return f(boost::cref(formatter));
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
-    virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
+    virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter & formatter) const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        // todo: use the formatter
         if (bp::override f = this->get_override("pretty_print_flat"))
-            return f();
+            return f(boost::cref(formatter));
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
@@ -447,8 +449,10 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     {
         Lock l(get_mutex());
 
-        // todo: override
-        return make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors"));
+        if (bp::override f = this->get_override("initial_label"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_label");
     }
 };
 
@@ -461,7 +465,9 @@ struct class_set_key :
         bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
-                    "NEED_DOC\n"
+                    "A MetadataSetKey is a MetadataKey that holds a Set of some kind of item\n"
+                    "as its value.\n\n"
+
                     "This class can be subclassed in Python.",
                     bp::init<const std::string &, const std::string &, MetadataKeyType>(
                         "__init__(raw_name, human_name, MetadataKeyType)"
@@ -473,7 +479,59 @@ struct class_set_key :
                 tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSetKey<C_>::value),
-                ("[ro] " + set + "\n").c_str());
+                ("value() -> " + set + "\n"
+                 "Fetch our value.").c_str()
+           );
+
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSetKey<C_>::pretty_print_flat),
+                ("pretty_print_flat(" + set +"Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items.").c_str()
+           );
+    }
+};
+
+template <>
+struct class_set_key<IUseFlagSet> :
+    bp::class_<MetadataSetKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+        bp::bases<MetadataKey>, boost::noncopyable>
+{
+    class_set_key(const std::string & set) :
+        bp::class_<MetadataSetKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+            bp::bases<MetadataKey>, boost::noncopyable>(
+                    ("Metadata" + set + "Key").c_str(),
+                    "A MetadataSetKey is a MetadataKey that holds a Set of some kind of item\n"
+                    "as its value.\n\n"
+
+                    "This class can be subclassed in Python.",
+                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
+                        "__init__(raw_name, human_name, MetadataKeyType)"
+                        )
+                    )
+    {
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+                tr1::shared_ptr<MetadataKey> >();
+
+        def("value", bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::value),
+                ("value() -> " + set + "\n"
+                 "Fetch our value.").c_str()
+           );
+
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::pretty_print_flat),
+                ("pretty_print_flat(" + set +"Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items.").c_str()
+           );
+
+        def("pretty_print_flat_with_comparison",
+                bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::pretty_print_flat_with_comparison),
+                ("pretty_print_flat_with_comparison(Environment, PackageID, " + set +"Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items, and the supplied\n"
+                 "PackageID to decorate using format::Added and format::Changed as\n"
+                 "appropriate.").c_str()
+           );
     }
 };
 
@@ -486,7 +544,9 @@ struct class_spec_tree_key :
         bp::class_<MetadataSpecTreeKeyWrapper<C_>, tr1::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + spec_tree + "Key").c_str(),
-                    "NEED_DOC\n"
+                    "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
+                    "kind as its value.\n\n"
+
                     "This class can be subclassed in Python.",
                     bp::init<const std::string &, const std::string &, MetadataKeyType>(
                         "__init__(raw_name, human_name, MetadataKeyType)"
@@ -498,9 +558,70 @@ struct class_spec_tree_key :
                 tr1::shared_ptr<MetadataKey> >();
 
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
-                ("[ro] " + spec_tree + "\n").c_str());
-        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print));
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print_flat));
+                ("value() -> " + spec_tree + "\n"
+                 "Fetch our value").c_str()
+           );
+
+        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print),
+                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
+                 "Return a multiline-line indented and formatted version of our\n"
+                 "value, using the supplied Formatter to format individual items.").c_str()
+           );
+
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print_flat),
+                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items.").c_str()
+           );
+    }
+};
+
+template <>
+struct class_spec_tree_key<FetchableURISpecTree> :
+    bp::class_<MetadataSpecTreeKeyWrapper<FetchableURISpecTree>,
+        tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+        bp::bases<MetadataKey>, boost::noncopyable>
+{
+    class_spec_tree_key(const std::string & spec_tree) :
+        bp::class_<MetadataSpecTreeKeyWrapper<FetchableURISpecTree>, 
+            tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+            bp::bases<MetadataKey>, boost::noncopyable>(
+                    ("Metadata" + spec_tree + "Key").c_str(),
+                    "A MetadataSpecTreeKey is a MetadataKey that holds a spec tree of some\n"
+                    "kind as its value.\n\n"
+
+                    "This class can be subclassed in Python.",
+                    bp::init<const std::string &, const std::string &, MetadataKeyType>(
+                        "__init__(raw_name, human_name, MetadataKeyType)"
+                        )
+                    )
+    {
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
+                tr1::shared_ptr<MetadataKey> >();
+
+        def("value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::value),
+                ("value() -> " + spec_tree + "\n"
+                 "Fetch our value").c_str()
+           );
+
+        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::pretty_print),
+                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
+                 "Return a multiline-line indented and formatted version of our\n"
+                 "value, using the supplied Formatter to format individual items.").c_str()
+           );
+
+        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat),
+                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
+                 "Return a single-line formatted version of our value, using the\n"
+                 "supplied Formatter to format individual items.").c_str()
+           );
+
+        def("initial_label", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::initial_label),
+                "initial_label() -> URILabel\n"
+                "Return a URILabel that represents the initial label to use when\n"
+                "deciding the behaviour of individual items in the heirarchy."
+           );
     }
 };
 
@@ -520,16 +641,40 @@ void expose_metadata_key()
     bp::class_<MetadataKey, boost::noncopyable>
         (
          "MetadataKey",
+         "A MetadataKey is a generic key that contains a particular piece of\n"
+         "information about a PackageID instance.\n\n"
+
+         "A basic MetadataKey has:\n\n"
+
+         "- A raw name. This is in a repository-defined format designed to closely\n"
+         "  represent the internal name. For example, ebuilds and VDB IDs use\n"
+         "  raw names like 'DESCRIPTION' and 'KEYWORDS', whereas CRAN uses names\n"
+         "  like 'Title' and 'BundleDescription'. The raw name is unique in a\n"
+         "  PackageID.\n\n"
+
+         "- A human name. This is the name that should be used when outputting\n"
+         "  normally for a human to read.\n\n"
+
+         "- A MetadataKeyType. This is a hint to clients as to whether the key\n"
+         "  should be displayed when outputting information about a package ID.\n\n"
+
+         "Subclasses provide additional information, including the 'value' of the\n"
+         "key.",
          bp::no_init
         )
-        .def("raw_name", &MetadataKey::raw_name,
+        .def("raw_name", bp::pure_virtual(&MetadataKey::raw_name),
                 "raw_name() -> string\n"
-                "NEED_DOC"
+                "Fetch our raw name."
                 )
 
-        .def("human_name", &MetadataKey::human_name,
+        .def("human_name", bp::pure_virtual(&MetadataKey::human_name),
                 "human_name() -> string\n"
-                "NEED_DOC"
+                "Fetch our human name."
+                )
+
+        .def("type", bp::pure_virtual(&MetadataKey::type),
+                "type() -> MetadataKeyType\n"
+                "Fetch our key type."
                 )
         ;
 
@@ -543,7 +688,9 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataPackageIDKey",
-         "NEED_DOC\n"
+         "A MetadataPackageIDKey is a MetadataKey that has a PackageID as its\n"
+         "value.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
@@ -551,7 +698,7 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataPackageIDKey::value),
                 "value() -> PackageID\n"
-                "NEED_DOC"
+                "Fetch our value."
                 )
         ;
 
@@ -565,15 +712,17 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataStringKey",
-         "NEED_DOC\n"
+         "A MetadataStringKey is a MetadataKey that has a std::string as its\n"
+         "value.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
              )
         )
-        .def("value", &MetadataStringKey::value,
+        .def("value", bp::pure_virtual(&MetadataStringKey::value),
                 "value() -> string\n"
-                "NEED_DOC"
+                "Fetch our value."
                 )
         ;
 
@@ -587,7 +736,8 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataTimeKey",
-         "NEED_DOC\n"
+         "A MetadataTimeKey is a MetadataKey that has a int(time_t) as its value.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
@@ -595,6 +745,7 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataTimeKey::value),
                 "value() -> int\n"
+                "Fetch our value."
                 )
         ;
 
@@ -608,7 +759,8 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataFSEntryKey",
-         "NEED_DOC\n"
+         "A MetadataFSEntryKey is a MetadataKey that has an string(FSEntry) as its value.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
@@ -616,6 +768,7 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataFSEntryKey::value),
                 "value() -> FSEntry\n"
+                "Fetch our value."
                 )
         ;
 
@@ -629,7 +782,8 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataContentsKey",
-         "NEED_DOC\n"
+         "A MetadataContentsKey is a MetadataKey that holds a Contents heirarchy.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
@@ -637,19 +791,25 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataContentsKey::value),
                 "value() -> Contents\n"
-                "NEED_DOC"
+                "Fetch our value."
                 )
 
         //Work around epydoc bug
-        .def("raw_name", &MetadataKey::raw_name,
+        .def("raw_name", bp::pure_virtual(&MetadataKey::raw_name),
                 "raw_name() -> string\n"
-                "NEED_DOC"
+                "Fetch our raw name."
                 )
 
         //Work around epydoc bug
-        .def("human_name", &MetadataKey::human_name,
+        .def("human_name", bp::pure_virtual(&MetadataKey::human_name),
                 "human_name() -> string\n"
-                "NEED_DOC"
+                "Fetch our human name."
+                )
+
+        //Work around epydoc bug
+        .def("type", bp::pure_virtual(&MetadataKey::type),
+                "type() -> MetadataKeyType\n"
+                "Fetch our key type."
                 )
         ;
 
@@ -663,7 +823,9 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataRepositoryMaskInfoKey",
-         "NEED_DOC\n"
+         "A MetadataRepositoryMaskInfoKey is a MetadataKey that holds\n"
+         "RepositoryMaskInfo as its value.\n\n"
+
          "This class can be subclassed in Python.",
          bp::init<const std::string &, const std::string &, MetadataKeyType>(
              "__init__(raw_name, human_name, MetadataKeyType)"
@@ -671,6 +833,7 @@ void expose_metadata_key()
         )
         .def("value", bp::pure_virtual(&MetadataRepositoryMaskInfoKey::value),
                 "value() -> RepositoryMaskInfo\n"
+                "Fetch our value."
                 )
         ;
 
