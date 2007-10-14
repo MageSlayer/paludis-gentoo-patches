@@ -70,9 +70,9 @@ struct PythonCanFormat<T_, format::PlainRoles> :
         return do_format(t, f);
     }
 
-    std::string format_plain(const T_ & t) const
+    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Plain());
+        return self.format(t, format::Plain());
     }
 };
 
@@ -96,19 +96,19 @@ struct PythonCanFormat<T_, format::AcceptableRoles> :
         return do_format(t, f);
     }
 
-    std::string format_plain(const T_ & t) const
+    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Plain());
+        return self.format(t, format::Plain());
     }
 
-    std::string format_accepted(const T_ & t) const
+    static std::string format_accepted(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Accepted());
+        return self.format(t, format::Accepted());
     }
 
-    std::string format_unaccepted(const T_ & t) const
+    static std::string format_unaccepted(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Unaccepted());
+        return self.format(t, format::Unaccepted());
     }
 };
 
@@ -142,29 +142,29 @@ struct PythonCanFormat<T_, format::UseRoles> :
         return do_format(t, f);
     }
 
-    std::string format_plain(const T_ & t) const
+    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Plain());
+        return self.format(t, format::Plain());
     }
 
-    std::string format_enabled(const T_ & t) const
+    static std::string format_enabled(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Enabled());
+        return self.format(t, format::Enabled());
     }
 
-    std::string format_disabled(const T_ & t) const
+    static std::string format_disabled(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Disabled());
+        return self.format(t, format::Disabled());
     }
 
-    std::string format_forced(const T_ & t) const
+    static std::string format_forced(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Forced());
+        return self.format(t, format::Forced());
     }
 
-    std::string format_masked(const T_ & t) const
+    static std::string format_masked(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Masked());
+        return self.format(t, format::Masked());
     }
 };
 
@@ -222,29 +222,29 @@ struct PythonCanFormat<T_, format::IUseRoles> :
         return do_decorate(t, s, f);
     }
 
-    std::string format_plain(const T_ & t) const
+    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Plain());
+        return self.format(t, format::Plain());
     }
 
-    std::string format_enabled(const T_ & t) const
+    static std::string format_enabled(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Enabled());
+        return self.format(t, format::Enabled());
     }
 
-    std::string format_disabled(const T_ & t) const
+    static std::string format_disabled(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Disabled());
+        return self.format(t, format::Disabled());
     }
 
-    std::string format_forced(const T_ & t) const
+    static std::string format_forced(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Forced());
+        return self.format(t, format::Forced());
     }
 
-    std::string format_masked(const T_ & t) const
+    static std::string format_masked(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Masked());
+        return self.format(t, format::Masked());
     }
 
     std::string decorate_added(const T_ & t, const std::string & s) const
@@ -278,19 +278,19 @@ struct PythonCanFormat<T_, format::PackageRoles> :
         return do_format(t, f);
     }
 
-    std::string format_plain(const T_ & t) const
+    static std::string format_plain(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Plain());
+        return self.format(t, format::Plain());
     }
 
-    std::string format_installed(const T_ & t) const
+    static std::string format_installed(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Installed());
+        return self.format(t, format::Installed());
     }
 
-    std::string format_installable(const T_ & t) const
+    static std::string format_installable(const CanFormat<T_> & self, const T_ & t)
     {
-        return format(t, format::Installable());
+        return self.format(t, format::Installable());
     }
 };
 
@@ -370,271 +370,190 @@ void expose_formatter()
     /**
      * CanFormatString
      */
-    std::string (PythonCanFormatWrapper<std::string>::* format_string_plain)
-        (const std::string &) const = &PythonCanFormatWrapper<std::string>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<std::string>, boost::noncopyable>
         (
          "CanFormatString",
          "Descendents of this class implement the necessary methods to format a String.",
          bp::init<>("__init__()")
         )
-        .def("format_string_plain", format_string_plain)
+        .def("format_string_plain", &PythonCanFormatWrapper<std::string>::format_plain)
         ;
 
     /**
      * CanFormatUseFlagName
      */
-    std::string (PythonCanFormatWrapper<UseFlagName>::* format_use_flag_name_plain)
-        (const UseFlagName &) const = &PythonCanFormatWrapper<UseFlagName>::format_plain;
-    std::string (PythonCanFormatWrapper<UseFlagName>::* format_use_flag_name_enabled)
-        (const UseFlagName &) const = &PythonCanFormatWrapper<UseFlagName>::format_enabled;
-    std::string (PythonCanFormatWrapper<UseFlagName>::* format_use_flag_name_disabled)
-        (const UseFlagName &) const = &PythonCanFormatWrapper<UseFlagName>::format_disabled;
-    std::string (PythonCanFormatWrapper<UseFlagName>::* format_use_flag_name_forced)
-        (const UseFlagName &) const = &PythonCanFormatWrapper<UseFlagName>::format_forced;
-    std::string (PythonCanFormatWrapper<UseFlagName>::* format_use_flag_name_masked)
-        (const UseFlagName &) const = &PythonCanFormatWrapper<UseFlagName>::format_masked;
-
     bp::class_<PythonCanFormatWrapper<UseFlagName>, boost::noncopyable>
         (
          "CanFormatUseFlagName",
          "Descendents of this class implement the necessary methods to format a UseFlagName.",
          bp::init<>("__init__()")
         )
-        .def("format_use_flag_name_plain", format_use_flag_name_plain)
-        .def("format_use_flag_name_enabled", format_use_flag_name_enabled)
-        .def("format_use_flag_name_disabled", format_use_flag_name_disabled)
-        .def("format_use_flag_name_forced", format_use_flag_name_forced)
-        .def("format_use_flag_name_masked", format_use_flag_name_masked)
+        .def("format_use_flag_name_plain", &PythonCanFormatWrapper<UseFlagName>::format_plain)
+        .def("format_use_flag_name_enabled", &PythonCanFormatWrapper<UseFlagName>::format_enabled)
+        .def("format_use_flag_name_disabled", &PythonCanFormatWrapper<UseFlagName>::format_disabled)
+        .def("format_use_flag_name_forced", &PythonCanFormatWrapper<UseFlagName>::format_forced)
+        .def("format_use_flag_name_masked", &PythonCanFormatWrapper<UseFlagName>::format_masked)
         ;
 
     /**
      * CanFormatIUseFlag
      */
-    std::string (PythonCanFormatWrapper<IUseFlag>::* format_iuse_flag_plain)
-        (const IUseFlag &) const = &PythonCanFormatWrapper<IUseFlag>::format_plain;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* format_iuse_flag_enabled)
-        (const IUseFlag &) const = &PythonCanFormatWrapper<IUseFlag>::format_enabled;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* format_iuse_flag_disabled)
-        (const IUseFlag &) const = &PythonCanFormatWrapper<IUseFlag>::format_disabled;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* format_iuse_flag_forced)
-        (const IUseFlag &) const = &PythonCanFormatWrapper<IUseFlag>::format_forced;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* format_iuse_flag_masked)
-        (const IUseFlag &) const = &PythonCanFormatWrapper<IUseFlag>::format_masked;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* decorate_iuse_flag_added)
-        (const IUseFlag &, const std::string &) const = &PythonCanFormatWrapper<IUseFlag>::decorate_added;
-    std::string (PythonCanFormatWrapper<IUseFlag>::* decorate_iuse_flag_changed)
-        (const IUseFlag &, const std::string &) const = &PythonCanFormatWrapper<IUseFlag>::decorate_changed;
-
     bp::class_<PythonCanFormatWrapper<IUseFlag>, boost::noncopyable>
         (
          "CanFormatIUseFlag",
          "Descendents of this class implement the necessary methods to format a IUseFlag.",
          bp::init<>("__init__()")
         )
-        .def("format_iuse_flag_plain", format_iuse_flag_plain)
-        .def("format_iuse_flag_enabled", format_iuse_flag_enabled)
-        .def("format_iuse_flag_disabled", format_iuse_flag_disabled)
-        .def("format_iuse_flag_forced", format_iuse_flag_forced)
-        .def("format_iuse_flag_masked", format_iuse_flag_masked)
-        .def("decorate_iuse_flag_added", decorate_iuse_flag_added)
-        .def("decorate_iuse_flag_changed", decorate_iuse_flag_changed)
+        .def("format_iuse_flag_plain", &PythonCanFormatWrapper<IUseFlag>::format_plain)
+        .def("format_iuse_flag_enabled", &PythonCanFormatWrapper<IUseFlag>::format_enabled)
+        .def("format_iuse_flag_disabled", &PythonCanFormatWrapper<IUseFlag>::format_disabled)
+        .def("format_iuse_flag_forced", &PythonCanFormatWrapper<IUseFlag>::format_forced)
+        .def("format_iuse_flag_masked", &PythonCanFormatWrapper<IUseFlag>::format_masked)
+        .def("decorate_iuse_flag_added", &PythonCanFormatWrapper<IUseFlag>::decorate_added)
+        .def("decorate_iuse_flag_changed", &PythonCanFormatWrapper<IUseFlag>::decorate_changed)
         ;
 
     /**
      * CanFormatKeywordName
      */
-    std::string (PythonCanFormatWrapper<KeywordName>::* format_keyword_name_plain)
-        (const KeywordName &) const = &PythonCanFormatWrapper<KeywordName>::format_plain;
-    std::string (PythonCanFormatWrapper<KeywordName>::* format_keyword_name_accepted)
-        (const KeywordName &) const = &PythonCanFormatWrapper<KeywordName>::format_accepted;
-    std::string (PythonCanFormatWrapper<KeywordName>::* format_keyword_name_unaccepted)
-        (const KeywordName &) const = &PythonCanFormatWrapper<KeywordName>::format_unaccepted;
-
     bp::class_<PythonCanFormatWrapper<KeywordName>, boost::noncopyable>
         (
          "CanFormatKeywordName",
          "Descendents of this class implement the necessary methods to format a KeywordName.",
          bp::init<>("__init__()")
         )
-        .def("format_keyword_name_plain", format_keyword_name_plain)
-        .def("format_keyword_name_accepted", format_keyword_name_accepted)
-        .def("format_keyword_name_unaccepted", format_keyword_name_unaccepted)
+        .def("format_keyword_name_plain", &PythonCanFormatWrapper<KeywordName>::format_plain)
+        .def("format_keyword_name_accepted", &PythonCanFormatWrapper<KeywordName>::format_accepted)
+        .def("format_keyword_name_unaccepted", &PythonCanFormatWrapper<KeywordName>::format_unaccepted)
         ;
 
     /**
      * CanFormatPackageDepSpec
      */
-    std::string (PythonCanFormatWrapper<PackageDepSpec>::* format_package_dep_spec_plain)
-        (const PackageDepSpec &) const = &PythonCanFormatWrapper<PackageDepSpec>::format_plain;
-    std::string (PythonCanFormatWrapper<PackageDepSpec>::* format_package_dep_spec_installed)
-        (const PackageDepSpec &) const = &PythonCanFormatWrapper<PackageDepSpec>::format_installed;
-    std::string (PythonCanFormatWrapper<PackageDepSpec>::* format_package_dep_spec_installable)
-        (const PackageDepSpec &) const = &PythonCanFormatWrapper<PackageDepSpec>::format_installable;
-
     bp::class_<PythonCanFormatWrapper<PackageDepSpec>, boost::noncopyable>
         (
          "CanFormatPackageDepSpec",
          "Descendents of this class implement the necessary methods to format a PackageDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_package_dep_spec_plain", format_package_dep_spec_plain)
-        .def("format_package_dep_spec_installed", format_package_dep_spec_installed)
-        .def("format_package_dep_spec_installable", format_package_dep_spec_installable)
+        .def("format_package_dep_spec_plain", &PythonCanFormatWrapper<PackageDepSpec>::format_plain)
+        .def("format_package_dep_spec_installed", &PythonCanFormatWrapper<PackageDepSpec>::format_installed)
+        .def("format_package_dep_spec_installable", &PythonCanFormatWrapper<PackageDepSpec>::format_installable)
         ;
 
     /**
      * CanFormatBlockDepSpec
      */
-    std::string (PythonCanFormatWrapper<BlockDepSpec>::* format_block_dep_spec_plain)
-        (const BlockDepSpec &) const = &PythonCanFormatWrapper<BlockDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<BlockDepSpec>, boost::noncopyable>
         (
          "CanFormatBlockDepSpec",
          "Descendents of this class implement the necessary methods to format a BlockDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_block_dep_spec_plain", format_block_dep_spec_plain)
+        .def("format_block_dep_spec_plain", &PythonCanFormatWrapper<BlockDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatFetchableURIDepSpec
      */
-    std::string (PythonCanFormatWrapper<FetchableURIDepSpec>::* format_fetchable_uri_dep_spec_plain)
-        (const FetchableURIDepSpec &) const = &PythonCanFormatWrapper<FetchableURIDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<FetchableURIDepSpec>, boost::noncopyable>
         (
          "CanFormatFetchableURIDepSpec",
          "Descendents of this class implement the necessary methods to format a FetchableURIDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_fetchable_uri_dep_spec_plain", format_fetchable_uri_dep_spec_plain)
+        .def("format_fetchable_uri_dep_spec_plain", &PythonCanFormatWrapper<FetchableURIDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatSimpleURIDepSpec
      */
-    std::string (PythonCanFormatWrapper<SimpleURIDepSpec>::* format_simple_uri_dep_spec_plain)
-        (const SimpleURIDepSpec &) const = &PythonCanFormatWrapper<SimpleURIDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<SimpleURIDepSpec>, boost::noncopyable>
         (
          "CanFormatSimpleURIDepSpec",
          "Descendents of this class implement the necessary methods to format a SimpleURIDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_simple_uri_dep_spec_plain", format_simple_uri_dep_spec_plain)
+        .def("format_simple_uri_dep_spec_plain", &PythonCanFormatWrapper<SimpleURIDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatDependencyLabelsDepSpec
      */
-    std::string (PythonCanFormatWrapper<DependencyLabelsDepSpec>::* format_dependency_labels_dep_spec_plain)
-        (const DependencyLabelsDepSpec &) const = &PythonCanFormatWrapper<DependencyLabelsDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<DependencyLabelsDepSpec>, boost::noncopyable>
         (
          "CanFormatDependencyLabelsDepSpec",
          "Descendents of this class implement the necessary methods to format a DependencyLabelsDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_dependency_labels_dep_spec_plain", format_dependency_labels_dep_spec_plain)
+        .def("format_dependency_labels_dep_spec_plain",
+                &PythonCanFormatWrapper<DependencyLabelsDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatURILabelsDepSpec
      */
-    std::string (PythonCanFormatWrapper<URILabelsDepSpec>::* format_uri_labels_dep_spec_plain)
-        (const URILabelsDepSpec &) const = &PythonCanFormatWrapper<URILabelsDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<URILabelsDepSpec>, boost::noncopyable>
         (
          "CanFormatURILabelsDepSpec",
          "Descendents of this class implement the necessary methods to format an URILabelsDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_uri_labels_dep_spec_plain", format_uri_labels_dep_spec_plain)
+        .def("format_uri_labels_dep_spec_plain", &PythonCanFormatWrapper<URILabelsDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatPlainTextDepSpec
      */
-    std::string (PythonCanFormatWrapper<PlainTextDepSpec>::* format_plain_text_dep_spec_plain)
-        (const PlainTextDepSpec &) const = &PythonCanFormatWrapper<PlainTextDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<PlainTextDepSpec>, boost::noncopyable>
         (
          "CanFormatPlainTextDepSpec",
          "Descendents of this class implement the necessary methods to format a PlainTextDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_plain_text_dep_spec_plain", format_plain_text_dep_spec_plain)
+        .def("format_plain_text_dep_spec_plain", &PythonCanFormatWrapper<PlainTextDepSpec>::format_plain)
         ;
 
     /**
      * CanFormatLicenseDepSpec
      */
-    std::string (PythonCanFormatWrapper<LicenseDepSpec>::* format_license_dep_spec_plain)
-        (const LicenseDepSpec &) const = &PythonCanFormatWrapper<LicenseDepSpec>::format_plain;
-    std::string (PythonCanFormatWrapper<LicenseDepSpec>::* format_license_dep_spec_accepted)
-        (const LicenseDepSpec &) const = &PythonCanFormatWrapper<LicenseDepSpec>::format_accepted;
-    std::string (PythonCanFormatWrapper<LicenseDepSpec>::* format_license_dep_spec_unaccepted)
-        (const LicenseDepSpec &) const = &PythonCanFormatWrapper<LicenseDepSpec>::format_unaccepted;
-
     bp::class_<PythonCanFormatWrapper<LicenseDepSpec>, boost::noncopyable>
         (
          "CanFormatLicenseDepSpec",
          "Descendents of this class implement the necessary methods to format a LicenseDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_license_dep_spec_plain", format_license_dep_spec_plain)
-        .def("format_license_dep_spec_accepted", format_license_dep_spec_accepted)
-        .def("format_license_dep_spec_unaccepted", format_license_dep_spec_unaccepted)
+        .def("format_license_dep_spec_plain", &PythonCanFormatWrapper<LicenseDepSpec>::format_plain)
+        .def("format_license_dep_spec_accepted", &PythonCanFormatWrapper<LicenseDepSpec>::format_accepted)
+        .def("format_license_dep_spec_unaccepted", &PythonCanFormatWrapper<LicenseDepSpec>::format_unaccepted)
         ;
 
     /**
      * CanFormatUseDepSpec
      */
-    std::string (PythonCanFormatWrapper<UseDepSpec>::* format_use_dep_spec_plain)
-        (const UseDepSpec &) const = &PythonCanFormatWrapper<UseDepSpec>::format_plain;
-    std::string (PythonCanFormatWrapper<UseDepSpec>::* format_use_dep_spec_enabled)
-        (const UseDepSpec &) const = &PythonCanFormatWrapper<UseDepSpec>::format_enabled;
-    std::string (PythonCanFormatWrapper<UseDepSpec>::* format_use_dep_spec_disabled)
-        (const UseDepSpec &) const = &PythonCanFormatWrapper<UseDepSpec>::format_disabled;
-    std::string (PythonCanFormatWrapper<UseDepSpec>::* format_use_dep_spec_forced)
-        (const UseDepSpec &) const = &PythonCanFormatWrapper<UseDepSpec>::format_forced;
-    std::string (PythonCanFormatWrapper<UseDepSpec>::* format_use_dep_spec_masked)
-        (const UseDepSpec &) const = &PythonCanFormatWrapper<UseDepSpec>::format_masked;
-
     bp::class_<PythonCanFormatWrapper<UseDepSpec>, boost::noncopyable>
         (
          "CanFormatUseDepSpec",
          "Descendents of this class implement the necessary methods to format a UseDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_use_dep_spec_plain", format_use_dep_spec_plain)
-        .def("format_use_dep_spec_enabled", format_use_dep_spec_enabled)
-        .def("format_use_dep_spec_disabled", format_use_dep_spec_disabled)
-        .def("format_use_dep_spec_forced", format_use_dep_spec_forced)
-        .def("format_use_dep_spec_masked", format_use_dep_spec_masked)
+        .def("format_use_dep_spec_plain", &PythonCanFormatWrapper<UseDepSpec>::format_plain)
+        .def("format_use_dep_spec_enabled", &PythonCanFormatWrapper<UseDepSpec>::format_enabled)
+        .def("format_use_dep_spec_disabled", &PythonCanFormatWrapper<UseDepSpec>::format_disabled)
+        .def("format_use_dep_spec_forced", &PythonCanFormatWrapper<UseDepSpec>::format_forced)
+        .def("format_use_dep_spec_masked", &PythonCanFormatWrapper<UseDepSpec>::format_masked)
         ;
 
     /**
      * CanFormatNamedSetDepSpec
      */
-    std::string (PythonCanFormatWrapper<NamedSetDepSpec>::* format_named_set_dep_spec_plain)
-        (const NamedSetDepSpec &) const = &PythonCanFormatWrapper<NamedSetDepSpec>::format_plain;
-
     bp::class_<PythonCanFormatWrapper<NamedSetDepSpec>, boost::noncopyable>
         (
          "CanFormatNamedSetDepSpec",
          "Descendents of this class implement the necessary methods to format a NamedSetDepSpec.",
          bp::init<>("__init__()")
         )
-        .def("format_named_set_dep_spec_plain", format_named_set_dep_spec_plain)
+        .def("format_named_set_dep_spec_plain", &PythonCanFormatWrapper<NamedSetDepSpec>::format_plain)
         ;
 
     /**
@@ -795,6 +714,7 @@ void expose_formatter()
      */
     bp::class_<StringifyFormatter,
             bp::bases<
+                CanFormat<std::string>,
                 CanFormat<UseFlagName>,
                 CanFormat<IUseFlag>,
                 CanFormat<KeywordName>,
@@ -828,6 +748,7 @@ void expose_formatter()
      */
     bp::class_<PythonFormatterWrapper,
             bp::bases<
+                CanFormat<std::string>,
                 CanFormat<UseFlagName>,
                 CanFormat<IUseFlag>,
                 CanFormat<KeywordName>,

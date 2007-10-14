@@ -132,7 +132,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return ["keyword"]
 
             def pretty_print_flat(self, f):
-                return "foo"
+                return f.format_keyword_name_plain(KeywordName("foo"))
 
         test_metadata_keyword_name_set_key(TestKey())
 
@@ -145,7 +145,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return ["use"]
 
             def pretty_print_flat(self, f):
-                return "foo"
+                return f.format_use_flag_name_plain(UseFlagName("foo"))
 
         test_metadata_use_flag_name_set_key(TestKey())
 
@@ -158,10 +158,10 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return [IUseFlag("iuse", IUseFlagParseMode.PERMISSIVE, -1)]
 
             def pretty_print_flat(self, f):
-                return "foo"
+                return f.format_iuse_flag_plain(IUseFlag("foo", UseFlagState.ENABLED, 0))
 
             def pretty_print_flat_with_comparison(self, e, pid, f):
-                return "foo"
+                return f.format_iuse_flag_plain(IUseFlag("foo", UseFlagState.ENABLED, 0))
 
         test_metadata_iuse_flag_set_key(TestKey())
 
@@ -174,7 +174,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return ["string"]
 
             def pretty_print_flat(self, f):
-                return "foo"
+                return f.format_string_plain("foo")
 
         test_metadata_string_set_key(TestKey())
 
@@ -187,9 +187,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
         test_metadata_license_spec_tree_key(TestKey())
@@ -203,10 +207,12 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                return "str"
+                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                return "str"
+                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                return f.format_package_dep_spec_plain(pds)
 
         test_metadata_provide_spec_tree_key(TestKey())
 
@@ -219,10 +225,12 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                return "str"
+                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                return f.format_package_dep_spec_plain(pds)
 
             def pretty_print_flat(self, f):
-                return "str"
+                pds = PackageDepSpec("cat/pkg", PackageDepSpecParseMode.PERMISSIVE)
+                return f.format_package_dep_spec_plain(pds)
 
         test_metadata_dependency_spec_tree_key(TestKey())
 
@@ -236,9 +244,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
+                #TODO
+                #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
             def pretty_print_flat(self, f):
+                #TODO
+                #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
         test_metadata_restrict_spec_tree_key(TestKey())
@@ -252,9 +264,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def initial_label(self):
@@ -271,9 +287,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
+                #TODO
+                #return f.format_use_dep_spec_plain(...)
                 return "str"
 
         test_metadata_simple_uri_spec_tree_key(TestKey())
