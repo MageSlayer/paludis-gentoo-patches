@@ -24,16 +24,6 @@ _reconcilio() {
         --exact \
         --verbose -v \
         --resume-command-template"
-    linkage_opts="--library"
-    install_opts="--pretend -p \
-        --no-config-protection \
-        --debug-build \
-        --checks \
-        --fetch -f \
-        --no-safe-resume \
-        --show-reasons \
-        --show-use-descriptions \
-        --continue-on-failure"
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \
@@ -52,6 +42,18 @@ _reconcilio() {
         --dl-blocks \
         --dl-override-masks \
         --dl-fall-back"
+    install_opts="--pretend -p \
+        --no-config-protection \
+        --debug-build \
+        --checks \
+        --fetch -f \
+        --no-safe-resume \
+        --show-reasons \
+        --show-use-descriptions \
+        --continue-on-failure \
+        ${deplist_opts}"
+    linkage_opts="--library \
+        ${install_opts}"
 
     all_opts="${action_opts} ${general_opts} ${linkage_opts} ${install_opts} ${deplist_opts}"
 
