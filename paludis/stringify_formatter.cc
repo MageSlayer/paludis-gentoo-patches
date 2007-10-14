@@ -28,12 +28,20 @@ using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
     PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 {
 }
 
 StringifyFormatter::~StringifyFormatter()
 {
+}
+
+std::string
+StringifyFormatter::format(const std::string & s, const format::Plain & k) const
+{
+    if (_imp->f_str)
+        return _imp->f_str->format(s, k);
+    return s;
 }
 
 std::string

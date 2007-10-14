@@ -42,6 +42,7 @@ namespace paludis
     template <>
     struct Implementation<StringifyFormatter>
     {
+        const CanFormat<std::string> * const f_str;
         const CanFormat<IUseFlag> * const f_iuse;
         const CanFormat<UseFlagName> * const f_use;
         const CanFormat<KeywordName> * const f_keyword;
@@ -58,6 +59,7 @@ namespace paludis
         const CanSpace * const f_space;
 
         Implementation(
+                const CanFormat<std::string> * const f_str_v,
                 const CanFormat<IUseFlag> * const f_iuse_v,
                 const CanFormat<UseFlagName> * const f_use_v,
                 const CanFormat<KeywordName> * const f_keyword_v,
@@ -73,6 +75,7 @@ namespace paludis
                 const CanFormat<NamedSetDepSpec> * const f_named_v,
                 const CanSpace * const f_space_v
                 ) :
+            f_str(f_str_v),
             f_iuse(f_iuse_v),
             f_use(f_use_v),
             f_keyword(f_keyword_v),
@@ -174,6 +177,7 @@ namespace paludis
     template <typename T_>
         StringifyFormatter::StringifyFormatter(const T_ & t) :
             PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
+                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<IUseFlag> *>::value, IUseFlag>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseFlagName> *>::value, UseFlagName>::get(&t),
                         StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),

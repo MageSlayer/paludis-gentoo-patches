@@ -58,6 +58,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE StringifyFormatter :
         private PrivateImplementationPattern<StringifyFormatter>,
+        public CanFormat<std::string>,
         public CanFormat<UseFlagName>,
         public CanFormat<IUseFlag>,
         public CanFormat<KeywordName>,
@@ -91,6 +92,8 @@ namespace paludis
             ~StringifyFormatter();
 
             ///\}
+
+            virtual std::string format(const std::string &, const format::Plain &) const;
 
             virtual std::string format(const UseFlagName &, const format::Enabled &) const;
             virtual std::string format(const UseFlagName &, const format::Disabled &) const;
