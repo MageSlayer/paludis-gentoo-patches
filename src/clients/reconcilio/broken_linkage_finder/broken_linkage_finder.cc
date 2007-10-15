@@ -23,7 +23,6 @@
 #include "libtool_linkage_checker.hh"
 #include "linkage_checker.hh"
 
-#include <src/clients/reconcilio/util/iterator.hh>
 #include <src/clients/reconcilio/util/realpath.hh>
 
 #include <paludis/util/fs_entry.hh>

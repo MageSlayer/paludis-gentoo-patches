@@ -19,7 +19,6 @@
 
 #include "elf_linkage_checker.hh"
 
-#include <src/clients/reconcilio/util/iterator.hh>
 #include <src/clients/reconcilio/util/realpath.hh>
 
 #include <src/clients/reconcilio/littlelf/elf.hh>

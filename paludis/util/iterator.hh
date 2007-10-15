@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -497,6 +498,75 @@ namespace paludis
     CreateInsertIterator<Iter_, Type_> create_inserter(const Iter_ & i)
     {
         return CreateInsertIterator<Iter_, Type_>(i);
+    }
+
+    template <typename Value_, typename Iterator_, Value_ std::iterator_traits<Iterator_>::value_type::* member_>
+    class MemberIterator :
+        public std::iterator<std::forward_iterator_tag, const Value_>,
+        public paludis::equality_operators::HasEqualityOperators
+    {
+        private:
+            Iterator_ _it;
+
+        public:
+            MemberIterator(Iterator_ it) :
+                _it(it)
+            {
+            }
+
+            bool operator== (const MemberIterator & other) const
+            {
+                return _it == other._it;
+            }
+
+            MemberIterator & operator++ ()
+            {
+                ++_it;
+                return *this;
+            }
+
+            MemberIterator operator++ (int)
+            {
+                return MemberIterator(_it++);
+            }
+
+            typename std::iterator_traits<MemberIterator>::reference operator* () const
+            {
+                return (*_it).*member_;
+            }
+
+            typename std::iterator_traits<MemberIterator>::pointer operator-> () const
+            {
+                return &((*_it).*member_);
+            }
+    };
+
+    template <typename Iterator_>
+    struct FirstIterator
+    {
+        typedef MemberIterator<typename std::iterator_traits<Iterator_>::value_type::first_type,
+                               Iterator_, &std::iterator_traits<Iterator_>::value_type::first> Type;
+    };
+
+    template <typename Iterator_>
+    inline typename FirstIterator<Iterator_>::Type
+    first_iterator(Iterator_ it)
+    {
+        return typename FirstIterator<Iterator_>::Type(it);
+    }
+
+    template <typename Iterator_>
+    struct SecondIterator
+    {
+        typedef MemberIterator<typename std::iterator_traits<Iterator_>::value_type::second_type,
+                               Iterator_, &std::iterator_traits<Iterator_>::value_type::second> Type;
+    };
+
+    template <typename Iterator_>
+    inline typename SecondIterator<Iterator_>::Type
+    second_iterator(Iterator_ it)
+    {
+        return typename SecondIterator<Iterator_>::Type(it);
     }
 }
 

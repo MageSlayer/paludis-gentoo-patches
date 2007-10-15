@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 David Leverton <levertond@googlemail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,11 +21,13 @@
 #include <algorithm>
 #include <list>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/join.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
 #include <set>
 #include <map>
+#include <string>
 #include <paludis/util/tr1_memory.hh>
 
 using namespace test;
@@ -332,4 +335,105 @@ namespace test_cases
             TEST_CHECK_EQUAL(vv.at(1).s, "two");
         }
     } test_create_insert_iterator;
+}
+
+namespace test_cases
+{
+    /**
+     * \test Test first_iterator.
+     *
+     */
+    struct FirstIteratorTest : TestCase
+    {
+        FirstIteratorTest() : TestCase("first_iterator") {}
+
+        void run()
+        {
+            typedef std::vector<std::pair<std::string, std::string> > V;
+
+            V v;
+            v.push_back(std::pair<std::string, std::string>("one", "I"));
+            v.push_back(std::pair<std::string, std::string>("two", "II"));
+            v.push_back(std::pair<std::string, std::string>("three", "III"));
+            v.push_back(std::pair<std::string, std::string>("four", "IV"));
+            v.push_back(std::pair<std::string, std::string>("five", "V"));
+
+            FirstIterator<V::iterator>::Type it = first_iterator(v.begin());
+            TEST_CHECK(it == it);
+            TEST_CHECK(! (it != it));
+            TEST_CHECK_EQUAL(*it, "one");
+            TEST_CHECK_EQUAL(it->length(), 3U);
+
+            FirstIterator<V::iterator>::Type it2(it);
+            TEST_CHECK(it == it2);
+            TEST_CHECK(! (it != it2));
+            TEST_CHECK_EQUAL(*++it2, "two");
+            TEST_CHECK_EQUAL(*it2, "two");
+            TEST_CHECK_EQUAL(it2->length(), 3U);
+            TEST_CHECK(it != it2);
+            TEST_CHECK(! (it == it2));
+
+            FirstIterator<V::iterator>::Type it3(it2);
+            TEST_CHECK(it2 == it3++);
+            TEST_CHECK(it2 != it3);
+            TEST_CHECK_EQUAL(*it3, "three");
+            TEST_CHECK_EQUAL(it3->length(), 5U);
+
+            it3 = it2;
+            TEST_CHECK(it2 == it3);
+            TEST_CHECK_EQUAL(*it3, "two");
+            TEST_CHECK_EQUAL(*it3++, "two");
+
+            TEST_CHECK_EQUAL(join(first_iterator(v.begin()), first_iterator(v.end()), " "), "one two three four five");
+        }
+    } first_iterator_test;
+
+    /**
+     * \test Test second_iterator.
+     *
+     */
+    struct SecondIteratorTest : TestCase
+    {
+        SecondIteratorTest() : TestCase("second_iterator") {}
+
+        void run()
+        {
+            typedef std::map<std::string, std::string> M;
+
+            M m;
+            m["I"] = "one";
+            m["II"] = "two";
+            m["III"] = "three";
+            m["IV"] = "four";
+            m["V"] = "five";
+
+            SecondIterator<M::iterator>::Type it = second_iterator(m.begin());
+            TEST_CHECK(it == it);
+            TEST_CHECK(! (it != it));
+            TEST_CHECK_EQUAL(*it, "one");
+            TEST_CHECK_EQUAL(it->length(), 3U);
+
+            SecondIterator<M::iterator>::Type it2(it);
+            TEST_CHECK(it == it2);
+            TEST_CHECK(! (it != it2));
+            TEST_CHECK_EQUAL(*++it2, "two");
+            TEST_CHECK_EQUAL(*it2, "two");
+            TEST_CHECK_EQUAL(it2->length(), 3U);
+            TEST_CHECK(it != it2);
+            TEST_CHECK(! (it == it2));
+
+            SecondIterator<M::iterator>::Type it3(it2);
+            TEST_CHECK(it2 == it3++);
+            TEST_CHECK(it2 != it3);
+            TEST_CHECK_EQUAL(*it3, "three");
+            TEST_CHECK_EQUAL(it3->length(), 5U);
+
+            it3 = it2;
+            TEST_CHECK(it2 == it3);
+            TEST_CHECK_EQUAL(*it3, "two");
+            TEST_CHECK_EQUAL(*it3++, "two");
+
+            TEST_CHECK_EQUAL(join(second_iterator(m.begin()), second_iterator(m.end()), " "), "one two three four five");
+        }
+    } second_iterator_test;
 }
