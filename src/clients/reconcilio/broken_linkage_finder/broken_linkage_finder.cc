@@ -67,6 +67,7 @@ namespace paludis
         std::string library;
 
         std::vector<tr1::shared_ptr<LinkageChecker> > checkers;
+        std::set<FSEntry> extra_lib_dirs;
 
         Mutex mutex;
 
@@ -124,7 +125,7 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
 
     Context ctx("When checking for broken linkage in '" + stringify(env->root()) + "':");
 
-    _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new ElfLinkageChecker(library)));
+    _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new ElfLinkageChecker(env->root(), library)));
     if (library.empty())
         _imp->checkers.push_back(tr1::shared_ptr<LinkageChecker>(new LibtoolLinkageChecker(env->root())));
 
@@ -144,8 +145,20 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
         ll_debug, lc_context, "After resolving symlinks and pruning subdirectories, SEARCH_DIRS=\"" +
         join(search_dirs_pruned.begin(), search_dirs_pruned.end(), " ") + "\"");
 
+    std::transform(_imp->config.begin_ld_so_conf(), _imp->config.end_ld_so_conf(),
+                   std::inserter(_imp->extra_lib_dirs, _imp->extra_lib_dirs.begin()),
+                   tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
+
     parallel_for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
                       tr1::bind(&Implementation<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
+
+    for (Configuration::DirsIterator it(_imp->extra_lib_dirs.begin()),
+             it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "Need to check for extra libraries in '" + stringify(env->root() / *it) + "'");
+        std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
+                      tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
+    }
 
     tr1::function<void (const FSEntry &, const std::string &)> callback(
         tr1::bind(&Implementation<BrokenLinkageFinder>::add_breakage, _imp.get(), _1, _2));
@@ -186,13 +199,19 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
 {
     using namespace tr1::placeholders;
 
-    if (config.dir_is_masked(directory.strip_leading(env->root())))
+    FSEntry without_root(directory.strip_leading(env->root()));
+    if (config.dir_is_masked(without_root))
     {
         Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(directory) + "' is search-masked");
         return;
     }
 
     Log::get_instance()->message(ll_debug, lc_context, "Entering directory '" + stringify(directory) + "'");
+    {
+        Lock l(mutex);
+        extra_lib_dirs.erase(without_root);
+    }
+
     try
     {
         parallel_for_each(DirIterator(directory, false), DirIterator(),

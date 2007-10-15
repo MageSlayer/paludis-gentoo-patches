@@ -50,6 +50,8 @@ namespace test_cases
 
             TEST_CHECK_EQUAL(join(config.begin_search_dirs(), config.end_search_dirs(), " "),
                              "/alib /barbin /barlib/foo /bazbin /bin /blib /foobin /foolib/bar /lib32 /lib64 /quuxlib /sbin /usr/bin /usr/lib* /usr/sbin");
+            TEST_CHECK_EQUAL(join(config.begin_ld_so_conf(), config.end_ld_so_conf(), " "),
+                             "/barlib/foo /foolib/bar /lib /usr/lib");
 
             TEST_CHECK(config.dir_is_masked(FSEntry("/meh")));
             TEST_CHECK(config.dir_is_masked(FSEntry("/quuxlib/quux")));

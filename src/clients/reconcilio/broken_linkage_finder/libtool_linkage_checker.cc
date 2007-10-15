@@ -154,6 +154,11 @@ LibtoolLinkageChecker::note_symlink(const FSEntry &, const FSEntry &)
 }
 
 void
+LibtoolLinkageChecker::add_extra_lib_dir(const FSEntry &)
+{
+}
+
+void
 LibtoolLinkageChecker::need_breakage_added(
     const tr1::function<void (const FSEntry &, const std::string &)> & callback)
 {

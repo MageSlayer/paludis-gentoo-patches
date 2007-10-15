@@ -20,6 +20,7 @@
 #include "elf_linkage_checker.hh"
 
 #include <src/clients/reconcilio/util/iterator.hh>
+#include <src/clients/reconcilio/util/realpath.hh>
 
 #include <src/clients/reconcilio/littlelf/elf.hh>
 #include <src/clients/reconcilio/littlelf/elf_dynamic_section.hh>
@@ -56,20 +57,7 @@ namespace
         unsigned char _class, _os_abi, _os_abi_version;
         bool _bigendian, _mips_n32;
 
-        bool operator< (const ElfArchitecture & other) const
-        {
-            if (_machine != other._machine)
-                return _machine < other._machine;
-            if (_class != other._class)
-                return _class < other._class;
-            if (_os_abi != other._os_abi)
-                return _os_abi < other._os_abi;
-            if (_os_abi_version != other._os_abi_version)
-                return _os_abi_version < other._os_abi_version;
-            if (_bigendian != other._bigendian)
-                return _bigendian < other._bigendian;
-            return _mips_n32 < other._mips_n32;
-        }
+        bool operator< (const ElfArchitecture &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         static unsigned normalise_arch(unsigned arch)
         {
@@ -94,6 +82,22 @@ namespace
         {
         }
     };
+
+    bool
+    ElfArchitecture::operator< (const ElfArchitecture & other) const
+    {
+        if (_machine != other._machine)
+            return _machine < other._machine;
+        if (_class != other._class)
+            return _class < other._class;
+        if (_os_abi != other._os_abi)
+            return _os_abi < other._os_abi;
+        if (_os_abi_version != other._os_abi_version)
+            return _os_abi_version < other._os_abi_version;
+        if (_bigendian != other._bigendian)
+            return _bigendian < other._bigendian;
+        return _mips_n32 < other._mips_n32;
+    }
 }
 
 typedef std::multimap<FSEntry, FSEntry> Symlinks;
@@ -104,6 +108,7 @@ namespace paludis
     template <>
     struct Implementation<ElfLinkageChecker>
     {
+        FSEntry root;
         std::string library;
 
         Mutex mutex;
@@ -114,18 +119,22 @@ namespace paludis
         std::map<ElfArchitecture, std::vector<std::string> > libraries;
         Needed needed;
 
+        std::vector<FSEntry> extra_lib_dirs;
+
         template <typename> bool check_elf(const FSEntry &, std::ifstream &);
         void handle_library(const FSEntry &, const ElfArchitecture &);
+        template <typename> bool check_extra_elf(const FSEntry &, std::istream &, std::set<ElfArchitecture> &);
 
-        Implementation(const std::string & the_library) :
+        Implementation(const FSEntry & the_root, const std::string & the_library) :
+            root(the_root),
             library(the_library)
         {
         }
     };
 }
 
-ElfLinkageChecker::ElfLinkageChecker(const std::string & library) :
-    PrivateImplementationPattern<ElfLinkageChecker>(new Implementation<ElfLinkageChecker>(library))
+ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::string & library) :
+    PrivateImplementationPattern<ElfLinkageChecker>(new Implementation<ElfLinkageChecker>(root, library))
 {
 }
 
@@ -242,9 +251,20 @@ ElfLinkageChecker::note_symlink(const FSEntry & link, const FSEntry & target)
 }
 
 void
+ElfLinkageChecker::add_extra_lib_dir(const FSEntry & dir)
+{
+    _imp->extra_lib_dirs.push_back(dir);
+}
+
+void
 ElfLinkageChecker::need_breakage_added(
     const tr1::function<void (const FSEntry &, const std::string &)> & callback)
 {
+    using namespace tr1::placeholders;
+
+    typedef std::map<std::string, std::set<ElfArchitecture> > AllMissing;
+    AllMissing all_missing;
+
     for (Needed::iterator arch_it(_imp->needed.begin()),
              arch_it_end(_imp->needed.end()); arch_it_end != arch_it; ++arch_it)
     {
@@ -260,12 +280,77 @@ ElfLinkageChecker::need_breakage_added(
                             _imp->libraries[arch_it->first].begin(),
                             _imp->libraries[arch_it->first].end(),
                             std::back_inserter(missing));
-
-        for (std::vector<std::string>::const_iterator req_it(missing.begin()),
-                 req_it_end(missing.end()); req_it_end != req_it; ++req_it)
-            for (std::vector<FSEntry>::const_iterator file_it(arch_it->second[*req_it].begin()),
-                     file_it_end(arch_it->second[*req_it].end()); file_it_end != file_it; ++file_it)
-                callback(*file_it, *req_it);
+        for (std::vector<std::string>::const_iterator it(missing.begin()),
+                 it_end(missing.end()); it_end != it; ++it)
+            all_missing[*it].insert(arch_it->first);
     }
+
+    for (std::vector<FSEntry>::const_iterator dir_it(_imp->extra_lib_dirs.begin()),
+             dir_it_end(_imp->extra_lib_dirs.end()); dir_it_end != dir_it; ++dir_it)
+    {
+        Context ctx("When seaching for missing libraries in '" + stringify(*dir_it) + "':");
+
+        for (AllMissing::iterator missing_it(all_missing.begin()),
+                 missing_it_end(all_missing.end()); missing_it_end != missing_it; ++missing_it)
+        {
+            if (missing_it->second.empty())
+                continue;
+
+            FSEntry file(dereference_with_root(*dir_it / missing_it->first, _imp->root));
+            if (! file.is_regular_file())
+            {
+                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is missing or not a regular file");
+                continue;
+            }
+
+            std::ifstream stream(stringify(file).c_str());
+            if (! stream)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "Error opening '" + stringify(file) + "': " + strerror(errno));
+                continue;
+            }
+
+            if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing_it->second) ||
+                   _imp->check_extra_elf<Elf64Type>(file, stream, missing_it->second)))
+                Log::get_instance()->message(ll_debug, lc_no_context, "'" + stringify(file) + "' is not an ELF file");
+        }
+    }
+
+    for (AllMissing::const_iterator missing_it(all_missing.begin()),
+             missing_it_end(all_missing.end()); missing_it_end != missing_it; ++missing_it)
+        for (std::set<ElfArchitecture>::const_iterator arch_it(missing_it->second.begin()),
+                 arch_it_end(missing_it->second.end()); arch_it_end != arch_it; ++arch_it)
+            std::for_each(_imp->needed[*arch_it][missing_it->first].begin(),
+                          _imp->needed[*arch_it][missing_it->first].end(),
+                          tr1::bind(callback, _1, missing_it->first));
+
+}
+
+template <typename ElfType_>
+bool
+Implementation<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::istream & stream, std::set<ElfArchitecture> & arches)
+{
+    if (! ElfObject<ElfType_>::is_valid_elf(stream))
+        return false;
+
+    Context ctx("When checking '" + stringify(file) + "' as a " + stringify<int>(ElfType_::elf_class * 32) + "-bit ELF file");
+
+    try
+    {
+        ElfObject<ElfType_> elf(stream);
+        if (ET_DYN == elf.get_type())
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is a library");
+            arches.erase(ElfArchitecture(elf));
+        }
+        else
+            Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a library");
+    }
+    catch (const InvalidElfFileError &)
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "'" + stringify(file) + "' appears to be invalid or corrupted");
+    }
+
+    return true;
 }
 

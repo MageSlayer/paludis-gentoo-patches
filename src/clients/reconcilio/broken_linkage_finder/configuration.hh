@@ -42,6 +42,8 @@ namespace broken_linkage_finder
             typedef libwrapiter::ForwardIterator<Configuration, const paludis::FSEntry> DirsIterator;
             DirsIterator begin_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            DirsIterator begin_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            DirsIterator end_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             bool dir_is_masked(const paludis::FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));

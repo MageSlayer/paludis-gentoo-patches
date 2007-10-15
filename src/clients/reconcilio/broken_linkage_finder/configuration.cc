@@ -51,6 +51,7 @@ namespace paludis
         std::vector<std::string> ld_library_mask;
         std::vector<FSEntry> search_dirs;
         std::vector<FSEntry> search_dirs_mask;
+        std::vector<FSEntry> ld_so_conf;
 
         void load_from_environment();
         void load_from_etc_revdep_rebuild(const FSEntry &);
@@ -142,6 +143,14 @@ Configuration::Configuration(const FSEntry & root) :
     cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root);
     cleanup("SEARCH_DIRS",      _imp->search_dirs,      root);
     cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root);
+
+    // don't need the extra cleanup here
+    std::sort(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end());
+    _imp->ld_so_conf.erase(std::unique(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end()),
+                           _imp->ld_so_conf.end());
+    Log::get_instance()->message(
+        ll_debug, lc_context, "Final ld.so.conf contents is \"" +
+        join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") + "\"");
 }
 
 Configuration::~Configuration()
@@ -252,6 +261,7 @@ Implementation<Configuration>::load_from_etc_ld_so_conf(const FSEntry & root)
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + join(lines.begin(), lines.end(), " "));
             std::copy(lines.begin(), lines.end(), std::back_inserter(search_dirs));
+            std::copy(lines.begin(), lines.end(), std::back_inserter(ld_so_conf));
         }
     }
     else if (etc_ld_so_conf.exists())
@@ -269,6 +279,7 @@ Implementation<Configuration>::add_defaults()
         "/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*");
     static const std::string default_search_dirs_mask(
         "/opt/OpenOffice /usr/lib*/openoffice /lib*/modules");
+    static const std::string default_ld_so_conf("/lib /usr/lib");
 
     Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + default_ld_library_mask + "\"");
     WhitespaceTokeniser::get_instance()->tokenise(
@@ -281,6 +292,10 @@ Implementation<Configuration>::add_defaults()
     Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + default_search_dirs_mask + "\"");
     WhitespaceTokeniser::get_instance()->tokenise(
         default_search_dirs_mask, std::back_inserter(search_dirs_mask));
+
+    Log::get_instance()->message(ll_debug, lc_context, "Default ld.so.conf contents is \"" + default_ld_so_conf + "\"");
+    WhitespaceTokeniser::get_instance()->tokenise(
+        default_ld_so_conf, std::back_inserter(ld_so_conf));
 }
 
 Configuration::DirsIterator
@@ -293,6 +308,18 @@ Configuration::DirsIterator
 Configuration::end_search_dirs() const
 {
     return DirsIterator(_imp->search_dirs.end());
+}
+
+Configuration::DirsIterator
+Configuration::begin_ld_so_conf() const
+{
+    return DirsIterator(_imp->ld_so_conf.begin());
+}
+
+Configuration::DirsIterator
+Configuration::end_ld_so_conf() const
+{
+    return DirsIterator(_imp->ld_so_conf.end());
 }
 
 bool

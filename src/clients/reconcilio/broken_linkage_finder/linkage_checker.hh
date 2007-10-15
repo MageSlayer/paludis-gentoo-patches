@@ -44,6 +44,7 @@ namespace broken_linkage_finder
             virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &) = 0;
 
+            virtual void add_extra_lib_dir(const paludis::FSEntry &) = 0;
             virtual void need_breakage_added(
                 const paludis::tr1::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
 
