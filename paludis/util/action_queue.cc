@@ -41,6 +41,7 @@ namespace paludis
         bool should_finish;
         std::deque<tr1::function<void () throw ()> > queue;
         ThreadPool threads;
+        bool limit_size;
 
         void finish()
         {
@@ -75,7 +76,8 @@ namespace paludis
             }
         }
 
-        Implementation(const unsigned n_threads, const bool nice) :
+        Implementation(const unsigned n_threads, const bool nice, const bool do_limit_size) :
+            limit_size(do_limit_size),
             should_finish(false)
         {
             for (unsigned x(0) ; x < n_threads ; ++x)
@@ -90,8 +92,8 @@ namespace paludis
 }
 
 #ifdef PALUDIS_ENABLE_THREADS
-ActionQueue::ActionQueue(const unsigned n_threads, const bool nice) :
-    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads, nice))
+ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool limit_size) :
+    PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>(n_threads, nice, limit_size))
 {
 }
 #else
@@ -113,7 +115,7 @@ ActionQueue::enqueue(const tr1::function<void () throw ()> & f)
 {
 #ifdef PALUDIS_ENABLE_THREADS
     Lock l(_imp->mutex);
-    if (_imp->queue.size() < 1000)
+    if ((! _imp->limit_size) || (_imp->queue.size() < 1000))
     {
         _imp->queue.push_back(f);
         _imp->condition.signal();

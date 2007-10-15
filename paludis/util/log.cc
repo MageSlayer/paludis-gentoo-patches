@@ -56,7 +56,8 @@ namespace paludis
         Implementation() :
             log_level(initial_ll),
             stream(&std::cerr),
-            program_name("paludis")
+            program_name("paludis"),
+            action_queue(1, false, false)
         {
         }
 

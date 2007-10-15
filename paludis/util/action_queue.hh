@@ -42,7 +42,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ActionQueue(const unsigned n_threads = 1, const bool nice = false);
+            ActionQueue(const unsigned n_threads = 1, const bool nice = false, const bool limit_size = true);
             ~ActionQueue();
 
             ///\}
