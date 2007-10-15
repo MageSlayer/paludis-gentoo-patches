@@ -97,7 +97,7 @@ ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool l
 {
 }
 #else
-ActionQueue::ActionQueue(const unsigned, const bool) :
+ActionQueue::ActionQueue(const unsigned, const bool, const bool) :
     PrivateImplementationPattern<ActionQueue>(new Implementation<ActionQueue>())
 {
 }
