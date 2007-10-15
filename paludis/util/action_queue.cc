@@ -38,10 +38,10 @@ namespace paludis
 #ifdef PALUDIS_ENABLE_THREADS
         Mutex mutex;
         ConditionVariable condition;
-        bool should_finish;
         std::deque<tr1::function<void () throw ()> > queue;
         ThreadPool threads;
         bool limit_size;
+        bool should_finish;
 
         void finish()
         {
