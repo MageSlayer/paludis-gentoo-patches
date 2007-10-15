@@ -45,6 +45,8 @@ namespace paludis
                 void _run_category(const CategoryNamePart &);
                 void _run_package(const QualifiedPackageName &);
                 void _run_id(const tr1::shared_ptr<const PackageID> &);
+                bool _under_base_dir(const FSEntry &) const;
+                bool _above_base_dir(const FSEntry &) const;
 
             public:
                 QAController(
@@ -53,7 +55,8 @@ namespace paludis
                         const QACheckProperties & ignore_if,
                         const QACheckProperties & ignore_unless,
                         const QAMessageLevel minimum_level,
-                        QAReporter &);
+                        QAReporter &,
+                        const FSEntry &);
 
                 ~QAController();
 

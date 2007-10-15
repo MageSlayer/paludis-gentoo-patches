@@ -55,9 +55,9 @@ void check_qa(
         const QACheckProperties & ignore_unless,
         const QAMessageLevel minimum_level,
         QAReporter & reporter,
-        const FSEntry &)
+        const FSEntry & if_dir)
 {
-    erepository::QAController controller(env, repo, ignore_if, ignore_unless, minimum_level, reporter);
+    erepository::QAController controller(env, repo, ignore_if, ignore_unless, minimum_level, reporter, if_dir);
     controller.run();
 }
 

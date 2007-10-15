@@ -283,12 +283,27 @@ int main(int argc, char *argv[])
             throw ConfigurationError("Repository '" + stringify(env->main_repository()->name()) + "' does not support QA checks");
 
         QualudisReporter r;
-        env->main_repository()->qa_interface->check_qa(
-                r,
-                QACheckProperties(),
-                QACheckProperties(),
-                QualudisCommandLine::get_instance()->message_level,
-                env->main_repository_dir());
+        if (QualudisCommandLine::get_instance()->empty())
+        {
+            env->main_repository()->qa_interface->check_qa(
+                    r,
+                    QACheckProperties(),
+                    QACheckProperties(),
+                    QualudisCommandLine::get_instance()->message_level,
+                    FSEntry::cwd());
+        }
+        else
+        {
+            for (QualudisCommandLine::ParametersConstIterator c(QualudisCommandLine::get_instance()->begin_parameters()),
+                    c_end(QualudisCommandLine::get_instance()->end_parameters()) ;
+                    c != c_end ; ++c)
+                env->main_repository()->qa_interface->check_qa(
+                        r,
+                        QACheckProperties(),
+                        QACheckProperties(),
+                        QualudisCommandLine::get_instance()->message_level,
+                        FSEntry(*c));
+        }
     }
     catch (const DoVersion &)
     {
