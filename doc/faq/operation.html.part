@@ -1,0 +1,30 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>FAQ: Operation</h1>
+
+<ul>
+    <li><a href="operation.html#updatingdepends">Paludis does not update DEPENDs of already installed packages</a></li>
+    <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
+</ul>
+
+<h2 id="updatingdepends">Paludis does not update DEPENDs of already installed packages</h2>
+
+<p>Paludis ignores DEPENDs of already installed packages by default. If you
+need a different behaviour, use the <code>--dl-installed-deps-pre</code>
+option. You may also want to use the <code>everything</code> set rather than
+<code>world</code>.</p>
+
+<h2 id="updateworldmissesthings">Updating world misses things</h2>
+
+<p>Paludis doesn't 'miss' packages. If you think it is missing something, check the
+following:</p>
+
+<ul>
+    <li>See the previous item. Is the thing in question only included as a build dependency of
+    a package?</li>
+    <li>Are you sure the package is in world? <code>paludis --query world</code> will tell
+    you.</li>
+    <li>Is the upgrade being blocked by another package that depends upon a lower version
+    of the thing being missed?</li>
+</ul>
+

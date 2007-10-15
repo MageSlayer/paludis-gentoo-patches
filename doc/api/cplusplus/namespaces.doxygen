@@ -1,0 +1,14 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/** \namespace paludis
+ * Paludis library code.
+ *
+ * \ingroup g_paludis
+ */
+
+/** \namespace paludis::args
+ * Commandline argument handling.
+ *
+ * \ingroup g_args
+ */
+

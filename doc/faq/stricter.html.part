@@ -1,0 +1,88 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>FAQ: Paludis is Stricter than Portage</h1>
+
+<ul>
+    <li><a href="stricter.html#mergingweirdstuff">Merging Weird Stuff</a></li>
+    <li><a href="stricter.html#testfailures">Packages Failing <code>src_test</code></a></li>
+    <li><a href="stricter.html#sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</a></li>
+    <li><a href="stricter.html#blacklist">Repository Blacklists</a></li>
+    <li><a href="stricter.html#downgrades">Paludis wants to downgrade Qt or KDE</a></li>
+</ul>
+
+<h2 id="mergingweirdstuff">Merging Weird Stuff</h2>
+
+<p>Paludis will refuse to merge various things:</p>
+
+<ul>
+    <li>Device nodes, fifos and similar weird files. Portage will merge these
+    incorrectly and then leave stray garbage lying around; Paludis refuses to do
+    anything with them. Ebuilds that need to install fancy file types should do
+    so in <code>pkg_postinst</code>.</li>
+
+    <li>Things containing spaces. The VDB format, which cannot be changed
+    without breaking Portage compatibility, uses spaces as a delimiter. Portage
+    behaves incorrectly on items with spaces in the name; Paludis simply refuses
+    to touch them.</li>
+
+    <li>Non-directories on top of directories. Paludis will not let a package
+    overwrite a directory with a non-directory. This is for your own safety.
+    Portage doesn't bail out on this, but instead ends up partially merging
+    content and generally making a mess of your system.</li>
+</ul>
+
+<p>If you encounter an ebuild that does any of these, fix the ebuild.</p>
+
+<h2 id="testfailures">Packages Failing <code>src_test</code></h2>
+
+<p>Prior to version 0.26, Paludis would always run <code>src_test</code>. Earlier
+versions of this FAQ suggested using <code>SKIP_FUNCTIONS</code> to override this.</p>
+
+<p>Unfortunately, because the QA standards in many parts of the Gentoo tree are so low,
+and because some Gentoo developers have such terrible attitudes towards QA, this is
+no longer the default behaviour. Whether or not tests are run is now controlled by
+the <code>--checks</code> command line argument.</p>
+
+<h2 id="sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</h2>
+
+<p>Various packages will give sandbox violations when installing to somewhere
+other than <code>/</code>.</p>
+
+<p>Paludis enforces <code>ROOT</code> via Sandbox. However, some packages don't
+honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
+set <code>SANDBOX_PREDICT=/</code> or <code>SANDBOX_WRITE=/</code> as
+appropriate.</p>
+
+<h2 id="blacklist">Repository Blacklists</h2>
+
+<p>Paludis will sometimes blacklist certain repositories. When using a
+blacklisted repository, you will receive a warning when Paludis starts up. This
+is not a fatal error, but you should realise that use of the repository in
+question will likely lead to breakages.</p>
+
+<p>Repositories are only blacklisted under extreme circumstances, such as:</p>
+
+<ul>
+    <li>When they are known to be very broken.</li>
+    <li>When they are known to rely heavily upon quirks in Portage's behaviour
+    that Paludis will not emulate.</li>
+    <li>When they are known to be a security threat.</li>
+</ul>
+
+<h2 id="downgrades">Paludis wants to downgrade Qt or KDE</h2>
+
+<p>Unlike Portage, Paludis enforces the dependencies of installed
+packages, rather than those of the corresponding package in the tree.
+Unfortunately, to work around Portage limitations, the Qt and KDE
+eclasses are set up to depend specifically on those versions that are
+in the tree at the time of installation.  The result is that after
+upgrading to a newer version, dependant packages that were installed
+before the new version became available will try to force a downgrade
+back to the old version.</p>
+
+<p>To solve this problem, run your Paludis update command with
+the <code>--dl-downgrade warning</code> option, and check the
+backtrace for the package that depends on the older library.
+Reinstalling this package will fix the dependency.  Repeat if there is
+more than one package with the problem.</p>
+

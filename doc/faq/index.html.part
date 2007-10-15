@@ -1,0 +1,79 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Frequently Asked Questions</h1>
+
+<p>This document describes some of the more commonly encountered problems, issues
+and things that aren't bugs but might look like they are. Pestering anyone about
+these is liable to get you hurt.</p>
+
+<p>This document also describes some things that are not bugs or missing
+functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
+
+<h2>General Questions</h2>
+
+<ul>
+    <li><a href="general.html#ihaveaquestion">I have an Unanswered Question</a></li>
+    <li><a href="general.html#why">Why not fix Portage?</a></li>
+    <li><a href="general.html#cplusplus">Why C++?</a></li>
+    <li><a href="general.html#butcplusplusis">But C++ is ...</a></li>
+    <li><a href="general.html#contribute">Contributing</a></li>
+</ul>
+
+<h2>How do I ...?</h2>
+
+<ul>
+    <li><a href="howdoi.html#ccache">Use <code>ccache</code></a></li>
+    <li><a href="howdoi.html#distcc">Use <code>distcc</code></a></li>
+    <li><a href="howdoi.html#defaultoptions">Specify default options</a></li>
+    <li><a href="howdoi.html#removeunneeded">Remove unneeded packages</a></li>
+    <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
+    <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
+    <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
+</ul>
+
+<h2>Operation</h2>
+
+<ul>
+    <li><a href="operation.html#updatingdepends">Paludis does not update DEPENDs of already installed packages</a></li>
+    <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
+</ul>
+
+<h2>Stricter than Portage</h2>
+
+<ul>
+    <li><a href="stricter.html#mergingweirdstuff">Merging Weird Stuff</a></li>
+    <li><a href="stricter.html#testfailures">Packages Failing <code>src_test</code></a></li>
+    <li><a href="stricter.html#sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</a></li>
+    <li><a href="stricter.html#blacklist">Repository Blacklists</a></li>
+    <li><a href="stricter.html#downgrades">Paludis wants to downgrade Qt or KDE</a></li>
+</ul>
+
+<h2>Undesirable Misfunctionality</h2>
+
+<ul>
+    <li><a href="misfunctionality.html#wgetresume">wget Resume Support</a></li>
+    <li><a href="misfunctionality.html#skipfirst">Build Resume / Skip First Support</a></li>
+    <li><a href="misfunctionality.html#nice">No Automatic Niceness Support</a></li>
+    <li><a href="misfunctionality.html#ask">No Ask Support</a></li>
+    <li><a href="misfunctionality.html#xtermtitles">Restoring XTerm Titles</a></li>
+</ul>
+
+<h2>Things Paludis Does Differently</h2>
+
+<ul>
+    <li><a href="different.html#tree">No <code>--tree</code> Equivalent</a></li>
+    <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
+    <li><a href="different.html#emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code>
+        Equivalent</a></li>
+    <li><a href="different.html#elog">ELOG Equivalent</a></li>
+    <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
+    <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
+</ul>
+
+<h2>Repository Questions</h2>
+
+<ul>
+    <li><a href="repositories.html#profiles">Profiles vs Profiles</a></li>
+    <li><a href="repositories.html#repo_name">Repository names</a></li>
+</ul>
+

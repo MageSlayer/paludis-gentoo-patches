@@ -1,0 +1,93 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Features</h1>
+
+<h2>For the End User</h2>
+
+<ul>
+    <li>An optional new configuration system, making it much easier to operate upon
+    groups of related packages, much easier to maintain multiple systems (or chroots)
+    and much easier to set options on a per-package or per-repository basis.</li>
+
+    <li>Performance. Paludis can be an order of magnitude faster than other package
+    managers.</li>
+
+    <li>Low dependency bloat. No Python, no big external crypto libraries.</li>
+
+    <li>Native security (GLSA) integration.</li>
+
+    <li>Proper multiple repository support, not constrained by a limited 'overlay'
+    model.</li>
+
+    <li>Support for repositories containing things other than ebuilds.</li>
+
+    <li>License filtering.</li>
+
+    <li>Hook scripts, for running code after a certain action occurs.</li>
+
+    <li>User definable package sets.</li>
+
+    <li>Ability to sync multiple repositories, natively, using SVN, CVS, Git etc.</li>
+
+    <li>Ability to uninstall packages with dependencies, and safely remove unneeded
+    packages.</li>
+
+    <li>Ability to continue with a collection of installs after a failure, and to resume
+    failed compiles far more flexibly than offered by Portage.</li>
+
+    <li>Ability to see why a package is really being pulled in, rather than relying
+    upon the rather crude 'tree' offered by Portage.</li>
+
+    <li>Much improved output: <code>--query</code> makes it easy to get a useful summary
+    of information about a package, and <code>--pretend</code> can be configured to show
+    relevant information (e.g. USE flag descriptions and an explanation of why a package
+    is being pulled in).</li>
+
+    <li>Secure (un)installation of set*id files, preventing your system from being left
+    vulnerable after having replaced a vulnerable application.</li>
+
+    <li>Ability to use slot, use, repository and ranged version dependencies when selecting
+    a version.</li>
+
+    <li>Ability to see all packages that need unmasking in one go, rather than one package
+    at a time.</li>
+
+    <li>Ability to automatically reinstall scm (svn, cvs etc.) packages after a given period
+    (daily, weekly, ...).</li>
+
+    <li>Ability to manage packages even where no ebuild is available.</li>
+</ul>
+
+<h2>For the Ebuild Developer</h2>
+
+<ul>
+    <li>Full and correct circular dependency resolution.</li>
+
+    <li>Default deep dependency resolution.</li>
+
+    <li>Support for 'experimental' (read: 'still not implemented in Portage') EAPI proposals
+    (use dependencies, ranged version specs, -scm and -try version specs, src_uri arrows etc).</li>
+
+    <li>Ability to deliver news items to the end user.</li>
+
+    <li>Much more useful diagnostics.</li>
+</ul>
+
+<h2>For the Programmer</h2>
+
+<ul>
+    <li>Proper client / library separation.</li>
+
+    <li>API documentation and code examples.</li>
+
+    <li>A sane OO API.</li>
+
+    <li>Consistent interfaces for different repository types.</li>
+
+    <li>Test suites and extensive static checking, to check the impact of changes.</li>
+
+    <li>Type safe interfaces, for catching programming errors at compile time.</li>
+
+    <li>A choice of programming language for external tools.</li>
+</ul>
+

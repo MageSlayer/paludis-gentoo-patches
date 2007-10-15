@@ -1,0 +1,89 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Things Paludis Does Differently</h1>
+
+<ul>
+    <li><a href="different.html#tree">No <code>--tree</code> Equivalent</a></li>
+    <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
+    <li><a href="different.html#emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code>
+        Equivalent</a></li>
+    <li><a href="different.html#elog">ELOG Equivalent</a></li>
+    <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
+    <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
+</ul>
+
+<h2 id="tree">No <code>--tree</code> Equivalent</h2>
+
+<p>Paludis does not have something identical to <code>emerge --tree</code>. It
+does, however, have <code>--show-reasons</code>, which we find to be
+considerably more informative, useful and correct.</p>
+
+<h2 id="features">No <code>FEATURES</code> Equivalent</h2>
+
+<p>Paludis doesn't use the <code>FEATURES</code> variable. We find this to be
+a rather ugly way of handling things. We do have equivalents to most values:</p>
+
+<dl>
+    <dt>ccache</dt>
+    <dd>See <a href="howdoi.html#ccache">Use <code>ccache</code></a>.</dd>
+
+    <dt>collision-protect</dt>
+    <dd>There are various third party hooks that implement this. We might start
+    shipping one as a demo hook at some point. Note that collision-protect is
+    conceptually broken and you shouldn't be using it.</dd>
+
+    <dt>distcc</dt>
+    <dd>See <a href="howdoi.html#distcc">Use <code>distcc</code></a>.</dd>
+
+    <dt>keepwork, keeptemp, noclean</dt>
+    <dd>The <code>builtin_tidyup</code> phase does cleaning up. You can turn
+    this phase off using <code>SKIP_FUNCTIONS="tidyup"</code>.</dd>
+
+    <dt>nodoc, noinfo, noman</dt>
+    <dd>You could write a hook that removes the relevant directories from
+    <code>$D</code>.</dd>
+
+    <dt>nostrip</dt>
+    <dd>Again, it's a function, so use <code>SKIP_FUNCTIONS="strip"</code>.</dd>
+
+    <dt>sandbox</dt>
+    <dd>Always on.</dd>
+
+    <dt>splitdebug</dt>
+    <dd>Use <code>--debug-build split</code>.</dd>
+
+    <dt>test</dt>
+    <dd>Controlled by <code>--checks</code>.</dd>
+</dl>
+
+<h2 id="emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code> Equivalent</h2>
+
+<p>The option <code>--dl-reinstall</code> handles both these cases.</p>
+
+<h2 id="elog">ELOG Equivalent</h2>
+
+<p>Paludis ships with a demo hook showing how to get a summary of messages after
+all packages have been installed. It can be found in
+<code>SHAREDIR/paludis/hooks/demos/elog.bash</code>. See <a
+    href="hooks.html">the hooks documentation</a> for more information about
+hooks.</p>
+
+<p>This hook is not enabled by default because it is highly annoying. If you use
+repositories that don't use elog to spam pointless messages about revdep-rebuild,
+the demo hook may be of use.</p>
+
+<h2 id="mkdir">No Automatic Directory Creation</h2>
+
+<p>Portage usually automatically creates directories for things. Paludis will
+usually refuse to create directories, except as a subdirectory of an existing
+Paludis-owned directory. This is for security reasons -- Paludis does not know
+what permissions are correct for you for the directory, and unlike Portage it
+does not grant back-door root access to all users in a particular group.</p>
+
+<p>Incidentally, if you want to let multiple users do Paludis cache writes and
+the like, you should look into what <code>chmod +s</code> does to directories.</p>
+
+<h2 id="revdep_rebuild">Revdep-rebuild Equivalent</h2>
+
+<p>Use the <code>reconcilio</code> client.</p>
+

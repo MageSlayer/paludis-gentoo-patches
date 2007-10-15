@@ -1,0 +1,81 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>FAQ: Undesirable Misfunctionality</h1>
+
+<ul>
+    <li><a href="misfunctionality.html#wgetresume">wget Resume Support</a></li>
+    <li><a href="misfunctionality.html#skipfirst">Build Resume / Skip First Support</a></li>
+    <li><a href="misfunctionality.html#nice">No Automatic Niceness Support</a></li>
+    <li><a href="misfunctionality.html#ask">No Ask Support</a></li>
+    <li><a href="misfunctionality.html#xtermtitles">Restoring XTerm Titles</a></li>
+</ul>
+
+<h2 id="wgetresume">wget Resume Support</h2>
+
+<p>Non-Problem: With Portage, <code>wget -c</code> is used to attempt to resume
+downloads of partial files. With Paludis, this is not done by default.</p>
+
+<p>Rationale: This leads to corruption and wasted bandwidth far too frequently.
+In particular, if an error page that isn't recognised as a 404 is fetched from
+one server (this is common for <code>mirror://sourceforge/</code>), resume
+support means <code>wget</code> would then download all but the first few
+hundred bytes of the file from somewhere else, leading to a corrupt distfile
+notice only after lots of bandwidth has been wasted.</p>
+
+<p>Paludis uses a much safer mechanism known as 'safe resume'. When downloading, the
+following steps are taken:</p>
+
+<ul>
+    <li>If <code>output_file.-PARTIAL-</code> exists and is below a certain
+    arbitrary threshold (currently somewhere in the 100KBytes region), it is
+    deleted.</li>
+
+    <li>Rather than downloading straight to <code>output_file</code>, Paludis downloads to
+    <code>output_file.-PARTIAL-</code>. If this file already exists, Paludis resumes rather than
+    starting from scratch.</li>
+
+    <li>If <code>wget</code> exits with success, <code>output_file.-PARTIAL-</code> is moved
+    to <code>output_file</code>.</li>
+</ul>
+
+<p>This logic is handled by the default fetcher for <code>http://</code>, <code>https://</code>
+and <code>ftp://</code>. This can be overridden by a custom fetcher if finer grained control
+is required.</p>
+
+<h2 id="skipfirst">Build Resume / Skip First Support</h2>
+
+<p>Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in
+Portage.</p>
+
+<p>Rationale: Too unreliable, too flaky, a security hole and far too widely abused;
+however, if an ebuild exits with an error, Paludis will echo a resume command
+(<code>paludis -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to
+resume the build.</p>
+
+<p>Paludis also includes <code>--continue-on-failure</code> support. This is much more
+elegant.</p>
+
+<h2 id="nice">No Automatic Niceness Support</h2>
+
+<p>Non-Problem: There's no <code>PORTAGE_NICENESS</code> equivalent.</p>
+
+<p>Rationale: Learn how to use <code>nice</code>. There's no
+<code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
+
+<h2 id="ask">No Ask Support</h2>
+
+<p>Non-Problem: There's nothing like <code>emerge --ask</code>.</p>
+
+<p>Rationale: the <code>paludis</code> client is non-interactive. If someone is
+making an interactive client, there are much better ways of doing it than
+the limited functionality that <code>emerge --ask</code> provides.</p>
+
+<h2 id="xtermtitles">Restoring XTerm Titles</h2>
+
+<p>Non-Problem: Paludis doesn't restore the xterm title on exit.</p>
+
+<p>Rationale: Neither does anything else. Some programs do set it to a guessed
+value based upon a default prompt for certain distributions, but they don't
+restore it. You should be using <code>PROMPT_COMMAND</code> to do that yourself
+-- see the <code>bash</code> documentation.</p>
+

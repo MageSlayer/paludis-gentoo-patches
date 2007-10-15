@@ -4,11 +4,17 @@
 
 This is the Paludis core API documentation.
 
+To find your way around:
+
+- Use the <a href="modules.html">Modules</a> link, rather than trying to browse through
+  raw class lists.
+- See the <a href="examples.html">Examples</a>.
+
 Some classes you may find useful:
 
 - paludis::Environment, which is usually created using paludis::EnvironmentMaker
 - paludis::PackageDatabase
 - paludis::Repository and the associated interface classes
-- paludis::VersionMetadata
+- paludis::PackageID
 
 */

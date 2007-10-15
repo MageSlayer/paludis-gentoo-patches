@@ -1,0 +1,63 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>FAQ: General Questions</h1>
+
+<ul>
+    <li><a href="general.html#ihaveaquestion">I have an Unanswered Question</a></li>
+    <li><a href="general.html#why">Why not fix Portage?</a></li>
+    <li><a href="general.html#cplusplus">Why C++?</a></li>
+    <li><a href="general.html#butcplusplusis">But C++ is ...</a></li>
+    <li><a href="general.html#contribute">Contributing</a></li>
+</ul>
+
+<h2 id="ihaveaquestion">I have an Unanswered Question</h2>
+
+<p>If you've checked the documentation, and your question really isn't answered,
+you should ask it in one of these places:</p>
+
+<ul>
+    <li>The <code>#paludis</code> channel on <code>irc.freenode.net</code></li>
+    <li>The <a href="../overview/contact.html">paludis-user mailing list</a></li>
+    <li>The <a href="http://paludis.pioto.org/trac/">bug tracker</a> will probably
+    also be useful</li>
+</ul>
+
+<p>You are encouraged to submit an entry for this document once your question
+has been answered.</p>
+
+<h2 id="why">Why not fix Portage?</h2>
+
+<p>The Portage codebase is too broken to be fixed. It is a huge mess of
+spaghetti procedural code with no underlying design. It relies upon weird
+quirks in its own behaviour all over the place, so any change is liable to
+cause huge breakage in seemingly unrelated areas. It is almost entirely
+undocumented, and the internal names are perverse and often do not reflect what
+the code now does.</p>
+
+<h2 id="cplusplus">Why C++?</h2>
+
+<p>Because we don't have the time or the manpower to write it in C.</p>
+
+<h2 id="butcplusplusis">But C++ is ...</h2>
+
+<p>No it isn't. Whoever told you that was either trolling or ignorant.</p>
+
+<h2 id="contribute">Contributing</h2>
+
+<p>Contributions to Paludis are welcome:</p>
+
+<ul>
+    <li>Patches can be submitted via <a
+        href="http://paludis.pioto.org/trac/">trac</a>. It's best to
+    discuss ideas before spending too much time on the code, because we don't
+    have any qualms about rejecting things we think are a bad idea.</li>
+
+    <li>We could probably use some more documentation. Again, ask first.</li>
+
+    <li>Translations aren't currently possible. We don't have anything against
+    internationalisation in principle, but as we're not gettextised it'll be a
+    fair bit of effort.</li>
+
+    <li>We don't need or desire assistance with hosting etc. at present.</li>
+</ul>
+

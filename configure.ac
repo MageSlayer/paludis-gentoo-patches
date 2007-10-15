@@ -1274,8 +1274,16 @@ AC_OUTPUT(
 	Makefile
 	bash-completion/Makefile
 	doc/Makefile
-	doc/doxygen.conf
-	doc/examples/Makefile
+	doc/api/Makefile
+	doc/api/cplusplus/doxygen.conf
+	doc/api/cplusplus/Makefile
+	doc/api/cplusplus/examples/Makefile
+	doc/api/python/Makefile
+	doc/api/ruby/Makefile
+	doc/clients/Makefile
+	doc/configuration/Makefile
+	doc/faq/Makefile
+	doc/overview/Makefile
 	eselect/Makefile
 	hooks/Makefile
 	hooks/demos/Makefile

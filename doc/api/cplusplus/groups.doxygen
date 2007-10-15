@@ -135,7 +135,7 @@ using namespace paludis;
  * - \ref example_metadata_key.cc "example_metadata_key.cc"
  */
 
-/** \defgroup g_repository "Repository"
+/** \defgroup g_repository Repository
  *
  * \ingroup g_paludis
  *
@@ -147,7 +147,7 @@ using namespace paludis;
  * - \ref example_repository.cc "example_repository.cc"
  */
 
-/** \defgroup g_query "Query"
+/** \defgroup g_query Query
  *
  * \ingroup g_package_database
  *
@@ -161,7 +161,7 @@ using namespace paludis;
  * - \ref example_match_package.cc "example_match_package.cc"
  */
 
-/** \defgroup g_package_database "Package Database"
+/** \defgroup g_package_database Package Database
  *
  * \ingroup g_paludis
  *
@@ -175,7 +175,7 @@ using namespace paludis;
  * - \ref example_query_delegate.cc "example_query_delegate.cc"
  */
 
-/** \defgroup g_names "Names and Versions"
+/** \defgroup g_names Names and Versions
  *
  * \ingroup g_paludis
  *
@@ -190,7 +190,7 @@ using namespace paludis;
  * - \ref example_version_operator.cc "example_version_operator.cc"
  */
 
-/** \defgroup g_dep_list "Dependency Resolution"
+/** \defgroup g_dep_list Dependency Resolution
  *
  * \ingroup g_paludis
  *
@@ -203,7 +203,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_tasks "Tasks"
+/** \defgroup g_tasks Tasks
  *
  * \ingroup g_paludis
  *
@@ -218,7 +218,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_hooks "Hooks"
+/** \defgroup g_hooks Hooks
  *
  * \ingroup g_paludis
  *
@@ -230,7 +230,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_digests "Digests"
+/** \defgroup g_digests Digests
  *
  * \ingroup g_paludis
  *
@@ -241,7 +241,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_utils "Utilities"
+/** \defgroup g_utils Utilities
  *
  * \ingroup g_paludis
  *
@@ -253,7 +253,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_config_file "Configuration Files"
+/** \defgroup g_config_file Configuration Files
  *
  * \ingroup g_utils
  *
@@ -265,7 +265,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_strings "Strings"
+/** \defgroup g_strings Strings
  *
  * \ingroup g_utils
  *
@@ -277,7 +277,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_fs "Filesystem"
+/** \defgroup g_fs Filesystem
  *
  * \ingroup g_utils
  *
@@ -289,7 +289,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_data_structures "Data Structures"
+/** \defgroup g_data_structures Data Structures
  *
  * \ingroup g_utils
  *
@@ -300,7 +300,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_iterator "Iterators"
+/** \defgroup g_iterator Iterators
  *
  * \ingroup g_utils
  *
@@ -311,7 +311,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_oo "OO Design Helpers"
+/** \defgroup g_oo OO Design Helpers
  *
  * \ingroup g_utils
  *
@@ -322,7 +322,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_log "Logging"
+/** \defgroup g_log Logging
  *
  * \ingroup g_utils
  *
@@ -333,7 +333,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_system "System"
+/** \defgroup g_system System
  *
  * \ingroup g_utils
  *
@@ -344,7 +344,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_visitors "Visitors"
+/** \defgroup g_visitors Visitors
  *
  * \ingroup g_utils
  *
@@ -356,7 +356,7 @@ using namespace paludis;
  * - None at this time.
  */
 
-/** \defgroup g_threads "Threads"
+/** \defgroup g_threads Threads
  *
  * \ingroup g_utils
  *
