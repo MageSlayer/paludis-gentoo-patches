@@ -112,7 +112,7 @@ namespace
         bool operator() (const FSEntry & parent)
         {
             std::string child_str(stringify(_child)), parent_str(stringify(parent));
-            return 0 == parent_str.compare(0, parent_str.length(), child_str) &&
+            return 0 == child_str.compare(0, parent_str.length(), parent_str) &&
                 (parent_str.length() == child_str.length() || '/' == child_str[parent_str.length()]);
         }
     };
