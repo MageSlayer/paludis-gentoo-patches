@@ -29,8 +29,6 @@
 
 namespace broken_linkage_finder
 {
-    class ElfArchitecture;
-
     class ElfLinkageChecker :
         public LinkageChecker,
         private paludis::PrivateImplementationPattern<ElfLinkageChecker>
@@ -44,10 +42,6 @@ namespace broken_linkage_finder
 
             virtual void need_breakage_added(
                 const paludis::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
-
-        private:
-            template <typename> bool check_elf(const paludis::FSEntry &, std::ifstream &);
-            void handle_library(const paludis::FSEntry &, const ElfArchitecture &);
     };
 }
 

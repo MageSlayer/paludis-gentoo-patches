@@ -51,6 +51,12 @@ namespace paludis
         std::vector<std::string> ld_library_mask;
         std::vector<FSEntry> search_dirs;
         std::vector<FSEntry> search_dirs_mask;
+
+        void load_from_environment();
+        void load_from_etc_revdep_rebuild(const FSEntry &);
+        void load_from_etc_profile_env(const FSEntry &);
+        void load_from_etc_ld_so_conf(const FSEntry &);
+        void add_defaults();
     };
 }
 
@@ -127,11 +133,11 @@ Configuration::Configuration(const FSEntry & root) :
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
 
-    load_from_environment();
-    load_from_etc_revdep_rebuild(root);
-    load_from_etc_profile_env(root);
-    load_from_etc_ld_so_conf(root);
-    add_defaults();
+    _imp->load_from_environment();
+    _imp->load_from_etc_revdep_rebuild(root);
+    _imp->load_from_etc_profile_env(root);
+    _imp->load_from_etc_ld_so_conf(root);
+    _imp->add_defaults();
 
     cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root);
     cleanup("SEARCH_DIRS",      _imp->search_dirs,      root);
@@ -143,7 +149,7 @@ Configuration::~Configuration()
 }
 
 void
-Configuration::load_from_environment()
+Implementation<Configuration>::load_from_environment()
 {
     using namespace tr1::placeholders;
 
@@ -152,13 +158,13 @@ Configuration::load_from_environment()
     tr1::function<std::string (const std::string &)> fromenv(
         tr1::bind(getenv_with_default, _1, ""));
 
-    from_string(fromenv, "LD_LIBRARY_MASK",  _imp->ld_library_mask);
-    from_string(fromenv, "SEARCH_DIRS",      _imp->search_dirs);
-    from_string(fromenv, "SEARCH_DIRS_MASK", _imp->search_dirs_mask);
+    from_string(fromenv, "LD_LIBRARY_MASK",  ld_library_mask);
+    from_string(fromenv, "SEARCH_DIRS",      search_dirs);
+    from_string(fromenv, "SEARCH_DIRS_MASK", search_dirs_mask);
 }
 
 void
-Configuration::load_from_etc_revdep_rebuild(const FSEntry & root)
+Implementation<Configuration>::load_from_etc_revdep_rebuild(const FSEntry & root)
 {
     using namespace tr1::placeholders;
 
@@ -190,9 +196,9 @@ Configuration::load_from_etc_revdep_rebuild(const FSEntry & root)
                 tr1::function<std::string (const std::string &)> fromfile(
                     tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
 
-                from_string(fromfile, "LD_LIBRARY_MASK",  _imp->ld_library_mask);
-                from_string(fromfile, "SEARCH_DIRS",      _imp->search_dirs);
-                from_string(fromfile, "SEARCH_DIRS_MASK", _imp->search_dirs_mask);
+                from_string(fromfile, "LD_LIBRARY_MASK",  ld_library_mask);
+                from_string(fromfile, "SEARCH_DIRS",      search_dirs);
+                from_string(fromfile, "SEARCH_DIRS_MASK", search_dirs_mask);
             }
             else
                 Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(*it) + "' is not a regular file");
@@ -203,7 +209,7 @@ Configuration::load_from_etc_revdep_rebuild(const FSEntry & root)
 }
 
 void
-Configuration::load_from_etc_profile_env(const FSEntry & root)
+Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
 {
     using namespace tr1::placeholders;
 
@@ -223,15 +229,15 @@ Configuration::load_from_etc_profile_env(const FSEntry & root)
         tr1::function<std::string (const std::string &)> fromfile(
             tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
 
-        from_string(fromfile, "PATH",     _imp->search_dirs, tokeniser);
-        from_string(fromfile, "ROOTPATH", _imp->search_dirs, tokeniser);
+        from_string(fromfile, "PATH",     search_dirs, tokeniser);
+        from_string(fromfile, "ROOTPATH", search_dirs, tokeniser);
     }
     else if (etc_profile_env.exists())
         Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_profile_env) + "' exists but is not a regular file");
 }
 
 void
-Configuration::load_from_etc_ld_so_conf(const FSEntry & root)
+Implementation<Configuration>::load_from_etc_ld_so_conf(const FSEntry & root)
 {
     FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
     Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
@@ -245,7 +251,7 @@ Configuration::load_from_etc_ld_so_conf(const FSEntry & root)
         if (lines.begin() != lines.end())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + join(lines.begin(), lines.end(), " "));
-            std::copy(lines.begin(), lines.end(), std::back_inserter(_imp->search_dirs));
+            std::copy(lines.begin(), lines.end(), std::back_inserter(search_dirs));
         }
     }
     else if (etc_ld_so_conf.exists())
@@ -253,28 +259,28 @@ Configuration::load_from_etc_ld_so_conf(const FSEntry & root)
 }
 
 void
-Configuration::add_defaults()
+Implementation<Configuration>::add_defaults()
 {
     Context ctx("When adding default settings:");
 
-    static const std::string ld_library_mask(
+    static const std::string default_ld_library_mask(
         "libodbcinst.so libodbc.so libjava.so libjvm.so");
-    static const std::string search_dirs(
+    static const std::string default_search_dirs(
         "/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*");
-    static const std::string search_dirs_mask(
+    static const std::string default_search_dirs_mask(
         "/opt/OpenOffice /usr/lib*/openoffice /lib*/modules");
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + ld_library_mask + "\"");
+    Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + default_ld_library_mask + "\"");
     WhitespaceTokeniser::get_instance()->tokenise(
-        ld_library_mask, std::back_inserter(_imp->ld_library_mask));
+        default_ld_library_mask, std::back_inserter(ld_library_mask));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + search_dirs + "\"");
+    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + default_search_dirs + "\"");
     WhitespaceTokeniser::get_instance()->tokenise(
-        search_dirs, std::back_inserter(_imp->search_dirs));
+        default_search_dirs, std::back_inserter(search_dirs));
 
-    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + search_dirs_mask + "\"");
+    Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + default_search_dirs_mask + "\"");
     WhitespaceTokeniser::get_instance()->tokenise(
-        search_dirs_mask, std::back_inserter(_imp->search_dirs_mask));
+        default_search_dirs_mask, std::back_inserter(search_dirs_mask));
 }
 
 Configuration::DirsIterator

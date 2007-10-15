@@ -45,13 +45,6 @@ namespace broken_linkage_finder
 
             bool dir_is_masked(const paludis::FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-        private:
-            void load_from_environment();
-            void load_from_etc_revdep_rebuild(const paludis::FSEntry &);
-            void load_from_etc_profile_env(const paludis::FSEntry &);
-            void load_from_etc_ld_so_conf(const paludis::FSEntry &);
-            void add_defaults();
     };
 }
 

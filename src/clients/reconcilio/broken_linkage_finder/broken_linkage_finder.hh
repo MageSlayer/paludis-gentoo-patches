@@ -62,16 +62,6 @@ class BrokenLinkageFinder :
         MissingRequirementConstIterator end_missing_requirements(
             const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-    private:
-        void search_directory(const paludis::FSEntry &);
-
-        void walk_directory(const paludis::FSEntry &);
-        void check_file(const paludis::FSEntry &);
-
-        void gather_package(const paludis::tr1::shared_ptr<const paludis::PackageID> &);
-
-        void add_breakage(const paludis::FSEntry &, const std::string &);
 };
 
 #endif

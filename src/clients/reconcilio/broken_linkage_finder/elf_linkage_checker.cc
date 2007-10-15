@@ -42,12 +42,10 @@
 #include <set>
 #include <vector>
 
-#define tr1 paludis::tr1 // XXX
-
 using namespace paludis;
 using namespace broken_linkage_finder;
 
-namespace broken_linkage_finder
+namespace
 {
     struct ElfArchitecture
     {
@@ -116,6 +114,9 @@ namespace paludis
         std::map<ElfArchitecture, std::vector<std::string> > libraries;
         Needed needed;
 
+        template <typename> bool check_elf(const FSEntry &, std::ifstream &);
+        void handle_library(const FSEntry &, const ElfArchitecture &);
+
         Implementation(const std::string & the_library) :
             library(the_library)
         {
@@ -145,12 +146,12 @@ ElfLinkageChecker::check_file(const FSEntry & file)
     if (! stream)
         throw FSError("Error opening file '" + stringify(file) + "': " + strerror(errno));
 
-    return check_elf<Elf32Type>(file, stream) || check_elf<Elf64Type>(file, stream);
+    return _imp->check_elf<Elf32Type>(file, stream) || _imp->check_elf<Elf64Type>(file, stream);
 }
 
 template <typename ElfType_>
 bool
-ElfLinkageChecker::check_elf(const FSEntry & file, std::ifstream & stream)
+Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::ifstream & stream)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;
@@ -169,9 +170,9 @@ ElfLinkageChecker::check_elf(const FSEntry & file, std::ifstream & stream)
         ElfArchitecture arch(elf);
         elf.resolve_all_strings();
 
-        Lock l(_imp->mutex);
+        Lock l(mutex);
 
-        if (_imp->library.empty() && ET_DYN == elf.get_type())
+        if (library.empty() && ET_DYN == elf.get_type())
             handle_library(file, arch);
 
         for (typename ElfObject<ElfType_>::SectionIterator sec_it(elf.section_begin()),
@@ -188,10 +189,10 @@ ElfLinkageChecker::check_elf(const FSEntry & file, std::ifstream & stream)
                     if (0 != ent_str && "NEEDED" == ent_str->tag_name())
                     {
                         const std::string & req((*ent_str)());
-                        if (_imp->library.empty() || _imp->library == req)
+                        if (library.empty() || library == req)
                         {
                             Log::get_instance()->message(ll_debug, lc_context, "File depends on " + req);
-                            _imp->needed[arch][req].push_back(file);
+                            needed[arch][req].push_back(file);
                         }
                     }
                 }
@@ -206,11 +207,11 @@ ElfLinkageChecker::check_elf(const FSEntry & file, std::ifstream & stream)
 }
 
 void
-ElfLinkageChecker::handle_library(const FSEntry & file, const ElfArchitecture & arch)
+Implementation<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitecture & arch)
 {
-    _imp->seen.insert(std::make_pair(file, arch));
-    std::pair<Symlinks::const_iterator, Symlinks::const_iterator> range(_imp->symlinks.equal_range(file));
-    _imp->libraries[arch].push_back(file.basename());
+    seen.insert(std::make_pair(file, arch));
+    std::pair<Symlinks::const_iterator, Symlinks::const_iterator> range(symlinks.equal_range(file));
+    libraries[arch].push_back(file.basename());
 
     if (range.first != range.second)
     {
@@ -218,7 +219,7 @@ ElfLinkageChecker::handle_library(const FSEntry & file, const ElfArchitecture & 
             ll_debug, lc_context, "Known symlinks are " +
             join(second_iterator(range.first), second_iterator(range.second), " "));
         std::transform(second_iterator(range.first), second_iterator(range.second),
-                       std::back_inserter(_imp->libraries[arch]), tr1::mem_fn(&FSEntry::basename));
+                       std::back_inserter(libraries[arch]), tr1::mem_fn(&FSEntry::basename));
     }
 }
 
