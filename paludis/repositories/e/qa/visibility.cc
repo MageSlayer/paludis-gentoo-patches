@@ -289,7 +289,7 @@ paludis::erepository::visibility_check(
             continue;
 
         std::set<KeywordName> accepted_keywords, overlap;
-        WhitespaceTokeniser::get_instance()->tokenise(p->profile->environment_variable(
+        WhitespaceTokeniser::tokenise(p->profile->environment_variable(
                     repo->accept_keywords_variable()), create_inserter<KeywordName>(std::inserter(accepted_keywords, accepted_keywords.begin())));
 
         std::set_intersection(accepted_keywords.begin(), accepted_keywords.end(),

@@ -107,7 +107,7 @@ namespace
         while (std::getline(f, s))
         {
             std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(tokens));
+            WhitespaceTokeniser::tokenise(s, std::back_inserter(tokens));
             if (tokens.size() != 3)
                 throw ConfigurationError("Bad line '" + s + "'");
 

@@ -631,7 +631,7 @@ EIUseKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value.reset(new IUseFlagSet);
     std::list<std::string> tokens;
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
+    WhitespaceTokeniser::tokenise(_imp->string_value, std::back_inserter(tokens));
 
     tr1::shared_ptr<const UseFlagNameSet> prefixes;
     if (_imp->id->repository()->use_interface)
@@ -884,7 +884,7 @@ EKeywordsKey::value() const
 
     _imp->value.reset(new KeywordNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
+    WhitespaceTokeniser::tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
 }
 
@@ -898,7 +898,7 @@ EKeywordsKey::idle_load() const
         {
             _imp->value.reset(new KeywordNameSet);
             Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
+            WhitespaceTokeniser::tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
             _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
             return iar_success;
         }
@@ -977,7 +977,7 @@ EUseKey::value() const
     _imp->value.reset(new UseFlagNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     std::list<std::string> tokens;
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, std::back_inserter(tokens));
+    WhitespaceTokeniser::tokenise(_imp->string_value, std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
         if ('-' != t->at(0))
@@ -1048,7 +1048,7 @@ EInheritedKey::value() const
 
     _imp->value.reset(new Set<std::string>);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->string_value, _imp->value->inserter());
+    WhitespaceTokeniser::tokenise(_imp->string_value, _imp->value->inserter());
     return _imp->value;
 }
 
@@ -1119,7 +1119,7 @@ EContentsKey::value() const
         ++line_number;
 
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
         if (tokens.empty())
             continue;
 

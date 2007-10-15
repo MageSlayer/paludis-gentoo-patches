@@ -284,7 +284,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
         ++line_number;
 
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
         if (tokens.empty())
             continue;
 

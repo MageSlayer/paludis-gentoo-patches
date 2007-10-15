@@ -697,7 +697,7 @@ InstallTask::_main_actions()
                     tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > all(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                                 tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                     std::list<std::string> tokens;
-                    WhitespaceTokeniser::get_instance()->tokenise(*_imp->add_to_world_spec, std::back_inserter(tokens));
+                    WhitespaceTokeniser::tokenise(*_imp->add_to_world_spec, std::back_inserter(tokens));
                     if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
                     {
                         tokens.erase(tokens.begin());

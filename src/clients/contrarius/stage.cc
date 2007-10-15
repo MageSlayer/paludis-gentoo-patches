@@ -45,7 +45,7 @@ bool
 AuxiliaryStage::is_rebuild() const
 {
     std::list<std::string> packages;
-    WhitespaceTokeniser::get_instance()->tokenise(TargetConfig::get_instance()->aux(), std::back_inserter(packages));
+    WhitespaceTokeniser::tokenise(TargetConfig::get_instance()->aux(), std::back_inserter(packages));
 
     for (std::list<std::string>::const_iterator p(packages.begin()), p_end(packages.end()) ;
             p != p_end ; ++p)

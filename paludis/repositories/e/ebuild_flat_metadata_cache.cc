@@ -78,7 +78,7 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                     {
                         time_t cache_time(std::max(_master_mtime, _filename.mtime()));
                         std::set<std::string> tokens;
-                        WhitespaceTokeniser::get_instance()->tokenise(lines[9], std::inserter(tokens, tokens.begin()));
+                        WhitespaceTokeniser::tokenise(lines[9], std::inserter(tokens, tokens.begin()));
                         ok = _ebuild.mtime() <= cache_time;
 
                         if (ok && ! tokens.empty())
@@ -151,7 +151,7 @@ namespace
     std::string normalise(const T_ & s)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(stringify(s), std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(stringify(s), std::back_inserter(tokens));
         return join(tokens.begin(), tokens.end(), " ");
     }
 

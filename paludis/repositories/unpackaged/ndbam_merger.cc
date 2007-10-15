@@ -58,9 +58,9 @@ namespace paludis
             options(o),
             realroot(options.root.realpath())
         {
-            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect,
+            WhitespaceTokeniser::tokenise(o.config_protect,
                     std::back_inserter(config_protect));
-            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect_mask,
+            WhitespaceTokeniser::tokenise(o.config_protect_mask,
                     std::back_inserter(config_protect_mask));
         }
     };

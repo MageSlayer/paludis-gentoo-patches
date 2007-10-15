@@ -75,7 +75,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
         l != l_end ; ++l)
     {
         std::list<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise((*l),
+        WhitespaceTokeniser::tokenise((*l),
             create_inserter<std::string>(std::back_inserter(tokens)));
         std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
 

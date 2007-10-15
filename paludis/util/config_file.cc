@@ -706,8 +706,8 @@ KeyValueConfigFile::_parse(const Source & ss, const KeyValueConfigFileOptions & 
             {
                 std::list<std::string> values;
                 std::set<std::string> new_values;
-                WhitespaceTokeniser::get_instance()->tokenise(get(key), std::back_inserter(values));
-                WhitespaceTokeniser::get_instance()->tokenise(value, std::back_inserter(values));
+                WhitespaceTokeniser::tokenise(get(key), std::back_inserter(values));
+                WhitespaceTokeniser::tokenise(value, std::back_inserter(values));
                 for (std::list<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
                         v != v_end ; ++v)
                     if (v->empty())

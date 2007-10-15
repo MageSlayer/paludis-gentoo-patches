@@ -90,7 +90,7 @@ KeywordsConf::add(const FSEntry & filename)
             line != line_end ; ++line)
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(*line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;

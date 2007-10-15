@@ -228,7 +228,7 @@ namespace paludis
             for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line,
+                WhitespaceTokeniser::tokenise(*line,
                         std::back_inserter(tokens));
                 if (tokens.size() < 3)
                     continue;
@@ -532,7 +532,7 @@ ERepository::need_mirrors() const
                 for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> ee;
-                    WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(ee));
+                    WhitespaceTokeniser::tokenise(*line, std::back_inserter(ee));
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
@@ -587,7 +587,7 @@ ERepository::do_sync() const
         return false;
 
     std::list<std::string> sync_list;
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->params.sync, std::back_inserter(sync_list));
+    WhitespaceTokeniser::tokenise(_imp->params.sync, std::back_inserter(sync_list));
 
     bool ok(false);
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
@@ -810,7 +810,7 @@ ERepository::do_use_expand_flags() const
             i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
     {
         std::list<std::string> values;
-        WhitespaceTokeniser::get_instance()->tokenise(_imp->profile_ptr->environment_variable(
+        WhitespaceTokeniser::tokenise(_imp->profile_ptr->environment_variable(
                     stringify(*i)), std::back_inserter(values));
         for (std::list<std::string>::const_iterator j(values.begin()), j_end(values.end()) ;
                 j != j_end ; ++j)

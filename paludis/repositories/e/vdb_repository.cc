@@ -861,7 +861,7 @@ VDBRepository::load_provided_using_cache() const
     while (std::getline(provides_cache, line))
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
         if (tokens.size() < 3)
             continue;
 

@@ -152,7 +152,8 @@ namespace paludis
      *
      * \ingroup g_strings
      */
-    template <typename DelimKind_, typename DelimMode_, typename Char_ = std::string::value_type>
+    template <typename DelimKind_, typename DelimMode_ = delim_mode::DelimiterTag,
+             typename Char_ = std::string::value_type>
     struct Tokeniser;
 
     /**
@@ -162,45 +163,37 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename DelimMode_, typename Char_>
-    class Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_> :
-        private InstantiationPolicy<Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_>,
-                instantiation_method::NonCopyableTag>
+    class Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_>
     {
         private:
-            const std::basic_string<Char_> _delims;
+            Tokeniser();
 
         public:
             ///\name Basic operations
             ///\{
 
-            Tokeniser(const std::basic_string<Char_> & delims) :
-                _delims(delims)
-            {
-            }
-
-            ///\}
-
             /**
              * Do the tokenisation.
              */
             template <typename Iter_>
-            void tokenise(const std::basic_string<Char_> & s, Iter_ iter) const;
+            static void tokenise(const std::basic_string<Char_> & s,
+                    const std::basic_string<Char_> & delims, Iter_ iter);
     };
 
     template <typename DelimMode_, typename Char_>
     template <typename Iter_>
     void
     Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_>::tokenise(
-            const std::basic_string<Char_> & s, Iter_ iter) const
+            const std::basic_string<Char_> & s, const std::basic_string<Char_> & delims, Iter_ iter)
     {
         typename std::basic_string<Char_>::size_type p(0), old_p(0);
-        bool in_delim((! s.empty()) && std::basic_string<Char_>::npos != _delims.find(s[0]));
+        bool in_delim((! s.empty()) && std::basic_string<Char_>::npos != delims.find(s[0]));
 
         for ( ; p < s.length() ; ++p)
         {
             if (in_delim)
             {
-                if (std::basic_string<Char_>::npos == _delims.find(s[p]))
+                if (std::basic_string<Char_>::npos == delims.find(s[p]))
                 {
                     tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_delim(
                             s.substr(old_p, p - old_p), iter);
@@ -210,7 +203,7 @@ namespace paludis
             }
             else
             {
-                if (std::basic_string<Char_>::npos != _delims.find(s[p]))
+                if (std::basic_string<Char_>::npos != delims.find(s[p]))
                 {
                     tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_token(
                             s.substr(old_p, p - old_p), iter);
@@ -232,18 +225,18 @@ namespace paludis
     }
 
     /**
-     * Convenience singleton class for tokenising on whitespace.
+     * Convenience class for tokenising on whitespace.
      *
      * \ingroup g_strings
      */
-    class PALUDIS_VISIBLE WhitespaceTokeniser :
-        public InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonTag>,
-        public Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>
+    class PALUDIS_VISIBLE WhitespaceTokeniser
     {
-        friend class InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonTag>;
-
-        private:
-            WhitespaceTokeniser();
+        public:
+            template <typename Iter_>
+            static void tokenise(const std::string & s, Iter_ iter)
+            {
+                Tokeniser<delim_kind::AnyOfTag>::tokenise(s, " \t\r\n", iter);
+            }
     };
 }
 

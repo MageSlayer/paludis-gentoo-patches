@@ -39,15 +39,17 @@ namespace test_cases
      */
     struct TestTokeniserAD : TestCase
     {
-        TestTokeniserAD() : TestCase("Tokeniser<AnyOfTag, DelimiterTag>") { }
+        TestTokeniserAD() : TestCase("Tokeniser<AnyOfTag, DelimiterTag(default)>") { }
 
         void run()
         {
-            Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(",.+");
+            typedef Tokeniser<delim_kind::AnyOfTag> t;
+            const std::string delims(",.+");
+
             std::vector<std::string> tokens;
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("one,two...+...three...", std::back_inserter(tokens));
+            t::tokenise("one,two...+...three...", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), "two");
@@ -55,7 +57,7 @@ namespace test_cases
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("...one,two...+...three", std::back_inserter(tokens));
+            t::tokenise("...one,two...+...three", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), "two");
@@ -63,18 +65,18 @@ namespace test_cases
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("one", std::back_inserter(tokens));
+            t::tokenise("one", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise(".+.,.", std::back_inserter(tokens));
+            t::tokenise(".+.,.", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("", std::back_inserter(tokens));
+            t::tokenise("", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
         }
@@ -90,11 +92,13 @@ namespace test_cases
 
         void run()
         {
-            Tokeniser<delim_kind::AnyOfTag, delim_mode::BoundaryTag> t(",.+");
+            typedef Tokeniser<delim_kind::AnyOfTag, delim_mode::BoundaryTag> t;
+            const std::string delims(",.+");
+
             std::vector<std::string> tokens;
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("one,two...+...three...", std::back_inserter(tokens));
+            t::tokenise("one,two...+...three...", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             TEST_CHECK_EQUAL(tokens.at(1), ",");
@@ -105,7 +109,7 @@ namespace test_cases
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("...one,two...+...three", std::back_inserter(tokens));
+            t::tokenise("...one,two...+...three", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
             TEST_CHECK_EQUAL(tokens.at(0), "...");
             TEST_CHECK_EQUAL(tokens.at(1), "one");
@@ -116,19 +120,19 @@ namespace test_cases
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("one", std::back_inserter(tokens));
+            t::tokenise("one", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), "one");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise(".+.,.", std::back_inserter(tokens));
+            t::tokenise(".+.,.", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
             TEST_CHECK_EQUAL(tokens.at(0), ".+.,.");
             tokens.clear();
 
             TEST_CHECK(tokens.empty());
-            t.tokenise("", std::back_inserter(tokens));
+            t::tokenise("", delims, std::back_inserter(tokens));
             TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
             tokens.clear();
         }

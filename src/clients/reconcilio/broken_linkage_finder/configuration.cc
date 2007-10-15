@@ -72,26 +72,30 @@ namespace
         }
     };
 
-    template <typename T_, typename DelimKind_, typename DelimMode_, typename Char_>
+    template <typename Tokeniser_, typename T_>
     void
     from_string(const tr1::function<std::string (const std::string &)> & source,
-                const std::string & varname, std::vector<T_> & vec,
-                const Tokeniser<DelimKind_, DelimMode_, Char_> & tokeniser)
+                const std::string & varname, std::vector<T_> & vec, const std::string & delims)
     {
         std::string str(source(varname));
         if (! str.empty())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
-            tokeniser.tokenise(str, std::back_inserter(vec));
+            Tokeniser_::tokenise(str, delims, std::back_inserter(vec));
         }
     }
 
     template <typename T_>
-    inline void
+    void
     from_string(const tr1::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        from_string(source, varname, vec, *WhitespaceTokeniser::get_instance());
+        std::string str(source(varname));
+        if (! str.empty())
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
+            WhitespaceTokeniser::tokenise(str, std::back_inserter(vec));
+        }
     }
 
     inline void
@@ -233,13 +237,14 @@ Implementation<Configuration>::load_from_etc_profile_env(const FSEntry & root)
         opts += kvcfo_ignore_export;
 
         KeyValueConfigFile kvs(etc_profile_env, opts);
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(":");
+        typedef Tokeniser<delim_kind::AnyOfTag> Tokeniser;
+        const std::string delims(":");
 
         tr1::function<std::string (const std::string &)> fromfile(
             tr1::bind(&KeyValueConfigFile::get, tr1::cref(kvs), _1));
 
-        from_string(fromfile, "PATH",     search_dirs, tokeniser);
-        from_string(fromfile, "ROOTPATH", search_dirs, tokeniser);
+        from_string<Tokeniser>(fromfile, "PATH",     search_dirs, delims);
+        from_string<Tokeniser>(fromfile, "ROOTPATH", search_dirs, delims);
     }
     else if (etc_profile_env.exists())
         Log::get_instance()->message(ll_warning, lc_context, "'" + stringify(etc_profile_env) + "' exists but is not a regular file");
@@ -282,20 +287,20 @@ Implementation<Configuration>::add_defaults()
     static const std::string default_ld_so_conf("/lib /usr/lib");
 
     Log::get_instance()->message(ll_debug, lc_context, "Got LD_LIBRARY_MASK=\"" + default_ld_library_mask + "\"");
-    WhitespaceTokeniser::get_instance()->tokenise(
-        default_ld_library_mask, std::back_inserter(ld_library_mask));
+    WhitespaceTokeniser::tokenise(
+            default_ld_library_mask, std::back_inserter(ld_library_mask));
 
     Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS=\"" + default_search_dirs + "\"");
-    WhitespaceTokeniser::get_instance()->tokenise(
-        default_search_dirs, std::back_inserter(search_dirs));
+    WhitespaceTokeniser::tokenise(
+            default_search_dirs, std::back_inserter(search_dirs));
 
     Log::get_instance()->message(ll_debug, lc_context, "Got SEARCH_DIRS_MASK=\"" + default_search_dirs_mask + "\"");
-    WhitespaceTokeniser::get_instance()->tokenise(
-        default_search_dirs_mask, std::back_inserter(search_dirs_mask));
+    WhitespaceTokeniser::tokenise(
+            default_search_dirs_mask, std::back_inserter(search_dirs_mask));
 
     Log::get_instance()->message(ll_debug, lc_context, "Default ld.so.conf contents is \"" + default_ld_so_conf + "\"");
-    WhitespaceTokeniser::get_instance()->tokenise(
-        default_ld_so_conf, std::back_inserter(ld_so_conf));
+    WhitespaceTokeniser::tokenise(
+            default_ld_so_conf, std::back_inserter(ld_so_conf));
 }
 
 Configuration::DirsIterator

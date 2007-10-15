@@ -193,7 +193,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         {
             Context local_context("When handling Contains: key:");
             std::list<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(file.get("Contains"), std::back_inserter(tokens));
+            WhitespaceTokeniser::tokenise(file.get("Contains"), std::back_inserter(tokens));
             _imp->contains_key.reset(new PackageIDSequenceKey(_imp->env, "Contains", "Contains", mkt_normal));
             add_metadata_key(_imp->contains_key);
             for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;

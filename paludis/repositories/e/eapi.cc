@@ -176,9 +176,9 @@ namespace paludis
 
                                                                 ))));
 
-                WhitespaceTokeniser::get_instance()->tokenise(k.get("restrict_fetch"),
+                WhitespaceTokeniser::tokenise(k.get("restrict_fetch"),
                         eapi->supported->ebuild_options->restrict_fetch->inserter());
-                WhitespaceTokeniser::get_instance()->tokenise(k.get("restrict_mirror"),
+                WhitespaceTokeniser::tokenise(k.get("restrict_mirror"),
                         eapi->supported->ebuild_options->restrict_mirror->inserter());
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"), eapi));
@@ -236,15 +236,14 @@ EAPILabels::EAPILabels(const std::string & s) :
     PrivateImplementationPattern<EAPILabels>(new Implementation<EAPILabels>)
 {
     std::vector<std::string> tokens;
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tok(";");
-    tok.tokenise(s, std::back_inserter(tokens));
+
+    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, ";", std::back_inserter(tokens));
 
     for (std::vector<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
     {
         std::vector<std::string> values;
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> vtok("=");
-        vtok.tokenise(*t, std::back_inserter(values));
+        Tokeniser<delim_kind::AnyOfTag>::tokenise(*t, "=", std::back_inserter(values));
 
         if (values.size() != 2)
             throw EAPIConfigurationError("EAPI labels value '" + s + "' has bad values size '" + stringify(values.size()) + "'");

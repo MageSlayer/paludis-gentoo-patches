@@ -65,9 +65,8 @@ DepLexer::DepLexer(const std::string & s) :
 {
     Context context("When lexing dependency string '" + s + "':");
 
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::BoundaryTag> tokeniser(" \n\t");
     std::vector<std::string> tokens;
-    tokeniser.tokenise(s, std::back_inserter(tokens));
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::BoundaryTag>::tokenise(s, " \n\t", std::back_inserter(tokens));
 
     for (std::vector<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)

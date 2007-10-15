@@ -59,9 +59,9 @@ namespace paludis
         Implementation(const VDBUnmergerOptions & o) :
             options(o)
         {
-            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect,
+            WhitespaceTokeniser::tokenise(o.config_protect,
                     std::back_inserter(config_protect));
-            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect_mask,
+            WhitespaceTokeniser::tokenise(o.config_protect_mask,
                     std::back_inserter(config_protect_mask));
         }
     };
@@ -210,7 +210,7 @@ VDBUnmerger::populate_unmerge_set()
     while (std::getline(c, line))
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
         if (tokens.empty())
             continue;
 

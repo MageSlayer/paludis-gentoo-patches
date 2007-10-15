@@ -49,10 +49,9 @@ HostTupleName::HostTupleName(const std::string & s) :
 {
     Context c("When creating a HostTupleName from '" + s + "':");
 
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser("-");
     std::vector<std::string> tokens;
+    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, "-", std::back_inserter(tokens));
 
-    tokeniser.tokenise(s, std::back_inserter(tokens));
     switch (tokens.size())
     {
         case 2: // Type 'arch'-'userland', i.e. 'spu-elf'.

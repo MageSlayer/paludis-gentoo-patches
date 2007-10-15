@@ -156,7 +156,7 @@ namespace
         bool operator() (const std::string & l) const
         {
             std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(l, std::back_inserter(tokens));
+            WhitespaceTokeniser::tokenise(l, std::back_inserter(tokens));
 
             return (tokens.size() >= 1) && (tokens.at(1) == query);
         }
@@ -177,7 +177,7 @@ namespace
         try
         {
             std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
+            WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
 
             if (tokens.empty())
                 return;

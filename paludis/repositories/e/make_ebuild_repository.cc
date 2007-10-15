@@ -71,7 +71,7 @@ paludis::make_ebuild_repository(
 
     tr1::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
     if (m->end() != m->find("profiles"))
-        WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
+        WhitespaceTokeniser::tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
 
     if (profiles->empty())
@@ -86,7 +86,7 @@ paludis::make_ebuild_repository(
     tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
 
     if (m->end() != m->find("eclassdirs"))
-        WhitespaceTokeniser::get_instance()->tokenise(m->find("eclassdirs")->second,
+        WhitespaceTokeniser::tokenise(m->find("eclassdirs")->second,
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
 
     if (eclassdirs->empty())

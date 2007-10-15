@@ -790,7 +790,7 @@ paludis::erepository::parse_dependency_label(const std::string & s, const EAPI &
 
     std::set<std::string> labels;
     std::string label(s.substr(0, s.length() - 1));
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(",+").tokenise(label, std::inserter(labels, labels.end()));
+    Tokeniser<delim_kind::AnyOfTag>::tokenise(label, ",+", std::inserter(labels, labels.end()));
 
     tr1::shared_ptr<DependencyLabelsDepSpec> l(new DependencyLabelsDepSpec);
 

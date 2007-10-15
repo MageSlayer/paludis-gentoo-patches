@@ -587,7 +587,7 @@ namespace
     std::string normalise(const std::string & s)
     {
         std::list<std::string> w;
-        WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(w));
+        WhitespaceTokeniser::tokenise(s, std::back_inserter(w));
         return join(w.begin(), w.end(), " ");
     }
 }

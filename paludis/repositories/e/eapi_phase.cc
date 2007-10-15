@@ -54,7 +54,7 @@ EAPIPhase::EAPIPhase(const std::string & s) :
     Context c("When parsing EAPI phase '" + s + "'");
 
     std::list<std::string> tokens;
-    WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(tokens));
+    WhitespaceTokeniser::tokenise(s, std::back_inserter(tokens));
 
     std::list<std::string>::iterator t(std::find(tokens.begin(), tokens.end(), ":"));
     if (t == tokens.end())
@@ -92,8 +92,7 @@ EAPIPhases::EAPIPhases(const std::string & s) :
     Context c("When parsing EAPI phases '" + s + "'");
 
     std::list<std::string> tokens;
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tok(";");
-    tok.tokenise(s, std::back_inserter(tokens));
+    Tokeniser<delim_kind::AnyOfTag>::tokenise(s, ";", std::back_inserter(tokens));
     for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
             t != t_end ; ++t)
         _imp->phases.push_back(make_shared_ptr(new EAPIPhase(*t)));
