@@ -219,7 +219,8 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
 
             qr = PyQAR()
 
-            qi.check_qa(qr, QACheckProperties(), QACheckProperties(), QAMessageLevel.DEBUG, "")
+            qi.check_qa(qr, QACheckProperties(), QACheckProperties(),
+                    QAMessageLevel.DEBUG, "repository_TEST_dir/testrepo")
             self.assertEquals(qr.messages > 0, True)
 
 class TestCase_03_FakeRepository(unittest.TestCase):
