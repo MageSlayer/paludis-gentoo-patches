@@ -328,4 +328,10 @@ InstalledVirtualsRepository::do_some_ids_might_support_action(const SupportsActi
     return q.result;
 }
 
-
+tr1::shared_ptr<const CategoryNamePartSet>
+InstalledVirtualsRepository::unimportant_category_names() const
+{
+    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    result->insert(CategoryNamePart("virtual"));
+    return result;
+}

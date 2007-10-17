@@ -86,6 +86,8 @@ namespace paludis
                     Environment * const env,
                     tr1::shared_ptr<const Map<std::string, std::string> >);
 
+            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+
             virtual void invalidate();
 
             virtual void invalidate_masks();

@@ -406,3 +406,11 @@ VirtualsRepository::do_some_ids_might_support_action(const SupportsActionTestBas
     return q.result;
 }
 
+tr1::shared_ptr<const CategoryNamePartSet>
+VirtualsRepository::unimportant_category_names() const
+{
+    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    result->insert(CategoryNamePart("virtual"));
+    return result;
+}
+
