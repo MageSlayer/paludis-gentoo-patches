@@ -117,6 +117,8 @@ EbuildFlatMetadataCache::load(const tr1::shared_ptr<const EbuildID> & id)
                             id->load_provide(m.metadata_provide, m.description_provide, lines[13]);
                     }
                 }
+                else
+                    id->set_slot(SlotName("UNKNOWN"));
 
                 if (! ok)
                     Log::get_instance()->message(ll_warning, lc_no_context) << "Stale cache file at '"
