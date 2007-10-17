@@ -297,7 +297,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
         } while (false);
 
         Log::get_instance()->message(ll_warning, lc_context)
-            << "Package name '" << p << "' is amibguous, assuming you meant '" << *qpns.begin()
+            << "Package name '" << p << "' is ambiguous, assuming you meant '" << *qpns.begin()
             << "' (candidates were '"
             << join(first_iterator(result->begin()), first_iterator(result->end()), "', '") << "')";
 
