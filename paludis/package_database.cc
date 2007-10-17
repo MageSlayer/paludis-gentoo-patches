@@ -21,12 +21,16 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
+#include <paludis/environment.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map.hh>
+#include <paludis/util/map-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -187,13 +191,57 @@ PackageDatabase::add_repository(int i, const tr1::shared_ptr<Repository> r)
     _imp->repository_importances.insert(std::make_pair(i, _imp->repositories.insert(q, r)));
 }
 
+namespace
+{
+    struct IsInstalled
+    {
+        const FSEntry _root;
+        const tr1::shared_ptr<const PackageDatabase> _db;
+
+        IsInstalled(const Environment * e) :
+            _root(e->root()),
+            _db(e->package_database())
+        {
+        }
+
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return (! _db->query(query::Package(qpn) & query::InstalledAtRoot(_root), qo_whatever)->empty());
+        }
+    };
+
+    struct IsImportant
+    {
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        typedef Map<const QualifiedPackageName, const tr1::shared_ptr<const CategoryNamePartSet> > QPNCMap;
+        const tr1::shared_ptr<QPNCMap> _map;
+
+        IsImportant(const tr1::shared_ptr<QPNCMap> & m) :
+            _map(m)
+        {
+        }
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return (_map->find(qpn)->second->end() == _map->find(qpn)->second->find(qpn.category));
+        }
+    };
+}
+
 QualifiedPackageName
 PackageDatabase::fetch_unique_qualified_package_name(
         const PackageNamePart & p) const
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    // Map matching QualifiedPackageNames with unimportant_category_names sets from their repository.
+    typedef Map<const QualifiedPackageName, const tr1::shared_ptr<const CategoryNamePartSet> > QPNCMap;
+    tr1::shared_ptr<QPNCMap> result(new QPNCMap);
 
     for (IndirectIterator<RepositoryConstIterator> r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
@@ -201,17 +249,62 @@ PackageDatabase::fetch_unique_qualified_package_name(
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
         tr1::shared_ptr<const CategoryNamePartSet> cats(r->category_names_containing_package(p));
+        tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(r->unimportant_category_names());
+
         for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
-            result->insert(*c + p);
+            result->insert(*c + p, unimportant_cats);
     }
 
     if (result->empty())
         throw NoSuchPackageError(stringify(p));
     if (result->size() > 1)
-        throw AmbiguousPackageNameError(stringify(p), result->begin(), result->end());
+    {
+        using namespace tr1::placeholders;
 
-    return *(result->begin());
+        std::list<QualifiedPackageName> qpns;
+
+        do
+        {
+            const IsImportant is_important(result);
+            const IsInstalled is_installed(_imp->environment);
+
+            std::remove_copy_if(first_iterator(result->begin()), first_iterator(result->end()),
+                    std::front_inserter(qpns),
+                    tr1::bind(std::logical_and<bool>(),
+                        tr1::bind(std::not1(is_important), _1),
+                        tr1::bind(std::not1(is_installed), _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(tr1::bind(std::logical_and<bool>(),
+                        tr1::bind(is_important, _1),
+                        tr1::bind(std::not1(is_installed), _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(tr1::bind(std::logical_and<bool>(),
+                        tr1::bind(std::not1(is_important), _1),
+                        tr1::bind(is_installed, _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            throw AmbiguousPackageNameError(stringify(p), first_iterator(result->begin()),
+                    first_iterator(result->end()));
+        } while (false);
+
+        Log::get_instance()->message(ll_warning, lc_context)
+            << "Package name '" << p << "' is amibguous, assuming you meant '" << *qpns.begin()
+            << "' (candidates were '"
+            << join(first_iterator(result->begin()), first_iterator(result->end()), "', '") << "')";
+
+        return *qpns.begin();
+    }
+    else
+        return result->begin()->first;
 }
 
 const tr1::shared_ptr<const PackageIDSequence>

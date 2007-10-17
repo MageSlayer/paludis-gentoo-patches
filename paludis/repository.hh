@@ -197,6 +197,11 @@ namespace paludis
             tr1::shared_ptr<const CategoryNamePartSet> category_names() const;
 
             /**
+             * Fetch unimportant categories.
+             */
+            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+
+            /**
              * Fetch categories that contain a named package.
              */
             tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(

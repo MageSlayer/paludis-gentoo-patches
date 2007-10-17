@@ -21,8 +21,10 @@
 #include <paludis/query.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
@@ -253,6 +255,23 @@ namespace test_cases
     {
         PackageDatabaseDisambiguateTest() : TestCase("package database disambiguate") { }
 
+        struct CoolFakeRepository :
+            FakeRepository
+        {
+            CoolFakeRepository(const Environment * const e, const RepositoryName & rn) :
+                FakeRepository(e, rn)
+            {
+            }
+
+            tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
+            {
+                tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                result->insert(CategoryNamePart("bad-cat1"));
+                result->insert(CategoryNamePart("bad-cat2"));
+                return result;
+            };
+        };
+
         void run()
         {
             TestEnvironment e;
@@ -267,23 +286,66 @@ namespace test_cases
             TEST_CHECK(true);
 
             tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
-            r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
-            r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
+            r2->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
+            r2->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
             p.add_repository(10, r2);
             TEST_CHECK(true);
+
+            tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
+            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"));
+            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"));
+
+            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"));
+            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-installed"));
+
+            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail1"));
+            r3->add_package(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail1"));
+
+            r3->add_package(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-fail2"));
+            r3->add_package(CategoryNamePart("bad-cat2") + PackageNamePart("pkg-fail2"));
+
+            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail3"));
+            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail3"));
+
+            r3->add_package(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"));
+            r3->add_package(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"));
+            p.add_repository(10, r3);
+            TEST_CHECK(true);
+
+            tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(&e, RepositoryName("repo4")));
+            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-installed"), VersionSpec("0"));
+            r4->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+            r4->add_version(CategoryNamePart("good-cat2") + PackageNamePart("pkg-fail4"), VersionSpec("0"));
+            p.add_repository(10, r4);
 
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),
                     "cat-one/pkg-one");
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-four")),
                     "cat-three/pkg-four");
 
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-important")),
+                    "good-cat1/pkg-important");
+
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-installed")),
+                    "good-cat1/pkg-installed");
+
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-two")),
                     AmbiguousPackageNameError);
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-three")),
                     AmbiguousPackageNameError);
 
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail1")),
+                    AmbiguousPackageNameError);
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail2")),
+                    AmbiguousPackageNameError);
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail3")),
+                    AmbiguousPackageNameError);
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail4")),
+                    AmbiguousPackageNameError);
+
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-five")),
                     NoSuchPackageError);
+
         }
     } package_database_disambiguate_test;
 }

@@ -1010,6 +1010,14 @@ ERepository::perform_hook(const Hook & hook) const
     return HookResult(0, "");
 }
 
+tr1::shared_ptr<const CategoryNamePartSet>
+ERepository::unimportant_category_names() const
+{
+    tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    result->insert(CategoryNamePart("virtual"));
+    return result;
+}
+
 #ifdef ENABLE_QA
 namespace
 {

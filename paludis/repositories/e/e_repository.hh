@@ -225,6 +225,8 @@ namespace paludis
             HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+
             /**
              * Update GLEP 42 news files.
              */
