@@ -4,6 +4,7 @@ SUBDIRS =
 
 eapis = \
 	0.conf \
+	1.conf \
 	exheres-0.conf \
 	paludis-1.conf
 

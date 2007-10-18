@@ -8,6 +8,8 @@ make_enum_PackageDepSpecParseMode()
 
     key pds_pm_eapi_0        "EAPI 0"
     key pds_pm_eapi_0_strict "EAPI 0, errors for non-permitted things"
+    key pds_pm_eapi_1        "EAPI 1"
+    key pds_pm_eapi_1_strict "EAPI 1, errors for non-permitted things"
     key pds_pm_exheres_0     "EAPI exheres-0"
     key pds_pm_permissive    "Permissive"
     key pds_pm_unspecific    "Permissive, and allow unspecific cat/pkg"

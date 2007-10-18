@@ -387,6 +387,8 @@ namespace
                     /* fall through */
 
                 case iuse_pm_permissive:
+                case iuse_pm_eapi_1:
+                case iuse_pm_eapi_1_strict:
                     return '-' == s[0] ? use_disabled : use_enabled;
 
                 case iuse_pm_eapi_0_strict:

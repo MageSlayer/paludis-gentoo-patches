@@ -300,10 +300,12 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                     break;
 
                 case pds_pm_eapi_0:
+                case pds_pm_eapi_1:
                     Log::get_instance()->message(ll_warning, lc_context, "[] dependencies not safe for use with this EAPI");
                     break;
 
                 case pds_pm_eapi_0_strict:
+                case pds_pm_eapi_1_strict:
                     throw PackageDepSpecError("[] dependencies not safe for use with this EAPI");
             }
 
@@ -416,11 +418,13 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                     break;
 
                 case pds_pm_eapi_0:
+                case pds_pm_eapi_1:
                     Log::get_instance()->message(ll_warning, lc_context, "Repository dependencies not safe for use with this EAPI");
                     break;
 
                 case pds_pm_exheres_0:
                 case pds_pm_eapi_0_strict:
+                case pds_pm_eapi_1_strict:
                     throw PackageDepSpecError("Repository dependencies not allowed with this EAPI");
             }
 
@@ -436,6 +440,8 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                 case pds_pm_unspecific:
                 case pds_pm_permissive:
                 case pds_pm_exheres_0:
+                case pds_pm_eapi_1:
+                case pds_pm_eapi_1_strict:
                 case last_pds_pm:
                     break;
 
@@ -471,10 +477,12 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                         break;
 
                     case pds_pm_eapi_0:
+                    case pds_pm_eapi_1:
                         Log::get_instance()->message(ll_warning, lc_context, "~> dependencies not safe for use with this EAPI");
                         break;
 
                     case pds_pm_eapi_0_strict:
+                    case pds_pm_eapi_1_strict:
                         throw PackageDepSpecError("~> dependencies not safe for use with this EAPI");
                 }
 
@@ -536,6 +544,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                         case pds_pm_permissive:
                         case last_pds_pm:
                         case pds_pm_eapi_0:
+                        case pds_pm_eapi_1:
                             Log::get_instance()->message(ll_qa, lc_context,
                                     "Package dep spec '" + ss + "' uses * "
                                     "with operator '" + stringify(op) +
@@ -543,6 +552,7 @@ PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode 
                             break;
 
                         case pds_pm_eapi_0_strict:
+                        case pds_pm_eapi_1_strict:
                         case pds_pm_exheres_0:
                             throw PackageDepSpecError(
                                     "Package dep spec '" + ss + "' uses * "

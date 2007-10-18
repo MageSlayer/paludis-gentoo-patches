@@ -552,6 +552,32 @@ src_compile() {
     emake monkey
 }
 END
+mkdir -p "cat/econf-source"
+cat <<END > cat/econf-source/econf-source-0.ebuild || exit 1
+EAPI="\${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_unpack() {
+    ECONF_SOURCE=subdir
+    mkdir \${S}
+    cd \${S}
+    mkdir subdir
+    echo 'touch monkey' > subdir/configure
+    chmod +x subdir/configure
+}
+
+src_install() {
+    insinto /usr/bin
+    doins monkey || die "no monkey"
+}
+END
+cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
 cd ..
 
 mkdir -p repo14/{profiles/profile,metadata,eclass} || exit 1
