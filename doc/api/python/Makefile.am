@@ -1,7 +1,23 @@
 SUBDIRS = .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ epydoc/*
 MAINTAINERCLEANFILES = Makefile.in
+
+if ENABLE_PYTHON
+
+epydoc : epydoc.css built-sources
+	mkdir epydoc
+	epydoc -n Paludis -o epydoc -u http://paludis.pioto.org --no-frames -c epydoc.css \
+	    $(top_builddir)/python/paludis.so
+
+else
+
+epydoc :
+	@echo "You don't have python turned on!"
+	exit 1
+
+endif
+
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

@@ -27,6 +27,9 @@ dist-hook :
 doxygen : built-sources
 	$(MAKE) -C doc $@
 
+epydoc : all
+	$(MAKE) -C doc $@
+
 check-local :
 	touch $(top_builddir)/done-check
 

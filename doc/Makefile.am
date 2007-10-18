@@ -15,5 +15,8 @@ distcheck-deps-subdirs :
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
 
 doxygen :
-	make -C api doxygen
+	$(MAKE) -C api $@
+
+epydoc :
+	$(MAKE) -C api $@
 
