@@ -151,6 +151,22 @@ int main(int, char **)
 	])
 dnl }}}
 
+dnl {{{ check for namespace aliasing
+AC_MSG_CHECKING([whether your compiler has referencing issues])
+AC_COMPILE_IFELSE([
+namespace n
+{
+	int x = 0;
+	int & r_x = x;
+}
+
+using n::r_x;
+],
+	[AC_MSG_RESULT([no])],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
+dnl }}}
+
 dnl {{{ check for hashes
 AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
