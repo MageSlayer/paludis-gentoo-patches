@@ -312,7 +312,7 @@ VDBRepository::make_vdb_repository(
         if (provides_cache.empty())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
-                    + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
+                    + repo_file + "'. You should read the Paludis documentation and select an "
                     "appropriate value.");
             provides_cache = "/var/empty";
         }
@@ -326,7 +326,7 @@ VDBRepository::make_vdb_repository(
         if (names_cache.empty())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
-                    + repo_file + "'. You should read http://paludis.pioto.org/cachefiles.html and select an "
+                    + repo_file + "'. You should read the Paludis documentation and select an "
                     "appropriate value.");
             names_cache = "/var/empty";
         }
