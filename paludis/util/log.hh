@@ -22,6 +22,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
