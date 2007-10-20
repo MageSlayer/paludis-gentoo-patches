@@ -1,0 +1,141 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<div class="topnavinner">
+    <table border="0" cellspacing="0">
+        <tr>
+            <td rowspan="7" class="logotab">
+                <a href="###TOPURI###" class="noarrow"><img style="border: 0px; padding-right: 50px;"
+                    src="###TOPURI###paludis_270.png" alt="Paludis Logo"
+                    /></a>
+            </td>
+
+            <td>
+                <a href="###TOPURI###">Introduction</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/hooks.html">Hooks</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/keywords.html">keywords.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/repositories.html">repositories/</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="http://paludis.pioto.org/trac/">Bugs, Requests, Support</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/syncers.html">Syncers</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/use.html">use.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/erepository.html">ebuild</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="###TOPURI###overview/">Overview</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/fetchers.html">Fetchers</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/licenses.html">licenses.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/vdb.html">VDB</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="###TOPURI###faq/">FAQ</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/envvars.html">Env Vars</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/mirrors.html">mirrors.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/installedunpackaged.html">installed unpackaged</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="###TOPURI###clients/">Clients</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td class="currenttab">
+                <a href="###TOPURI###configuration/">Configuration</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/configfiles.html">File formats</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="###TOPURI###api/">API</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/environment.html">environment.conf</a>
+            </td>
+
+            <td class="currentpage">
+                <a href="###TOPURI###configuration/sets.html">sets/</a>
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+

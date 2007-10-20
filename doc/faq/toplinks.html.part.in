@@ -9,12 +9,12 @@
                     /></a>
             </td>
 
-            <td class="currenttab">
+            <td>
                 <a href="###TOPURI###">Introduction</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###">Main page</a>
+                <a href="###TOPURI###faq/general.html">General Questions</a>
             </td>
         </tr>
 
@@ -24,7 +24,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###news.html">Release Notes</a>
+                <a href="###TOPURI###faq/howdoi.html">How do I ...?</a>
             </td>
         </tr>
 
@@ -34,17 +34,17 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###changelog.html">ChangeLog</a>
+                <a href="###TOPURI###faq/operation.html">Operation</a>
             </td>
         </tr>
 
         <tr>
-            <td>
+            <td class="currenttab">
                 <a href="###TOPURI###faq/">FAQ</a>
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###faq/stricter.html">Stricter than Portage</a>
             </td>
         </tr>
 
@@ -54,7 +54,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###faq/different.html">Things Paludis Does Differently</a>
             </td>
         </tr>
 
@@ -64,7 +64,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###faq/repositories.html">Repository Questions</a>
             </td>
         </tr>
 
@@ -79,4 +79,6 @@
         </tr>
     </table>
 </div>
+
+
 

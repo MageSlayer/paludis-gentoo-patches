@@ -4,7 +4,7 @@
     <table border="0" cellspacing="0">
         <tr>
             <td rowspan="7" class="logotab">
-                <a href="###TOPURI###"><img style="border: 0px; padding-right: 50px;"
+                <a href="###TOPURI###" class="noarrow"><img style="border: 0px; padding-right: 50px;"
                     src="###TOPURI###paludis_270.png" alt="Paludis Logo"
                     /></a>
             </td>

@@ -33,6 +33,15 @@ a:hover img {
     background-color: #996600;
 }
 
+div.topnav * a:before {
+    content: "\25b8";
+    color: #996600;
+}
+
+div.topnav * a.noarrow:before {
+    content: "";
+}
+
 div.topnav * a:link {
     text-decoration: none;
     font-weight: bold;

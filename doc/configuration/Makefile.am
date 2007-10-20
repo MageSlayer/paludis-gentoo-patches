@@ -1,7 +1,39 @@
 SUBDIRS = .
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
+	header.html.part \
+	toplinks.html.part \
+	footer.html.part \
+	index.html
+
 MAINTAINERCLEANFILES = Makefile.in
+
+EXTRA_DIST = \
+	toplinks.html.part.in \
+	index.html.part
+
+paludisconfigurationhtmldir = $(htmldir)/configuration
+
+paludisconfigurationhtml_DATA = \
+	index.html
+
+index.html : header.html.part index.html.part footer.html.part
+	cat header.html.part index.html.part footer.html.part > $@
+
+header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
+	sed \
+	    -e 's,###TOPURI###,../,g' \
+	    -e '/###TOPLINKS###/r $(srcdir)/toplinks.html.part' \
+	    -e 's,###TOPLINKS###,,g' \
+	    < $(srcdir)/../header.html.part.in > header.html.part
+
+toplinks.html.part : $(srcdir)/toplinks.html.part.in
+	sed \
+	    -e 's,###TOPURI###,../,g' \
+	    < $(srcdir)/toplinks.html.part.in > toplinks.html.part
+
+footer.html.part : $(srcdir)/../footer.html.part.in
+	sed -e 's,###TOPURI###,./,g' < $(srcdir)/../footer.html.part.in > footer.html.part
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
