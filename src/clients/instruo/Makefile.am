@@ -10,14 +10,10 @@ SUBDIRS = .
 
 bin_PROGRAMS = instruo
 noinst_PROGRAMS = man-instruo
-noinst_DATA = instruo.html
 man_MANS = instruo.1
 
 instruo.1 : man-instruo
 	./man-instruo > $@
-
-instruo.html : man-instruo
-	./man-instruo --html > $@
 
 man_instruo_SOURCES = \
 	man_instruo.cc \
@@ -77,12 +73,12 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = instruo.1 instruo.html
+DISTCHECK_DEPS = instruo.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
