@@ -36,7 +36,7 @@ CommandLine::CommandLine() :
     a_help(&action_args,        "help",        'h',  "Display program help"),
 
     general_args(this, "General options",
-            "Options which are relvevant for most or all actions."),
+            "Options which are relevant for most or all actions."),
     a_log_level(&general_args,      "log-level",      '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour,   "no-color"),
