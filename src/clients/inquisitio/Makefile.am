@@ -9,14 +9,10 @@ SUBDIRS = .
 
 bin_PROGRAMS = inquisitio
 noinst_PROGRAMS = man-inquisitio
-noinst_DATA = inquisitio.html
 man_MANS = inquisitio.1
 
 inquisitio.1 : man-inquisitio
 	./man-inquisitio > $@
-
-inquisitio.html : man-inquisitio
-	./man-inquisitio --html > $@
 
 man_inquisitio_SOURCES = \
 	man_inquisitio.cc \
@@ -80,12 +76,12 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = inquisitio.1 inquisitio.html
+DISTCHECK_DEPS = inquisitio.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
