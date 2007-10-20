@@ -3,7 +3,8 @@ SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	header.html.part \
 	toplinks.html.part \
-	footer.html.part
+	footer.html.part \
+	index.html
 
 MAINTAINERCLEANFILES = Makefile.in \
 	$(ALL_CLIENTS_HTML)
