@@ -12,7 +12,6 @@ man_pages = contrarius.1
 
 bin_PROGRAMS = contrarius
 noinst_PROGRAMS = man-contrarius
-noinst_DATA = contrarius.html
 man_MANS = $(man_pages)
 
 contrarius_SOURCES = \
@@ -63,9 +62,6 @@ version_TEST :
 contrarius.1 : man-contrarius
 	./man-contrarius > $@
 
-contrarius.html : man-contrarius
-	./man-contrarius --html > $@
-
 man_contrarius_SOURCES = \
 	man_contrarius.cc \
 	command_line.hh \
@@ -95,12 +91,12 @@ contrarius_data_DATA = default_config.txt
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = contrarius.1 contrarius.html
+DISTCHECK_DEPS = contrarius.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
