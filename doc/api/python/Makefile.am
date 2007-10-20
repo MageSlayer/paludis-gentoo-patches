@@ -10,8 +10,8 @@ all-local : epydoc
 epydoc : python
 
 python : epydoc.css
-	rm -fr epydoc
-	mkdir -p epydoc
+	rm -fr python
+	mkdir -p python
 	epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c epydoc.css \
 	    $(top_builddir)/python/paludis.so
 
