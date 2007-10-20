@@ -1040,6 +1040,14 @@ dnl }}}
 
 dnl {{{ clients
 ALL_CLIENTS="accerso adjutrix contrarius gtkpaludis importare inquisitio instruo paludis qualudis reconcilio"
+ALL_CLIENTS_HTML=""
+for a in $ALL_CLIENTS ; do
+	if test x"$a" = "xgtkpaludis" ; then
+		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML"
+	else
+		ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
+	fi
+done
 DEFAULT_CLIENTS="adjutrix paludis reconcilio"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -1071,6 +1079,7 @@ clients=`echo $clients | tr ' ' '\n' \
 AC_MSG_RESULT([$clients])
 BUILD_CLIENTS="$clients"
 AC_SUBST([ALL_CLIENTS])
+AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
 
 if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
