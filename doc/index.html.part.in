@@ -86,4 +86,14 @@
 
 <h2>API Documentation</h2>
 
+<ul>
+    <li>The core library code is written in <a href="api/cplusplus/index.html">C++</a>.</li>
+    <li>
+        <p>Bindings are available for:</p>
+        <ul>
+            <li><a href="api/ruby/index.html">Ruby</a></li>
+            <li><a href="api/python/index.html">Python</a></li>
+        </ul>
+    </li>
+</ul>
 

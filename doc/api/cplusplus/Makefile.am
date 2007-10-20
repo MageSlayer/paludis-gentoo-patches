@@ -21,14 +21,22 @@ doxygen_files = \
 	references.doxygen
 
 EXTRA_DIST = doxygen.conf.in $(doxygen_files)
-CLEANFILES = *~ doxygen/* paludis.tag
+CLEANFILES = *~ cplusplus/* cplusplus paludis.tag
 
 MAINTAINERCLEANFILES = Makefile.in doxygen.conf $(tagfiles)
 
 if HAVE_DOXYGEN
 
-doxygen : doxygen.conf $(doxygen_files) $(tagfiles)
+all-local : cplusplus
+
+doxygen : cplusplus
+
+cplusplus : doxygen.conf $(doxygen_files) $(tagfiles)
 	doxygen doxygen.conf
+
+install-data-local :
+	mkdir -p $(DESTDIR)$(htmldir)/api
+	cp -R cplusplus/ $(DESTDIR)$(htmldir)/api/cplusplus
 
 else
 
@@ -47,7 +55,7 @@ distcheck-deps-subdirs :
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s distcheck-deps || exit 1 ; done
 
 clean-local :
-	rm -fr doxygen/
+	rm -fr cplusplus/
 
 htmldocs : htmldocs-subdirs
 

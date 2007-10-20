@@ -1,0 +1,14 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>API</h1>
+
+<ul>
+    <li>The core library code is written in <a href="cplusplus/index.html">C++</a>.</li>
+    <li>
+        <p>Bindings are available for:</p>
+        <ul>
+            <li><a href="ruby/index.html">Ruby</a></li>
+            <li><a href="python/index.html">Python</a></li>
+        </ul>
+    </li>
+</ul>
