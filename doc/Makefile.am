@@ -21,15 +21,17 @@ EXTRA_DIST = \
 	index.html.part.in \
 	news.html.part.in \
 	changelog.html.part.in \
-	paludis.css
+	paludis.css \
+	paludis_270.png
 
-paludishtmldir = $(htmldir)/paludis
+paludishtmldir = $(htmldir)
 
 paludishtml_DATA = \
 	index.html \
 	news.html \
 	changelog.html \
-	paludis.css
+	paludis.css \
+	paludis_270.png
 
 index.html : header.html.part index.html.part footer.html.part
 	cat header.html.part index.html.part footer.html.part > $@

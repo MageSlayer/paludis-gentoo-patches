@@ -78,8 +78,18 @@ div.topnav {
     background-color: #ddcc99;
 }
 
+div.topnav table {
+    background-color: #ddcc99;
+}
+
 div.topnav table * td {
     padding: 1px 10px;
+}
+
+div.topnavinner {
+    background-color: #eedd99;
+    margin: 0em;
+    padding: 0em;
 }
 
 .currenttab {

@@ -14,7 +14,7 @@ EXTRA_DIST = \
 
 MAINTAINERCLEANFILES = Makefile.in
 
-paludisoverviewhtmldir = $(htmldir)/paludis/overview
+paludisoverviewhtmldir = $(htmldir)/overview
 
 paludisoverviewhtml_DATA = \
 	index.html \
