@@ -12,14 +12,10 @@ SUBDIRS = .
 
 bin_PROGRAMS = paludis
 noinst_PROGRAMS = man-paludis
-noinst_DATA = paludis.html
 man_MANS = paludis.1
 
 paludis.1 : man-paludis
 	./man-paludis > $@
-
-paludis.html : man-paludis
-	./man-paludis --html > $@
 
 man_paludis_SOURCES = \
 	man_paludis.cc \
@@ -92,12 +88,12 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = paludis.1 paludis.html
+DISTCHECK_DEPS = paludis.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
