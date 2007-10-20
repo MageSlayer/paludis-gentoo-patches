@@ -1,14 +1,23 @@
 SUBDIRS = .
 
-CLEANFILES = *~ epydoc/*
+CLEANFILES = *~ python/*
 MAINTAINERCLEANFILES = Makefile.in
 
 if ENABLE_PYTHON
 
-epydoc : epydoc.css built-sources
-	mkdir epydoc
-	epydoc -n Paludis -o epydoc -u http://paludis.pioto.org --no-frames -c epydoc.css \
+all-local : epydoc
+
+epydoc : python
+
+python : epydoc.css
+	rm -fr epydoc
+	mkdir -p epydoc
+	epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c epydoc.css \
 	    $(top_builddir)/python/paludis.so
+
+install-data-local :
+	mkdir -p $(DESTDIR)$(htmldir)/api
+	cp -R python/ $(DESTDIR)$(htmldir)/api/python
 
 else
 
@@ -34,4 +43,7 @@ htmldocs-subdirs :
 	    else $(MAKE) -C $$s htmldocs || exit 1 ; fi ; done
 
 htmldocs-local : $(paludisapipythonhtml_DATA)
+
+clean-local :
+	rm -fr python/
 
