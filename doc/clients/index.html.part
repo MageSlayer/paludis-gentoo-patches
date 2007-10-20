@@ -1,0 +1,23 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Clients</h1>
+
+<p>For users:</p>
+
+<ul>
+    <li><a href="paludis.html">paludis</a>, the console package management client.</li>
+    <li><a href="contrarius.html">contrarius</a>, a tool for creating cross-toolchains.</li>
+    <li><a href="importare.html">importare</a>, the unpackaged package installer.</li>
+    <li><a href="inquisitio.html">inquisitio</a>, the search client.</li>
+    <li><a href="reconcilio.html">reconcilio</a>, a tool for rebuilding packages with broken linkage.</li>
+</ul>
+
+<p>For ebuild developers and distribution maintainers:</p>
+
+<ul>
+    <li><a href="accerso.html">accerso</a>, the mirror client.</li>
+    <li><a href="adjutrix.html">adjutrix</a>, a collection of utilities for ebuild developers and arch teams.</li>
+    <li><a href="instruo.html">instruo</a>, the metadata generation client.</li>
+    <li><a href="qualudis.html">qualudis</a>, the QA client.</li>
+</ul>
+

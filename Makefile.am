@@ -30,6 +30,12 @@ doxygen : built-sources
 epydoc : all
 	$(MAKE) -C doc $@
 
+htmldocs :
+	$(MAKE) -C doc $@
+
+documentation : doxygen epydoc htmldocs
+	$(MAKE) -C doc $@
+
 check-local :
 	touch $(top_builddir)/done-check
 

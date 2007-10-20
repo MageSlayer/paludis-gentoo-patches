@@ -1,0 +1,114 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<table border="0" cellspacing="0" width="100%">
+    <col width="0*" />
+    <col width="1*" />
+    <col width="1*" />
+    <col />
+
+    <tr>
+        <td rowspan="7" class="logotab">
+            <a href="###TOPURI###"><img style="border: 0px; padding-right: 50px;"
+                src="###TOPURI###paludis_270.png" alt="Paludis Logo"
+                /></a>
+        </td>
+
+        <td>
+            <a href="###TOPURI###">Introduction</a>
+        </td>
+
+        <td class="currentpage">
+            <a href="###TOPURI###overview/">Overview</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="http://paludis.pioto.org/trac/">Bugs, Requests, Support</a>
+        </td>
+
+        <td class="currentpage">
+            <a href="###TOPURI###overview/features">Features</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td class="currenttab">
+            <a href="###TOPURI###overview/">Overview</a>
+        </td>
+
+        <td class="currentpage">
+            <a href="###TOPURI###overview/gettingstarted.html">Getting started</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="###TOPURI###faq/">FAQ</a>
+        </td>
+
+        <td class="currentpage">
+            <a href="###TOPURI###overview/contact.html">Contact</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="###TOPURI###">Clients</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="###TOPURI###">Configuration</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="###TOPURI###">API</a>
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+
+        <td class="currentpage">
+            &nbsp;
+        </td>
+    </tr>
+</table>
+
+

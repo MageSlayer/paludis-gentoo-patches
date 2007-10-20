@@ -17,3 +17,11 @@ doxygen :
 epydoc :
 	$(MAKE) -C python $@
 
+htmldocs : htmldocs-subdirs
+
+htmldocs-subdirs :
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) htmldocs-local || exit 1 ; \
+	    else $(MAKE) -C $$s htmldocs || exit 1 ; fi ; done
+
+htmldocs-local : $(paludisapihtml_DATA)
+

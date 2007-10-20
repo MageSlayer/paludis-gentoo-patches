@@ -1,0 +1,93 @@
+body {
+    margin: 0em;
+    padding: 0em;
+    background-color: #eedd99;
+    color: #333333;
+    font-family: "Verdana", "Helvetica", sans-serif;
+}
+
+div.main {
+    margin: 0em 1em 2em 1em;
+}
+
+a:link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #996600;
+}
+
+a:visited {
+    text-decoration: none;
+    font-weight: bold;
+    color: #996600;
+}
+
+a:hover {
+    text-decoration: none;
+    background-color: #996600;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+a:hover img {
+    background-color: #996600;
+}
+
+div.topnav * a:link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #333333;
+}
+
+div.topnav * a:visited {
+    text-decoration: none;
+    font-weight: bold;
+    color: #333333;
+}
+
+div.topnav * a:hover {
+    text-decoration: none;
+    background-color: #996600;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+div.topnav * a:hover img {
+    background-color: #996600;
+}
+
+div.topnav {
+    border-bottom: 1px solid #996600;
+    padding: 5px;
+}
+
+h1 {
+    text-align: center;
+    border-bottom: 1px dashed #996600;
+    margin-left: 5em;
+    margin-right: 5em;
+}
+
+h2 {
+    text-align: left;
+    border-bottom: 1px dashed #996600;
+}
+
+div.topnav {
+    font-size: 70%;
+    background-color: #ddcc99;
+}
+
+div.topnav table * td {
+    padding: 1px 10px;
+}
+
+.currenttab {
+    background-color: #eedd99;
+    font-weight: bold;
+}
+
+.currentpage {
+    background-color: #eedd99;
+}
+

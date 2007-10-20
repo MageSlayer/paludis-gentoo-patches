@@ -1,0 +1,34 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Configuration</h1>
+
+<h2>In General</h2>
+
+<ul>
+    <li><a href="hooks.html">Hooks</a>: how to execute additional code at well defined points.</li>
+    <li><a href="syncers.html">Syncers</a>: how to implement custom sync protocols, and replace built-in syncers.</li>
+    <li><a href="fetchers.html">Fetchers</a>: how to implement custom URI fetching protocols, and replace built-in
+    fetchers.</li>
+    <li><a href="envvars.html">Environment variables</a> that Paludis itself recognises.</li>
+</ul>
+
+<h2>For the 'Paludis' Environment</h2>
+
+<ul>
+    <li><a href="specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
+    <li><a href="configfiles.html">Configuration file formats</a> in general, including <code>conf.d/</code> directories
+    and <code>.bash</code> dynamic configuration files.</li>
+    <li><a href="environment.html">environment.conf</a>: for environment options.</li>
+    <li><a href="keywords.html">keywords.conf</a>: for keywords.</li>
+    <li><a href="use.html">use.conf</a>: for USE flags.</li>
+    <li><a href="licenses.html">licenses.conf</a>: for licence filtering.</li>
+    <li><a href="mirrors.html">mirrors.conf</a>: for mirrors.</li>
+    <li><a href="packagemask.html">package_mask.conf and package_unmask.conf</a>: for masks.</li>
+    <li><a href="bashrc.html">bashrc</a>: for package build environment options.</li>
+    <li><a href="sets.html">sets/*.conf</a>: for user defined package sets.</li>
+    <li><a href="repositories.html">repositoryies/*.conf and repository_defaults.conf</a>, in general.</li>
+    <li>... and configuration keys for <a href="erepository.html">ebuild repositories</a>.</li>
+    <li>... and configuration keys for <a href="vdb.html">VDB repositories</a>.</li>
+    <li>... and configuration keys for <a href="installedunpackaged.html">installed unpackaged repositories</a>.</li>
+</ul>
+

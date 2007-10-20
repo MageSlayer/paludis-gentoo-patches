@@ -1,0 +1,86 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Paludis</h1>
+
+<h2>Overview</h2>
+
+<ul>
+    <li><a href="overview/features.html">Features</a>: an overview of Paludis, and how it differs from its predecessor,
+    Portage.</li>
+    <li><a href="overview/gettingstarted.html">Getting started</a>: where to begin.</li>
+    <li><a href="overview/contact.html">Contact</a>: how to get in touch.</li>
+    <li>We use <a href="http://paludis.pioto.org/trac/">Trac</a> for bug reports, feature requests etc.</li>
+    <li>The current version is ###PALUDIS_VERSION###. See <a href="news.html">the release notes</a> and <a
+        href="changelog.html">changelog</a>.</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<ul>
+    <li><a href="faq/general.html">General questions</a> about Paludis.</li>
+    <li><a href="faq/howdoi.html">How do I</a> do and use various things.</li>
+    <li><a href="faq/operation.html">Operation</a> of Paludis.</li>
+    <li><a href="faq/stricter.html">Stricter than Portage</a>: why certain things happen to work with Portage, but not
+    Paludis.</li>
+    <li><a href="faq/misfunctionality.html">Undesirable misfunctionality</a>: why Paludis doesn't do certain
+    things.</li>
+    <li><a href="faq/different.html">Things Paludis does differently</a>: why Paludis does some things differently.</li>
+    <li><a href="faq/repositories.html">Repository questions</a>.</li>
+</ul>
+
+<h2>Configuration</h2>
+
+<p>In general:</p>
+
+<ul>
+    <li><a href="configuration/hooks.html">Hooks</a>: how to execute additional code at well defined points.</li>
+    <li><a href="configuration/syncers.html">Syncers</a>: how to implement custom sync protocols, and replace built-in syncers.</li>
+    <li><a href="configuration/fetchers.html">Fetchers</a>: how to implement custom URI fetching protocols, and replace built-in
+    fetchers.</li>
+    <li><a href="configuration/envvars.html">Environment variables</a> that Paludis itself recognises.</li>
+</ul>
+
+<p>For the 'Paludis' environment:</p>
+
+<ul>
+    <li><a href="configuration/specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
+    <li><a href="configuration/configfiles.html">Configuration file formats</a> in general, including <code>conf.d/</code> directories
+    and <code>.bash</code> dynamic configuration files.</li>
+    <li><a href="configuration/environment.html">environment.conf</a>: for environment options.</li>
+    <li><a href="configuration/keywords.html">keywords.conf</a>: for keywords.</li>
+    <li><a href="configuration/use.html">use.conf</a>: for USE flags.</li>
+    <li><a href="configuration/licenses.html">licenses.conf</a>: for licence filtering.</li>
+    <li><a href="configuration/mirrors.html">mirrors.conf</a>: for mirrors.</li>
+    <li><a href="configuration/packagemask.html">package_mask.conf and package_unmask.conf</a>: for masks.</li>
+    <li><a href="configuration/bashrc.html">bashrc</a>: for package build environment options.</li>
+    <li><a href="configuration/sets.html">sets/*.conf</a>: for user defined package sets.</li>
+    <li><a href="configuration/repositories.html">repositoryies/*.conf and repository_defaults.conf</a>, in general.</li>
+    <li>... and configuration keys for <a href="configuration/erepository.html">ebuild repositories</a>.</li>
+    <li>... and configuration keys for <a href="configuration/vdb.html">VDB repositories</a>.</li>
+    <li>... and configuration keys for <a href="configuration/installedunpackaged.html">installed unpackaged repositories</a>.</li>
+</ul>
+
+<h2>Client Documentation</h2>
+
+<p>For users:</p>
+
+<ul>
+    <li><a href="clients/paludis.html">paludis</a>, the console package management client.</li>
+    <li><a href="clients/contrarius.html">contrarius</a>, a tool for creating cross-toolchains.</li>
+    <li><a href="clients/importare.html">importare</a>, the unpackaged package installer.</li>
+    <li><a href="clients/inquisitio.html">inquisitio</a>, the search client.</li>
+    <li><a href="clients/reconcilio.html">reconcilio</a>, a tool for rebuilding packages with broken linkage.</li>
+</ul>
+
+<p>For ebuild developers and distribution maintainers:</p>
+
+<ul>
+    <li><a href="clients/accerso.html">accerso</a>, the mirror client.</li>
+    <li><a href="clients/adjutrix.html">adjutrix</a>, a collection of utilities for ebuild developers and arch teams.</li>
+    <li><a href="clients/instruo.html">instruo</a>, the metadata generation client.</li>
+    <li><a href="clients/qualudis.html">qualudis</a>, the QA client.</li>
+</ul>
+
+<h2>API Documentation</h2>
+
+
