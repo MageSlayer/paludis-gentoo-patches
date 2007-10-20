@@ -5,14 +5,10 @@ SUBDIRS = util littlelf broken_linkage_finder .
 
 bin_PROGRAMS = reconcilio
 noinst_PROGRAMS = man-reconcilio
-noinst_DATA = reconcilio.html
 man_MANS = reconcilio.1
 
 reconcilio.1 : man-reconcilio
 	./man-reconcilio > $@
-
-reconcilio.html : man-reconcilio
-	./man-reconcilio --html > $@
 
 man_reconcilio_SOURCES = \
 	man_reconcilio.cc \
@@ -91,12 +87,12 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = reconcilio.1 reconcilio.html
+DISTCHECK_DEPS = reconcilio.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
