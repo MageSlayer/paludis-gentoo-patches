@@ -5,14 +5,10 @@ SUBDIRS = .
 
 bin_PROGRAMS = importare
 noinst_PROGRAMS = man-importare
-noinst_DATA = importare.html
 man_MANS = importare.1
 
 importare.1 : man-importare
 	./man-importare > $@
-
-importare.html : man-importare
-	./man-importare --html > $@
 
 man_importare_SOURCES = \
 	man_importare.cc \
@@ -71,12 +67,12 @@ MAINTAINERCLEANFILES = Makefile.in
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = importare.1 importare.html
+DISTCHECK_DEPS = importare.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
