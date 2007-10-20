@@ -9,15 +9,11 @@ SUBDIRS = .
 
 bin_PROGRAMS = adjutrix
 noinst_PROGRAMS = man-adjutrix
-noinst_DATA = adjutrix.html
 
 man_MANS = adjutrix.1
 
 adjutrix.1 : man-adjutrix
 	./man-adjutrix > $@
-
-adjutrix.html : man-adjutrix
-	./man-adjutrix --html > $@
 
 man_adjutrix_SOURCES = \
 	man_adjutrix.cc \
@@ -112,12 +108,12 @@ downgrade_check-sr.cc : downgrade_check.sr $(top_srcdir)/misc/make_sr.bash
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
-DISTCHECK_DEPS = adjutrix.1 adjutrix.html
+DISTCHECK_DEPS = adjutrix.1
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 
 distcheck-deps : distcheck-deps-subdirs
 
 distcheck-deps-subdirs :
-	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then make distcheck-deps-local || exit 1 ; \
+	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
