@@ -1,6 +1,6 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
-<h1>Things Paludis Does Differently</h1>
+<h1>FAQ: Things Paludis Does Differently</h1>
 
 <ul>
     <li><a href="different.html#tree">No <code>--tree</code> Equivalent</a></li>

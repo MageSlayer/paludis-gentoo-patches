@@ -4,13 +4,13 @@
     <table border="0" cellspacing="0">
         <tr>
             <td rowspan="7" class="logotab">
-                <a href="###TOPURI###" class="noarrow"><img style="border: 0px; padding-right: 50px;"
+                <a href="###TOPURI###index.html" class="noarrow"><img style="border: 0px; padding-right: 50px;"
                     src="###TOPURI###paludis_270.png" alt="Paludis Logo"
                     /></a>
             </td>
 
             <td>
-                <a href="###TOPURI###">Introduction</a>
+                <a href="###TOPURI###index.html">Introduction</a>
             </td>
 
             <td class="currentpage">
@@ -46,7 +46,7 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###overview/">Overview</a>
+                <a href="###TOPURI###overview/index.html">Overview</a>
             </td>
 
             <td class="currentpage">
@@ -64,7 +64,7 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###faq/">FAQ</a>
+                <a href="###TOPURI###faq/index.html">FAQ</a>
             </td>
 
             <td class="currentpage">
@@ -82,7 +82,7 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###clients/">Clients</a>
+                <a href="###TOPURI###clients/index.html">Clients</a>
             </td>
 
             <td class="currentpage">
@@ -100,7 +100,7 @@
 
         <tr>
             <td class="currenttab">
-                <a href="###TOPURI###configuration/">Configuration</a>
+                <a href="###TOPURI###configuration/index.html">Configuration</a>
             </td>
 
             <td class="currentpage">
@@ -118,7 +118,7 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###api/">API</a>
+                <a href="###TOPURI###api/index.html">API</a>
             </td>
 
             <td class="currentpage">
@@ -135,7 +135,4 @@
         </tr>
     </table>
 </div>
-
-
-
 
