@@ -36,29 +36,29 @@ paludisfaqhtml_DATA = \
 	stricter.html \
 	repositories.html
 
-index.html : header.html.part index.html.part footer.html.part
-	cat header.html.part index.html.part footer.html.part > $@
+index.html : header.html.part $(srcdir)/index.html.part footer.html.part
+	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-different.html : header.html.part different.html.part footer.html.part
-	cat header.html.part different.html.part footer.html.part > $@
+different.html : header.html.part $(srcdir)/different.html.part footer.html.part
+	cat header.html.part $(srcdir)/different.html.part footer.html.part > $@
 
-general.html : header.html.part general.html.part footer.html.part
-	cat header.html.part general.html.part footer.html.part > $@
+general.html : header.html.part $(srcdir)/general.html.part footer.html.part
+	cat header.html.part $(srcdir)/general.html.part footer.html.part > $@
 
-howdoi.html : header.html.part howdoi.html.part footer.html.part
-	cat header.html.part howdoi.html.part footer.html.part > $@
+howdoi.html : header.html.part $(srcdir)/howdoi.html.part footer.html.part
+	cat header.html.part $(srcdir)/howdoi.html.part footer.html.part > $@
 
-misfunctionality.html : header.html.part misfunctionality.html.part footer.html.part
-	cat header.html.part misfunctionality.html.part footer.html.part > $@
+misfunctionality.html : header.html.part $(srcdir)/misfunctionality.html.part footer.html.part
+	cat header.html.part $(srcdir)/misfunctionality.html.part footer.html.part > $@
 
-operation.html : header.html.part operation.html.part footer.html.part
-	cat header.html.part operation.html.part footer.html.part > $@
+operation.html : header.html.part $(srcdir)/operation.html.part footer.html.part
+	cat header.html.part $(srcdir)/operation.html.part footer.html.part > $@
 
-stricter.html : header.html.part stricter.html.part footer.html.part
-	cat header.html.part stricter.html.part footer.html.part > $@
+stricter.html : header.html.part $(srcdir)/stricter.html.part footer.html.part
+	cat header.html.part $(srcdir)/stricter.html.part footer.html.part > $@
 
-repositories.html : header.html.part repositories.html.part footer.html.part
-	cat header.html.part repositories.html.part footer.html.part > $@
+repositories.html : header.html.part $(srcdir)/repositories.html.part footer.html.part
+	cat header.html.part $(srcdir)/repositories.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
