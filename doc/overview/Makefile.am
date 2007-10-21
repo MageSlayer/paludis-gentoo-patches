@@ -6,7 +6,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	footer.html.part \
 	features.html \
 	gettingstarted.html \
-	contact.html
+	contact.html \
+	index.html
 
 EXTRA_DIST = \
 	toplinks.html.part.in \
