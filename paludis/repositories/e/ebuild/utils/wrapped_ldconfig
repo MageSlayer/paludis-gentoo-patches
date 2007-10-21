@@ -1,0 +1,19 @@
+#!/bin/bash
+
+case $(uname -s) in
+    FreeBSD)
+    ldconfig -elf -i -f "$1"/var/run/ld-elf.so.hints "$1"/etc/ld.so.conf
+    exit $?
+    ;;
+
+    Linux)
+    ldconfig -r "$1"
+    exit $?
+    ;;
+
+    *)
+    echo "!!! Don't know how to use ldconfig on this system" 1>&2
+    exit 1
+    ;;
+esac
+

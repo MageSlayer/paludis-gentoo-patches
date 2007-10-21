@@ -13,7 +13,7 @@ make_file() {
     echo "foo" > "file_$1"
 
     md5=${2:-$(md5sum "file_$1" | cut -f1 -d' ')}
-    mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/getmtime "file_$1")}
+    mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "file_$1")}
     echo "obj /file_$1 ${md5} ${mtime}" > "../CONTENTS/file_$1"
 }
 
@@ -24,7 +24,7 @@ make_sym() {
     > "sym_$1_dst"
     ln -s "${dst}" "${src}"
 
-    mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/getmtime "sym_$1")}
+    mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "sym_$1")}
     echo "sym /${src} -> sym_$1_dst  ${mtime}" > "../CONTENTS/sym_$1"
 }
 
@@ -95,6 +95,6 @@ mkdir protected_dir_not_really
 touch protected_dir_not_really/unprotected_file
 
 find . -name '*protected*' -type f -print | while read file; do
-    echo obj "${file#.}" "$(md5sum "${file}" | cut -f1 -d' ')" "$(${PALUDIS_EBUILD_DIR}/utils/getmtime "${file}")"
+    echo obj "${file#.}" "$(md5sum "${file}" | cut -f1 -d' ')" "$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "${file}")"
 done >../CONTENTS/config_protect
 

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if /bin/awk --version &>/dev/null ; then
+    /bin/awk "$@"
+    exit $?
+elif /usr/bin/awk --version &>/dev/null ; then
+    /usr/bin/awk "$@"
+    exit $?
+elif /usr/local/bin/awk --version &>/dev/null ; then
+    /usr/local/bin/awk "$@"
+    exit $?
+elif gawk --version &>/dev/null ; then
+    gawk "$@"
+    exit $?
+else
+    echo "!!! Don't know how to use GNU awk on this system" 1>&2
+    exit 1
+fi
+

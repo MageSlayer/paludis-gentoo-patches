@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if /bin/patch -g0 </dev/null &>/dev/null ; then
+    /bin/patch "$@"
+    exit $?
+elif /usr/bin/patch -g0 </dev/null &>/dev/null ; then
+    /usr/bin/patch "$@"
+    exit $?
+elif /usr/local/bin/patch -g0 </dev/null &>/dev/null ; then
+    /usr/local/bin/patch "$@"
+    exit $?
+elif gpatch -g0 </dev/null &>/dev/null ; then
+    gpatch "$@"
+    exit $?
+else
+    echo "!!! Don't know how to use GNU patch on this system" 1>&2
+    exit 1
+fi
+

@@ -1153,62 +1153,6 @@ if test "x$need_gtkmm_check" = "xyes" ; then
 fi
 dnl }}}
 
-dnl {{{ is sed gnu sed
-AC_MSG_CHECKING([if we need a sed wrapper])
-AC_SUBST([NEED_SED_WRAPPER])
-AC_CACHE_VAL(paludis_need_sed_wrapper,[sed --version &>/dev/null || paludis_need_sed_wrapper=yes])
-AM_CONDITIONAL([NEED_SED_WRAPPER], test x$paludis_need_sed_wrapper = "xyes")
-if test x$paludis_need_sed_wrapper = "xyes"; then
-	AC_DEFINE([NEED_SED_WRAPPER], 1, [Do we need sed wrapper?])
-	AC_MSG_RESULT([yes])
-else
-	AC_DEFINE([NEED_SED_WRAPPER], 0)
-	AC_MSG_RESULT([no])
-fi
-dnl }}}
-
-dnl {{{ is awk gnu awk
-AC_MSG_CHECKING([if we need an awk wrapper])
-AC_SUBST([NEED_AWK_WRAPPER])
-AC_CACHE_VAL(paludis_need_awk_wrapper,[awk --version &>/dev/null || paludis_need_awk_wrapper=yes])
-AM_CONDITIONAL([NEED_AWK_WRAPPER], test x$paludis_need_awk_wrapper = "xyes")
-if test x$paludis_need_awk_wrapper = "xyes"; then
-	AC_DEFINE([NEED_AWK_WRAPPER], 1, [Do we need awk wrapper?])
-	AC_MSG_RESULT([yes])
-else
-	AC_DEFINE([NEED_AWK_WRAPPER], 0)
-	AC_MSG_RESULT([no])
-fi
-dnl }}}
-
-dnl {{{ is make gnu make
-AC_MSG_CHECKING([if we need a make wrapper])
-AC_SUBST([NEED_MAKE_WRAPPER])
-AC_CACHE_VAL(paludis_need_make_wrapper,[make --version &>/dev/null || paludis_need_make_wrapper=yes])
-AM_CONDITIONAL([NEED_MAKE_WRAPPER], test x$paludis_need_make_wrapper = "xyes")
-if test x$paludis_need_make_wrapper = "xyes"; then
-	AC_DEFINE([NEED_MAKE_WRAPPER], 1, [Do we need make wrapper?])
-	AC_MSG_RESULT([yes])
-else
-	AC_DEFINE([NEED_MAKE_WRAPPER], 0)
-	AC_MSG_RESULT([no])
-fi
-dnl }}}
-
-dnl {{{ is patch gnu patch
-AC_MSG_CHECKING([if we need a patch wrapper])
-AC_SUBST([NEED_PATCH_WRAPPER])
-AC_CACHE_VAL(paludis_need_patch_wrapper,[patch -g0 < /dev/null &>/dev/null || paludis_need_patch_wrapper=yes])
-AM_CONDITIONAL([NEED_PATCH_WRAPPER], test x$paludis_need_patch_wrapper = "xyes")
-if test x$paludis_need_patch_wrapper = "xyes"; then
-	AC_DEFINE([NEED_PATCH_WRAPPER], 1, [Do we need patch wrapper?])
-	AC_MSG_RESULT([yes])
-else
-	AC_DEFINE([NEED_PATCH_WRAPPER], 0)
-	AC_MSG_RESULT([no])
-fi
-dnl }}}
-
 dnl {{{ check for eselect
 AC_MSG_CHECKING([for eselect])
 if eselect version >/dev/null 2>/dev/null ; then
@@ -1227,36 +1171,6 @@ for m in env news ; do
 		AC_MSG_ERROR([eselect $m is required])
 	fi
 done
-dnl }}}
-
-dnl {{{ is ldconfig gnu ldconfig
-AC_MSG_CHECKING([if ldconfig is GNU])
-AC_ARG_ENABLE([gnu-ldconfig],
-	AS_HELP_STRING([--enable-gnu-ldconfig], [Use GNU ldconfig syntax (default: autodetect)]),
-	[
-		HAVE_GNU_LDCONFIG=$enableval
-		AC_MSG_RESULT([$HAVE_GNU_LDCONFIG])
-	],
-	[
-		AC_MSG_RESULT([auto-detect])
-		AC_MSG_CHECKING([whether ldconfig is GNU])
-		if ! type ldconfig &>/dev/null ; then
-			AC_MSG_RESULT([don't know])
-			AC_MSG_ERROR([ldconfig not found. Use --enable-gnu-ldconfig or --disable-gnu-ldconfig])
-		fi
-		if ldconfig --version &>/dev/null ; then
-			HAVE_GNU_LDCONFIG=yes
-			AC_MSG_RESULT([$HAVE_GNU_LDCONFIG])
-		else
-			HAVE_GNU_LDCONFIG=no
-			AC_MSG_RESULT([$HAVE_GNU_LDCONFIG])
-		fi
-	])
-if test "x$HAVE_GNU_LDCONFIG" = "xyes"; then
-	AC_DEFINE([HAVE_GNU_LDCONFIG], 1, [Define to 1 if you have GNU 'ldconfig'.])
-fi
-AC_SUBST([HAVE_GNU_LDCONFIG])
-AM_CONDITIONAL([HAVE_GNU_LDCONFIG], test "x$HAVE_GNU_LDCONFIG" = "xyes")
 dnl }}}
 
 dnl {{{ pkg-config
@@ -1337,7 +1251,6 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/exheres-0/echo_functions.bash
 	paludis/repositories/e/ebuild/utils/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
-	paludis/repositories/e/ebuild/work_around_broken_utilities.bash
 	paludis/repositories/e/qa/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile

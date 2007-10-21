@@ -32,10 +32,10 @@ vdb_loc=$(${PALUDIS_COMMAND} --configuration-variable installed location )
 for info_path in ${INFOPATH/:/ } ; do
     info_path="${ROOT%/}/${info_path}"
     [[ -d "${info_path}" ]] || continue
-    info_time=$(getmtime "${info_path}" )
+    info_time=$(wrapped_getmtime "${info_path}" )
 
     if [[ -f "${vdb_loc}/.cache/info_time_cache" ]] ; then
-        info_time_cache=$(getmtime "${vdb_loc}"/.cache/info_time_cache )
+        info_time_cache=$(wrapped_getmtime "${vdb_loc}"/.cache/info_time_cache )
         [[ "${info_time}" -le "${info_time_cache}" ]] && continue
     fi
 

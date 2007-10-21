@@ -44,8 +44,7 @@ libexecprog_SCRIPTS = \
 	src_test.bash \
 	src_unpack.bash \
 	usage_error.bash \
-	write_vdb_entry.bash \
-	work_around_broken_utilities.bash
+	write_vdb_entry.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild/" \

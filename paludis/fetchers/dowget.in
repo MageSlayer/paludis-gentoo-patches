@@ -29,7 +29,7 @@ done
 if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
 
     if [[ -f "${2}.-PARTIAL-" ]] ; then
-        if [[ $(getfsize "${2}".-PARTIAL- ) -ge 123456 ]] ; then
+        if [[ $(wrapped_getfsize "${2}".-PARTIAL- ) -ge 123456 ]] ; then
             einfo_unhooked "Attempting resume using ${2}.-PARTIAL-"
         else
             einfo_unhooked "Not attempting resume using ${2}.-PARTIAL- (too small)"

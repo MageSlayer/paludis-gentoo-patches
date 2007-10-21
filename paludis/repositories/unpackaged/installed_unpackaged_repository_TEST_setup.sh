@@ -35,8 +35,8 @@ mkdir -p repo2/data/asdf/1.2.3:fred:ghjk
 ln -s ../../../data/asdf repo2/indices/categories/cat-one/foo
 ln -s ../../../data/asdf repo2/indices/packages/foo/cat-one
 cat <<END > repo2/data/asdf/1.2.3:fred:ghjk/contents
-type=file path=/first md5=c0ba8bfb6501abb1b7105ec79536b848 mtime=$(${PALUDIS_EBUILD_DIR}/utils/getmtime "root2/first")
-type=file path=/first md5=0 mtime=$(${PALUDIS_EBUILD_DIR}/utils/getmtime "root2/second")
+type=file path=/first md5=c0ba8bfb6501abb1b7105ec79536b848 mtime=$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "root2/first")
+type=file path=/first md5=0 mtime=$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "root2/second")
 END
 cat <<"END" > repo2/ndbam.conf
 ndbam_format = 1

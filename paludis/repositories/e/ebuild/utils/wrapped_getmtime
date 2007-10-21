@@ -1,0 +1,19 @@
+#!/bin/bash
+
+case $(uname -s) in
+    FreeBSD)
+    stat -f '%m' "$@"
+    exit $?
+    ;;
+
+    Linux)
+    stat -c '%Y' "$@"
+    exit $?
+    ;;
+
+    *)
+    echo "!!! Don't know how to use stat on this system" 1>&2
+    exit $?
+    ;;
+esac
+

@@ -46,7 +46,6 @@ ebuild_load_module()
 
 ebuild_load_module die_functions
 ebuild_load_module echo_functions
-ebuild_load_module work_around_broken_utilities
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 

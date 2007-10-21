@@ -690,14 +690,10 @@ VDBPostMergeCommand::operator() ()
     if (! getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
         return;
 
-#ifdef HAVE_GNU_LDCONFIG
-    std::string ebuild_cmd("ldconfig -r '" + stringify(params.root) + "'");
-#else
-    std::string ebuild_cmd("ldconfig -elf -i -f '" + stringify(params.root) +
-            "var/run/ld-elf.so.hints' '" + stringify(params.root) + "etc/ld.so.conf'");
-#endif
+    Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+            "/utils/wrapped_ldconfig.bash '" + stringify(params.root) + "'");
 
-    if (0 != (run_command(ebuild_cmd)))
+    if (0 != (run_command(cmd)))
         throw InstallActionError("VDB Entry post merge commands failed");
 }
 

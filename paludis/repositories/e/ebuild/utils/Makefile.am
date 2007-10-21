@@ -28,8 +28,6 @@ libexecprog_SCRIPTS = \
 	emake \
 	fowners \
 	fperms \
-	getmtime \
-	getfsize \
 	newbin \
 	newconfd \
 	newdoc \
@@ -50,7 +48,14 @@ libexecprog_SCRIPTS = \
 	prepinfo \
 	prepdocs \
 	prepalldocs \
-	unpack
+	unpack \
+	wrapped_ldconfig \
+	wrapped_getfsize \
+	wrapped_getmtime \
+	make \
+	sed \
+	awk \
+	patch
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
@@ -63,7 +68,13 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/paludis/repositories/e/ebuild/utils/run_test.bash
 
-TESTS = dobin_TEST.bash getfsize_TEST.bash
+TESTS = \
+	dobin_TEST.bash \
+	wrapped_getfsize_TEST.bash \
+	sed_TEST.bash \
+	awk_TEST.bash \
+	patch_TEST.bash \
+	make_TEST.bash
 
 prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 
@@ -99,3 +110,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

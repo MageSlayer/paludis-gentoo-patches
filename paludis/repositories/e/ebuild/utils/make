@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if /bin/make --version &>/dev/null ; then
+    /bin/make "$@"
+    exit $?
+elif /usr/bin/make --version &>/dev/null ; then
+    /usr/bin/make "$@"
+    exit $?
+elif /usr/local/bin/make --version &>/dev/null ; then
+    /usr/local/bin/make "$@"
+    exit $?
+elif gmake --version &>/dev/null ; then
+    gmake "$@"
+    exit $?
+else
+    echo "!!! Don't know how to use GNU make on this system" 1>&2
+    exit 1
+fi
+

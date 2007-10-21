@@ -1,5 +1,0 @@
-#!/bin/bash
-case $(uname -s) in
-	FreeBSD) stat -f '%z' "$@" ;;
-	*) stat -c '%s' "$@" ;;
-esac

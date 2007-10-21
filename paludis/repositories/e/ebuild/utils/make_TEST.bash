@@ -16,29 +16,26 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-getfsize_TEST()
+make_TEST()
 {
-    mkdir -p getfsize_TEST_dir ; test_return_code
+    mkdir -p make_TEST_dir ; test_return_code
 
-    echo -n "12345" > getfsize_TEST_dir/five
-    echo "12345" > getfsize_TEST_dir/six
+    ${PALUDIS_EBUILD_DIR}/utils/sed -e 's,    ,\t,g' <<"END" > make_TEST_dir/GNUmakefile
+A=x
+B=$(A:C/$/.1/)
 
-    ${PALUDIS_EBUILD_DIR}/utils/getfsize getfsize_TEST_dir/five >/dev/null ; test_return_code
-    ${PALUDIS_EBUILD_DIR}/utils/getfsize getfsize_TEST_dir/six >/dev/null ; test_return_code
+x.1 :
+    exit 1
 
-    [[ $(${PALUDIS_EBUILD_DIR}/utils/getfsize getfsize_TEST_dir/five ) == "5" ]] ; test_return_code
-    [[ $(${PALUDIS_EBUILD_DIR}/utils/getfsize getfsize_TEST_dir/six ) == "6" ]] ; test_return_code
+yes : $(B)
 
-    rm -fr getfsize_TEST_dir
+no : x.1
+END
+
+    ${PALUDIS_EBUILD_DIR}/utils/make --version >/dev/null ; test_return_code
+    ${PALUDIS_EBUILD_DIR}/utils/make -C make_TEST_dir yes &>/dev/null ; test_return_code
+    ! ${PALUDIS_EBUILD_DIR}/utils/make -C make_TEST_dir no &>/dev/null ; test_return_code
+
+    rm -fr make_TEST_dir
 }
-
-getfsize_fail_TEST()
-{
-    mkdir -p getfsize_TEST_dir ; test_return_code
-
-    ! ${PALUDIS_EBUILD_DIR}/utils/getfsize getfsize_TEST_dir/seven 2>/dev/null ; test_return_code
-
-    rm -fr getfsize_TEST_dir
-}
-
 
