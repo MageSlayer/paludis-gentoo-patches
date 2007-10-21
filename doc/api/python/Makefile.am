@@ -13,7 +13,7 @@ epydoc : python
 python : epydoc.css
 	rm -fr python
 	mkdir -p python
-	epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c epydoc.css \
+	epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
 	    $(top_builddir)/python/paludis.so
 
 install-data-local :
