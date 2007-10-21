@@ -385,7 +385,7 @@ def hook_run_install_all_post(env, hook_env):
 
     print "* Checking for monkeys..."
 
-    if list(env.package_database().query(Query.Package("nice/monkey"))):
+    if list(env.package_database.query(Query.Package("nice/monkey"), QueryOrder.WHATEVER)):
         print "Found a monkey!"
     else:
         print "No monkeys found"
