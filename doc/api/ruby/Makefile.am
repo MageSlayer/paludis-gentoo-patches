@@ -29,7 +29,8 @@ rdoc : ruby
 
 ruby : create_ruby_doc.rb
 	rm -fr ruby
-	$(RUBY) $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby $(top_srcdir)/ruby/*.cc
+	env TOP_SRCDIR="$(top_srcdir)" $(RUBY) \
+	    $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby $(top_srcdir)/ruby/*.cc
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api
