@@ -2,6 +2,7 @@ SUBDIRS = .
 
 CLEANFILES = *~ python/*
 MAINTAINERCLEANFILES = Makefile.in
+EXTRA_DIST = epydoc.css
 
 if ENABLE_PYTHON
 
