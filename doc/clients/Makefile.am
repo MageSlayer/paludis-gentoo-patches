@@ -20,8 +20,8 @@ paludisclientshtml_DATA = \
 	index.html \
 	$(ALL_CLIENTS_HTML)
 
-index.html : header.html.part index.html.part footer.html.part
-	cat header.html.part index.html.part footer.html.part > $@
+index.html : header.html.part $(srcdir)/index.html.part footer.html.part
+	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
 paludis.html : header.html.part $(top_builddir)/src/clients/paludis/man-paludis footer.html.part
 	{ cat header.html.part && \
