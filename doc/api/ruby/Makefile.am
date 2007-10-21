@@ -19,3 +19,24 @@ htmldocs-subdirs :
 
 htmldocs-local : $(paludisapirubyhtml_DATA)
 
+dist_noinst_SCRIPTS = create_ruby_doc.rb
+
+if ENABLE_RUBY
+
+all-local : rdoc
+
+rdoc : ruby
+
+ruby : create_ruby_doc.rb
+	rm -fr ruby
+	$(RUBY) $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby $(top_srcdir)/ruby/*.cc
+
+install-data-local :
+	mkdir -p $(DESTDIR)$(htmldir)/api
+	cp -R ruby/ $(DESTDIR)$(htmldir)/api/
+
+endif
+
+clean-local :
+	rm -fr ruby
+
