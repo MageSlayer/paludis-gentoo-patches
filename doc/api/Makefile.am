@@ -17,8 +17,8 @@ paludisapihtmldir = $(htmldir)/api
 paludisapihtml_DATA = \
 	index.html
 
-index.html : header.html.part index.html.part footer.html.part
-	cat header.html.part index.html.part footer.html.part > $@
+index.html : header.html.part $(srcdir)/index.html.part footer.html.part
+	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
