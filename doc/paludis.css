@@ -10,6 +10,10 @@ div.main {
     margin: 0em 1em 2em 1em;
 }
 
+div.main p, div.main * p, div.main * li {
+    text-align: justify;
+}
+
 a:link {
     text-decoration: none;
     font-weight: bold;
@@ -108,5 +112,12 @@ div.topnavinner {
 
 .currentpage {
     background-color: #eedd99;
+}
+
+pre {
+    background-color: #ffeedd;
+    border: 1px solid #996600;
+    margin: 0.2em 2em;
+    padding: 0.2em 0.5em;
 }
 
