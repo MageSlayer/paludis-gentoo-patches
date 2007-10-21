@@ -36,7 +36,7 @@ cplusplus : doxygen.conf $(doxygen_files) $(tagfiles)
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api
-	cp -R cplusplus/ $(DESTDIR)$(htmldir)/api/cplusplus
+	cp -R cplusplus/ $(DESTDIR)$(htmldir)/api/
 
 else
 

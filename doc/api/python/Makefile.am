@@ -17,7 +17,7 @@ python : epydoc.css
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api
-	cp -R python/ $(DESTDIR)$(htmldir)/api/python
+	cp -R python/ $(DESTDIR)$(htmldir)/api/
 
 else
 
