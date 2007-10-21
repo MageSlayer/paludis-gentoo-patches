@@ -1,0 +1,470 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Hooks</h1>
+
+<h2>Overview</h2>
+
+<p>This document describes the Paludis hooks interface. A hook is a piece of code
+that is executed when a particular well defined action occurs.</p>
+
+<p>There are currently four categories of hook:</p>
+
+<ul>
+    <li>General hooks. These have access to a limited environment. If
+    a hook returns a non-zero exit code, the action will be aborted.
+    See <a href="#general-hooks">General Hooks</a>.</li>
+
+    <li>Ebuild phase hooks. These have <code>ebuild</code> in the hook name, and
+    have full access to the ebuild environment (including the ability to call
+    <code>die</code>), but are only used for ebuild-based activities.
+    See <a href="#ebuild-hooks">Ebuild Hooks</a>.</li>
+
+    <li>Ebuild message hooks. These are special hooks that are called for
+    <code>einfo</code>, <code>ewarn</code> etc.
+    See <a href="#ebuild-message-hooks">Ebuild Message Hooks</a>.</li>
+
+    <li>Merger / Unmerger hooks. These are used when installing and uninstalling
+    content to the live filesystem. If a check hook returns a non-zero exit
+    code, the action will be aborted.
+    See <a href="#merger-hooks">Merger / Unmerger Hooks</a>.</li>
+</ul>
+
+<p>There are currently five categories of hook execution code:</p>
+
+<ul>
+    <li><code>.bash</code> hooks. These are simple <code>.bash</code> files that
+    are executed with a particular environment. See <a href="#bash-hooks">Bash Hooks</a>
+    for details.</li>
+
+    <li><code>.hook</code> hooks. These are also <code>bash</code> files, but rather
+    than containing the relevant code in global scope, they make use of functions
+    to perform hook actions. They also support specifying execution order dependencies
+    upon other hooks. See <a href="#hook-hooks">Hook Hooks</a> for details.</li>
+
+    <li><code>.py</code> hooks.  These are much like .hook hooks, but written in Python and
+    with additional power given by Python bindings and access to the current Environment.
+    See <a href="#py-hooks">Python Hooks</a> for details.</li>
+
+    <li><code>.so</code> hooks.  These are written in C++ and compiled into shared
+    libraries, and run inside the Paludis process. See <a href="#so-hooks">So Hooks</a>
+    for details.</li>
+
+    <li>Repository hooks. These are implemented internally by <code>Repository</code>
+    classes.</li>
+</ul>
+
+<p>Not all hook execution code methods are available for all hook categories. The
+following table indicates availability:</p>
+
+<table border="1">
+    <tr>
+        <td></td>
+        <th><code>.bash</code></th>
+        <th><code>.hook</code></th>
+        <th><code>.py</code></th>
+        <th><code>.so</code></th>
+        <th>Repository</th>
+    </tr>
+    <tr>
+        <th>General</th>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+    </tr>
+    <tr>
+        <th>Ebuild Phase</th>
+        <td>yes</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Ebuild Message</th>
+        <td>yes</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Merger</th>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+        <td>yes</td>
+    </tr>
+</table>
+
+<p>Where there is a choice, <code>.hook</code> hooks should be favoured over <code>.bash</code>
+hooks.</p>
+
+<h3>Available Hooks</h3>
+
+<h4 id="general-hooks">General Hooks</h4>
+
+<p>The following general normal hooks are available:</p>
+
+<ul>
+    <li><code>install_pre</code></li>
+    <li><code>install_fail</code></li>
+    <li><code>install_post</code></li>
+    <li><code>install_all_pre</code></li>
+    <li><code>install_all_post</code></li>
+    <li><code>install_pretend_pre</code></li>
+    <li><code>install_pretend_post</code></li>
+    <li><code>install_pretend_display_item_pre</code></li>
+    <li><code>install_pretend_display_item_post</code></li>
+    <li><code>uninstall_pre</code></li>
+    <li><code>uninstall_fail</code></li>
+    <li><code>uninstall_post</code></li>
+    <li><code>uninstall_all_pre</code></li>
+    <li><code>uninstall_all_post</code></li>
+    <li><code>clean_pre</code></li>
+    <li><code>clean_post</code></li>
+    <li><code>clean_fail</code></li>
+    <li><code>clean_all_pre</code></li>
+    <li><code>clean_all_post</code></li>
+    <li><code>sync_pre</code></li>
+    <li><code>sync_fail</code></li>
+    <li><code>sync_post</code></li>
+    <li><code>sync_all_pre</code></li>
+    <li><code>sync_all_post</code></li>
+    <li><code>fetch_pre</code></li>
+    <li><code>fetch_post</code></li>
+    <li><code>fetch_all_pre</code></li>
+    <li><code>fetch_all_post</code></li>
+</ul>
+
+<p>In general, certain special environment variables will be set. <code>HOOK</code> will contain
+the name of the hook. For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
+for the operation. For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
+target. The <code>PALUDIS_CMDLINE</code> variables described below are also available. For the
+<code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
+interest.</p>
+
+<h4 id="ebuild-hooks">Ebuild Hooks</h4>
+
+<p>The following ebuild hooks are available:</p>
+
+<ul>
+    <li><code>ebuild_metadata_pre</code></li>
+    <li><code>ebuild_metadata_fail</code></li>
+    <li><code>ebuild_metadata_post</code></li>
+    <li><code>ebuild_init_pre</code></li>
+    <li><code>ebuild_init_fail</code></li>
+    <li><code>ebuild_init_post</code></li>
+    <li><code>ebuild_fetch_pre</code></li>
+    <li><code>ebuild_fetch_fail</code></li>
+    <li><code>ebuild_fetch_post</code></li>
+    <li><code>ebuild_tidyup_pre</code></li>
+    <li><code>ebuild_tidyup_fail</code></li>
+    <li><code>ebuild_tidyup_post</code></li>
+    <li><code>ebuild_strip_pre</code></li>
+    <li><code>ebuild_strip_fail</code></li>
+    <li><code>ebuild_strip_post</code></li>
+    <li><code>ebuild_unpack_pre</code></li>
+    <li><code>ebuild_unpack_fail</code></li>
+    <li><code>ebuild_unpack_post</code></li>
+    <li><code>ebuild_compile_pre</code></li>
+    <li><code>ebuild_compile_fail</code></li>
+    <li><code>ebuild_compile_post</code></li>
+    <li><code>ebuild_install_pre</code></li>
+    <li><code>ebuild_install_fail</code></li>
+    <li><code>ebuild_install_post</code></li>
+    <li><code>ebuild_test_pre</code></li>
+    <li><code>ebuild_test_fail</code></li>
+    <li><code>ebuild_test_post</code></li>
+    <li><code>ebuild_setup_pre</code></li>
+    <li><code>ebuild_setup_fail</code></li>
+    <li><code>ebuild_setup_post</code></li>
+    <li><code>ebuild_config_pre</code></li>
+    <li><code>ebuild_config_fail</code></li>
+    <li><code>ebuild_config_post</code></li>
+    <li><code>ebuild_nofetch_pre</code></li>
+    <li><code>ebuild_nofetch_fail</code></li>
+    <li><code>ebuild_nofetch_post</code></li>
+    <li><code>ebuild_preinst_pre</code></li>
+    <li><code>ebuild_preinst_fail</code></li>
+    <li><code>ebuild_preinst_post</code></li>
+    <li><code>ebuild_postinst_pre</code></li>
+    <li><code>ebuild_postinst_fail</code></li>
+    <li><code>ebuild_postinst_post</code></li>
+    <li><code>ebuild_prerm_pre</code></li>
+    <li><code>ebuild_prerm_fail</code></li>
+    <li><code>ebuild_prerm_post</code></li>
+    <li><code>ebuild_postrm_pre</code></li>
+    <li><code>ebuild_postrm_fail</code></li>
+    <li><code>ebuild_postrm_post</code></li>
+</ul>
+
+<p>As well as the full ebuild environment, the <code>HOOK</code> environment
+variable will contain the name of the hook being called. The
+<code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
+
+<h4 id="ebuild-message-hooks">Ebuild Message Hooks</h4>
+
+<p>The following ebuild message hooks are available:</p>
+
+<ul>
+    <li><code>einfo</code></li>
+    <li><code>ewarn</code></li>
+    <li><code>eerror</code></li>
+    <li><code>elog</code></li>
+</ul>
+
+<p>The <code>HOOK</code> environment variable will contain the name of the hook
+being called, and the <code>MESSAGE</code> environment variable will contain
+the message being passed to the function.  The <code>PALUDIS_CMDLINE</code>
+variables described below are also available.</p>
+
+<h4 id="merger-hooks">Merger / Unmerger Hooks</h4>
+
+<p>The merger runs in two stages, for safety. First it checks that it can
+probably install safely, then it does the actual install. Note that calculating
+the md5, timestamp etc for VDB CONTENTS is done <em>after</em> the install_post
+hooks are called.</p>
+
+<p>In each of the following subcategories, the hooks that do not name
+a specific type of object are called before or after the entire
+process; those that do are called once for each relevant item.</p>
+
+<p>The following merger check hooks are available:</p>
+
+<ul>
+    <li><code>merger_check_pre</code></li>
+    <li><code>merger_check_post</code></li>
+    <li><code>merger_check_file_pre</code></li>
+    <li><code>merger_check_file_post</code></li>
+    <li><code>merger_check_sym_pre</code></li>
+    <li><code>merger_check_sym_post</code></li>
+    <li><code>merger_check_dir_pre</code></li>
+    <li><code>merger_check_dir_post</code></li>
+</ul>
+
+<p>The <code>INSTALL_SOURCE</code> and <code>INSTALL_DESTINATION</code>
+environment variables contain the target source and destination. The
+<code>ROOT</code> variable contains the filesystem root. The <code>IMAGE</code>
+variable contains the image root.</p>
+
+<p>The following merger hooks are available:</p>
+
+<ul>
+    <li><code>merger_install_pre</code></li>
+    <li><code>merger_install_post</code></li>
+    <li><code>merger_install_file_pre</code></li>
+    <li><code>merger_install_file_post</code></li>
+    <li><code>merger_install_sym_pre</code></li>
+    <li><code>merger_install_sym_post</code></li>
+    <li><code>merger_install_dir_pre</code></li>
+    <li><code>merger_install_dir_post</code></li>
+    <li><code>merger_unlink_file_pre</code></li>
+    <li><code>merger_unlink_file_post</code></li>
+    <li><code>merger_unlink_dir_pre</code></li>
+    <li><code>merger_unlink_dir_post</code></li>
+    <li><code>merger_unlink_sym_pre</code></li>
+    <li><code>merger_unlink_sym_post</code></li>
+    <li><code>merger_unlink_misc_pre</code></li>
+    <li><code>merger_unlink_misc_post</code></li>
+</ul>
+
+<p>Again, <code>ROOT</code> and <code>IMAGE</code> are available. For
+install hooks, <code>INSTALL_SOURCE</code>, <code>INSTALL_DESTINATION</code> are
+set, and for uninstall hooks, <code>UNLINK_TARGET</code>.</p>
+
+<p>The unmerger hooks are used for uninstalling a package, but not when existing
+things have to be removed for an install (the merger does that). The following
+unmerger hooks are available:</p>
+
+<ul>
+    <li><code>unmerger_unlink_pre</code></li>
+    <li><code>unmerger_unlink_post</code></li>
+    <li><code>unmerger_unlink_file_pre</code></li>
+    <li><code>unmerger_unlink_file_post</code></li>
+    <li><code>unmerger_unlink_dir_pre</code></li>
+    <li><code>unmerger_unlink_dir_post</code></li>
+    <li><code>unmerger_unlink_sym_pre</code></li>
+    <li><code>unmerger_unlink_sym_post</code></li>
+    <li><code>unmerger_unlink_misc_pre</code></li>
+    <li><code>unmerger_unlink_misc_post</code></li>
+</ul>
+
+<p>The <code>UNLINK_TARGET</code> environment variable specifies the file about
+to be unlinked, and <code>ROOT</code> is the filesystem root.</p>
+
+<h3>User Defined Hooks</h3>
+
+<p>User defined hooks should be executable (<code>chmod a+x</code>) scripts named
+<code>*.bash</code> or <code>*.hook</code>. They can live in two locations (or
+be symlinked there, to allow a single script to be shared between hooks):</p>
+
+<ul>
+    <li><code><em>confdir</em>/hooks/<em>hookname</em>/</code>, where
+    <code><em>confdir</em></code> is the directory in which <code>use.conf</code>
+    et al. reside.</li>
+
+    <li><code><em>DATADIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
+    systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+
+    <li><code><em>LIBDIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
+    systems, <code><em>LIBDIR</em></code> is <code>/usr/lib</code> or <code>/usr/lib64</code>.</li>
+</ul>
+
+<h4 id="bash-hooks">Bash Hooks</h4>
+
+<p>A <code>.bash</code> hook is merely executed when the associated action is
+triggered. There is no guarantee as to execution order.</p>
+
+<h4 id="hook-hooks">Hook Hooks</h4>
+
+<p>A <code>.hook</code> hook is more powerful. It must not run anything in
+global scope, but instead defines all its actions in functions. It must, at
+minimum, define a function called <code>hook_run_$HOOK</code> for each hook
+that it can handle. It may also define functions called <code>hook_depend_$HOOK</code>,
+which should output names of any other hooks upon which it depends, and
+<code>hook_after_$HOOK</code>, which is similar but indicates an ordering
+rather than hard dependency (the named hooks not existing is not an error).
+For example:</p>
+
+<pre>
+#!/bin/bash
+
+hook_run_install_all_post()
+{
+    # ensure that einfo etc are available
+    export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+    source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+
+    echo
+    einfo "Checking for monkeys..."
+
+    if [[ -d "${ROOT}/var/lib/monkeys" ]] ; then
+        for m in "${ROOT}"/var/lib/monkeys/* ; do
+            ewarn "Found monkey $(basename ${m} )"
+        done
+    else
+        einfo "No monkeys found"
+    fi
+}
+
+hook_depend_install_all_post()
+{
+    # we need to run after the Paludis standard eselect_env_update hook
+    echo eselect_env_update
+}
+
+hook_after_install_all_post()
+{
+    # if checking for rabbits or squirrels, do those first
+    echo check_for_rabbits check_for_squirrels
+}
+</pre>
+
+<p>Note that the <code>hook_depend_</code> and <code>hook_after_</code> functions
+are cached, and are generally only called once per session, so the output should
+not vary based upon outside parameters.</p>
+
+<h4 id="py-hooks">Python Hooks</h4>
+
+<p>A <code>.py</code> hook is much like <code>.hook</code> hook, but written
+in Python and with full access to the current Paludis environment through
+Python bindings. For each hook it can handle it must, at minimum, define
+a function named <code>hook_run_$HOOK</code> which accepts exactly two positional
+arguments: the current Environment used by Paludis, and the additional Hook environment variables
+represented by a Python dictionary. It may also define the <code>hook_depend_$HOOK</code>
+and <code>hook_after_$HOOK</code> functions which must take exactly one argument,
+the Hook environment, and return a list of strings.
+For example:</p>
+
+<pre>
+def hook_run_install_all_post(env, hook_env):
+    from paludis import *
+
+    print "* Checking for monkeys..."
+
+    if list(env.package_database().query(Query.Package("nice/monkey"))):
+        print "Found a monkey!"
+    else:
+        print "No monkeys found"
+
+def hook_depend_install_all_post(hook_env):
+    # we need to run after the Paludis standard eselect_env_update hook
+    return ["eselect_env_update"]
+
+def hook_after_install_all_post(hook_env):
+    # if checking for rabbits or squirrels, do those first
+    return ["check_for_rabbits", "check_for_squirrels"]
+</pre>
+
+<h4 id="so-hooks">So Hooks</h4>
+
+<p>A <code>.so</code> hook is written in C++ and has full access to the Paludis public API.
+The hook takes the form of a shared library with a filename ending in <code>.so.<i>N</i></code>,
+where <i>N</i> is the first component of the Paludis version number multiplied by 100,
+plus the second component of the version number (for example, 26 for Paludis 0.26.x,
+or 102 for Paludis 1.2.y).  The library must export a function with prototype
+<code>paludis::HookResult paludis_hook_run(const paludis::Environment *, const paludis::Hook &amp;)</code>
+that performs the action, and optionally one with prototype
+<code>void paludis_hook_add_dependencies(const paludis::Environment *, const paludis::Hook &amp;,
+    paludis::DirectedGraph&lt;std::string, int&gt; &amp;)</code>
+if it needs to define ordering dependencies with other hooks.  Both functions are
+declared in the header <code>&lt;paludis/hook.hh&gt;</code>, including any necessary
+<code>extern</code> or visibility declarations.</p>
+
+<p>The parameters and return values have the following meanings:</p>
+<dl>
+<dt><code>const paludis::Environment *</code></dt>
+<dd>The usual <code>Environment</code>, as used by all Paludis clients.</dd>
+<dt><code>const paludis::Hook &amp;</code></dt>
+<dd>Contains information about the hook being called.  In <code>paludis_hook_add_dependencies</code>,
+the only useful member is <code>name()</code>.
+<dt><code>paludis::DirectedGraph&lt;std::string, int&gt; &amp;</code></dt>
+<dd>A graph containing, as nodes, all named hooks that will be executed along with
+this one.  The <code>paludis_hook_add_dependencies</code> function should add any
+edges required to indicate its desired execution order relative to the other hooks,
+as follows: <code>g.add_edge("after", "before", 0);</code> (the 0 is not significant,
+but required by the <code>DirectedGraph</code> API).</dd>
+<dt><code>paludis::HookResult</code></dt>
+<dd>The <code>HookResult</code> constructor takes two arguments: an <code>int</code>,
+which should be zero if the hook is successful, or positive if not, and a <code>std::string</code>
+containing any information that should be passed back to the hook's caller (only
+used if the <code>Hook</code>'s <code>output_dest</code> member is <code>hod_grab</code>).</dd>
+</dl>
+
+<h3>Package Manager Defined Hooks</h3>
+
+<p>Paludis places some of its own hooks in
+<code><em>LIBEXECDIR</em>/hooks/<em>hookname</em></code>. These directories are
+not for end user use.</p>
+
+<h3>Example Hooks</h3>
+
+<p>Paludis ships certain example hooks that many users would find useful, but that
+are not suitably general to be enabled by default -- these live in
+<code>DATADIR/paludis/hooks/demos/</code>. You may also find the default
+hooks useful -- these live in various places in <code>LIBEXECDIR/paludis/hooks/</code>.</p>
+
+<h3>The <code>PALUDIS_CMDLINE</code> Variables</h3>
+
+<p>Sometimes hooks need access to the commandline used to invoke
+<code>paludis</code>.  However, manual parsing of the commandline by hooks will
+lead to bugs when people forget to emulate certain behaviour (say, short
+options, aliases or <code>--</code> support).  To work around this issue,
+Paludis provides environment variables prefixed <code>PALUDIS_CMDLINE_</code>
+that specify the parsed command line:</p>
+
+<ul>
+    <li>The <code>PALUDIS_CMDLINE_PARAMS</code> variable contains the parameters (that is,
+    the parts that aren't <code>-x</code> or <code>--blah</code> or values for these).</li>
+
+    <li>For each <code>--param-name</code>, <code>PALUDIS_CMDLINE_param_name</code> (note
+    the case and the underscores) is set. If <code>--param-name</code> takes an argument,
+    this argument is used for the environment variable's value.</li>
+
+    <li>For short options (<code>-x</code>) and aliases, the appropriate long option's
+    variable is set instead.</li>
+</ul>
+

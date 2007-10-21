@@ -4,21 +4,27 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	header.html.part \
 	toplinks.html.part \
 	footer.html.part \
-	index.html
+	index.html \
+	hooks.html
 
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = \
 	toplinks.html.part.in \
-	index.html.part
+	index.html.part \
+	hooks.html.part
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
 paludisconfigurationhtml_DATA = \
-	index.html
+	index.html \
+	hooks.html
 
-index.html : header.html.part index.html.part footer.html.part
-	cat header.html.part index.html.part footer.html.part > $@
+index.html : header.html.part $(srcdir)/index.html.part footer.html.part
+	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
+
+hooks.html : header.html.part $(srcdir)/hooks.html.part footer.html.part
+	cat header.html.part $(srcdir)/hooks.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
