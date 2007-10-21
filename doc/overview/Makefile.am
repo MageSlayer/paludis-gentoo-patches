@@ -22,17 +22,17 @@ paludisoverviewhtml_DATA = \
 	gettingstarted.html \
 	contact.html
 
-index.html : header.html.part index.html.part footer.html.part
-	cat header.html.part index.html.part footer.html.part > $@
+index.html : header.html.part $(srcdir)/index.html.part footer.html.part
+	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-gettingstarted.html : header.html.part gettingstarted.html.part footer.html.part
-	cat header.html.part gettingstarted.html.part footer.html.part > $@
+gettingstarted.html : header.html.part $(srcdir)/gettingstarted.html.part footer.html.part
+	cat header.html.part $(srcdir)/gettingstarted.html.part footer.html.part > $@
 
-features.html : header.html.part features.html.part footer.html.part
-	cat header.html.part features.html.part footer.html.part > $@
+features.html : header.html.part $(srcdir)/features.html.part footer.html.part
+	cat header.html.part $(srcdir)/features.html.part footer.html.part > $@
 
-contact.html : header.html.part contact.html.part footer.html.part
-	cat header.html.part contact.html.part footer.html.part > $@
+contact.html : header.html.part $(srcdir)/contact.html.part footer.html.part
+	cat header.html.part $(srcdir)/contact.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
