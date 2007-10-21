@@ -1,29 +1,27 @@
-# Bash completion function for reconcilio
+# Bash completion function for importare
 # vim: set et sw=4 sts=4 ts=4 ft=sh :
 
 # NOTE: This is still a work in progress, don't expect it to work well or
 # properly right now.
 
-_reconcilio() {
-    local cur prev opts
+_importare() {
+    local cur prev opts action
 
-    local action_opts general_opts deplist_opts
-    local linkage_opts install_opts all_opts
+    local action_opts general_opts source_opts
+    local install_opts deplist_opts all_opts
 
     COMPREPLY=()
     cur=${COMP_WORDS[COMP_CWORD]}
     prev=${COMP_WORDS[COMP_CWORD-1]}
 
-    action_opts="--fix-linkage \
+    action_opts="--install -i \
         --version -V \
         --help -h"
     general_opts="--log-level \
         --no-colour \
         --no-color \
-        --environment -E \
-        --exact \
-        --verbose -v \
-        --resume-command-template"
+        --environment -E"
+    source_opts="--location -l"
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \
@@ -43,36 +41,32 @@ _reconcilio() {
         --dl-override-masks \
         --dl-fall-back"
     install_opts="--pretend -p \
+        --destinations -d \
         --no-config-protection \
-        --debug-build \
-        --checks \
-        --fetch -f \
-        --no-safe-resume \
         --show-reasons \
         --show-use-descriptions \
         --continue-on-failure \
+        ${source_opts} \
         ${deplist_opts}"
-    linkage_opts="--library \
-        ${install_opts}"
 
-    all_opts="${action_opts} ${general_opts} ${linkage_opts} ${install_opts} ${deplist_opts}"
+    all_opts="${action_opts} ${general_opts} ${source_opts} ${deplist_opts} ${install_opts} ${install_opts}"
 
     local x
     for x in "${COMP_WORDS[@]}" ; do
         case "${x}" in
-            --fix-linkage)
-                action="linkage"
+            --install|-i)
+                action="install"
                 break
                 ;;
             --version|-V|--help|-h)
                 action="info"
                 break
                 ;;
-        esac
-    done
+         esac
+     done
 
-    case "${cur}" in
-        -*)
+     case "${cur}" in
+         -*)
             local opts=
             [[ -z "${action}" ]] && action="all"
             opts="${action}_opts"
@@ -85,14 +79,6 @@ _reconcilio() {
                 ## Enum operators
                 --log-level|-L)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
-                    return 0
-                    ;;
-                --debug-build)
-                    COMPREPLY=($(compgen -W "none split internal" -- "${cur}"))
-                    return 0
-                    ;;
-                --checks)
-                    COMPREPLY=($(compgen -W "none default always" -- "${cur}"))
                     return 0
                     ;;
                 --show-reasons)
@@ -108,6 +94,11 @@ _reconcilio() {
                     return 0
                     ;;
 
+                --location|-l)
+                    _filedir -d
+                    return 0
+                    ;;
+                    
                 --dl-reinstall)
                     COMPREPLY=($(compgen -W "never always if-use-changed" -- "${cur}"))
                     return 0
@@ -155,7 +146,7 @@ _reconcilio() {
                     ;;
                 *)
                     case "${action}" in
-                        --fix-linkage)
+                        --install|-i)
                             return 0
                             ;;
                     esac
@@ -164,4 +155,5 @@ _reconcilio() {
             ;;
     esac
 }
-complete -F _reconcilio reconcilio
+
+complete -o filenames -F _importare importare
