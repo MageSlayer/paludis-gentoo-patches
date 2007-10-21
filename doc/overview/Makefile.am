@@ -3,7 +3,10 @@ SUBDIRS = .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	header.html.part \
 	toplinks.html.part \
-	footer.html.part
+	footer.html.part \
+	features.html \
+	gettingstarted.html \
+	contact.html
 
 EXTRA_DIST = \
 	toplinks.html.part.in \
