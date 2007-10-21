@@ -10,7 +10,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa --enable-vim
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
 	--with-repositories=default \
 	--with-environments=default,portage \
-	--with-clients=default,accerso,contrarius,inquisitio,instruo \
+	--with-clients=default,accerso,contrarius,importare,inquisitio,instruo \
 	--with-default-distribution=giant-space-monkey
 
 automake-deps-built-hack.tmp : built-sources-subdirs
