@@ -6,7 +6,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	footer.html.part \
 	index.html
 
-MAINTAINERCLEANFILES = Makefile.in \
+MAINTAINERCLEANFILES = Makefile.in
+
+DISTCLEANFILES = \
 	$(ALL_CLIENTS_HTML)
 
 EXTRA_DIST = \
