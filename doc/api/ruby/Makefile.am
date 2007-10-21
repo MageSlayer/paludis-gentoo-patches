@@ -41,3 +41,6 @@ endif
 clean-local :
 	rm -fr ruby
 
+uninstall-local :
+	rm -fr $(DESTDIR)$(htmldir)/api/ruby
+

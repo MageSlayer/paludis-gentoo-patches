@@ -48,3 +48,6 @@ htmldocs-local : $(paludisapipythonhtml_DATA)
 clean-local :
 	rm -fr python/
 
+uninstall-local :
+	rm -fr $(DESTDIR)$(htmldir)/api/python
+

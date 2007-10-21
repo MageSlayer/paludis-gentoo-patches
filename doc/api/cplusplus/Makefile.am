@@ -57,6 +57,9 @@ distcheck-deps-subdirs :
 clean-local :
 	rm -fr cplusplus/
 
+uninstall-local :
+	rm -fr $(DESTDIR)$(htmldir)/api/cplusplus
+
 htmldocs : htmldocs-subdirs
 
 htmldocs-subdirs :
