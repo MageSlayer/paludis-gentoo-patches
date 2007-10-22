@@ -15,9 +15,7 @@ any of:</p>
     line using this specification.</li>
     <li>A simple <code>category/package</code> name.</li>
     <li>A simple <code>set</code> name.</li>
-    <li>A complex dependency specification, which may use the full range of operators supported by Paludis, along with
-    <code>:slot</code> and <code>::repository</code> restrictions. Either or both of the category and package parts may
-    be an asterisk (but both must be supplied, even if they are).</li>
+    <li>A complex dependency specification.</li>
 </ul>
 
 <p>Accepted keywords are one of:</p>
