@@ -14,7 +14,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	synclist \
 	fetchlist \
 	specpath.html \
-	specpath.html.part
+	specpath.html.part \
+	environment.html \
+	environment.html.part
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -26,6 +28,7 @@ EXTRA_DIST = \
 	fetchers.html.part.in \
 	envvars.html.part \
 	specpath.html.part.in \
+	environment.html.part.in \
 	paludisenvironmentonly.html.part
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
@@ -36,7 +39,8 @@ paludisconfigurationhtml_DATA = \
 	syncers.html \
 	fetchers.html \
 	envvars.html \
-	specpath.html
+	specpath.html \
+	environment.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
@@ -94,11 +98,20 @@ specpath.html.part : $(srcdir)/specpath.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/specpath.html.part.in > specpath.html.part
 
+environment.html.part : $(srcdir)/environment.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/environment.html.part.in > environment.html.part
+
 fetchers.html.part : $(srcdir)/fetchers.html.part.in fetchlist
 	sed \
 	    -e '/###FETCHERS###/r fetchlist' \
 	    -e 's,###FETCHERS###,,g' \
 	    < $(srcdir)/fetchers.html.part.in > fetchers.html.part
+
+environment.html : header.html.part environment.html.part footer.html.part
+	cat header.html.part environment.html.part footer.html.part > $@
 
 specpath.html : header.html.part specpath.html.part footer.html.part
 	cat header.html.part specpath.html.part footer.html.part > $@

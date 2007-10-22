@@ -1,0 +1,23 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>environment.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The optional file <code>environment.conf</code> can be used to control general environment settings. It is a standard
+key=value configuration file, and may optionally be in bash format. Recognised keys are as follows:</p>
+
+<dl>
+    <dt>reduced_username</dt>
+    <dd>If set, Paludis will use this username rather than <code>paludisbuild</code> when a reduced privilege user is
+    required.</dd>
+
+    <dt>portage_compatible</dt>
+    <dd>If set to a non-empty string, Paludis will automatically mask any packages that would break Portage. This can be
+    used if Paludis and Portage are to be used on the same machine. This does <em>not</em> disable cache options that
+    would cause interoperability problems.</dd>
+
+    <dt>distribution</dt>
+    <dd>If set, overrides the distribution used when distribution-specific defaults are used.</dd>
+</dl>
+
