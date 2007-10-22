@@ -4,6 +4,11 @@
 
 ###PALUDISENVIRONMENTONLY###
 
+<div class="note">
+    <p>We apologise for misspelling 'licence' as 'license' throughout. This is done to match the ebuild variable
+    'LICENSE', whose name cannot be fixed for historical reasons.</p>
+</div>
+
 <p>The <code>license.conf</code> file controls which licenses are and are not accepted. It is a standard configuration
 file which may be a bash file and which may use the <code>licenses.conf.d/</code> directory.</p>
 
