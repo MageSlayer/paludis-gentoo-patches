@@ -33,3 +33,36 @@ any of:</p>
 <p>Accepted keywords are usually cumulative, so if you have a <code>*/* arch ~arch</code> line, you will need to use
 <code>cat/pkg -* arch</code> if you only wish to accept <code>arch</code> for a particular package.</p>
 
+<h2>Examples</h2>
+
+<p>For a system which is mostly stable:</p>
+
+<pre>
+# By default, only accept 'x86' packages
+*/*                            x86
+
+# For the repository named 'paludis-overlay', accept unstable too
+*/*::paludis-overlay           x86 ~x86
+
+# For these packages, accept unstable too
+app-admin/eselect              ~x86
+app-doc/doxygen                ~x86
+
+# For packages in the 'kde' set, accept unstable
+kde                            ~x86
+
+# Accept gcc 4.3 from the toolchain overlay, even if it is unkeyworded
+sys-devel/gcc:4.3::toolchain   *
+</pre>
+
+<p>For a system which is mostly unstable:</p>
+
+<pre>
+# By default, accept stable and unstable
+*/*                             amd64 ~amd64
+
+# For these packages, accept stable only
+sys-devel/gcc                   -* amd64
+sys-libs/glibc                  -* amd64
+</pre>
+
