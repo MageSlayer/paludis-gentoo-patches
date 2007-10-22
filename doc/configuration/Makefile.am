@@ -19,6 +19,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	environment.html.part \
 	keywords.html \
 	keywords.html.part \
+	use.html \
+	use.html.part \
 	configfiles.html \
 	specs.html
 
@@ -34,6 +36,7 @@ EXTRA_DIST = \
 	specpath.html.part.in \
 	environment.html.part.in \
 	keywords.html.part.in \
+	use.html.part.in \
 	paludisenvironmentonly.html.part \
 	configfiles.html.part \
 	specs.html.part
@@ -49,6 +52,7 @@ paludisconfigurationhtml_DATA = \
 	specpath.html \
 	environment.html \
 	keywords.html \
+	use.html \
 	configfiles.html \
 	specs.html
 
@@ -126,6 +130,12 @@ keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/keywords.html.part.in > keywords.html.part
 
+use.html.part : $(srcdir)/use.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/use.html.part.in > use.html.part
+
 fetchers.html.part : $(srcdir)/fetchers.html.part.in fetchlist
 	sed \
 	    -e '/###FETCHERS###/r fetchlist' \
@@ -137,6 +147,9 @@ environment.html : header.html.part environment.html.part footer.html.part
 
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@
+
+use.html : header.html.part use.html.part footer.html.part
+	cat header.html.part use.html.part footer.html.part > $@
 
 specpath.html : header.html.part specpath.html.part footer.html.part
 	cat header.html.part specpath.html.part footer.html.part > $@
