@@ -51,6 +51,8 @@ CommandLine::CommandLine() :
             "Write report to the specified file, rather than stdout")
 {
     add_usage_line("--fetch");
+
+    add_environment_variable("ACCERSO_OPTIONS", "Default command-line options.");
 }
 
 std::string

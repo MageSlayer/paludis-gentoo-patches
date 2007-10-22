@@ -59,7 +59,6 @@ QualudisCommandLine::QualudisCommandLine() :
 {
     add_usage_line("[ options ] [ directories ... ]");
     add_environment_variable("QUALUDIS_OPTIONS", "Default command-line options.");
-    add_environment_variable("PALUDIS_QA_DATA_DIR", "Where to look for QA data files.");
 }
 
 QualudisCommandLine::~QualudisCommandLine()

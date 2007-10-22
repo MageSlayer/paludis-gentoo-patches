@@ -49,6 +49,8 @@ CommandLine::CommandLine() :
             "Write report to the specified file, rather than stdout")
 {
     add_usage_line("--generate-cache [ at least one of --repository-dir /dir or --output-dir /dir ]");
+
+    add_environment_variable("INSTRUO_OPTIONS", "Default command-line options.");
 }
 
 std::string

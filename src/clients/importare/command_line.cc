@@ -61,6 +61,8 @@ CommandLine::CommandLine() :
     install_args.a_no_safe_resume.remove();
 
     dl_args.dl_reinstall_targets.remove();
+
+    add_environment_variable("IMPORTARE_OPTIONS", "Default command-line options.");
 }
 
 std::string

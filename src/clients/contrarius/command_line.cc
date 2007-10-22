@@ -70,6 +70,7 @@ CommandLine::CommandLine() :
     a_no_color(&a_no_colour,     "no-color"),
     a_resume_command_template(&output_options, "resume-command-template", '\0', "Save the resume command to a file made using mkstemp(3)")
 {
+    add_environment_variable("CONTRARIUS_OPTIONS", "Default command-line options.");
 }
 
 CommandLine::~CommandLine()

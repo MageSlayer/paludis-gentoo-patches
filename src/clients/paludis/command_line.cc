@@ -150,17 +150,6 @@ CommandLine::CommandLine() :
     add_usage_line("--list-repository-formats");
     add_usage_line("--list-dep-tag-categories");
 
-    add_environment_variable("PALUDIS_HOME", "Overrides the home directory used when searching "
-            "for configuration files etc.");
-    add_environment_variable("PALUDIS_NO_GLOBAL_HOOKS", "Don't use global hooks. Mostly for "
-            "internal and test case use.");
-    add_environment_variable("PALUDIS_SKIP_CONFIG", "Don't load configuration. Mostly for "
-            "internal and test case use.");
-    add_environment_variable("PALUDIS_EBUILD_DIR", "Where to look for ebuild.bash and related "
-            "utilities.");
-    add_environment_variable("PALUDIS_REPOSITORY_SO_DIR", "Where to look for repository .so "
-            "files.");
-    add_environment_variable("PALUDIS_FETCHERS_DIR", "Where to look for fetcher scripts.");
     add_environment_variable("PALUDIS_OPTIONS", "Default command-line options.");
 }
 
