@@ -25,49 +25,94 @@ paludisclientshtml_DATA = \
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-paludis.html : header.html.part $(top_builddir)/src/clients/paludis/man-paludis footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/paludis/man-paludis --html && \
+paludis.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/paludis/man-paludis ; then \
+	        $(top_builddir)/src/clients/paludis/man-paludis --html ; \
+	    else \
+	        echo "<h1>paludis</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the paludis client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-accerso.html : header.html.part $(top_builddir)/src/clients/accerso/man-accerso footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/accerso/man-accerso --html && \
+accerso.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/accerso/man-accerso ; then \
+	        $(top_builddir)/src/clients/accerso/man-accerso --html ; \
+	    else \
+	        echo "<h1>accerso</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the accerso client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-adjutrix.html : header.html.part $(top_builddir)/src/clients/adjutrix/man-adjutrix footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/adjutrix/man-adjutrix --html && \
+adjutrix.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/adjutrix/man-adjutrix ; then \
+	        $(top_builddir)/src/clients/adjutrix/man-adjutrix --html ; \
+	    else \
+	        echo "<h1>adjutrix</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the adjutrix client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-contrarius.html : header.html.part $(top_builddir)/src/clients/contrarius/man-contrarius footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/contrarius/man-contrarius --html && \
+contrarius.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/contrarius/man-contrarius ; then \
+	        $(top_builddir)/src/clients/contrarius/man-contrarius --html ; \
+	    else \
+	        echo "<h1>contrarius</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the contrarius client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-importare.html : header.html.part $(top_builddir)/src/clients/importare/man-importare footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/importare/man-importare --html && \
+inquisitio.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/inquisitio/man-inquisitio ; then \
+	        $(top_builddir)/src/clients/inquisitio/man-inquisitio --html ; \
+	    else \
+	        echo "<h1>inquisitio</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the inquisitio client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-inquisitio.html : header.html.part $(top_builddir)/src/clients/inquisitio/man-inquisitio footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/inquisitio/man-inquisitio --html && \
+importare.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/importare/man-importare ; then \
+	        $(top_builddir)/src/clients/importare/man-importare --html ; \
+	    else \
+	        echo "<h1>importare</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the importare client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-instruo.html : header.html.part $(top_builddir)/src/clients/instruo/man-instruo footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/instruo/man-instruo --html && \
+instruo.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/instruo/man-instruo ; then \
+	        $(top_builddir)/src/clients/instruo/man-instruo --html ; \
+	    else \
+	        echo "<h1>instruo</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the instruo client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-qualudis.html : header.html.part $(top_builddir)/src/clients/qualudis/man-qualudis footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/qualudis/man-qualudis --html && \
+qualudis.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/qualudis/man-qualudis ; then \
+	        $(top_builddir)/src/clients/qualudis/man-qualudis --html ; \
+	    else \
+	        echo "<h1>qualudis</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the qualudis client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-reconcilio.html : header.html.part $(top_builddir)/src/clients/reconcilio/man-reconcilio footer.html.part
-	{ cat header.html.part && \
-	    $(top_builddir)/src/clients/reconcilio/man-reconcilio --html && \
+reconcilio.html : header.html.part footer.html.part
+	{ cat header.html.part && { \
+	    if test -x $(top_builddir)/src/clients/reconcilio/man-reconcilio ; then \
+	        $(top_builddir)/src/clients/reconcilio/man-reconcilio --html ; \
+	    else \
+	        echo "<h1>reconcilio</h1>"; \
+	        echo "<p>Sorry, documentation was generated without support for the reconcilio client.</p>" ; \
+	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
