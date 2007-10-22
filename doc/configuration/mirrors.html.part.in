@@ -18,7 +18,12 @@ master, the master's name) specially, checking them for all mirrorable files.</p
 # Try a fast local mirror first
 * http://myfastbox/distfiles/
 
-# For mirror://gentoo/, use our ISP's mirror
+# For mirror://gentoo/, use our ISP's mirror. This mirror will be consulted
+# for most files in the 'gentoo' repository, and repositories using 'gentoo'
+# as a master, as well as for any explicit mirror://gentoo/ entry.
 gentoo http://gentoo.virginmedia.com/distfiles/
+
+# Use a local Debian mirror too. This is only used for mirror://debian/.
+debian http://debian.virginmedia.com/
 </pre>
 
