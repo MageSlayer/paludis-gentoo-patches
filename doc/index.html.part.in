@@ -50,6 +50,7 @@
 <ul>
     <li><a href="configuration/configfiles.html">Configuration file formats</a> in general, including <code>conf.d/</code> directories
     and <code>.bash</code> dynamic configuration files.</li>
+    <li><a href="configuration/specs.html">Dependency specifications</a> in general.</li>
     <li><a href="configuration/specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
     <li><a href="configuration/environment.html">environment.conf</a>: for environment options.</li>
     <li><a href="configuration/keywords.html">keywords.conf</a>: for keywords.</li>

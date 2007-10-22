@@ -18,11 +18,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/keywords.html">keywords.conf</a>
+                <a href="###TOPURI###configuration/environment.html">environment.conf</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories.html">repositories/</a>
+                <a href="###TOPURI###configuration/sets.html">sets/</a>
             </td>
         </tr>
 
@@ -36,11 +36,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/use.html">use.conf</a>
+                <a href="###TOPURI###configuration/keywords.html">keywords.conf</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/erepository.html">ebuild</a>
+                <a href="###TOPURI###configuration/repositories.html">repositories/</a>
             </td>
         </tr>
 
@@ -54,11 +54,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/licenses.html">licenses.conf</a>
+                <a href="###TOPURI###configuration/use.html">use.conf</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/vdb.html">vdb</a>
+                <a href="###TOPURI###configuration/erepository.html">ebuild</a>
             </td>
         </tr>
 
@@ -72,11 +72,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/mirrors.html">mirrors.conf</a>
+                <a href="###TOPURI###configuration/licenses.html">licenses.conf</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/installedunpackaged.html">installed unpackaged</a>
+                <a href="###TOPURI###configuration/vdb.html">vdb</a>
             </td>
         </tr>
 
@@ -86,15 +86,15 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/configfiles.html">File formats</a>
+                <a href="###TOPURI###configuration/configfiles.html">File Formats</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
+                <a href="###TOPURI###configuration/mirrors.html">mirrors.conf</a>
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###configuration/installedunpackaged.html">installed unpackaged</a>
             </td>
         </tr>
 
@@ -104,11 +104,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
+                <a href="###TOPURI###configuration/specs.html">Dep Specs</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
+                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
             </td>
 
             <td class="currentpage">
@@ -122,11 +122,11 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/environment.html">environment.conf</a>
+                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/sets.html">sets/</a>
+                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
             </td>
 
             <td class="currentpage">

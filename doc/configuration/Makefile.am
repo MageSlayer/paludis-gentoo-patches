@@ -19,7 +19,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	environment.html.part \
 	keywords.html \
 	keywords.html.part \
-	configfiles.html
+	configfiles.html \
+	specs.html
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -34,7 +35,8 @@ EXTRA_DIST = \
 	environment.html.part.in \
 	keywords.html.part.in \
 	paludisenvironmentonly.html.part \
-	configfiles.html.part
+	configfiles.html.part \
+	specs.html.part
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -47,10 +49,14 @@ paludisconfigurationhtml_DATA = \
 	specpath.html \
 	environment.html \
 	keywords.html \
-	configfiles.html
+	configfiles.html \
+	specs.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
+
+specs.html : header.html.part $(srcdir)/specs.html.part footer.html.part
+	cat header.html.part $(srcdir)/specs.html.part footer.html.part > $@
 
 configfiles.html : header.html.part $(srcdir)/configfiles.html.part footer.html.part
 	cat header.html.part $(srcdir)/configfiles.html.part footer.html.part > $@
