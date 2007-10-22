@@ -5,23 +5,89 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	toplinks.html.part \
 	footer.html.part \
 	index.html \
-	hooks.html
+	hooks.html \
+	syncers.html.part \
+	syncers.html \
+	fetchers.html.part \
+	fetchers.html \
+	synclist \
+	fetchlist
 
 MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = \
 	toplinks.html.part.in \
 	index.html.part \
-	hooks.html.part
+	hooks.html.part \
+	syncers.html.part.in \
+	fetchers.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
 paludisconfigurationhtml_DATA = \
 	index.html \
-	hooks.html
+	hooks.html \
+	syncers.html \
+	fetchers.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
+
+synclist :
+	find $(top_srcdir)/paludis/syncers $(top_builddir)/paludis/syncers -type f \
+	    | while read a ; do \
+		basename $$a ; \
+	done | sort -u | \
+	while read a ; do \
+		if echo $$a | grep '.in$$' >/dev/null ; then \
+			: ; \
+		elif ! echo $$a | grep '^do' >/dev/null ; then \
+			: ; \
+		else \
+			echo "<strong>$$a</strong>" | sed -e 's/>do/>/' ; \
+			if test -f $(top_builddir)/paludis/syncers/$$a ; then \
+				env PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild" \
+					bash $(top_builddir)/paludis/syncers/$$a --help || exit 1 ; \
+			else \
+				env PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/e/ebuild" \
+					bash $(top_srcdir)/paludis/syncers/$$a --help || exit 1 ; \
+			fi ; \
+			echo ; \
+		fi ; \
+	done > synclist
+
+fetchlist :
+	find $(top_srcdir)/paludis/fetchers $(top_builddir)/paludis/fetchers -type f \
+	    | while read a ; do \
+		basename $$a ; \
+	done | sort -u | \
+	while read a ; do \
+		if echo $$a | grep '.in$$' >/dev/null ; then \
+			: ; \
+		elif ! echo $$a | grep '^do' >/dev/null ; then \
+			: ; \
+		else \
+			echo "<li>$$a</li>" | sed -e 's/>do/>/' ; \
+		fi ; \
+	done > fetchlist
+
+syncers.html.part : $(srcdir)/syncers.html.part.in synclist
+	sed \
+	    -e '/###SYNCERS###/r synclist' \
+	    -e 's,###SYNCERS###,,g' \
+	    < $(srcdir)/syncers.html.part.in > syncers.html.part
+
+fetchers.html.part : $(srcdir)/fetchers.html.part.in fetchlist
+	sed \
+	    -e '/###FETCHERS###/r fetchlist' \
+	    -e 's,###FETCHERS###,,g' \
+	    < $(srcdir)/fetchers.html.part.in > fetchers.html.part
+
+syncers.html : header.html.part syncers.html.part footer.html.part
+	cat header.html.part syncers.html.part footer.html.part > $@
+
+fetchers.html : header.html.part fetchers.html.part footer.html.part
+	cat header.html.part fetchers.html.part footer.html.part > $@
 
 hooks.html : header.html.part $(srcdir)/hooks.html.part footer.html.part
 	cat header.html.part $(srcdir)/hooks.html.part footer.html.part > $@

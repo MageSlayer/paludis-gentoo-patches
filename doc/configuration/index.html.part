@@ -6,9 +6,10 @@
 
 <ul>
     <li><a href="hooks.html">Hooks</a>: how to execute additional code at well defined points.</li>
-    <li><a href="syncers.html">Syncers</a>: how to implement custom sync protocols, and replace built-in syncers.</li>
-    <li><a href="fetchers.html">Fetchers</a>: how to implement custom URI fetching protocols, and replace built-in
-    fetchers.</li>
+    <li><a href="syncers.html">Syncers</a>: options for built-in syncers, and how to implement custom sync protocols
+    or override built-in syncers.</li>
+    <li><a href="fetchers.html">Fetchers</a>: options for built-in fetchers, and how to implement custom URI fetching
+    protocols or replace built-in fetchers.</li>
     <li><a href="envvars.html">Environment variables</a> that Paludis itself recognises.</li>
 </ul>
 
