@@ -1,0 +1,93 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Environment Variables</h1>
+
+<p>A number of environment variables can be used to override the behaviour of Paludis. These variables must be set in
+the environment before Paludis is launched; using them in a configuration bashrc will not work.</p>
+
+<h2>Default Options for Clients</h2>
+
+<p>Every standard client provides a way of providing default command line options in an environment variable named
+<code>CLIENT_OPTIONS</code>, where <code>CLIENT</code> is <code>PALUDIS</code>, <code>ADJUTRIX</code>,
+<code>RECONCILIO</code> etc. For example, you might find something like the following helpful:</p>
+
+<pre>
+export PALUDIS_OPTIONS="--show-reasons summary --debug-build split --dl-reinstall-scm weekly"
+</pre>
+
+<h2>Internal Variables</h2>
+
+<p>The following variables can be used to override certain aspects of Paludis' behaviour. Tinkering with these variables
+can be dangerous and may break things; many of these variables exist mainly for use in test cases.</p>
+
+<dl>
+    <dt><code>PALUDIS_DISTRIBUTION</code></dt>
+    <dd>The distibution configuration file to use (e.g. 'gentoo'). Usually this is configured at compile time; however,
+    overriding it can be useful when building a chroot for a different distribution.</dd>
+
+    <dt><code>PALUDIS_DISTRIBUTIONS_DIR</code></dt>
+    <dd>Where Paludis looks to find distribution config files.</dd>
+
+    <dt><code>PALUDIS_FETCHERS_DIR</code></dt>
+    <dd>Where Paludis looks to find fetchers.</dd>
+
+    <dt><code>PALUDIS_ENVIRONMENT_SO_DIR</code></dt>
+    <dd>Where Paludis looks to find environment .so files.</dd>
+
+    <dt><code>PALUDIS_EBUILD_DIR</code></dt>
+    <dd>Where Paludis looks to find ebuild-related scripts.</dd>
+
+    <dt><code>PALUDIS_HOME</code></dt>
+    <dd>Overrides the normal <code>HOME</code> environment variable.</dd>
+
+    <dt><code>PALUDIS_NO_GLOBAL_HOOKS</code></dt>
+    <dd>If set to a non-empty string, global hooks will be ignored.</dd>
+
+    <dt><code>PALUDIS_NO_GLOBAL_FETCHERS</code></dt>
+    <dd>If set to a non-empty string, global fetchers will be ignored.</dd>
+
+    <dt><code>PALUDIS_NO_GLOBAL_SYNCERS</code></dt>
+    <dd>If set to a non-empty string, global syncers will be ignored.</dd>
+
+    <dt><code>PALUDIS_HOOKER_DIR</code></dt>
+    <dd>Where Paludis looks to find the hooker script.</dd>
+
+    <dt><code>PALUDIS_PYTHON_DIR</code></dt>
+    <dd>Where Paludis looks to find Python things.</dd>
+
+    <dt><code>PALUDIS_E_REPOSITORY_QA_SO</code></dt>
+    <dd>The .so file to use for QA for e repositories.</dd>
+
+    <dt><code>PALUDIS_EAPIS_DIR</code></dt>
+    <dd>Where Paludis looks to find EAPI config files.</dd>
+
+    <dt><code>PALUDIS_QA_DATA_DIR</code></dt>
+    <dd>Where Paludis looks to find QA data.</dd>
+
+    <dt><code>PALUDIS_NO_CHOWN</code></dt>
+    <dd>If set to a non-empty string, Paludis will skip calling chown and chmod when installing files.</dd>
+
+    <dt><code>PALUDIS_REPOSITORY_SO_DIR</code></dt>
+    <dd>Where Paludis looks to find repository .so files.</dd>
+
+    <dt><code>PALUDIS_FUTURE_THREAD_COUNT</code></dt>
+    <dd>(Highly experimental, only if threads are enabled) The number of threads used to precalculate futures.</dd>
+
+    <dt><code>PALUDIS_IDLE_THREAD_COUNT</code></dt>
+    <dd>(Highly experimental, only if threads are enabled) The number of low priority threads used to precalculate
+    values that might be used in the future.</dd>
+
+    <dt><code>PALUDIS_OUTPUTWRAPPER_DIR</code></dt>
+    <dd>Where Paludis looks to find outputwrapper.</dd>
+
+    <dt><code>PALUDIS_DO_NOTHING_SANDBOXY</code></dt>
+    <dd>If set to a non-empty string, Paludis will do absolutely nothing involving Sandbox.</dd>
+
+    <dt><code>PALUDIS_NO_XTERM_TITLES</code></dt>
+    <dd>If set to a non-empty string, Paludis will not set xterm titles.</dd>
+
+    <dt><code>PALUDIS_EXEC_PALUDIS</code></dt>
+    <dd>If set to <code>never</code>, Paludis will never re-exec itself when upgrading. If set to <code>always</code>,
+    Paludis will always re-exec itself when upgrading, even if it isn't necessary.</dd>
+</dl>
+

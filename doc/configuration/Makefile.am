@@ -10,6 +10,7 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	syncers.html \
 	fetchers.html.part \
 	fetchers.html \
+	envvars.html \
 	synclist \
 	fetchlist
 
@@ -20,7 +21,8 @@ EXTRA_DIST = \
 	index.html.part \
 	hooks.html.part \
 	syncers.html.part.in \
-	fetchers.html.part.in
+	fetchers.html.part.in \
+	envvars.html.part
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -28,10 +30,14 @@ paludisconfigurationhtml_DATA = \
 	index.html \
 	hooks.html \
 	syncers.html \
-	fetchers.html
+	fetchers.html \
+	envvars.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
+
+envvars.html : header.html.part $(srcdir)/envvars.html.part footer.html.part
+	cat header.html.part $(srcdir)/envvars.html.part footer.html.part > $@
 
 synclist :
 	find $(top_srcdir)/paludis/syncers $(top_builddir)/paludis/syncers -type f \
