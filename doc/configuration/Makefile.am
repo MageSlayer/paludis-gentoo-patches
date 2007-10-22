@@ -21,6 +21,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	keywords.html.part \
 	use.html \
 	use.html.part \
+	licenses.html \
+	licenses.html.part \
 	configfiles.html \
 	specs.html
 
@@ -52,6 +54,7 @@ paludisconfigurationhtml_DATA = \
 	specpath.html \
 	environment.html \
 	keywords.html \
+	licenses.html \
 	use.html \
 	configfiles.html \
 	specs.html
@@ -130,6 +133,12 @@ keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/keywords.html.part.in > keywords.html.part
 
+licenses.html.part : $(srcdir)/licenses.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/licenses.html.part.in > licenses.html.part
+
 use.html.part : $(srcdir)/use.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
@@ -147,6 +156,9 @@ environment.html : header.html.part environment.html.part footer.html.part
 
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@
+
+licenses.html : header.html.part licenses.html.part footer.html.part
+	cat header.html.part licenses.html.part footer.html.part > $@
 
 use.html : header.html.part use.html.part footer.html.part
 	cat header.html.part use.html.part footer.html.part > $@
