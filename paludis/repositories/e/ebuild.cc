@@ -691,7 +691,7 @@ VDBPostMergeCommand::operator() ()
         return;
 
     Command cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-            "/utils/wrapped_ldconfig.bash '" + stringify(params.root) + "'");
+            "/utils/wrapped_ldconfig '" + stringify(params.root) + "'");
 
     if (0 != (run_command(cmd)))
         throw InstallActionError("VDB Entry post merge commands failed");
