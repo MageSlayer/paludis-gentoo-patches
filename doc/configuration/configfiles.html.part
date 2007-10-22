@@ -1,0 +1,28 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Configuration File Formats</h1>
+
+<h2>In General</h2>
+
+<p>Configuration files for Paludis are plain text files. Blank lines are ignored, as are lines that start with a hash
+(<code>#</code>) character. Leading and trailing whitespace is not generally significant. Lines ending in a single
+backslash are continuations.</p>
+
+<h2>Key=Value Files</h2>
+
+<p>Some configuration files use a key=value format. Keys are typically case sensitive. Variable expansion of previously
+set variables is supported via <code>$var</code> or <code>${var}</code>. Quoting with single or double quotes is usually
+supported but not usually required.</p>
+
+<h2>Bash Files</h2>
+
+<p>Where explicitly noted, if a configuration file with a <code>.conf</code> extension does not exist, but a like-named
+executable file with a <code>.bash</code> extension does exist, Paludis will execute the bash file and treat its
+standard output as if it were the contents of the <code>.conf</code> file.</p>
+
+<h2>conf.d Directories</h2>
+
+<p>Where explicitly noted, for configuration files named <code>foo.conf</code>, Paludis will also look in the directory
+<code>foo.conf.d/</code> for any additional files named <code>*.conf</code> (and, if bash is supported for that file,
+<code>*.bash</code> as above).</p>
+
