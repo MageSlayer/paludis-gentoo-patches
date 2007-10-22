@@ -8,7 +8,9 @@
 file which may be a bash file and which may use the <code>mirrors.conf.d/</code> directory.</p>
 
 <p>Each line consists of a mirror name followed by one or more URLs. The special mirror name <code>*</code> can be used
-to indicate a mirror that should be tried for all URLs (even those that are marked as 'not for mirroring').</p>
+to indicate a mirror that should be tried for all URLs (even those that are marked as 'not for mirroring'). Ebuild
+format repositories also treat mirrors whose name is equal to the repository name (or, if the repository has a
+master, the master's name) specially, checking them for all mirrorable files.</p>
 
 <h2>Example</h2>
 
