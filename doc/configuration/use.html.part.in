@@ -1,0 +1,58 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>use.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The <code>use.conf</code> file controls which use flags are and are not enabled. It is a standard configuration
+file which may be a bash file and which may use the <code>use.conf.d/</code> directory.</p>
+
+<p>Each line in the file consists of a specification followed by one or more use flags and labels. A specification may be
+any of:</p>
+
+<ul>
+    <li>The special specification <code>*/*</code>, which matches all packages. Nearly all users will have at least one
+    line using this specification.</li>
+    <li>A simple <code>category/package</code> name.</li>
+    <li>A simple <code>set</code> name.</li>
+    <li>A complex dependency specification.</li>
+</ul>
+
+<p>A use flag or label can be:</p>
+
+<ul>
+    <li><code>flag</code>, which enables that flag.</li>
+    <li><code>-flag</code>, which disables that flag.</li>
+    <li><code>LABEL:</code>, which marks any subsequent flags on that line as applying to a particular use expand label.
+    Common examples of use expand labels are <code>VIDEO_CARDS</code>, <code>LINGUAS</code> and
+    <code>INPUT_DEVICES</code>.</li>
+    <li><code>-*</code>, which disables all flags for the current label, or all flags that are not a label if there is
+    no current label.</li>
+</ul>
+
+<p>Use flag settings are cumulative. This applies to expanded use flags too, so if you do not wish to inherit, say,
+default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*/* VIDEO_CARDS: -* radeon</code>.</p>
+
+<h2>Example</h2>
+
+<pre>
+# Accept some basic defaults for all packages, inheriting defaults from profiles
+*/* -doc -nls -apache2 bash-completion -gnome -kde mpd flac aac cdparanoia \
+  mmx mmxext rtc sse -arts -qt3 -cups real dvd threads dvdnav mp3 quicktime \
+  pnm real vidix a52 3dnow 3dnowext amr bidi bl cddb dts srt unicode xvmc
+
+# And set some USE_EXPAND defaults for all packages, explicitly overriding defaults
+# from profiles
+*/* LINGUAS:           -* en_GB en
+*/* VIDEO_CARDS:       -* nv nvidia
+*/* ALSA_CARDS:        -* emu10k1
+
+# Some per package settings
+app-editors/vim        -perl -python
+app-crypt/gnupg        -X
+media-sound/lame       -gtk
+
+# And some wildcarding
+dev-cpp/*              doc
+</pre>
+
