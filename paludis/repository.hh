@@ -51,6 +51,74 @@
 namespace paludis
 {
 
+    /**
+     * Thrown if a Set does not exist
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_repository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE NoSuchSetError :
+        public Exception
+    {
+        private:
+            std::string _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            NoSuchSetError(const std::string & name) throw ();
+
+            virtual ~NoSuchSetError() throw ()
+            {
+            }
+
+            ///\}
+
+            /**
+             * Name of the set.
+             */
+            const std::string & name() const
+            {
+                return _name;
+            }
+    };
+
+    /**
+     * Thrown if a Set is recursively defined
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_repository
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE RecursivelyDefinedSetError :
+        public Exception
+    {
+        private:
+            std::string _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            RecursivelyDefinedSetError(const std::string & name) throw ();
+
+            virtual ~RecursivelyDefinedSetError() throw ()
+            {
+            }
+
+            ///\}
+
+            /**
+             * Name of the set.
+             */
+            const std::string & name() const
+            {
+                return _name;
+            }
+    };
+
 #include <paludis/repository-sr.hh>
 
     /**

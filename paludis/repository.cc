@@ -47,6 +47,18 @@ template class Set<tr1::shared_ptr<Repository> >;
 template class Sequence<RepositoryVirtualsEntry>;
 template class Sequence<RepositoryProvidesEntry>;
 
+NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
+    Exception("Could not find '" + our_name + "'"),
+    _name(our_name)
+{
+}
+
+RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_name) throw () :
+    Exception("Set '" + our_name + "' is recursively defined"),
+    _name(our_name)
+{
+}
+
 namespace
 {
     struct RepositoryBlacklist :

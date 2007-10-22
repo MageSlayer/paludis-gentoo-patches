@@ -595,12 +595,12 @@ DepList::AddVisitor::visit_leaf(const NamedSetDepSpec & a)
     tr1::shared_ptr<const SetSpecTree::ConstItem> set(d->_imp->env->set(a.name()));
 
     if (! set)
-        throw NoSuchPackageError(stringify(a.name()));
+        throw NoSuchSetError(stringify(a.name()));
 
     if (! recursing_sets.insert(a.name()).second)
     {
         Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << a.name() << "'";
-        throw NoSuchPackageError(stringify(a.name()));
+        throw RecursivelyDefinedSetError(stringify(a.name()));
     }
 
     set->accept(*this);

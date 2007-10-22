@@ -31,6 +31,9 @@
 
 namespace paludis
 {
+    class NoSuchSetError;
+    class RecursivelyDefinedSetError;
+
     class Environment;
     class RepositoryNameCache;
     class ERepositoryProfile;
