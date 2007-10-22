@@ -1,0 +1,31 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>package_mask.conf and package_unmask.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The <code>package_mask.conf</code> file allows a packages to be explicitly masked. The
+<code>package_unmask.conf</code> file allows repository and profile masked packages to be unmasked. Both are standard
+configuration files which may be bash files and which may use a <code>.conf.d/</code> directory.</p>
+
+<p>Each line in the file consists of a specification.</p>
+
+<h2>Example</h2>
+
+<p>An example <code>package_mask.conf</code>:</p>
+
+<pre>
+# Mask gcc 4.2 for now
+sys-devel/gcc:4.2
+
+# Mask all versions of Portage
+sys-apps/portage
+</pre>
+
+<p>And an example <code>package_unmask.conf</code>:</p>
+
+<pre>
+# Ignore repository and profile masks for things in the toolchain overlay
+*/*::toolchain
+</pre>
+
