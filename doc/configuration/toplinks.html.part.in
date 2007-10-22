@@ -86,7 +86,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
+                <a href="###TOPURI###configuration/configfiles.html">File formats</a>
             </td>
 
             <td class="currentpage">
@@ -104,7 +104,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/configfiles.html">File formats</a>
+                <a href="###TOPURI###configuration/specpath.html">specpath.conf</a>
             </td>
 
             <td class="currentpage">

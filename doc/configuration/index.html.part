@@ -16,9 +16,9 @@
 <h2>For the 'Paludis' Environment</h2>
 
 <ul>
-    <li><a href="specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
     <li><a href="configfiles.html">Configuration file formats</a> in general, including <code>conf.d/</code> directories
     and <code>.bash</code> dynamic configuration files.</li>
+    <li><a href="specpath.html">specpath.conf</a>, and where Paludis looks for configuration files.</li>
     <li><a href="environment.html">environment.conf</a>: for environment options.</li>
     <li><a href="keywords.html">keywords.conf</a>: for keywords.</li>
     <li><a href="use.html">use.conf</a>: for USE flags.</li>
