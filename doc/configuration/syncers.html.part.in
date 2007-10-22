@@ -1,0 +1,49 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Syncers</h1>
+
+<h2>Overview</h2>
+
+<p>Paludis makes use of scripts called 'syncers' to perform certain sync actions (e.g. handling <code>paludis
+    --sync</code> for ebuild format repositories). Some syncers support additional options that can be set via the
+<code>sync_options</code> repository configuration key. Syncers can be added for additional protocols (for example, if
+you need to use a repository that uses a weird version control system), and built-in syncers can be replaced (for
+example, if you want to use a non-standard program).</p>
+
+<p><strong>The syncer protocol used by Paludis is not always identical to the one used by the syncing program.</strong>
+In particular, several syncing programs support URIs in the form <code>http://</code>, and Paludis would not be able to
+tell whether such a URI should be synced by, say, Subversion, Git or Darcs. Instead, you must use
+<code>svn+http://</code> and so on.</p>
+
+<h2>Standard Syncers</h2>
+
+<p>Paludis ships with the following sync protocols (you can use <code>paludis --list-sync-protocols</code> to get the
+list yourself). Note that many of these syncers depend upon external programs that are not listed as dependencies for
+Paludis.</p>
+
+<pre>
+###SYNCERS###
+</pre>
+
+<h2>User Defined Syncers</h2>
+
+<p>To write your own syncer for protocol <code>proto</code>, create an executable script named <code>doproto</code> (the
+<code>do</code> prefix is essential) and place it in <code>SHAREDIR/paludis/syncers/</code>, where <code>SHAREDIR</code>
+is probably <code>/usr/share</code>. This directory has priority over the usual Paludis syncer locations, so it can be
+used to override existing syncers as well as creating new ones.</p>
+
+<p>A syncer script can be called in two ways:</p>
+
+<ul>
+    <li>With <code>--help</code> as an argument. When this happens, it must output a useful help message and then exit
+    without syncing anything.</li>
+    <li>With two arguments, the first being the local directory and the second being the remote sync URL. If
+    <code>sync_options</code> is used, its contents are also passed as arguments. Success or failure is indicated via
+    exit status.</li>
+</ul>
+
+<p>Many syncers use <code>source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"</code> early on to get access to
+<code>ewarn</code> and friends.</p>
+
+<p>For examples, consult the built-in syncers, which can be found in <code>LIBEXECDIR/paludis/syncers/</code>.</p>
+

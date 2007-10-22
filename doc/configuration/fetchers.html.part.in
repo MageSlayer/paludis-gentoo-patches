@@ -1,0 +1,31 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Fetchers</h1>
+
+<h2>Overview</h2>
+
+<p>Paludis makes use of scripts called 'fetchers' to do most downloading. Fetchers can be added for additional protocols
+(for example, if you need to use a third party ebuild where upstream distributes its sources via Gopher), and built-in
+fetchers can be replaced (for example, if you want to use something other than <code>wget</code> to fetch via http).</p>
+
+<h2>Standard Fetchers</h2>
+
+<p>Paludis ships with the following fetcher protocols:</p>
+
+<ul>
+###FETCHERS###
+</ul>
+
+<h2>User Defined Fetchers</h2>
+
+<p>To write your own fetcher for protocol <code>proto</code>, create an executable script named <code>doproto</code> (the
+<code>do</code> prefix is essential) and place it in <code>SHAREDIR/paludis/fetchers/</code>, where <code>SHAREDIR</code>
+is probably <code>/usr/share</code>. This directory has priority over the usual Paludis fetcher locations, so it can be
+used to override existing fetchers as well as creating new ones.</p>
+
+<p>A fetcher is called with two parameters, the source URI and the destination filename. It indicates success or failure
+via its exit status.</p>
+
+<p>For examples, consult the built-in ferchers, which can be found in <code>LIBEXECDIR/paludis/fetchers/</code>.</p>
+
+
