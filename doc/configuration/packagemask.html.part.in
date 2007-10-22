@@ -4,7 +4,7 @@
 
 ###PALUDISENVIRONMENTONLY###
 
-<p>The <code>package_mask.conf</code> file allows a packages to be explicitly masked. The
+<p>The <code>package_mask.conf</code> file allows a package to be explicitly masked. The
 <code>package_unmask.conf</code> file allows repository and profile masked packages to be unmasked. Both are standard
 configuration files which may be bash files and which may use a <code>.conf.d/</code> directory.</p>
 
