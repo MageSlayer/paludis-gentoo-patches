@@ -1,0 +1,30 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>bashrc</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The <code>bashrc</code> file is sourced by Paludis when executing most bash scripts (for example, ebuilds and
+syncers). It can be used to set build-related options (e.g. <code>CFLAGS</code>), but <strong>not</strong> any
+option which might affect dependency resolution (e.g. <code>USE</code>).</p>
+
+<p>This file must not be used to output anything to standard output. Be aware that sandbox and / or reduced privileges
+may be in operation.</p>
+
+<h2>Example</h2>
+
+<pre>
+# Set basic build options
+CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
+CXXFLAGS="${CFLAGS}"
+MAKEOPTS="-j2"
+
+# For some profiles, you <strong>must</strong> set CHOST
+CHOST="i686-pc-linux-gnu"
+
+# We have access to CATEGORY, PN etc, which we can use for per-package settings
+if [[ "${CATEGORY}/${PN}" == "sys-apps/paludis" ]] ; then
+    CXXFLAGS="${CXXFLAGS} -g -ggdb3"
+fi
+</pre>
+

@@ -19,14 +19,16 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	environment.html.part \
 	keywords.html \
 	keywords.html.part \
-	package_mask.html \
-	package_mask.html.part \
+	packagemask.html \
+	packagemask.html.part \
 	use.html \
 	use.html.part \
 	licenses.html \
 	licenses.html.part \
 	mirrors.html \
 	mirrors.html.part \
+	bashrc.html \
+	bashrc.html.part \
 	configfiles.html \
 	specs.html
 
@@ -42,8 +44,9 @@ EXTRA_DIST = \
 	specpath.html.part.in \
 	environment.html.part.in \
 	keywords.html.part.in \
-	package_mask.html.part.in \
+	packagemask.html.part.in \
 	mirrors.html.part.in \
+	bashrc.html.part.in \
 	use.html.part.in \
 	paludisenvironmentonly.html.part \
 	configfiles.html.part \
@@ -60,8 +63,9 @@ paludisconfigurationhtml_DATA = \
 	specpath.html \
 	environment.html \
 	keywords.html \
-	package_mask.html \
+	packagemask.html \
 	mirrors.html \
+	bashrc.html \
 	licenses.html \
 	use.html \
 	configfiles.html \
@@ -141,17 +145,23 @@ keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/keywords.html.part.in > keywords.html.part
 
-package_mask.html.part : $(srcdir)/package_mask.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+packagemask.html.part : $(srcdir)/packagemask.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
-	    < $(srcdir)/package_mask.html.part.in > package_mask.html.part
+	    < $(srcdir)/packagemask.html.part.in > packagemask.html.part
 
 mirrors.html.part : $(srcdir)/mirrors.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/mirrors.html.part.in > mirrors.html.part
+
+bashrc.html.part : $(srcdir)/bashrc.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/bashrc.html.part.in > bashrc.html.part
 
 licenses.html.part : $(srcdir)/licenses.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -177,11 +187,14 @@ environment.html : header.html.part environment.html.part footer.html.part
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@
 
-package_mask.html : header.html.part package_mask.html.part footer.html.part
-	cat header.html.part package_mask.html.part footer.html.part > $@
+packagemask.html : header.html.part packagemask.html.part footer.html.part
+	cat header.html.part packagemask.html.part footer.html.part > $@
 
 mirrors.html : header.html.part mirrors.html.part footer.html.part
 	cat header.html.part mirrors.html.part footer.html.part > $@
+
+bashrc.html : header.html.part bashrc.html.part footer.html.part
+	cat header.html.part bashrc.html.part footer.html.part > $@
 
 licenses.html : header.html.part licenses.html.part footer.html.part
 	cat header.html.part licenses.html.part footer.html.part > $@
