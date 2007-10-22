@@ -10,7 +10,7 @@ div.main {
     margin: 0em 1em 2em 1em;
 }
 
-div.main p, div.main * p, div.main * li {
+div.main p, div.main * p, div.main * li, div.main * dt, div.main * dd {
     text-align: justify;
 }
 
