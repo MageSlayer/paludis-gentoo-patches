@@ -14,6 +14,18 @@ div.main p, div.main * p, div.main * li {
     text-align: justify;
 }
 
+div.note {
+    margin: 0.2em 2em;
+    padding: 0.2em 0.5em;
+    background-color: #ffeedd;
+    border: 1px solid #996600;
+}
+
+div.note p:first-child:before {
+    content: "Note: ";
+    font-weight: bold;
+}
+
 a:link {
     text-decoration: none;
     font-weight: bold;

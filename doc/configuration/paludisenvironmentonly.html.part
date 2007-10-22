@@ -1,0 +1,9 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<div class="note">
+    <p>This document applies only to clients using <code>PaludisEnvironment</code>. Any standard client that supports a
+    <code>--environment</code> command line option uses <code>PaludisEnvironment</code> unless overridden, either by
+    explicitly selecting another environment (e.g. <code>--environment portage</code>) or, on distributions also
+    supporting Portage, by lack of a Paludis configuration and presence of a Portage configuration.</p>
+</div>
+

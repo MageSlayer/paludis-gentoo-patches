@@ -1,0 +1,37 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>specpath.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<h2>Configuration File Locations</h2>
+
+<p>Paludis looks in the following places for configuration files:</p>
+
+<ul>
+    <li><code>${PALUDIS_HOME}/.paludis</code>, if the <code>PALUDIS_HOME</code> environment variable is set, or
+    <code>${HOME}/.paludis</code> otherwise.</li>
+    <li><code>${SYSCONFDIR}/paludis</code>, where <code>SYSCONFDIR</code> is <code>/etc</code> on most systems.</li>
+</ul>
+
+<p>If <code>--environment :suffix</code> or <code>--environment paludis:suffix</code> is specified, Paludis will use
+<code>.paludis-suffix</code> or <code>paludis-suffix</code>. This can be used to maintain multiple configurations, for
+example for chroots.</p>
+
+<h2>specpath.conf</h2>
+
+<p>If a file named <code>specpath.conf</code> exists in the configuration directory, Paludis uses this to find a second,
+real configuration directory. <code>specpath.conf</code> is a standard key=value configuration file, with the following
+keys having recognised meaning:</p>
+
+<dl>
+    <dt><code>root</code></dt>
+    <dd>The real configuration directory is taken to be <code>${root}/SYSCONFDIR/paludis/</code> (note that HOME values
+    are <em>not</em> used). When installing, <code>${root}/</code> is used rather than <code>/</code> as the base
+    install location.</dd>
+
+    <dt><code>config-suffix</code></dt>
+    <dd>If set, Paludis will instead look in <code>${root}/SYSCONFDIR/paludis-suffix</code> for configuration files. By
+    default, no configuration suffix is used under root.</dd>
+</dl>
+
