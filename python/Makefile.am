@@ -127,7 +127,10 @@ if ENABLE_PYTHON
 lib_LTLIBRARIES = libpaludispython.la
 
 libpaludispython_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@PYTHON_INCLUDE_DIR@
-libpaludispython_la_LDFLAGS = @BOOST_PYTHON_LIB@
+libpaludispython_la_LDFLAGS = \
+	@BOOST_PYTHON_LIB@ \
+	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
+	$(PTHREAD_LIBS)
 
 check_LTLIBRARIES = libadditionaltests.la
 
