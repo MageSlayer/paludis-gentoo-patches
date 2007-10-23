@@ -44,7 +44,8 @@ repositories:</p>
 
     <dt><code>write_cache</code></dt>
     <dd>Where to look for and save generated metadata cache items. If set to <code>/var/empty</code>, no write cache is
-    used. Optional, but recommended for repositories that do not ship with their own metadata cache.</dd>
+    used. Optional, but recommended for repositories that do not ship with their own metadata cache. Set to
+    <code>/var/empty</code> to disable.</dd>
 
     <dt><code>append_repository_name_to_write_cache</code></dt>
     <dd>Boolean. If true (default), the repository name is appended to the <code>write_cache</code> directory. Optional,
