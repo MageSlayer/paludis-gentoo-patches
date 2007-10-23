@@ -1,0 +1,55 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Sets</h1>
+
+<p>A set is a collection of package dependency specifications.</p>
+
+<h2>Built-in Sets</h2>
+
+<p>The following sets are always available:</p>
+
+<dl>
+    <dt>system</dt>
+    <dd>Defined by repositories, system consists of core packages that make up a basic system.</dd>
+
+    <dt>world</dt>
+    <dd>Consists of the system set, plus all packages that have been installed as targets (as opposed to merely pulled
+    in as dependencies of a target).</dd>
+
+    <dt>everything</dt>
+    <dd>All installed packages.</dd>
+
+    <dt>security</dt>
+    <dd>The set of upgrades which must be performed to resolve security holes.</dd>
+
+    <dt>insecurity</dt>
+    <dd>The set of insecure packages (mostly for internal use).</dd>
+
+    <dt>ununused</dt>
+    <dd>Any packages that, although not part of system or world, should none-the-less not be considered unused (again,
+    mostly for internal use).</dd>
+</dl>
+
+<h2>User Defined Sets</h2>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>When using the Paludis environment, the user can create their own sets. A set named <code>foo</code> is defined in
+the file <code>sets/foo.conf</code>, which is a standard configuration file and which may be a bash file.</p>
+
+<div class="note">
+    <p>Overriding built-in sets in this manner is not recommended. Strange things will happen.</p>
+</div>
+
+<p>Each line in a user set file consists of an operator, followed by whitespace, followed by a package dependency
+specification. Permitted operators are:</p>
+
+<dl>
+    <dt><code>*</code></dt>
+    <dd>Indicates that the specification is part of the set.</dd>
+
+    <dt><code>?</code></dt>
+    <dd>Indicates that the specification is part of the set if and only if a package whose name is equal to the name
+    part of the specification is installed.</dd>
+</dl>
+

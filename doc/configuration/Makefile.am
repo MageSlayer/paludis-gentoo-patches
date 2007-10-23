@@ -29,6 +29,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	mirrors.html.part \
 	bashrc.html \
 	bashrc.html.part \
+	sets.html \
+	sets.html.part \
 	configfiles.html \
 	specs.html
 
@@ -51,7 +53,8 @@ EXTRA_DIST = \
 	use.html.part.in \
 	paludisenvironmentonly.html.part \
 	configfiles.html.part \
-	specs.html.part
+	specs.html.part \
+	sets.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -70,7 +73,8 @@ paludisconfigurationhtml_DATA = \
 	licenses.html \
 	use.html \
 	configfiles.html \
-	specs.html
+	specs.html \
+	sets.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
@@ -168,6 +172,12 @@ bashrc.html.part : $(srcdir)/bashrc.html.part.in $(srcdir)/paludisenvironmentonl
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/bashrc.html.part.in > bashrc.html.part
 
+sets.html.part : $(srcdir)/sets.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/sets.html.part.in > sets.html.part
+
 licenses.html.part : $(srcdir)/licenses.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
@@ -200,6 +210,9 @@ mirrors.html : header.html.part mirrors.html.part footer.html.part
 
 bashrc.html : header.html.part bashrc.html.part footer.html.part
 	cat header.html.part bashrc.html.part footer.html.part > $@
+
+sets.html : header.html.part sets.html.part footer.html.part
+	cat header.html.part sets.html.part footer.html.part > $@
 
 licenses.html : header.html.part licenses.html.part footer.html.part
 	cat header.html.part licenses.html.part footer.html.part > $@
