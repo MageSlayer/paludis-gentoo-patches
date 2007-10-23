@@ -10,7 +10,7 @@ repositories:</p>
 <dl>
     <dt><code>location</code></dt>
     <dd>The location of the repository. Mandatory. On Gentoo systems, this must be <code>${root}/var/db/pkg</code> to
-    aviod problems with broken ebuilds that illegally access the VDB.</dd>
+    avoid problems with broken ebuilds that illegally access the VDB.</dd>
 
     <dt><code>world</code></dt>
     <dd>The location of the world file. Optional.</dd>
