@@ -13,8 +13,19 @@ epydoc : python
 python : epydoc.css
 	rm -fr python
 	mkdir -p python
-	epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
-	    $(top_builddir)/python/paludis.so
+	env \
+	    LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/paludis/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/no_config/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/adapted/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/fake/.libs\`: \
+	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs\`" \
+	    | tr -d ' '` \
+	    PYTHONPATH="./.libs" \
+	    epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
+	        $(top_builddir)/python/paludis.so
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api
