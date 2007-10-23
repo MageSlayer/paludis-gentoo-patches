@@ -269,6 +269,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     tr1::shared_ptr<Map<std::string, std::string> > conf_vars(
             new Map<std::string, std::string>);
     conf_vars->insert("ROOT", root_prefix);
+    conf_vars->insert("root", root_prefix);
 
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig real directory is '"
             + stringify(local_config_dir) + "', root prefix is '" + root_prefix +
