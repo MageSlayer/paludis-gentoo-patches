@@ -94,6 +94,8 @@ synclist :
 			: ; \
 		elif ! echo $$a | grep '^do' >/dev/null ; then \
 			: ; \
+		elif echo $$a | grep 'svn-base$$' >/dev/null ; then \
+			: ; \
 		else \
 			echo "<strong>$$a</strong>" | sed -e 's/>do/>/' ; \
 			if test -f $(top_builddir)/paludis/syncers/$$a ; then \
@@ -116,6 +118,8 @@ fetchlist :
 		if echo $$a | grep '.in$$' >/dev/null ; then \
 			: ; \
 		elif ! echo $$a | grep '^do' >/dev/null ; then \
+			: ; \
+		elif echo $$a | grep 'svn-base$$' >/dev/null ; then \
 			: ; \
 		else \
 			echo "<li>$$a</li>" | sed -e 's/>do/>/' ; \
