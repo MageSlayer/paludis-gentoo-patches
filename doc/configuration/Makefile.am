@@ -45,6 +45,7 @@ EXTRA_DIST = \
 	environment.html.part.in \
 	keywords.html.part.in \
 	packagemask.html.part.in \
+	licenses.html.part.in \
 	mirrors.html.part.in \
 	bashrc.html.part.in \
 	use.html.part.in \
