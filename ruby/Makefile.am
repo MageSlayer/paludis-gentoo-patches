@@ -96,6 +96,7 @@ if ENABLE_RUBY
 lib_LTLIBRARIES = libpaludisruby.la
 
 libpaludisruby_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_SITEARCHDIR@ -I@RUBY_ARCHDIR@
+libpaludisruby_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_ruby_so.o : paludis_ruby_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
