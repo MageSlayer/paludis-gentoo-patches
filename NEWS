@@ -4,6 +4,45 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.24.6:
+    * Various bugfixes: ebuild_notice is now called correctly by various
+      utilities. Exit statuses for programs dying with a signal are now detected
+      correctly.
+
+    * g++-4.2's std::exception::what() is less useful. We now use typeid.name()
+      to get the type of an exception for error messages.
+
+    * configure now checks for more CXXFLAGS that are known to cause breakages.
+
+    * We now include test cases for hooks. This means eselect modules are now
+      strict build dependencies.
+
+0.24.5:
+    * More ldconfig oddities fixed.
+
+    * The eselect news module is no longer shipped as part of Paludis.
+
+0.24.4:
+    * The ldconfig check introduced in 0.24.3 would incorrectly detect a BSD
+      ldconfig on some GNU systems. This is now fixed.
+
+0.24.3:
+    * Bug fix: -* in keywords.conf now works.
+
+    * Non-GNU ldconfig is now supported.
+
+    * Various minor bug fixes and docs updates.
+
+0.24.2:
+    * Various fixes for FreeBSD, gcc 3.4.
+
+    * Recursively defined USE flags no longer cause problems.
+
+0.24.1:
+    * Switched to automake-1.10 for BSD friendliness.
+
+    * Dist tarballs no longer have issues with missing Vim scripts.
+
 0.24.0:
     * Ranged dependencies using foo/bar[>=1&<2] or foo/bar[=1|=2] are now
     allowed. An asterisk can now be used for the category and / or package part
