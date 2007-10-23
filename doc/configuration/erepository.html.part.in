@@ -1,0 +1,84 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>ebuild Options</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>As well as the general keys supported for all repositories, the following keys have meaning for ebuild format
+repositories:</p>
+
+<dl>
+    <dt><code>master_repository</code></dt>
+    <dd>If set to the name of another ebuild-format repository, that repository is used as a 'master' for any part of
+    this repository that is not defined. Also changes the default importance of this repository from 0 to 10.  (In
+    Portage terms, this is similar to saying that this repository is an overlay with the master as the main repository.
+    However, identically named and versioned packages in this repository do not hide those in the master.)</dd>
+
+    <dt><code>profiles</code></dt>
+    <dd>A space separated list of directories to use as profiles. Later entries override earlier entries. Inherited from
+    a master if unspecified, mandatory otherwise. (In Portage terms, this is like the <code>/etc/make.profile</code>
+    symlink.)</dd>
+
+    <dt><code>eclassdirs</code></dt>
+    <dd>A space separated list of directories in which to find eclasses. The first directory is used to set
+    <code>ECLASSDIR</code>, but eclasses in later directories have priority. Optional.</dd>
+
+    <dt><code>distdir</code></dt>
+    <dd>Where to look for and save downloaded files. Inherited from a master. Optional.</dd>
+
+    <dt><code>setsdir</code></dt>
+    <dd>Where to look for repository-defined sets. Optional.</dd>
+
+    <dt><code>securitydir</code></dt>
+    <dd>Where to look for GLSAs (security advisories). Optional.</dd>
+
+    <dt><code>newsdir</code></dt>
+    <dd>Where to look for GLEP 42 news items. Optional.</dd>
+
+    <dt><code>cache</code></dt>
+    <dd>Where to look for read-only repository defined metadata cache items. If set to <code>/var/empty</code>, no
+    repository defined cache is used. Optional.</dd>
+
+    <dt><code>write_cache</code></dt>
+    <dd>Where to look for and save generated metadata cache items. If set to <code>/var/empty</code>, no write cache is
+    used. Optional, but recommended for repositories that do not ship with their own metadata cache.</dd>
+
+    <dt><code>append_repository_name_to_write_cache</code></dt>
+    <dd>Boolean. If true (default), the repository name is appended to the <code>write_cache</code> directory. Optional,
+    for internal use.</dd>
+
+    <dt><code>eapi_when_unknown</code></dt>
+    <dd>The EAPI to use when a package's EAPI is unknown (e.g. before it has been sourced to generate its metadata, if
+    it does not use an EAPI filename suffix). Optional, generally set by the distribution.</dd>
+
+    <dt><code>eapi_when_unspecified</code></dt>
+    <dd>The EAPI to use when a package does not specify an EAPI, either explicitly or by suffix. Optional, generally set
+    by the distribution.</dd>
+
+    <dt><code>profile_eapi</code></dt>
+    <dd>The EAPI to use for profiles. Optional, generally set by the distribution.</dd>
+
+    <dt><code>names_cache</code></dt>
+    <dd>The directory in which to look for a names cache, and in which to generate a names cache. A names cache will
+    significantly speed up converting a <code>pkg</code> into a <code>cat/pkg</code>. See <a
+        href="../overview/gettingstarted.html">Getting Started</a> for notes. Optional.</dd>
+
+    <dt><code>sync</code></dt>
+    <dd>How to sync the repository. See <a href="syncers.html">Syncers</a> for supported formats. Optional if the
+    repository does not need to be synced.</dd>
+
+    <dt><code>sync_options</code></dt>
+    <dd>Any options to be passed to the syncer. Optional.</dd>
+
+    <dt><code>builddir</code></dt>
+    <dd>The temporary directory to use when building packages. Optional.</dd>
+
+    <dt><code>layout</code></dt>
+    <dd>The repository's layout. Supported values are <code>traditional</code> and <code>exheres</code>. Optional,
+    usually set by the distribution.</dd>
+
+    <dt><code>use_manifest</code></dt>
+    <dd>Whether to use Manifest2. Valid values are <code>use</code>, <code>require</code> or <code>ignore</code>.
+    Optional.</dd>
+</dl>
+

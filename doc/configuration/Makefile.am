@@ -34,7 +34,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	configfiles.html \
 	specs.html \
 	repositories.html \
-	repositories.html.part
+	repositories.html.part \
+	erepository.html \
+	erepository.html.part
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -57,7 +59,8 @@ EXTRA_DIST = \
 	configfiles.html.part \
 	specs.html.part \
 	sets.html.part.in \
-	repositories.html.part.in
+	repositories.html.part.in \
+	erepository.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -78,7 +81,8 @@ paludisconfigurationhtml_DATA = \
 	configfiles.html \
 	specs.html \
 	sets.html \
-	repositories.html
+	repositories.html \
+	erepository.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
@@ -145,6 +149,12 @@ specpath.html.part : $(srcdir)/specpath.html.part.in $(srcdir)/paludisenvironmen
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/specpath.html.part.in > specpath.html.part
+
+erepository.html.part : $(srcdir)/erepository.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/erepository.html.part.in > erepository.html.part
 
 environment.html.part : $(srcdir)/environment.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -235,6 +245,9 @@ use.html : header.html.part use.html.part footer.html.part
 
 specpath.html : header.html.part specpath.html.part footer.html.part
 	cat header.html.part specpath.html.part footer.html.part > $@
+
+erepository.html : header.html.part erepository.html.part footer.html.part
+	cat header.html.part erepository.html.part footer.html.part > $@
 
 syncers.html : header.html.part syncers.html.part footer.html.part
 	cat header.html.part syncers.html.part footer.html.part > $@
