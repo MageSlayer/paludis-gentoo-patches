@@ -37,6 +37,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	repositories.html.part \
 	erepository.html \
 	erepository.html.part \
+	installedunpackaged.html \
+	installedunpackaged.html.part \
 	vdb.html \
 	vdb.html.part
 
@@ -63,6 +65,7 @@ EXTRA_DIST = \
 	sets.html.part.in \
 	repositories.html.part.in \
 	erepository.html.part.in \
+	installedunpackaged.html.part.in \
 	vdb.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
@@ -86,6 +89,7 @@ paludisconfigurationhtml_DATA = \
 	sets.html \
 	repositories.html \
 	erepository.html \
+	installedunpackaged.html \
 	vdb.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
@@ -159,6 +163,12 @@ erepository.html.part : $(srcdir)/erepository.html.part.in $(srcdir)/paludisenvi
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/erepository.html.part.in > erepository.html.part
+
+installedunpackaged.html.part : $(srcdir)/installedunpackaged.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/installedunpackaged.html.part.in > installedunpackaged.html.part
 
 vdb.html.part : $(srcdir)/vdb.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
@@ -258,6 +268,9 @@ specpath.html : header.html.part specpath.html.part footer.html.part
 
 erepository.html : header.html.part erepository.html.part footer.html.part
 	cat header.html.part erepository.html.part footer.html.part > $@
+
+installedunpackaged.html : header.html.part installedunpackaged.html.part footer.html.part
+	cat header.html.part installedunpackaged.html.part footer.html.part > $@
 
 vdb.html : header.html.part vdb.html.part footer.html.part
 	cat header.html.part vdb.html.part footer.html.part > $@

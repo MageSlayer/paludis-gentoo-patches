@@ -1,0 +1,16 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>installed_unpackaged Options</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>As well as the general keys supported for all repositories, the following
+keys have meaning for installed_unpackaged format repositories:</p>
+
+<dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+</dl>
+
+
+
