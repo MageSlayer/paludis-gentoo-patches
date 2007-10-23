@@ -3,7 +3,7 @@ CLEANFILES = *~ done-check gmon.out *.gcov *.gcno *.gcda \
 MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL COPYING
 AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options
-EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp
+EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp ChangeLog.old.bz2
 SUBDIRS = misc test paludis python ruby src doc hooks eselect vim bash-completion zsh-completion pkg-config
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa --enable-vim --enable-python \
