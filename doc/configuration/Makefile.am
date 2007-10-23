@@ -33,8 +33,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	sets.html.part \
 	configfiles.html \
 	specs.html \
-	repositories.html.part \
-	repositories.html.part.in
+	repositories.html \
+	repositories.html.part
 
 MAINTAINERCLEANFILES = Makefile.in
 
