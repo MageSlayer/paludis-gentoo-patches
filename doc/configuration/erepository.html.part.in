@@ -8,6 +8,9 @@
 repositories:</p>
 
 <dl>
+    <dt><code>location</code></dt>
+    <dd>The location of the repository. Mandatory.</dd>
+
     <dt><code>master_repository</code></dt>
     <dd>If set to the name of another ebuild-format repository, that repository is used as a 'master' for any part of
     this repository that is not defined. Also changes the default importance of this repository from 0 to 10.  (In
