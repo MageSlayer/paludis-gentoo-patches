@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006 Mike Kelly <pioto@pioto.org>
+# Copyright (c) 2006 Mike Kelly
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General

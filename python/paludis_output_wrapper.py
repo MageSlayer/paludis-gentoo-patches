@@ -1,7 +1,7 @@
 # vim: set fileencoding=utf-8 sw=4 sts=4 et :
 
 #
-# Copyright (c) 2007 Piotr Jaroszyński <peper@gentoo.org>
+# Copyright (c) 2007 Piotr Jaroszyński
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
