@@ -7,7 +7,7 @@
 <p>This document describes the Paludis hooks interface. A hook is a piece of code
 that is executed when a particular well defined action occurs.</p>
 
-<p>There are currently four categories of hook:</p>
+<p>There are currently four categories of hooks:</p>
 
 <ul>
     <li>General hooks. These have access to a limited environment. If
