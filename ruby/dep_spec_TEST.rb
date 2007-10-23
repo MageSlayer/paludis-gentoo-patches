@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
 # Copyright (c) 2007 Richard Brown <rbrown@gentoo.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
