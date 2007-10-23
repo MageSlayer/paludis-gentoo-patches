@@ -36,7 +36,7 @@
     failed compiles far more flexibly than offered by Portage.</li>
 
     <li>Ability to see why a package is really being pulled in, rather than relying
-    upon the rather crude 'tree' offered by Portage.</li>
+    upon the rather crude '--tree' offered by Portage.</li>
 
     <li>Much improved output: <code>--query</code> makes it easy to get a useful summary
     of information about a package, and <code>--pretend</code> can be configured to show
@@ -46,8 +46,8 @@
     <li>Secure (un)installation of set*id files, preventing your system from being left
     vulnerable after having replaced a vulnerable application.</li>
 
-    <li>Ability to use slot, use, repository and ranged version dependencies when selecting
-    a version.</li>
+    <li>Ability to use slot, use, repository and ranged version dependencies in dependency
+    specifications.</li>
 
     <li>Ability to see all packages that need unmasking in one go, rather than one package
     at a time.</li>
@@ -63,7 +63,7 @@
 <ul>
     <li>Full and correct circular dependency resolution.</li>
 
-    <li>Default deep dependency resolution.</li>
+    <li>Deep dependency resolution even when not upgrading everything.</li>
 
     <li>Support for 'experimental' (read: 'still not implemented in Portage') EAPI proposals
     (use dependencies, ranged version specs, -scm and -try version specs, src_uri arrows etc).</li>

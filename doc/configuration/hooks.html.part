@@ -343,7 +343,7 @@ hook_run_install_all_post()
 
     if [[ -d "${ROOT}/var/lib/monkeys" ]] ; then
         for m in "${ROOT}"/var/lib/monkeys/* ; do
-            ewarn "Found monkey $(basename ${m} )"
+            ewarn "Found monkey $(basename "${m}" )"
         done
     else
         einfo "No monkeys found"

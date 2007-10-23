@@ -72,13 +72,13 @@ question will likely lead to breakages.</p>
 <h2 id="downgrades">Paludis wants to downgrade Qt or KDE</h2>
 
 <p>Unlike Portage, Paludis enforces the dependencies of installed
-packages, rather than those of the corresponding package in the tree.
-Unfortunately, to work around Portage limitations, the Qt and KDE
-eclasses are set up to depend specifically on those versions that are
-in the tree at the time of installation.  The result is that after
-upgrading to a newer version, dependant packages that were installed
-before the new version became available will try to force a downgrade
-back to the old version.</p>
+packages, rather than those of the corresponding package in its
+original repository. Unfortunately, to work around Portage limitations,
+the Qt and KDE eclasses are set up to depend specifically on those
+versions that are in the tree at the time of installation.  The result
+is that after upgrading to a newer version, dependant packages that
+were installed before the new version became available will try to
+force a downgrade back to the old version.</p>
 
 <p>To solve this problem, run your Paludis update command with
 the <code>--dl-downgrade warning</code> option, and check the

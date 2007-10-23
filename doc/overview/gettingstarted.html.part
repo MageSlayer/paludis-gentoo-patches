@@ -238,7 +238,6 @@ master_repository = gentoo
 location = /var/paludis/repositories/paludis-overlay/
 sync = svn://svn.pioto.org/paludis/overlay
 names_cache = (as above)
-provides_cache = (as above)
 write_cache = (see below)
 format = ebuild
 </pre>

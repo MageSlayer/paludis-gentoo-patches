@@ -9,8 +9,8 @@
 
 <h2 id="updatingdepends">Paludis does not update DEPENDs of already installed packages</h2>
 
-<p>Paludis ignores DEPENDs of already installed packages by default. If you
-need a different behaviour, use the <code>--dl-installed-deps-pre</code>
+<p>Paludis ignores build time dependencies (DEPENDs) of already installed packages by default.
+If you need a different behaviour, use the <code>--dl-installed-deps-pre</code>
 option. You may also want to use the <code>everything</code> set rather than
 <code>world</code>.</p>
 
