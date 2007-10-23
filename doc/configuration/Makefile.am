@@ -32,7 +32,9 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda \
 	sets.html \
 	sets.html.part \
 	configfiles.html \
-	specs.html
+	specs.html \
+	repositories.html.part \
+	repositories.html.part.in
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -54,7 +56,8 @@ EXTRA_DIST = \
 	paludisenvironmentonly.html.part \
 	configfiles.html.part \
 	specs.html.part \
-	sets.html.part.in
+	sets.html.part.in \
+	repositories.html.part.in
 
 paludisconfigurationhtmldir = $(htmldir)/configuration
 
@@ -74,7 +77,8 @@ paludisconfigurationhtml_DATA = \
 	use.html \
 	configfiles.html \
 	specs.html \
-	sets.html
+	sets.html \
+	repositories.html
 
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
@@ -154,6 +158,12 @@ keywords.html.part : $(srcdir)/keywords.html.part.in $(srcdir)/paludisenvironmen
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/keywords.html.part.in > keywords.html.part
 
+repositories.html.part : $(srcdir)/repositories.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/repositories.html.part.in > repositories.html.part
+
 packagemask.html.part : $(srcdir)/packagemask.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
@@ -201,6 +211,9 @@ environment.html : header.html.part environment.html.part footer.html.part
 
 keywords.html : header.html.part keywords.html.part footer.html.part
 	cat header.html.part keywords.html.part footer.html.part > $@
+
+repositories.html : header.html.part repositories.html.part footer.html.part
+	cat header.html.part repositories.html.part footer.html.part > $@
 
 packagemask.html : header.html.part packagemask.html.part footer.html.part
 	cat header.html.part packagemask.html.part footer.html.part > $@

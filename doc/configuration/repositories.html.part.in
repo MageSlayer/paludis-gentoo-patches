@@ -1,0 +1,59 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Repositories</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>Each file in <code>repositories/</code> named <code>*.conf</code> defines a repository. A repository configuration
+file is a standard key=value config file, and it may be in bash format. The <code>repository_defaults.conf</code> file
+(which does <em>not</em> live in the <code>repositories</code> subdirectory), if it exists, is treated as if it were
+prepended to each individual file.</p>
+
+<div class="note">
+    <p>The filenames used for repository configuration files have no effect upon the names of the repositories. Whilst
+    you <em>could</em> use the name <code>giant-space-monkey.conf</code> for the repository named <code>gentoo</code>,
+    for user sanity reasons it is best to use the repository name as the filename.</p>
+</div>
+
+<h2>Predefined Keys</h2>
+
+<p>The following keys are predefined. They should not be modified.</p>
+
+<dl>
+    <dt>root</dt>
+    <dd>The filesystem root. Relevant if <code>specpath.conf</code> is in use. Using this variable can create a
+    configuration system that works both inside and outside of a chroot (e.g. <code>location =
+        ${root}/var/db/paludis/repositories/paludis-overlay</code>).</dd>
+</dl>
+
+<h2>General Keys</h2>
+
+<p>The following keys are meaningful for all repository formats.</p>
+
+<dl>
+    <dt>format</dt>
+    <dd>Determines which repository class Paludis uses to create the repository. Example formats are
+    <code>ebuild</code>, <code>vdb</code> and <code>installed_unpackaged</code>. Mandatory.</dd>
+
+    <dt>importance</dt>
+    <dd>Must be an integer. Used by Paludis to determine from which repository a package should be selected, all other
+    things being equal (a higher importance is preferred over a lower importance). By default, <code>0</code>, except
+    if the <code>master_repository</code> key is set, in which case it is <code>10</code> instead.</dd>
+</dl>
+
+<p>For format-specific keys, see the documentation for that format.</p>
+
+<h2>Predefined Repositories</h2>
+
+<p>If using a distribution that supports old-style virtuals, two repositories are magically defined:</p>
+
+<dl>
+    <dt><code>virtuals</code></dt>
+    <dd>A special repository that contains special package entries for old style virtuals, mapping them to their
+    providers.</dd>
+
+    <dt><code>installed-virtuals</code></dt>
+    <dd>A special repository that contains special package entries for installed old style virtuals (provided
+    packages).</dd>
+</dl>
+
