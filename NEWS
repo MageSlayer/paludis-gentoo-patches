@@ -4,6 +4,46 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.26.0_alpha1:
+    * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
+      dep specs.
+
+    * We now ship Python bindings (Google Summer of Code project by Piotr
+      Jaroszyński).
+
+    * Massive internals changes. The old PDE / VM system has been replaced by
+      PackageIDs.
+
+    * GCC 4.1+ users can now --enable-visibility to enable .so visibility
+      attributes.
+
+    * EAPI 1 is supported.
+
+    * Support for .so and Python hooks.
+
+    * New distribution configuration system, allowing distributions to change
+      various aspects of default behaviour.
+
+    * Compiling against Paludis is now done via pkg-config.
+
+    * Huge documentation rework.
+
+    * Unsafe uninstalls now require 'paludis --permit-unsafe-uninstalls'.
+
+    * Manifest2 support, replacing digest support.
+
+    * Whether src_test is run is now an EAPI defined default. 'paludis --checks
+      none|default|always' can be used to change this. SKIP_FUNCTIONS voodoo is
+      now considered harmful.
+
+    * New clients: accerso (for running a distfiles mirror), instruo (for
+      generating metadata cache), reconcilio (like revdep-rebuild), importare
+      (for managing unpackaged packages).
+
+    * Initial 'paludis --continue-on-failure' support.
+
+    * Much nicer 'paludis --info', and pkg_info support.
+
 0.24.6:
     * Various bugfixes: ebuild_notice is now called correctly by various
       utilities. Exit statuses for programs dying with a signal are now detected
