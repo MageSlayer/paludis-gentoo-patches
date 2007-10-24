@@ -212,6 +212,7 @@ ebuild_scrub_environment()
         source "${1}" || exit 1
 
         unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
+        unset -f portageq best_version has_version
 
         unset -v PATH ROOTPATH T HOME TMPDIR PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
         unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR
