@@ -131,7 +131,8 @@ do_install(tr1::shared_ptr<Environment> env, std::string spec_str)
             throw DoHelp("bad value for --debug-build");
     }
 
-    task.add_target(spec_str);
+    if (! task.try_to_add_target(spec_str))
+        return task.exit_status();
 
     task.execute();
 

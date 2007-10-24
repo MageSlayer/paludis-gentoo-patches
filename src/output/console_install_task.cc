@@ -42,6 +42,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
+#include <paludis/fuzzy_finder.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
@@ -166,6 +167,38 @@ ConsoleInstallTask::exit_status() const
     if (had_action_failures())
         return_code |= 7;
     return return_code;
+}
+
+bool
+ConsoleInstallTask::try_to_add_target(const std::string & s)
+{
+    bool is_ok(true);
+    try
+    {
+        InstallTask::add_target(s);
+    }
+    catch (const NoSuchPackageError & e)
+    {
+        output_stream() << endl;
+        output_stream() << "Query error:" << endl;
+        output_stream() << "  * " << e.backtrace("\n  * ");
+        output_stream() << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+        FuzzyCandidatesFinder f(*environment(), e.name());
+
+        if (f.begin() == f.end())
+            output_stream() << "No suggestions found." << endl;
+        else
+            output_stream() << "Suggestions:" << endl;
+
+        for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                c_end(f.end()) ; c != c_end ; ++c)
+            output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+        output_stream() << endl;
+        is_ok = false;;
+    }
+
+    return is_ok;
 }
 
 void
@@ -1328,7 +1361,19 @@ ConsoleInstallTask::on_no_such_package_error(const NoSuchPackageError & e)
     output_stream() << endl;
     output_stream() << "Query error:" << endl;
     output_stream() << "  * " << e.backtrace("\n  * ");
-    output_stream() << "No such package '" << e.name() << "'" << endl;
+    output_stream() << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+    FuzzyCandidatesFinder f(*environment(), e.name());
+
+    if (f.begin() == f.end())
+        output_stream() << "No suggestions found." << endl;
+    else
+        output_stream() << "Suggestions:" << endl;
+
+    for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+            c_end(f.end()) ; c != c_end ; ++c)
+        output_stream() << "  * " << colour(cl_package_name, *c) << endl;
+    output_stream() << endl;
 }
 
 void

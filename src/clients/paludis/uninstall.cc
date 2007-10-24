@@ -26,6 +26,7 @@
 #include <paludis/uninstall_list.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
+#include <paludis/fuzzy_finder.hh>
 
 #include <iostream>
 #include <limits>
@@ -288,11 +289,23 @@ namespace
         }
         catch (const NoSuchPackageError & e)
         {
+            return_code |= 1;
             cout << endl;
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
-            cerr << "No such package '" << e.name() << "'" << endl;
-            return 1;
+            cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+            FuzzyCandidatesFinder f(*env, e.name());
+
+            if (f.begin() == f.end())
+                cerr << "No suggestions found." << endl;
+            else
+                cerr << "Suggestions:" << endl;
+
+            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                    c_end(f.end()) ; c != c_end ; ++c)
+                cerr << "  * " << colour(cl_package_name, *c) << endl;
+            cerr << endl;
         }
 
         return return_code;

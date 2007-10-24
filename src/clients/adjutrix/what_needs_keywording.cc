@@ -19,6 +19,7 @@
 
 #include "what_needs_keywording.hh"
 #include "command_line.hh"
+#include <output/colour.hh>
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
@@ -32,6 +33,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
+#include <paludis/fuzzy_finder.hh>
 
 #include <set>
 #include <map>
@@ -80,13 +82,36 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     for (CommandLine::ParametersConstIterator p(next(CommandLine::get_instance()->begin_parameters())),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
     {
-        if (std::string::npos == p->find('/'))
-            d.add(PackageDepSpec(
-                        tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
-                                env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p))))),
-                    env.default_destinations());
-        else
-            d.add(PackageDepSpec(*p, pds_pm_permissive), env.default_destinations());
+        try
+        {
+            if (std::string::npos == p->find('/'))
+                d.add(PackageDepSpec(
+                            tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                    env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p))))),
+                        env.default_destinations());
+            else
+                d.add(PackageDepSpec(*p, pds_pm_permissive), env.default_destinations());
+        }
+        catch (const NoSuchPackageError & e)
+        {
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+            FuzzyCandidatesFinder f(env, e.name());
+
+            if (f.begin() == f.end())
+                cerr << "No suggestions found." << endl;
+            else
+                cerr << "Suggestions:" << endl;
+
+            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                    c_end(f.end()) ; c != c_end ; ++c)
+                cerr << "  * " << colour(cl_package_name, *c) << endl;
+            cerr << endl;
+            return 5;
+        }
     }
 
     cout << std::setw(30) << std::left << "Package";

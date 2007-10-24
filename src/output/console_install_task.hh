@@ -129,6 +129,8 @@ namespace paludis
             virtual void execute();
             int exit_status() const;
 
+            bool try_to_add_target(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual std::string make_x_of_y(const int x, const int y, const int s, const int f);
 
             virtual void on_build_deplist_pre();

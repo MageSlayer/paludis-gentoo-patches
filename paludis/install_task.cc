@@ -191,14 +191,22 @@ InstallTask::add_target(const std::string & target)
         }
         else
         {
-            QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
-                        PackageNamePart(target)));
-            modified_target = stringify(q);
-            tr1::shared_ptr<PackageDepSpec> spec(
-                new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q))));
-            spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
-            _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
-                        new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            try
+            {
+                QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
+                            PackageNamePart(target)));
+                modified_target = stringify(q);
+                tr1::shared_ptr<PackageDepSpec> spec(
+                    new PackageDepSpec(tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q))));
+                spec->set_tag(tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                _imp->targets->add(tr1::shared_ptr<TreeLeaf<SetSpecTree, PackageDepSpec> >(
+                            new TreeLeaf<SetSpecTree, PackageDepSpec>(spec)));
+            }
+            catch (const NoSuchPackageError & e)
+            {
+                _imp->had_resolution_failures = true;
+                throw;
+            }
         }
     }
 

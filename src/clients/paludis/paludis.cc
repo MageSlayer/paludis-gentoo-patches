@@ -39,6 +39,7 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
+#include <paludis/fuzzy_finder.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
@@ -464,8 +465,20 @@ main(int argc, char *argv[])
             cerr << "Unhandled exception:" << endl
                 << "  * " << e.backtrace("\n  * ")
                 << e.message() << " (" << e.what() << ")" << endl;
-            if (env->package_database()->has_repository_named(RepositoryName("x-" + stringify(e.name()))))
-                cerr << "Perhaps you meant 'x-" << e.name() << "'?" << endl;
+            cerr << "  * Looking for suggestions:" << endl;
+
+            FuzzyRepositoriesFinder f(*env, stringify(e.name()));
+
+            if (f.begin() == f.end())
+                cerr << "No suggestions found." << endl;
+            else
+                cerr << "Suggestions:" << endl;
+
+            for (FuzzyRepositoriesFinder::RepositoriesConstIterator r(f.begin()), r_end(f.end()) ;
+                    r != r_end ; ++r)
+                cerr << " * " << colour(cl_repository_name, *r) << endl;
+            cerr << endl;
+
             return EXIT_FAILURE;
         }
     }

@@ -146,7 +146,9 @@ do_install(tr1::shared_ptr<Environment> env)
     cout << "Building target list... " << std::flush;
     for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
-        task.add_target(*q);
+        if (! task.try_to_add_target(*q))
+            return task.exit_status();
+
     cout << endl;
 
     task.execute();

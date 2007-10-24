@@ -120,7 +120,10 @@ do_install(const tr1::shared_ptr<Environment> & env, const tr1::shared_ptr<const
     CommandLine::get_instance()->install_args.populate_install_task(env.get(), task);
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
-    std::for_each(targets->begin(), targets->end(), tr1::bind(&InstallTask::add_target, tr1::ref(task), _1));
+    for (Sequence<std::string>::ConstIterator t(targets->begin()), t_end(targets->end()) ;
+            t != t_end ; ++t)
+        if (! task.try_to_add_target(*t))
+            return task.exit_status();
 
     std::cout << std::endl;
     task.execute();

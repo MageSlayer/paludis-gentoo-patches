@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * If a wrong package or repository name is used in several places, they will
+      give possible suggestions rather than just saying "could not find
+      whatever".
+
 0.26.0_alpha1:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

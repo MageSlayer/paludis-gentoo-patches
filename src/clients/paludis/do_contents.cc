@@ -22,6 +22,7 @@
 #include "command_line.hh"
 #include <paludis/paludis.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/fuzzy_finder.hh>
 #include <iostream>
 #include <algorithm>
 
@@ -144,6 +145,26 @@ do_contents(tr1::shared_ptr<Environment> env)
             cout << endl;
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+            cerr << endl;
+        }
+        catch (const NoSuchPackageError & e)
+        {
+            return_code |= 1;
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+            FuzzyCandidatesFinder f(*env, e.name());
+
+            if (f.begin() == f.end())
+                cerr << "No suggestions found." << endl;
+            else
+                cerr << "Suggestions:" << endl;
+
+            for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                    c_end(f.end()) ; c != c_end ; ++c)
+                cerr << "  * " << colour(cl_package_name, *c) << endl;
             cerr << endl;
         }
         catch (const PackageDatabaseLookupError & e)

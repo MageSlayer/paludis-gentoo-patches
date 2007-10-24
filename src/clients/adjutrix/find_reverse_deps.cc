@@ -31,6 +31,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/fuzzy_finder.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <libwrapiter/libwrapiter_output_iterator.hh>
 
@@ -279,6 +280,26 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
             cerr << "    * " << colour(cl_package_name, *o) << endl;
         cerr << endl;
         return 4;
+    }
+    catch (const NoSuchPackageError & e)
+    {
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
+
+        FuzzyCandidatesFinder f(env, e.name());
+
+        if (f.begin() == f.end())
+            cerr << "No suggestions found." << endl;
+        else
+            cerr << "Suggestions:" << endl;
+
+        for (FuzzyCandidatesFinder::CandidatesConstIterator c(f.begin()),
+                c_end(f.end()) ; c != c_end ; ++c)
+            cerr << "  * " << colour(cl_package_name, *c) << endl;
+        cerr << endl;
+        return 5;
     }
 
     tr1::shared_ptr<const PackageIDSequence> entries(env.package_database()->query(
