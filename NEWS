@@ -4,12 +4,20 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-trunk/:
+0.26.0_alpha2:
+    * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
+      dep specs.
+
     * If a wrong package or repository name is used in several places, they will
       give possible suggestions rather than just saying "could not find
       whatever".
 
     * More documentation for clients.
+
+    * User-defined package sets are now cached.
+
+    * Bug fixes: reconcilio is better at handling broken elf files. Doxygen
+      external tags are fixed. IUSE in VDB has +/- stripped.
 
 0.26.0_alpha1:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
