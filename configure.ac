@@ -682,8 +682,8 @@ AM_CONDITIONAL([HAVE_DOXYGEN_TAGS], test "x$HAVE_DOXYGEN_TAGS" = "xyes")
 
 if test "x$HAVE_DOXYGEN_TAGS" = xyes ; then
 	DOXYGEN_TAG_FILES="\
-		libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen \
-		libwrapiter.tag = http://libwrapiter.pioto.org/"
+		\"libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen\" \
+		\"libwrapiter.tag = http://libwrapiter.pioto.org/\""
 else
 	DOXYGEN_TAG_FILES=""
 fi
