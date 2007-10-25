@@ -9,6 +9,8 @@ trunk/:
       give possible suggestions rather than just saying "could not find
       whatever".
 
+    * More documentation for clients.
+
 0.26.0_alpha1:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
