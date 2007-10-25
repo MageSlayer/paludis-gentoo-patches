@@ -90,7 +90,7 @@ CommandLine::app_name() const
 std::string
 CommandLine::app_synopsis() const
 {
-    return "A broken package rebuilder for Paludis, the other package mangler";
+    return "Rebuilds packages with broken linkage.";
 }
 
 std::string
