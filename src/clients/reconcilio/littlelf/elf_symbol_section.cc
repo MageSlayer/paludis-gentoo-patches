@@ -116,11 +116,14 @@ SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & 
     else if (shdr.sh_type == SHT_SYMTAB)
         _type = "SYMTAB";
 
-    std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / shdr.sh_entsize);
-    stream.seekg(shdr.sh_offset, std::ios::beg);
-    stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
-    for (typename std::vector<typename ElfType_::Symbol>::iterator i = symbols.begin(); i != symbols.end(); ++i)
-        _imp->symbols.push_back(Symbol<ElfType_>(*i));
+    if (0 != shdr.sh_entsize)
+    {
+        std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / shdr.sh_entsize);
+        stream.seekg(shdr.sh_offset, std::ios::beg);
+        stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
+        for (typename std::vector<typename ElfType_::Symbol>::iterator i = symbols.begin(); i != symbols.end(); ++i)
+            _imp->symbols.push_back(Symbol<ElfType_>(*i));
+    }
 }
 
 template <typename ElfType_>

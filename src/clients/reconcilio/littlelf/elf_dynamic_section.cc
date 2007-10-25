@@ -233,15 +233,18 @@ DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader 
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<DynamicSection>(new Implementation<DynamicSection>)
 {
-    stream.seekg(shdr.sh_offset, std::ios::beg);
-    std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / shdr.sh_entsize);
-    stream.read( reinterpret_cast<char *>(&tmp_entries.front()), shdr.sh_size );
-
-    for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
+    if (0 != shdr.sh_entsize)
     {
-        paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
-        instance->initialize(*i);
-        _imp->dynamic_entries.push_back(instance);
+        stream.seekg(shdr.sh_offset, std::ios::beg);
+        std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / shdr.sh_entsize);
+        stream.read( reinterpret_cast<char *>(&tmp_entries.front()), shdr.sh_size );
+
+        for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
+        {
+            paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
+            instance->initialize(*i);
+            _imp->dynamic_entries.push_back(instance);
+        }
     }
 }
 
