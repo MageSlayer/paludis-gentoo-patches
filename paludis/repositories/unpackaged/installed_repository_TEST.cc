@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
-#include <paludis/repositories/unpackaged/installed_unpackaged_repository.hh>
+#include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
@@ -91,8 +91,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
+                        .root(FSEntry("installed_repository_TEST_dir/root"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -114,8 +114,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
+                        .root(FSEntry("installed_repository_TEST_dir/root"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -129,7 +129,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id1->repository()->name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(id1->fs_location_key());
             TEST_CHECK_EQUAL(id1->fs_location_key()->value(),
-                    FSEntry::cwd() / "installed_unpackaged_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
+                    FSEntry::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
 
             TEST_CHECK(id1->contents_key());
             ContentsDumper d1;
@@ -147,7 +147,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id2->repository()->name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(id2->fs_location_key());
             TEST_CHECK_EQUAL(id2->fs_location_key()->value(),
-                    FSEntry::cwd() / "installed_unpackaged_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
+                    FSEntry::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
 
             TEST_CHECK(id2->contents_key());
             ContentsDumper d2;
@@ -168,8 +168,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
+                        .root(FSEntry("installed_repository_TEST_dir/root"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -198,8 +198,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo1"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo1"))
+                        .root(FSEntry("installed_repository_TEST_dir/root"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -235,8 +235,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo2"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root2"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo2"))
+                        .root(FSEntry("installed_repository_TEST_dir/root2"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -245,11 +245,11 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged");
 
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root2/first").is_regular_file());
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root2/second").is_regular_file());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/root2/first").is_regular_file());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/root2/second").is_regular_file());
 
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
 
             const tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::All(), qo_require_exactly_one)->begin());
@@ -259,11 +259,11 @@ namespace test_cases
                     );
             id->perform_action(action);
 
-            TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root2/first").exists());
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root2/second").is_regular_file());
+            TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root2/first").exists());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/root2/second").is_regular_file());
 
-            TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
-            TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
+            TEST_CHECK(! FSEntry("installed_repository_TEST_dir/repo2/indices/categories/cat-one/foo").is_symbolic_link());
+            TEST_CHECK(! FSEntry("installed_repository_TEST_dir/repo2/indices/packages/foo/cat-one").is_symbolic_link());
 
             repo->invalidate();
 
@@ -290,8 +290,8 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                         .environment(&env)
-                        .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo3"))
-                        .root(FSEntry("installed_unpackaged_repository_TEST_dir/root3"))
+                        .location(FSEntry("installed_repository_TEST_dir/repo3"))
+                        .root(FSEntry("installed_repository_TEST_dir/root3"))
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -300,8 +300,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "),
                     "cat-one/foo-1.2.3:fred::installed-unpackaged cat-one/foo-3.2.1:barney::installed-unpackaged");
 
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
             const tr1::shared_ptr<const PackageID> id(
                     *env.package_database()->query(query::Matches(PackageDepSpec("cat-one/foo:fred", pds_pm_unspecific)),
@@ -312,8 +312,8 @@ namespace test_cases
                     );
             id->perform_action(action);
 
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
-            TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/categories/cat-one/foo").is_symbolic_link());
+            TEST_CHECK(FSEntry("installed_repository_TEST_dir/repo3/indices/packages/foo/cat-one").is_symbolic_link());
 
             repo->invalidate();
 
@@ -343,8 +343,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(1, repo);
 
@@ -352,7 +352,7 @@ namespace test_cases
                         env.package_database()->query(query::All(), qo_order_by_version));
                 TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
 
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").exists());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").exists());
             }
 
             {
@@ -363,8 +363,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(0, repo);
 
@@ -375,7 +375,7 @@ namespace test_cases
                             .name(QualifiedPackageName("cat/pkg4a"))
                             .version(VersionSpec("1.0"))
                             .slot(SlotName("foo"))
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/src4a"))
+                            .location(FSEntry("installed_repository_TEST_dir/src4a"))
                             ));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -385,7 +385,7 @@ namespace test_cases
                     TEST_CHECK_EQUAL(join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "), "");
                 }
 
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").exists());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").exists());
 
                 InstallAction action(InstallActionOptions::create()
                         .destination(repo)
@@ -395,8 +395,8 @@ namespace test_cases
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").is_directory());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4a").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
 
                 repo->invalidate();
                 {
@@ -415,8 +415,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(0, repo);
 
@@ -427,7 +427,7 @@ namespace test_cases
                             .name(QualifiedPackageName("cat/pkg4b"))
                             .version(VersionSpec("1.0"))
                             .slot(SlotName("foo"))
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/src4b1"))
+                            .location(FSEntry("installed_repository_TEST_dir/src4b1"))
                             ));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -446,11 +446,11 @@ namespace test_cases
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").is_directory());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4a").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b1").is_regular_file());
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b2").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b1").is_regular_file());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4b2").is_regular_file());
 
                 repo->invalidate();
                 {
@@ -469,8 +469,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(0, repo);
 
@@ -481,7 +481,7 @@ namespace test_cases
                             .name(QualifiedPackageName("cat/pkg4b"))
                             .version(VersionSpec("1.0"))
                             .slot(SlotName("foo"))
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/src4b2"))
+                            .location(FSEntry("installed_repository_TEST_dir/src4b2"))
                             ));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -500,11 +500,11 @@ namespace test_cases
                 (*env.package_database()->query(query::Repository(RepositoryName("unpackaged")),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").is_directory());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4a").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b").is_regular_file());
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b1").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b2").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b").is_regular_file());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4b1").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b2").is_regular_file());
 
                 repo->invalidate();
                 {
@@ -523,8 +523,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(0, repo);
 
@@ -540,11 +540,11 @@ namespace test_cases
                 (*env.package_database()->query(query::Matches(PackageDepSpec("cat/pkg4a", pds_pm_unspecific)),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").is_directory());
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4a").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b").is_regular_file());
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b1").is_regular_file());
-                TEST_CHECK(FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir/4b2").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b").is_regular_file());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4b1").is_regular_file());
+                TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir/4b2").is_regular_file());
 
                 repo->invalidate();
                 {
@@ -563,8 +563,8 @@ namespace test_cases
                             RepositoryName("installed-unpackaged"),
                             unpackaged_repositories::InstalledUnpackagedRepositoryParams::create()
                             .environment(&env)
-                            .location(FSEntry("installed_unpackaged_repository_TEST_dir/repo4"))
-                            .root(FSEntry("installed_unpackaged_repository_TEST_dir/root4"))
+                            .location(FSEntry("installed_repository_TEST_dir/repo4"))
+                            .root(FSEntry("installed_repository_TEST_dir/root4"))
                             ));
                 env.package_database()->add_repository(0, repo);
 
@@ -580,7 +580,7 @@ namespace test_cases
                 (*env.package_database()->query(query::Matches(PackageDepSpec("cat/pkg4b", pds_pm_unspecific)),
                                                 qo_require_exactly_one)->begin())->perform_action(action);
 
-                TEST_CHECK(! FSEntry("installed_unpackaged_repository_TEST_dir/root4/dir").is_directory());
+                TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
 
                 repo->invalidate();
                 {

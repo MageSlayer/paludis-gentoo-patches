@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/unpackaged/installed_unpackaged_repository.hh>
-#include <paludis/repositories/unpackaged/installed_unpackaged_id.hh>
+#include <paludis/repositories/unpackaged/installed_repository.hh>
+#include <paludis/repositories/unpackaged/installed_id.hh>
 #include <paludis/repositories/unpackaged/ndbam.hh>
 #include <paludis/repositories/unpackaged/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -42,7 +42,7 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-#include <paludis/repositories/unpackaged/installed_unpackaged_repository-sr.cc>
+#include <paludis/repositories/unpackaged/installed_repository-sr.cc>
 
 namespace
 {

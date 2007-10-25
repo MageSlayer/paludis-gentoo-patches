@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
-#include <paludis/repositories/unpackaged/installed_unpackaged_repository.hh>
+#include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>

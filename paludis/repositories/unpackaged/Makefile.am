@@ -5,7 +5,7 @@ DISTCLEANFILES = \
 	ndbam_merger-sr.hh ndbam_merger-sr.cc \
 	ndbam_unmerger-sr.hh ndbam_unmerger-sr.cc \
 	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
-	installed_unpackaged_repository-sr.hh installed_unpackaged_repository-sr.cc
+	installed_repository-sr.hh installed_repository-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -34,9 +34,9 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	unpackaged_id.hh \
 	unpackaged_repository.hh \
 	unpackaged_repository-sr.hh \
-	installed_unpackaged_repository.hh \
-	installed_unpackaged_repository-sr.hh \
-	installed_unpackaged_id.hh
+	installed_repository.hh \
+	installed_repository-sr.hh \
+	installed_id.hh
 
 libpaludisunpackagedrepository_la_SOURCES = \
 	exceptions.cc \
@@ -45,8 +45,8 @@ libpaludisunpackagedrepository_la_SOURCES = \
 	ndbam_unmerger.cc \
 	unpackaged_id.cc \
 	unpackaged_repository.cc \
-	installed_unpackaged_repository.cc \
-	installed_unpackaged_id.cc \
+	installed_repository.cc \
+	installed_id.cc \
 	registration.cc \
 	$(paludis_repositories_unpackaged_include_HEADERS)
 
@@ -66,9 +66,9 @@ unpackaged_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
-installed_unpackaged_repository_TEST_SOURCES = installed_unpackaged_repository_TEST.cc
+installed_repository_TEST_SOURCES = installed_repository_TEST.cc
 
-installed_unpackaged_repository_TEST_LDADD = \
+installed_repository_TEST_LDADD = \
 	libpaludisunpackagedrepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
@@ -93,26 +93,26 @@ EXTRA_DIST = \
 	unpackaged_repository.sr \
 	unpackaged_repository-sr.hh \
 	unpackaged_repository-sr.cc \
-	installed_unpackaged_repository_TEST.cc \
-	installed_unpackaged_repository_TEST_setup.sh \
-	installed_unpackaged_repository_TEST_cleanup.sh \
-	installed_unpackaged_repository.sr \
-	installed_unpackaged_repository-sr.hh \
-	installed_unpackaged_repository-sr.cc \
-	installed_unpackaged_id.cc
+	installed_repository_TEST.cc \
+	installed_repository_TEST_setup.sh \
+	installed_repository_TEST_cleanup.sh \
+	installed_repository.sr \
+	installed_repository-sr.hh \
+	installed_repository-sr.cc \
+	installed_id.cc
 
 BUILT_SOURCES = \
 	ndbam-sr.hh ndbam-sr.cc \
 	ndbam_merger-sr.hh ndbam_merger-sr.cc \
 	ndbam_unmerger-sr.hh ndbam_unmerger-sr.cc \
 	unpackaged_repository-sr.hh unpackaged_repository-sr.cc \
-	installed_unpackaged_repository-sr.hh installed_unpackaged_repository-sr.cc
+	installed_repository-sr.hh installed_repository-sr.cc
 
 check_SCRIPTS = \
 	unpackaged_repository_TEST_setup.sh \
 	unpackaged_repository_TEST_cleanup.sh \
-	installed_unpackaged_repository_TEST_setup.sh \
-	installed_unpackaged_repository_TEST_cleanup.sh
+	installed_repository_TEST_setup.sh \
+	installed_repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
@@ -130,7 +130,7 @@ TESTS_ENVIRONMENT = env \
 
 TESTS = \
 	unpackaged_repository_TEST \
-	installed_unpackaged_repository_TEST
+	installed_repository_TEST
 
 check_PROGRAMS = $(TESTS)
 
@@ -161,11 +161,11 @@ unpackaged_repository-sr.hh : unpackaged_repository.sr $(top_srcdir)/misc/make_s
 unpackaged_repository-sr.cc : unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
-installed_unpackaged_repository-sr.hh : installed_unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/installed_unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+installed_repository-sr.hh : installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/installed_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
-installed_unpackaged_repository-sr.cc : installed_unpackaged_repository.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/installed_unpackaged_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+installed_repository-sr.cc : installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/installed_repository.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 distcheck-deps-local : $(DISTCHECK_DEPS)
 

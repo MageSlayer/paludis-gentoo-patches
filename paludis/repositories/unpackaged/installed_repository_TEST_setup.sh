@@ -1,8 +1,8 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir installed_unpackaged_repository_TEST_dir || exit 1
-cd installed_unpackaged_repository_TEST_dir || exit 1
+mkdir installed_repository_TEST_dir || exit 1
+cd installed_repository_TEST_dir || exit 1
 
 mkdir -p root
 mkdir -p repo1/indices/{categories/cat-one,packages/foo}

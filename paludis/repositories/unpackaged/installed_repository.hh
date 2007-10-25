@@ -28,7 +28,7 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
-#include <paludis/repositories/unpackaged/installed_unpackaged_repository-sr.hh>
+#include <paludis/repositories/unpackaged/installed_repository-sr.hh>
     }
 
     class PALUDIS_VISIBLE InstalledUnpackagedRepository :
