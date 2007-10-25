@@ -137,6 +137,16 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 
         dw.end_environment();
     }
+
+    if (h->begin_examples() != h->end_examples())
+    {
+        dw.start_examples();
+
+        for (ArgsHandler::ExamplesConstIterator a(h->begin_examples()), a_end(h->end_examples()) ; a != a_end ; ++a)
+            dw.example(a->first, a->second);
+
+        dw.end_examples();
+    }
 }
 
 DocWriter::~DocWriter()
@@ -254,6 +264,24 @@ void
 HtmlWriter::end_environment()
 {
     _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::start_examples()
+{
+    _os << "<h2>Examples</h2>" << endl;
+}
+
+void
+HtmlWriter::example(const std::string & first, const std::string & second)
+{
+    _os << "<pre>" << first << "</pre>" << endl;
+    _os << "<p>" << second << "</p>" << endl;
+}
+
+void
+HtmlWriter::end_examples()
+{
 }
 
 void
@@ -386,6 +414,36 @@ ManWriter::environment_line(const std::string & first, const std::string & secon
 
 void
 ManWriter::end_environment()
+{
+}
+
+void
+ManWriter::start_examples()
+{
+    _os << ".SH EXAMPLES" << endl;
+}
+
+namespace
+{
+    std::string ungroff(const std::string & s)
+    {
+        if ((! s.empty() && ('.' == s.at(0))))
+            return " " + s;
+        else
+            return s;
+    }
+}
+
+void
+ManWriter::example(const std::string & first, const std::string & second)
+{
+    _os << ".TP" << endl;
+    _os << first << endl;
+    _os << ungroff(second) << endl << endl;
+}
+
+void
+ManWriter::end_examples()
 {
 }
 

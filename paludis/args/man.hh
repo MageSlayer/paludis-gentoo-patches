@@ -75,6 +75,10 @@ namespace paludis
                 virtual void environment_line(const std::string & first, const std::string & second) = 0;
                 virtual void end_environment() = 0;
 
+                virtual void start_examples() = 0;
+                virtual void example(const std::string &, const std::string &) = 0;
+                virtual void end_examples() = 0;
+
                 virtual void section(const std::string & title) = 0;
                 virtual void subsection(const std::string & title) = 0;
                 virtual void paragraph(const std::string & text) = 0;
@@ -123,6 +127,10 @@ namespace paludis
                 void environment_line(const std::string & first, const std::string & second);
                 void end_environment();
 
+                void start_examples();
+                void example(const std::string &, const std::string &);
+                void end_examples();
+
                 void section(const std::string & title);
                 void subsection(const std::string & title);
                 void paragraph(const std::string & text);
@@ -168,6 +176,10 @@ namespace paludis
                 void start_environment();
                 void environment_line(const std::string & first, const std::string & second);
                 void end_environment();
+
+                void start_examples();
+                void example(const std::string &, const std::string &);
+                void end_examples();
 
                 void section(const std::string & title);
                 void subsection(const std::string & title);

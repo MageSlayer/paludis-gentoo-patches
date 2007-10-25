@@ -45,6 +45,7 @@ namespace paludis
         std::list<std::string> parameters;
         std::list<std::string> usage_lines;
         std::list<std::pair<std::string, std::string> > environment_lines;
+        std::list<std::pair<std::string, std::string> > example_lines;
 
         std::map<std::string, ArgsOption *> longopts;
         std::map<char, ArgsOption *> shortopts;
@@ -70,6 +71,12 @@ void
 ArgsHandler::add_environment_variable(const std::string & e, const std::string & desc)
 {
     _imp->environment_lines.push_back(std::make_pair(e, desc));
+}
+
+void
+ArgsHandler::add_example(const std::string & e, const std::string & desc)
+{
+    _imp->example_lines.push_back(std::make_pair(e, desc));
 }
 
 void
@@ -238,6 +245,18 @@ ArgsHandler::EnvironmentLineConstIterator
 ArgsHandler::end_environment_lines() const
 {
     return EnvironmentLineConstIterator(_imp->environment_lines.end());
+}
+
+ArgsHandler::EnvironmentLineConstIterator
+ArgsHandler::begin_examples() const
+{
+    return EnvironmentLineConstIterator(_imp->example_lines.begin());
+}
+
+ArgsHandler::EnvironmentLineConstIterator
+ArgsHandler::end_examples() const
+{
+    return EnvironmentLineConstIterator(_imp->example_lines.end());
 }
 
 ArgsHandler::ArgsGroupsConstIterator

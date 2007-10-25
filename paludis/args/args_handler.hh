@@ -68,6 +68,11 @@ namespace paludis
                 void add_environment_variable(const std::string & e, const std::string & desc);
 
                 /**
+                 * Add a new example.
+                 */
+                void add_example(const std::string & e, const std::string & desc);
+
+                /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
                  */
                 void add(ArgsGroup * const);
@@ -176,6 +181,18 @@ namespace paludis
                 EnvironmentLineConstIterator begin_environment_lines() const;
 
                 EnvironmentLineConstIterator end_environment_lines() const;
+
+                ///\}
+
+                ///\name Iterate over our examples (for documentation)
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<ArgsHandler,
+                        const std::pair<std::string, std::string> > ExamplesConstIterator;
+
+                ExamplesConstIterator begin_examples() const;
+
+                ExamplesConstIterator end_examples() const;
 
                 ///\}
 
