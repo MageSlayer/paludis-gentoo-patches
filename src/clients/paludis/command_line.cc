@@ -71,7 +71,8 @@ CommandLine::CommandLine() :
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
-    a_resume_command_template(&general_args, "resume-command-template", '\0', "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
+    a_resume_command_template(&general_args, "resume-command-template", '\0',
+            "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
 
     query_args(this, "Query options",
             "Options which are relevant for --query."),
@@ -151,6 +152,61 @@ CommandLine::CommandLine() :
     add_usage_line("--list-dep-tag-categories");
 
     add_environment_variable("PALUDIS_OPTIONS", "Default command-line options.");
+
+    add_example(
+            "paludis --sync",
+            "Sync all syncable repositories, and perform any necessary cache updates.");
+    add_example(
+            "paludis --install --pretend world",
+            "Show available updates for packages in the 'world' set (which contains all packages that "
+            "have been explicitly installed as targets, along with the 'system' set), along with runtime "
+            "dependencies of packages therein recursively.");
+    add_example(
+            "paludis --install world",
+            "...and, having checked the output above, perform the install.");
+    add_example(
+            "paluds --install --continue-on-failure if-satisfied world",
+            "...and continue as far as possible even after errors are encountered.");
+    add_example(
+            "paludis --install --pretend --dl-reinstall if-use-changed world",
+            "...also reinstall packages whose use settings have changed.");
+    add_example(
+            "paludis --install --pretend --dl-reinstall-scm weekly",
+            "...also reinstall any scm (cvs, svn, ...) package that was installed over a week ago.");
+    add_example(
+            "paludis --install --pretend x11-wm/fluxbox",
+            "Show what would be done to install a single package, along with all its dependencies, "
+            "whilst recursively updating runtime dependencies.");
+    add_example(
+            "paludis --install --pretend fluxbox",
+            "...as above, if the package name is unambiguous.");
+    add_example(
+            "paludis --install fluxbox",
+            "...and perform the install, and add the package to the 'world' set when done.");
+    add_example(
+            "paludis --install --preserve-world fluxbox",
+            "...or don't add the package to the 'world' set.");
+    add_example(
+            "paludis --install --pretend --dl-upgrade as-needed fluxbox",
+            "...only update dependencies where required.");
+    add_example(
+            "paludis --install --pretend =x11-wm/fluxbox-1.0.0",
+            "...specifying an exact version (which also prevents the package from being added to 'world').");
+    add_example(
+            "paludis --uninstall app-editors/emacs",
+            "Uninstall a package.");
+    add_example(
+            "paludis --uninstall --pretend --with-dependencies app-editors/emacs",
+            "Uninstall a package, along with any packages depending upon it.");
+    add_example(
+            "paludis --uninstall --pretend --with-dependencies --with-unused-dependencies app-editors/emacs",
+            "...and also any packages that are only installed to satisfy that package's dependencies.");
+    add_example(
+            "paludis --uninstall --pretend --permit-unsafe-uninstalls app-editors/emacs",
+            "...uninstall, even if the package is required by another installed package.");
+    add_example(
+            "paludis --uninstall-unused --pretend",
+            "Uninstall all unused packages.");
 }
 
 std::string
