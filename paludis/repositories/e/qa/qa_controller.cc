@@ -250,6 +250,9 @@ QAController::run()
 bool
 QAController::_under_base_dir(const FSEntry & d) const
 {
+    if (! d.exists())
+        return false;
+
     FSEntry dd(d.realpath()), b("/");
     while (dd != b)
     {
@@ -264,6 +267,9 @@ QAController::_under_base_dir(const FSEntry & d) const
 bool
 QAController::_above_base_dir(const FSEntry & d) const
 {
+    if (! d.exists())
+        return false;
+
     FSEntry dd(_imp->base_dir), b("/");
     while (dd != b)
     {
