@@ -29,6 +29,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
