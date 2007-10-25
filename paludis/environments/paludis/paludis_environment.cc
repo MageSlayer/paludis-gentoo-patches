@@ -54,6 +54,7 @@
 #include <functional>
 #include <algorithm>
 #include <list>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -73,6 +74,9 @@ namespace paludis
         std::list<UseConfigEntry> forced_use;
 
         tr1::shared_ptr<PackageDatabase> package_database;
+
+        mutable Mutex sets_mutex;
+        mutable std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> > sets;
 
         Implementation(PaludisEnvironment * const e, tr1::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
@@ -336,6 +340,12 @@ PaludisEnvironment::local_set(const SetName & s) const
 {
     Context context("When looking for package set '" + stringify(s) + "' in paludis environment:");
 
+    Lock l(_imp->sets_mutex);
+
+    std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(s));
+    if (i != _imp->sets.end())
+        return i->second;
+
     FSEntry dir(FSEntry(_imp->config->config_dir()) / "sets");
     tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
 
@@ -347,6 +357,8 @@ PaludisEnvironment::local_set(const SetName & s) const
                 .parse_mode(pds_pm_unspecific)
                 .tag(tag)
                 .environment(this));
+
+        _imp->sets.insert(std::make_pair(s, f.contents()));
         return f.contents();
     }
     else if ((dir / (stringify(s) + ".conf")).exists())
@@ -357,10 +369,15 @@ PaludisEnvironment::local_set(const SetName & s) const
                 .parse_mode(pds_pm_unspecific)
                 .tag(tag)
                 .environment(this));
+
+        _imp->sets.insert(std::make_pair(s, f.contents()));
         return f.contents();
     }
     else
+    {
+        _imp->sets.insert(std::make_pair(s, tr1::shared_ptr<SetSpecTree::ConstItem>()));
         return tr1::shared_ptr<SetSpecTree::ConstItem>();
+    }
 }
 
 tr1::shared_ptr<const SetNameSet>
