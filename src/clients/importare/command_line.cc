@@ -63,6 +63,15 @@ CommandLine::CommandLine() :
     dl_args.dl_reinstall_targets.remove();
 
     add_environment_variable("IMPORTARE_OPTIONS", "Default command-line options.");
+
+    add_example(
+            "importare --location img/ unpackaged/myapp 1.23",
+            "Install the contents of img/ (which could be produced, for example, using 'sudo make DESTDIR=img/ install' "
+            "from an autotools package) as 'unpackaged/myapp' version 1.23. If 'unpackaged/myapp' is already installed, "
+            "it will be replaced.");
+    add_example(
+            "importare --location /var/empty sys-apps/portage 2.2",
+            "Install an empty fake package named 'sys-apps/portage', version 2.2. DANGEROUS!");
 }
 
 std::string
