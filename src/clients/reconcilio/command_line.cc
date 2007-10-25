@@ -43,7 +43,8 @@ CommandLine::CommandLine() :
     a_environment(&general_args,    "environment",    'E',  "Environment specification (class:suffix, both parts optional)"),
     a_exact(&general_args,     "exact",               '\0', "Rebuild the same package version that is currently installed"),
     a_verbose(&general_args,        "verbose",        'v',  "Display more detailed output"),
-    a_resume_command_template(&general_args, "resume-command-template", '\0', "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
+    a_resume_command_template(&general_args, "resume-command-template", '\0',
+            "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
 
     fix_linkage_args(this, "Fix Linkage options",
             "Options which are relevant for --fix-linkage."),
@@ -67,6 +68,17 @@ CommandLine::CommandLine() :
     dl_args.dl_new_slots.set_default_arg("as-needed");
 
     add_environment_variable("RECONCILIO_OPTIONS", "Default command-line options.");
+
+    add_example(
+            "reconcilio --pretend",
+            "Find and display any packages that appear to have broken linkage. (Requires read access to "
+            "files to be checked, so best run as root.)");
+    add_example(
+            "reconcilio --pretend --exact",
+            "The same, but try to reinstall exact versions, even if an upgrade is available.");
+    add_example(
+            "reconcilio --pretend --library 'libXi.so.6",
+            "Find and display any packages that need a named library.");
 }
 
 std::string
