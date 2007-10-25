@@ -33,6 +33,9 @@
 #include <iomanip>
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 
 using namespace paludis;
 using std::endl;
@@ -119,6 +122,22 @@ do_info(const tr1::shared_ptr<const Environment> & env)
         << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR << "." << LIBEBT_VERSION_MICRO << endl;
     cout << "        " << std::setw(22) << std::left << ("libwrapiter:") << std::setw(0) << " "
         << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR << "." << LIBWRAPITER_VERSION_MICRO << endl;
+
+    cout << endl;
+
+    cout << "    " << colour(cl_heading, "Reduced Privs:") << endl;
+    cout << "        " << std::setw(22) << std::left << "reduced_uid:" << std::setw(0) << " "
+        << env->reduced_uid() << endl;
+    const struct passwd * const p(getpwuid(env->reduced_uid()));
+    cout << "        " << std::setw(22) << std::left << "reduced_uid->name:" << std::setw(0) << " "
+        << (p ? p->pw_name : "???") << endl;
+    cout << "        " << std::setw(22) << std::left << "reduced_uid->dir:" << std::setw(0) << " "
+        << (p ? p->pw_dir : "???") << endl;
+    cout << "        " << std::setw(22) << std::left << "reduced_gid:" << std::setw(0) << " "
+        << env->reduced_gid() << endl;
+    const struct group * const g(getgrgid(env->reduced_gid()));
+    cout << "        " << std::setw(22) << std::left << "reduced_gid->name:" << std::setw(0) << " "
+        << (g ? g->gr_name : "???") << endl;
 
     cout << endl;
 
