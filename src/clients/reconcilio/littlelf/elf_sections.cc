@@ -60,8 +60,6 @@ template <typename ElfType_>
 std::string
 StringSection<ElfType_>::get_string(typename ElfType_::Word index) const
 {
-    if (index > _stringTable.size())
-        return "";
     typename ElfType_::Word end(_stringTable.find_first_of('\0', index));
     return _stringTable.substr(index, end-index);
 }

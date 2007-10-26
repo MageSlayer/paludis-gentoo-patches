@@ -1,6 +1,7 @@
 
 #include "elf_symbol_section.hh"
 #include "elf_types.hh"
+#include "elf.hh"
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -9,6 +10,7 @@
 
 #include <istream>
 #include <vector>
+#include <stdexcept>
 
 using namespace paludis;
 
@@ -41,9 +43,15 @@ namespace littlelf_internals
 
             virtual void visit(StringSection<ElfType_> & section)
             {
-                std::string str;
-                for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
-                    i->resolve_symbol(section.get_string(i->get_symbol_index()));
+                try
+                {
+                    for (typename std::vector<Symbol<ElfType_> >::iterator i = _begin; i != _end; ++i)
+                        i->resolve_symbol(section.get_string(i->get_symbol_index()));
+                }
+                catch (std::out_of_range &)
+                {
+                    throw InvalidElfFileError();
+                }
             }
     };
 }
@@ -116,14 +124,13 @@ SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & 
     else if (shdr.sh_type == SHT_SYMTAB)
         _type = "SYMTAB";
 
-    if (0 != shdr.sh_entsize)
-    {
-        std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / shdr.sh_entsize);
-        stream.seekg(shdr.sh_offset, std::ios::beg);
-        stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
-        for (typename std::vector<typename ElfType_::Symbol>::iterator i = symbols.begin(); i != symbols.end(); ++i)
-            _imp->symbols.push_back(Symbol<ElfType_>(*i));
-    }
+    if (sizeof(typename ElfType_::Symbol) != shdr.sh_entsize)
+        throw InvalidElfFileError();
+    std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / sizeof(typename ElfType_::Symbol));
+    stream.seekg(shdr.sh_offset, std::ios::beg);
+    stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
+    for (typename std::vector<typename ElfType_::Symbol>::iterator i = symbols.begin(); i != symbols.end(); ++i)
+        _imp->symbols.push_back(Symbol<ElfType_>(*i));
 }
 
 template <typename ElfType_>

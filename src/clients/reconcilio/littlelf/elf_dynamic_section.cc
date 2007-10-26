@@ -1,6 +1,7 @@
 
 #include "elf_dynamic_section.hh"
 #include "elf_types.hh"
+#include "elf.hh"
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -14,6 +15,7 @@
 #include <istream>
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 using namespace paludis;
 
@@ -51,7 +53,14 @@ namespace littlelf_internals
 
             virtual void visit(DynamicEntryString<ElfType_> & entry)
             {
-                entry.resolve_string(_string_section.get_string(entry.get_string_index()));
+                try
+                {
+                    entry.resolve_string(_string_section.get_string(entry.get_string_index()));
+                }
+                catch (std::out_of_range &)
+                {
+                    throw InvalidElfFileError();
+                }
             }
     };
 }
@@ -233,18 +242,18 @@ DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader 
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<DynamicSection>(new Implementation<DynamicSection>)
 {
-    if (0 != shdr.sh_entsize)
-    {
-        stream.seekg(shdr.sh_offset, std::ios::beg);
-        std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / shdr.sh_entsize);
-        stream.read( reinterpret_cast<char *>(&tmp_entries.front()), shdr.sh_size );
+    if (sizeof(typename ElfType_::DynamicEntry) != shdr.sh_entsize)
+        throw InvalidElfFileError();
 
-        for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
-        {
-            paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
-            instance->initialize(*i);
-            _imp->dynamic_entries.push_back(instance);
-        }
+    stream.seekg(shdr.sh_offset, std::ios::beg);
+    std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / sizeof(typename ElfType_::DynamicEntry));
+    stream.read( reinterpret_cast<char *>(&tmp_entries.front()), shdr.sh_size );
+
+    for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
+    {
+        paludis::tr1::shared_ptr<DynamicEntry<ElfType_> > instance(DynamicEntries<ElfType_>::get_instance()->get_entry(i->d_tag));
+        instance->initialize(*i);
+        _imp->dynamic_entries.push_back(instance);
     }
 }
 

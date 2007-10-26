@@ -14,6 +14,7 @@
 
 #include <string>
 #include <exception>
+#include <stdexcept>
 #include <istream>
 #include <vector>
 
@@ -73,12 +74,18 @@ namespace
 
             virtual void visit(SymbolSection<ElfType_> & section)
             {
-                section.resolve_symbols(*_elf_object->get_section_by_index(section.get_link_index()));
+                typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
+                if (_elf_object->section_end() == sec)
+                    throw InvalidElfFileError();
+                section.resolve_symbols(*sec);
             }
 
             virtual void visit(DynamicSection<ElfType_> & section)
             {
-                section.resolve_entry_names(*_elf_object->get_section_by_index(section.get_link_index()));
+                typename ElfObject<ElfType_>::SectionIterator sec(_elf_object->get_section_by_index(section.get_link_index()));
+                if (_elf_object->section_end() == sec)
+                    throw InvalidElfFileError();
+                section.resolve_entry_names(*sec);
             }
     };
 }
@@ -103,8 +110,15 @@ namespace littlelf_internals
 
             virtual void visit(const StringSection<ElfType_> & section)
             {
-                for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
-                    i->resolve_section_name(section.get_string(i->get_name_index()));
+                try
+                {
+                    for (typename ElfObject<ElfType_>::SectionIterator i = _begin; i != _end; ++i)
+                        i->resolve_section_name(section.get_string(i->get_name_index()));
+                }
+                catch (std::out_of_range &)
+                {
+                    throw InvalidElfFileError();
+                }
             }
     };
 }
@@ -167,10 +181,33 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
 
         stream.seekg(0, std::ios::beg);
         stream.read(reinterpret_cast<char *>(&_hdr), sizeof(typename ElfType_::Header));
-        stream.seekg(_hdr.e_shoff, std::ios::beg);
-        // The standard guarantees that there's at least one section
-        std::vector<typename ElfType_::SectionHeader> shdrs(_hdr.e_shnum);
-        stream.read(reinterpret_cast<char *>(&shdrs.front()), sizeof(typename ElfType_::SectionHeader) * _hdr.e_shnum);
+
+        std::vector<typename ElfType_::SectionHeader> shdrs;
+        if (_hdr.e_shoff)
+        {
+            if (sizeof(typename ElfType_::SectionHeader) != _hdr.e_shentsize)
+                throw InvalidElfFileError();
+            stream.seekg(_hdr.e_shoff, std::ios::beg);
+
+            if (_hdr.e_shnum)
+            {
+                std::vector<typename ElfType_::SectionHeader> my_shdrs(_hdr.e_shnum);
+                stream.read(reinterpret_cast<char *>(&my_shdrs.front()), sizeof(typename ElfType_::SectionHeader) * _hdr.e_shnum);
+                shdrs.swap(my_shdrs);
+            }
+            else
+            {
+                typename ElfType_::SectionHeader first_shdr;
+                stream.read(reinterpret_cast<char *>(&first_shdr), sizeof(typename ElfType_::SectionHeader));
+                if (0 == first_shdr.sh_size)
+                    throw InvalidElfFileError();
+
+                std::vector<typename ElfType_::SectionHeader> my_shdrs(first_shdr.sh_size);
+                my_shdrs[0] = first_shdr;
+                stream.read(reinterpret_cast<char *>(&my_shdrs[1]), sizeof(typename ElfType_::SectionHeader) * (first_shdr.sh_size - 1));
+                shdrs.swap(my_shdrs);
+            }
+        }
 
         for (typename std::vector<typename ElfType_::SectionHeader>::iterator i = shdrs.begin(); i != shdrs.end(); ++i)
         {
@@ -190,9 +227,12 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
 
         if (! _hdr.e_shstrndx)
             return;
+        typename ElfType_::Half shstrndx(SHN_XINDEX == _hdr.e_shstrndx ? shdrs[0].sh_link : _hdr.e_shstrndx);
+        if (_imp->sections.size() <= shstrndx)
+            throw InvalidElfFileError();
 
         littlelf_internals::SectionNameResolvingVisitor<ElfType_> res(section_begin(), section_end());
-        _imp->sections[_hdr.e_shstrndx]->accept(res);
+        _imp->sections[shstrndx]->accept(res);
     }
     catch (const std::ios_base::failure &)
     {
