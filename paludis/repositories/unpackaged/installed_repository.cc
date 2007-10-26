@@ -30,6 +30,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_tag.hh>
@@ -88,8 +89,15 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
             .hook_interface(0)
             .qa_interface(0)
             .manifest_interface(0),
-            "installed-unpackaged")
+            "installed_unpackaged")
 {
+    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
+
+    config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("root", stringify(_imp->params.root));
+    config_info->add_kv("format", "installed_unpackage");
+
+    _info->add_section(config_info);
 }
 
 InstalledUnpackagedRepository::~InstalledUnpackagedRepository()

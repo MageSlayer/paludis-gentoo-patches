@@ -23,7 +23,9 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/package_id.hh>
+#include <paludis/repository_info.hh>
 #include <paludis/action.hh>
 
 using namespace paludis;
@@ -79,6 +81,15 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
             .manifest_interface(0),
             "unpackaged")
 {
+    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
+
+    config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("name", stringify(_imp->params.name));
+    config_info->add_kv("version", stringify(_imp->params.version));
+    config_info->add_kv("slot", stringify(_imp->params.slot));
+    config_info->add_kv("format", "unpackaged");
+
+    _info->add_section(config_info);
 }
 
 UnpackagedRepository::~UnpackagedRepository()
