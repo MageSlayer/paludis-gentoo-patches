@@ -101,6 +101,10 @@ namespace paludis
      * Subclasses provide additional information, including the 'value' of the
      * key. A ConstVisitor using MetadataKeyVisitorTypes can be used to get more
      * detail.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE MetadataKey :
         private InstantiationPolicy<MetadataKey, instantiation_method::NonCopyableTag>,
