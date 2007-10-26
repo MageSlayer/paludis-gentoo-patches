@@ -1,6 +1,7 @@
 
 #include "elf_relocation_section.hh"
 #include "elf_types.hh"
+#include "elf.hh"
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
@@ -51,14 +52,15 @@ RelocationSection<ElfType_, Relocation_>::RelocationSection(const typename ElfTy
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<RelocationSection>(new Implementation<RelocationSection>)
 {
-    if (0 != shdr.sh_entsize)
-    {
-        std::vector<typename Relocation_::Type> relocations(shdr.sh_size / shdr.sh_entsize);
-        stream.seekg(shdr.sh_offset, std::ios::beg);
-        stream.read(reinterpret_cast<char *>(&relocations.front()), shdr.sh_size);
-        for (typename std::vector<typename Relocation_::Type>::iterator i = relocations.begin(); i != relocations.end(); ++i)
-            _imp->relocations.push_back(typename Relocation_::Entry(*i));
-    }
+    if (sizeof(typename Relocation_::Type) != shdr.sh_entsize)
+        throw InvalidElfFileError();
+
+    std::vector<typename Relocation_::Type> relocations(shdr.sh_size / sizeof(typename Relocation_::Type));
+    stream.seekg(shdr.sh_offset, std::ios::beg);
+    stream.read(reinterpret_cast<char *>(&relocations.front()), shdr.sh_size);
+
+    for (typename std::vector<typename Relocation_::Type>::iterator i = relocations.begin(); i != relocations.end(); ++i)
+        _imp->relocations.push_back(typename Relocation_::Entry(*i));
 }
 
 template <typename ElfType_, typename Relocation_>
