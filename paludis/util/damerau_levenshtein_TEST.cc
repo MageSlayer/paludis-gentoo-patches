@@ -41,20 +41,20 @@ namespace test_cases
         {
             DamerauLevenshtein dl("foo");
 
-            TEST_CHECK_EQUAL(dl.distance_with("foo"),  0);
-            TEST_CHECK_EQUAL(dl.distance_with("foo1"), 1);
-            TEST_CHECK_EQUAL(dl.distance_with("fo"),   1);
-            TEST_CHECK_EQUAL(dl.distance_with("fao"),  1);
-            TEST_CHECK_EQUAL(dl.distance_with("ofo"),  1);
-            TEST_CHECK_EQUAL(dl.distance_with("fie"),  2);
-            TEST_CHECK_EQUAL(dl.distance_with("ife"),  3);
-            TEST_CHECK_EQUAL(dl.distance_with("bar"),  3);
-            TEST_CHECK_EQUAL(dl.distance_with(""),     3);
+            TEST_CHECK_EQUAL(dl.distance_with("foo"),  0u);
+            TEST_CHECK_EQUAL(dl.distance_with("foo1"), 1u);
+            TEST_CHECK_EQUAL(dl.distance_with("fo"),   1u);
+            TEST_CHECK_EQUAL(dl.distance_with("fao"),  1u);
+            TEST_CHECK_EQUAL(dl.distance_with("ofo"),  1u);
+            TEST_CHECK_EQUAL(dl.distance_with("fie"),  2u);
+            TEST_CHECK_EQUAL(dl.distance_with("ife"),  3u);
+            TEST_CHECK_EQUAL(dl.distance_with("bar"),  3u);
+            TEST_CHECK_EQUAL(dl.distance_with(""),     3u);
 
             DamerauLevenshtein de("");
 
-            TEST_CHECK_EQUAL(de.distance_with("foo"),  3);
-            TEST_CHECK_EQUAL(de.distance_with(""),     0);
+            TEST_CHECK_EQUAL(de.distance_with("foo"),  3u);
+            TEST_CHECK_EQUAL(de.distance_with(""),     0u);
         }
     } test_damerau_levenshtein_test;
 }
