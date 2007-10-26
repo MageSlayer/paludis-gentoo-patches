@@ -64,6 +64,13 @@ CommandLine::CommandLine() :
 
     add_environment_variable("IMPORTARE_OPTIONS", "Default command-line options.");
 
+    add_note(
+            "importare requires a repository with format 'installed_unpackaged' configured and available. It cannot use "
+            "a standard VDB or suchlike because there is no ebuild available.");
+    add_note(
+            "Packages installed using importare will not be visible to broken ebuilds that illegally access the VDB. "
+            "This means that things like 'built_with_use' will not realise that the package is installed.");
+
     add_example(
             "importare --location img/ unpackaged/myapp 1.23",
             "Install the contents of img/ (which could be produced, for example, using 'sudo make DESTDIR=img/ install' "
