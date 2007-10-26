@@ -79,6 +79,10 @@ namespace paludis
                 virtual void example(const std::string &, const std::string &) = 0;
                 virtual void end_examples() = 0;
 
+                virtual void start_notes() = 0;
+                virtual void note(const std::string &) = 0;
+                virtual void end_notes() = 0;
+
                 virtual void section(const std::string & title) = 0;
                 virtual void subsection(const std::string & title) = 0;
                 virtual void paragraph(const std::string & text) = 0;
@@ -131,6 +135,10 @@ namespace paludis
                 void example(const std::string &, const std::string &);
                 void end_examples();
 
+                void start_notes();
+                void note(const std::string &);
+                void end_notes();
+
                 void section(const std::string & title);
                 void subsection(const std::string & title);
                 void paragraph(const std::string & text);
@@ -180,6 +188,10 @@ namespace paludis
                 void start_examples();
                 void example(const std::string &, const std::string &);
                 void end_examples();
+
+                void start_notes();
+                void note(const std::string &);
+                void end_notes();
 
                 void section(const std::string & title);
                 void subsection(const std::string & title);

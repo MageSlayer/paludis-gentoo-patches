@@ -73,6 +73,11 @@ namespace paludis
                 void add_example(const std::string & e, const std::string & desc);
 
                 /**
+                 * Add a new note.
+                 */
+                void add_note(const std::string &);
+
+                /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
                  */
                 void add(ArgsGroup * const);
@@ -204,6 +209,16 @@ namespace paludis
                 ArgsGroupsConstIterator begin_args_groups() const;
 
                 ArgsGroupsConstIterator end_args_groups() const;
+
+                ///\}
+
+                ///\name Iterate over our notes
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string > NotesIterator;
+
+                NotesIterator begin_notes() const;
+                NotesIterator end_notes() const;
 
                 ///\}
         };

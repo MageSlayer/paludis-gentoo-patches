@@ -19,8 +19,10 @@
 
 #include "man.hh"
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <ostream>
 #include <sstream>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -96,6 +98,8 @@ namespace
 void
 paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 {
+    using namespace tr1::placeholders;
+
     dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
     for (ArgsHandler::UsageLineConstIterator u(h->begin_usage_lines()),
@@ -136,6 +140,13 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         }
 
         dw.end_environment();
+    }
+
+    if (h->begin_notes() != h->end_notes())
+    {
+        dw.start_notes();
+        std::for_each(h->begin_notes(), h->end_notes(), tr1::bind(&DocWriter::note, &dw, _1));
+        dw.end_notes();
     }
 
     if (h->begin_examples() != h->end_examples())
@@ -264,6 +275,25 @@ void
 HtmlWriter::end_environment()
 {
     _os << "</dl>" << endl;
+}
+
+void
+HtmlWriter::start_notes()
+{
+    _os << "<h2>Notes</h2>" << endl;
+    _os << "<ul>" << endl;
+}
+
+void
+HtmlWriter::end_notes()
+{
+    _os << "</ul>" << endl;
+}
+
+void
+HtmlWriter::note(const std::string & s)
+{
+    _os << "<li>" << s << "</li>" << endl;
 }
 
 void
@@ -444,6 +474,23 @@ ManWriter::example(const std::string & first, const std::string & second)
 
 void
 ManWriter::end_examples()
+{
+}
+
+void
+ManWriter::start_notes()
+{
+    _os << ".SH NOTES" << endl;
+}
+
+void
+ManWriter::note(const std::string & s)
+{
+    _os << s << endl << endl;
+}
+
+void
+ManWriter::end_notes()
 {
 }
 
