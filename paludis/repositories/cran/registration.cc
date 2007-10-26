@@ -34,7 +34,7 @@ extern "C"
 void register_repositories(RepositoryMaker * maker)
 {
     maker->register_maker("cran", &CRANRepository::make_cran_repository);
-    maker->register_maker("cran_installed", &CRANInstalledRepository::make_cran_installed_repository);
+    maker->register_maker("installed_cran", &CRANInstalledRepository::make_cran_installed_repository);
 }
 
 #endif

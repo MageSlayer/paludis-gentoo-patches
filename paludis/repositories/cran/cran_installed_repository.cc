@@ -169,14 +169,14 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .make_virtuals_interface(0)
             .hook_interface(0)
             .manifest_interface(0),
-            "cran_installed"),
+            "installed_cran"),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {
     tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->params.location));
     config_info->add_kv("root", stringify(_imp->params.root));
-    config_info->add_kv("format", "cran_installed");
+    config_info->add_kv("format", "installed_cran");
 
     _info->add_section(config_info);
 }
