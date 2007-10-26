@@ -690,6 +690,10 @@ namespace test_cases
                 TEST_CHECK(repo->query_use(UseFlagName("flag3"), *p1) == use_enabled);
                 TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p2) == use_enabled);
                 TEST_CHECK(repo->query_use(UseFlagName("flag5"), *p1) == use_unspecified);
+                TEST_CHECK(repo->query_use(UseFlagName("test"), *p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("test2"), *p1) == use_disabled);
+                TEST_CHECK(! repo->query_use_mask(UseFlagName("test"), *p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("test2"), *p1));
             }
         }
     } test_e_repository_query_use;

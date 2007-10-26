@@ -457,7 +457,8 @@ ERepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_masked(u, e) ||
-        (arch_flags()->end() != arch_flags()->find(u) && use_enabled != query_use(u, e));
+        (arch_flags()->end() != arch_flags()->find(u) &&
+         use_enabled != _imp->profile_ptr->use_state_ignoring_masks(u, e));
 }
 
 bool

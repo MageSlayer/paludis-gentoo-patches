@@ -263,6 +263,10 @@ cat <<END >profiles/categories || exit 1
 cat-one
 cat-two
 END
+cat <<END > profiles/arch.list || exit 1
+test
+test2
+END
 cat <<END >profiles/profile/make.defaults || exit 1
 ARCH=test
 USE="flag1 flag2 flag3 -flag4 -flag5"
