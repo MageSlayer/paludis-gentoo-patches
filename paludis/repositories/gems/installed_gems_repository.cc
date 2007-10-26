@@ -87,7 +87,6 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
             .virtuals_interface(0)
             .provides_interface(0)
             .destination_interface(this)
-            .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
@@ -122,7 +121,7 @@ InstalledGemsRepository::invalidate_masks()
 }
 
 bool
-InstalledGemsRepository::do_has_category_named(const CategoryNamePart & c) const
+InstalledGemsRepository::has_category_named(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -131,11 +130,11 @@ InstalledGemsRepository::do_has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-InstalledGemsRepository::do_has_package_named(const QualifiedPackageName & q) const
+InstalledGemsRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! do_has_category_named(q.category))
+    if (! has_category_named(q.category))
         return false;
 
     need_ids();
@@ -143,7 +142,7 @@ InstalledGemsRepository::do_has_package_named(const QualifiedPackageName & q) co
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-InstalledGemsRepository::do_category_names() const
+InstalledGemsRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -152,7 +151,7 @@ InstalledGemsRepository::do_category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-InstalledGemsRepository::do_package_names(const CategoryNamePart & c) const
+InstalledGemsRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -169,7 +168,7 @@ InstalledGemsRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-InstalledGemsRepository::do_package_ids(const QualifiedPackageName & q) const
+InstalledGemsRepository::package_ids(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -335,7 +334,7 @@ namespace
 }
 
 bool
-InstalledGemsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+InstalledGemsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

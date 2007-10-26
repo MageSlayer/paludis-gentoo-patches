@@ -123,7 +123,6 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             .provides_interface(0)
             .virtuals_interface(0)
             .destination_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(this)
             .qa_interface(0)
@@ -258,7 +257,7 @@ VirtualsRepository::make_virtuals_repository(
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-VirtualsRepository::do_package_ids(const QualifiedPackageName & q) const
+VirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
         return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
@@ -273,7 +272,7 @@ VirtualsRepository::do_package_ids(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-VirtualsRepository::do_package_names(const CategoryNamePart & c) const
+VirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
         return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
@@ -288,7 +287,7 @@ VirtualsRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-VirtualsRepository::do_category_names() const
+VirtualsRepository::category_names() const
 {
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
@@ -296,7 +295,7 @@ VirtualsRepository::do_category_names() const
 }
 
 bool
-VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
+VirtualsRepository::has_package_named(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
         return false;
@@ -314,7 +313,7 @@ VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
 }
 
 bool
-VirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
+VirtualsRepository::has_category_named(const CategoryNamePart & c) const
 {
     return (c.data() == "virtual");
 }
@@ -399,7 +398,7 @@ namespace
 }
 
 bool
-VirtualsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+VirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

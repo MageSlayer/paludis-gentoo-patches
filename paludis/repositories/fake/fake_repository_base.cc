@@ -93,13 +93,13 @@ FakeRepositoryBase::~FakeRepositoryBase()
 }
 
 bool
-FakeRepositoryBase::do_has_category_named(const CategoryNamePart & c) const
+FakeRepositoryBase::has_category_named(const CategoryNamePart & c) const
 {
     return (_imp->category_names->end() != _imp->category_names->find(c));
 }
 
 bool
-FakeRepositoryBase::do_has_package_named(const QualifiedPackageName & q) const
+FakeRepositoryBase::has_package_named(const QualifiedPackageName & q) const
 {
     return has_category_named(q.category) &&
         (_imp->package_names.find(q.category)->second->end() !=
@@ -107,13 +107,13 @@ FakeRepositoryBase::do_has_package_named(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-FakeRepositoryBase::do_category_names() const
+FakeRepositoryBase::category_names() const
 {
     return _imp->category_names;
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
+FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 {
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! has_category_named(c))
@@ -127,7 +127,7 @@ FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-FakeRepositoryBase::do_package_ids(const QualifiedPackageName & n) const
+FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category))
         return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
@@ -161,25 +161,25 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
 }
 
 UseFlagState
-FakeRepositoryBase::do_query_use(const UseFlagName &, const PackageID &) const
+FakeRepositoryBase::query_use(const UseFlagName &, const PackageID &) const
 {
     return use_unspecified;
 }
 
 bool
-FakeRepositoryBase::do_query_use_mask(const UseFlagName &, const PackageID &) const
+FakeRepositoryBase::query_use_mask(const UseFlagName &, const PackageID &) const
 {
     return false;
 }
 
 bool
-FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageID &) const
+FakeRepositoryBase::query_use_force(const UseFlagName &, const PackageID &) const
 {
     return false;
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::do_arch_flags() const
+FakeRepositoryBase::arch_flags() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
@@ -200,19 +200,19 @@ FakeRepositoryBase::invalidate_masks()
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::do_use_expand_flags() const
+FakeRepositoryBase::use_expand_flags() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::do_use_expand_hidden_prefixes() const
+FakeRepositoryBase::use_expand_hidden_prefixes() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-FakeRepositoryBase::do_use_expand_prefixes() const
+FakeRepositoryBase::use_expand_prefixes() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
@@ -224,7 +224,7 @@ FakeRepositoryBase::add_package_set(const SetName & n, tr1::shared_ptr<SetSpecTr
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-FakeRepositoryBase::do_package_set(const SetName & id) const
+FakeRepositoryBase::package_set(const SetName & id) const
 {
     std::map<SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::const_iterator i(_imp->sets.find(id));
     if (_imp->sets.end() == i)
@@ -243,7 +243,7 @@ FakeRepositoryBase::sets_list() const
 }
 
 std::string
-FakeRepositoryBase::do_describe_use_flag(const UseFlagName &,
+FakeRepositoryBase::describe_use_flag(const UseFlagName &,
         const PackageID &) const
 {
     return "";

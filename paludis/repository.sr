@@ -16,7 +16,6 @@ make_class_RepositoryCapabilities()
     key virtuals_interface "RepositoryVirtualsInterface *"
     key make_virtuals_interface "RepositoryMakeVirtualsInterface *"
     key destination_interface "RepositoryDestinationInterface *"
-    key licenses_interface "RepositoryLicensesInterface *"
     key e_interface "RepositoryEInterface *"
     key hook_interface "RepositoryHookInterface *"
     key qa_interface "RepositoryQAInterface *"

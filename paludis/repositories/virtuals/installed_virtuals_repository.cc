@@ -113,7 +113,6 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .provides_interface(0)
             .virtuals_interface(0)
             .destination_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
@@ -185,7 +184,7 @@ InstalledVirtualsRepository::make_installed_virtuals_repository(
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-InstalledVirtualsRepository::do_package_ids(const QualifiedPackageName & q) const
+InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
         return tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
@@ -200,7 +199,7 @@ InstalledVirtualsRepository::do_package_ids(const QualifiedPackageName & q) cons
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
+InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
         return tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
@@ -215,7 +214,7 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-InstalledVirtualsRepository::do_category_names() const
+InstalledVirtualsRepository::category_names() const
 {
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
@@ -223,7 +222,7 @@ InstalledVirtualsRepository::do_category_names() const
 }
 
 bool
-InstalledVirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
+InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
         return false;
@@ -234,7 +233,7 @@ InstalledVirtualsRepository::do_has_package_named(const QualifiedPackageName & q
 }
 
 bool
-InstalledVirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
+InstalledVirtualsRepository::has_category_named(const CategoryNamePart & c) const
 {
     return (c.data() == "virtual");
 }
@@ -263,12 +262,6 @@ InstalledVirtualsRepository::perform_hook(const Hook & hook) const
             + stringify(name()) + "':");
 
     return HookResult(0, "");
-}
-
-time_t
-InstalledVirtualsRepository::do_installed_time(const PackageID &) const
-{
-    return 0;
 }
 
 bool
@@ -321,7 +314,7 @@ namespace
 }
 
 bool
-InstalledVirtualsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+InstalledVirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

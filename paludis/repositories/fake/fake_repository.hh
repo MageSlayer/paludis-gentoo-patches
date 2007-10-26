@@ -38,9 +38,6 @@ namespace paludis
         private:
             Implementation<FakeRepository> * const _imp;
 
-        protected:
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -66,6 +63,8 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MirrorsConstIterator end_mirrors(const std::string & s) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
     };
 }
 

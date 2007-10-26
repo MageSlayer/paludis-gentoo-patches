@@ -113,7 +113,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .provides_interface(0)
             .destination_interface(0)
             .virtuals_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .hook_interface(0)
@@ -138,18 +137,18 @@ CRANRepository::~CRANRepository()
 }
 
 bool
-CRANRepository::do_has_category_named(const CategoryNamePart & c) const
+CRANRepository::has_category_named(const CategoryNamePart & c) const
 {
     return "cran" == stringify(c);
 }
 
 bool
-CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
+CRANRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! do_has_category_named(q.category))
+    if (! has_category_named(q.category))
         return false;
 
     need_ids();
@@ -157,7 +156,7 @@ CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-CRANRepository::do_category_names() const
+CRANRepository::category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
@@ -169,14 +168,14 @@ CRANRepository::do_category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-CRANRepository::do_package_names(const CategoryNamePart & c) const
+CRANRepository::package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
-    if (! do_has_category_named(c))
+    if (! has_category_named(c))
         return result;
 
     need_ids();
@@ -188,14 +187,14 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-CRANRepository::do_package_ids(const QualifiedPackageName & n) const
+CRANRepository::package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
     tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    if (! do_has_package_named(n))
+    if (! has_package_named(n))
         return result;
 
     need_ids();
@@ -337,7 +336,7 @@ CRANRepository::do_install(const tr1::shared_ptr<const PackageID> & id_uncasted,
 #endif
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-CRANRepository::do_package_set(const SetName & s) const
+CRANRepository::package_set(const SetName & s) const
 {
     if ("base" == s.data())
     {
@@ -363,7 +362,7 @@ CRANRepository::sets_list() const
 }
 
 bool
-CRANRepository::do_sync() const
+CRANRepository::sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
@@ -494,7 +493,7 @@ namespace
 }
 
 bool
-CRANRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+CRANRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

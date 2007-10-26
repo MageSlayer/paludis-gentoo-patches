@@ -67,7 +67,6 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .virtuals_interface(DistributionData::get_instance()->distribution_from_string(
                     e->default_distribution())->support_old_style_virtuals ? this : 0)
             .destination_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
@@ -152,7 +151,7 @@ namespace
 }
 
 bool
-FakeRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+FakeRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

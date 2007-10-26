@@ -144,7 +144,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .provides_interface(this)
             .virtuals_interface(0)
             .destination_interface(this)
-            .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
@@ -171,7 +170,7 @@ VDBRepository::~VDBRepository()
 }
 
 bool
-VDBRepository::do_has_category_named(const CategoryNamePart & c) const
+VDBRepository::has_category_named(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -183,7 +182,7 @@ VDBRepository::do_has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
+VDBRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -202,7 +201,7 @@ VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-VDBRepository::do_category_names() const
+VDBRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -220,7 +219,7 @@ VDBRepository::do_category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-VDBRepository::do_package_names(const CategoryNamePart & c) const
+VDBRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -239,7 +238,7 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-VDBRepository::do_package_ids(const QualifiedPackageName & n) const
+VDBRepository::package_ids(const QualifiedPackageName & n) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -259,7 +258,7 @@ VDBRepository::do_package_ids(const QualifiedPackageName & n) const
 }
 
 UseFlagState
-VDBRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
+VDBRepository::query_use(const UseFlagName & f, const PackageID & e) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -273,15 +272,15 @@ VDBRepository::do_query_use(const UseFlagName & f, const PackageID & e) const
 }
 
 bool
-VDBRepository::do_query_use_mask(const UseFlagName & u, const PackageID & e) const
+VDBRepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
-    return use_disabled == do_query_use(u, e);
+    return use_disabled == query_use(u, e);
 }
 
 bool
-VDBRepository::do_query_use_force(const UseFlagName & u, const PackageID & e) const
+VDBRepository::query_use_force(const UseFlagName & u, const PackageID & e) const
 {
-    return use_enabled == do_query_use(u, e);
+    return use_enabled == query_use(u, e);
 }
 
 tr1::shared_ptr<Repository>
@@ -584,7 +583,7 @@ VDBRepository::perform_info(const tr1::shared_ptr<const ERepositoryID> & id) con
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-VDBRepository::do_package_set(const SetName & s) const
+VDBRepository::package_set(const SetName & s) const
 {
     using namespace tr1::placeholders;
 
@@ -793,25 +792,25 @@ VDBRepository::provided_packages() const
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::do_arch_flags() const
+VDBRepository::arch_flags() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::do_use_expand_flags() const
+VDBRepository::use_expand_flags() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::do_use_expand_prefixes() const
+VDBRepository::use_expand_prefixes() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-VDBRepository::do_use_expand_hidden_prefixes() const
+VDBRepository::use_expand_hidden_prefixes() const
 {
     return tr1::shared_ptr<const UseFlagNameSet>(new UseFlagNameSet);
 }
@@ -1025,17 +1024,17 @@ VDBRepository::regenerate_provides_cache() const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-VDBRepository::do_category_names_containing_package(const PackageNamePart & p) const
+VDBRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
     if (! _imp->names_cache->usable())
-        return Repository::do_category_names_containing_package(p);
+        return Repository::category_names_containing_package(p);
 
     tr1::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
-    return result ? result : Repository::do_category_names_containing_package(p);
+    return result ? result : Repository::category_names_containing_package(p);
 }
 
 bool
@@ -1052,7 +1051,7 @@ VDBRepository::is_default_destination() const
 }
 
 std::string
-VDBRepository::do_describe_use_flag(const UseFlagName &, const PackageID &) const
+VDBRepository::describe_use_flag(const UseFlagName &, const PackageID &) const
 {
     return "";
 }
@@ -1308,7 +1307,7 @@ namespace
 }
 
 bool
-VDBRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+VDBRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

@@ -116,7 +116,7 @@ Repository::info(bool) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-Repository::do_category_names_containing_package(const PackageNamePart & p) const
+Repository::category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
@@ -181,10 +181,6 @@ RepositoryDestinationInterface::~RepositoryDestinationInterface()
 {
 }
 
-RepositoryLicensesInterface::~RepositoryLicensesInterface()
-{
-}
-
 RepositoryEInterface::~RepositoryEInterface()
 {
 }
@@ -205,75 +201,10 @@ RepositoryManifestInterface::~RepositoryManifestInterface()
 {
 }
 
-tr1::shared_ptr<FSEntry>
-RepositoryLicensesInterface::license_exists(const std::string & license) const
-{
-    return do_license_exists(license);
-}
-
-UseFlagState
-RepositoryUseInterface::query_use(const UseFlagName & u, const PackageID & pde) const
-{
-    if (do_query_use_mask(u, pde))
-        return use_disabled;
-    else if (do_query_use_force(u, pde))
-        return use_enabled;
-    else
-        return do_query_use(u, pde);
-}
-
-bool
-RepositoryUseInterface::query_use_mask(const UseFlagName & u, const PackageID & pde) const
-{
-    return do_query_use_mask(u, pde);
-}
-
-bool
-RepositoryUseInterface::query_use_force(const UseFlagName & u, const PackageID & pde) const
-{
-    return do_query_use_force(u, pde);
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-RepositoryUseInterface::arch_flags() const
-{
-    return do_arch_flags();
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-RepositoryUseInterface::use_expand_flags() const
-{
-    return do_use_expand_flags();
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-RepositoryUseInterface::use_expand_hidden_prefixes() const
-{
-    return do_use_expand_hidden_prefixes();
-}
-
-tr1::shared_ptr<const UseFlagNameSet>
-RepositoryUseInterface::use_expand_prefixes() const
-{
-    return do_use_expand_prefixes();
-}
-
-std::string
-RepositoryUseInterface::describe_use_flag(const UseFlagName & n, const PackageID & pkg) const
-{
-    return do_describe_use_flag(n, pkg);
-}
-
 bool
 RepositoryMirrorsInterface::is_mirror(const std::string & s) const
 {
     return begin_mirrors(s) != end_mirrors(s);
-}
-
-tr1::shared_ptr<const PackageIDSequence>
-Repository::package_ids(const QualifiedPackageName & p) const
-{
-    return do_package_ids(p);
 }
 
 bool
@@ -282,51 +213,9 @@ Repository::can_be_favourite_repository() const
     return true;
 }
 
-bool
-Repository::has_package_named(const QualifiedPackageName & q) const
-{
-    return do_has_package_named(q);
-}
-
-bool
-Repository::has_category_named(const CategoryNamePart & q) const
-{
-    return do_has_category_named(q);
-}
-
-tr1::shared_ptr<const CategoryNamePartSet>
-Repository::category_names_containing_package(const PackageNamePart & p) const
-{
-    return do_category_names_containing_package(p);
-}
-
-tr1::shared_ptr<const QualifiedPackageNameSet>
-Repository::package_names(const CategoryNamePart & c) const
-{
-    return do_package_names(c);
-}
-
-tr1::shared_ptr<const CategoryNamePartSet>
-Repository::category_names() const
-{
-    return do_category_names();
-}
-
 tr1::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names() const
 {
     return make_shared_ptr(new CategoryNamePartSet);
-}
-
-bool
-RepositorySyncableInterface::sync() const
-{
-    return do_sync();
-}
-
-bool
-Repository::some_ids_might_support_action(const SupportsActionTestBase & b) const
-{
-    return do_some_ids_might_support_action(b);
 }
 

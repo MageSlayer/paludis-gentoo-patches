@@ -81,6 +81,42 @@ namespace paludis
                     const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+        public:
+            /**
+             * Constructor.
+             */
+            VDBRepository(const VDBRepositoryParams &);
+
+            /**
+             * Virtual constructor.
+             */
+            static tr1::shared_ptr<Repository> make_vdb_repository(
+                    Environment * const env,
+                    tr1::shared_ptr<const Map<std::string, std::string> > m);
+
+            /**
+             * Destructor.
+             */
+            ~VDBRepository();
+
+            virtual void invalidate();
+
+            virtual void invalidate_masks();
+
+            virtual void regenerate_cache() const;
+
+            ///\name For use by VDBID
+            ///\{
+
+            void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                    const UninstallActionOptions & o, bool reinstalling) const;
+
+            void perform_config(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+
+            void perform_info(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
+
+            ///\}
+
             /* RepositoryInstalledInterface */
 
             virtual FSEntry root() const
@@ -88,34 +124,34 @@ namespace paludis
 
             /* RepositoryUseInterface */
 
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
+            virtual UseFlagState query_use(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
+            virtual bool query_use_mask(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
+            virtual bool query_use_force(const UseFlagName &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string do_describe_use_flag(const UseFlagName &,
+            virtual std::string describe_use_flag(const UseFlagName &,
                     const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositorySetsInterface */
 
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual tr1::shared_ptr<const SetNameSet> sets_list() const
@@ -163,81 +199,44 @@ namespace paludis
 
             /* Repository */
 
-            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents: fetch package names.
              */
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents: fetch category names.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents if a fast implementation is available: fetch category names
              * that contain a particular package.
              */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents: check for a package.
              */
-            virtual bool do_has_package_named(const QualifiedPackageName &) const
+            virtual bool has_package_named(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Override in descendents: check for a category.
              */
-            virtual bool do_has_category_named(const CategoryNamePart &) const
+            virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
-
-        public:
-            /**
-             * Constructor.
-             */
-            VDBRepository(const VDBRepositoryParams &);
-
-            /**
-             * Virtual constructor.
-             */
-            static tr1::shared_ptr<Repository> make_vdb_repository(
-                    Environment * const env,
-                    tr1::shared_ptr<const Map<std::string, std::string> > m);
-
-            /**
-             * Destructor.
-             */
-            ~VDBRepository();
-
-            virtual void invalidate();
-
-            virtual void invalidate_masks();
-
-            virtual void regenerate_cache() const;
-
-            ///\name For use by VDBID
-            ///\{
-
-            void perform_uninstall(const tr1::shared_ptr<const erepository::ERepositoryID> & id,
-                    const UninstallActionOptions & o, bool reinstalling) const;
-
-            void perform_config(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
-
-            void perform_info(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
-
-            ///\}
-
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
     };
 
     /**

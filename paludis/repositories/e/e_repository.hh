@@ -58,7 +58,6 @@ namespace paludis
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
-        public RepositoryLicensesInterface,
         public RepositoryEInterface,
         public RepositoryHookInterface,
         public RepositoryQAInterface,
@@ -68,80 +67,6 @@ namespace paludis
     {
         private:
             void need_mirrors() const;
-
-        protected:
-            /* RepositoryLicensesInterface */
-
-            virtual tr1::shared_ptr<FSEntry> do_license_exists(
-                    const std::string & license) const;
-
-            /* RepositorySetsInterface */
-
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const;
-
-            virtual tr1::shared_ptr<const SetNameSet> sets_list() const;
-
-            /* RepositorySyncableInterface */
-
-            virtual bool do_sync() const;
-
-            /* RepositoryUseInterface */
-
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string do_describe_use_flag(const UseFlagName &,
-                    const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* RepositoryEnvironmentVariableInterface */
-
-            virtual std::string get_environment_variable(
-                    const tr1::shared_ptr<const PackageID> & for_package,
-                    const std::string & var) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /* Repository */
-
-            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
-                    const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
-                    const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
-                    const PackageNamePart &) const;
-
-            virtual bool do_has_package_named(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_has_category_named(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
 
         public:
             virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
@@ -196,6 +121,75 @@ namespace paludis
 
             /* RepositoryManifestInterface */
             virtual void make_manifest(const QualifiedPackageName & qpn);
+
+            /* RepositorySetsInterface */
+
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const;
+
+            virtual tr1::shared_ptr<const SetNameSet> sets_list() const;
+
+            /* RepositorySyncableInterface */
+
+            virtual bool sync() const;
+
+            /* RepositoryUseInterface */
+
+            virtual UseFlagState query_use(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool query_use_mask(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool query_use_force(const UseFlagName &, const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string describe_use_flag(const UseFlagName &,
+                    const PackageID &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* RepositoryEnvironmentVariableInterface */
+
+            virtual std::string get_environment_variable(
+                    const tr1::shared_ptr<const PackageID> & for_package,
+                    const std::string & var) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+                    const PackageNamePart &) const;
+
+            virtual bool has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
 
             ///\name Information about ERepository
             ///\{

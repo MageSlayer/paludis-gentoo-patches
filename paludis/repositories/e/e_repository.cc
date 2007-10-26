@@ -305,7 +305,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                     p.environment->default_distribution())->support_old_style_virtuals ? this : 0)
             .provides_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
-            .licenses_interface(this)
             .make_virtuals_interface(0)
             .e_interface(this)
 #ifdef ENABLE_QA
@@ -356,31 +355,31 @@ ERepository::~ERepository()
 }
 
 bool
-ERepository::do_has_category_named(const CategoryNamePart & c) const
+ERepository::has_category_named(const CategoryNamePart & c) const
 {
     return _imp->layout->has_category_named(c);
 }
 
 bool
-ERepository::do_has_package_named(const QualifiedPackageName & q) const
+ERepository::has_package_named(const QualifiedPackageName & q) const
 {
     return _imp->layout->has_package_named(q);
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-ERepository::do_category_names() const
+ERepository::category_names() const
 {
     return _imp->layout->category_names();
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-ERepository::do_package_names(const CategoryNamePart & c) const
+ERepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->layout->package_names(c);
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-ERepository::do_package_ids(const QualifiedPackageName & n) const
+ERepository::package_ids(const QualifiedPackageName & n) const
 {
     return _imp->layout->package_ids(n);
 }
@@ -442,29 +441,34 @@ ERepository::repository_masked(const PackageID & id) const
 }
 
 UseFlagState
-ERepository::do_query_use(const UseFlagName & f, const PackageID & e) const
+ERepository::query_use(const UseFlagName & f, const PackageID & e) const
 {
     _imp->need_profiles();
-    return _imp->profile_ptr->use_state_ignoring_masks(f, e);
+    if (query_use_mask(f, e))
+        return use_disabled;
+    else if (query_use_force(f, e))
+        return use_enabled;
+    else
+        return _imp->profile_ptr->use_state_ignoring_masks(f, e);
 }
 
 bool
-ERepository::do_query_use_mask(const UseFlagName & u, const PackageID & e) const
+ERepository::query_use_mask(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_masked(u, e) ||
-        (arch_flags()->end() != arch_flags()->find(u) && use_enabled != do_query_use(u, e));
+        (arch_flags()->end() != arch_flags()->find(u) && use_enabled != query_use(u, e));
 }
 
 bool
-ERepository::do_query_use_force(const UseFlagName & u, const PackageID & e) const
+ERepository::query_use_force(const UseFlagName & u, const PackageID & e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_forced(u, e);
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-ERepository::do_arch_flags() const
+ERepository::arch_flags() const
 {
     Lock l(_imp->mutexes->arch_flags_mutex);
     if (! _imp->arch_flags)
@@ -493,25 +497,6 @@ ERepository::do_arch_flags() const
     }
 
     return _imp->arch_flags;
-}
-
-tr1::shared_ptr<FSEntry>
-ERepository::do_license_exists(const std::string & license) const
-{
-    tr1::shared_ptr<FSEntry> p;
-
-    if (_imp->params.master_repository)
-    {
-        FSEntry l(_imp->params.master_repository->params().location / "licenses" / license);
-        if (l.exists() && l.is_regular_file_or_symlink_to_regular_file())
-            p.reset(new FSEntry(l));
-    }
-
-    FSEntry l(_imp->params.location / "licenses" / license);
-    if (l.exists() && l.is_regular_file_or_symlink_to_regular_file())
-        p.reset(new FSEntry(l));
-
-    return p;
 }
 
 void
@@ -561,7 +546,7 @@ ERepository::need_mirrors() const
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-ERepository::do_package_set(const SetName & s) const
+ERepository::package_set(const SetName & s) const
 {
     if (s.data() == "system")
     {
@@ -579,7 +564,7 @@ ERepository::sets_list() const
 }
 
 bool
-ERepository::do_sync() const
+ERepository::sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -771,7 +756,7 @@ ERepository::virtual_packages() const
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-ERepository::do_use_expand_flags() const
+ERepository::use_expand_flags() const
 {
     _imp->need_profiles();
 
@@ -797,7 +782,7 @@ ERepository::do_use_expand_flags() const
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-ERepository::do_use_expand_prefixes() const
+ERepository::use_expand_prefixes() const
 {
     _imp->need_profiles();
 
@@ -814,7 +799,7 @@ ERepository::do_use_expand_prefixes() const
 }
 
 tr1::shared_ptr<const UseFlagNameSet>
-ERepository::do_use_expand_hidden_prefixes() const
+ERepository::use_expand_hidden_prefixes() const
 {
     _imp->need_profiles();
 
@@ -837,15 +822,15 @@ ERepository::regenerate_cache() const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-ERepository::do_category_names_containing_package(const PackageNamePart & p) const
+ERepository::category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
-        return Repository::do_category_names_containing_package(p);
+        return Repository::category_names_containing_package(p);
 
     tr1::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
-    return result ? result : Repository::do_category_names_containing_package(p);
+    return result ? result : Repository::category_names_containing_package(p);
 }
 
 ERepository::ProfilesConstIterator
@@ -911,7 +896,7 @@ ERepository::set_profile_by_arch(const UseFlagName & arch)
 }
 
 std::string
-ERepository::do_describe_use_flag(const UseFlagName & f,
+ERepository::describe_use_flag(const UseFlagName & f,
         const PackageID & e) const
 {
     Lock l(_imp->mutexes->use_desc_mutex);
@@ -1118,7 +1103,7 @@ namespace
 }
 
 bool
-ERepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+ERepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

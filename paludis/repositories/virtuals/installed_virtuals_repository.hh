@@ -42,32 +42,6 @@ namespace paludis
         private:
             void need_ids() const;
 
-        protected:
-            /* RepositoryInstalledInterface */
-
-            virtual time_t do_installed_time(const PackageID &) const;
-
-            /* Repository */
-
-            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
-                    const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
-                    const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_has_package_named(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_has_category_named(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
-
         public:
             ///\name Basic operations
             //\{
@@ -98,6 +72,28 @@ namespace paludis
 
             HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Repository */
+
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(
+                    const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                    const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool has_package_named(const QualifiedPackageName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool has_category_named(const CategoryNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
     };
 }
 

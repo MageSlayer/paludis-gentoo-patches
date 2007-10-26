@@ -108,12 +108,6 @@ struct RepositoryWrapper :
         return self.destination_interface;
     }
 
-    static RepositoryLicensesInterface *
-    get_licenses_interface(const Repository & self)
-    {
-        return self.licenses_interface;
-    }
-
     static RepositoryEInterface *
     get_e_interface(const Repository & self)
     {
@@ -133,19 +127,6 @@ struct FakeRepositoryWrapper
     add_version(FakeRepository & self, const QualifiedPackageName & qpn, const VersionSpec & vs)
     {
         return self.add_version(qpn, vs);
-    }
-};
-
-struct RepositoryLicensesInterfaceWrapper
-{
-    static PyObject *
-    license_exists(const RepositoryLicensesInterface & self, const std::string & license)
-    {
-        tr1::shared_ptr<FSEntry> p(self.license_exists(license));
-        if (p)
-            return to_string<FSEntry>::convert(*p);
-        else
-            return 0;
     }
 };
 
@@ -337,11 +318,6 @@ void expose_repository()
                 "[ro] RepositoryDestinationInterface"
                 )
 
-        .add_property("licenses_interface", bp::make_function(&RepositoryWrapper::get_licenses_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryLicensesInterface"
-                )
-
         .add_property("e_interface", bp::make_function(&RepositoryWrapper::get_e_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryEInterface"
@@ -498,21 +474,6 @@ void expose_repository()
          "Interface for repositories that can be used as an install destination.",
          bp::no_init
         );
-
-    /**
-     * RepositoryLicensesInterface
-     */
-    bp::class_<RepositoryLicensesInterface, boost::noncopyable>
-        (
-         "RepositoryLicensesInterface",
-         "Interface for handling actions relating to licenses.",
-         bp::no_init
-        )
-        .def("license_exists", &RepositoryLicensesInterfaceWrapper::license_exists,
-                "license_exists(string) -> path_string or None\n"
-                "Check if a license exists."
-            )
-        ;
 
     /**
      * RepositoryEInterface

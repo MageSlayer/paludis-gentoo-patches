@@ -36,8 +36,6 @@ namespace paludis
         public RepositoryProvidesInterface
     {
         protected:
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const;
-
             /* RepositoryInstalledInterface */
 
             virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -68,6 +66,8 @@ namespace paludis
             ~FakeInstalledRepository();
 
             ///\}
+
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
     };
 }
 

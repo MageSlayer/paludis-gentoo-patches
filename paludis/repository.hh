@@ -155,61 +155,6 @@ namespace paludis
 
             ///\}
 
-            /**
-             * \name Implementations: navigation functions
-             *
-             * These are implemented in subclasses to handle navigation queries.
-             */
-            ///\{
-
-            /**
-             * Override in descendents: fetch package IDs.
-             */
-            virtual tr1::shared_ptr<const PackageIDSequence> do_package_ids(
-                    const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch package names.
-             */
-            virtual tr1::shared_ptr<const QualifiedPackageNameSet> do_package_names(
-                    const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch category names.
-             */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents if a fast implementation is available: fetch category names
-             * that contain a particular package.
-             */
-            virtual tr1::shared_ptr<const CategoryNamePartSet> do_category_names_containing_package(
-                    const PackageNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Override in descendents: check for a package.
-             */
-            virtual bool do_has_package_named(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: check for a category.
-             */
-            virtual bool do_has_category_named(const CategoryNamePart &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: might some of our IDs support a
-             * particular action?
-             */
-            virtual bool do_some_ids_might_support_action(const SupportsActionTestBase &) const = 0;
-
-            ///\}
-
         public:
             ///\name Basic operations
             ///\{
@@ -252,17 +197,17 @@ namespace paludis
             /**
              * Do we have a category with the given name?
              */
-            bool has_category_named(const CategoryNamePart & c) const;
+            virtual bool has_category_named(const CategoryNamePart & c) const = 0;
 
             /**
              * Do we have a package in the given category with the given name?
              */
-            bool has_package_named(const QualifiedPackageName & q) const;
+            virtual bool has_package_named(const QualifiedPackageName & q) const = 0;
 
             /**
              * Fetch our category names.
              */
-            tr1::shared_ptr<const CategoryNamePartSet> category_names() const;
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
 
             /**
              * Fetch unimportant categories.
@@ -272,19 +217,19 @@ namespace paludis
             /**
              * Fetch categories that contain a named package.
              */
-            tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**
              * Fetch our package names.
              */
-            tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
-                    const CategoryNamePart & c) const;
+            virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                    const CategoryNamePart & c) const = 0;
 
             /**
              * Fetch our IDs.
              */
-            tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
+            virtual tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
 
             /**
              * Might some of our IDs support a particular action?
@@ -293,7 +238,7 @@ namespace paludis
              * support, say, InstallAction, a query can skip searching it
              * entirely when looking for installable packages.
              */
-            bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const = 0;
 
             ///\}
 
@@ -328,61 +273,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositoryUseInterface
     {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: get use.
-             */
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: get use mask.
-             */
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: get use force.
-             */
-            virtual bool do_query_use_force(const UseFlagName &, const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch all arch flags.
-             */
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_arch_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch all use expand flags.
-             */
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_flags() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch all use expand hidden prefixes.
-             */
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_hidden_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: fetch all use expand prefixes.
-             */
-            virtual tr1::shared_ptr<const UseFlagNameSet> do_use_expand_prefixes() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Override in descendents: describe a use flag.
-             */
-            virtual std::string do_describe_use_flag(const UseFlagName &,
-                    const PackageID &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
         public:
             ///\name USE queries
             ///\{
@@ -390,43 +280,42 @@ namespace paludis
             /**
              * Query the state of the specified use flag.
              */
-            UseFlagState query_use(const UseFlagName & u, const PackageID &) const;
+            virtual UseFlagState query_use(const UseFlagName & u, const PackageID &) const = 0;
 
             /**
              * Query whether the specified use flag is masked.
              */
-            bool query_use_mask(const UseFlagName & u, const PackageID & pde) const;
+            virtual bool query_use_mask(const UseFlagName & u, const PackageID & pde) const = 0;
 
             /**
              * Query whether the specified use flag is forced.
              */
-            bool query_use_force(const UseFlagName & u, const PackageID & pde) const;
+            virtual bool query_use_force(const UseFlagName & u, const PackageID & pde) const = 0;
 
             /**
              * Fetch all arch flags.
              */
-            tr1::shared_ptr<const UseFlagNameSet> arch_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameSet> arch_flags() const = 0;
 
             /**
              * Fetch all expand flags.
              */
-            tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const;
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_flags() const = 0;
 
             /**
              * Fetch all expand hidden flags.
              */
-            tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_hidden_prefixes() const = 0;
 
             /**
              * Fetch all use expand prefixes.
              */
-            tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const;
+            virtual tr1::shared_ptr<const UseFlagNameSet> use_expand_prefixes() const = 0;
 
             /**
              * Describe a use flag.
              */
-            std::string describe_use_flag(const UseFlagName & n,
-                    const PackageID & pkg) const;
+            virtual std::string describe_use_flag(const UseFlagName & n, const PackageID & pkg) const = 0;
 
             ///\}
 
@@ -466,18 +355,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositorySetsInterface
     {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: package list.
-             */
-            virtual tr1::shared_ptr<SetSpecTree::ConstItem> do_package_set(const SetName & id) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
         public:
             ///\name Set queries
             ///\{
@@ -485,10 +362,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const
-            {
-                return do_package_set(s);
-            }
+            virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & s) const = 0;
 
             /**
              * Gives a list of the names of all the sets provided by this repo.
@@ -510,17 +384,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositorySyncableInterface
     {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: sync, if needed (true) or do nothing (false).
-             */
-            virtual bool do_sync() const = 0;
-
-            ///\}
-
         public:
             ///\name Sync functions
             ///\{
@@ -530,7 +393,7 @@ namespace paludis
              *
              * \return True if we synced successfully, false if we skipped sync.
              */
-            bool sync() const;
+            virtual bool sync() const = 0;
 
             ///\}
 
@@ -751,43 +614,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryDestinationInterface();
-    };
-
-    /**
-     * Interface for handling actions relating to licenses.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryLicensesInterface
-    {
-        protected:
-            ///\name Implementation details
-            ///\{
-
-            /**
-             * Override in descendents: do the actual check,
-             */
-            virtual tr1::shared_ptr<FSEntry>
-            do_license_exists(const std::string & license) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-        public:
-            ///\name License related queries
-            ///\{
-
-            /**
-             * Check if a license exists
-             */
-            tr1::shared_ptr<FSEntry>
-            license_exists(const std::string & license) const;
-
-            ///\}
-
-            virtual ~RepositoryLicensesInterface();
     };
 
     class ERepositoryParams;

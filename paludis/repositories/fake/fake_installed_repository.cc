@@ -47,7 +47,6 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .provides_interface(this)
             .virtuals_interface(0)
             .destination_interface(this)
-            .licenses_interface(0)
             .e_interface(0)
             .make_virtuals_interface(0)
             .qa_interface(0)
@@ -168,7 +167,7 @@ namespace
 }
 
 bool
-FakeInstalledRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

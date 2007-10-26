@@ -84,7 +84,6 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
             .virtuals_interface(0)
             .make_virtuals_interface(0)
             .destination_interface(this)
-            .licenses_interface(0)
             .e_interface(0)
             .hook_interface(0)
             .qa_interface(0)
@@ -105,7 +104,7 @@ InstalledUnpackagedRepository::~InstalledUnpackagedRepository()
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-InstalledUnpackagedRepository::do_package_ids(const QualifiedPackageName & q) const
+InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
 {
     tr1::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
@@ -124,32 +123,32 @@ InstalledUnpackagedRepository::do_package_ids(const QualifiedPackageName & q) co
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-InstalledUnpackagedRepository::do_package_names(const CategoryNamePart & c) const
+InstalledUnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->ndbam.package_names(c);
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-InstalledUnpackagedRepository::do_category_names() const
+InstalledUnpackagedRepository::category_names() const
 {
     return _imp->ndbam.category_names();
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-InstalledUnpackagedRepository::do_category_names_containing_package(
+InstalledUnpackagedRepository::category_names_containing_package(
         const PackageNamePart & p) const
 {
     return _imp->ndbam.category_names_containing_package(p);
 }
 
 bool
-InstalledUnpackagedRepository::do_has_package_named(const QualifiedPackageName & q) const
+InstalledUnpackagedRepository::has_package_named(const QualifiedPackageName & q) const
 {
     return _imp->ndbam.has_package_named(q);
 }
 
 bool
-InstalledUnpackagedRepository::do_has_category_named(const CategoryNamePart & c) const
+InstalledUnpackagedRepository::has_category_named(const CategoryNamePart & c) const
 {
     return _imp->ndbam.has_category_named(c);
 }
@@ -199,7 +198,7 @@ namespace
 }
 
 bool
-InstalledUnpackagedRepository::do_some_ids_might_support_action(const SupportsActionTestBase & test) const
+InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase & test) const
 {
     SomeIDsMightSupportVisitor v;
     test.accept(v);
@@ -336,7 +335,7 @@ InstalledUnpackagedRepository::deindex(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-InstalledUnpackagedRepository::do_package_set(const SetName & s) const
+InstalledUnpackagedRepository::package_set(const SetName & s) const
 {
     using namespace tr1::placeholders;
 

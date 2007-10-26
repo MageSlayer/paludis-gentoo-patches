@@ -163,7 +163,6 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .virtuals_interface(0)
             .provides_interface(0)
             .destination_interface(this)
-            .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
@@ -186,17 +185,17 @@ CRANInstalledRepository::~CRANInstalledRepository()
 }
 
 bool
-CRANInstalledRepository::do_has_category_named(const CategoryNamePart & c) const
+CRANInstalledRepository::has_category_named(const CategoryNamePart & c) const
 {
     return (CategoryNamePart("cran") == c);
 }
 
 bool
-CRANInstalledRepository::do_has_package_named(const QualifiedPackageName & q) const
+CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
 
-    if (! do_has_category_named(q.category))
+    if (! has_category_named(q.category))
         return false;
 
     need_ids();
@@ -205,7 +204,7 @@ CRANInstalledRepository::do_has_package_named(const QualifiedPackageName & q) co
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-CRANInstalledRepository::do_category_names() const
+CRANInstalledRepository::category_names() const
 {
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
@@ -213,13 +212,13 @@ CRANInstalledRepository::do_category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
+CRANInstalledRepository::package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
-    if (! do_has_category_named(c))
+    if (! has_category_named(c))
         return result;
 
     need_ids();
@@ -231,13 +230,13 @@ CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-CRANInstalledRepository::do_package_ids(const QualifiedPackageName & n) const
+CRANInstalledRepository::package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
     tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    if (! do_has_package_named(n))
+    if (! has_package_named(n))
         return result;
 
     need_ids();
@@ -426,7 +425,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 #endif
 
 tr1::shared_ptr<SetSpecTree::ConstItem>
-CRANInstalledRepository::do_package_set(const SetName & s) const
+CRANInstalledRepository::package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
             stringify(name()) + "':");
@@ -648,7 +647,7 @@ namespace
 }
 
 bool
-CRANInstalledRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+CRANInstalledRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

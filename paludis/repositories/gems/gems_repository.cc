@@ -78,7 +78,6 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
             .virtuals_interface(0)
             .provides_interface(0)
             .destination_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .qa_interface(0)
             .make_virtuals_interface(0)
@@ -123,7 +122,7 @@ GemsRepository::invalidate_masks()
 }
 
 bool
-GemsRepository::do_has_category_named(const CategoryNamePart & c) const
+GemsRepository::has_category_named(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -132,11 +131,11 @@ GemsRepository::do_has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
+GemsRepository::has_package_named(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! do_has_category_named(q.category))
+    if (! has_category_named(q.category))
         return false;
 
     need_ids();
@@ -144,7 +143,7 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & q) const
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-GemsRepository::do_category_names() const
+GemsRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -153,7 +152,7 @@ GemsRepository::do_category_names() const
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-GemsRepository::do_package_names(const CategoryNamePart & c) const
+GemsRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -170,7 +169,7 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-GemsRepository::do_package_ids(const QualifiedPackageName & q) const
+GemsRepository::package_ids(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -301,7 +300,7 @@ namespace
 }
 
 bool
-GemsRepository::do_some_ids_might_support_action(const SupportsActionTestBase & a) const
+GemsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
     SupportsActionQuery q;
     a.accept(q);

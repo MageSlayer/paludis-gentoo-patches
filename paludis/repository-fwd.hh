@@ -52,7 +52,6 @@ namespace paludis
     class RepositoryVirtualsInterface;
     class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
-    class RepositoryLicensesInterface;
     class RepositoryEInterface;
     class RepositoryHookInterface;
     class RepositoryQAInterface;

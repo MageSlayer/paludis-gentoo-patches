@@ -176,13 +176,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
 
-    def test_11_licenses_interface(self):
-        li = repo.licenses_interface
-        self.assert_(isinstance(li, RepositoryLicensesInterface))
-
-        self.assertEquals(os.path.realpath(li.license_exists("foo")), os.path.join(repo_path, "licenses/foo"))
-        self.assertEquals(li.license_exists("bad"), None)
-
     def test_12_e_interface(self):
         ei = nce.main_repository.e_interface
 

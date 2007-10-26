@@ -74,7 +74,6 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
             .virtuals_interface(0)
             .make_virtuals_interface(0)
             .destination_interface(0)
-            .licenses_interface(0)
             .e_interface(0)
             .hook_interface(0)
             .qa_interface(0)
@@ -97,43 +96,43 @@ UnpackagedRepository::~UnpackagedRepository()
 }
 
 tr1::shared_ptr<const PackageIDSequence>
-UnpackagedRepository::do_package_ids(const QualifiedPackageName & n) const
+UnpackagedRepository::package_ids(const QualifiedPackageName & n) const
 {
     return n == _imp->id->name() ? _imp->ids : make_shared_ptr(new PackageIDSequence);
 }
 
 tr1::shared_ptr<const QualifiedPackageNameSet>
-UnpackagedRepository::do_package_names(const CategoryNamePart & c) const
+UnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
     return c == _imp->id->name().category ? _imp->package_names : make_shared_ptr(new QualifiedPackageNameSet);
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-UnpackagedRepository::do_category_names() const
+UnpackagedRepository::category_names() const
 {
     return _imp->category_names;
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
-UnpackagedRepository::do_category_names_containing_package(const PackageNamePart & p) const
+UnpackagedRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return p == _imp->id->name().package ? _imp->category_names : make_shared_ptr(new CategoryNamePartSet);
 }
 
 bool
-UnpackagedRepository::do_has_package_named(const QualifiedPackageName & q) const
+UnpackagedRepository::has_package_named(const QualifiedPackageName & q) const
 {
     return q == _imp->id->name();
 }
 
 bool
-UnpackagedRepository::do_has_category_named(const CategoryNamePart & c) const
+UnpackagedRepository::has_category_named(const CategoryNamePart & c) const
 {
     return c == _imp->id->name().category;
 }
 
 bool
-UnpackagedRepository::do_some_ids_might_support_action(const SupportsActionTestBase & test) const
+UnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase & test) const
 {
     return _imp->id->supports_action(test);
 }
