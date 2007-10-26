@@ -726,34 +726,6 @@ ERepository::info(bool verbose) const
         result->add_section(package_info);
     }
 
-#if 0
-    // don't inherit from master_repository, just causes clutter
-    std::set<std::string> info_vars;
-    if (_imp->layout->info_variables_file(_imp->params.location / "profiles").exists())
-    {
-        LineConfigFile vars(_imp->layout->info_variables_file(_imp->params.location / "profiles"), LineConfigFileOptions());
-        info_vars.insert(vars.begin(), vars.end());
-    }
-
-    if (! info_vars.empty() && ! info_pkgs.empty() &&
-            ! package_ids(QualifiedPackageName(*info_pkgs.begin()))->empty())
-    {
-        PackageDatabaseEntry e(QualifiedPackageName(*info_pkgs.begin()),
-                *package_ids(QualifiedPackageName(*info_pkgs.begin()))->last(),
-                name());
-        tr1::shared_ptr<RepositoryInfoSection> variable_info(new RepositoryInfoSection("Variable information"));
-        for (std::set<std::string>::const_iterator i(info_vars.begin()),
-                i_end(info_vars.end()) ; i != i_end ; ++i)
-            variable_info->add_kv(*i, get_environment_variable(e, *i));
-
-        result->add_section(variable_info);
-    }
-    else if (! info_vars.empty())
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Skipping info_vars for '" + stringify(name()) +
-                "' because info_pkgs is not usable");
-#endif
-
     return result;
 }
 
