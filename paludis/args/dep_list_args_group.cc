@@ -277,14 +277,21 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
         options.uninstalled_deps_suggested = x;
     }
 
-    options.installed_deps_pre = enum_arg_to_dep_list_deps_option(dl_installed_deps_pre);
-    options.installed_deps_runtime = enum_arg_to_dep_list_deps_option(dl_installed_deps_runtime);
-    options.installed_deps_post = enum_arg_to_dep_list_deps_option(dl_installed_deps_post);
+    if (dl_installed_deps_pre.specified() || ! dl_deps_default.specified())
+        options.installed_deps_pre = enum_arg_to_dep_list_deps_option(dl_installed_deps_pre);
+    if (dl_installed_deps_runtime.specified() || ! dl_deps_default.specified())
+        options.installed_deps_runtime = enum_arg_to_dep_list_deps_option(dl_installed_deps_runtime);
+    if (dl_installed_deps_post.specified() || ! dl_deps_default.specified())
+        options.installed_deps_post = enum_arg_to_dep_list_deps_option(dl_installed_deps_post);
 
-    options.uninstalled_deps_pre = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_pre);
-    options.uninstalled_deps_runtime = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_runtime);
-    options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_post);
-    options.uninstalled_deps_suggested = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_suggested);
+    if (dl_uninstalled_deps_pre.specified() || ! dl_deps_default.specified())
+        options.uninstalled_deps_pre = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_pre);
+    if (dl_uninstalled_deps_runtime.specified() || ! dl_deps_default.specified())
+        options.uninstalled_deps_runtime = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_runtime);
+    if (dl_uninstalled_deps_post.specified() || ! dl_deps_default.specified())
+        options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_post);
+    if (dl_uninstalled_deps_suggested.specified() || ! dl_deps_default.specified())
+        options.uninstalled_deps_suggested = enum_arg_to_dep_list_deps_option(dl_uninstalled_deps_suggested);
 }
 
 void
