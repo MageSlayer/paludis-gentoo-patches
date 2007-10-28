@@ -19,6 +19,7 @@
  */
 
 #include "vdb_unmerger.hh"
+#include "vdb_contents_tokeniser.hh"
 
 using namespace paludis;
 
@@ -210,102 +211,39 @@ VDBUnmerger::populate_unmerge_set()
     while (std::getline(c, line))
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
-        if (tokens.empty())
+        if (! erepository::VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
             continue;
+        }
 
         if ("obj" == tokens.at(0))
         {
-            while (tokens.size() > 4)
-            {
-                if (std::string::npos != tokens.at(4).find('='))
-                    break;
-
-                tokens.at(1).append(" " + tokens.at(2));
-                tokens.erase(next(tokens.begin(), 2));
-            }
-
-            if (tokens.size() != 4)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
-            else
-            {
-                std::string md5sum(tokens.at(2));
-                time_t mtime(destringify<time_t>(tokens.at(3)));
-                tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
-                add_unmerge_entry(tokens.at(1), et_file, extra);
-            }
+            std::string md5sum(tokens.at(2));
+            time_t mtime(destringify<time_t>(tokens.at(3)));
+            tr1::shared_ptr<ExtraInfo> extra(new FileExtraInfo(md5sum, mtime));
+            add_unmerge_entry(tokens.at(1), et_file, extra);
 
         }
         else if ("sym" == tokens.at(0))
         {
-            while (tokens.size() > 5)
-            {
-                if (tokens.at(2) == "->")
-                    break;
-
-                tokens.at(1).append(" " + tokens.at(2));
-                tokens.erase(next(tokens.begin(), 2));
-            }
-
-            while (tokens.size() > 5)
-            {
-                if (std::string::npos != tokens.at(5).find('='))
-                    break;
-
-                tokens.at(3).append(" " + tokens.at(4));
-                tokens.erase(next(tokens.begin(), 4));
-            }
-
-            if (tokens.size() != 5 || tokens.at(2) != "->")
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
-            else
-            {
-                std::string dest(tokens.at(3));
-                time_t mtime(destringify<time_t>(tokens.at(4)));
-                tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
-                add_unmerge_entry(tokens.at(1), et_sym, extra);
-            }
+            std::string dest(tokens.at(2));
+            time_t mtime(destringify<time_t>(tokens.at(3)));
+            tr1::shared_ptr<ExtraInfo> extra(new SymlinkExtraInfo(dest, mtime));
+            add_unmerge_entry(tokens.at(1), et_sym, extra);
         }
         else if ("misc" == tokens.at(0))
         {
         }
         else if ("fif" == tokens.at(0) || "dev" == tokens.at(0))
         {
-            while (tokens.size() > 2)
-            {
-                if (std::string::npos != tokens.at(2).find('='))
-                    break;
-
-                tokens.at(1).append(" " + tokens.at(2));
-                tokens.erase(next(tokens.begin(), 2));
-            }
-
-            if (tokens.size() != 2)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
-            else
-            {
-                std::string type(tokens.at(0));
-                tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
-                add_unmerge_entry(tokens.at(1), et_misc, extra);
-            }
+            std::string type(tokens.at(0));
+            tr1::shared_ptr<ExtraInfo> extra(new MiscExtraInfo(type));
+            add_unmerge_entry(tokens.at(1), et_misc, extra);
         }
         else if ("dir" == tokens.at(0))
         {
-            while (tokens.size() > 2)
-            {
-                if (std::string::npos != tokens.at(2).find('='))
-                    break;
-
-                tokens.at(1).append(" " + tokens.at(2));
-                tokens.erase(next(tokens.begin(), 2));
-            }
-
-            if (tokens.size() != 2)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");
-            else
-            {
-                add_unmerge_entry(tokens.at(1), et_dir, tr1::shared_ptr<ExtraInfo>());
-            }
+            add_unmerge_entry(tokens.at(1), et_dir, tr1::shared_ptr<ExtraInfo>());
         }
         else
             Log::get_instance()->message(ll_warning, lc_no_context, "Malformed VDB entry '" + line + "'");

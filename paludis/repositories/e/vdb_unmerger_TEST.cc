@@ -108,6 +108,34 @@ namespace test_cases
         }
     } test_vdb_unmerger_file_with_spaces;
 
+    struct VDBUnmergerTestFileWithLotsOfSpaces : VDBUnmergerTest
+    {
+        VDBUnmergerTestFileWithLotsOfSpaces() : VDBUnmergerTest("file_ with lots  of   spaces") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / target).is_regular_file());
+
+            unmerger.unmerge();
+
+            TEST_CHECK(! (root_dir / target).exists());
+        }
+    } test_vdb_unmerger_file_with_lots_of_spaces;
+
+    struct VDBUnmergerTestFileWithTrailingSpace : VDBUnmergerTest
+    {
+        VDBUnmergerTestFileWithTrailingSpace() : VDBUnmergerTest("file_ with trailing  space\t ") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / target).is_regular_file());
+
+            unmerger.unmerge();
+
+            TEST_CHECK(! (root_dir / target).exists());
+        }
+    } test_vdb_unmerger_file_with_trailing_space;
+
     struct VDBUnmergerTestFileBadType : VDBUnmergerTest
     {
         VDBUnmergerTestFileBadType() : VDBUnmergerTest("file_bad_type") { }
@@ -178,6 +206,20 @@ namespace test_cases
         }
     } test_vdb_unmerger_dir_with_spaces;
 
+    struct VDBUnmergerTestDirWithLotsOfSpaces : VDBUnmergerTest
+    {
+        VDBUnmergerTestDirWithLotsOfSpaces() : VDBUnmergerTest("dir_ with lots  of   spaces") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / target).is_directory());
+
+            unmerger.unmerge();
+
+            TEST_CHECK(! (root_dir / target).exists());
+        }
+    } test_vdb_unmerger_dir_with_lots_of_spaces;
+
     struct VDBUnmergerTestDirBadType : VDBUnmergerTest
     {
         VDBUnmergerTestDirBadType() : VDBUnmergerTest("dir_bad_type") { }
@@ -233,6 +275,34 @@ namespace test_cases
             TEST_CHECK(! (root_dir / target).exists());
         }
     } test_vdb_unmerger_sym_with_spaces;
+
+    struct VDBUnmergerTestSymWithLotsOfSpaces : VDBUnmergerTest
+    {
+        VDBUnmergerTestSymWithLotsOfSpaces() : VDBUnmergerTest("sym_ with lots  of   spaces") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / target).is_symbolic_link());
+
+            unmerger.unmerge();
+
+            TEST_CHECK(! (root_dir / target).exists());
+        }
+    } test_vdb_unmerger_sym_with_lots_of_spaces;
+
+    struct VDBUnmergerTestSymWithManyArrows : VDBUnmergerTest
+    {
+        VDBUnmergerTestSymWithManyArrows() : VDBUnmergerTest("sym with many arrows") { }
+
+        void run()
+        {
+            TEST_CHECK((root_dir / target).is_symbolic_link());
+
+            unmerger.unmerge();
+
+            TEST_CHECK(! (root_dir / target).exists());
+        }
+    } test_vdb_unmerger_sym_with_many_arrows;
 
     struct VDBUnmergerTestSymBadType : VDBUnmergerTest
     {

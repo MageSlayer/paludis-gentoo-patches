@@ -10,6 +10,8 @@ trunk/:
 
     * More verbose paludis --info output.
 
+    * Paludis now fully supports filenames containing spaces.
+
     * Bug fixes: --dl-deps-default works again.
 
 0.26.0_alpha2:

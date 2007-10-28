@@ -3,9 +3,10 @@
 
 mkdir vdb_merger_TEST_dir || exit 2
 cd vdb_merger_TEST_dir || exit 3
+mkdir CONTENTS || exit 4
 
 
-mkdir -p config_protect_dir/{image,root,CONTENTS} || exit 4
+mkdir -p config_protect_dir/{image,root} || exit 4
 
 cd config_protect_dir/image
 
@@ -58,6 +59,26 @@ mkdir protected_dir_not_really
 echo bar >protected_dir_not_really/unprotected_file
 
 cd ../..
+
+
+mkdir -p file_newline_dir/{image,root} || exit 4
+touch file_newline_dir/image/"file
+newline"
+
+mkdir -p dir_newline_dir/{image,root} || exit 4
+mkdir dir_newline_dir/image/"dir
+newline"
+
+mkdir -p sym_newline_dir/{image,root} || exit 4
+ln -s foo sym_newline_dir/image/"sym
+newline"
+
+mkdir -p sym_arrow_dir/{image,root} || exit 4
+ln -s bar sym_arrow_dir/image/"sym -> arrow"
+
+mkdir -p sym_arrow2_dir/{image,root} || exit 4
+mkdir sym_arrow2_dir/image/"dir -> ectory"
+ln -s bar sym_arrow2_dir/image/"dir -> ectory/sym"
 
 
 for d in *_dir; do

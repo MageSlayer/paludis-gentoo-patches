@@ -260,6 +260,35 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
 }
 
 void
+VDBMerger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+{
+    if (is_check && std::string::npos != src.basename().find('\n'))
+        throw MergerError("File '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+    Merger::on_file(is_check, src, dst);
+}
+
+void
+VDBMerger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+{
+    if (is_check && std::string::npos != src.basename().find('\n'))
+        throw MergerError("Directory '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+    Merger::on_dir(is_check, src, dst);
+}
+
+void
+VDBMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+{
+    if (is_check)
+    {
+        if (std::string::npos != src.basename().find('\n'))
+            throw MergerError("'" + stringify(src) + "Symlink ' contains a newline in its name, which cannot be stored by VDB");
+        if (std::string::npos != stringify(src).find(" -> "))
+            throw MergerError("'" + stringify(src) + "Symlink ' contains a ' -> ' in its name, which cannot be stored by VDB");
+    }
+    Merger::on_sym(is_check, src, dst);
+}
+
+void
 VDBMerger::display_override(const std::string & message) const
 {
     std::cout << message << std::endl;

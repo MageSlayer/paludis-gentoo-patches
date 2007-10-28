@@ -177,5 +177,55 @@ namespace test_cases
             TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").exists());
         }
     } test_vdb_merger_config_protect;
+
+    struct VDBMergerTestFileNewline : VDBMergerTest
+    {
+        VDBMergerTestFileNewline() : VDBMergerTest("file_newline") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_file_newline;
+
+    struct VDBMergerTestDirNewline : VDBMergerTest
+    {
+        VDBMergerTestDirNewline() : VDBMergerTest("dir_newline") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_dir_newline;
+
+    struct VDBMergerTestSymNewline : VDBMergerTest
+    {
+        VDBMergerTestSymNewline() : VDBMergerTest("sym_newline") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_sym_newline;
+
+    struct VDBMergerTestSymArrow : VDBMergerTest
+    {
+        VDBMergerTestSymArrow() : VDBMergerTest("sym_arrow") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_sym_arrow;
+
+    struct VDBMergerTestSymArrow2 : VDBMergerTest
+    {
+        VDBMergerTestSymArrow2() : VDBMergerTest("sym_arrow2") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(merger.check(), MergerError);
+        }
+    } test_vdb_merger_sym_arrow2;
 }
 

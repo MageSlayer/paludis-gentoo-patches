@@ -20,7 +20,9 @@
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/query.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -243,5 +245,110 @@ namespace test_cases
             TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/bar\ncat-one/oink\ncat-one/foofoo\n");
         }
     } test_vdb_repository_add_to_world_no_match_no_eol;
+
+    /**
+     * \test Test VDBRepository CONTENTS.
+     */
+    struct VDBRepositoryContentsTest : TestCase
+    {
+        VDBRepositoryContentsTest() : TestCase("CONTENTS") { }
+
+        struct ContentsGatherer :
+            ConstVisitor<ContentsVisitorTypes>
+        {
+            std::string _str;
+
+            void visit(const ContentsFileEntry & e)
+            {
+                _str += "file\n";
+                _str += stringify(e.name());
+                _str += '\n';
+            }
+
+            void visit(const ContentsDirEntry & e)
+            {
+                _str += "directory\n";
+                _str += stringify(e.name());
+                _str += '\n';
+            }
+
+            void visit(const ContentsSymEntry & e)
+            {
+                _str += "symlink\n";
+                _str += stringify(e.name());
+                _str += '\n';
+                _str += stringify(e.target());
+                _str += '\n';
+            }
+
+            void visit(const ContentsMiscEntry & e)
+            {
+                _str += "miscellaneous\n";
+                _str += stringify(e.name());
+                _str += '\n';
+            }
+
+            void visit(const ContentsFifoEntry & e)
+            {
+                _str += "fifo\n";
+                _str += stringify(e.name());
+                _str += '\n';
+            }
+
+            void visit(const ContentsDevEntry & e)
+            {
+                _str += "device\n";
+                _str += stringify(e.name());
+                _str += '\n';
+            }
+        };
+
+        void run()
+        {
+            TestEnvironment env;
+            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
+            tr1::shared_ptr<Repository> repo(VDBRepository::make_vdb_repository(
+                        &env, keys));
+            env.package_database()->add_repository(1, repo);
+
+            tr1::shared_ptr<const PackageID> e1(*env.package_database()->query(query::Matches(
+                            PackageDepSpec("=cat-one/pkg-one-1", pds_pm_permissive)), qo_require_exactly_one)->begin());
+            ContentsGatherer gatherer;
+            std::for_each(indirect_iterator(e1->contents_key()->value()->begin()),
+                          indirect_iterator(e1->contents_key()->value()->end()),
+                          accept_visitor(gatherer));
+            TEST_CHECK_EQUAL(gatherer._str,
+                             "directory\n/directory\n"
+                             "file\n/directory/file\n"
+                             "symlink\n/directory/symlink\ntarget\n"
+                             "directory\n/directory with spaces\n"
+                             "directory\n/directory with trailing space \n"
+                             "directory\n/directory  with  consecutive  spaces\n"
+                             "file\n/file with spaces\n"
+                             "file\n/file  with  consecutive  spaces\n"
+                             "file\n/file with  trailing   space\t \n"
+                             "symlink\n/symlink\ntarget  with  consecutive  spaces\n"
+                             "symlink\n/symlink with spaces\ntarget with spaces\n"
+                             "symlink\n/symlink  with  consecutive  spaces\ntarget  with  consecutive  spaces\n"
+                             "symlink\n/symlink\ntarget -> with -> multiple -> arrows\n"
+                             "symlink\n/symlink\ntarget with trailing space \n"
+                             "symlink\n/symlink\n target with leading space\n"
+                             "symlink\n/symlink with trailing space \ntarget\n"
+                             "fifo\n/fifo\n"
+                             "fifo\n/fifo with spaces\n"
+                             "fifo\n/fifo  with  consecutive  spaces\n"
+                             "device\n/device\n"
+                             "device\n/device with spaces\n"
+                             "device\n/device  with  consecutive  spaces\n"
+                             "miscellaneous\n/miscellaneous\n"
+                             "miscellaneous\n/miscellaneous with spaces\n"
+                             "miscellaneous\n/miscellaneous  with  consecutive  spaces\n");
+        }
+    } vdb_repository_contents_test;
 }
 

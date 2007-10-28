@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -1119,11 +1120,7 @@ EContentsKey::value() const
         ++line_number;
 
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::tokenise(line, std::back_inserter(tokens));
-        if (tokens.empty())
-            continue;
-
-        if (tokens.size() < 2)
+        if (! VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
         {
             Log::get_instance()->message(ll_warning, lc_no_context) << "CONTENTS has broken line " <<
                 line_number << ", skipping";
@@ -1141,16 +1138,7 @@ EContentsKey::value() const
         else if ("dev" == tokens.at(0))
             _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsDevEntry(tokens.at(1))));
         else if ("sym" == tokens.at(0))
-        {
-            if (tokens.size() < 4)
-            {
-                Log::get_instance()->message(ll_warning, lc_no_context) << "CONTENTS has broken sym line " <<
-                    line_number << ", skipping";
-                continue;
-            }
-
-            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(tokens.at(1), tokens.at(3))));
-        }
+            _imp->value->add(tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(tokens.at(1), tokens.at(2))));
     }
 
     return _imp->value;

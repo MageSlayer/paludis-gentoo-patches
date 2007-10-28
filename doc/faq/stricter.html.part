@@ -20,11 +20,6 @@
     anything with them. Ebuilds that need to install fancy file types should do
     so in <code>pkg_postinst</code>.</li>
 
-    <li>Things containing spaces. The VDB format, which cannot be changed
-    without breaking Portage compatibility, uses spaces as a delimiter. Portage
-    behaves incorrectly on items with spaces in the name; Paludis simply refuses
-    to touch them.</li>
-
     <li>Non-directories on top of directories. Paludis will not let a package
     overwrite a directory with a non-directory. This is for your own safety.
     Portage doesn't bail out on this, but instead ends up partially merging

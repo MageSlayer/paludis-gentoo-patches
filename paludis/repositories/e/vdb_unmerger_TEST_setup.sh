@@ -25,12 +25,16 @@ make_sym() {
     ln -s "${dst}" "${src}"
 
     mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "sym_$1")}
-    echo "sym /${src} -> sym_$1_dst  ${mtime}" > "../CONTENTS/sym_$1"
+    echo "sym /${src} -> sym_$1_dst ${mtime}" > "../CONTENTS/sym_$1"
 }
 
 make_file "ok"
 
 make_file " with spaces"
+
+make_file " with lots  of   spaces"
+
+make_file " with trailing  space	 "
 
 make_file "bad_type"
 rm file_bad_type
@@ -46,6 +50,9 @@ echo "dir /dir_ok" > ../CONTENTS/dir_ok
 mkdir "dir_ with spaces"
 echo "dir /dir_ with spaces" > "../CONTENTS/dir_ with spaces"
 
+mkdir "dir_ with lots  of   spaces"
+echo "dir /dir_ with lots  of   spaces" > "../CONTENTS/dir_ with lots  of   spaces"
+
 > dir_bad_type
 echo "dir /dir_bad_type" > ../CONTENTS/dir_bad_type
 
@@ -54,6 +61,12 @@ echo "dir /dir_not_empty" > ../CONTENTS/dir_not_empty
 
 make_sym "ok"
 make_sym " with spaces"
+make_sym " with lots  of   spaces"
+
+> "sym -> with -> many -> arrows -> dst"
+ln -s "sym -> with -> many -> arrows -> dst" "sym with many arrows"
+mtime=${3:-$(${PALUDIS_EBUILD_DIR}/utils/wrapped_getmtime "sym with many arrows")}
+echo "sym /sym with many arrows -> sym -> with -> many -> arrows -> dst ${mtime}" > "../CONTENTS/sym with many arrows"
 
 make_sym "bad_type"
 rm sym_bad_type

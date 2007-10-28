@@ -62,6 +62,10 @@ namespace paludis
             virtual void on_warn(bool is_check, const std::string &);
             virtual void on_enter_dir(bool is_check, const FSEntry);
 
+            virtual void on_file(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
+
             virtual bool config_protected(const FSEntry &, const FSEntry &);
             virtual std::string make_config_protect_name(const FSEntry &, const FSEntry &);
 
