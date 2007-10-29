@@ -1,9 +1,13 @@
 
+#include "config.h"
+
 #include "elf.hh"
 #include "elf_dynamic_section.hh"
 #include "elf_relocation_section.hh"
 #include "elf_symbol_section.hh"
 #include "elf_types.hh"
+
+#include <src/clients/reconcilio/util/byte_swap.hh>
 
 #include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -29,8 +33,60 @@ namespace paludis
     };
 }
 
+enum {
+    native_byte_order =
+#if WORDS_BIGENDIAN
+    ELFDATA2MSB
+#else
+    ELFDATA2LSB
+#endif
+};
+
 namespace
 {
+    template <typename ElfType_>
+    struct ByteSwapElfHeader
+    {
+        static void swap_in_place(typename ElfType_::Header & hdr)
+        {
+            hdr.e_type      = byte_swap(hdr.e_type);
+            hdr.e_machine   = byte_swap(hdr.e_machine);
+            hdr.e_version   = byte_swap(hdr.e_version);
+            hdr.e_entry     = byte_swap(hdr.e_entry);
+            hdr.e_phoff     = byte_swap(hdr.e_phoff);
+            hdr.e_shoff     = byte_swap(hdr.e_shoff);
+            hdr.e_flags     = byte_swap(hdr.e_flags);
+            hdr.e_ehsize    = byte_swap(hdr.e_ehsize);
+            hdr.e_phentsize = byte_swap(hdr.e_phentsize);
+            hdr.e_phnum     = byte_swap(hdr.e_phnum);
+            hdr.e_shentsize = byte_swap(hdr.e_shentsize);
+            hdr.e_shnum     = byte_swap(hdr.e_shnum);
+            hdr.e_shstrndx  = byte_swap(hdr.e_shstrndx);
+        }
+    };
+
+    template <typename ElfType_>
+    struct ByteSwapSectionHeader
+    {
+        static void swap_in_place(typename ElfType_::SectionHeader &);
+    };
+
+    template <typename ElfType_>
+    void
+    ByteSwapSectionHeader<ElfType_>::swap_in_place(typename ElfType_::SectionHeader & shdr)
+    {
+        shdr.sh_name      = byte_swap(shdr.sh_name);
+        shdr.sh_type      = byte_swap(shdr.sh_type);
+        shdr.sh_flags     = byte_swap(shdr.sh_flags);
+        shdr.sh_addr      = byte_swap(shdr.sh_addr);
+        shdr.sh_offset    = byte_swap(shdr.sh_offset);
+        shdr.sh_size      = byte_swap(shdr.sh_size);
+        shdr.sh_link      = byte_swap(shdr.sh_link);
+        shdr.sh_info      = byte_swap(shdr.sh_info);
+        shdr.sh_addralign = byte_swap(shdr.sh_addralign);
+        shdr.sh_entsize   = byte_swap(shdr.sh_entsize);
+    }
+
     class StreamExceptions
     {
         private:
@@ -181,6 +237,9 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
 
         stream.seekg(0, std::ios::beg);
         stream.read(reinterpret_cast<char *>(&_hdr), sizeof(typename ElfType_::Header));
+        bool need_byte_swap(_hdr.e_ident[EI_DATA] != native_byte_order);
+        if (need_byte_swap)
+            ByteSwapElfHeader<ElfType_>::swap_in_place(_hdr);
 
         std::vector<typename ElfType_::SectionHeader> shdrs;
         if (_hdr.e_shoff)
@@ -193,18 +252,26 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
             {
                 std::vector<typename ElfType_::SectionHeader> my_shdrs(_hdr.e_shnum);
                 stream.read(reinterpret_cast<char *>(&my_shdrs.front()), sizeof(typename ElfType_::SectionHeader) * _hdr.e_shnum);
+                if (need_byte_swap)
+                    std::for_each(my_shdrs.begin(), my_shdrs.end(),
+                                  &ByteSwapSectionHeader<ElfType_>::swap_in_place);
                 shdrs.swap(my_shdrs);
             }
             else
             {
                 typename ElfType_::SectionHeader first_shdr;
                 stream.read(reinterpret_cast<char *>(&first_shdr), sizeof(typename ElfType_::SectionHeader));
+                if (need_byte_swap)
+                    ByteSwapSectionHeader<ElfType_>::swap_in_place(first_shdr);
                 if (0 == first_shdr.sh_size)
                     throw InvalidElfFileError();
 
                 std::vector<typename ElfType_::SectionHeader> my_shdrs(first_shdr.sh_size);
                 my_shdrs[0] = first_shdr;
                 stream.read(reinterpret_cast<char *>(&my_shdrs[1]), sizeof(typename ElfType_::SectionHeader) * (first_shdr.sh_size - 1));
+                if (need_byte_swap)
+                    std::for_each(next(my_shdrs.begin()), my_shdrs.end(),
+                                  &ByteSwapSectionHeader<ElfType_>::swap_in_place);
                 shdrs.swap(my_shdrs);
             }
         }
@@ -212,15 +279,15 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
         for (typename std::vector<typename ElfType_::SectionHeader>::iterator i = shdrs.begin(); i != shdrs.end(); ++i)
         {
             if (i->sh_type == SHT_STRTAB)
-                _imp->sections.push_back(make_shared_ptr(new StringSection<ElfType_>(*i, stream)));
+                _imp->sections.push_back(make_shared_ptr(new StringSection<ElfType_>(*i, stream, need_byte_swap)));
             else if ( (i->sh_type == SHT_SYMTAB) || (i->sh_type == SHT_DYNSYM) )
-                _imp->sections.push_back(make_shared_ptr(new SymbolSection<ElfType_>(*i, stream)));
+                _imp->sections.push_back(make_shared_ptr(new SymbolSection<ElfType_>(*i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_DYNAMIC)
-                _imp->sections.push_back(make_shared_ptr(new DynamicSection<ElfType_>(*i, stream)));
+                _imp->sections.push_back(make_shared_ptr(new DynamicSection<ElfType_>(*i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_REL)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, Relocation<ElfType_> >(*i, stream)));
+                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, Relocation<ElfType_> >(*i, stream, need_byte_swap)));
             else if (i->sh_type == SHT_RELA)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, RelocationA<ElfType_> >(*i, stream)));
+                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, RelocationA<ElfType_> >(*i, stream, need_byte_swap)));
             else
                 _imp->sections.push_back(make_shared_ptr(new GenericSection<ElfType_>(*i)));
         }

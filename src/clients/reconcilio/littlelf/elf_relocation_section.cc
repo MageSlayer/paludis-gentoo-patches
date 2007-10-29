@@ -3,6 +3,8 @@
 #include "elf_types.hh"
 #include "elf.hh"
 
+#include <src/clients/reconcilio/util/byte_swap.hh>
+
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 
@@ -19,6 +21,32 @@ namespace paludis
     struct Implementation<RelocationSection<ElfType_, Relocation_> >
     {
         std::vector<typename Relocation_::Entry> relocations;
+    };
+}
+
+namespace
+{
+    template <typename, typename> struct ByteSwapRelocation;
+
+    template <typename ElfType_>
+    struct ByteSwapRelocation<ElfType_, Relocation<ElfType_> >
+    {
+        static void swap_in_place(typename ElfType_::Relocation & rel)
+        {
+            rel.r_offset = byte_swap(rel.r_offset);
+            rel.r_info   = byte_swap(rel.r_info);
+        }
+    };
+
+    template <typename ElfType_>
+    struct ByteSwapRelocation<ElfType_, RelocationA<ElfType_> >
+    {
+        static void swap_in_place(typename ElfType_::RelocationA & rela)
+        {
+            rela.r_offset = byte_swap(rela.r_offset);
+            rela.r_info   = byte_swap(rela.r_info);
+            rela.r_addend = byte_swap(rela.r_addend);
+        }
     };
 }
 
@@ -48,7 +76,8 @@ template <typename ElfType_> const std::string Relocation<ElfType_>::type_name =
 template <typename ElfType_> const std::string RelocationA<ElfType_>::type_name = "RELA";
 
 template <typename ElfType_, typename Relocation_>
-RelocationSection<ElfType_, Relocation_>::RelocationSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream) :
+RelocationSection<ElfType_, Relocation_>::RelocationSection(
+    const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<RelocationSection>(new Implementation<RelocationSection>)
 {
@@ -58,6 +87,9 @@ RelocationSection<ElfType_, Relocation_>::RelocationSection(const typename ElfTy
     std::vector<typename Relocation_::Type> relocations(shdr.sh_size / sizeof(typename Relocation_::Type));
     stream.seekg(shdr.sh_offset, std::ios::beg);
     stream.read(reinterpret_cast<char *>(&relocations.front()), shdr.sh_size);
+    if (need_byte_swap)
+        std::for_each(relocations.begin(), relocations.end(),
+                      &ByteSwapRelocation<ElfType_, Relocation_>::swap_in_place);
 
     for (typename std::vector<typename Relocation_::Type>::iterator i = relocations.begin(); i != relocations.end(); ++i)
         _imp->relocations.push_back(typename Relocation_::Entry(*i));

@@ -6,14 +6,15 @@ noinst_LIBRARIES = libreconcilioutil.a
 
 libreconcilioutil_a_SOURCES = \
 	realpath.cc          realpath.hh \
-	wildcard_expander.cc wildcard_expander.hh
+	wildcard_expander.cc wildcard_expander.hh \
+	byte_swap.hh
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
 	bash $(top_srcdir)/test/run_test.sh bash
 
-TESTS = realpath_TEST wildcard_expander_TEST
+TESTS = realpath_TEST wildcard_expander_TEST byte_swap_TEST
 check_PROGRAMS = $(TESTS)
 
 EXTRA_DIST = \
@@ -29,6 +30,13 @@ realpath_TEST_LDADD = \
 
 wildcard_expander_TEST_SOURCES = wildcard_expander_TEST.cc
 wildcard_expander_TEST_LDADD = \
+	libreconcilioutil.a \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a
+
+byte_swap_TEST_SOURCES = byte_swap_TEST.cc
+byte_swap_TEST_LDADD = \
 	libreconcilioutil.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \

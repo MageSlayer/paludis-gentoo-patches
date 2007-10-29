@@ -3,6 +3,8 @@
 #include "elf_types.hh"
 #include "elf.hh"
 
+#include <src/clients/reconcilio/util/byte_swap.hh>
+
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 
@@ -20,6 +22,23 @@ namespace paludis
     struct Implementation<SymbolSection<ElfType_> >
     {
         std::vector<Symbol<ElfType_> > symbols;
+    };
+}
+
+namespace
+{
+    template <typename ElfType_>
+    struct ByteSwapSymbol
+    {
+        static void swap_in_place(typename ElfType_::Symbol & sym)
+        {
+            sym.st_name  = byte_swap(sym.st_name);
+            sym.st_value = byte_swap(sym.st_value);
+            sym.st_size  = byte_swap(sym.st_size);
+            sym.st_info  = byte_swap(sym.st_info);
+            sym.st_other = byte_swap(sym.st_other);
+            sym.st_shndx = byte_swap(sym.st_shndx);
+        }
     };
 }
 
@@ -114,7 +133,7 @@ Symbol<ElfType_>::~Symbol()
 }
 
 template <typename ElfType_>
-SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream) :
+SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<SymbolSection>(new Implementation<SymbolSection>),
     _type("invalid")
@@ -129,6 +148,10 @@ SymbolSection<ElfType_>::SymbolSection(const typename ElfType_::SectionHeader & 
     std::vector<typename ElfType_::Symbol> symbols(shdr.sh_size / sizeof(typename ElfType_::Symbol));
     stream.seekg(shdr.sh_offset, std::ios::beg);
     stream.read( reinterpret_cast<char *>(&symbols.front()), shdr.sh_size );
+    if (need_byte_swap)
+        std::for_each(symbols.begin(), symbols.end(),
+                      &ByteSwapSymbol<ElfType_>::swap_in_place);
+
     for (typename std::vector<typename ElfType_::Symbol>::iterator i = symbols.begin(); i != symbols.end(); ++i)
         _imp->symbols.push_back(Symbol<ElfType_>(*i));
 }

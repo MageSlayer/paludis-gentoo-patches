@@ -41,7 +41,7 @@ GenericSection<ElfType_>::get_type() const
 }
 
 template <typename ElfType_>
-StringSection<ElfType_>::StringSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream) :
+StringSection<ElfType_>::StringSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool) :
     Section<ElfType_>(shdr),
     _stringTable(shdr.sh_size, ' ')
 {

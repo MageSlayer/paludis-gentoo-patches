@@ -195,7 +195,7 @@ class DynamicSection :
     using paludis::PrivateImplementationPattern<DynamicSection>::_imp;
 
     public:
-        DynamicSection(const typename ElfType_::SectionHeader &, std::istream &);
+        DynamicSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~DynamicSection();
 
         virtual std::string get_type() const;

@@ -3,6 +3,8 @@
 #include "elf_types.hh"
 #include "elf.hh"
 
+#include <src/clients/reconcilio/util/byte_swap.hh>
+
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/iterator.hh>
@@ -67,6 +69,16 @@ namespace littlelf_internals
 
 namespace
 {
+    template <typename ElfType_>
+    struct ByteSwapDynamicEntry
+    {
+        static void swap_in_place(typename ElfType_::DynamicEntry & entry)
+        {
+            entry.d_tag      = byte_swap(entry.d_tag);
+            entry.d_un.d_val = byte_swap(entry.d_un.d_val);
+        }
+    };
+
     template <typename ElfType_>
     class DynamicSectionStringResolvingVisitor :
         public SectionVisitor<ElfType_>
@@ -238,7 +250,7 @@ DynamicEntries<ElfType_>::has_entry(typename ElfType_::DynamicTag identifier) co
 }
 
 template <typename ElfType_>
-DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream) :
+DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(shdr),
     PrivateImplementationPattern<DynamicSection>(new Implementation<DynamicSection>)
 {
@@ -248,6 +260,9 @@ DynamicSection<ElfType_>::DynamicSection(const typename ElfType_::SectionHeader 
     stream.seekg(shdr.sh_offset, std::ios::beg);
     std::vector<typename ElfType_::DynamicEntry> tmp_entries(shdr.sh_size / sizeof(typename ElfType_::DynamicEntry));
     stream.read( reinterpret_cast<char *>(&tmp_entries.front()), shdr.sh_size );
+    if (need_byte_swap)
+        std::for_each(tmp_entries.begin(), tmp_entries.end(),
+                      &ByteSwapDynamicEntry<ElfType_>::swap_in_place);
 
     for (typename std::vector<typename ElfType_::DynamicEntry>::iterator i = tmp_entries.begin(); i != tmp_entries.end(); ++i)
     {

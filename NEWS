@@ -12,7 +12,9 @@ trunk/:
 
     * Paludis now fully supports filenames containing spaces.
 
-    * Bug fixes: --dl-deps-default works again.
+    * Bug fixes: --dl-deps-default works again. More
+      robustness/compilance improvements for reconcilio, including
+      proper handling of ELF files that use the non-native byte order.
 
 0.26.0_alpha2:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for

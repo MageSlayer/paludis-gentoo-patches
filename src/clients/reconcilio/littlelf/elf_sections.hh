@@ -136,7 +136,7 @@ class StringSection :
         std::string _stringTable;
 
     public:
-        StringSection(const typename ElfType_::SectionHeader &, std::istream &);
+        StringSection(const typename ElfType_::SectionHeader &, std::istream &, bool);
         virtual ~StringSection();
 
         std::string get_string(typename ElfType_::Word) const;
