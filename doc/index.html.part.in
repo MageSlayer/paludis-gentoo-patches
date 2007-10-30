@@ -41,7 +41,6 @@
     or override built-in syncers.</li>
     <li><a href="configuration/fetchers.html">Fetchers</a>: options for built-in fetchers, and how to implement custom URI fetching
     protocols or replace built-in fetchers.</li>
-    fetchers.</li>
     <li><a href="configuration/envvars.html">Environment variables</a> that Paludis itself recognises.</li>
 </ul>
 
