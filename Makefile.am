@@ -11,7 +11,8 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa --enable-vim
 	--with-repositories=default \
 	--with-environments=default,portage \
 	--with-clients=default,accerso,contrarius,importare,inquisitio,instruo \
-	--with-default-distribution=giant-space-monkey
+	--with-default-distribution=giant-space-monkey \
+	--enable-htmltidy
 
 automake-deps-built-hack.tmp : built-sources-subdirs
 	touch $@
