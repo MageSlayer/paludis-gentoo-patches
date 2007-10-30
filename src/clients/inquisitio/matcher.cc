@@ -18,6 +18,7 @@
  */
 
 #include "matcher.hh"
+#include "exact_matcher.hh"
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
 #include <paludis/util/virtual_constructor-impl.hh>
@@ -58,6 +59,7 @@ namespace
 
 MatcherMaker::MatcherMaker()
 {
+    register_maker("exact", &make<ExactMatcher>);
     register_maker("pcre", &make<PCREMatcher>);
     register_maker("text", &make<TextMatcher>);
 }
