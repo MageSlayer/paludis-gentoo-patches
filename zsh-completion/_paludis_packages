@@ -5,38 +5,39 @@
 # Written by Baptiste Daroussin <baptux at free.fr>
 # Usage: _paludis_packages installed|available|repositories|categories|sets|repository-formats
 
-local flags prepo packages categories
+local flags prepo packages categories paludis_pkgs
 _paludis_packages_update_available() {
-    categories=(${${(M)${(f)"$(paludis --list-categories)"}:#\* *}##\* })
     if [[ $PREFIX != */* ]];then
+        paludis_pkgs=(${(o)${${(M)${(f)"$(paludis --log-level silent --list-packages)"}:#\* *}##\* }##*/})
+        _wanted paludis_pkgs expl "packages" compadd - ${(@)paludis_pkgs}
+        categories=(${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* })
         _wanted cat_packages expl "category/packages" compadd -S "/" $categories
     else
-    compset -P '*/'
-#   packages=(${${(M)${(f)"$(paludis --category ${PREFIX//\//} --list-packages)"}:#\* *}##\* })
-    packages=(${${${(M)${(f)"$(paludis --category ${IPREFIX//\//} --list-packages)"}:#\* *}##\* }//$IPREFIX/})
-    _wanted cat_packages expl "category/packages" compadd ${(@)packages}
+        compset -P '*/'
+        packages=(${${${(M)${(f)"$(paludis --log-level silent --category ${IPREFIX//\//} --list-packages)"}:#\* *}##\* }//$IPREFIX/})
+        _wanted cat_packages expl "category/packages" compadd ${(@)packages}
     fi
 }
 
 _paludis_packages_update_repository-formats() {
-    packages=(${${(M)${(f)"$(paludis --list-repository-formats)"}:#\* *}##\* })
+    packages=(${${(M)${(f)"$(paludis --log-level silent --list-repository-formats)"}:#\* *}##\* })
     compadd ${(@)packages}
 }
 
 _paludis_packages_update_installed() {
-    packages=(${${(M)${(f)"$(paludis --repository installed --list-packages)"}:#\* *}##\* })
+    packages=(${${(M)${(f)"$(paludis --log-level silent --repository installed --list-packages)"}:#\* *}##\* })
     compadd ${(@)packages}
 }
 _paludis_packages_update_categories() {
-    packages=(${${${(M)${(f)"$(paludis --list-categories)"}:#\* *}##\* }:#*(virtual|installed)*})
+    packages=(${${${(M)${(f)"$(paludis --log-level silent --list-categories)"}:#\* *}##\* }:#*(virtual|installed)*})
     compadd ${(@)packages}
 }
 _paludis_packages_update_repositories() {
-    packages=(${${${(M)${(f)"$(paludis --list-repositories)"}:#\* *}##\* }:#*(virtual|installed)*})
+    packages=(${${${(M)${(f)"$(paludis --log-level silent --list-repositories)"}:#\* *}##\* }:#*(virtual|installed)*})
     compadd ${(@)packages}
 }
 _paludis_packages_update_sets() {
-    packages=(${${${(M)${(f)"$(paludis --list-sets)"}:#\* *}##\* }:#*(virtual|installed)*})
+    packages=(${${${(M)${(f)"$(paludis --log-level silent --list-sets)"}:#\* *}##\* }:#*(virtual|installed)*})
     compadd ${(@)packages}
 }
 _paludis_packages() {
