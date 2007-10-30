@@ -1,7 +1,7 @@
 <!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
 
 <div class="topnavinner">
-    <table border="0" cellspacing="0">
+    <table border="0" cellspacing="0" summary="Navigation links">
         <tr>
             <td rowspan="7" class="logotab">
                 <a href="###TOPURI###/index.html" class="noarrow"><img style="border: 0px; padding-right: 50px;"

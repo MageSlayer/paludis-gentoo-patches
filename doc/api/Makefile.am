@@ -17,6 +17,13 @@ paludisapihtmldir = $(htmldir)/api
 paludisapihtml_DATA = \
 	index.html
 
+if HAVE_HTMLTIDY
+
+TESTS = $(paludisapihtml_DATA)
+TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+
+endif
+
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 

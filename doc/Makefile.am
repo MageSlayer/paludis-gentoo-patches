@@ -33,6 +33,16 @@ paludishtml_DATA = \
 	paludis.css \
 	paludis_270.png
 
+dist_check_SCRIPTS = \
+	htmltidy.bash
+
+if HAVE_HTMLTIDY
+
+TESTS = $(paludishtml_DATA)
+TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+
+endif
+
 index.html : header.html.part index.html.part footer.html.part
 	cat header.html.part index.html.part footer.html.part > $@
 

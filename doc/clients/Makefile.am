@@ -22,6 +22,13 @@ paludisclientshtml_DATA = \
 	index.html \
 	$(ALL_CLIENTS_HTML)
 
+if HAVE_HTMLTIDY
+
+TESTS = $(paludisclientshtml_DATA)
+TESTS_ENVIRONMENT = bash $(top_srcdir)/doc/htmltidy.bash
+
+endif
+
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 

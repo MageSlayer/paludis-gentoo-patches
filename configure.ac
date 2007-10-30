@@ -694,6 +694,17 @@ fi
 AC_SUBST([DOXYGEN_TAG_FILES])
 dnl }}}
 
+dnl {{{
+AC_MSG_CHECKING([whether to use htmltidy to verify documentation])
+AC_ARG_ENABLE([htmltidy],
+			  AS_HELP_STRING([--enable-htmltidy], [Check generated documentation with htmltidy]),
+			  [HAVE_HTMLTIDY=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [HAVE_HTMLTIDY=no
+			   AC_MSG_RESULT([no])])
+AC_SUBST([HAVE_HTMLTIDY])
+AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
+
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],

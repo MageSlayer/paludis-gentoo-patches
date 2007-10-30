@@ -56,7 +56,7 @@ that is executed when a particular well defined action occurs.</p>
 <p>Not all hook execution code methods are available for all hook categories. The
 following table indicates availability:</p>
 
-<table border="1">
+<table border="1" summary="Which methods are supported for which categories">
     <tr>
         <td></td>
         <th><code>.bash</code></th>
