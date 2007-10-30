@@ -35,6 +35,8 @@ namespace inquisitio
             Matcher();
 
         public:
+            typedef bool result;
+
             virtual ~Matcher();
 
             virtual bool operator() (const std::string &) const = 0;

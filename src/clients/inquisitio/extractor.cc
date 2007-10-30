@@ -18,41 +18,9 @@
  */
 
 #include "extractor.hh"
-#include "description_extractor.hh"
-#include "name_extractor.hh"
-#include <paludis/util/virtual_constructor-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
-
-template class paludis::VirtualConstructor<std::string,
-         tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
-         paludis::virtual_constructor_not_found::ThrowException<NoSuchExtractorError> >;
-
-template class paludis::InstantiationPolicy<ExtractorMaker, paludis::instantiation_method::SingletonTag>;
-
-NoSuchExtractorError::NoSuchExtractorError(const std::string & m) throw () :
-    Exception("No such extractor '" + m + "'")
-{
-}
-
-namespace
-{
-    template <typename M_>
-    tr1::shared_ptr<Extractor>
-    make(const Environment & e)
-    {
-        return tr1::shared_ptr<Extractor>(new M_(e));
-    }
-}
-
-ExtractorMaker::ExtractorMaker()
-{
-    register_maker("description", &make<DescriptionExtractor>);
-    register_maker("name", &make<NameExtractor>);
-}
 
 Extractor::Extractor()
 {

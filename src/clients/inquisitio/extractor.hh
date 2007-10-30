@@ -22,12 +22,12 @@
 
 #include <string>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/virtual_constructor.hh>
-#include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
 namespace inquisitio
 {
+    class Matcher;
+
     class Extractor :
         private paludis::InstantiationPolicy<Extractor, paludis::instantiation_method::NonCopyableTag>
     {
@@ -37,27 +37,7 @@ namespace inquisitio
         public:
             virtual ~Extractor();
 
-            virtual std::string operator() (const paludis::PackageID &) const = 0;
-    };
-
-    class NoSuchExtractorError :
-        public paludis::Exception
-    {
-        public:
-            NoSuchExtractorError(const std::string &) throw ();
-    };
-
-    class ExtractorMaker :
-        public paludis::InstantiationPolicy<ExtractorMaker, paludis::instantiation_method::SingletonTag>,
-        public paludis::VirtualConstructor<
-            std::string,
-            paludis::tr1::shared_ptr<Extractor> (*) (const paludis::Environment &),
-            paludis::virtual_constructor_not_found::ThrowException<NoSuchExtractorError> >
-    {
-        friend class paludis::InstantiationPolicy<ExtractorMaker, paludis::instantiation_method::SingletonTag>;
-
-        private:
-            ExtractorMaker();
+            virtual bool operator() (const Matcher &, const paludis::PackageID &) const = 0;
     };
 }
 

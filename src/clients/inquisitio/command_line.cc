@@ -42,26 +42,42 @@ CommandLine::CommandLine() :
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
 
-    search_args(this, "Search options",
-            "Options that are relevant for the search action."),
-    a_matcher(&search_args, "matcher", 'm', "Which match algorithm to use",
+    match_args(this, "Matching options",
+            "Options that control which packages are matched."),
+    a_keys(&match_args, "keys", 'k', "Match using listed metadata keys, rather than name and description"),
+    a_matcher(&match_args, "matcher", 'm', "Which match algorithm to use",
             paludis::args::EnumArg::EnumArgOptions
             ("text",        "Simple text match")
-            ("pcre",        "Regular expression match using pcre"),
+            ("pcre",        "Regular expression match using pcre")
+            ("exact",       "Exact text match"),
             "text"),
-    a_extractors(&search_args, "extractors", 'e', "Which extractors to use",
-            paludis::args::StringSetArg::StringSetArgOptions
-            ("description",   "Match against description (default)")
-            ("name",          "Match against package name")
-            ("homepage",      "Match against homepage")),
+    a_flatten(&match_args, "flatten", 'f', "Flatten spec trees, rather than matching against individual items"),
+    a_enabled_only(&match_args, "enabled-only", 'e', "When searching spec trees, only look in enabled subtrees"),
 
-    a_repository(&search_args, "repository", '\0', "Matches with this repository name only",
+    filter_args(this, "Filter options",
+            "Options that control whether or not a package is considered for matching."),
+
+    a_repository(&filter_args, "repository", 'r', "Matches with this repository name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::RepositoryNameValidator::validate),
-    a_repository_format(&search_args, "repository-format", '\0', "Matches with this repository format only"),
-    a_category(&search_args,   "category",   '\0', "Matches with this category name only",
+    a_repository_format(&filter_args, "repository-format", '\0', "Matches with this repository format only"),
+    a_category(&filter_args,   "category",   '\0', "Matches with this category name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
-    a_package(&search_args,    "package",    '\0', "Matches with this package name only",
+    a_package(&filter_args,    "package",    '\0', "Matches with this package name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
+    a_visible_only(&filter_args, "visible-only", 'v', "Only consider visible packages"),
+    a_kind(&filter_args, "kind", 'k', "Packages of this kind only",
+            paludis::args::EnumArg::EnumArgOptions
+            ("installable",        "Installable packages")
+            ("installed",          "Installed packages")
+            ("all",                "All packages"),
+            "installable"),
+
+    output_args(this, "Output options",
+            "Options that control how output is generated."),
+
+    a_list(&output_args, "list", 'l', "Output a package name list only"),
+    a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies"),
+    a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata"),
 
     deprecated_args(this, "Deprecated options", "Deprecated options."),
     a_config_suffix(&deprecated_args, "config-suffix", 'c',

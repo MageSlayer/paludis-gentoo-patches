@@ -17,43 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "description_extractor.hh"
-#include <paludis/package_database.hh>
+#include "name_description_extractor.hh"
+#include "matcher.hh"
 #include <paludis/package_id.hh>
+#include <paludis/name.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
 
 using namespace paludis;
 using namespace inquisitio;
 
-namespace paludis
-{
-    template <>
-    struct Implementation<DescriptionExtractor>
-    {
-        const Environment * const env;
-
-        Implementation(const Environment & e) :
-            env(&e)
-        {
-        }
-    };
-}
-
-DescriptionExtractor::DescriptionExtractor(const Environment & e) :
-    PrivateImplementationPattern<DescriptionExtractor>(new Implementation<DescriptionExtractor>(e))
+NameDescriptionExtractor::NameDescriptionExtractor()
 {
 }
 
-DescriptionExtractor::~DescriptionExtractor()
+NameDescriptionExtractor::~NameDescriptionExtractor()
 {
 }
 
-std::string
-DescriptionExtractor::operator() (const PackageID & p) const
+bool
+NameDescriptionExtractor::operator() (const Matcher & m, const PackageID & id) const
 {
-    if (p.short_description_key())
-        return p.short_description_key()->value();
-    return "";
+    if (m(stringify(id.name())))
+        return true;
+
+    if (id.short_description_key())
+        if (m(id.short_description_key()->value()))
+            return true;
+
+    if (id.long_description_key())
+        if (m(id.long_description_key()->value()))
+            return true;
+
+    return false;
 }
 

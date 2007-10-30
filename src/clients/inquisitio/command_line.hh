@@ -24,13 +24,6 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/args/log_level_arg.hh>
 
-/** \file
- * Declarations for the CommandLine class.
- */
-
-/**
- * Our command line.
- */
 class CommandLine :
     public paludis::args::ArgsHandler,
     public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>
@@ -38,10 +31,7 @@ class CommandLine :
     friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
 
     private:
-        /// Constructor.
         CommandLine();
-
-        /// Destructor.
         ~CommandLine();
 
     public:
@@ -76,17 +66,37 @@ class CommandLine :
 
         ///}
 
-        ///\name Search arguments
+        ///\name Matching arguments
         ///\{
 
-        paludis::args::ArgsGroup search_args;
+        paludis::args::ArgsGroup match_args;
+        paludis::args::StringSetArg a_keys;
         paludis::args::EnumArg a_matcher;
-        paludis::args::StringSetArg a_extractors;
+        paludis::args::SwitchArg a_flatten;
+        paludis::args::SwitchArg a_enabled_only;
 
+        ///\}
+
+        ///\name Filter arguments
+        ///\{
+
+        paludis::args::ArgsGroup filter_args;
         paludis::args::StringSetArg a_repository;
         paludis::args::StringSetArg a_repository_format;
         paludis::args::StringSetArg a_category;
         paludis::args::StringSetArg a_package;
+        paludis::args::SwitchArg a_visible_only;
+        paludis::args::EnumArg a_kind;
+
+        ///\}
+
+        ///\name Output arguments
+        ///\{
+
+        paludis::args::ArgsGroup output_args;
+        paludis::args::SwitchArg a_list;
+        paludis::args::SwitchArg a_show_dependencies;
+        paludis::args::SwitchArg a_show_metadata;
 
         ///\}
 

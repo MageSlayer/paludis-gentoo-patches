@@ -17,22 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_DESCRIPTION_EXTRACTOR_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_DESCRIPTION_EXTRACTOR_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_KEY_EXTRACTOR_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_KEY_EXTRACTOR_HH 1
 
 #include <src/clients/inquisitio/extractor.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace inquisitio
 {
-    class DescriptionExtractor :
-        public Extractor,
-        private paludis::PrivateImplementationPattern<DescriptionExtractor>
+    class KeyExtractor :
+        private paludis::PrivateImplementationPattern<KeyExtractor>,
+        public Extractor
     {
         public:
-            DescriptionExtractor(const paludis::Environment &);
-            virtual ~DescriptionExtractor();
+            KeyExtractor(const std::string &, const bool flatten, const bool visible_only,
+                    const paludis::Environment &);
+            ~KeyExtractor();
 
-            std::string operator() (const paludis::PackageID &) const;
+            bool operator() (const Matcher &, const paludis::PackageID &) const;
     };
 }
 

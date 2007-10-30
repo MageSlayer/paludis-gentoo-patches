@@ -17,22 +17,41 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "name_extractor.hh"
-#include <paludis/util/stringify.hh>
+#include "exact_matcher.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/package_id.hh>
-#include <paludis/name.hh>
+#include <string.h>
 
-using namespace inquisitio;
 using namespace paludis;
+using namespace inquisitio;
 
-NameExtractor::NameExtractor(const paludis::Environment &)
+namespace paludis
+{
+    template<>
+    struct Implementation<ExactMatcher>
+    {
+        std::string pattern;
+
+        Implementation(const std::string & s) :
+            pattern(s)
+        {
+        }
+    };
+}
+
+ExactMatcher::ExactMatcher(const std::string & s) :
+    PrivateImplementationPattern<ExactMatcher>(new Implementation<ExactMatcher>(s))
 {
 }
 
-std::string
-NameExtractor::operator() (const PackageID & p) const
+bool
+ExactMatcher::operator() (const std::string & s) const
 {
-    return stringify(p.name());
+    return 0 == strcasecmp(s.c_str(), _imp->pattern.c_str());
 }
+
+ExactMatcher::~ExactMatcher()
+{
+}
+
+
 

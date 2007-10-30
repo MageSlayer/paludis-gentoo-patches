@@ -18,6 +18,7 @@
  */
 
 #include "query_task.hh"
+#include "command_line.hh"
 
 using namespace inquisitio;
 using namespace paludis;
@@ -25,5 +26,17 @@ using namespace paludis;
 InquisitioQueryTask::InquisitioQueryTask(const Environment * const env) :
     ConsoleQueryTask(env)
 {
+}
+
+bool
+InquisitioQueryTask::want_deps() const
+{
+    return CommandLine::get_instance()->a_show_dependencies.specified();
+}
+
+bool
+InquisitioQueryTask::want_raw() const
+{
+    return CommandLine::get_instance()->a_show_metadata.specified();
 }
 

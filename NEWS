@@ -12,6 +12,8 @@ trunk/:
 
     * Paludis now fully supports filenames containing spaces.
 
+    * New, much more flexible, faster inquisitio.
+
     * Bug fixes: --dl-deps-default works again. More
       robustness/compilance improvements for reconcilio, including
       proper handling of ELF files that use the non-native byte order.

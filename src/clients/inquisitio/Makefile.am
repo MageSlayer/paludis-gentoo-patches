@@ -28,15 +28,16 @@ man_inquisitio_LDADD = \
 	$(PCREPLUSPLUS_LIBS)
 
 inquisitio_SOURCES = \
-	command_line.hh              command_line.cc \
-	matcher.hh                   matcher.cc \
-	pcre_matcher.hh              pcre_matcher.cc \
-	text_matcher.hh              text_matcher.cc \
-	extractor.hh                 extractor.cc \
-	description_extractor.hh     description_extractor.cc \
-	name_extractor.hh            name_extractor.cc \
-	do_search.hh                 do_search.cc \
-	query_task.hh                query_task.cc \
+	command_line.hh                 command_line.cc \
+	matcher.hh                      matcher.cc \
+	pcre_matcher.hh                 pcre_matcher.cc \
+	text_matcher.hh                 text_matcher.cc \
+	exact_matcher.hh                exact_matcher.cc \
+	do_search.hh                    do_search.cc \
+	query_task.hh                   query_task.cc \
+	extractor.hh                    extractor.cc \
+	name_description_extractor.hh   name_description_extractor.cc \
+	key_extractor.hh                key_extractor.cc \
 	inquisitio.cc
 
 inquisitio_LDADD = \
@@ -85,3 +86,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

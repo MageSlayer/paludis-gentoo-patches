@@ -17,20 +17,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_NAME_EXTRACTOR_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_NAME_EXTRACTOR_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXACT_MATCHER_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXACT_MATCHER_HH 1
 
-#include <src/clients/inquisitio/extractor.hh>
+#include <src/clients/inquisitio/matcher.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 namespace inquisitio
 {
-    class NameExtractor :
-        public Extractor
+    class ExactMatcher :
+        public Matcher,
+        private paludis::PrivateImplementationPattern<ExactMatcher>
     {
         public:
-            NameExtractor(const paludis::Environment &);
+            ExactMatcher(const std::string &);
+            virtual ~ExactMatcher();
 
-            std::string operator() (const paludis::PackageID &) const;
+            bool operator() (const std::string &) const;
     };
 }
 

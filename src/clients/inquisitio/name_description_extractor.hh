@@ -17,21 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_QUERY_TASK_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_QUERY_TASK_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_NAME_DESCRIPTION_EXTRACTOR_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_NAME_DESCRIPTION_EXTRACTOR_HH 1
 
-#include <src/output/console_query_task.hh>
+#include <src/clients/inquisitio/extractor.hh>
 
 namespace inquisitio
 {
-    class InquisitioQueryTask :
-        public paludis::ConsoleQueryTask
+    class NameDescriptionExtractor :
+        public Extractor
     {
         public:
-            InquisitioQueryTask(const paludis::Environment * const);
+            NameDescriptionExtractor();
+            ~NameDescriptionExtractor();
 
-            virtual bool want_deps() const;
-            virtual bool want_raw() const;
+            bool operator() (const Matcher &, const paludis::PackageID &) const;
     };
 }
 
