@@ -63,7 +63,7 @@ CommandLine::CommandLine() :
             "none"),
 
     output_options(this, "Options for output verbosity",
-            ""),
+            "Control how verbose contrarius is."),
     a_verbose(&output_options,   "verbose", 'v', "Be verbose"),
     a_log_level(&output_options, "log-level", 'L'),
     a_no_colour(&output_options, "no-colour", 'C', "Do not use colour"),
