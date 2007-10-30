@@ -24,6 +24,7 @@
 
 #include <paludis/dep_tag.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/util/clone-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/save.hh>

@@ -23,6 +23,7 @@
 #include <paludis/about.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository_info.hh>

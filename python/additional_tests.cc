@@ -32,6 +32,7 @@
 #include <paludis/hook.hh>
 #include <paludis/formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
+#include <paludis/util/clone-impl.hh>
 
 using namespace paludis;
 namespace bp = boost::python;

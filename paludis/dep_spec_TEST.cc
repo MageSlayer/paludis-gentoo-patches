@@ -18,6 +18,7 @@
  */
 
 #include <paludis/dep_spec.hh>
+#include <paludis/util/clone-impl.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_requirements.hh>

@@ -24,6 +24,7 @@
 #include <paludis/dep_tree.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <paludis/util/clone-impl.hh>
 
 using namespace test;
 using namespace paludis;

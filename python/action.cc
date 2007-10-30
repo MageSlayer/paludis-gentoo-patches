@@ -22,6 +22,7 @@
 
 #include <paludis/action.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/repository.hh>
 
 using namespace paludis;

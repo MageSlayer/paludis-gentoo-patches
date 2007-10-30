@@ -23,6 +23,7 @@
 #include <paludis/report_task.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_id.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <iostream>
 
 /** \file
