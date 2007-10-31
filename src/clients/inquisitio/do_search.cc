@@ -33,7 +33,6 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/future-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <list>
@@ -204,16 +203,12 @@ do_search(const Environment & env)
                 create_inserter<CategoryNamePart>(std::inserter(cats, cats.begin())));
     else
     {
-        std::list<tr1::shared_ptr<Future<tr1::shared_ptr<const CategoryNamePartSet> > > > acats;
         for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
-            acats.push_back(make_shared_ptr(new Future<tr1::shared_ptr<const CategoryNamePartSet> >(
-                            tr1::bind(&Repository::category_names, *r))));
-
-        for (std::list<tr1::shared_ptr<Future<tr1::shared_ptr<const CategoryNamePartSet> > > >::const_iterator
-                c(acats.begin()), c_end(acats.end()) ;
-                c != c_end ; ++c)
-            std::copy((**c)()->begin(), (**c)()->end(), std::inserter(cats, cats.begin()));
+        {
+            tr1::shared_ptr<const CategoryNamePartSet> c((*r)->category_names());
+            std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
+        }
     }
 
     std::set<QualifiedPackageName> qpns;
@@ -227,18 +222,14 @@ do_search(const Environment & env)
     }
     else
     {
-        std::list<tr1::shared_ptr<Future<tr1::shared_ptr<const QualifiedPackageNameSet> > > > aqpns;
         for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
             for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                     c != c_end ; ++c)
-                aqpns.push_back(make_shared_ptr(new Future<tr1::shared_ptr<const QualifiedPackageNameSet> >(
-                                tr1::bind(&Repository::package_names, *r, *c))));
-
-        for (std::list<tr1::shared_ptr<Future<tr1::shared_ptr<const QualifiedPackageNameSet> > > >::const_iterator
-                q(aqpns.begin()), q_end(aqpns.end()) ;
-                q != q_end ; ++q)
-            std::copy((**q)()->begin(), (**q)()->end(), std::inserter(qpns, qpns.begin()));
+            {
+                tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
+                std::copy(q->begin(), q->end(), std::inserter(qpns, qpns.begin()));
+            }
     }
 
     Eligible eligible(
@@ -250,19 +241,16 @@ do_search(const Environment & env)
             extractors
             );
 
-    std::multimap<QualifiedPackageName, tr1::shared_ptr<Future<tr1::shared_ptr<const PackageID> > > > ids;
+    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > show_ids;
     for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
             r != r_end ; ++r)
         for (std::set<QualifiedPackageName>::const_iterator q(qpns.begin()), q_end(qpns.end()) ;
                 q != q_end ; ++q)
-            ids.insert(std::make_pair(*q, make_shared_ptr(new Future<tr1::shared_ptr<const PackageID> >(
-                                tr1::bind(&fetch_id, tr1::cref(env), *r, *q, eligible, matches)))));
-
-    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > show_ids;
-    for (std::multimap<QualifiedPackageName, tr1::shared_ptr<Future<tr1::shared_ptr<const PackageID> > > >::const_iterator
-            i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
-        if ((*i->second)())
-            show_ids[i->first] = (*i->second)();
+        {
+            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, *q, eligible, matches));
+            if (id)
+                show_ids[*q] = id;
+        }
 
     if (show_ids.empty())
         return 1;
