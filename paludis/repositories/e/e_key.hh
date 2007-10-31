@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_E_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/idle_action_pool-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 
@@ -85,8 +84,6 @@ namespace paludis
 
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                IdleActionResult idle_load() const;
         };
 
         class EFetchableURIKey :
@@ -201,8 +198,6 @@ namespace paludis
                 virtual const tr1::shared_ptr<const LicenseSpecTree::ConstItem> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                IdleActionResult idle_load() const;
-
                 virtual std::string pretty_print(const LicenseSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -226,8 +221,6 @@ namespace paludis
 
                 const tr1::shared_ptr<const IUseFlagSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                IdleActionResult idle_load() const;
 
                 virtual std::string pretty_print_flat(const Formatter<IUseFlag> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -256,8 +249,6 @@ namespace paludis
 
                 const tr1::shared_ptr<const KeywordNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                IdleActionResult idle_load() const;
 
                 virtual std::string pretty_print_flat(const Formatter<KeywordName> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

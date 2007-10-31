@@ -39,7 +39,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/idle_action_pool.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
@@ -255,22 +254,6 @@ EbuildID::need_keys_added() const
     }
 
     add_metadata_key(make_shared_ptr(new EStringKey(shared_from_this(), "EAPI", "EAPI", _imp->eapi->name, mkt_internal)));
-
-    if (_imp->eapi->supported)
-    {
-        if (_imp->build_dependencies)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->build_dependencies));
-        if (_imp->run_dependencies)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->run_dependencies));
-        if (_imp->post_dependencies)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EDependenciesKey::idle_load), _imp->post_dependencies));
-        if (_imp->keywords)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EKeywordsKey::idle_load), _imp->keywords));
-        if (_imp->iuse)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&EIUseKey::idle_load), _imp->iuse));
-        if (_imp->license)
-            IdleActionPool::get_instance()->optional_idle_action(tr1::bind(tr1::mem_fn(&ELicenseKey::idle_load), _imp->license));
-    }
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
         tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));

@@ -23,7 +23,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/idle_action_pool-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 

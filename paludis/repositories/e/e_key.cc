@@ -33,7 +33,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <paludis/util/idle_action_pool.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
 
@@ -145,8 +144,6 @@ EDependenciesKey::value() const
         return _imp->value;
     }
 
-    IdleActionPool::get_instance()->increase_unprepared_stat();
-
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
@@ -168,29 +165,6 @@ EDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f)
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
-}
-
-IdleActionResult
-EDependenciesKey::idle_load() const
-{
-    TryLock l(_imp->value_mutex);
-    if (l() && ! _imp->value)
-    {
-        try
-        {
-            Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            _imp->value = parse_depend(_imp->string_value, *_imp->id->eapi());
-            _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
-            return iar_success;
-        }
-        catch (...)
-        {
-            // the exception will be repeated in the relevant thread
-            return iar_failure;
-        }
-    }
-
-    return iar_already_completed;
 }
 
 namespace paludis
@@ -243,8 +217,6 @@ ELicenseKey::value() const
         return _imp->value;
     }
 
-    IdleActionPool::get_instance()->increase_unprepared_stat();
-
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_license(_imp->string_value, *_imp->id->eapi());
     return _imp->value;
@@ -266,29 +238,6 @@ ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false);
     value()->accept(p);
     return stringify(p);
-}
-
-IdleActionResult
-ELicenseKey::idle_load() const
-{
-    TryLock l(_imp->value_mutex);
-    if (l() && ! _imp->value)
-    {
-        try
-        {
-            Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            _imp->value = parse_license(_imp->string_value, *_imp->id->eapi());
-            _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
-            return iar_success;
-        }
-        catch (...)
-        {
-            // the exception will be repeated in the relevant thread
-            return iar_failure;
-        }
-    }
-
-    return iar_already_completed;
 }
 
 namespace paludis
@@ -627,8 +576,6 @@ EIUseKey::value() const
         return _imp->value;
     }
 
-    IdleActionPool::get_instance()->increase_unprepared_stat();
-
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value.reset(new IUseFlagSet);
     std::list<std::string> tokens;
@@ -652,29 +599,6 @@ EIUseKey::value() const
     }
 
     return _imp->value;
-}
-
-IdleActionResult
-EIUseKey::idle_load() const
-{
-    TryLock l(_imp->value_mutex);
-    if (l() && ! _imp->value)
-    {
-        try
-        {
-            tr1::shared_ptr<const IUseFlagSet> PALUDIS_ATTRIBUTE((unused)) a(value());
-        }
-        catch (...)
-        {
-            // the exception will be repeated in the relevant thread
-            _imp->value.reset();
-            return iar_failure;
-        }
-
-        return iar_success;
-    }
-
-    return iar_already_completed;
 }
 
 std::string
@@ -881,37 +805,10 @@ EKeywordsKey::value() const
         return _imp->value;
     }
 
-    IdleActionPool::get_instance()->increase_unprepared_stat();
-
     _imp->value.reset(new KeywordNameSet);
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     WhitespaceTokeniser::tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
-}
-
-IdleActionResult
-EKeywordsKey::idle_load() const
-{
-    TryLock l(_imp->value_mutex);
-    if (l() && ! _imp->value)
-    {
-        try
-        {
-            _imp->value.reset(new KeywordNameSet);
-            Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "' as idle action:");
-            WhitespaceTokeniser::tokenise(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
-            _imp->value_used = tr1::bind(tr1::mem_fn(&IdleActionPool::increase_used_stat), IdleActionPool::get_instance());
-            return iar_success;
-        }
-        catch (...)
-        {
-            // the exception will be repeated in the relevant thread
-            _imp->value.reset();
-            return iar_failure;
-        }
-    }
-
-    return iar_already_completed;
 }
 
 std::string
