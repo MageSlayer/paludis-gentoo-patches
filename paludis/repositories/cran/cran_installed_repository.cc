@@ -30,7 +30,6 @@
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -44,9 +43,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <functional>
 #include <algorithm>
@@ -223,8 +219,8 @@ CRANInstalledRepository::package_names(const CategoryNamePart & c) const
 
     need_ids();
 
-    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first)));
+    std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
+            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first));
 
     return result;
 }

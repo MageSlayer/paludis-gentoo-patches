@@ -27,10 +27,9 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/parallel_for_each.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/qa.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <algorithm>
 #include <list>

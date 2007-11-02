@@ -22,6 +22,7 @@
 #include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <cmath>
 
 using namespace test;
 using namespace paludis;
@@ -64,10 +65,10 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(abs(destringify<float>("0") - 0.0f) < 0.01f);
-            TEST_CHECK(abs(destringify<float>("0.0") - 0.0f) < 0.01f);
-            TEST_CHECK(abs(destringify<float>("0.1") - 0.1f) < 0.01f);
-            TEST_CHECK(abs(destringify<float>("-1.54") - -1.54f) < 0.01f);
+            TEST_CHECK(std::fabs(destringify<float>("0") - 0.0f) < 0.01f);
+            TEST_CHECK(std::fabs(destringify<float>("0.0") - 0.0f) < 0.01f);
+            TEST_CHECK(std::fabs(destringify<float>("0.1") - 0.1f) < 0.01f);
+            TEST_CHECK(std::fabs(destringify<float>("-1.54") - -1.54f) < 0.01f);
             TEST_CHECK_THROWS(destringify<float>("I am a fish"), DestringifyError);
             TEST_CHECK_THROWS(destringify<float>(""), DestringifyError);
         }

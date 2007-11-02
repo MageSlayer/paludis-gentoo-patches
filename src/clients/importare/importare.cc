@@ -27,11 +27,10 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/about.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/fuzzy_finder.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <algorithm>
 #include <iterator>

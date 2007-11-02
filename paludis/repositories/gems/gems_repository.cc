@@ -33,8 +33,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <fstream>
 
 using namespace paludis;

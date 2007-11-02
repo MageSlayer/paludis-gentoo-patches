@@ -23,6 +23,7 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 #include <string>
 #include <vector>
@@ -33,6 +34,7 @@
 using namespace paludis;
 
 template class InstantiationPolicy<TargetConfig, instantiation_method::SingletonTag>;
+template class WrappedForwardIterator<TargetConfig::ConstIteratorTag, const std::string>;
 
 void
 TargetConfig::_parse_defaults()

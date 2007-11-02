@@ -23,8 +23,7 @@
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/adapted/adapted_environment.hh>
 #include <paludis/environment_maker.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <ruby.h>
 

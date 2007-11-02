@@ -87,7 +87,7 @@ struct MaskWrapper :
     Mask,
     bp::wrapper<Mask>
 {
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 
@@ -112,7 +112,7 @@ struct UserMaskWrapper :
     UserMask,
     bp::wrapper<UserMask>
 {
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 
@@ -147,7 +147,7 @@ struct UnacceptedMaskWrapper :
             throw PythonMethodNotImplemented("UnacceptedMask", "unaccepted_key");
     }
 
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 
@@ -182,7 +182,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "mask_key");
     }
 
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 
@@ -216,7 +216,7 @@ struct UnsupportedMaskWrapper :
             throw PythonMethodNotImplemented("UnsupportedMask", "explanation");
     }
 
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 
@@ -251,7 +251,7 @@ struct AssociationMaskWrapper :
             throw PythonMethodNotImplemented("AssociationMask", "associated_package");
     }
 
-    virtual const char key() const
+    virtual char key() const
     {
         Lock l(get_mutex());
 

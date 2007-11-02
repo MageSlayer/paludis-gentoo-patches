@@ -23,7 +23,6 @@
 #include <paludis/repositories/unpackaged/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -35,7 +34,6 @@
 #include <paludis/environment.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <sstream>
 #include <sys/time.h>

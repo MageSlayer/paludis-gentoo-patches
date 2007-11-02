@@ -22,8 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -43,7 +42,7 @@ namespace paludis
                 QAChecksGroup();
                 ~QAChecksGroup();
 
-                typedef libwrapiter::ForwardIterator<QAChecksGroup<T_>, T_> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, T_> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

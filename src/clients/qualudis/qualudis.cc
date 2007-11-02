@@ -36,9 +36,6 @@
 #include <algorithm>
 #include <set>
 
-#include <libebt/libebt.hh>
-#include <libwrapiter/libwrapiter.hh>
-
 #include "qualudis_command_line.hh"
 #include <src/output/colour.hh>
 #include <paludis/args/do_help.hh>

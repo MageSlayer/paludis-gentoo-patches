@@ -25,14 +25,11 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
 #include <sstream>
 

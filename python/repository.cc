@@ -30,7 +30,7 @@
 #include <paludis/environment.hh>
 #include <paludis/qa.hh>
 #include <paludis/util/options.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

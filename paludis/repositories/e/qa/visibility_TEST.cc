@@ -22,13 +22,13 @@
 #include <paludis/repositories/e/make_ebuild_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/qa.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;

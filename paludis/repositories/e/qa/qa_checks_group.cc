@@ -23,9 +23,9 @@
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/hashed_containers.hh>
 
 #include <list>
@@ -109,10 +109,13 @@ QAChecksGroup<T_>::need_ordering() const
     std::list<std::string> o;
     _imp->deps.topological_sort(std::back_inserter(o));
     _imp->ordered.reset(new std::list<T_>);
-    std::copy(o.begin(), o.end(), transform_inserter(std::back_inserter(*_imp->ordered),
-                tr1::bind(tr1::mem_fn(&MakeHashedMap<std::string, T_>::Type::operator []), &_imp->unordered, _1)));
+    std::transform(o.begin(), o.end(), std::back_inserter(*_imp->ordered),
+            tr1::bind(tr1::mem_fn(&MakeHashedMap<std::string, T_>::Type::operator []), &_imp->unordered, _1));
 }
 
 template class QAChecksGroup<TreeCheckFunction>;
 template class QAChecksGroup<PackageIDCheckFunction>;
+
+template class WrappedForwardIterator<QAChecksGroup<TreeCheckFunction>::ConstIteratorTag, TreeCheckFunction>;
+template class WrappedForwardIterator<QAChecksGroup<PackageIDCheckFunction>::ConstIteratorTag, PackageIDCheckFunction>;
 

@@ -19,7 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/dep_list.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <ruby.h>
 
 using namespace paludis;

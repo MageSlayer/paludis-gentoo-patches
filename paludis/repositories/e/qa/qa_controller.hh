@@ -30,8 +30,6 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 namespace paludis
 {
     class ERepository;

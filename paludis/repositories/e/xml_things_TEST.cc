@@ -18,8 +18,8 @@
  */
 
 #include <paludis/repositories/e/glsa.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

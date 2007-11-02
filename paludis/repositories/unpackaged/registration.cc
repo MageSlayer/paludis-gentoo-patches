@@ -20,10 +20,10 @@
 #include <paludis/repository_maker.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/unpackaged_repository.hh>
 #include <paludis/repositories/unpackaged/exceptions.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 

@@ -24,10 +24,9 @@
 #include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 

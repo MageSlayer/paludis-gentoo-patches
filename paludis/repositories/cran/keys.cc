@@ -25,12 +25,11 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/formatter.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;

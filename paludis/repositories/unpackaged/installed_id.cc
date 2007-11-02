@@ -127,7 +127,7 @@ namespace
             {
             }
 
-            const time_t value() const
+            time_t value() const
             {
                 return _time;
             }

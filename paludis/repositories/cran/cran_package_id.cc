@@ -43,8 +43,6 @@
 #include <list>
 
 #include <paludis/util/tr1_functional.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;

@@ -18,9 +18,8 @@
  */
 
 #include <python/paludis_python.hh>
-
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/contents.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

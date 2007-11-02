@@ -27,7 +27,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>

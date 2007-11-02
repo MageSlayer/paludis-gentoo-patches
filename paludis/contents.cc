@@ -20,6 +20,7 @@
 #include "contents.hh"
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
@@ -40,6 +41,8 @@ template class Visits<const ContentsSymEntry>;
 template class Visits<const ContentsFifoEntry>;
 template class Visits<const ContentsDevEntry>;
 template class Visits<const ContentsMiscEntry>;
+
+template class WrappedForwardIterator<Contents::ConstIteratorTag, const tr1::shared_ptr<const ContentsEntry> >;
 
 ContentsEntry::ContentsEntry(const std::string & n) :
     _name(n)

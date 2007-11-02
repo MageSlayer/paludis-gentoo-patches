@@ -26,12 +26,12 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>

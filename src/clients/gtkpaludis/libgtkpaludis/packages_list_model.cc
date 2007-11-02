@@ -9,13 +9,12 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -79,10 +78,10 @@ namespace gtkpaludis
     };
 
     struct PackagesListModel::PopulateDataIterator :
-        libwrapiter::ForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>
+        WrappedForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>
     {
         PopulateDataIterator(const std::list<PopulateItem>::const_iterator & i) :
-            libwrapiter::ForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>(i)
+            WrappedForwardIterator<PackagesListModel::PopulateDataIterator, const PopulateItem>(i)
         {
         }
     };

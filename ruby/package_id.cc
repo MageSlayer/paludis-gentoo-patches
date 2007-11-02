@@ -18,7 +18,7 @@
  */
 
 #include <paludis_ruby.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>

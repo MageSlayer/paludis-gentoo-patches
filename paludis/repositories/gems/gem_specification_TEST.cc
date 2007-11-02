@@ -26,7 +26,6 @@
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace test;
 using namespace paludis;

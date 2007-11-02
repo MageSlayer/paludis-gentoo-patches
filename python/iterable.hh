@@ -26,7 +26,6 @@
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <paludis/util/validated.hh>
 
 namespace paludis

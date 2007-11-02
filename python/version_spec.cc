@@ -21,7 +21,7 @@
 #include <python/exception.hh>
 
 #include <paludis/version_spec.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

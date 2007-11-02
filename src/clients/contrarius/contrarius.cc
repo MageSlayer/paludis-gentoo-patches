@@ -27,9 +27,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <libebt/libebt.hh>
-#include <libwrapiter/libwrapiter.hh>
-
 #include "target_config.hh"
 #include "command_line.hh"
 #include "stage.hh"

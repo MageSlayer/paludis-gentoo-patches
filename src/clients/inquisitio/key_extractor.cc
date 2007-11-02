@@ -32,7 +32,6 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <algorithm>
 
 using namespace paludis;

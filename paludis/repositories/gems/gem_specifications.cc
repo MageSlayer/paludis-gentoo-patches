@@ -27,12 +27,14 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/hashed_containers.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::gems;
+
+template class WrappedForwardIterator<GemSpecifications::ConstIteratorTag,
+         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> >::Type Specs;
 

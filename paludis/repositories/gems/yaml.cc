@@ -23,8 +23,7 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <syck.h>
 #include <cstring>
 #include <algorithm>
@@ -32,6 +31,9 @@
 
 using namespace paludis;
 using namespace paludis::yaml;
+
+template class WrappedForwardIterator<MapNode::ConstIteratorTag, const std::pair<const Node *, const Node *> >;
+template class WrappedForwardIterator<SequenceNode::ConstIteratorTag, const Node * const>;
 
 Node::~Node()
 {

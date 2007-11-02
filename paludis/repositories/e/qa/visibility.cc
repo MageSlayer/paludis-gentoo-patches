@@ -24,8 +24,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/query.hh>
 #include <paludis/qa.hh>
@@ -36,7 +36,6 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <set>
 #include <algorithm>
 

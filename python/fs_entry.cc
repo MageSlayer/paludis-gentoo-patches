@@ -22,6 +22,7 @@
 #include <python/iterable.hh>
 
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

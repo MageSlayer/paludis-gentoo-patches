@@ -30,8 +30,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_type_traits.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <list>
 
@@ -67,6 +66,9 @@ template class Visits<const PythonLicenseDepSpec>;
 template class Visits<const PythonURILabelsDepSpec>;
 template class Visits<const PythonDependencyLabelsDepSpec>;
 template class Visits<const PythonNamedSetDepSpec>;
+
+template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
+         const tr1::shared_ptr<const PythonDepSpec> >;
 
 PythonDepSpec::PythonDepSpec()
 {

@@ -31,12 +31,13 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/parallel_for_each.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <algorithm>
 #include <map>
 #include <set>

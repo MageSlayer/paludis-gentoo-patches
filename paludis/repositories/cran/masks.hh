@@ -35,7 +35,7 @@ namespace paludis
                 BrokenMask(const char, const std::string &, const std::string &);
                 ~BrokenMask();
 
-                virtual const char key() const;
+                virtual char key() const;
                 virtual const std::string description() const;
                 virtual const std::string explanation() const;
         };

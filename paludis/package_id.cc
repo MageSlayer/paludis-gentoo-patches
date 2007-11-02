@@ -53,6 +53,9 @@ template class WrappedForwardIterator<Set<tr1::shared_ptr<const PackageID> >::Co
 template class WrappedOutputIterator<Set<tr1::shared_ptr<const PackageID> >::InserterTag,
          tr1::shared_ptr<const PackageID> >;
 
+template class WrappedForwardIterator<PackageID::MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> >;
+template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, tr1::shared_ptr<const Mask> >;
+
 namespace paludis
 {
     template <>

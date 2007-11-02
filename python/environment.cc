@@ -30,6 +30,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;

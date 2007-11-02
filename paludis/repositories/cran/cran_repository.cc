@@ -33,7 +33,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
@@ -47,9 +46,6 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <functional>
 #include <algorithm>
@@ -180,8 +176,8 @@ CRANRepository::package_names(const CategoryNamePart & c) const
 
     need_ids();
 
-    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first)));
+    std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
+            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const cranrepository::CRANPackageID> >::first));
 
     return result;
 }

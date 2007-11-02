@@ -5,7 +5,6 @@
 #include "versions_page.hh"
 #include "markup.hh"
 #include "markup_formatter.hh"
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/strip.hh>
@@ -16,8 +15,6 @@
 #include <paludis/query.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 
 using namespace paludis;

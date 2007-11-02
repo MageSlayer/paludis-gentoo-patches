@@ -26,10 +26,10 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -58,7 +58,7 @@ namespace paludis
                 ///\name Iterate over our specifications
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<GemSpecifications,
+                typedef WrappedForwardIterator<enum ConstIteratorTag { },
                         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >
                             ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));

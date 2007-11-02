@@ -30,12 +30,12 @@
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/parallel_for_each.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <list>
 #include <set>
 #include <map>

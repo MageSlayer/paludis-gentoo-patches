@@ -36,9 +36,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <list>
 #include <map>

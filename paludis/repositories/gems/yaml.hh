@@ -124,7 +124,7 @@ namespace paludis
                 ///\name Iterate over our child nodes.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<SequenceNode, const Node * const> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const Node * const> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -159,7 +159,7 @@ namespace paludis
                 ///\name Iterate over and find our child nodes.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<MapNode, const std::pair<const Node *, const Node *> > ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const Node *, const Node *> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator find(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));

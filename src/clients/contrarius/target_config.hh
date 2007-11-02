@@ -22,6 +22,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/host_tuple_name.hh>
 #include <list>
 #include <utility>
@@ -46,7 +47,7 @@ class TargetConfig :
     private:
         typedef std::list<std::pair<std::string, std::string> > SpecEntryList;
 
-        typedef libwrapiter::ForwardIterator<TargetConfig, const std::string> ConstIterator;
+        typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
 
         SpecEntryList _binutils_list;
 

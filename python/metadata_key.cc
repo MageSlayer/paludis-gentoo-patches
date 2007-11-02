@@ -202,7 +202,7 @@ struct MetadataTimeKeyWrapper :
     {
     }
 
-    virtual const time_t value() const
+    virtual time_t value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());

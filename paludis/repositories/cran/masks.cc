@@ -50,7 +50,7 @@ BrokenMask::~BrokenMask()
 {
 }
 
-const char
+char
 BrokenMask::key() const
 {
     return _imp->key;
