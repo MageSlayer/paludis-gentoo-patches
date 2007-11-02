@@ -96,7 +96,7 @@ namespace paludis
              * A single character key, which can be used by clients if they need
              * a very compact way of representing a mask.
              */
-            virtual const char key() const = 0;
+            virtual char key() const = 0;
 
             /**
              * A description of the mask.
