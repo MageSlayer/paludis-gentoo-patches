@@ -30,6 +30,10 @@ namespace paludis
         virtual Base * clone() const = 0;
         virtual void increment() = 0;
         virtual void assign(const Value_ &) = 0;
+
+        virtual ~Base()
+        {
+        }
     };
 
     template <typename Tag_, typename Value_>
