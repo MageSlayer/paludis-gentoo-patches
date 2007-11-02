@@ -22,7 +22,7 @@
 #include <paludis/repositories/unpackaged/ndbam.hh>
 
 #include <paludis/util/destringify.hh>
-#include <paludis/md5.hh>
+#include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>

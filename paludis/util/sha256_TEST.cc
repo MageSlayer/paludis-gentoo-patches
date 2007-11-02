@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/sha256.hh>
+#include <paludis/util/sha256.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/md5.hh>
+#include <paludis/util/md5.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

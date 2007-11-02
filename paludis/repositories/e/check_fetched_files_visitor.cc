@@ -36,9 +36,9 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 
-#include <paludis/rmd160.hh>
-#include <paludis/sha256.hh>
-#include <paludis/md5.hh>
+#include <paludis/util/rmd160.hh>
+#include <paludis/util/sha256.hh>
+#include <paludis/util/md5.hh>
 
 #include <paludis/repositories/e/manifest2_reader.hh>
 

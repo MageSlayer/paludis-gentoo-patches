@@ -17,16 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MD5_HH
-#define PALUDIS_GUARD_PALUDIS_MD5_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_SHA256_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_SHA256_HH 1
 
 #include <iosfwd>
 #include <string>
-#include <inttypes.h>
 #include <paludis/util/attributes.hh>
+#include <inttypes.h>
 
 /** \file
- * Declarations for the MD5 digest class.
+ * Declarations for the SHA256 digest class.
  *
  * \ingroup g_digests
  *
@@ -38,16 +38,16 @@
 namespace paludis
 {
     /**
-     * MD5 digest class.
+     * SHA256 digest class.
      *
      * \ingroup g_digests
      */
-    class PALUDIS_VISIBLE MD5
+    class PALUDIS_VISIBLE SHA256
     {
         private:
-            static const PALUDIS_HIDDEN uint32_t _t[64];
-            static const PALUDIS_HIDDEN uint8_t _s[64];
-            uint32_t _r[4];
+            static const PALUDIS_HIDDEN uint32_t _k[64];
+
+            uint32_t _h[8];
             uint64_t _size;
             bool _done_one_pad;
 
@@ -59,7 +59,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            MD5(std::istream & stream);
+            SHA256(std::istream & stream);
 
             /**
              * Our checksum, as a string of hex characters.

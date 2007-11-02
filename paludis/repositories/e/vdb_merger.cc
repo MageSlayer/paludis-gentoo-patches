@@ -29,7 +29,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
-#include <paludis/md5.hh>
+#include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <fstream>
