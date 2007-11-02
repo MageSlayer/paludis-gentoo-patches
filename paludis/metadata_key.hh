@@ -135,7 +135,7 @@ namespace paludis
             /**
              * Fetch our key type.
              */
-            virtual const MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -244,7 +244,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const time_t value() const
+            virtual time_t value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
