@@ -69,7 +69,7 @@ MetadataKey::human_name() const
     return _imp->human_name;
 }
 
-const MetadataKeyType
+MetadataKeyType
 MetadataKey::type() const
 {
     return _imp->type;
