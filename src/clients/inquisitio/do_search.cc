@@ -35,6 +35,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/parallel_for_each.hh>
 #include <list>
 #include <set>
 #include <map>
@@ -136,6 +137,34 @@ namespace
             return tr1::shared_ptr<const PackageID>();
         }
     }
+
+    void set_id(
+            const Environment & env,
+            const std::list<tr1::shared_ptr<const Repository> > & repos,
+            std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> > & q,
+            const tr1::function<bool (const PackageID &)> & e,
+            const tr1::function<bool (const PackageID &)> & m)
+    {
+        tr1::shared_ptr<const PackageID> best_id;
+        for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+                r != r_end ; ++r)
+        {
+            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m));
+            if (id)
+            {
+                if (best_id)
+                {
+                    PackageIDComparator c(env.package_database().get());
+                    if (c(best_id, id))
+                        best_id = id;
+                }
+                else
+                    best_id = id;
+            }
+        }
+
+        q.second = best_id;
+    }
 }
 
 int
@@ -211,14 +240,14 @@ do_search(const Environment & env)
         }
     }
 
-    std::set<QualifiedPackageName> qpns;
+    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > ids;
     if (CommandLine::get_instance()->a_package.begin_args() != CommandLine::get_instance()->a_package.end_args())
     {
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                 c != c_end ; ++c)
             for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_package.begin_args()),
                     i_end(CommandLine::get_instance()->a_package.end_args()) ; i != i_end ; ++i)
-                qpns.insert(*c + PackageNamePart(*i));
+                ids.insert(std::make_pair(*c + PackageNamePart(*i), tr1::shared_ptr<const PackageID>()));
     }
     else
     {
@@ -228,7 +257,9 @@ do_search(const Environment & env)
                     c != c_end ; ++c)
             {
                 tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
-                std::copy(q->begin(), q->end(), std::inserter(qpns, qpns.begin()));
+                for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
+                        i != i_end ; ++i)
+                    ids.insert(std::make_pair(*i, tr1::shared_ptr<const PackageID>()));
             }
     }
 
@@ -241,25 +272,18 @@ do_search(const Environment & env)
             extractors
             );
 
-    std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> > show_ids;
-    for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
-            r != r_end ; ++r)
-        for (std::set<QualifiedPackageName>::const_iterator q(qpns.begin()), q_end(qpns.end()) ;
-                q != q_end ; ++q)
-        {
-            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, *q, eligible, matches));
-            if (id)
-                show_ids[*q] = id;
-        }
+    parallel_for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches));
 
-    if (show_ids.empty())
-        return 1;
-
+    bool any(false);
     InquisitioQueryTask task(&env);
     for (std::map<QualifiedPackageName, tr1::shared_ptr<const PackageID> >::const_iterator
-            i(show_ids.begin()), i_end(show_ids.end()) ; i != i_end ; ++i)
-        task.show(PackageDepSpec(make_shared_ptr(new QualifiedPackageName(i->first))), i->second);
+            i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
+        if (i->second)
+        {
+            task.show(PackageDepSpec(make_shared_ptr(new QualifiedPackageName(i->first))), i->second);
+            any = true;
+        }
 
-    return 0;
+    return any ? 0 : 1;
 }
 
