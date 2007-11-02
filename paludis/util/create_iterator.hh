@@ -23,10 +23,6 @@
 #include <iterator>
 #include <paludis/util/create_iterator-fwd.hh>
 
-#ifdef PALUDIS_HAVE_CONCEPTS
-#  include <concepts>
-#endif
-
 namespace paludis
 {
     template <typename Value_, typename Iter_>

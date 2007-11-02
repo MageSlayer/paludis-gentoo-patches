@@ -34,9 +34,15 @@ namespace paludis
          * For use by fast_unique_copy only.
          */
         template <typename I_, typename O_, typename C_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+            requires
+                std::RandomAccessIterator<I_>,
+                std::OutputIterator<O_, I_::value_type>,
+                std::BinaryPredicate<C_, I_::reference, I_::reference>
+#endif
         void
         real_fast_unique_copy(const I_ & start, const I_ & end, const I_ & full_end, O_ out,
-                const C_ & comp, const I_ & mbgt)
+                C_ comp, const I_ & mbgt)
         {
             if (start != end)
             {
@@ -48,7 +54,10 @@ namespace paludis
                 // if our first item is equal to our last item, we have exactly
                 // one unique item in this sequence
                 if ((! comp(*start, *previous(end))) && (! comp(*previous(end), *start)))
-                    *out++ = *start;
+                {
+                    *out = *start;
+                    ++out;
+                }
                 else
                 {
                     I_ mid = start + (std::distance(start, end) >> 1);
@@ -63,19 +72,36 @@ namespace paludis
      * Extract unique elements from a sorted range of random access iterators.
      */
     template <typename I_, typename O_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires
+            std::RandomAccessIterator<I_>,
+            std::OutputIterator<O_, I_::value_type>,
+            std::BinaryPredicate<std::less<I_::value_type>, I_::reference, I_::reference>
+#endif
     void
     fast_unique_copy(const I_ & start, const I_ & end, O_ out)
     {
         fast_unique_copy_internals::real_fast_unique_copy(start, end, end, out,
-                std::less<typename std::iterator_traits<I_>::value_type>(), end);
+#ifdef PALUDIS_HAVE_CONCEPTS
+                std::less<I_::value_type>(),
+#else
+                std::less<typename std::iterator_traits<I_>::value_type>(),
+#endif
+                end);
     }
 
     /**
      * Extract unique elements from a sorted range of random access iterators.
      */
     template <typename I_, typename O_, typename C_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires
+            std::RandomAccessIterator<I_>,
+            std::OutputIterator<O_, I_::value_type>,
+            std::BinaryPredicate<C_, I_::reference>
+#endif
     void
-    fast_unique_copy(const I_ & start, const I_ & end, O_ out, const C_ & comp)
+    fast_unique_copy(const I_ & start, const I_ & end, O_ out, C_ comp)
     {
         fast_unique_copy_internals::real_fast_unique_copy(start, end, end, out, comp, end);
     }

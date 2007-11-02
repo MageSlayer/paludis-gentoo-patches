@@ -20,6 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_CREATE_ITERATOR_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_CREATE_ITERATOR_FWD_HH 1
 
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
+
 namespace paludis
 {
     template <typename Value_, typename Iter_>

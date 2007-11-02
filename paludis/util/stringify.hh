@@ -21,9 +21,13 @@
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/tr1_memory.hh>
 #include <sstream>
 #include <string>
-#include <paludis/util/tr1_memory.hh>
+
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
 
 /** \file
  * Stringify functions.
@@ -37,6 +41,20 @@
 
 namespace paludis
 {
+#ifdef PALUDIS_HAVE_CONCEPTS
+    auto concept IsStreamStringifiable<typename T_>
+    {
+        requires ! std::Dereferenceable<T_>;
+        std::ostream & operator<< (std::ostream &, const T_ &);
+    };
+
+    auto concept IsStringifiable<typename T_>
+    {
+        std::string stringify(const T_ &);
+    };
+#endif
+
+#ifndef PALUDIS_HAVE_CONCEPTS
     /**
      * For use by stringify.
      *
@@ -91,6 +109,7 @@ namespace paludis
             enum { value = 0 } Value;
         };
     }
+#endif
 
     /**
      * Convert item to a string.
@@ -98,12 +117,17 @@ namespace paludis
      * \ingroup g_strings
      */
     template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires IsStreamStringifiable<T_>
+#endif
     std::string
     stringify(const T_ & item)
     {
+#ifndef PALUDIS_HAVE_CONCEPTS
         /* check that we're not trying to stringify a pointer or somesuch */
         int check_for_stringifying_silly_things
             PALUDIS_ATTRIBUTE((unused)) = stringify_internals::CheckType<T_>::value;
+#endif
 
         std::ostringstream s;
         s << item;

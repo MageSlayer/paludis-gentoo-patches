@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 David Leverton
+ * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +23,10 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/tr1_memory.hh>
+
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
 
 /** \file
  * Declares the Cloneable class and helpers.

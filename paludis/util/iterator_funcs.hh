@@ -23,6 +23,10 @@
 
 #include <iterator>
 
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
+
 namespace paludis
 {
     /**
@@ -31,6 +35,9 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires std::ForwardIterator<T_>
+#endif
     T_ next(const T_ & i)
     {
         T_ result(i);
@@ -43,6 +50,9 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires std::ForwardIterator<T_>
+#endif
     T_ next(const T_ & i, const int & n)
     {
         T_ result(i);
@@ -56,6 +66,9 @@ namespace paludis
      * \ingroup g_iterator
      */
     template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+        requires std::BidirectionalIterator<T_>
+#endif
     T_ previous(const T_ & i)
     {
         T_ result(i);

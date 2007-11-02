@@ -24,6 +24,10 @@
 #include <inttypes.h>
 #include <paludis/util/attributes.hh>
 
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
+
 /** \file
  * Declarations for the Random class.
  *
@@ -70,6 +74,11 @@ namespace paludis
 
             /// Fetch a random number in (0, max]
             template <typename DiffType_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+                requires
+                    std::Multiplicable<double, DiffType_>,
+                    std::CopyConstructible<DiffType_>
+#endif
             DiffType_ operator() (DiffType_ max)
             {
                 local_seed = (_a * local_seed + _b) % _m;

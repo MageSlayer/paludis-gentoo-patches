@@ -163,6 +163,9 @@ namespace paludis
              * Append some text to our message.
              */
             template <typename T_>
+#ifdef PALUDIS_HAVE_CONCEPTS
+                requires IsStringifiable<T_>
+#endif
             LogMessageHandler &
             operator<< (const T_ & t)
             {
