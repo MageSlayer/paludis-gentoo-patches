@@ -29,9 +29,8 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/no_type.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/sr.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for DepSpecFlattener.
@@ -195,8 +194,7 @@ namespace paludis
             ///\name Iterate over our dep specs
             ///\{
 
-            typedef libwrapiter::ForwardIterator<DepSpecFlattener<Heirarchy_, Item_>,
-                    const tr1::shared_ptr<const Item_> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const Item_> > ConstIterator;
 
             ConstIterator begin() const;
             ConstIterator end() const;

@@ -19,19 +19,23 @@
 
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/damerau_levenshtein.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/name.hh>
 #include <paludis/util/set.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <list>
+#include <algorithm>
 #include <set>
 
 #include <cctype>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<FuzzyCandidatesFinder::CandidatesConstIteratorTag, const QualifiedPackageName>;
+template class WrappedForwardIterator<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag, const RepositoryName>;
 
 namespace
 {

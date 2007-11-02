@@ -27,8 +27,6 @@
 #include <iosfwd>
 #include <string>
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 /** \file
  * Declarations for ArgsHandler.
  *
@@ -117,7 +115,7 @@ namespace paludis
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> ParametersConstIterator;
+                typedef WrappedForwardIterator<enum ParametersConstIteratorTag { }, const std::string> ParametersConstIterator;
 
                 ParametersConstIterator begin_parameters() const;
 
@@ -169,7 +167,7 @@ namespace paludis
                 ///\name Iterate over our usage lines (for documentation)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> UsageLineConstIterator;
+                typedef WrappedForwardIterator<enum UsageLineConstIteratorTag { }, const std::string> UsageLineConstIterator;
 
                 UsageLineConstIterator begin_usage_lines() const;
 
@@ -180,7 +178,7 @@ namespace paludis
                 ///\name Iterate over our environment lines (for documentation)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler,
+                typedef WrappedForwardIterator<enum EnvironmentLineConstIteratorTag { },
                         const std::pair<std::string, std::string> > EnvironmentLineConstIterator;
 
                 EnvironmentLineConstIterator begin_environment_lines() const;
@@ -192,7 +190,7 @@ namespace paludis
                 ///\name Iterate over our examples (for documentation)
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler,
+                typedef WrappedForwardIterator<enum ExamplesConstIteratorTag { },
                         const std::pair<std::string, std::string> > ExamplesConstIterator;
 
                 ExamplesConstIterator begin_examples() const;
@@ -204,7 +202,7 @@ namespace paludis
                 ///\name Iterate over our groups
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, ArgsGroup * const> ArgsGroupsConstIterator;
+                typedef WrappedForwardIterator<enum ArgsGroupsConstIteratorTag { }, ArgsGroup * const> ArgsGroupsConstIterator;
 
                 ArgsGroupsConstIterator begin_args_groups() const;
 
@@ -215,7 +213,7 @@ namespace paludis
                 ///\name Iterate over our notes
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string > NotesIterator;
+                typedef WrappedForwardIterator<enum NotesIteratorTag { }, const std::string > NotesIterator;
 
                 NotesIterator begin_notes() const;
                 NotesIterator end_notes() const;

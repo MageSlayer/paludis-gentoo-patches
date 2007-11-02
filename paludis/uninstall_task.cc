@@ -27,14 +27,14 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/repository.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
 #include <set>
 #include <list>
@@ -42,6 +42,8 @@
 #include <functional>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const tr1::shared_ptr<const PackageID> >;
 
 AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
         const tr1::shared_ptr<const PackageIDSequence> m) throw () :

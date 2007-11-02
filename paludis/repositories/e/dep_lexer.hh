@@ -23,9 +23,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the DepLexer class.
@@ -106,7 +105,7 @@ namespace paludis
                 ///\name Iterate over our items
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<DepLexer,
+                typedef WrappedForwardIterator<enum ConstIteratorTag { },
                         const std::pair<DepLexerLexeme, std::string> > ConstIterator;
 
                 ConstIterator begin() const;

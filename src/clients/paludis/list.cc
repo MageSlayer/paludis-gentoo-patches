@@ -26,6 +26,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <src/output/colour.hh>
 
 #include <paludis/util/tr1_memory.hh>

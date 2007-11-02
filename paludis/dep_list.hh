@@ -36,8 +36,6 @@
 
 #include <iosfwd>
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 /** \file
  * Declarations for DepList and related classes.
  *
@@ -204,8 +202,8 @@ namespace paludis
             ///\name Iterate over our dependency list entries.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<DepList, DepListEntry> Iterator;
-            typedef libwrapiter::ForwardIterator<DepList, const DepListEntry> ConstIterator;
+            typedef WrappedForwardIterator<enum IteratorTag { }, DepListEntry> Iterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const DepListEntry> ConstIterator;
 
             Iterator begin();
             Iterator end();

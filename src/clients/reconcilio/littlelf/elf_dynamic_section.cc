@@ -7,12 +7,10 @@
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <istream>
 #include <map>
@@ -309,4 +307,8 @@ DynamicSection<ElfType_>::entry_end() const
 
 template class DynamicSection<Elf32Type>;
 template class DynamicSection<Elf64Type>;
+
+template class WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
+template class WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
+
 

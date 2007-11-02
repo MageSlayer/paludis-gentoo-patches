@@ -40,9 +40,6 @@
 #include <paludis/mask.hh>
 #include <paludis/action.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
-
 /** \file
  * Handle the --install action for the main paludis program.
  */

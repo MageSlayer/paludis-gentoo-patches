@@ -22,7 +22,6 @@
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/query.hh>
@@ -36,15 +35,17 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/handled_information.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
 #include <set>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<InstallTask::TargetsConstIteratorTag, const std::string>;
 
 #include <paludis/install_task-se.cc>
 

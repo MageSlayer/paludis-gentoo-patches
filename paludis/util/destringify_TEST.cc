@@ -64,10 +64,10 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_EQUAL(destringify<float>("0"),     0.f);
-            TEST_CHECK_EQUAL(destringify<float>("0.0"),   0.f);
-            TEST_CHECK_EQUAL(destringify<float>("0.1"),   0.1f);
-            TEST_CHECK_EQUAL(destringify<float>("-1.54"), -1.54f);
+            TEST_CHECK(abs(destringify<float>("0") - 0.0f) < 0.01f);
+            TEST_CHECK(abs(destringify<float>("0.0") - 0.0f) < 0.01f);
+            TEST_CHECK(abs(destringify<float>("0.1") - 0.1f) < 0.01f);
+            TEST_CHECK(abs(destringify<float>("-1.54") - -1.54f) < 0.01f);
             TEST_CHECK_THROWS(destringify<float>("I am a fish"), DestringifyError);
             TEST_CHECK_THROWS(destringify<float>(""), DestringifyError);
         }

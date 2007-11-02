@@ -24,8 +24,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <string>
 
@@ -39,7 +38,7 @@ namespace broken_linkage_finder
             Configuration(const paludis::FSEntry &);
             ~Configuration();
 
-            typedef libwrapiter::ForwardIterator<Configuration, const paludis::FSEntry> DirsIterator;
+            typedef paludis::WrappedForwardIterator<enum DirsIteratorTag { }, const paludis::FSEntry> DirsIterator;
             DirsIterator begin_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator begin_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));

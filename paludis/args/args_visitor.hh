@@ -22,10 +22,9 @@
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
 #include <paludis/util/visitor.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for ArgsVisitor.
@@ -75,8 +74,11 @@ namespace paludis
         class PALUDIS_VISIBLE ArgsVisitor :
             public Visitor<ArgsVisitorTypes>
         {
+            public:
+                typedef WrappedForwardIterator<enum ArgsIteratorTag { }, std::string> ArgsIterator;
+
             private:
-                libwrapiter::ForwardIterator<ArgsVisitor, std::string> * _args_index, _args_end;
+                ArgsIterator * _args_index, _args_end;
                 std::string _env_prefix;
 
                 const std::string & get_param(const ArgsOption &);
@@ -87,8 +89,7 @@ namespace paludis
                 /**
                  * Constructor
                  */
-                ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> *,
-                        libwrapiter::ForwardIterator<ArgsVisitor, std::string>,
+                ArgsVisitor(ArgsIterator *, ArgsIterator,
                         const std::string & env_prefix = "");
 
                 /// Visit a StringArg.

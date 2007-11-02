@@ -28,6 +28,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_list_exceptions.hh>
 

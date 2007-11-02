@@ -27,7 +27,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
@@ -35,15 +34,13 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
 #include <vector>
@@ -1071,7 +1068,7 @@ ECTimeKey::~ECTimeKey()
 {
 }
 
-const time_t
+time_t
 ECTimeKey::value() const
 {
     Lock l(_imp->value_mutex);

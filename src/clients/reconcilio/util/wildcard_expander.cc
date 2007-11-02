@@ -140,7 +140,7 @@ WildcardExpander::~WildcardExpander()
 {
 }
 
-const WildcardExpander &
+WildcardExpander &
 WildcardExpander::operator= (const WildcardExpander & other)
 {
     _imp->files = other._imp->files;

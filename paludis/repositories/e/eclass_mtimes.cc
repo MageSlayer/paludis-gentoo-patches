@@ -23,8 +23,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 

@@ -23,9 +23,9 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 #include <string>
 
@@ -75,7 +75,7 @@ namespace paludis
             ///\name Iterate over our archs.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSAPackage, const UseFlagName> ArchsConstIterator;
+            typedef WrappedForwardIterator<enum ArchsConstIteratorTag { }, const UseFlagName> ArchsConstIterator;
             ArchsConstIterator begin_archs() const;
             ArchsConstIterator end_archs() const;
 
@@ -89,7 +89,7 @@ namespace paludis
             ///\name Iterate over our ranges.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSAPackage, const GLSARange> RangesConstIterator;
+            typedef WrappedForwardIterator<enum RangesConstIteratorTag { }, const GLSARange> RangesConstIterator;
             RangesConstIterator begin_unaffected() const;
             RangesConstIterator end_unaffected() const;
             RangesConstIterator begin_vulnerable() const;
@@ -139,7 +139,7 @@ namespace paludis
             ///\name Iterate over our packages.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<GLSA, const GLSAPackage> PackagesConstIterator;
+            typedef WrappedForwardIterator<enum PackagesConstIteratorTag { }, const GLSAPackage> PackagesConstIterator;
             PackagesConstIterator begin_packages() const;
             PackagesConstIterator end_packages() const;
 

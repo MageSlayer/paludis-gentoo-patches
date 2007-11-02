@@ -23,6 +23,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <ostream>
 #include <utility>
 
@@ -32,14 +34,39 @@ using namespace paludis;
 #include <paludis/name-se.cc>
 
 template struct Sequence<RepositoryName>;
+template struct WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
+
 template struct Set<PackageNamePart>;
+template struct WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
+template struct WrappedOutputIterator<Set<PackageNamePart>::InserterTag, PackageNamePart>;
+
 template struct Set<CategoryNamePart>;
+template struct WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
+template struct WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
+
 template struct Set<UseFlagName>;
+template struct WrappedForwardIterator<Set<UseFlagName>::ConstIteratorTag, const UseFlagName>;
+template struct WrappedOutputIterator<Set<UseFlagName>::InserterTag, UseFlagName>;
+
 template struct Set<QualifiedPackageName>;
+template struct WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
+template struct WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
+
 template struct Set<KeywordName>;
+template struct WrappedForwardIterator<Set<KeywordName>::ConstIteratorTag, const KeywordName>;
+template struct WrappedOutputIterator<Set<KeywordName>::InserterTag, KeywordName>;
+
 template struct Set<SetName>;
+template struct WrappedForwardIterator<Set<SetName>::ConstIteratorTag, const SetName>;
+template struct WrappedOutputIterator<Set<SetName>::InserterTag, SetName>;
+
 template struct Set<IUseFlag>;
+template struct WrappedForwardIterator<Set<IUseFlag>::ConstIteratorTag, const IUseFlag>;
+template struct WrappedOutputIterator<Set<IUseFlag>::InserterTag, IUseFlag>;
+
 template struct Set<std::string>;
+template struct WrappedForwardIterator<Set<std::string>::ConstIteratorTag, const std::string>;
+template struct WrappedOutputIterator<Set<std::string>::InserterTag, std::string>;
 
 QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :
     NameError(s, "qualified package name")

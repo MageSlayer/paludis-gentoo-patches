@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_INFO_HH 1
 
 #include <paludis/repository_info-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for RepositoryInfo classes.
@@ -61,7 +62,7 @@ namespace paludis
             ///\name Iterate over our key/values
             ///\{
 
-            typedef libwrapiter::ForwardIterator<RepositoryInfoSection,
+            typedef WrappedForwardIterator<enum KeyValueConstIteratorTag { },
                     const std::pair<const std::string, std::string> > KeyValueConstIterator;
 
             KeyValueConstIterator begin_kvs() const
@@ -100,7 +101,7 @@ namespace paludis
             ///\name ConstIterator over our sections
             ///\{
 
-            typedef libwrapiter::ForwardIterator<RepositoryInfo,
+            typedef WrappedForwardIterator<enum SectionConstIteratorTag { },
                     const tr1::shared_ptr<const RepositoryInfoSection> > SectionConstIterator;
 
             SectionConstIterator begin_sections() const

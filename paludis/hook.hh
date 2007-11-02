@@ -27,9 +27,9 @@
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <string>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Hook classes.
@@ -87,7 +87,7 @@ namespace paludis
             ///\name Iterate over environment data
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Hook, const std::pair<const std::string, std::string> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const std::string, std::string> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

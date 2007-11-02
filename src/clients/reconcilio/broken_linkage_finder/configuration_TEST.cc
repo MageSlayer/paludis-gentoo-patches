@@ -21,11 +21,10 @@
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
 
 #include <unistd.h>
 

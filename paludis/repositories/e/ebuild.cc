@@ -32,6 +32,8 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -43,9 +45,6 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
 

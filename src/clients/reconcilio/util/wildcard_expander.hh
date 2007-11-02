@@ -45,7 +45,7 @@ class PALUDIS_VISIBLE WildcardExpander :
 
         ~WildcardExpander();
 
-        const WildcardExpander & operator= (const WildcardExpander &);
+        WildcardExpander & operator= (const WildcardExpander &);
 
         const paludis::FSEntry & operator* () const PALUDIS_ATTRIBUTE((warn_unused_result));
         const paludis::FSEntry * operator-> () const PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -27,6 +27,7 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -36,8 +37,6 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for PackageID classes.
@@ -287,7 +286,7 @@ namespace paludis
             ///\name Finding and iterating over metadata keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+            typedef WrappedForwardIterator<enum MetadataConstIteratorTag { }, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
             MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -318,7 +317,7 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageID, tr1::shared_ptr<const Mask> > MasksConstIterator;
+            typedef WrappedForwardIterator<enum MasksConstIteratorTag { }, tr1::shared_ptr<const Mask> > MasksConstIterator;
             MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

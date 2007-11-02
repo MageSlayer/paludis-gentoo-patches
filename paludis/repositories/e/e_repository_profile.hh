@@ -29,8 +29,6 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 #include <string>
 
 /** \file
@@ -85,7 +83,7 @@ namespace paludis
             ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
             ///\{
 
-            typedef libwrapiter::ForwardIterator<ERepositoryProfile, const UseFlagName> UseExpandConstIterator;
+            typedef WrappedForwardIterator<enum UseExpandConstIteratorTag { }, const UseFlagName> UseExpandConstIterator;
 
             UseExpandConstIterator begin_use_expand() const;
             UseExpandConstIterator end_use_expand() const;
@@ -119,7 +117,7 @@ namespace paludis
             ///\name Virtuals
             ///\{
 
-            typedef libwrapiter::ForwardIterator<ERepositoryProfile,
+            typedef WrappedForwardIterator<enum VirtualsConstIteratorTag { },
                 const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsConstIterator;
 
             VirtualsConstIterator begin_virtuals() const;

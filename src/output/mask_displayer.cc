@@ -25,10 +25,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/metadata_key.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sstream>
 
 using namespace paludis;

@@ -23,11 +23,10 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {
@@ -51,7 +50,7 @@ namespace paludis
 
                 ~SourceURIFinder();
 
-                typedef libwrapiter::ForwardIterator<SourceURIFinder, const std::pair<std::string, std::string> > ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<std::string, std::string> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

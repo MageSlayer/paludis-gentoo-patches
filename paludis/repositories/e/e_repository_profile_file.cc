@@ -23,11 +23,10 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/mask.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <algorithm>
 
@@ -37,18 +36,21 @@ using namespace paludis::erepository;
 namespace
 {
     template <typename T_>
-    struct FileEntryTraits
+    struct FileEntryTraits;
+
+    template<>
+    struct FileEntryTraits<std::string>
     {
-        static const T_ & extract_key(const T_ & k)
+        static const std::string extract_key(const std::string & k)
         {
             return k;
         }
     };
 
     template <typename F_, typename S_>
-    struct FileEntryTraits<const std::pair<F_, S_> >
+    struct FileEntryTraits<std::pair<F_, S_> >
     {
-        static const F_ & extract_key(const std::pair<F_, S_> & p)
+        static const std::string extract_key(const std::pair<F_, S_> & p)
         {
             return p.first;
         }
@@ -67,7 +69,7 @@ namespace
         template <typename U_>
         bool operator() (const U_ & y)
         {
-            return FileEntryTraits<const U_>::extract_key(y) == _x;
+            return FileEntryTraits<U_>::extract_key(y) == _x;
         }
     };
 }
@@ -77,7 +79,8 @@ namespace paludis
     template <typename F_>
     struct Implementation<ProfileFile<F_> >
     {
-        typedef std::list<typename tr1::remove_const<typename F_::ConstIterator::value_type>::type> Lines;
+        typedef std::list<typename tr1::remove_const<typename tr1::remove_reference<
+            typename F_::ConstIterator::value_type>::type>::type> Lines;
         Lines lines;
     };
 }
@@ -94,7 +97,8 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     F_ file(f, LineConfigFileOptions());
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        const std::string & key(FileEntryTraits<typename F_::ConstIterator::value_type>::extract_key(*line));
+        const std::string & key(FileEntryTraits<typename tr1::remove_const<typename tr1::remove_reference<
+                typename F_::ConstIterator::value_type>::type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
             typename Implementation<ProfileFile>::Lines::iterator i(
@@ -141,5 +145,8 @@ ProfileFile<F_>::end() const
 }
 
 template class ProfileFile<LineConfigFile>;
+template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIteratorTag, LineConfigFile::ConstIterator::value_type>;
+
 template class ProfileFile<MaskFile>;
+template class WrappedForwardIterator<ProfileFile<MaskFile>::ConstIteratorTag, MaskFile::ConstIterator::value_type>;
 

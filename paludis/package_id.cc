@@ -20,13 +20,14 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
@@ -36,14 +37,21 @@
 #include <list>
 #include <algorithm>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-
 using namespace paludis;
 
 #include <paludis/package_id-se.cc>
 
 template class Sequence<tr1::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const tr1::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Sequence<tr1::shared_ptr<const PackageID> >::InserterTag,
+         tr1::shared_ptr<const PackageID> >;
+
 template class Set<tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
+template class WrappedForwardIterator<Set<tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const tr1::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Set<tr1::shared_ptr<const PackageID> >::InserterTag,
+         tr1::shared_ptr<const PackageID> >;
 
 namespace paludis
 {

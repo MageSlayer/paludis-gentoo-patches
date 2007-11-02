@@ -23,6 +23,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declaration for the ERepositoryNews class.
@@ -84,10 +85,7 @@ namespace paludis
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
-            /// Tag for DisplayIfInstalledConstIterator.
-            struct DisplayIfInstalledConstIteratorTag;
-
-            typedef libwrapiter::ForwardIterator<DisplayIfInstalledConstIteratorTag,
+            typedef WrappedForwardIterator<enum DisplayIfInstalledConstIteratorTag { },
                     const std::string> DisplayIfInstalledConstIterator;
 
             DisplayIfInstalledConstIterator begin_display_if_installed() const;
@@ -99,10 +97,7 @@ namespace paludis
             ///\name Iterate over our Display-If-Keyword headers
             ///\{
 
-            /// Tag for DisplayIfKeywordConstIterator.
-            struct DisplayIfKeywordConstIteratorTag;
-
-            typedef libwrapiter::ForwardIterator<DisplayIfKeywordConstIteratorTag,
+            typedef WrappedForwardIterator<enum DisplayIfKeywordConstIteratorTag { },
                     const std::string> DisplayIfKeywordConstIterator;
 
             DisplayIfKeywordConstIterator begin_display_if_keyword() const;
@@ -114,10 +109,7 @@ namespace paludis
             ///\name Iterate over our Display-If-Profile headers
             ///\{
 
-            /// Tag for DisplayIfProfileConstIterator.
-            struct DisplayIfProfileConstIteratorTag;
-
-            typedef libwrapiter::ForwardIterator<DisplayIfProfileConstIteratorTag,
+            typedef WrappedForwardIterator<enum DisplayIfProfileConstIteratorTag { },
                     const std::string> DisplayIfProfileConstIterator;
 
             DisplayIfProfileConstIterator begin_display_if_profile() const;

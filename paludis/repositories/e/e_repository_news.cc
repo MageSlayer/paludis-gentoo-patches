@@ -29,8 +29,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/query.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <set>
 #include <ostream>
@@ -38,6 +38,10 @@
 #include <list>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<NewsFile::DisplayIfProfileConstIteratorTag, const std::string>;
 
 namespace paludis
 {

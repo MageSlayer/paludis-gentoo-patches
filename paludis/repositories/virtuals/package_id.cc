@@ -458,7 +458,7 @@ namespace
             {
             }
 
-            const char key() const
+            char key() const
             {
                 return 'A';
             }

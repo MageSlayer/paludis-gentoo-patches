@@ -24,6 +24,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <algorithm>
 #include <sstream>
@@ -56,8 +57,9 @@ template class Visits<const StringSetArg>;
 template class Visits<const AliasArg>;
 template class Visits<const SwitchArg>;
 
-ArgsVisitor::ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> * ai,
-        libwrapiter::ForwardIterator<ArgsVisitor, std::string> ae,
+template class WrappedForwardIterator<ArgsVisitor::ArgsIteratorTag, std::string>;
+
+ArgsVisitor::ArgsVisitor(ArgsIterator * ai, ArgsIterator ae,
         const std::string & env_prefix) :
     _args_index(ai),
     _args_end(ae),

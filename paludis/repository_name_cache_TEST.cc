@@ -22,10 +22,9 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

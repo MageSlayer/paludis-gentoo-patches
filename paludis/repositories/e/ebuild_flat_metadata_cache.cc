@@ -27,7 +27,6 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <set>
 #include <list>

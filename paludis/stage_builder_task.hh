@@ -20,11 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STAGE_BUILDER_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_STAGE_BUILDER_TASK_HH 1
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/util/tr1_memory.hh>
 
@@ -122,7 +121,7 @@ namespace paludis
             ///\name Iterate over our stages
             ///\{
 
-            typedef libwrapiter::ForwardIterator<StageBuilderTask, const tr1::shared_ptr<const StageBase> > StageConstIterator;
+            typedef WrappedForwardIterator<enum StageConstIteratorTag { }, const tr1::shared_ptr<const StageBase> > StageConstIterator;
             StageConstIterator begin_stages() const;
             StageConstIterator end_stages() const;
 

@@ -23,8 +23,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/mask-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {
@@ -58,7 +58,7 @@ namespace paludis
                 ///\name Iterate over our profile lines.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ProfileFile, typename F_::ConstIterator::value_type> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, typename F_::ConstIterator::value_type> ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
 

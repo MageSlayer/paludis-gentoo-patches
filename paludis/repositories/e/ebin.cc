@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/environment.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
@@ -31,8 +32,6 @@
 #include <paludis/metadata_key.hh>
 #include <sys/resource.h>
 #include <sys/time.h>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <unistd.h>
 
 using namespace paludis;

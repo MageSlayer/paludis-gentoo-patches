@@ -30,7 +30,6 @@
 #include <paludis/environment.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Implementation of dep_spec_pretty_printer.hh.

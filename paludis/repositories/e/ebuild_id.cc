@@ -43,8 +43,6 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-
 #include <iterator>
 #include <fstream>
 

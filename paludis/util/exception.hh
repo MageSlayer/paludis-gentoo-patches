@@ -24,7 +24,6 @@
 #include <string>
 #include <exception>
 
-
 /** \file
  * Declaration for the Exception base class, the InternalError exception
  * class, the NameError class and related utilities.
@@ -50,9 +49,6 @@ namespace paludis
             Context(const Context &);
             const Context & operator= (const Context &);
 
-            struct ContextData;
-            ContextData * const _context_data;
-
         public:
             ///\name Basic operations
             ///\{
@@ -64,7 +60,7 @@ namespace paludis
             ///\}
 
             /**
-             * Current context (forwards to libebt).
+             * Current context.
              */
             static std::string backtrace(const std::string & delim);
     };

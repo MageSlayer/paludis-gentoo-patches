@@ -22,7 +22,7 @@
 
 #include <paludis/util/graph.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <map>
 #include <set>
 #include <list>
@@ -60,7 +60,7 @@ namespace paludis
             ///\name Iterate over our nodes
             ///\{
 
-            typedef libwrapiter::ForwardIterator<RemainingNodes, const std::string> ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
 
             ConstIterator begin() const
             {

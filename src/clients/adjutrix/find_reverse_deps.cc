@@ -32,8 +32,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/fuzzy_finder.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <set>
 #include <map>

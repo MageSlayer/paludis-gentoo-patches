@@ -20,15 +20,14 @@
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/repository_info.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <map>
 
 /** \file
@@ -237,8 +236,8 @@ tr1::shared_ptr<const SetNameSet>
 FakeRepositoryBase::sets_list() const
 {
     tr1::shared_ptr<SetNameSet> result(new SetNameSet);
-    std::copy(_imp->sets.begin(), _imp->sets.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::first)));
+    std::transform(_imp->sets.begin(), _imp->sets.end(), result->inserter(),
+            tr1::mem_fn(&std::pair<const SetName, tr1::shared_ptr<SetSpecTree::ConstItem> >::first));
     return result;
 }
 

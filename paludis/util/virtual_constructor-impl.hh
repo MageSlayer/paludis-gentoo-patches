@@ -22,7 +22,6 @@
 
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <algorithm>
 #include <vector>
@@ -148,8 +147,8 @@ namespace paludis
     void
     VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::copy_keys(T_ out_iter) const
     {
-        std::copy(_entries_holder->entries.begin(), _entries_holder->entries.end(), transform_inserter(out_iter,
-                    paludis::tr1::mem_fn(&std::pair<KeyType_, ValueType_>::first)));
+        std::transform(_entries_holder->entries.begin(), _entries_holder->entries.end(), out_iter,
+                paludis::tr1::mem_fn(&std::pair<KeyType_, ValueType_>::first));
     }
 }
 

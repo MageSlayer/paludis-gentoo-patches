@@ -23,9 +23,8 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-#include <libwrapiter/libwrapiter_output_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_output_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Sequence<> class.
@@ -76,17 +75,16 @@ namespace paludis
             ///\name Iteration
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Sequence<T_>, const T_> ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const T_> ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator last() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            struct ReverseConstIteratorTag;
-            typedef libwrapiter::ForwardIterator<typename Sequence<T_>::ReverseConstIteratorTag, const T_> ReverseConstIterator;
+            typedef WrappedForwardIterator<enum ReverseConstIteratorTag { }, const T_> ReverseConstIterator;
             ReverseConstIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ReverseConstIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef libwrapiter::OutputIterator<Sequence<T_>, T_> Inserter;
+            typedef WrappedOutputIterator<enum InserterTag { }, T_> Inserter;
             Inserter back_inserter();
             Inserter front_inserter();
 

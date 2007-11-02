@@ -27,6 +27,7 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/environment_maker.hh>
 
 #include <string>
@@ -124,7 +125,7 @@ namespace paludis
                 ///\name Iterate over our repositories
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<PaludisConfig, const RepositoryConfigEntry> RepositoryConstIterator;
+                typedef WrappedForwardIterator<enum RepositoryConstIteratorTag { }, const RepositoryConfigEntry> RepositoryConstIterator;
 
                 RepositoryConstIterator begin_repositories() const;
 

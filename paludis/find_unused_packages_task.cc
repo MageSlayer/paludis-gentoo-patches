@@ -25,11 +25,10 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <set>
 

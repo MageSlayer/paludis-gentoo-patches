@@ -18,12 +18,11 @@
  */
 
 #include "glsa.hh"
-#include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
 #include <dlfcn.h>
 #include <stdint.h>
@@ -32,6 +31,10 @@
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
 using namespace paludis;
+
+template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const UseFlagName>;
+template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const GLSARange>;
+template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
 
 #include "glsa-sr.cc"
 

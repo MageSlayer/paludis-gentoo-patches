@@ -20,12 +20,19 @@
 #include "args.hh"
 #include "args_error.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <set>
 #include <vector>
 #include <algorithm>
 
 using namespace paludis;
 using namespace paludis::args;
+
+template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
+         const std::pair<std::string, std::string> >;
 
 namespace
 {

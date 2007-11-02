@@ -26,12 +26,12 @@
 #include <src/clients/reconcilio/littlelf/elf_types.hh>
 
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
 

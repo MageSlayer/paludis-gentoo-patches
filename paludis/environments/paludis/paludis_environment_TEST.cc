@@ -22,12 +22,11 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <cstdlib>
 
 using namespace paludis;

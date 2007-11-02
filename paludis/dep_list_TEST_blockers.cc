@@ -19,6 +19,8 @@
 
 #include "dep_list_TEST.hh"
 #include <paludis/repositories/fake/fake_package_id.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace test;

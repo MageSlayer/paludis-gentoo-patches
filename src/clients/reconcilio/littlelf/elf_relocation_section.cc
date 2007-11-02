@@ -7,8 +7,7 @@
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <istream>
 #include <vector>
@@ -115,7 +114,18 @@ RelocationSection<ElfType_, Relocation_>::relocation_end() const
 }
 
 template class RelocationSection<Elf32Type, Relocation<Elf32Type> >;
+template class WrappedForwardIterator<RelocationSection<Elf32Type, Relocation<Elf32Type> >::RelocationIteratorTag,
+         const Relocation<Elf32Type>::Entry>;
+
 template class RelocationSection<Elf32Type, RelocationA<Elf32Type> >;
+template class WrappedForwardIterator<RelocationSection<Elf32Type, RelocationA<Elf32Type> >::RelocationIteratorTag,
+         const RelocationA<Elf32Type>::Entry>;
+
 template class RelocationSection<Elf64Type, Relocation<Elf64Type> >;
+template class WrappedForwardIterator<RelocationSection<Elf64Type, Relocation<Elf64Type> >::RelocationIteratorTag,
+         const Relocation<Elf64Type>::Entry>;
+
 template class RelocationSection<Elf64Type, RelocationA<Elf64Type> >;
+template class WrappedForwardIterator<RelocationSection<Elf64Type, RelocationA<Elf64Type> >::RelocationIteratorTag,
+         const RelocationA<Elf64Type>::Entry>;
 

@@ -9,12 +9,11 @@
 
 #include <src/clients/reconcilio/util/byte_swap.hh>
 
-#include <paludis/util/iterator.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/iterator_funcs.hh>
 
 #include <string>
 #include <exception>
@@ -346,4 +345,7 @@ ElfObject<ElfType_>::get_section_by_index(unsigned int index) const
 
 template class ElfObject<Elf32Type>;
 template class ElfObject<Elf64Type>;
+
+template class WrappedForwardIterator<ElfObject<Elf32Type>::SectionIteratorTag, Section<Elf32Type> >;
+template class WrappedForwardIterator<ElfObject<Elf64Type>::SectionIteratorTag, Section<Elf64Type> >;
 

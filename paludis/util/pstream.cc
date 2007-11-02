@@ -20,7 +20,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <cstring>
 #include <iostream>

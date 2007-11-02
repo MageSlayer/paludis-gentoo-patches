@@ -22,7 +22,7 @@
 
 #include <paludis/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>

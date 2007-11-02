@@ -23,10 +23,9 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for UninstallList and related classes.
@@ -105,7 +104,7 @@ namespace paludis
             ///\name Iterate over our items to remove
             ///\{
 
-            typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> ConstIterator;
+            typedef WrappedForwardIterator<enum UninstallListTag { }, const UninstallListEntry> ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 

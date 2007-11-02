@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_FAST_UNIQUE_COPY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_FAST_UNIQUE_COPY_HH 1
 
-#include <paludis/util/iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <functional>
 
 namespace paludis

@@ -28,7 +28,6 @@
 #include <paludis/util/tr1_memory.hh>
 
 #include <string>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Contents classes.
@@ -240,7 +239,7 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Contents, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

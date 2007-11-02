@@ -26,6 +26,7 @@ configuration_TEST_SOURCES = configuration_TEST.cc
 configuration_TEST_LDADD = \
 	libbrokenlinkagefinder.a \
 	../util/libreconcilioutil.a \
+	$(top_builddir)/src/clients/reconcilio/littlelf/liblittlelf.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \

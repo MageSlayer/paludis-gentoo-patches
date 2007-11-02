@@ -7,8 +7,7 @@
 
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <istream>
 #include <vector>
@@ -185,4 +184,8 @@ SymbolSection<ElfType_>::symbol_end() const
 
 template class SymbolSection<Elf32Type>;
 template class SymbolSection<Elf64Type>;
+
+template class WrappedForwardIterator<SymbolSection<Elf32Type>::SymbolIteratorTag, const Symbol<Elf32Type> >;
+template class WrappedForwardIterator<SymbolSection<Elf64Type>::SymbolIteratorTag, const Symbol<Elf64Type> >;
+
 

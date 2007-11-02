@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EAPI_PHASE_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -53,7 +53,7 @@ namespace paludis
                 bool option(const std::string &) const;
                 bool option_contains(const std::string &, const std::string &) const;
 
-                typedef libwrapiter::ForwardIterator<EAPIPhase, const std::string> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
                 ConstIterator begin_commands() const;
                 ConstIterator end_commands() const;
 
@@ -82,7 +82,7 @@ namespace paludis
                 ///\name Information about the phases
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<EAPIPhases, const EAPIPhase> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const EAPIPhase> ConstIterator;
                 ConstIterator begin_phases() const;
                 ConstIterator end_phases() const;
 

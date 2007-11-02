@@ -26,7 +26,6 @@
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -50,6 +49,8 @@ template class Visits<const TargetDepTag>;
 template class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
 
 template class Set<DepTagEntry>;
+template class WrappedForwardIterator<Set<DepTagEntry>::ConstIteratorTag, const DepTagEntry>;
+template class WrappedOutputIterator<Set<DepTagEntry>::InserterTag, DepTagEntry>;
 
 #include <paludis/dep_tag-sr.cc>
 

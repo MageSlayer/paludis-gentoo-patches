@@ -29,8 +29,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <istream>
 #include <list>
@@ -40,6 +40,12 @@
 using namespace paludis;
 
 #include <paludis/util/config_file-se.cc>
+
+template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<KeyValueConfigFile::Defaults::ConstIteratorTag,
+         const std::pair<const std::string, std::string> >;
+template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag,
+         const std::pair<const std::string, std::string> >;
 
 ConfigFileError::ConfigFileError(const std::string & f, const std::string & m) throw () :
     ConfigurationError("Configuration file error: " + (f.empty() ? m : f + ": " + m))

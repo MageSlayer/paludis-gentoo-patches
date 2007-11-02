@@ -27,8 +27,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <stack>
 #include <set>
 

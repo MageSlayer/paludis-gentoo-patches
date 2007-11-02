@@ -27,8 +27,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 #include <set>
 

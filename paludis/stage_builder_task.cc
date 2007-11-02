@@ -21,10 +21,13 @@
 
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<StageBuilderTask::StageConstIteratorTag,
+         const tr1::shared_ptr<const StageBase> >;
 
 namespace paludis
 {

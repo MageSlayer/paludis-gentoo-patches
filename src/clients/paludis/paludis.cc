@@ -41,9 +41,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/fuzzy_finder.hh>
 
-#include <libebt/libebt.hh>
-#include <libwrapiter/libwrapiter.hh>
-
 #include <iostream>
 #include <iomanip>
 #include <string>

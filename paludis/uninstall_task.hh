@@ -26,7 +26,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for UninstallTask.
@@ -70,7 +70,7 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<AmbiguousUnmergeTargetError, const tr1::shared_ptr<const PackageID> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const PackageID> > ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 

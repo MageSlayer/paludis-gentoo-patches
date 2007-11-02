@@ -25,11 +25,10 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 class BrokenLinkageFinder :
     private paludis::PrivateImplementationPattern<BrokenLinkageFinder>,
@@ -39,23 +38,19 @@ class BrokenLinkageFinder :
         BrokenLinkageFinder(const paludis::Environment *, const std::string &);
         ~BrokenLinkageFinder();
 
-        typedef libwrapiter::ForwardIterator<
-            BrokenLinkageFinder, const paludis::tr1::shared_ptr<const paludis::PackageID>
-            > BrokenPackageConstIterator;
+        typedef paludis::WrappedForwardIterator<enum BrokenPackageConstIteratorTag { },
+                const paludis::tr1::shared_ptr<const paludis::PackageID>
+                    > BrokenPackageConstIterator;
         BrokenPackageConstIterator begin_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
         BrokenPackageConstIterator end_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-        typedef libwrapiter::ForwardIterator<
-            BrokenLinkageFinder, const paludis::FSEntry
-            > BrokenFileConstIterator;
+        typedef paludis::WrappedForwardIterator<enum BrokenFileConstIteratorTag { }, const paludis::FSEntry> BrokenFileConstIterator;
         BrokenFileConstIterator begin_broken_files(const paludis::tr1::shared_ptr<const paludis::PackageID> &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));
         BrokenFileConstIterator end_broken_files(const paludis::tr1::shared_ptr<const paludis::PackageID> &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-        typedef libwrapiter::ForwardIterator<
-            BrokenLinkageFinder, const std::string
-            > MissingRequirementConstIterator;
+        typedef paludis::WrappedForwardIterator<enum MissingRequirementConstIteratorTag { }, const std::string> MissingRequirementConstIterator;
         MissingRequirementConstIterator begin_missing_requirements(
             const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));

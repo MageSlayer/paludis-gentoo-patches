@@ -23,6 +23,7 @@
 
 #include <paludis/args/args_visitor.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for ArgsOption.
@@ -260,7 +261,7 @@ namespace paludis
                 ///\name Iterate over our args.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<StringArg, const std::string> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
 
                 ConstIterator begin_args() const;
 
@@ -276,7 +277,7 @@ namespace paludis
                 ///\name Iterate over our allowed arguments and associated descriptions
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<StringSetArg,
+                typedef WrappedForwardIterator<enum AllowedArgConstIteratorTag { },
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
@@ -438,7 +439,7 @@ namespace paludis
                 ///\name Iterate over our allowed arguments and associated descriptions
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<EnumArg,
+                typedef WrappedForwardIterator<enum AllowedArgConstIteratorTag { },
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;

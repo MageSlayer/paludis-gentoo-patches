@@ -22,7 +22,6 @@
 
 #include <paludis/install_task.hh>
 #include <paludis/util/set.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <src/output/console_task.hh>
 #include <iosfwd>
 

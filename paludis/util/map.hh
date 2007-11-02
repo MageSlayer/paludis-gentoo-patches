@@ -24,9 +24,8 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-#include <libwrapiter/libwrapiter_output_iterator-fwd.hh>
+#include <paludis/util/wrapped_output_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <utility>
 
@@ -70,12 +69,12 @@ namespace paludis
             ///\name Iteration
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Map<K_, V_, C_>, const std::pair<const K_, V_> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const K_, V_> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef libwrapiter::OutputIterator<Map<K_, V_, C_>, std::pair<const K_, V_> > Inserter;
+            typedef WrappedOutputIterator<enum InserterTag { }, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

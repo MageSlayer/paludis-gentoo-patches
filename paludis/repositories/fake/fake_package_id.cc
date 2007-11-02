@@ -32,14 +32,11 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
-
-#include <libwrapiter/libwrapiter_output_iterator.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <list>
 #include <sstream>
@@ -296,7 +293,7 @@ FakeUnacceptedMask::~FakeUnacceptedMask()
 {
 }
 
-const char
+char
 FakeUnacceptedMask::key() const
 {
     return _imp->key;

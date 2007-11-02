@@ -23,6 +23,7 @@
 #include <paludis/dep_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for the AAVisitor class.
@@ -68,7 +69,7 @@ namespace paludis
                 /// \name Iterator functions
                 ///{
 
-                typedef libwrapiter::ForwardIterator<AAVisitor, const std::string> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
 
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -36,21 +36,20 @@
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
 
-#include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/member_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <algorithm>
 #include <functional>
@@ -61,6 +60,8 @@
 using namespace paludis;
 
 template class Sequence<tr1::function<bool (const PackageID &, const Mask &)> >;
+template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
+template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
 
 #include <paludis/dep_list-sr.cc>
 
@@ -1402,11 +1403,15 @@ DepList::prefer_installed_over_uninstalled(const PackageID & installed,
     {
         std::set<UseFlagName> use_common;
         if (installed.iuse_key() && uninstalled.iuse_key())
+        {
+            std::set<IUseFlag> iuse_common;
             std::set_intersection(
                     installed.iuse_key()->value()->begin(), installed.iuse_key()->value()->end(),
                     uninstalled.iuse_key()->value()->begin(), uninstalled.iuse_key()->value()->end(),
-                    transform_inserter(std::inserter(use_common, use_common.end()),
-                        paludis::tr1::mem_fn(&IUseFlag::flag)));
+                    std::inserter(iuse_common, iuse_common.begin()));
+            std::transform(iuse_common.begin(), iuse_common.end(), std::inserter(use_common, use_common.begin()),
+                    tr1::mem_fn(&IUseFlag::flag));
+        }
 
         for (std::set<UseFlagName>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
                 f != f_end ; ++f)

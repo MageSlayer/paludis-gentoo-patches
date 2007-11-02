@@ -323,7 +323,7 @@ namespace paludis
                         const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
                 ~ECTimeKey();
 
-                const time_t value() const
+                time_t value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

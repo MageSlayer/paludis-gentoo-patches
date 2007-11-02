@@ -23,27 +23,30 @@
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/member_iterator.hh>
 #include <paludis/query.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
 #include <map>
 #include <set>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const tr1::shared_ptr<Repository> >;
 
 #include "package_database-se.cc"
 
@@ -323,10 +326,12 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             repos->push_back((*r)->name());
     }
     if (repos->empty())
+    {
         if (qo_require_exactly_one == query_order)
             throw NonUniqueQueryResultError(q, result);
         else
             return result;
+    }
 
     tr1::shared_ptr<CategoryNamePartSet> cats(q.categories(*_imp->environment, repos));
     if (! cats)
@@ -340,10 +345,12 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
         }
     }
     if (cats->empty())
+    {
         if (qo_require_exactly_one == query_order)
             throw NonUniqueQueryResultError(q, result);
         else
             return result;
+    }
 
     tr1::shared_ptr<QualifiedPackageNameSet> pkgs(q.packages(*_imp->environment, repos, cats));
     if (! pkgs)
@@ -359,10 +366,12 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             }
     }
     if (pkgs->empty())
+    {
         if (qo_require_exactly_one == query_order)
             throw NonUniqueQueryResultError(q, result);
         else
             return result;
+    }
 
     tr1::shared_ptr<PackageIDSequence> ids(q.ids(*_imp->environment, repos, pkgs));
     if (! ids)
@@ -379,10 +388,12 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     else
     {
         if (ids->empty())
+        {
             if (qo_require_exactly_one == query_order)
                 throw NonUniqueQueryResultError(q, result);
             else
                 return result;
+        }
 
         std::copy(ids->begin(), ids->end(), result->back_inserter());
     }
@@ -442,8 +453,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                     }
 
                     result.reset(new PackageIDSequence);
-                    std::copy(best.begin(), best.end(), transform_inserter(result->back_inserter(),
-                                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> >::second)));
+                    std::copy(second_iterator(best.begin()), second_iterator(best.end()), result->back_inserter());
                 }
                 continue;
 
@@ -461,9 +471,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
                     }
 
                     result.reset(new PackageIDSequence);
-                    std::copy(best.begin(), best.end(), transform_inserter(result->back_inserter(),
-                                tr1::mem_fn(&std::pair<const std::pair<QualifiedPackageName, SlotName>,
-                                    tr1::shared_ptr<const PackageID> >::second)));
+                    std::copy(second_iterator(best.begin()), second_iterator(best.end()), result->back_inserter());
                     result->sort(tr1::cref(c));
                 }
                 continue;

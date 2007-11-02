@@ -24,9 +24,9 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -269,7 +269,7 @@ namespace test_cases
                 result->insert(CategoryNamePart("bad-cat1"));
                 result->insert(CategoryNamePart("bad-cat2"));
                 return result;
-            };
+            }
         };
 
         void run()

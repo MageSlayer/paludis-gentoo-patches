@@ -37,8 +37,6 @@
 
 #include <src/output/colour.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator-decl.hh>
-
 #include <iostream>
 
 using namespace paludis;

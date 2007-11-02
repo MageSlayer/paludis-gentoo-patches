@@ -158,7 +158,7 @@ namespace paludis
             FakeUnacceptedMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
             ~FakeUnacceptedMask();
 
-            const char key() const;
+            char key() const;
             const std::string description() const;
             const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
     };

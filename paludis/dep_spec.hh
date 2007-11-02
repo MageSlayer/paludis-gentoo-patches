@@ -25,6 +25,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -33,8 +34,6 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -225,7 +224,7 @@ namespace paludis
             ///\name Iterate over our USE requirements
             ///\{
 
-            typedef libwrapiter::ForwardIterator<UseRequirements,
+            typedef WrappedForwardIterator<enum ConstIteratorTag { },
                     const std::pair<const UseFlagName, UseFlagState> > ConstIterator;
 
             ConstIterator begin() const;
@@ -588,7 +587,7 @@ namespace paludis
             ///\{
 
             void add_label(const tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
-            typedef libwrapiter::ForwardIterator<LabelsDepSpec<SpecTree_>,
+            typedef WrappedForwardIterator<enum ConstIteratorTag { },
                     const tr1::shared_ptr<const typename SpecTree_::BasicNode> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));

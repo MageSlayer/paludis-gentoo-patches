@@ -31,7 +31,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <list>
 #include <vector>
 #include <map>

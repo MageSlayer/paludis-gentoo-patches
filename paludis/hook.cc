@@ -22,11 +22,14 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <utility>
 #include <map>
 #include <set>
 
 using namespace paludis;
+
+template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 
 #include <paludis/hook-se.cc>
 #include <paludis/hook-sr.cc>

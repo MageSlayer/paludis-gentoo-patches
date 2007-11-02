@@ -26,8 +26,6 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/mask-fwd.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 namespace paludis
 {
     namespace erepository
@@ -54,7 +52,7 @@ namespace paludis
                 ///\name Iterate over our mask lines.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<MaskFile,
+                typedef WrappedForwardIterator<enum ConstIteratorTag { },
                         const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;

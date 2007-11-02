@@ -40,15 +40,13 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <fstream>
 #include <list>

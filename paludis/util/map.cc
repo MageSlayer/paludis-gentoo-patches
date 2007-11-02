@@ -19,9 +19,13 @@
 
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <string>
 
 using namespace paludis;
 
 template class Map<std::string, std::string>;
+template class WrappedForwardIterator<Map<std::string, std::string>::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+template class WrappedOutputIterator<Map<std::string, std::string>::InserterTag, std::pair<const std::string, std::string> >;
 

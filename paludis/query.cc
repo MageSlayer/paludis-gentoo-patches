@@ -31,8 +31,6 @@
 #include <paludis/match_package.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <algorithm>
 #include <set>
 

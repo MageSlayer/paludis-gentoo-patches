@@ -29,7 +29,6 @@
 #include <paludis/query.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <fstream>
 #include <iterator>
 

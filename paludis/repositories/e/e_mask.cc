@@ -50,7 +50,7 @@ EUnacceptedMask::~EUnacceptedMask()
 {
 }
 
-const char
+char
 EUnacceptedMask::key() const
 {
     return _imp->key;
@@ -95,7 +95,7 @@ EUnsupportedMask::~EUnsupportedMask()
 {
 }
 
-const char
+char
 EUnsupportedMask::key() const
 {
     return _imp->key;
@@ -142,7 +142,7 @@ ERepositoryMask::~ERepositoryMask()
 {
 }
 
-const char
+char
 ERepositoryMask::key() const
 {
     return _imp->key;

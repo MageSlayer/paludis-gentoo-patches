@@ -26,6 +26,7 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -92,8 +93,9 @@ namespace
             return;
 
         std::set<SlotName> slots;
-        std::copy(packages->begin(), packages->end(),
-                transform_inserter(std::inserter(slots, slots.begin()), tr1::mem_fn(&PackageID::slot)));
+        std::transform(packages->begin(), packages->end(),
+                std::inserter(slots, slots.begin()),
+                tr1::mem_fn(&PackageID::slot));
 
         unsigned version_specs_columns_width(std::max_element(indirect_iterator(packages->begin()),
                     indirect_iterator(packages->end()),

@@ -24,13 +24,14 @@
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
 #include <map>
 
@@ -1134,6 +1135,14 @@ LabelsDepSpec<T_>::add_label(const tr1::shared_ptr<const typename T_::BasicNode>
     _imp->items.push_back(item);
 }
 
+template class WrappedForwardIterator<UseRequirements::ConstIteratorTag, const std::pair<const UseFlagName, UseFlagState> >;
+
 template class LabelsDepSpec<URILabelVisitorTypes>;
+template class WrappedForwardIterator<LabelsDepSpec<URILabelVisitorTypes>::ConstIteratorTag,
+         const tr1::shared_ptr<const URILabelVisitorTypes::BasicNode> >;
+
 template class LabelsDepSpec<DependencyLabelVisitorTypes>;
+template class WrappedForwardIterator<LabelsDepSpec<DependencyLabelVisitorTypes>::ConstIteratorTag,
+         const tr1::shared_ptr<const DependencyLabelVisitorTypes::BasicNode> >;
+
 

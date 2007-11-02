@@ -26,16 +26,15 @@
 #include <paludis/repository.hh>
 #include <paludis/query-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/contents.hh>
 
 #include <iosfwd>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for PackageDatabase.
@@ -124,7 +123,7 @@ namespace paludis
             ///\name Iterate over possible matches
             ///\{
 
-            typedef libwrapiter::ForwardIterator<AmbiguousPackageNameError,
+            typedef WrappedForwardIterator<enum OptionsConstIteratorTag { },
                     const std::string> OptionsConstIterator;
 
             OptionsConstIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -321,7 +320,7 @@ namespace paludis
             ///\name Iterate over our repositories
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageDatabase, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
+            typedef WrappedForwardIterator<enum RepositoryConstIteratorTag { }, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
 
             RepositoryConstIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

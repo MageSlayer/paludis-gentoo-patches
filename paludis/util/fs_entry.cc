@@ -26,6 +26,10 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -46,6 +50,9 @@
 using namespace paludis;
 
 template class Sequence<FSEntry>;
+template class WrappedForwardIterator<Sequence<FSEntry>::ConstIteratorTag, const FSEntry>;
+template class WrappedForwardIterator<Sequence<FSEntry>::ReverseConstIteratorTag, const FSEntry>;
+template class WrappedOutputIterator<Sequence<FSEntry>::InserterTag, FSEntry>;
 template class Set<FSEntry>;
 
 FSError::FSError(const std::string & our_message) throw () :

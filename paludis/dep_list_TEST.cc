@@ -26,8 +26,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/override_functions.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace test;

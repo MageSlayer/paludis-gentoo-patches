@@ -21,17 +21,19 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/mask.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
-#include <libwrapiter/libwrapiter_output_iterator-impl.hh>
 
 #include <list>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
+         const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > >;
 
 namespace paludis
 {

@@ -21,7 +21,7 @@
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 /** \file
  * Implementation of aa_visitor.hh

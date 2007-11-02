@@ -21,9 +21,10 @@
 #include "command_line.hh"
 
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/indirect_iterator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>

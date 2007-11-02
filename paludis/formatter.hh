@@ -1067,6 +1067,7 @@ namespace paludis
                 FormatFunctionsByProxy<T13_, typename format::CategorySelector<T13_>::Category, 13>(&t),
                 FormatFunctionsByProxy<T14_, typename format::CategorySelector<T14_>::Category, 14>(&t),
                 FormatFunctionsByProxy<T15_, typename format::CategorySelector<T15_>::Category, 15>(&t),
+                CanSpace(),
                 _proxy(&t)
             {
             }

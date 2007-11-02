@@ -18,7 +18,6 @@
  */
 
 #include <list>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/no_type.hh>

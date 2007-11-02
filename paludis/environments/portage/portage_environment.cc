@@ -21,10 +21,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -42,8 +45,6 @@
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/mutex.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <functional>
 #include <set>
 #include <map>
@@ -651,8 +652,8 @@ PortageEnvironment::mirrors(const std::string & m) const
     std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
         p(_imp->mirrors.equal_range(m));
     tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
-    std::copy(p.first, p.second, transform_inserter(result->back_inserter(),
-                tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
+    std::transform(p.first, p.second, result->back_inserter(),
+            tr1::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
 }
 
@@ -673,7 +674,7 @@ namespace
     class BreaksPortageMask :
         public UnsupportedMask
     {
-        const char key() const
+        char key() const
         {
             return 'B';
         }
@@ -692,7 +693,7 @@ namespace
     class UserConfigMask :
         public UserMask
     {
-        const char key() const
+        char key() const
         {
             return 'U';
         }

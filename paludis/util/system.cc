@@ -24,7 +24,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -37,6 +38,8 @@
 #include "config.h"
 
 using namespace paludis;
+
+template class WrappedForwardIterator<Command::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 
 namespace
 {

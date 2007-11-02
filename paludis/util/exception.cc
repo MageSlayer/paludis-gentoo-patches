@@ -19,11 +19,9 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <libebt/libebt.hh>
-
-#ifdef PALUDIS_ENABLE_THREADS
-#  include <libebt/libebt_pthread_threads.hh>
-#endif
+#include <paludis/util/join.hh>
+#include <paludis/util/tr1_memory.hh>
+#include <list>
 
 #include "config.h"
 
@@ -35,55 +33,58 @@ using namespace paludis;
 
 namespace
 {
-    struct ContextTag;
+    PALUDIS_TLS std::list<std::string> * context = 0;
 }
 
-#ifdef PALUDIS_ENABLE_THREADS
-
-namespace libebt
+Context::Context(const std::string & s)
 {
-    template <>
-    struct BacktraceContextHolder<ContextTag> :
-        PthreadBacktraceContextHolder<ContextTag>
-    {
-    };
-}
-
-#endif
-
-struct Context::ContextData
-{
-    libebt::BacktraceContext<ContextTag> context;
-
-    ContextData(const std::string & s) :
-        context(s)
-    {
-    }
-};
-
-Context::Context(const std::string & s) :
-    _context_data(new ContextData(s))
-{
+    if (! context)
+        context = new std::list<std::string>;
+    context->push_back(s);
 }
 
 Context::~Context()
 {
-    delete _context_data;
+    if (! context)
+        throw InternalError(PALUDIS_HERE, "no context");
+    context->pop_back();
+    if (context->empty())
+    {
+        delete context;
+        context = 0;
+    }
 }
 
 std::string
 Context::backtrace(const std::string & delim)
 {
-    return libebt::BacktraceContext<ContextTag>::backtrace(delim);
+    if (! context)
+        return "";
+
+    return join(context->begin(), context->end(), delim);
 }
 
-struct Exception::ContextData :
-    public libebt::Backtraceable<ContextTag>
+namespace paludis
 {
-};
+    struct Exception::ContextData
+    {
+        std::list<std::string> local_context;
 
-Exception::Exception(const std::string & our_message) throw () :
-    _message(our_message),
+        ContextData()
+        {
+            if (context)
+                local_context.assign(context->begin(), context->end());
+        }
+
+        ContextData(const ContextData & other) :
+            local_context(other.local_context)
+        {
+        }
+    };
+}
+
+Exception::Exception(const std::string & m) throw () :
+    _message(m),
     _context_data(new ContextData)
 {
 }
@@ -100,12 +101,6 @@ Exception::~Exception() throw ()
     delete _context_data;
 }
 
-bool
-Exception::empty() const
-{
-    return _context_data->empty();
-}
-
 const std::string &
 Exception::message() const throw ()
 {
@@ -115,7 +110,13 @@ Exception::message() const throw ()
 std::string
 Exception::backtrace(const std::string & delim) const
 {
-    return _context_data->backtrace(delim);
+    return join(_context_data->local_context.begin(), _context_data->local_context.end(), delim);
+}
+
+bool
+Exception::empty() const
+{
+    return _context_data->local_context.empty();
 }
 
 NotAvailableError::NotAvailableError(const std::string & msg) throw () :

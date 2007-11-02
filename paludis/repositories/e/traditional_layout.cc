@@ -28,13 +28,14 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 
@@ -42,9 +43,6 @@
 #include <functional>
 #include <algorithm>
 #include <list>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -293,9 +291,9 @@ TraditionalLayout::need_category_names_collection() const
     need_category_names();
 
     _imp->category_names_collection.reset(new CategoryNamePartSet);
-    std::copy(_imp->category_names.begin(), _imp->category_names.end(),
-            transform_inserter(_imp->category_names_collection->inserter(),
-                tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first)));
+    std::transform(_imp->category_names.begin(), _imp->category_names.end(),
+            _imp->category_names_collection->inserter(),
+            tr1::mem_fn(&std::pair<const CategoryNamePart, bool>::first));
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>

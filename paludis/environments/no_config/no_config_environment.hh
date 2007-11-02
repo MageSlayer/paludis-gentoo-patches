@@ -25,7 +25,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/map-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 namespace paludis
 {

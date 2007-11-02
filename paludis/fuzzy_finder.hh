@@ -22,7 +22,7 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/name.hh>
 #include <string>
 
@@ -54,7 +54,7 @@ namespace paludis
             ///\name Iterate over the candidates
             ///\{
 
-            typedef libwrapiter::ForwardIterator<FuzzyCandidatesFinder, const QualifiedPackageName>
+            typedef WrappedForwardIterator<enum CandidatesConstIteratorTag { }, const QualifiedPackageName>
                 CandidatesConstIterator;
 
             CandidatesConstIterator begin() const;
@@ -83,7 +83,7 @@ namespace paludis
             ///\name Iterate over the candidates
             ///\{
 
-            typedef libwrapiter::ForwardIterator<FuzzyRepositoriesFinder, const RepositoryName>
+            typedef WrappedForwardIterator<enum RepositoriesConstIteratorTag { }, const RepositoryName>
                 RepositoriesConstIterator;
 
             RepositoriesConstIterator begin() const;

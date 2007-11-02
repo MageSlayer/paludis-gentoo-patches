@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -31,8 +32,6 @@
 #include <paludis/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>

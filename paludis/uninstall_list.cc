@@ -29,6 +29,8 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
@@ -36,8 +38,6 @@
 #include <paludis/query.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_tag.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -50,6 +50,8 @@ using namespace paludis;
 typedef MakeHashedMap<tr1::shared_ptr<const PackageID>, tr1::shared_ptr<const DepListEntryTags> >::Type DepCollectorCache;
 
 template class Set<tr1::shared_ptr<DepTag> >;
+template class WrappedForwardIterator<Set<tr1::shared_ptr<DepTag> >::ConstIteratorTag, const tr1::shared_ptr<DepTag> >;
+template class WrappedOutputIterator<Set<tr1::shared_ptr<DepTag> >::InserterTag, tr1::shared_ptr<DepTag> >;
 
 namespace paludis
 {

@@ -28,8 +28,9 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/sequence.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <vector>
 
 using namespace paludis;
@@ -90,8 +91,8 @@ MirrorsConf::query(const std::string & m) const
 {
     tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
-    std::copy(p.first, p.second, transform_inserter(result->back_inserter(),
-                paludis::tr1::mem_fn(&std::pair<const std::string, std::string>::second)));
+    std::transform(p.first, p.second, result->back_inserter(),
+            paludis::tr1::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
 }
 

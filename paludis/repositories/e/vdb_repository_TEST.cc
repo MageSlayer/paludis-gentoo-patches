@@ -29,8 +29,6 @@
 #include <fstream>
 #include <iterator>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-
 using namespace test;
 using namespace paludis;
 

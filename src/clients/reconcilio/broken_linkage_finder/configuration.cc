@@ -32,8 +32,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/tr1_functional.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 #include <algorithm>
 #include <functional>
@@ -42,6 +41,8 @@
 
 using namespace paludis;
 using namespace broken_linkage_finder;
+
+template class WrappedForwardIterator<Configuration::DirsIteratorTag, const paludis::FSEntry>;
 
 namespace paludis
 {
@@ -77,7 +78,7 @@ namespace
     from_string(const tr1::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec, const std::string & delims)
     {
-        std::string str(source(varname));
+        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");
@@ -90,7 +91,7 @@ namespace
     from_string(const tr1::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        std::string str(source(varname));
+        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
             Log::get_instance()->message(ll_debug, lc_context, "Got " + varname + "=\"" + str + "\"");

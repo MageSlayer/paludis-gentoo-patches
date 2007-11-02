@@ -21,14 +21,16 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 
 using namespace paludis;
 
 #include <paludis/version_requirements-sr.cc>
 
 template class Sequence<VersionRequirement>;
+template class WrappedForwardIterator<Sequence<VersionRequirement>::ConstIteratorTag, const VersionRequirement>;
+template class WrappedOutputIterator<Sequence<VersionRequirement>::InserterTag, VersionRequirement>;
 
 tr1::shared_ptr<VersionRequirements>
 paludis::make_equal_to_version_requirements(const VersionSpec & v)

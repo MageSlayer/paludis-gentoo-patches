@@ -36,6 +36,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -49,8 +50,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -297,8 +298,8 @@ PaludisEnvironment::hook_dirs() const
     _imp->need_hook_dirs(_imp->config->config_dir());
 
     tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
-    std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
-            transform_inserter(result->back_inserter(), tr1::mem_fn(&std::pair<FSEntry, bool>::first)));
+    std::transform(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter(),
+            tr1::mem_fn(&std::pair<FSEntry, bool>::first));
 
     return result;
 }
@@ -465,7 +466,7 @@ namespace
     class BreaksPortageMask :
         public UnsupportedMask
     {
-        const char key() const
+        char key() const
         {
             return 'B';
         }
@@ -484,7 +485,7 @@ namespace
     class UserConfigMask :
         public UserMask
     {
-        const char key() const
+        char key() const
         {
             return 'U';
         }

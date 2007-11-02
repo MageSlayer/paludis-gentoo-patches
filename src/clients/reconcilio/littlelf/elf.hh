@@ -5,9 +5,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <iosfwd>
 
 #include <elf.h>
@@ -90,7 +88,7 @@ class ElfObject :
             return _hdr.e_shnum;
         }
 
-        typedef libwrapiter::ForwardIterator<ElfObject, Section<ElfType_> > SectionIterator;
+        typedef paludis::WrappedForwardIterator<enum SectionIteratorTag { }, Section<ElfType_> > SectionIterator;
         SectionIterator section_begin() const;
         SectionIterator section_end() const;
 

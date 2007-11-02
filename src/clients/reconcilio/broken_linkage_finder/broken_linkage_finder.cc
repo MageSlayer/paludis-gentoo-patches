@@ -35,6 +35,8 @@
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/member_iterator-impl.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
@@ -51,6 +53,12 @@
 
 using namespace paludis;
 using namespace broken_linkage_finder;
+
+template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag,
+         const paludis::tr1::shared_ptr<const paludis::PackageID> >;
+template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag,
+         const paludis::FSEntry>;
+template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 
 typedef std::multimap<FSEntry, tr1::shared_ptr<const PackageID> > Files;
 typedef std::map<FSEntry, std::set<std::string> > PackageBreakage;

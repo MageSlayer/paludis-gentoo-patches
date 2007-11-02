@@ -19,7 +19,6 @@
 
 #include <paludis/repository.hh>
 #include <paludis/repository_info.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -31,8 +30,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/config_file.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <map>
 #include <list>
 #include <utility>
@@ -46,6 +44,10 @@ using namespace paludis;
 template class Set<tr1::shared_ptr<Repository> >;
 template class Sequence<RepositoryVirtualsEntry>;
 template class Sequence<RepositoryProvidesEntry>;
+
+template class WrappedForwardIterator<RepositoryMirrorsInterface::MirrorsConstIteratorTag,
+         const std::pair<const std::string, std::string> >;
+template class WrappedForwardIterator<RepositoryEInterface::ProfilesConstIteratorTag, const RepositoryEInterface::ProfilesDescLine>;
 
 NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
     Exception("Could not find '" + our_name + "'"),

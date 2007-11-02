@@ -25,8 +25,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-
 /** \file
  * Declarations for ArgsGroup.
  *
@@ -84,7 +82,7 @@ namespace paludis
                 ///\name Iterate over our ArgsOptions.
                 ///\{
 
-                typedef libwrapiter::ForwardIterator<ArgsGroup, ArgsOption * const> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, ArgsOption * const> ConstIterator;
 
                 ConstIterator begin() const;
                 ConstIterator end() const;

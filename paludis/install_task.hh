@@ -22,13 +22,13 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/tasks_exceptions.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/package_database-fwd.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for InstallTask.
@@ -110,7 +110,7 @@ namespace paludis
             bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             void override_target_type(const DepListTargetType);
 
-            typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsConstIterator;
+            typedef WrappedForwardIterator<enum TargetsConstIteratorTag { }, const std::string> TargetsConstIterator;
             TargetsConstIterator begin_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             TargetsConstIterator end_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

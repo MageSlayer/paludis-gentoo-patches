@@ -21,7 +21,6 @@
 #include "command_line.hh"
 #include "src/output/colour.hh"
 #include <paludis/about.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
@@ -32,8 +31,6 @@
 #include <paludis/action.hh>
 #include <iostream>
 #include <iomanip>
-#include <libebt/libebt.hh>
-#include <libwrapiter/libwrapiter.hh>
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
@@ -119,11 +116,6 @@ do_info(const tr1::shared_ptr<const Environment> & env)
         << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
 #endif
         << endl;
-    cout << "        " << std::setw(22) << std::left << ("libebt:") << std::setw(0) << " "
-        << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR << "." << LIBEBT_VERSION_MICRO << endl;
-    cout << "        " << std::setw(22) << std::left << ("libwrapiter:") << std::setw(0) << " "
-        << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR << "." << LIBWRAPITER_VERSION_MICRO << endl;
-
     cout << endl;
 
     cout << "    " << colour(cl_heading, "Reduced Privs:") << endl;

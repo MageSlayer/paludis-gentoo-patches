@@ -35,7 +35,7 @@ namespace paludis
                 EUnacceptedMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
                 ~EUnacceptedMask();
 
-                const char key() const;
+                char key() const;
                 const std::string description() const;
                 const tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
         };
@@ -48,7 +48,7 @@ namespace paludis
                 EUnsupportedMask(const char, const std::string &, const std::string &);
                 ~EUnsupportedMask();
 
-                virtual const char key() const;
+                virtual char key() const;
                 virtual const std::string description() const;
                 virtual const std::string explanation() const;
         };
@@ -61,7 +61,7 @@ namespace paludis
                 ERepositoryMask(const char, const std::string &, const tr1::shared_ptr<const MetadataKey> &);
                 ~ERepositoryMask();
 
-                const char key() const;
+                virtual char key() const;
                 const std::string description() const;
                 const tr1::shared_ptr<const MetadataKey> mask_key() const;
         };

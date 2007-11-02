@@ -30,6 +30,7 @@ namespace paludis
     {
         using std::tr1::remove_pointer;
         using std::tr1::remove_const;
+        using std::tr1::remove_reference;
         using std::tr1::is_same;
         using std::tr1::is_convertible;
     }
@@ -45,6 +46,7 @@ namespace paludis
     {
         using boost::remove_pointer;
         using boost::remove_const;
+        using boost::remove_reference;
         using boost::is_same;
         using boost::is_convertible;
     }

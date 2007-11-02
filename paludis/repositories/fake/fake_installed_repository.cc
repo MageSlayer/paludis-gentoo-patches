@@ -30,8 +30,6 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/action.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 

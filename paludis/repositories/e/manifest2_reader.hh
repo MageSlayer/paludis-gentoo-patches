@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/repositories/e/manifest2_entry-sr.hh>
 
@@ -72,7 +73,7 @@ namespace paludis
 
                 /// \name Iterator functions
 
-                typedef libwrapiter::ForwardIterator<Manifest2Reader, const Manifest2Entry> ConstIterator;
+                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const Manifest2Entry> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

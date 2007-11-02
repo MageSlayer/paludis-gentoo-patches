@@ -56,7 +56,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/set.hh>
@@ -68,9 +67,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <fstream>
 #include <functional>
@@ -211,9 +207,8 @@ VDBRepository::category_names() const
 
     tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
 
-    std::copy(_imp->categories.begin(), _imp->categories.end(),
-            transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first)));
+    std::transform(_imp->categories.begin(), _imp->categories.end(), result->inserter(),
+            tr1::mem_fn(&std::pair<const CategoryNamePart, tr1::shared_ptr<QualifiedPackageNameSet> >::first));
 
     return result;
 }

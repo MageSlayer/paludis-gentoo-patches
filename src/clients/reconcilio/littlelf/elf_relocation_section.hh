@@ -4,6 +4,7 @@
 #include "elf_sections.hh"
 
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <iosfwd>
 
@@ -87,7 +88,7 @@ class RelocationSection :
             return Relocation_::type_name;
         }
 
-        typedef libwrapiter::ForwardIterator<RelocationSection, const typename Relocation_::Entry> RelocationIterator;
+        typedef paludis::WrappedForwardIterator<enum RelocationIteratorTag { }, const typename Relocation_::Entry> RelocationIterator;
         RelocationIterator relocation_begin() const;
         RelocationIterator relocation_end() const;
 };

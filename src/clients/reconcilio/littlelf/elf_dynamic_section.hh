@@ -8,6 +8,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <string>
 #include <iosfwd>
@@ -202,7 +203,7 @@ class DynamicSection :
 
         void resolve_entry_names(Section<ElfType_> &);
 
-        typedef libwrapiter::ForwardIterator<DynamicSection, DynamicEntry<ElfType_> > EntryIterator;
+        typedef paludis::WrappedForwardIterator<enum EntryIteratorTag { }, DynamicEntry<ElfType_> > EntryIterator;
         EntryIterator entry_begin() const;
         EntryIterator entry_end() const;
 };

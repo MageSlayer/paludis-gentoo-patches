@@ -24,6 +24,10 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
+#ifdef PALUDIS_HAVE_CONCEPTS
+#  include <concepts>
+#endif
+
 /** \file
  * Declarations for DirIterator.
  *
@@ -62,10 +66,20 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirIterator :
-        public std::iterator<std::forward_iterator_tag, FSEntry>,
         private PrivateImplementationPattern<DirIterator>
     {
         public:
+            ///\name Standard library typedefs
+            ///\{
+
+            typedef FSEntry value_type;
+            typedef const FSEntry & reference;
+            typedef const FSEntry * pointer;
+            typedef std::ptrdiff_t difference_type;
+            typedef std::forward_iterator_tag iterator_category;
+
+            ///\}
+
             ///\name Basic operations
             ///\{
 
@@ -84,7 +98,7 @@ namespace paludis
 
             ~DirIterator();
 
-            const DirIterator & operator= (const DirIterator & other);
+            DirIterator & operator= (const DirIterator & other);
 
             ///\}
 
@@ -118,5 +132,14 @@ namespace paludis
             ///\}
     };
 }
+
+#ifdef PALUDIS_HAVE_CONCEPTS
+namespace std
+{
+    concept_map ForwardIterator<paludis::DirIterator>
+    {
+    };
+}
+#endif
 
 #endif

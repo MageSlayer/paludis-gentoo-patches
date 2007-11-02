@@ -29,11 +29,11 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/query.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -43,9 +43,6 @@
 #include <paludis/mask.hh>
 #include <paludis/hook.hh>
 #include <paludis/fuzzy_finder.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <algorithm>
 #include <set>

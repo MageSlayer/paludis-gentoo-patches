@@ -27,13 +27,15 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -42,8 +44,6 @@
 #include <paludis/distribution.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <list>
 #include <algorithm>
@@ -55,12 +55,17 @@
 
 using namespace paludis;
 
+template class WrappedForwardIterator<ERepositoryProfile::UseExpandConstIteratorTag, const UseFlagName>;
+template class WrappedForwardIterator<ERepositoryProfile::VirtualsConstIteratorTag,
+         const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > >;
+
 namespace
 {
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
     typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
     typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type PackageMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName,
+            std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type PackageMaskMap;
 
     typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
     typedef std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;

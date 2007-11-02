@@ -21,19 +21,20 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
 #include <list>
 

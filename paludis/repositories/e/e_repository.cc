@@ -39,6 +39,7 @@
 
 #include <paludis/repository_info.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -53,12 +54,12 @@
 #include <paludis/qa.hh>
 
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/random.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/map.hh>
@@ -73,9 +74,6 @@
 
 #include <paludis/rmd160.hh>
 #include <paludis/sha256.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include <map>
 #include <set>
@@ -702,9 +700,8 @@ ERepository::info(bool verbose) const
             {
                 using namespace tr1::placeholders;
                 std::set<VersionSpec> versions;
-                std::copy(q->begin(), q->end(),
-                        transform_inserter(std::inserter(versions, versions.begin()),
-                            tr1::bind<const VersionSpec>(tr1::mem_fn(&PackageID::version), _1)));
+                std::transform(q->begin(), q->end(), std::inserter(versions, versions.begin()),
+                        tr1::bind<const VersionSpec>(tr1::mem_fn(&PackageID::version), _1));
                 package_info->add_kv(*i, join(versions.begin(), versions.end(), ", "));
             }
         }

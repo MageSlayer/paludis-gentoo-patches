@@ -22,9 +22,8 @@
 #include <paludis/repositories/e/make_ebin_repository.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include "config.h"
 
 using namespace paludis;

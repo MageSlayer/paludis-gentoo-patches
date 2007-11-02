@@ -28,12 +28,13 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
 #include <algorithm>
 #include <paludis/util/tr1_functional.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;

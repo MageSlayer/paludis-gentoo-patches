@@ -35,6 +35,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -45,9 +46,6 @@
 #include <list>
 #include <map>
 #include <set>
-
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 #include "config.h"
 
@@ -133,8 +131,11 @@ ERepositorySets::sets_list() const
         using namespace tr1::placeholders;
 
         std::list<FSEntry> repo_sets;
-        std::copy(DirIterator(_imp->params.setsdir), DirIterator(),
-            filter_inserter(std::back_inserter(repo_sets), tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+        std::remove_copy_if(
+                DirIterator(_imp->params.setsdir),
+                DirIterator(),
+                std::back_inserter(repo_sets),
+                tr1::bind(std::logical_not<bool>(), tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
 
         std::list<FSEntry>::const_iterator f(repo_sets.begin()),
             f_end(repo_sets.end());

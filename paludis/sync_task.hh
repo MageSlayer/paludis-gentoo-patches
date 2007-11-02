@@ -22,8 +22,8 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_list.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for SyncTask.
@@ -89,7 +89,7 @@ namespace paludis
             ///\name Target iteration
             ///\{
 
-            typedef libwrapiter::ForwardIterator<SyncTask, const RepositoryName> TargetsConstIterator;
+            typedef WrappedForwardIterator<enum TargetsConstIteratorTag { }, const RepositoryName> TargetsConstIterator;
             TargetsConstIterator begin_targets() const;
             TargetsConstIterator end_targets() const;
 

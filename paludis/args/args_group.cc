@@ -19,9 +19,13 @@
 
 #include "args.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
+using namespace paludis;
 using namespace paludis::args;
+
+template class WrappedForwardIterator<ArgsGroup::ConstIteratorTag, ArgsOption * const>;
 
 namespace paludis
 {

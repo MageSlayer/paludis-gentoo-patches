@@ -171,6 +171,64 @@ using n::r_x;
 	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
 dnl }}}
 
+dnl {{{ check for static_assert
+AC_MSG_CHECKING([for compiler support for static_assert])
+AC_COMPILE_IFELSE([
+int main(int, char **)
+{
+	static_assert(true, "works");
+}
+],
+	[AC_MSG_RESULT([yes])
+	 AC_MSG_CHECKING([whether static_assert works])
+	 AC_COMPILE_IFELSE([
+int main(int, char **)
+{
+	static_assert(false, "works");
+}
+],
+	 [AC_MSG_RESULT([no])],
+	 [AC_MSG_RESULT([yes])
+	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
+	  PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
+	 ])],
+	[AC_MSG_RESULT([no])])
+dnl }}}
+
+dnl {{{ check for concept support
+AC_MSG_CHECKING([for compiler support for concepts])
+AC_COMPILE_IFELSE([
+auto concept Monkeyable<typename T_>
+{
+	void T_::monkey () const;
+};
+
+template <Monkeyable Monkey_>
+void monkey_lots(const Monkey_ & m)
+{
+	for (int x(0) ; x < 10 ; ++x)
+		m.monkey();
+}
+
+struct Bobo
+{
+	void monkey() const
+	{
+	}
+};
+
+int main(int, char **)
+{
+	monkey_lots(Bobo());
+}
+],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_CONCEPTS=1"
+	],
+	[AC_MSG_RESULT([no])])
+dnl }}}
+
 dnl {{{ check for hashes
 AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
@@ -350,53 +408,6 @@ need_pcrepp_check=
 need_syck_check=
 need_gem_check=
 need_gtkmm_check=
-
-dnl {{{ we need libebt.
-dnl don't use AC_CHECK_HEADER, it does silly things
-AC_MSG_CHECKING([for libebt])
-AC_COMPILE_IFELSE([
-#include <libebt/libebt.hh>
-#include <string>
-struct Tag { };
-int main(int, char **)
-{
-	libebt::BacktraceContext<Tag> context("blah");
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([libebt (http://libebt.berlios.de/) is required])])
-dnl }}}
-
-dnl {{{ we need libwrapiter.
-dnl don't use AC_CHECK_HEADER, it does silly things
-AC_MSG_CHECKING([for libwrapiter])
-AC_COMPILE_IFELSE([
-#include <libwrapiter/libwrapiter.hh>
-#include <string>
-struct C {
-	typedef libwrapiter::ForwardIterator<C, int> Iterator;
-	Iterator begin();
-	Iterator end();
-};
-int main(int, char **)
-{
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([libwrapiter (http://libwrapiter.berlios.de/) is required])])
-AC_MSG_CHECKING([libwrapiter version])
-AC_COMPILE_IFELSE([
-#include <libwrapiter/libwrapiter.hh>
-#if LIBWRAPITER_VERSION < 10200
-#  error libwrapiter 1.2.0 or later required
-#endif
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([libwrapiter version must be at least 1.2.0])])
-dnl }}}
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -596,6 +607,8 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wlogical-op])
 	CHECK_CXXFLAG([-Wvla])
 	CHECK_CXXFLAG([-Wwrite-strings])
+	CHECK_CXXFLAG([-Wsignature-shadow])
+	CHECK_CXXFLAG([-Wfloat-equal])
 	if test "x$cxxflag_success" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
 	fi
@@ -686,8 +699,7 @@ AM_CONDITIONAL([HAVE_DOXYGEN_TAGS], test "x$HAVE_DOXYGEN_TAGS" = "xyes")
 
 if test "x$HAVE_DOXYGEN_TAGS" = xyes ; then
 	DOXYGEN_TAG_FILES="\
-		\"libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen\" \
-		\"libwrapiter.tag = http://libwrapiter.pioto.org/\""
+		\"libstdc++.tag = http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen\""
 else
 	DOXYGEN_TAG_FILES=""
 fi

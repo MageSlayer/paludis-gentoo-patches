@@ -27,6 +27,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/iterator_funcs.hh>
 
 #include <set>
 #include <map>

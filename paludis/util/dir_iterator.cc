@@ -98,7 +98,7 @@ DirIterator::~DirIterator()
 {
 }
 
-const DirIterator &
+DirIterator &
 DirIterator::operator= (const DirIterator & other)
 {
     if (this != &other)

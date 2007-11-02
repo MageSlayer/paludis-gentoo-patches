@@ -175,36 +175,37 @@ namespace paludis
     };
 
     template <typename T_>
-        StringifyFormatter::StringifyFormatter(const T_ & t) :
-            PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<IUseFlag> *>::value, IUseFlag>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseFlagName> *>::value, UseFlagName>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<FetchableURIDepSpec> *>::value,
-                            FetchableURIDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<SimpleURIDepSpec> *>::value,
-                            SimpleURIDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
-                            LicenseDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<DependencyLabelsDepSpec> *>::value,
-                            DependencyLabelsDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
-                            URILabelsDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<
-                            tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
-                            PlainTextDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseDepSpec> *>::value, UseDepSpec>::get(&t),
-                        StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
-                        StringifyFormatterGetSpaceForwarder<tr1::is_convertible<T_ *, CanSpace *>::value>::get(&t)
-                        ))
+    StringifyFormatter::StringifyFormatter(const T_ & t) :
+        PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<IUseFlag> *>::value, IUseFlag>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseFlagName> *>::value, UseFlagName>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<BlockDepSpec> *>::value, BlockDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<FetchableURIDepSpec> *>::value,
+                        FetchableURIDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<SimpleURIDepSpec> *>::value,
+                        SimpleURIDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<LicenseDepSpec> *>::value,
+                        LicenseDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<DependencyLabelsDepSpec> *>::value,
+                        DependencyLabelsDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<URILabelsDepSpec> *>::value,
+                        URILabelsDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<
+                        tr1::is_convertible<T_ *, CanFormat<PlainTextDepSpec> *>::value,
+                        PlainTextDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseDepSpec> *>::value, UseDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
+                    StringifyFormatterGetSpaceForwarder<tr1::is_convertible<T_ *, CanSpace *>::value>::get(&t)
+                    )),
+        CanSpace()
     {
     }
 }

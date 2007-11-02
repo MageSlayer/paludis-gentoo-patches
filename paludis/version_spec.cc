@@ -21,11 +21,11 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>

@@ -29,8 +29,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/package_database.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 #include <set>
 #include <map>
 

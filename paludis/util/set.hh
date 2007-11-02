@@ -24,9 +24,8 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
-#include <libwrapiter/libwrapiter_output_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_output_iterator-fwd.hh>
 
 /** \file
  * Declarations for the Set<> class.
@@ -76,12 +75,12 @@ namespace paludis
             ///\name Iteration
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Set<T_, C_>, const T_> ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const T_> ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const T_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef libwrapiter::OutputIterator<Set<T_, C_>, T_> Inserter;
+            typedef WrappedOutputIterator<enum InserterTag { }, T_> Inserter;
             Inserter inserter();
 
             ///\}

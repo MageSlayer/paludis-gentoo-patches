@@ -21,15 +21,25 @@
 #include "args_dumper.hh"
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <algorithm>
 #include <sstream>
 #include <list>
 #include <map>
 
+using namespace paludis;
 using namespace paludis::args;
+
+template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
+template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
+         const std::pair<std::string, std::string> >;
+template class WrappedForwardIterator<ArgsHandler::ArgsGroupsConstIteratorTag, ArgsGroup * const>;
+template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
 
 namespace paludis
 {
@@ -125,8 +135,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
 
     args.insert(args.end(), &argv[1], &argv[argc]);
 
-    libwrapiter::ForwardIterator<ArgsVisitor, std::string> argit(args.begin()), arge(args.end());
-
+    ArgsVisitor::ArgsIterator argit(args.begin()), arge(args.end());
     ArgsVisitor visitor(&argit, arge, env_prefix);
 
     for ( ; argit != arge; ++argit )
@@ -165,8 +174,7 @@ ArgsHandler::run(const int argc, const char * const * const argv,
         }
     }
 
-    _imp->parameters.insert(_imp->parameters.end(),
-            argit, libwrapiter::ForwardIterator<ArgsVisitor, std::string>(args.end()));
+    _imp->parameters.insert(_imp->parameters.end(), argit, ArgsVisitor::ArgsIterator(args.end()));
 
     if (! env_prefix.empty())
         setenv((env_prefix + "_PARAMS").c_str(), join(_imp->parameters.begin(),
@@ -254,16 +262,16 @@ ArgsHandler::end_environment_lines() const
     return EnvironmentLineConstIterator(_imp->environment_lines.end());
 }
 
-ArgsHandler::EnvironmentLineConstIterator
+ArgsHandler::ExamplesConstIterator
 ArgsHandler::begin_examples() const
 {
-    return EnvironmentLineConstIterator(_imp->example_lines.begin());
+    return ExamplesConstIterator(_imp->example_lines.begin());
 }
 
-ArgsHandler::EnvironmentLineConstIterator
+ArgsHandler::ExamplesConstIterator
 ArgsHandler::end_examples() const
 {
-    return EnvironmentLineConstIterator(_imp->example_lines.end());
+    return ExamplesConstIterator(_imp->example_lines.end());
 }
 
 ArgsHandler::NotesIterator

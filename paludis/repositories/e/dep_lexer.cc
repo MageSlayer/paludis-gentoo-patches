@@ -19,21 +19,18 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/e/dep_lexer.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <vector>
 #include <list>
 
-/** \file
- * Implementation of dep_lexer.hh things.
- *
- * \ingroup grpdeplexer
- */
-
 using namespace paludis;
 using namespace paludis::erepository;
+
+template class WrappedForwardIterator<DepLexer::ConstIteratorTag,
+         const std::pair<DepLexerLexeme, std::string> >;
 
 namespace paludis
 {

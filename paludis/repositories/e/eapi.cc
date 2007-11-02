@@ -33,11 +33,10 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/config_file.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <map>
 #include <vector>
-
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;

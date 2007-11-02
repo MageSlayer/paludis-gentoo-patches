@@ -4,8 +4,7 @@
 #include "elf_sections.hh"
 
 #include <paludis/util/private_implementation_pattern.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <iosfwd>
 
@@ -77,7 +76,7 @@ class SymbolSection :
 
         void resolve_symbols(Section<ElfType_> &);
 
-        typedef libwrapiter::ForwardIterator<SymbolSection, const Symbol<ElfType_ > > SymbolIterator;
+        typedef paludis::WrappedForwardIterator<enum SymbolIteratorTag { }, const Symbol<ElfType_ > > SymbolIterator;
         SymbolIterator symbol_begin() const;
         SymbolIterator symbol_end() const;
 };

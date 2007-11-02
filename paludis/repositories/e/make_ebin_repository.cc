@@ -23,11 +23,12 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 

@@ -23,13 +23,12 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/package_id.hh>
 #include <paludis/query.hh>
 #include <paludis/package_database.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
 
 using namespace paludis;
 using namespace test;

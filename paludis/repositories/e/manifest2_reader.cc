@@ -22,26 +22,21 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <list>
 
 #include <paludis/repositories/e/manifest2_entry-sr.cc>
 
-
-/** \file
- * Implementation of manifest2_reader.hh
- *
- * \ingroup grpmanifest2reader
- */
-
 using namespace paludis;
 using namespace paludis::erepository;
+
+template class WrappedForwardIterator<Manifest2Reader::ConstIteratorTag, const Manifest2Entry>;
 
 namespace paludis
 {

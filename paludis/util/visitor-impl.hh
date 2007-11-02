@@ -21,9 +21,9 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_IMPL_HH 1
 
 #include <paludis/util/visitor.hh>
-#include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <algorithm>
 
 /** \file
  * Implementation for paludis/util/visitor.hh .

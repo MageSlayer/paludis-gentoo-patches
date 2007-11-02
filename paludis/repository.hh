@@ -33,10 +33,9 @@
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <string>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
 
 /** \file
  * Declarations for Repository classes.
@@ -477,7 +476,7 @@ namespace paludis
             ///\name Iterate over our mirrors
             ///\{
 
-            typedef libwrapiter::ForwardIterator<RepositoryMirrorsInterface,
+            typedef WrappedForwardIterator<enum MirrorsConstIteratorTag { },
                     const std::pair<const std::string, std::string> > MirrorsConstIterator;
 
             virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
@@ -644,8 +643,7 @@ namespace paludis
 
             typedef RepositoryEInterfaceProfilesDescLine ProfilesDescLine;
 
-            typedef libwrapiter::ForwardIterator<RepositoryEInterface,
-                    const ProfilesDescLine> ProfilesConstIterator;
+            typedef WrappedForwardIterator<enum ProfilesConstIteratorTag { }, const ProfilesDescLine> ProfilesConstIterator;
             virtual ProfilesConstIterator begin_profiles() const = 0;
             virtual ProfilesConstIterator end_profiles() const = 0;
 

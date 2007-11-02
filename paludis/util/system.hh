@@ -23,7 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tr1_memory.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 #include <sys/types.h>
 
@@ -226,7 +226,7 @@ namespace paludis
             ///\name Iterate over our setenvs.
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const std::string, std::string> > ConstIterator;
             ConstIterator begin_setenvs() const;
             ConstIterator end_setenvs() const;
 

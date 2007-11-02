@@ -36,9 +36,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 
-#include <libwrapiter/libwrapiter_forward_iterator.hh>
-#include <libwrapiter/libwrapiter_output_iterator.hh>
-
 #include <algorithm>
 #include <vector>
 
@@ -207,8 +204,8 @@ InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
     need_ids();
 
     tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
-    std::copy(_imp->ids.begin(), _imp->ids.end(), transform_inserter(result->inserter(),
-                tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first)));
+    std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
+            tr1::mem_fn(&std::pair<const QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >::first));
 
     return result;
 }

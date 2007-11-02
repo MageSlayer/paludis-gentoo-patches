@@ -25,8 +25,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options-fwd.hh>
-
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <iosfwd>
 #include <string>
@@ -199,7 +198,7 @@ namespace paludis
             ///\name Iterate over our lines
             ///\{
 
-            typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
 
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -290,7 +289,8 @@ namespace paludis
                     ///\name Iterate over our default keys
                     ///\{
 
-                    typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > ConstIterator;
+                    typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                            const std::pair<const std::string, std::string> > ConstIterator;
                     ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                     ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -322,7 +322,8 @@ namespace paludis
             ///\name Iterate over our keys
             ///\{
 
-            typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > ConstIterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                    const std::pair<const std::string, std::string> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

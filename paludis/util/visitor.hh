@@ -26,7 +26,7 @@
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/operators.hh>
-#include <libwrapiter/libwrapiter_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
  * Declares the Visitor and related classes.
@@ -637,8 +637,8 @@ namespace paludis
             ///\name Visitor operations
             ///\{
 
-            typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, const ConstAcceptInterface<H_> > ConstIterator;
-            typedef libwrapiter::ForwardIterator<TreeSequenceIteratorTypes, AcceptInterface<H_> > Iterator;
+            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const ConstAcceptInterface<H_> > ConstIterator;
+            typedef WrappedForwardIterator<enum IteratorTag { }, AcceptInterface<H_> > Iterator;
 
             ///\}
         };
