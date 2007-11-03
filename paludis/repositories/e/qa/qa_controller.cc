@@ -45,12 +45,14 @@ namespace
     {
         QAReporter & base;
         Mutex mutex, flush_mutex;
+        ActionQueue message_queue;
 
         std::multimap<const FSEntry, const QAMessage> message_buf;
         typedef std::multimap<const FSEntry, const QAMessage>::iterator MessageIterator;
 
         ThreadSafeQAReporter(QAReporter & b) :
-            base(b)
+            base(b),
+            message_queue(1, false, false)
         {
         }
 
@@ -67,26 +69,17 @@ namespace
 
         void flush(const FSEntry & f)
         {
-            std::list<QAMessage> to_flush;
+            Lock lock(mutex);
+            std::string root(stringify(f));
 
+            for (MessageIterator i(message_buf.lower_bound(f)), i_end(message_buf.end()) ; i != i_end ; )
             {
-                Lock lock(mutex);
-                std::string root(stringify(f));
+                if (0 != stringify(i->first).compare(0, root.length(), root))
+                    break;
 
-                for (MessageIterator i(message_buf.lower_bound(f)), i_end(message_buf.end()) ; i != i_end ; )
-                {
-                    if (0 != stringify(i->first).compare(0, root.length(), root))
-                        break;
-
-                    /* don't call base.message whilst we hold the map lock. It'll deadlock. */
-                    to_flush.push_back(i->second);
-                    message_buf.erase(i++);
-                }
+                message_queue.enqueue(tr1::bind(&QAReporter::message, &base, i->second));
+                message_buf.erase(i++);
             }
-
-            using namespace tr1::placeholders;
-            Lock lock(flush_mutex);
-            std::for_each(to_flush.begin(), to_flush.end(), tr1::bind(&QAReporter::message, &base, _1));
         }
 
         void message(const QAMessage & msg)
