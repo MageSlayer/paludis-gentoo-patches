@@ -369,7 +369,7 @@ paludis::run_command(const Command & cmd)
         stderr_write_fd = -1;
         stderr_close_fd = -1;
 
-        if (-1 == wait(&status))
+        if (-1 == waitpid(child, &status, 0))
             throw RunCommandError("wait failed: " + stringify(strerror(errno)));
         return WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status);
     }
