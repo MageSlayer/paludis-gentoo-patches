@@ -1,0 +1,68 @@
+#!/bin/bash
+
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+
+old_set=$-
+set -a
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+[[ "${old_set}" == *a* ]] || set +a
+
+LOCAL=
+REMOTE=
+
+delay=0
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --help)
+            PROTO="${0##*/do}"
+            echo "    URL syntax: dummy://whatever/"
+            echo "    Options:"
+            echo "        --count-to=n                    Delay noisily for n seconds"
+            echo "    Notes:"
+            echo "        This syncer creates a single timestamp file in the target directory. It"
+            echo "        has no practical purpose, but it can be useful for testing."
+            exit 0
+            ;;
+
+        --delay=*)
+            delay="${1#*=}"
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+for (( x = 1 ; x <= ${delay} ; ++x )) ; do
+    echo "${REMOTE} -> ${LOCAL}: delaying for ${x} of ${delay}"
+    sleep 1
+done
+
+date +'%s' > ${LOCAL}/timestamp
+
