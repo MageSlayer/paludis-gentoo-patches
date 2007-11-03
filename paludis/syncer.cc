@@ -98,6 +98,12 @@ DefaultSyncer::sync(const SyncOptions & opts) const
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
             .with_setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file)));
 
+    if (! opts.output_prefix.empty())
+        cmd
+            .with_stdout_prefix(opts.output_prefix)
+            .with_stderr_prefix(opts.output_prefix)
+            .with_prefix_blank_lines();
+
     if (run_command(cmd))
         throw SyncFailedError(_local, _remote);
 }
