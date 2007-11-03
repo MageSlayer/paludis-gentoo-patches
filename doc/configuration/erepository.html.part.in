@@ -50,6 +50,10 @@ repositories:</p>
     <dd>Boolean. If true (default), the repository name is appended to the <code>write_cache</code> directory. Optional,
     for internal use.</dd>
 
+    <dt><code>ignore_deprecated_profiles</code></dt>
+    <dd>Boolean. If true (default is false), profiles deprecated files are ignored. Optional,
+    for internal use.</dd>
+
     <dt><code>eapi_when_unknown</code></dt>
     <dd>The EAPI to use when a package's EAPI is unknown (e.g. before it has been sourced to generate its metadata, if
     it does not use an EAPI filename suffix). Optional, generally set by the distribution.</dd>

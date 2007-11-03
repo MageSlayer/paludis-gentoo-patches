@@ -327,6 +327,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
     config_info->add_kv("cache", stringify(_imp->params.cache));
     config_info->add_kv("write_cache", stringify(_imp->params.write_cache));
     config_info->add_kv("append_repository_name_to_write_cache", stringify(_imp->params.append_repository_name_to_write_cache));
+    config_info->add_kv("ignore_deprecated_profiles", stringify(_imp->params.ignore_deprecated_profiles));
     config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
     config_info->add_kv("distdir", stringify(_imp->params.distdir));
     config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),

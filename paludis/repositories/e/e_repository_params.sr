@@ -29,6 +29,7 @@ make_class_ERepositoryParams()
     key eapi_when_unspecified std::string
     key profile_eapi std::string
     key use_manifest "erepository::UseManifest"
+    key ignore_deprecated_profiles bool
 
     doxygen_comment << "END"
         /**

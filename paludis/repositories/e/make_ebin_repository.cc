@@ -205,6 +205,7 @@ paludis::make_ebin_repository(
                 .profile_eapi(profile_eapi)
                 .use_manifest(use_manifest)
                 .append_repository_name_to_write_cache(true)
+                .ignore_deprecated_profiles(false)
                 .builddir(builddir)));
 }
 

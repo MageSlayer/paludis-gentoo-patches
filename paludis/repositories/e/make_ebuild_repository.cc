@@ -147,6 +147,13 @@ paludis::make_ebuild_repository(
         append_repository_name_to_write_cache = destringify<bool>(m->find("append_repository_name_to_write_cache")->second);
     }
 
+    bool ignore_deprecated_profiles(false);
+    if (m->end() != m->find("ignore_deprecated_profiles") && ! m->find("ignore_deprecated_profiles")->second.empty())
+    {
+        Context item_context("When handling ignore_deprecated_profiles key:");
+        ignore_deprecated_profiles = destringify<bool>(m->find("ignore_deprecated_profiles")->second);
+    }
+
     std::string eapi_when_unknown;
     if (m->end() == m->find("eapi_when_unknown") || ((eapi_when_unknown = m->find("eapi_when_unknown")->second)).empty())
         eapi_when_unknown = DistributionData::get_instance()->distribution_from_string(
@@ -239,6 +246,7 @@ paludis::make_ebuild_repository(
                 .profile_eapi(profile_eapi)
                 .use_manifest(use_manifest)
                 .append_repository_name_to_write_cache(append_repository_name_to_write_cache)
+                .ignore_deprecated_profiles(ignore_deprecated_profiles)
                 .builddir(builddir)));
 }
 

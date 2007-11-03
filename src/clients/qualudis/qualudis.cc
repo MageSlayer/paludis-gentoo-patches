@@ -81,32 +81,32 @@ namespace
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
         {
-            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter);
+            stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
         void visit(const MetadataSetKey<PackageIDSequence> & k)
@@ -139,9 +139,9 @@ namespace
         {
             if (k.value())
                 stream << k.raw_name() << ": " << k.value()->mask_file << ": "
-                    << join(k.value()->comment->begin(), k.value()->comment->end(), " ");
+                    << join(k.value()->comment->begin(), k.value()->comment->end(), " ") << "\n";
             else
-                stream << k.raw_name();
+                stream << k.raw_name() << "\n";
         }
 
         void visit(const MetadataContentsKey &)
@@ -221,7 +221,7 @@ namespace
                 {
                     MetadataKeyPrettyPrinter pp;
                     (*i)->accept(pp);
-                    std::cout << "      " << pp.stream.str() << std::endl;
+                    std::cout << "      " << pp.stream.str();
                 }
             }
         }
@@ -269,6 +269,8 @@ int main(int argc, char *argv[])
         if (! QualudisCommandLine::get_instance()->a_master_repository_dir.specified())
             QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
+        tr1::shared_ptr<Map<std::string, std::string> > extra(new Map<std::string, std::string>);
+        extra->insert("ignore_deprecated_profiles", "true");
         tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
                     .repository_dir(FSEntry::cwd())
                     .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
@@ -276,7 +278,7 @@ int main(int argc, char *argv[])
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
-                    .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
+                    .extra_params(extra)
                     ));
 
         if (! env->main_repository()->qa_interface)
