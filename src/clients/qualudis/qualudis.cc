@@ -269,8 +269,6 @@ int main(int argc, char *argv[])
         if (! QualudisCommandLine::get_instance()->a_master_repository_dir.specified())
             QualudisCommandLine::get_instance()->a_master_repository_dir.set_argument("/var/empty");
 
-        tr1::shared_ptr<Map<std::string, std::string> > extra(new Map<std::string, std::string>);
-        extra->insert("ignore_deprecated_profiles", "true");
         tr1::shared_ptr<NoConfigEnvironment> env(new NoConfigEnvironment(no_config_environment::Params::create()
                     .repository_dir(FSEntry::cwd())
                     .write_cache(QualudisCommandLine::get_instance()->a_write_cache_dir.argument())
@@ -278,7 +276,7 @@ int main(int argc, char *argv[])
                     .repository_type(no_config_environment::ncer_ebuild)
                     .master_repository_dir(QualudisCommandLine::get_instance()->a_master_repository_dir.argument())
                     .disable_metadata_cache(! QualudisCommandLine::get_instance()->a_use_repository_cache.specified())
-                    .extra_params(extra)
+                    .extra_params(tr1::shared_ptr<Map<std::string, std::string> >())
                     ));
 
         if (! env->main_repository()->qa_interface)

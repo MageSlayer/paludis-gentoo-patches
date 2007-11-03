@@ -154,6 +154,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             keys->insert("format", "ebuild");
             keys->insert("location", stringify(params.master_repository_dir));
             keys->insert("profiles", "/var/empty");
+            keys->insert("ignore_deprecated_profiles", "true");
             keys->insert("write_cache", stringify(params.write_cache));
             keys->insert("names_cache", "/var/empty");
             if (params.disable_metadata_cache)
@@ -171,6 +172,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("format", "ebuild");
         keys->insert("location", stringify(params.repository_dir));
         keys->insert("profiles", "/var/empty");
+        keys->insert("ignore_deprecated_profiles", "true");
         keys->insert("write_cache", stringify(params.write_cache));
         keys->insert("names_cache", "/var/empty");
 
