@@ -26,13 +26,15 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/parallel_for_each.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/action_queue.hh>
 #include <paludis/qa.hh>
 
 #include <algorithm>
 #include <list>
+#include <set>
 #include <map>
 
 using namespace paludis;
@@ -103,6 +105,10 @@ namespace paludis
         ThreadSafeQAReporter reporter;
         const FSEntry base_dir;
 
+        std::set<CategoryNamePart> cats_pool;
+        std::set<QualifiedPackageName> pkgs_pool;
+        Mutex pools_mutex;
+
         Implementation(
                 const Environment * const e,
                 const tr1::shared_ptr<const ERepository> & r,
@@ -143,40 +149,88 @@ QAController::~QAController()
 }
 
 void
-QAController::_run_category(const CategoryNamePart & c)
+QAController::_worker()
 {
-    using namespace tr1::placeholders;
+    bool done(false);
 
-    FSEntry c_dir(_imp->repo->layout()->category_directory(c));
-    try
+    while (! done)
     {
-        if (_under_base_dir(c_dir))
-            std::find_if(
-                    QAChecks::get_instance()->category_dir_checks_group()->begin(),
-                    QAChecks::get_instance()->category_dir_checks_group()->end(),
-                    tr1::bind(std::equal_to<bool>(), false,
-                        tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                            _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
-                            _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
-        _imp->reporter.flush(c_dir);
-    }
-    catch (const Exception & e)
-    {
-        _imp->reporter.message(
-                QAMessage(_imp->repo->layout()->category_directory(c), qaml_severe, "category_dir_checks_group",
-                    "Caught exception '" + e.message() + "' (" + e.what() + ")"));
-        _imp->reporter.flush(c_dir);
-    }
+        tr1::function<void ()> work_item;
 
-    if (_above_base_dir(c_dir) || _under_base_dir(c_dir))
-    {
-        tr1::shared_ptr<const QualifiedPackageNameSet> packages(_imp->repo->package_names(c));
-        parallel_for_each(packages->begin(), packages->end(), tr1::bind(&QAController::_run_package, this, _1));
+        {
+            Lock l(_imp->pools_mutex);
+            if (! _imp->cats_pool.empty())
+            {
+                CategoryNamePart cat(*_imp->cats_pool.begin());
+                FSEntry c_dir(_imp->repo->layout()->category_directory(cat));
+                _imp->cats_pool.erase(_imp->cats_pool.begin());
+                if (_above_base_dir(c_dir) || _under_base_dir(c_dir))
+                {
+                    tr1::shared_ptr<const QualifiedPackageNameSet> qpns(_imp->repo->package_names(cat));
+                    std::copy(qpns->begin(), qpns->end(), std::inserter(_imp->pkgs_pool, _imp->pkgs_pool.begin()));
+                    work_item = tr1::bind(&QAController::_check_category, this, cat, qpns);
+                }
+            }
+            else if (! _imp->pkgs_pool.empty())
+            {
+                QualifiedPackageName qpn(*_imp->pkgs_pool.begin());
+                _imp->pkgs_pool.erase(_imp->pkgs_pool.begin());
+                work_item = tr1::bind(&QAController::_check_package, this, qpn);
+            }
+            else
+                done = true;
+        }
+
+        if (work_item)
+            work_item();
     }
 }
 
 void
-QAController::_run_package(const QualifiedPackageName & p)
+QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<const QualifiedPackageNameSet> qpns)
+{
+    FSEntry c_dir(_imp->repo->layout()->category_directory(c));
+
+    if (_under_base_dir(c_dir))
+    {
+        using namespace tr1::placeholders;
+        std::find_if(
+                QAChecks::get_instance()->category_dir_checks_group()->begin(),
+                QAChecks::get_instance()->category_dir_checks_group()->end(),
+                tr1::bind(std::equal_to<bool>(), false,
+                    tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                        _1, _imp->repo->layout()->category_directory(c), tr1::ref(_imp->reporter),
+                        _imp->env, _imp->repo, _imp->repo->layout()->category_directory(c))));
+    }
+
+    bool done(false);
+    while (! done)
+    {
+        tr1::function<void ()> work_item;
+        {
+            Lock l(_imp->pools_mutex);
+            for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
+                    q != q_end ; ++q)
+            {
+                std::set<QualifiedPackageName>::iterator i(_imp->pkgs_pool.find(*q));
+                if (i != _imp->pkgs_pool.end())
+                {
+                    _imp->pkgs_pool.erase(i);
+                    work_item = tr1::bind(&QAController::_check_package, this, *q);
+                    break;
+                }
+            }
+        }
+
+        if (work_item)
+            work_item();
+        else
+            done = true;
+    }
+}
+
+void
+QAController::_check_package(const QualifiedPackageName p)
 {
     using namespace tr1::placeholders;
 
@@ -185,14 +239,13 @@ QAController::_run_package(const QualifiedPackageName & p)
     if (_above_base_dir(p_dir) || _under_base_dir(p_dir))
     {
         tr1::shared_ptr<const PackageIDSequence> ids(_imp->repo->package_ids(p));
-        parallel_for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_run_id, this, _1));
-
+        std::for_each(ids->begin(), ids->end(), tr1::bind(&QAController::_check_id, this, _1));
         _imp->reporter.flush(p_dir);
     }
 }
 
 void
-QAController::_run_id(const tr1::shared_ptr<const PackageID> & i)
+QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
 {
     using namespace tr1::placeholders;
 
@@ -226,13 +279,33 @@ QAController::run()
     try
     {
         if (_under_base_dir(_imp->repo->params().location))
-            std::find_if(
-                    QAChecks::get_instance()->tree_checks_group()->begin(),
-                    QAChecks::get_instance()->tree_checks_group()->end(),
-                    tr1::bind(std::equal_to<bool>(), false,
-                        tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
-                            _1, _imp->repo->params().location, tr1::ref(_imp->reporter),
-                            _imp->env, _imp->repo, _imp->repo->params().location)));
+            if (QAChecks::get_instance()->tree_checks_group()->end() !=
+                    std::find_if(
+                        QAChecks::get_instance()->tree_checks_group()->begin(),
+                        QAChecks::get_instance()->tree_checks_group()->end(),
+                        tr1::bind(std::equal_to<bool>(), false,
+                            tr1::bind<bool>(tr1::mem_fn(&CategoryDirCheckFunction::operator() ),
+                                _1, _imp->repo->params().location, tr1::ref(_imp->reporter),
+                                _imp->env, _imp->repo, _imp->repo->params().location))))
+            {
+                QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
+                        "Tree checks failed. Not continuing.");
+                return;
+            }
+        _imp->reporter.flush(_imp->repo->params().location);
+
+        /* Create our workers and pools. Each worker starts by working on a
+         * separate category. If there aren't any unclaimed categories, workers
+         * start taking packages from another worker's category. */
+        tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
+        std::copy(cats->begin(), cats->end(), std::inserter(_imp->cats_pool, _imp->cats_pool.begin()));
+#ifdef PALUDIS_ENABLE_THREADS
+        ThreadPool workers;
+        for (int x(0) ; x < 5 ; ++x)
+            workers.create_thread(tr1::bind(&QAController::_worker, this));
+#else
+        _worker();
+#endif
     }
     catch (const Exception & e)
     {
@@ -240,11 +313,6 @@ QAController::run()
                 QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
                     "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
-
-    _imp->reporter.flush(_imp->repo->params().location);
-
-    tr1::shared_ptr<const CategoryNamePartSet> categories(_imp->repo->category_names());
-    parallel_for_each(categories->begin(), categories->end(), tr1::bind(&QAController::_run_category, this, _1));
 }
 
 bool

@@ -40,9 +40,12 @@ namespace paludis
             private PrivateImplementationPattern<QAController>
         {
             private:
-                void _run_category(const CategoryNamePart &);
-                void _run_package(const QualifiedPackageName &);
-                void _run_id(const tr1::shared_ptr<const PackageID> &);
+                void _check_category(const CategoryNamePart, const tr1::shared_ptr<const QualifiedPackageNameSet>);
+                void _check_package(const QualifiedPackageName);
+                void _check_id(const tr1::shared_ptr<const PackageID> &);
+
+                void _worker();
+
                 bool _under_base_dir(const FSEntry &) const;
                 bool _above_base_dir(const FSEntry &) const;
 
