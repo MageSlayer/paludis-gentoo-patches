@@ -137,8 +137,11 @@ namespace
 
         void visit(const MetadataRepositoryMaskInfoKey & k)
         {
-            stream << k.raw_name() << ": " << k.value()->mask_file << ": "
-                << join(k.value()->comment->begin(), k.value()->comment->end(), " ");
+            if (k.value())
+                stream << k.raw_name() << ": " << k.value()->mask_file << ": "
+                    << join(k.value()->comment->begin(), k.value()->comment->end(), " ");
+            else
+                stream << k.raw_name();
         }
 
         void visit(const MetadataContentsKey &)
