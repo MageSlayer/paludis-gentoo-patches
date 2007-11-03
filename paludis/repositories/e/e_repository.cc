@@ -578,10 +578,15 @@ ERepository::sync() const
             s_end(sync_list.end()) ; s != s_end ; ++s)
     {
         DefaultSyncer syncer(SyncerParams::create()
-                                .environment(_imp->params.environment)
-                                .local(stringify(_imp->params.location))
-                                .remote(*s));
-        SyncOptions opts(_imp->params.sync_options, _imp->layout->sync_filter_file());
+                .environment(_imp->params.environment)
+                .local(stringify(_imp->params.location))
+                .remote(*s)
+                );
+        SyncOptions opts(
+                _imp->params.sync_options,
+                _imp->layout->sync_filter_file(),
+                "sync " + stringify(name()) + "> "
+                );
         try
         {
             syncer.sync(opts);

@@ -371,12 +371,21 @@ CRANRepository::sync() const
 
     cmd = "rsync --progress '" + _imp->params.sync + "/src/contrib/PACKAGES' ./";
 
-    if (0 != run_command(Command(cmd).with_chdir(_imp->params.location)))
+    if (0 != run_command(Command(cmd)
+                .with_chdir(_imp->params.location)
+                .with_stdout_prefix("sync " + stringify(name()) + "> ")
+                .with_stderr_prefix("sync " + stringify(name()) + "> ")
+                ))
         return false;
 
     cmd = "rsync --progress '" + _imp->params.sync + "/CRAN_mirrors.csv' ./";
 
-    return 0 == run_command(Command(cmd).with_chdir(_imp->params.location));
+    return 0 == run_command(Command(cmd)
+            .with_chdir(_imp->params.location)
+            .with_stdout_prefix("sync " + stringify(name()) + "> ")
+            .with_stderr_prefix("sync " + stringify(name()) + "> ")
+            .with_prefix_blank_lines()
+            );
 }
 
 tr1::shared_ptr<Repository>
