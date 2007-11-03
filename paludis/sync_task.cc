@@ -22,6 +22,9 @@
 #include <paludis/syncer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/action_queue.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <list>
@@ -37,16 +40,18 @@ namespace paludis
     {
         Environment * const env;
         std::list<RepositoryName> targets;
+        const bool parallel;
 
-        Implementation(Environment * const e) :
-            env(e)
+        Implementation(Environment * const e, const bool p) :
+            env(e),
+            parallel(p)
         {
         }
     };
 }
 
-SyncTask::SyncTask(Environment * const env) :
-    PrivateImplementationPattern<SyncTask>(new Implementation<SyncTask>(env))
+SyncTask::SyncTask(Environment * const env, const bool p) :
+    PrivateImplementationPattern<SyncTask>(new Implementation<SyncTask>(env, p))
 {
 }
 
@@ -59,6 +64,93 @@ SyncTask::add_target(const std::string & t)
 {
     Context context("When adding sync target '" + t + "':");
     _imp->targets.push_back(RepositoryName(t));
+}
+
+namespace
+{
+    struct ItemSyncer
+    {
+        typedef void result;
+
+        Mutex mutex;
+        int x, y, a;
+        Environment * const env;
+        SyncTask * const task;
+
+        ItemSyncer(int yy, Environment * const e, SyncTask * const t) :
+            x(0),
+            y(yy),
+            a(0),
+            env(e),
+            task(t)
+        {
+        }
+
+        void sync(const RepositoryName & r)
+        {
+            Context context_local("When syncing repository '" + stringify(r) + "':");
+
+            {
+                Lock l(mutex);
+                ++x;
+                ++a;
+                task->on_sync_status(x, y, a);
+            }
+
+            try
+            {
+                if (0 !=
+                        env->perform_hook(Hook("sync_pre")("TARGET", stringify(r))
+                            ("X_OF_Y", stringify(x) + " of " + stringify(y) + " (" + stringify(a) + " active)")
+                            ).max_exit_status)
+                    throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
+
+                {
+                    Lock l(mutex);
+                    task->on_sync_pre(r);
+                }
+
+                tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
+                if (rr->syncable_interface && rr->syncable_interface->sync())
+                {
+                    Lock l(mutex);
+                    task->on_sync_succeed(r);
+                }
+                else
+                {
+                    Lock l(mutex);
+                    task->on_sync_skip(r);
+                }
+
+                {
+                    Lock l(mutex);
+                    task->on_sync_post(r);
+                }
+
+                if (0 !=
+                        env->perform_hook(Hook("sync_post")("TARGET", stringify(r))
+                            ("X_OF_Y", stringify(x) + " of " + stringify(y) + " (" + stringify(a) + " active)")
+                            ).max_exit_status)
+                    throw SyncFailedError("Sync of '" + stringify(r) + "' aborted by hook");
+
+                {
+                    Lock l(mutex);
+                    --a;
+                    task->on_sync_status(x, y, a);
+                }
+            }
+            catch (const SyncFailedError & e)
+            {
+                HookResult PALUDIS_ATTRIBUTE((unused)) dummy(env->perform_hook(Hook("sync_fail")("TARGET", stringify(r))
+                            ("X_OF_Y", stringify(x) + " of " + stringify(y) + " (" + stringify(a) + " active)")
+                            ));
+                Lock l(mutex);
+                task->on_sync_fail(r, e);
+                --a;
+                task->on_sync_status(x, y, a);
+            }
+        }
+    };
 }
 
 void
@@ -77,41 +169,22 @@ SyncTask::execute()
         throw SyncFailedError("Sync aborted by hook");
     on_sync_all_pre();
 
-    int x(0), y(std::distance(_imp->targets.begin(), _imp->targets.end()));
-    for (std::list<RepositoryName>::const_iterator r(_imp->targets.begin()), r_end(_imp->targets.end()) ;
-            r != r_end ; ++r)
+    ItemSyncer s(std::distance(_imp->targets.begin(), _imp->targets.end()), _imp->env, this);
+
+    using namespace tr1::placeholders;
+#ifdef PALUDIS_ENABLE_THREADS
+    if (_imp->parallel)
     {
-        Context context_local("When syncing repository '" + stringify(*r) + "':");
-        ++x;
-
-        try
-        {
-            if (0 !=
-                _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r))
-                         ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
-            on_sync_pre(*r);
-
-            tr1::shared_ptr<const Repository> rr(_imp->env->package_database()->fetch_repository(*r));
-
-            if (rr->syncable_interface && rr->syncable_interface->sync())
-                on_sync_succeed(*r);
-            else
-                on_sync_skip(*r);
-
-            on_sync_post(*r);
-            if (0 !=
-                _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r))
-                             ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status)
-                throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
-        }
-        catch (const SyncFailedError & e)
-        {
-            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
-                    ("X_OF_Y", stringify(x) + " of " + stringify(y))));
-            on_sync_fail(*r, e);
-        }
+        ActionQueue actions(5);
+        for (std::list<RepositoryName>::const_iterator t(_imp->targets.begin()), t_end(_imp->targets.end()) ;
+                t != t_end ; ++t)
+            actions.enqueue(tr1::bind(&ItemSyncer::sync, &s, *t));
     }
+    else
+        std::for_each(_imp->targets.begin(), _imp->targets.end(), tr1::bind(&ItemSyncer::sync, &s, _1));
+#else
+    std::for_each(_imp->targets.begin(), _imp->targets.end(), tr1::bind(&ItemSyncer::sync, &s, _1));
+#endif
 
     on_sync_all_post();
     if (0 !=

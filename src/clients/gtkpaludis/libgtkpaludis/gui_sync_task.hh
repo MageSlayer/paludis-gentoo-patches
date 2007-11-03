@@ -27,6 +27,7 @@ namespace gtkpaludis
             virtual void on_sync_fail(const paludis::RepositoryName &, const paludis::SyncFailedError &);
             virtual void on_sync_succeed(const paludis::RepositoryName &);
             virtual void on_sync_all_post();
+            virtual void on_sync_status(const int x, const int y, const int a);
 
         public:
             GuiSyncTask(MainWindow * const);

@@ -54,7 +54,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SyncTask(Environment * const env);
+            SyncTask(Environment * const env, const bool parallel);
 
             ///\}
 
@@ -83,6 +83,8 @@ namespace paludis
             virtual void on_sync_fail(const RepositoryName &, const SyncFailedError &) = 0;
             virtual void on_sync_succeed(const RepositoryName &) = 0;
             virtual void on_sync_all_post() = 0;
+
+            virtual void on_sync_status(const int x, const int y, const int a) = 0;
 
             ///\}
 

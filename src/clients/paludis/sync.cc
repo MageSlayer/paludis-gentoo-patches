@@ -43,8 +43,8 @@ namespace
             int _return_code;
 
         public:
-            OurSyncTask(tr1::shared_ptr<Environment> env) :
-                SyncTask(env.get()),
+            OurSyncTask(tr1::shared_ptr<Environment> env, const bool p) :
+                SyncTask(env.get(), p),
                 _return_code(0)
             {
             }
@@ -56,6 +56,8 @@ namespace
             virtual void on_sync_fail(const RepositoryName &, const SyncFailedError &);
             virtual void on_sync_succeed(const RepositoryName &);
             virtual void on_sync_all_post();
+
+            virtual void on_sync_status(const int x, const int y, const int a);
 
             int return_code() const
             {
@@ -72,7 +74,6 @@ namespace
     OurSyncTask::on_sync_pre(const RepositoryName & r)
     {
         cout << colour(cl_heading, "Sync " + stringify(r)) << endl;
-        cerr << xterm_title("Syncing " + stringify(r));
     }
 
     void
@@ -108,13 +109,25 @@ namespace
     {
         cout << endl;
     }
+
+    void
+    OurSyncTask::on_sync_status(const int x, const int y, const int a)
+    {
+        cerr << xterm_title("Syncing " + stringify(x) + " of " + stringify(y) + ", "
+                + stringify(a) + " active");
+    }
 }
 
 int do_sync(tr1::shared_ptr<Environment> env)
 {
     Context context("When performing sync action from command line:");
 
-    OurSyncTask task(env);
+    bool parallel(false);
+#ifdef PALUDIS_ENABLE_THREADS
+    parallel = CommandLine::get_instance()->a_parallel.specified();
+#endif
+
+    OurSyncTask task(env, parallel);
 
     for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
@@ -125,5 +138,4 @@ int do_sync(tr1::shared_ptr<Environment> env)
 
     return task.return_code();
 }
-
 

@@ -73,6 +73,12 @@ CommandLine::CommandLine() :
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_resume_command_template(&general_args, "resume-command-template", '\0',
             "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
+#ifdef PALUDIS_ENABLE_THREADS
+    a_parallel(&general_args, "parallel", 'P', "Perform tasks in parallel, where supported (currently --sync only)"),
+#else
+    a_parallel(&general_args, "parallel", 'P', "Does nothing. (For compatibility with Paludis when built with thread "
+            "support, which you shouldn't be using.)"),
+#endif
 
     query_args(this, "Query options",
             "Options which are relevant for --query."),

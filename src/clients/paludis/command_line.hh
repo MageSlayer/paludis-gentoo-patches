@@ -166,6 +166,9 @@ class CommandLine :
         /// --resume-command-template
         paludis::args::StringArg a_resume_command_template;
 
+        /// --parallel
+        paludis::args::SwitchArg a_parallel;
+
         ///}
 
         /// \name Query arguments

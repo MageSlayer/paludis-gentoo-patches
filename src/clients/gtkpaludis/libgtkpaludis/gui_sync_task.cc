@@ -28,7 +28,7 @@ namespace paludis
 }
 
 GuiSyncTask::GuiSyncTask(MainWindow * const m) :
-    SyncTask(m->environment()),
+    SyncTask(m->environment(), false),
     PrivateImplementationPattern<GuiSyncTask>(new Implementation<GuiSyncTask>(m, this)),
     _imp(PrivateImplementationPattern<GuiSyncTask>::_imp)
 {
@@ -100,5 +100,10 @@ void
 GuiSyncTask::paludis_thread_execute()
 {
     execute();
+}
+
+void
+GuiSyncTask::on_sync_status(const int, const int, const int)
+{
 }
 
