@@ -61,7 +61,7 @@ Context::backtrace(const std::string & delim)
     if (! context)
         return "";
 
-    return join(context->begin(), context->end(), delim);
+    return join(context->begin(), context->end(), delim) + delim;
 }
 
 namespace paludis
@@ -110,7 +110,7 @@ Exception::message() const throw ()
 std::string
 Exception::backtrace(const std::string & delim) const
 {
-    return join(_context_data->local_context.begin(), _context_data->local_context.end(), delim);
+    return join(_context_data->local_context.begin(), _context_data->local_context.end(), delim) + delim;
 }
 
 bool
