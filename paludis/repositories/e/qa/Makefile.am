@@ -3,7 +3,10 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES =
 MAINTAINERCLEANFILES = Makefile.in
 
-AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+AM_CXXFLAGS = \
+	-I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@ \
+	$(PCREPLUSPLUS_CFLAGS)
+
 DEFS = \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
@@ -33,7 +36,9 @@ paludis_repositories_e_include_HEADERS = \
 	qa_controller.hh \
 	short_description_key.hh \
 	stray_files.hh \
-	visibility.hh
+	kv_variables.hh \
+	visibility.hh \
+	whitespace.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
 
@@ -48,10 +53,15 @@ libpaludiserepositoryqa_la_SOURCES = \
 	short_description_key.cc \
 	spec_keys.cc \
 	stray_files.cc \
+	kv_variables.cc \
 	visibility.cc \
+	whitespace.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
-libpaludiserepositoryqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludiserepositoryqa_la_LDFLAGS = \
+	-version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 \
+	$(PCREPLUSPLUS_LIBS)
+
 libpaludiserepositoryqa_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -88,6 +98,7 @@ TESTS = \
 	extractors_TEST \
 	spec_keys_TEST \
 	stray_files_TEST \
+	kv_variables_TEST \
 	visibility_TEST
 
 check_PROGRAMS = $(TESTS)
@@ -140,6 +151,18 @@ visibility_TEST_LDADD = \
 	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
+kv_variables_TEST_SOURCES = kv_variables_TEST.cc
+kv_variables_TEST_LDADD = \
+	libpaludiserepositoryqa.la \
+	test_extras.o \
+	$(top_builddir)/paludis/repositories/e/libpaludiserepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a
+
 endif
 
 built-sources : $(BUILT_SOURCES)
@@ -152,3 +175,4 @@ distcheck-deps : distcheck-deps-subdirs
 distcheck-deps-subdirs :
 	for s in $(SUBDIRS) . ; do if test x$$s = x. ; then $(MAKE) distcheck-deps-local || exit 1 ; \
 	    else $(MAKE) -C $$s distcheck-deps || exit 1 ; fi ; done
+

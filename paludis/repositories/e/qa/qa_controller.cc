@@ -31,7 +31,9 @@
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/qa.hh>
+#include <paludis/metadata_key.hh>
 
+#include <fstream>
 #include <unistd.h>
 #include <algorithm>
 #include <list>
@@ -284,6 +286,7 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
     try
     {
         if (_under_base_dir(p_dir))
+        {
             std::find_if(
                     QAChecks::get_instance()->package_id_checks_group()->begin(),
                     QAChecks::get_instance()->package_id_checks_group()->end(),
@@ -291,11 +294,29 @@ QAController::_check_id(const tr1::shared_ptr<const PackageID> & i)
                         tr1::bind<bool>(tr1::mem_fn(&PackageIDCheckFunction::operator() ),
                             _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
                             _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i))));
+
+            std::ifstream f(stringify(i->fs_location_key()->value()).c_str());
+            std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+            if (! f)
+                _imp->reporter.message(
+                        QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "check_id",
+                            "Couldn't get file contents for ID '" + stringify(*i) + ")")
+                        .with_associated_id(i)
+                        .with_associated_key(i->fs_location_key()));
+            else
+                std::find_if(
+                        QAChecks::get_instance()->package_id_file_contents_checks_group()->begin(),
+                        QAChecks::get_instance()->package_id_file_contents_checks_group()->end(),
+                        tr1::bind(std::equal_to<bool>(), false,
+                            tr1::bind<bool>(tr1::mem_fn(&PackageIDFileContentsCheckFunction::operator() ),
+                                _1, _imp->repo->layout()->package_file(*i), tr1::ref(_imp->reporter),
+                                _imp->env, _imp->repo, tr1::static_pointer_cast<const ERepositoryID>(i), content)));
+        }
     }
     catch (const Exception & e)
     {
         _imp->reporter.message(
-                QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "package_id_checks_group",
+                QAMessage(_imp->repo->layout()->package_file(*i), qaml_severe, "check_id",
                     "Caught exception '" + e.message() + "' (" + e.what() + ")")
                 .with_associated_id(i));
     }
@@ -341,7 +362,7 @@ QAController::run()
     catch (const Exception & e)
     {
         _imp->reporter.message(
-                QAMessage(_imp->repo->params().location, qaml_severe, "tree_checks_group",
+                QAMessage(_imp->repo->params().location, qaml_severe, "run",
                     "Caught exception '" + e.message() + "' (" + e.what() + ")"));
     }
 }

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_QA_VISIBILITY_HH
-#define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_QA_VISIBILITY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_VARIANT_GLOBALS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_VARIANT_GLOBALS_HH 1
 
 #include <paludis/qa-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -31,12 +31,11 @@ namespace paludis
 {
     namespace erepository
     {
-        bool visibility_check(
+        bool kv_variables_check(
                 const FSEntry &,
                 QAReporter &,
-                const Environment * const env,
-                const tr1::shared_ptr<const ERepository> &,
                 const tr1::shared_ptr<const PackageID> &,
+                const std::string &,
                 const std::string &) PALUDIS_VISIBLE;
     }
 }

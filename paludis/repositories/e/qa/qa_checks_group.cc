@@ -115,7 +115,9 @@ QAChecksGroup<T_>::need_ordering() const
 
 template class QAChecksGroup<TreeCheckFunction>;
 template class QAChecksGroup<PackageIDCheckFunction>;
+template class QAChecksGroup<PackageIDFileContentsCheckFunction>;
 
 template class WrappedForwardIterator<QAChecksGroup<TreeCheckFunction>::ConstIteratorTag, TreeCheckFunction>;
 template class WrappedForwardIterator<QAChecksGroup<PackageIDCheckFunction>::ConstIteratorTag, PackageIDCheckFunction>;
+template class WrappedForwardIterator<QAChecksGroup<PackageIDFileContentsCheckFunction>::ConstIteratorTag, PackageIDFileContentsCheckFunction>;
 

@@ -63,6 +63,15 @@ namespace paludis
                 const tr1::shared_ptr<const ERepositoryID> &
                 )> PackageIDCheckFunction;
 
+        typedef tr1::function<bool (
+                const FSEntry &,
+                QAReporter &,
+                const Environment * const,
+                const tr1::shared_ptr<const ERepository> &,
+                const tr1::shared_ptr<const ERepositoryID> &,
+                const std::string &
+                )> PackageIDFileContentsCheckFunction;
+
         class QAChecks :
             private PrivateImplementationPattern<QAChecks>,
             public InstantiationPolicy<QAChecks, instantiation_method::SingletonTag>
@@ -82,6 +91,9 @@ namespace paludis
 
                 const tr1::shared_ptr<QAChecksGroup<PackageIDCheckFunction> >
                     package_id_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const tr1::shared_ptr<QAChecksGroup<PackageIDFileContentsCheckFunction> >
+                    package_id_file_contents_checks_group() PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
