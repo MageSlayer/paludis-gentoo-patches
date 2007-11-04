@@ -57,6 +57,11 @@ namespace paludis
              * Report a QA message.
              */
             virtual void message(const QAMessage &) = 0;
+
+            /**
+             * Update status.
+             */
+            virtual void status(const std::string &) = 0;
     };
 }
 

@@ -32,6 +32,7 @@
 #include <paludis/util/action_queue.hh>
 #include <paludis/qa.hh>
 
+#include <unistd.h>
 #include <algorithm>
 #include <list>
 #include <set>
@@ -79,7 +80,7 @@ namespace
                 if (0 != stringify(i->first).compare(0, root.length(), root))
                     break;
 
-                message_queue.enqueue(tr1::bind(&QAReporter::message, &base, i->second));
+                message_queue.enqueue(tr1::bind(&QAReporter::message, &base, QAMessage(i->second)));
                 message_buf.erase(i++);
             }
         }
@@ -88,6 +89,11 @@ namespace
         {
             Lock lock(mutex);
             message_buf.insert(std::make_pair(msg.entry, msg));
+        }
+
+        void status(const std::string & s)
+        {
+            message_queue.enqueue(tr1::bind(&QAReporter::status, &base, std::string(s)));
         }
     };
 }
@@ -187,6 +193,24 @@ QAController::_worker()
 }
 
 void
+QAController::_status_worker()
+{
+    while (true)
+    {
+        {
+            Lock l(_imp->pools_mutex);
+            _imp->reporter.status("Pending: " + stringify(_imp->cats_pool.size()) + " full categories, "
+                    + stringify(_imp->pkgs_pool.size()) + " packages in '" + stringify(_imp->repo->name()) + "'");
+
+            if (_imp->cats_pool.empty() && _imp->pkgs_pool.empty())
+                break;
+        }
+
+        ::sleep(1);
+    }
+}
+
+void
 QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<const QualifiedPackageNameSet> qpns)
 {
     FSEntry c_dir(_imp->repo->layout()->category_directory(c));
@@ -223,7 +247,13 @@ QAController::_check_category(const CategoryNamePart c, const tr1::shared_ptr<co
         }
 
         if (work_item)
+        {
+#ifndef PALUDIS_ENABLE_THREADS
+            _imp->reporter.status("Pending: " + stringify(_imp->cats_pool.size()) + " full categories, "
+                    + stringify(_imp->pkgs_pool.size()) + " packages in '" + stringify(_imp->repo->name()) + "'");
+#endif
             work_item();
+        }
         else
             done = true;
     }
@@ -303,6 +333,7 @@ QAController::run()
         ThreadPool workers;
         for (int x(0) ; x < 5 ; ++x)
             workers.create_thread(tr1::bind(&QAController::_worker, this));
+        workers.create_thread(tr1::bind(&QAController::_status_worker, this));
 #else
         _worker();
 #endif

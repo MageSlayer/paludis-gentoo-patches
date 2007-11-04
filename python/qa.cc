@@ -41,6 +41,16 @@ struct QAReporterWrapper :
         else
             throw PythonMethodNotImplemented("QAReporter", "message");
     }
+
+    void status(const std::string & msg)
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("status"))
+            f(msg);
+        else
+            throw PythonMethodNotImplemented("QAReporter", "status");
+    }
 };
 
 void expose_qa()
@@ -90,5 +100,10 @@ void expose_qa()
                 "message(QAMessage)\n"
                 "NEED_DOC"
             )
+        .def("status", bp::pure_virtual(&QAReporter::status),
+                "status(str)\n"
+                "NEED_DOC"
+            )
         ;
 }
+

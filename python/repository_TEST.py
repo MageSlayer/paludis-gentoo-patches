@@ -207,6 +207,9 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
                 def message(self, msg):
                     self.messages += 1
 
+                def status(self, msg):
+                    return
+
             qi = repo.qa_interface
             self.assert_(isinstance(qi, RepositoryQAInterface))
 

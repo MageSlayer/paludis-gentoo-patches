@@ -46,6 +46,10 @@ namespace
         {
             ++count;
         }
+
+        void status(const std::string &)
+        {
+        }
     };
 }
 

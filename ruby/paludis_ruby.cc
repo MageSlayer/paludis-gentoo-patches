@@ -329,5 +329,10 @@ paludis::ruby::RubyQAReporter::message(const QAMessage & msg)
         exception_to_ruby_exception(e);
     }
 }
+
+void
+paludis::ruby::RubyQAReporter::status(const std::string &)
+{
+}
 #endif
 

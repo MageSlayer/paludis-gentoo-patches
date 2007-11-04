@@ -45,6 +45,7 @@ namespace paludis
                 void _check_id(const tr1::shared_ptr<const PackageID> &);
 
                 void _worker();
+                void _status_worker();
 
                 bool _under_base_dir(const FSEntry &) const;
                 bool _above_base_dir(const FSEntry &) const;

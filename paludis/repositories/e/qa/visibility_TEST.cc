@@ -54,6 +54,10 @@ namespace
                 messages.append(", ");
             messages.append(m.message);
         }
+
+        void status(const std::string &)
+        {
+        }
     };
 }
 

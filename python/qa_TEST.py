@@ -57,6 +57,9 @@ class TestCase_03_QAReporter(unittest.TestCase):
             def message(self, msg):
                 return 1
 
+            def status(self, str):
+                return 1
+
     def test_01_create(self):
         QAReporter()
 

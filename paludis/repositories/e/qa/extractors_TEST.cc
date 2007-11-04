@@ -48,6 +48,10 @@ namespace
             ++count;
             last_message = m.message;
         }
+
+        void status(const std::string &)
+        {
+        }
     };
 }
 

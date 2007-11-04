@@ -225,6 +225,11 @@ namespace
                 }
             }
         }
+
+        void status(const std::string & s)
+        {
+            std::cerr << xterm_title(s);
+        }
     };
 }
 
