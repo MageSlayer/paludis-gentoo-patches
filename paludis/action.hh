@@ -391,6 +391,7 @@ namespace paludis
 
             FetchActionError(const std::string &) throw ();
             FetchActionError(const std::string &, const tr1::shared_ptr<const Sequence<FetchActionFailure> > &) throw ();
+            ~FetchActionError() throw ();
 
             ///\}
 

@@ -249,6 +249,10 @@ FetchActionError::FetchActionError(const std::string & msg) throw () :
 {
 }
 
+FetchActionError::~FetchActionError() throw ()
+{
+}
+
 const tr1::shared_ptr<const Sequence<FetchActionFailure> >
 FetchActionError::failures() const
 {
