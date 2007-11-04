@@ -32,7 +32,6 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/parallel_for_each.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -425,7 +424,7 @@ paludis::erepository::spec_keys_check(
     using namespace tr1::placeholders;
 
     CheckForwarder f(entry, reporter, id, name);
-    parallel_for_each(id->begin_metadata(), id->end_metadata(), tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
+    std::for_each(id->begin_metadata(), id->end_metadata(), tr1::bind(&CheckForwarder::visit_sptr, &f, _1));
 
     return true;
 }

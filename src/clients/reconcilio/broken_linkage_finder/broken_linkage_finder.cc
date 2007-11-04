@@ -29,7 +29,6 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/parallel_for_each.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tr1_functional.hh>
@@ -156,7 +155,7 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
                    std::inserter(_imp->extra_lib_dirs, _imp->extra_lib_dirs.begin()),
                    tr1::bind(realpath_with_current_and_root, _1, FSEntry("/"), env->root()));
 
-    parallel_for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
+    std::for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
                       tr1::bind(&Implementation<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
 
     for (Configuration::DirsIterator it(_imp->extra_lib_dirs.begin()),
@@ -221,7 +220,7 @@ Implementation<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
 
     try
     {
-        parallel_for_each(DirIterator(directory, false), DirIterator(),
+        std::for_each(DirIterator(directory, false), DirIterator(),
                           tr1::bind(&Implementation<BrokenLinkageFinder>::check_file, this, _1));
     }
     catch (const FSError & ex)
@@ -278,7 +277,7 @@ Implementation<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const st
         tr1::shared_ptr<const PackageIDSequence> pkgs(
             db->query(query::InstalledAtRoot(env->root()), qo_whatever));
 
-        parallel_for_each(pkgs->begin(), pkgs->end(),
+        std::for_each(pkgs->begin(), pkgs->end(),
                           tr1::bind(&Implementation<BrokenLinkageFinder>::gather_package, this, _1));
     }
 

@@ -34,7 +34,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tr1_functional.hh>
-#include <paludis/util/parallel_for_each.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <list>
 #include <set>
@@ -272,7 +271,7 @@ do_search(const Environment & env)
             extractors
             );
 
-    parallel_for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches));
+    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches));
 
     bool any(false);
     InquisitioQueryTask task(&env);
