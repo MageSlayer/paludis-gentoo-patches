@@ -18,4 +18,51 @@
  */
 
 #include "repo_name.hh"
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/repository.hh>
+#include <paludis/qa.hh>
+#include <fstream>
+
+using namespace paludis;
+using namespace paludis::erepository;
+
+bool
+paludis::erepository::repo_name_check(
+        QAReporter & reporter,
+        const FSEntry & dir,
+        const std::string & name)
+{
+    if (! (dir / "profiles" / "repo_name").exists())
+        reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "No 'profiles/repo_name' file"));
+    else
+    {
+        std::ifstream f(stringify(dir / "profiles" / "repo_name").c_str());
+        if (! f)
+            reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "repo_name file unreadable"));
+        else
+        {
+            std::string line;
+            if (! std::getline(f, line))
+                reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "repo_name file empty"));
+            else
+            {
+                try
+                {
+                    RepositoryName n(line);
+                }
+                catch (const RepositoryNameError & e)
+                {
+                    reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name,
+                                "repo_name not a valid repository name"));
+                }
+
+                if (std::getline(f, line))
+                    reporter.message(QAMessage(dir / "profiles" / "repo_name", qaml_normal, name, "repo_name has trailing content"));
+            }
+        }
+    }
+
+    return true;
+}
 

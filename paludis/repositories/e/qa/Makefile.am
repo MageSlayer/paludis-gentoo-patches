@@ -38,7 +38,8 @@ paludis_repositories_e_include_HEADERS = \
 	stray_files.hh \
 	kv_variables.hh \
 	visibility.hh \
-	whitespace.hh
+	whitespace.hh \
+	repo_name.hh
 
 lib_LTLIBRARIES = libpaludiserepositoryqa.la
 
@@ -56,6 +57,7 @@ libpaludiserepositoryqa_la_SOURCES = \
 	kv_variables.cc \
 	visibility.cc \
 	whitespace.cc \
+	repo_name.cc \
 	$(paludis_repositories_e_include_HEADERS)
 
 libpaludiserepositoryqa_la_LDFLAGS = \

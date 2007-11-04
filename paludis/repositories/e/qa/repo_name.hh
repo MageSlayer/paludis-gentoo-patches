@@ -20,6 +20,19 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_REPO_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_QA_REPO_NAME_HH 1
 
-#include "config.h"
+#include <paludis/repositories/e/qa/qa_controller.hh>
+
+namespace paludis
+{
+    namespace erepository
+    {
+        bool repo_name_check(
+                QAReporter &,
+                const FSEntry & dir,
+                const std::string & s
+                );
+    }
+}
+
 
 #endif

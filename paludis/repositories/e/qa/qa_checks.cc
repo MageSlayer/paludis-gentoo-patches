@@ -30,6 +30,7 @@
 #include <paludis/repositories/e/qa/visibility.hh>
 #include <paludis/repositories/e/qa/kv_variables.hh>
 #include <paludis/repositories/e/qa/whitespace.hh>
+#include <paludis/repositories/e/qa/repo_name.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -63,6 +64,9 @@ QAChecks::QAChecks() :
 
     _imp->tree_checks_group->add_check("stray_tree_files",
             tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_tree_dir, "stray_tree_files"));
+
+    _imp->tree_checks_group->add_check("repo_name",
+            tr1::bind(repo_name_check, _2, _1, "repo_name"));
 
     _imp->category_dir_checks_group->add_check("stray_category_dir_files",
             tr1::bind(stray_files_check, _2, _4, _5, is_stray_at_category_dir, "stray_category_dir_files"));
