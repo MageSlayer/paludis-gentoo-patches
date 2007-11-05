@@ -66,6 +66,7 @@ namespace paludis
             void _display_failure_summary();
 
             tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
+            tr1::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
 
         protected:
             ///\name Basic operations
@@ -133,6 +134,7 @@ namespace paludis
             virtual void on_display_failure_summary_success(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_failure(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &) = 0;
+            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &) = 0;
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int) = 0;
             virtual void on_display_failure_summary_post() = 0;
             virtual void on_display_failure_no_summary() = 0;
@@ -151,6 +153,8 @@ namespace paludis
             virtual void on_install_all_post() = 0;
 
             virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
+                    const int x, const int y, const int s, const int f) = 0;
+            virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f) = 0;
 
             virtual void on_no_clean_needed(const DepListEntry &) = 0;

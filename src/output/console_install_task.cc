@@ -429,6 +429,16 @@ ConsoleInstallTask::on_skip_unsatisfied(const DepListEntry & d, const PackageDep
 }
 
 void
+ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const tr1::shared_ptr<const PackageID> & id,
+        const int x, const int y, const int s, const int f)
+{
+    std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id) +
+            " (dependent upon '" + stringify(*id) + "')");
+
+    output_heading(m);
+}
+
+void
 ConsoleInstallTask::on_install_post(const DepListEntry &, const int, const int,
         const int, const int)
 {
@@ -1498,6 +1508,16 @@ ConsoleInstallTask::on_display_failure_summary_skipped_unsatisfied(const DepList
     output_starred_item_no_endl("");
     output_stream() << colour(cl_package_name, *e.package_id) << ": skipped (dependency '"
         << spec << "' unsatisfied)";
+    output_endl();
+}
+
+void
+ConsoleInstallTask::on_display_failure_summary_skipped_dependent(const DepListEntry & e,
+        const tr1::shared_ptr<const PackageID> & id)
+{
+    output_starred_item_no_endl("");
+    output_stream() << colour(cl_package_name, *e.package_id) << ": skipped (dependent upon '"
+        << *id << "')";
     output_endl();
 }
 

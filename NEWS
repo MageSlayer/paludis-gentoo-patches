@@ -14,6 +14,8 @@ trunk/:
 
     * New, much more flexible, faster inquisitio.
 
+    * paludis --continue-on-failure if-independent implemented.
+
     * Bug fixes: --dl-deps-default works again. More
       robustness/compilance improvements for reconcilio, including
       proper handling of ELF files that use the non-native byte order.

@@ -8,7 +8,7 @@ make_enum_InstallTaskContinueOnFailure()
 
     key itcof_if_fetch_only  "Continue, but only if fetch only"
     key itcof_never          "Never"
-#    key itcof_if_independent "Continue if packages are independent"
+    key itcof_if_independent "Continue if packages are independent"
     key itcof_if_satisfied   "If dependencies are satisfied"
     key itcof_always         "Always"
 

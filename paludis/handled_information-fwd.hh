@@ -31,6 +31,7 @@ namespace paludis
     class DepListEntryHandled;
     class DepListEntryHandledSuccess;
     class DepListEntryHandledSkippedUnsatisfied;
+    class DepListEntryHandledSkippedDependent;
     class DepListEntryHandledFailed;
     class DepListEntryUnhandled;
     class DepListEntryNoHandlingRequired;

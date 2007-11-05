@@ -316,6 +316,13 @@ namespace
             task.on_display_failure_summary_skipped_unsatisfied(*entry, s.spec());
         }
 
+        void visit(const DepListEntryHandledSkippedDependent & s)
+        {
+            ++skipped;
+            ++total;
+            task.on_display_failure_summary_skipped_dependent(*entry, s.id());
+        }
+
         void visit(const DepListEntryHandledFailed &)
         {
             ++failures;
@@ -360,6 +367,7 @@ InstallTask::_display_failure_summary()
 
         case itcof_always:
         case itcof_if_satisfied:
+        case itcof_if_independent:
             break;
 
         case itcof_never:
@@ -653,6 +661,17 @@ InstallTask::_main_actions()
                             break;
                         dep->handled.reset(new DepListEntryHandledSkippedUnsatisfied(*d));
                         on_skip_unsatisfied(*dep, *d, x, y, s, f);
+                        ++s;
+                        continue;
+                    }
+
+                case itcof_if_independent:
+                    {
+                        tr1::shared_ptr<const PackageID> d(_dependent(*dep));
+                        if (! d)
+                            break;
+                        dep->handled.reset(new DepListEntryHandledSkippedDependent(d));
+                        on_skip_dependent(*dep, d, x, y, s, f);
                         ++s;
                         continue;
                     }
@@ -1128,6 +1147,219 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
 
 namespace
 {
+    struct CheckHandledVisitor :
+        ConstVisitor<DepListEntryHandledVisitorTypes>
+    {
+        bool failure;
+        bool skipped;
+        bool success;
+
+        CheckHandledVisitor() :
+            failure(false),
+            skipped(false),
+            success(false)
+        {
+        }
+
+        void visit(const DepListEntryHandledSkippedUnsatisfied &)
+        {
+            skipped = true;
+        }
+
+        void visit(const DepListEntryHandledSuccess &)
+        {
+            success = true;
+        }
+
+        void visit(const DepListEntryHandledSkippedDependent &)
+        {
+            skipped = true;
+        }
+
+        void visit(const DepListEntryHandledFailed &)
+        {
+            failure = true;
+        }
+
+        void visit(const DepListEntryNoHandlingRequired &)
+        {
+        }
+
+        void visit(const DepListEntryUnhandled &)
+        {
+        }
+    };
+
+    struct CheckIndependentVisitor :
+        ConstVisitor<DependencySpecTree>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AllDepSpec>,
+        ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AnyDepSpec>
+    {
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AllDepSpec>::visit_sequence;
+        using ConstVisitor<DependencySpecTree>::VisitConstSequence<CheckIndependentVisitor, AnyDepSpec>::visit_sequence;
+
+        const Environment * const env;
+        const DepList & dep_list;
+        const tr1::shared_ptr<const PackageID> id;
+        tr1::shared_ptr<PackageIDSet> already_checked;
+
+        tr1::shared_ptr<const PackageID> failure;
+        std::set<SetName> recursing_sets;
+
+        CheckIndependentVisitor(
+                const Environment * const e,
+                const DepList & d,
+                const tr1::shared_ptr<const PackageID> & i,
+                const tr1::shared_ptr<PackageIDSet> & a) :
+            env(e),
+            dep_list(d),
+            id(i),
+            already_checked(a)
+        {
+        }
+
+        void visit_leaf(const BlockDepSpec &)
+        {
+        }
+
+        void visit_leaf(const DependencyLabelsDepSpec &)
+        {
+        }
+
+        void visit_leaf(const PackageDepSpec & a)
+        {
+            if (failure)
+                return;
+
+            for (DepList::ConstIterator d(dep_list.begin()), d_end(dep_list.end()) ;
+                    d != d_end ; ++d)
+            {
+                if (! d->handled)
+                    continue;
+
+                if (! match_package(*env, a, *d->package_id))
+                    continue;
+
+                CheckHandledVisitor v;
+                d->handled->accept(v);
+
+                if (v.failure || v.skipped)
+                    failure = d->package_id;
+                else if (v.success)
+                    return;
+            }
+
+            /* no match on the dep list, fall back to installed packages. if
+             * there are no matches here it's not a problem because of or-deps. */
+            tr1::shared_ptr<const PackageIDSequence> installed(env->package_database()->query(
+                        query::Matches(a) &
+                        query::SupportsAction<InstalledAction>(),
+                        qo_whatever));
+
+            for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;
+                    i != i_end ; ++i)
+            {
+                if (already_checked->end() != already_checked->find(*i))
+                    continue;
+                already_checked->insert(*i);
+
+                CheckIndependentVisitor v(env, dep_list, *i, already_checked);
+
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_pre ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_pre)
+                    if ((*i)->build_dependencies_key())
+                        (*i)->build_dependencies_key()->value()->accept(v);
+
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_runtime ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_runtime)
+                    if ((*i)->run_dependencies_key())
+                        (*i)->run_dependencies_key()->value()->accept(v);
+
+                if (dl_deps_pre == dep_list.options()->uninstalled_deps_post ||
+                        dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_post)
+                    if ((*i)->post_dependencies_key())
+                        (*i)->post_dependencies_key()->value()->accept(v);
+
+                if ((dl_deps_pre == dep_list.options()->uninstalled_deps_suggested ||
+                            dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_suggested)
+                        && dl_suggested_install == dep_list.options()->suggested)
+                    if ((*i)->suggested_dependencies_key())
+                        (*i)->suggested_dependencies_key()->value()->accept(v);
+
+                if (v.failure)
+                {
+                    failure = v.failure;
+                    return;
+                }
+            }
+        }
+
+        void visit_sequence(const UseDepSpec & u,
+                DependencySpecTree::ConstSequenceIterator cur,
+                DependencySpecTree::ConstSequenceIterator end)
+        {
+            if (env->query_use(u.flag(), *id) ^ u.inverse())
+                std::for_each(cur, end, accept_visitor(*this));
+        }
+
+        void visit_leaf(const NamedSetDepSpec & s)
+        {
+            tr1::shared_ptr<const SetSpecTree::ConstItem> set(env->set(s.name()));
+
+            if (! set)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Unknown set '" << s.name() << "'";
+                return;
+            }
+
+            if (! recursing_sets.insert(s.name()).second)
+            {
+                Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
+                return;
+            }
+
+            set->accept(*this);
+
+            recursing_sets.erase(s.name());
+        }
+    };
+}
+
+tr1::shared_ptr<const PackageID>
+InstallTask::_dependent(const DepListEntry & e) const
+{
+    Context context("When checking whether dependencies for '" + stringify(*e.package_id) + "' are independent of failed packages:");
+
+    tr1::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
+    CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id, already_checked);
+    already_checked->insert(e.package_id);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre)
+        if (e.package_id->build_dependencies_key())
+            e.package_id->build_dependencies_key()->value()->accept(v);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime)
+        if (e.package_id->run_dependencies_key())
+            e.package_id->run_dependencies_key()->value()->accept(v);
+
+    if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post ||
+            dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post)
+        if (e.package_id->post_dependencies_key())
+            e.package_id->post_dependencies_key()->value()->accept(v);
+
+    if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested ||
+                dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested)
+            && dl_suggested_install == _imp->dep_list.options()->suggested)
+        if (e.package_id->suggested_dependencies_key())
+            e.package_id->suggested_dependencies_key()->value()->accept(v);
+
+    return v.failure;
+}
+
+namespace
+{
     struct NotYetInstalledVisitor :
         ConstVisitor<DepListEntryHandledVisitorTypes>
     {
@@ -1144,6 +1376,11 @@ namespace
         }
 
         void visit(const DepListEntryHandledSkippedUnsatisfied &)
+        {
+            result->push_back(id);
+        }
+
+        void visit(const DepListEntryHandledSkippedDependent &)
         {
             result->push_back(id);
         }

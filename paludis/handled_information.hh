@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 /** \file
  * Declarations for DepListEntryHandled classes, which are used by DepList and
@@ -52,6 +53,7 @@ namespace paludis
             DepListEntryHandled,
             DepListEntryHandledSuccess,
             DepListEntryHandledSkippedUnsatisfied,
+            DepListEntryHandledSkippedDependent,
             DepListEntryHandledFailed,
             DepListEntryUnhandled,
             DepListEntryNoHandlingRequired
@@ -139,6 +141,35 @@ namespace paludis
              * unsatisfied, returns one of them.
              */
             const PackageDepSpec spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
+     * Represents a DepListEntry that was skipped because of a dependency upon a
+     * failed package.
+     *
+     * \ingroup g_dep_list
+     * \since 0.26
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE DepListEntryHandledSkippedDependent :
+        public DepListEntryHandled,
+        public ConstAcceptInterfaceVisitsThis<DepListEntryHandledVisitorTypes, DepListEntryHandledSkippedDependent>,
+        private PrivateImplementationPattern<DepListEntryHandledSkippedDependent>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            DepListEntryHandledSkippedDependent(const tr1::shared_ptr<const PackageID> &);
+            ~DepListEntryHandledSkippedDependent();
+
+            ///\}
+
+            /**
+             * Upon which PackageID are we dependent? If multiple dependent IDs are
+             * unsatisfied, returns one of them.
+             */
+            const tr1::shared_ptr<const PackageID> id() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

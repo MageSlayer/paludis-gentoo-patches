@@ -96,7 +96,7 @@ namespace paludis
                 paludis::args::EnumArg a_show_use_descriptions;
 
                 /// --continue-on-failure
-                paludis::args::EnumArg a_continue_on_faillure;
+                paludis::args::EnumArg a_continue_on_failure;
 
                 /// }
 

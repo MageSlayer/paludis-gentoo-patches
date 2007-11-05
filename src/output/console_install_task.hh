@@ -156,6 +156,8 @@ namespace paludis
 
             virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
                     const int x, const int y, const int s, const int f);
+            virtual void on_skip_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &,
+                    const int x, const int y, const int s, const int f);
 
             virtual void on_no_clean_needed(const DepListEntry &);
             virtual void on_clean_all_pre(const DepListEntry &,
@@ -192,6 +194,7 @@ namespace paludis
             virtual void on_display_failure_summary_success(const DepListEntry &);
             virtual void on_display_failure_summary_failure(const DepListEntry &);
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &);
+            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const tr1::shared_ptr<const PackageID> &);
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int);
             virtual void on_display_failure_summary_post();
             virtual void on_display_failure_no_summary();

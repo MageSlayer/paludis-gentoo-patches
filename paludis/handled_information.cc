@@ -57,3 +57,33 @@ DepListEntryHandledSkippedUnsatisfied::spec() const
     return _imp->spec;
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<DepListEntryHandledSkippedDependent>
+    {
+        const tr1::shared_ptr<const PackageID> id;
+
+        Implementation(const tr1::shared_ptr<const PackageID> & i) :
+            id(i)
+        {
+        }
+    };
+}
+
+DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const tr1::shared_ptr<const PackageID> & i) :
+    PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(new Implementation<DepListEntryHandledSkippedDependent>(i))
+{
+}
+
+DepListEntryHandledSkippedDependent::~DepListEntryHandledSkippedDependent()
+{
+}
+
+const tr1::shared_ptr<const PackageID>
+DepListEntryHandledSkippedDependent::id() const
+{
+    return _imp->id;
+}
+
+

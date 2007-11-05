@@ -53,11 +53,12 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
             ("changed",    "Show for new and changed flags")
             ("all",        "Show for all flags"),
             "none"),
-    a_continue_on_faillure(this, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
+    a_continue_on_failure(this, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
             args::EnumArg::EnumArgOptions
             ("if-fetch-only",       "If fetching only")
             ("never",               "Never")
             ("if-satisfied",        "If remaining packages' dependencies are satisfied")
+            ("if-independent",      "If independent of failed and skipped packages")
             ("always",              "Always (UNSAFE)"),
             "if-fetch-only")
 {
@@ -114,13 +115,15 @@ InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task)
     task.set_debug_mode(a_debug_build.option());
     task.set_checks_mode(a_checks.option());
 
-    if (a_continue_on_faillure.argument() == "if-fetch-only")
+    if (a_continue_on_failure.argument() == "if-fetch-only")
         task.set_continue_on_failure(itcof_if_fetch_only);
-    else if (a_continue_on_faillure.argument() == "never")
+    else if (a_continue_on_failure.argument() == "never")
         task.set_continue_on_failure(itcof_never);
-    else if (a_continue_on_faillure.argument() == "if-satisfied")
+    else if (a_continue_on_failure.argument() == "if-satisfied")
         task.set_continue_on_failure(itcof_if_satisfied);
-    else if (a_continue_on_faillure.argument() == "always")
+    else if (a_continue_on_failure.argument() == "if-independent")
+        task.set_continue_on_failure(itcof_if_independent);
+    else if (a_continue_on_failure.argument() == "always")
         task.set_continue_on_failure(itcof_always);
     else
         throw args::DoHelp("bad value for --continue-on-failure");
