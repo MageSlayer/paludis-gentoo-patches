@@ -340,7 +340,7 @@ InstalledUnpackagedRepository::package_set(const SetName & s) const
     Context context("When fetching package set '" + stringify(s) + "' from '" +
             stringify(name()) + "':");
 
-    if ("everything" == s.data() || "ununused" == s.data())
+    if ("ununused" == s.data())
     {
         tr1::shared_ptr<ConstTreeSequence<SetSpecTree, AllDepSpec> > result(new ConstTreeSequence<SetSpecTree, AllDepSpec>(
                     make_shared_ptr(new AllDepSpec)));
