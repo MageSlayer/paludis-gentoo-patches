@@ -1081,7 +1081,6 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         return;
 
     output_no_endl(" ");
-    ColourFormatter formatter;
 
     tr1::shared_ptr<const PackageID> old_id;
     if (! existing_slot_repo->empty())
@@ -1089,12 +1088,17 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     else if (! existing_repo->empty())
         old_id = *existing_repo->last();
 
+    ColourFormatter formatter(old_id ? false : true);
     if (d.package_id->iuse_key())
     {
         if (old_id)
+        {
             output_stream() << d.package_id->iuse_key()->pretty_print_flat_with_comparison(environment(), old_id, formatter);
+        }
         else
+        {
             output_stream() << d.package_id->iuse_key()->pretty_print_flat(formatter);
+        }
     }
 
     _add_descriptions(formatter.seen_new_use_flag_names(), d.package_id, uds_new);

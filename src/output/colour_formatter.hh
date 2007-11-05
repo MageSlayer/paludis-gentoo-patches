@@ -45,7 +45,7 @@ class ColourFormatter :
     private paludis::PrivateImplementationPattern<ColourFormatter>
 {
     public:
-        ColourFormatter();
+        ColourFormatter(const bool unchanged_are_new = false);
         ~ColourFormatter();
 
         const paludis::tr1::shared_ptr<const paludis::UseFlagNameSet> seen_new_use_flag_names() const;

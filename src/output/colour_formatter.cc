@@ -31,6 +31,8 @@ namespace paludis
     template <>
     struct Implementation<ColourFormatter>
     {
+        const bool unchanged_are_new;
+
         mutable std::string active_prefix;
 
         const tr1::shared_ptr<UseFlagNameSet> seen_new_use_flag_names;
@@ -38,7 +40,8 @@ namespace paludis
         const tr1::shared_ptr<UseFlagNameSet> seen_use_flag_names;
         const tr1::shared_ptr<UseFlagNameSet> seen_use_expand_prefixes;
 
-        Implementation() :
+        Implementation(const bool b) :
+            unchanged_are_new(b),
             seen_new_use_flag_names(new UseFlagNameSet),
             seen_changed_use_flag_names(new UseFlagNameSet),
             seen_use_flag_names(new UseFlagNameSet),
@@ -48,8 +51,8 @@ namespace paludis
     };
 }
 
-ColourFormatter::ColourFormatter() :
-    PrivateImplementationPattern<ColourFormatter>(new Implementation<ColourFormatter>)
+ColourFormatter::ColourFormatter(const bool b) :
+    PrivateImplementationPattern<ColourFormatter>(new Implementation<ColourFormatter>(b))
 {
 }
 
@@ -85,6 +88,9 @@ std::string
 ColourFormatter::format(const IUseFlag & f, const format::Plain &) const
 {
     _imp->seen_use_flag_names->insert(f.flag);
+    if (_imp->unchanged_are_new)
+        _imp->seen_new_use_flag_names->insert(f.flag);
+
     std::string g(stringify(f.flag)), h;
 
     if (std::string::npos != f.prefix_delim_pos)
@@ -108,6 +114,8 @@ std::string
 ColourFormatter::format(const IUseFlag & f, const format::Enabled &) const
 {
     _imp->seen_use_flag_names->insert(f.flag);
+    if (_imp->unchanged_are_new)
+        _imp->seen_new_use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
 
     if (std::string::npos != f.prefix_delim_pos)
@@ -131,6 +139,8 @@ std::string
 ColourFormatter::format(const IUseFlag & f, const format::Disabled &) const
 {
     _imp->seen_use_flag_names->insert(f.flag);
+    if (_imp->unchanged_are_new)
+        _imp->seen_new_use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
 
     if (std::string::npos != f.prefix_delim_pos)
@@ -154,6 +164,8 @@ std::string
 ColourFormatter::format(const IUseFlag & f, const format::Forced &) const
 {
     _imp->seen_use_flag_names->insert(f.flag);
+    if (_imp->unchanged_are_new)
+        _imp->seen_new_use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
 
     if (std::string::npos != f.prefix_delim_pos)
@@ -177,6 +189,8 @@ std::string
 ColourFormatter::format(const IUseFlag & f, const format::Masked &) const
 {
     _imp->seen_use_flag_names->insert(f.flag);
+    if (_imp->unchanged_are_new)
+        _imp->seen_new_use_flag_names->insert(f.flag);
     std::string g(stringify(f.flag)), h;
 
     if (std::string::npos != f.prefix_delim_pos)
