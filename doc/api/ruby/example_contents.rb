@@ -11,7 +11,7 @@ exit_status = 0
 # We start with an Environment, respecting the user's '--environment' choice.
 env = EnvironmentMaker.instance.make_from_spec(ExampleCommandLine.instance.environment)
 
-# Fetch package IDs for isntalled 'sys-apps/paludis'
+# Fetch package IDs for installed 'sys-apps/paludis'
 ids = env.package_database.query(
     Query::Matches.new(PackageDepSpec.new("sys-apps/paludis", PackageDepSpecParseMode::Permissive)) &
     Query::SupportsInstalledAction.new,
