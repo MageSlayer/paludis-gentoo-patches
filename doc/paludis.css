@@ -137,3 +137,16 @@ code {
     background-color: #ffeedd;
 }
 
+div.main table {
+    border-width: 0px;
+}
+
+div.main th, div.main td {
+    border: 1px solid #996600;
+}
+
+div.main th {
+    text-align: left;
+    font-weight: bold;
+}
+

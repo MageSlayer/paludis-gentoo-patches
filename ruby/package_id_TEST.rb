@@ -120,6 +120,20 @@ module Paludis
             assert_equal 'foo/bar::testrepo', pid_testrepo.canonical_form(PackageIDCanonicalForm::NoVersion)
         end
 
+        def test_stringify
+            assert_equal 'foo/bar-1.0::testrepo', "#{pid_testrepo}"
+        end
+
+        def test_supports_action_test
+            assert pid_testrepo.supports_action(SupportsFetchActionTest.new)
+            assert_raise TypeError do
+                pid_testrepo.supports_action(1)
+            end
+            assert_raise TypeError do
+                pid_testrepo.supports_action(pid_testrepo)
+            end
+        end
+
         def test_=
             assert_equal pid_testrepo, pid_testrepo
         end

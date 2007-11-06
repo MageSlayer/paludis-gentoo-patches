@@ -100,6 +100,8 @@ namespace paludis
         RepositoryEInterface::ProfilesDescLine value_to_profiles_desc_line(VALUE v);
         Query value_to_query(VALUE v);
         tr1::shared_ptr<Repository> value_to_repository(VALUE);
+        tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
+        tr1::shared_ptr<Action> value_to_action(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         QACheckProperties value_to_qa_check_properties(VALUE);

@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Richard Brown
+ * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -183,6 +184,45 @@ namespace
         tr1::shared_ptr<const PackageID> * self_ptr;
         Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
         return rb_str_new2(((*self_ptr)->canonical_form(static_cast<PackageIDCanonicalForm>(NUM2INT(cf)))).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     supports_action(action_test) -> true or false
+     *
+     * Returns whether we support an action.
+     */
+    VALUE
+    package_id_supports_action(VALUE self, VALUE test)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        return (*self_ptr)->supports_action(*test_ptr) ? Qtrue : Qfalse;
+    }
+
+    /*
+     * call-seq:
+     *     perform_action(action) -> Nil
+     *
+     * Perform an action.
+     */
+    VALUE
+    package_id_perform_action(VALUE self, VALUE test)
+    {
+        tr1::shared_ptr<const PackageID> * self_ptr;
+        tr1::shared_ptr<Action> a_ptr(value_to_action(test));
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageID>, self_ptr);
+        try
+        {
+            (*self_ptr)->perform_action(*a_ptr);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
     }
 
     /*
@@ -535,6 +575,9 @@ namespace
         rb_define_method(c_package_id, "repository_name", RUBY_FUNC_CAST(&package_id_repository_name), 0);
         rb_define_method(c_package_id, "==", RUBY_FUNC_CAST(&package_id_equal), 1);
         rb_define_method(c_package_id, "[]", RUBY_FUNC_CAST(&package_id_subscript), 1);
+        rb_define_method(c_package_id, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageID> >::to_s_via_ptr), 0);
+        rb_define_method(c_package_id, "supports_action", RUBY_FUNC_CAST(&package_id_supports_action), 1);
+        rb_define_method(c_package_id, "perform_action", RUBY_FUNC_CAST(&package_id_perform_action), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);

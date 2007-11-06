@@ -21,16 +21,25 @@ htmldocs-local : $(paludisapirubyhtml_DATA)
 
 dist_noinst_SCRIPTS = create_ruby_doc.rb
 
+examples = \
+	example_command_line.rb \
+	example_about.rb \
+	example_action.rb
+
+EXTRA_DIST = $(examples)
+
 if ENABLE_RUBY
 
 all-local : rdoc
 
 rdoc : ruby
 
-ruby : create_ruby_doc.rb
+ruby : create_ruby_doc.rb $(examples)
 	rm -fr ruby
 	env TOP_SRCDIR="$(top_srcdir)" $(RUBY) \
-	    $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby $(top_srcdir)/ruby/*.cc
+	    $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby \
+		$(top_srcdir)/ruby/*.cc \
+		$(srcdir)/example_*.rb
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api

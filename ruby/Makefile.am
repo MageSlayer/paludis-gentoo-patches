@@ -17,40 +17,42 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o Paludis.so .libs/Paludis.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_TESTS = \
-	query_TEST.rb \
-	find_unused_packages_task_TEST.rb \
-	package_database_TEST.rb \
-	log_TEST.rb \
-	version_spec_TEST.rb \
-	dep_spec_TEST.rb \
-	qualified_package_name_TEST.rb \
+	action_TEST.rb \
 	contents_TEST.rb \
 	dep_list_TEST.rb \
-	repository_TEST.rb \
-	environment_TEST.rb \
-	paludis_ruby_TEST.rb \
+	dep_spec_TEST.rb \
 	dep_tag_TEST.rb \
-	package_id_TEST.rb
+	environment_TEST.rb \
+	find_unused_packages_task_TEST.rb \
+	log_TEST.rb \
+	package_database_TEST.rb \
+	package_id_TEST.rb \
+	paludis_ruby_TEST.rb \
+	qualified_package_name_TEST.rb \
+	query_TEST.rb \
+	repository_TEST.rb \
+	version_spec_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	qa_TEST.rb
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
-	environment.cc \
-	version_spec.cc \
-	dep_spec.cc \
-	log.cc \
-	package_database.cc \
-	repository.cc \
-	package_id.cc \
-	qualified_package_name.cc \
+	action.cc \
 	contents.cc \
 	dep_list.cc \
+	dep_spec.cc \
 	dep_tag.cc \
-	query.cc \
+	environment.cc \
 	find_unused_packages_task.cc \
-	name.cc
+	log.cc \
+	name.cc \
+	package_database.cc \
+	package_id.cc \
+	qualified_package_name.cc \
+	query.cc \
+	repository.cc \
+	version_spec.cc
 
 IF_RUBY_QA_SOURCES = \
 	qa.cc
@@ -58,13 +60,13 @@ IF_RUBY_QA_SOURCES = \
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	paludis_ruby_so.cc \
-	environment_TEST_setup.sh environment_TEST_cleanup.sh \
-	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
-	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
-	repository_TEST_setup.sh repository_TEST_cleanup.sh \
-	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
-	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh
+	environment_TEST_setup.sh environment_TEST_cleanup.sh \
+	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh \
+	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
+	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
+	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
+	repository_TEST_setup.sh repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
