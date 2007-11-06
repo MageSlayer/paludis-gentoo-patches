@@ -46,6 +46,12 @@ namespace
     static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_key_type;
+    static VALUE c_metadata_provide_spec_tree_key;
+    static VALUE c_metadata_license_spec_tree_key;
+    static VALUE c_metadata_fetchable_uri_spec_tree_key;
+    static VALUE c_metadata_simple_uri_spec_tree_key;
+    static VALUE c_metadata_dependency_spec_tree_key;
+    static VALUE c_metadata_restrict_spec_tree_key;
     static VALUE c_repository_mask_info;
 
     /*
@@ -156,32 +162,50 @@ namespace
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_license_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_provide_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<ProvideSpecTree> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_dependency_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_restrict_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<RestrictSpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<RestrictSpecTree> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_fetchable_uri_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
-            value = Qnil;
+            value = Data_Wrap_Struct(c_metadata_simple_uri_spec_tree_key, 0,
+                    &Common<tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > >::free,
+                    new tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(
+                        tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(mm)));
         }
     };
 
@@ -387,6 +411,48 @@ namespace
          */
         c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
         rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataLicenseSpecTreeKey
+         *
+         * Metadata class for license specs
+         */
+        c_metadata_license_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataLicenseSpecTreeKey", c_metadata_key);
+
+        /*
+         * Document-class: Paludis::MetadataProvideSpecTreeKey
+         *
+         * Metadata class for provide specs
+         */
+        c_metadata_provide_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataProvideSpecTreeKey", c_metadata_key);
+
+        /*
+         * Document-class: Paludis::MetadataRestrictSpecTreeKey
+         *
+         * Metadata class for restrict specs
+         */
+        c_metadata_restrict_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataRestrictSpecTreeKey", c_metadata_key);
+
+        /*
+         * Document-class: Paludis::MetadataDependencySpecTreeKey
+         *
+         * Metadata class for dependency specs
+         */
+        c_metadata_dependency_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataDependencySpecTreeKey", c_metadata_key);
+
+        /*
+         * Document-class: Paludis::MetadataFetchableURISpecTreeKey
+         *
+         * Metadata class for fetchable uri specs
+         */
+        c_metadata_fetchable_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataFetchableURISpecTreeKey", c_metadata_key);
+
+        /*
+         * Document-class: Paludis::MetadataSimpleURISpecTreeKey
+         *
+         * Metadata class for simple uri specs
+         */
+        c_metadata_simple_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataSimpleURISpecTreeKey", c_metadata_key);
 
         /*
          * Document-module: Paludis::MetadataKeyType
