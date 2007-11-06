@@ -206,6 +206,38 @@ namespace
 
     /*
      * call-seq:
+     *     package_name_part -> String or Nil
+     *
+     * Fetch the package name part.
+     */
+    VALUE
+    package_dep_spec_package_name_part(VALUE self)
+    {
+        tr1::shared_ptr<const PackageDepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
+        if (0 == (*ptr)->package_name_part_ptr())
+            return Qnil;
+        return rb_str_new2(stringify(*(*ptr)->package_name_part_ptr()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     category_name_part -> String or Nil
+     *
+     * Fetch the category name part.
+     */
+    VALUE
+    package_dep_spec_category_name_part(VALUE self)
+    {
+        tr1::shared_ptr<const PackageDepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
+        if (0 == (*ptr)->category_name_part_ptr())
+            return Qnil;
+        return rb_str_new2(stringify(*(*ptr)->category_name_part_ptr()).c_str());
+    }
+
+    /*
+     * call-seq:
      *     text -> String
      *
      * Fetch our text.
@@ -277,6 +309,34 @@ namespace
         return result;
     }
 
+    /*
+     * call-seq:
+     *     use_requirements -> Array
+     *
+     * Fetch the use requirements. E.g. [ {:flag => 'a', :state => true } ]
+     */
+    VALUE
+    package_dep_spec_use_requirements(VALUE self)
+    {
+        tr1::shared_ptr<const PackageDepSpec> * ptr;
+        Data_Get_Struct(self, tr1::shared_ptr<const PackageDepSpec>, ptr);
+        VALUE result(rb_ary_new());
+        VALUE result_hash;
+        if ((*ptr)->use_requirements_ptr())
+            for (UseRequirements::ConstIterator i((*ptr)->use_requirements_ptr()->begin()),
+                        i_end((*ptr)->use_requirements_ptr()->end()) ; i != i_end; ++i)
+            {
+                result_hash = rb_hash_new();
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("flag")),
+                    rb_str_new2(stringify(i->first).c_str()));
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("state")),
+                        i->second == use_disabled ? Qfalse : Qtrue);
+
+                rb_ary_push(result, result_hash);
+            }
+        return result;
+    }
+
     VALUE
     package_dep_spec_version_requirements_mode(VALUE self)
     {
@@ -340,11 +400,14 @@ namespace
         rb_define_method(c_package_dep_spec, "initialize", RUBY_FUNC_CAST(&package_dep_spec_init), -1);
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(&Common<tr1::shared_ptr<const PackageDepSpec> >::to_s_via_ptr), 0);
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
+        rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
+        rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
         rb_define_method(c_package_dep_spec, "text", RUBY_FUNC_CAST(&package_dep_spec_text), 0);
         rb_define_method(c_package_dep_spec, "slot", RUBY_FUNC_CAST(&package_dep_spec_slot_ptr), 0);
         rb_define_method(c_package_dep_spec, "repository", RUBY_FUNC_CAST(&package_dep_spec_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
+        rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
 
         /*
          * Document-class: Paludis::PlainTextDepSpec

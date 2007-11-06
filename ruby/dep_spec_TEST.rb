@@ -41,11 +41,16 @@ module Paludis
 
     class TestCase_PackageDepSpec < Test::Unit::TestCase
         def pda
-            PackageDepSpec.new('>=foo/bar-1:100::testrepo', PackageDepSpecParseMode::Permissive)
+            PackageDepSpec.new('>=foo/bar-1:100::testrepo[a][-b]', PackageDepSpecParseMode::Permissive)
+        end
+
+        def pdb
+            PackageDepSpec.new('*/bar', PackageDepSpecParseMode::Unspecific)
         end
 
         def test_create
             pda
+            pdb
         end
 
         def test_create_error
@@ -58,23 +63,38 @@ module Paludis
         end
 
         def test_to_s
-            assert_equal ">=foo/bar-1:100::testrepo", pda.to_s
+            assert_equal ">=foo/bar-1:100::testrepo[a][-b]", pda.to_s
+            assert_equal "*/bar", pdb.to_s
         end
 
         def test_text
-            assert_equal ">=foo/bar-1:100::testrepo", pda.text
+            assert_equal ">=foo/bar-1:100::testrepo[a][-b]", pda.text
+            assert_equal "*/bar", pdb.text
         end
 
         def test_slot
             assert_equal "100", pda.slot
+            assert_nil pdb.slot
         end
 
         def test_package
             assert_equal "foo/bar", pda.package
+            assert_nil pdb.package
         end
 
         def test_repository
             assert_equal "testrepo", pda.repository
+            assert_nil pdb.package
+        end
+
+        def test_package_name_part
+            assert_nil pda.package_name_part
+            assert_equal "bar", pdb.package_name_part
+        end
+
+        def test_category_name_part
+            assert_nil pda.category_name_part
+            assert_nil pdb.category_name_part
         end
 
         def test_version_requirements
@@ -87,6 +107,17 @@ module Paludis
         def test_version_requirements_mode
             assert_kind_of Fixnum, pda.version_requirements_mode
             assert_equal VersionRequirementsMode::And, pda.version_requirements_mode
+        end
+
+        def test_use_requirements
+            assert_kind_of Array, pda.use_requirements
+            assert_equal 2, pda.use_requirements.size
+
+            assert_equal 'a', pda.use_requirements[0][:flag]
+            assert_equal true, pda.use_requirements[0][:state]
+
+            assert_equal 'b', pda.use_requirements[1][:flag]
+            assert_equal false, pda.use_requirements[1][:state]
         end
     end
 
