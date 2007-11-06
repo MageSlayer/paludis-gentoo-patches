@@ -33,13 +33,13 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_action</td>
         <td><a href="cplusplus/example__action_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_action.html">Ruby</a></td>
         <td></td>
     </tr>
     <tr>
         <td>example_contents</td>
         <td><a href="cplusplus/example__contents_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_contents.html">Ruby</a></td>
         <td></td>
     </tr>
     <tr>
