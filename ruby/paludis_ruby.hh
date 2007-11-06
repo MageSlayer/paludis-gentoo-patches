@@ -35,6 +35,7 @@
 #include <paludis/contents.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/mask-fwd.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/stringify.hh>
 
 #ifdef ENABLE_RUBY_QA
