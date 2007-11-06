@@ -4,10 +4,10 @@
 require 'Paludis'
 
 print "Built using Paludis ", Paludis::VersionMajor, ".", Paludis::VersionMinor,
-    ".", Paludis::VersionMinor, Paludis::VersionSuffix
+    ".", Paludis::VersionMicro, Paludis::VersionSuffix
 
 if not Paludis::SubversionRevision.empty?
-    print Paludis::SubversionRevision
+    print ' ', Paludis::SubversionRevision
 end
 
 print "\n"
