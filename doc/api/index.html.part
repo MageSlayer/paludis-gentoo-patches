@@ -123,7 +123,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_query</td>
         <td><a href="cplusplus/example__query_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_query.html">Ruby</a></td>
         <td></td>
     </tr>
     <tr>

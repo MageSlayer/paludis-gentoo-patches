@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2007 Richard Brown
  * Copyright (c) 2007 Alexander Færøy
+ * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -259,6 +260,7 @@ namespace
         rb_funcall(c_query, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_query, "initialize", RUBY_FUNC_CAST(&query_init), -1);
         rb_define_method(c_query, "&", RUBY_FUNC_CAST(&query_and), 1);
+        rb_define_method(c_query, "to_s", RUBY_FUNC_CAST(&Common<Query>::to_s), 0);
 
         /*
          * Document-class: Paludis::Query::Matches
