@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh
+# Copyright (c) 2006, 2007 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -67,6 +67,16 @@ module Paludis
         def test_is_scm?
             assert_equal true, VersionSpec.new('scm').is_scm?
             assert_equal false, VersionSpec.new('0.1').is_scm?
+        end
+
+        def test_has_scm_part?
+            assert_equal true, VersionSpec.new('scm').has_scm_part?
+            assert_equal false, VersionSpec.new('0.1').has_scm_part?
+        end
+
+        def test_has_try_part?
+            assert_equal true, VersionSpec.new('1.2-try3').has_try_part?
+            assert_equal false, VersionSpec.new('0.1').has_try_part?
         end
 
         def test_bump

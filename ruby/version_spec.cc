@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -122,6 +122,28 @@ namespace
         return value_to_version_spec(self).is_scm() ? Qtrue : Qfalse;
     }
 
+    /*
+     * call-seq:
+     *     has_scm_part? -> true or false
+     *
+     * Do we have an -scm part?
+     */
+    VALUE version_spec_has_scm_part(VALUE self)
+    {
+        return value_to_version_spec(self).has_scm_part() ? Qtrue : Qfalse;
+    }
+
+    /*
+     * call-seq:
+     *     has_try_part? -> true or false
+     *
+     * Do we have a -try part?
+     */
+    VALUE version_spec_has_try_part(VALUE self)
+    {
+        return value_to_version_spec(self).has_try_part() ? Qtrue : Qfalse;
+    }
+
     void do_register_version_spec()
     {
         /*
@@ -140,6 +162,8 @@ namespace
         rb_define_method(c_version_spec, "revision_only", RUBY_FUNC_CAST(&version_spec_revision_only), 0);
         rb_define_method(c_version_spec, "bump", RUBY_FUNC_CAST(&version_spec_bump), 0);
         rb_define_method(c_version_spec, "is_scm?", RUBY_FUNC_CAST(&version_spec_is_scm), 0);
+        rb_define_method(c_version_spec, "has_try_part?", RUBY_FUNC_CAST(&version_spec_has_try_part), 0);
+        rb_define_method(c_version_spec, "has_scm_part?", RUBY_FUNC_CAST(&version_spec_has_scm_part), 0);
     }
 }
 
