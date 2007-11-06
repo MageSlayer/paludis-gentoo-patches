@@ -46,6 +46,7 @@ IF_RUBY_SOURCES = \
 	environment.cc \
 	find_unused_packages_task.cc \
 	log.cc \
+	metadata_key.cc \
 	name.cc \
 	package_database.cc \
 	package_id.cc \
