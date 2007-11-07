@@ -32,11 +32,16 @@ namespace
 {
     static VALUE c_supports_action_test_base;
     static VALUE c_supports_fetch_action_test;
+    static VALUE c_supports_info_action_test;
+    static VALUE c_supports_config_action_test;
 
     static VALUE c_action;
     static VALUE c_fetch_action;
     static VALUE c_fetch_action_options;
     static VALUE c_fetch_action_failure;
+
+    static VALUE c_info_action;
+    static VALUE c_config_action;
 
     const FetchActionOptions
     value_to_fetch_action_options(VALUE v)
@@ -84,36 +89,40 @@ namespace
     }
 
     VALUE
-    supports_fetch_action_init(int, VALUE *, VALUE self)
-    {
-        return self;
-    }
-
-    VALUE
-    fetch_action_init(int, VALUE *, VALUE self)
-    {
-        return self;
-    }
-
-    VALUE
-    fetch_action_options_init(int, VALUE *, VALUE self)
+    empty_init(int, VALUE *, VALUE self)
     {
         return self;
     }
 
     /*
+     * Document-method: SupportsFetchActionTest.new
+     *
      * call-seq:
      *     SupportsFetchActionTest.new -> SupportsFetchActionTest
+     *
+     * Create new SupportsFetchActionTest object.
      */
-    VALUE
-    supports_fetch_action_test_new(VALUE self)
+    /*
+     * Document-method: SupportsInfoActionTest.new
+     *
+     * call-seq:
+     *     SupportsInfoActionTest.new -> SupportsInfoActionTest
+     *
+     * Create new SupportsInfoActionTest object.
+     */
+    template <typename A_>
+    struct SupportsActionTestNew
     {
-        tr1::shared_ptr<const SupportsActionTestBase> * a(
-                new tr1::shared_ptr<const SupportsActionTestBase>(new SupportsActionTest<FetchAction>));
-        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const SupportsActionTestBase> >::free, a));
-        rb_obj_call_init(tdata, 0, &self);
-        return tdata;
-    }
+        static VALUE
+        supports_action_test_new(VALUE self)
+        {
+            tr1::shared_ptr<const SupportsActionTestBase> * a(
+                    new tr1::shared_ptr<const SupportsActionTestBase>(new SupportsActionTest<A_>));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<const SupportsActionTestBase> >::free, a));
+            rb_obj_call_init(tdata, 0, &self);
+            return tdata;
+        }
+    };
 
     /*
      * call-seq:
@@ -224,12 +233,6 @@ namespace
         tr1::shared_ptr<Action> * p;
         Data_Get_Struct(self, tr1::shared_ptr<Action>, p);
         return fetch_action_options_to_value(tr1::static_pointer_cast<FetchAction>(*p)->options);
-    }
-
-    VALUE
-    fetch_action_failure_init(int, VALUE *, VALUE self)
-    {
-        return self;
     }
 
     /*
@@ -352,6 +355,35 @@ namespace
         }
     };
 
+    /*
+     * Document-method InfoAction.new
+     *
+     * call-seq:
+     *     InfoAction.new -> InfoAction
+     *
+     * Create new InfoAction
+     */
+    /*
+     * Document-method ConfigAction.new
+     *
+     * call-seq:
+     *     ConfigAction.new -> ConfigAction
+     *
+     * Create new ConfigAction
+     */
+    template <typename A_>
+    struct EasyActionNew
+    {
+        static VALUE
+        easy_action_new(VALUE self)
+        {
+            tr1::shared_ptr<Action> * a(new tr1::shared_ptr<Action>(new A_()));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Action> >::free, a));
+            rb_obj_call_init(tdata, 1, &self);
+            return tdata;
+        }
+    };
+
     void do_register_action()
     {
         /*
@@ -368,8 +400,29 @@ namespace
          * Tests whether a Paludis::PackageID supports a Paludis::FetchAction.
          */
         c_supports_fetch_action_test = rb_define_class_under(paludis_module(), "SupportsFetchActionTest", c_supports_action_test_base);
-        rb_define_singleton_method(c_supports_fetch_action_test, "new", RUBY_FUNC_CAST((&supports_fetch_action_test_new)), 0);
-        rb_define_method(c_supports_fetch_action_test, "initialize", RUBY_FUNC_CAST(&supports_fetch_action_init), -1);
+        rb_define_singleton_method(c_supports_fetch_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<FetchAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_fetch_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::SupportsInfoActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::InfoAction.
+         */
+        c_supports_info_action_test = rb_define_class_under(paludis_module(), "SupportsInfoActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_info_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<InfoAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_info_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::SupportsConfigActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::ConfigAction.
+         */
+        c_supports_config_action_test = rb_define_class_under(paludis_module(), "SupportsConfigActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_config_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<ConfigAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_config_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
          * Document-class: Paludis::Action
@@ -386,7 +439,7 @@ namespace
          */
         c_fetch_action = rb_define_class_under(paludis_module(), "FetchAction", c_action);
         rb_define_singleton_method(c_fetch_action, "new", RUBY_FUNC_CAST(&fetch_action_new), 1);
-        rb_define_method(c_fetch_action, "initialize", RUBY_FUNC_CAST(&fetch_action_init), -1);
+        rb_define_method(c_fetch_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_fetch_action, "options", RUBY_FUNC_CAST(&fetch_action_options), 0);
 
         /*
@@ -396,7 +449,7 @@ namespace
          */
         c_fetch_action_options = rb_define_class_under(paludis_module(), "FetchActionOptions", rb_cObject);
         rb_define_singleton_method(c_fetch_action_options, "new", RUBY_FUNC_CAST(&fetch_action_options_new), -1);
-        rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&fetch_action_options_init), -1);
+        rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_fetch_action_options, "fetch_unneeded", RUBY_FUNC_CAST(&fetch_action_options_fetch_unneeded), 0);
         rb_define_method(c_fetch_action_options, "safe_resume", RUBY_FUNC_CAST(&fetch_action_options_safe_resume), 0);
 
@@ -407,7 +460,7 @@ namespace
          */
         c_fetch_action_failure = rb_define_class_under(paludis_module(), "FetchActionFailure", rb_cObject);
         rb_define_singleton_method(c_fetch_action_failure, "new", RUBY_FUNC_CAST(&fetch_action_failure_new), -1);
-        rb_define_method(c_fetch_action_failure, "initialize", RUBY_FUNC_CAST(&fetch_action_failure_init), -1);
+        rb_define_method(c_fetch_action_failure, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_fetch_action_failure, "target_file",
                 RUBY_FUNC_CAST((&FailureStringFetch<&FetchActionFailure::target_file>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "requires_manual_fetching?",
@@ -416,6 +469,26 @@ namespace
                 RUBY_FUNC_CAST((&FailureBoolFetch<&FetchActionFailure::failed_automatic_fetching>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "failed_integrity_checks",
                 RUBY_FUNC_CAST((&FailureStringFetch<&FetchActionFailure::failed_integrity_checks>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::InfoAction
+         *
+         * An action for fetching.
+         */
+        c_info_action = rb_define_class_under(paludis_module(), "InfoAction", c_action);
+        rb_define_singleton_method(c_info_action, "new",
+                RUBY_FUNC_CAST((&EasyActionNew<InfoAction>::easy_action_new)), 0);
+        rb_define_method(c_info_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::ConfigAction
+         *
+         * An action for fetching.
+         */
+        c_config_action = rb_define_class_under(paludis_module(), "ConfigAction", c_action);
+        rb_define_singleton_method(c_config_action, "new",
+                RUBY_FUNC_CAST((&EasyActionNew<ConfigAction>::easy_action_new)), 0);
+        rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
     }
 }
 

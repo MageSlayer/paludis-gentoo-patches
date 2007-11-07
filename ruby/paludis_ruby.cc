@@ -68,6 +68,8 @@ namespace
     static VALUE c_downgrade_not_allowed_error;
     static VALUE c_no_destination_error;
     static VALUE c_fetch_action_error;
+    static VALUE c_info_action_error;
+    static VALUE c_config_action_error;
     static VALUE c_action_error;
 
     static VALUE c_environment;
@@ -182,6 +184,10 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_exc_raise(rb_class_new_instance(2, ex_args, c_fetch_action_error));
 
     }
+    else if (0 != dynamic_cast<const paludis::InfoActionError *>(&ee))
+        rb_raise(c_info_action_error, dynamic_cast<const paludis::InfoActionError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::ConfigActionError *>(&ee))
+        rb_raise(c_config_action_error, dynamic_cast<const paludis::ConfigActionError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ActionError *>(&ee))
         rb_raise(c_action_error, dynamic_cast<const paludis::ActionError *>(&ee)->message().c_str());
 
@@ -357,6 +363,20 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     rb_define_module_function(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
     rb_define_method(c_fetch_action_error, "initialize", RUBY_FUNC_CAST(&fetch_action_error_init), -1);
     rb_define_method(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
+
+    /*
+     * Document-class: Paludis::InfoActionError
+     *
+     * Thrown if a PackageID fails to perform a InfoAction.
+     */
+    c_info_action_error = rb_define_class_under(c_paludis_module, "InfoActionError", c_action_error);
+
+    /*
+     * Document-class: Paludis::ConfigActionError
+     *
+     * Thrown if a PackageID fails to perform a ConfigAction.
+     */
+    c_config_action_error = rb_define_class_under(c_paludis_module, "ConfigActionError", c_action_error);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 

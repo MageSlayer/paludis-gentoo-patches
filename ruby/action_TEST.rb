@@ -36,6 +36,20 @@ module Paludis
         end
     end
 
+    class TestCase_SupportsInfoActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsInfoActionTest, SupportsInfoActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsInfoActionTest.new
+        end
+    end
+
+    class TestCase_SupportsConfigActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsConfigActionTest, SupportsConfigActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsConfigActionTest.new
+        end
+    end
+
     class TestCase_Action < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
@@ -112,6 +126,32 @@ module Paludis
             a = FetchAction.new(FetchActionOptions.new({:safe_resume => false, :fetch_unneeded => true}))
             assert_equal a.options.fetch_unneeded, true
             assert_equal a.options.safe_resume, false
+        end
+    end
+
+    class TestCase_InfoAction < Test::Unit::TestCase
+        def test_create
+            assert_kind_of InfoAction, InfoAction.new
+            assert_kind_of Action, InfoAction.new
+        end
+
+        def test_bad_create
+            assert_raise ArgumentError do
+                InfoAction.new('')
+            end
+        end
+    end
+
+    class TestCase_ConfigAction < Test::Unit::TestCase
+        def test_create
+            assert_kind_of ConfigAction, ConfigAction.new
+            assert_kind_of Action, ConfigAction.new
+        end
+
+        def test_bad_create
+            assert_raise ArgumentError do
+                ConfigAction.new('')
+            end
         end
     end
 end
