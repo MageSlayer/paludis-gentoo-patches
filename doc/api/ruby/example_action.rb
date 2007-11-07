@@ -34,40 +34,40 @@ ids.each do | id |
             :safe_resume => true
         }))
 
-###        begin
+        begin
             id.perform_action(fetch_action)
 
-###        rescue FetchActionError => e
-###            exit_status |= 1
-###            puts "Caught FetchActionError, with the following details:"
-###
-###            e.failures.each do | f |
-###                print "  * File '#{f.target_file}': "
-###                need_comma = false
-###
-###                if f.requires_manual_fetching
-###                    print "requires manual fetching"
-###                    need_comma = true
-###                end
-###
-###                if f.failed_automatic_fetching
-###                    if need_comma
-###                        print ", "
-###                    end
-###                    print "failed automatic fetching"
-###                    need_comma = true
-###                end
-###
-###                if not f.failed_integrity_checks.empty?
-###                    if need_comma
-###                        print ", "
-###                    end
-###                    print "failed integrity checks: #{f.failed_integrity_checks}"
-###                    need_comma = true
-###                end
-###                puts
-###            end
-###        end
+        rescue FetchActionError => e
+            exit_status |= 1
+            puts "Caught FetchActionError, with the following details:"
+
+            e.failures.each do | f |
+                print "  * File '#{f.target_file}': "
+                need_comma = false
+
+                if f.requires_manual_fetching?
+                    print "requires manual fetching"
+                    need_comma = true
+                end
+
+                if f.failed_automatic_fetching?
+                    if need_comma
+                        print ", "
+                    end
+                    print "failed automatic fetching"
+                    need_comma = true
+                end
+
+                if not f.failed_integrity_checks.empty?
+                    if need_comma
+                        print ", "
+                    end
+                    print "failed integrity checks: #{f.failed_integrity_checks}"
+                    need_comma = true
+                end
+                puts
+            end
+        end
 
     end
 

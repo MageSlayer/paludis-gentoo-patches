@@ -52,6 +52,39 @@ module Paludis
         end
     end
 
+    class TestCase_FetchActionFailure < Test::Unit::TestCase
+        def test_create
+            assert_kind_of FetchActionFailure, FetchActionFailure.new('target_file', false, false, 'fic')
+            assert_kind_of FetchActionFailure, FetchActionFailure.new(
+                {
+                :requires_manual_fetching => false, :failed_automatic_fetching => false,
+                :target_file => 'target_file', :failed_integrity_checks => 'fic'
+                }
+            )
+        end
+
+        def test_methods_hash_args
+             failure =  FetchActionFailure.new(
+                {
+                :requires_manual_fetching => false, :failed_automatic_fetching => false,
+                :target_file => 'target_file', :failed_integrity_checks => 'fic'
+                }
+             )
+             assert_equal 'target_file', failure.target_file;
+             assert ! failure.requires_manual_fetching?
+             assert ! failure.failed_automatic_fetching?
+             assert_equal 'fic', failure.failed_integrity_checks;
+        end
+
+        def test_methods_4_args
+             failure = FetchActionFailure.new('target_file', false, false, 'fic')
+             assert_equal 'target_file', failure.target_file;
+             assert ! failure.requires_manual_fetching?
+             assert ! failure.failed_automatic_fetching?
+             assert_equal 'fic', failure.failed_integrity_checks;
+        end
+    end
+
     class TestCase_FetchAction < Test::Unit::TestCase
         def test_create
             assert_kind_of FetchAction, FetchAction.new(FetchActionOptions.new(false, false))

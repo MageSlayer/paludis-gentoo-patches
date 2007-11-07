@@ -67,6 +67,8 @@ namespace
     static VALUE c_use_requirements_not_met_error;
     static VALUE c_downgrade_not_allowed_error;
     static VALUE c_no_destination_error;
+    static VALUE c_fetch_action_error;
+    static VALUE c_action_error;
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
@@ -169,6 +171,19 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_config_file_error, dynamic_cast<const paludis::ConfigFileError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigurationError *>(&ee))
         rb_raise(c_configuration_error, dynamic_cast<const paludis::ConfigurationError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::FetchActionError *>(&ee))
+    {
+        VALUE ex_args[2];
+        ex_args[1] = rb_ary_new();
+        const FetchActionError * e = dynamic_cast<const paludis::FetchActionError *>(&ee);
+        for (Sequence<FetchActionFailure>::ConstIterator f(e->failures()->begin()), f_end(e->failures()->end()) ;
+                f != f_end ; ++f)
+            rb_ary_unshift(ex_args[1], fetch_action_failure_to_value(*f));
+        rb_exc_raise(rb_class_new_instance(2, ex_args, c_fetch_action_error));
+
+    }
+    else if (0 != dynamic_cast<const paludis::ActionError *>(&ee))
+        rb_raise(c_action_error, dynamic_cast<const paludis::ActionError *>(&ee)->message().c_str());
 
     else if (0 != dynamic_cast<const paludis::Exception *>(&ee))
         rb_raise(rb_eRuntimeError, "Caught paludis::Exception: %s (%s)",
@@ -242,6 +257,29 @@ has_query_property_error_query(VALUE self)
     return rb_attr_get(self, rb_intern("query"));
 }
 
+static VALUE
+fetch_action_error_init(int argc, VALUE* argv, VALUE self)
+{
+    VALUE failures;
+
+    failures = (argc > 1) ? argv[--argc] : Qnil;
+    rb_call_super(argc, argv);
+    rb_iv_set(self, "failures", failures);
+    return self;
+}
+
+/*
+ * call-seq:
+ *     failures -> Array
+ *
+ * Our failures
+ */
+VALUE
+fetch_action_error_failures(VALUE self)
+{
+    return rb_attr_get(self, rb_intern("failures"));
+}
+
 void PALUDIS_VISIBLE paludis::ruby::init()
 {
     /*
@@ -302,6 +340,23 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
     c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
     c_no_destination_error = rb_define_class_under(c_paludis_module, "NoDestinationError", c_dep_list_error);
+
+    /*
+     * Document-class: Paludis::ActionError
+     *
+     * Base class for Action related errors
+     */
+    c_action_error = rb_define_class_under(c_paludis_module, "ActionError", rb_eRuntimeError);
+
+    /*
+     * Document-class: Paludis::FetchActionError
+     *
+     * Thrown if a PackageID fails to perform a FetchAction.
+     */
+    c_fetch_action_error = rb_define_class_under(c_paludis_module, "FetchActionError", c_action_error);
+    rb_define_module_function(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
+    rb_define_method(c_fetch_action_error, "initialize", RUBY_FUNC_CAST(&fetch_action_error_init), -1);
+    rb_define_method(c_fetch_action_error, "failures", RUBY_FUNC_CAST(&fetch_action_error_failures), 0);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 

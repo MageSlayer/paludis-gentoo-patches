@@ -88,6 +88,7 @@ namespace paludis
         VALUE contents_to_value(tr1::shared_ptr<const Contents>);
         VALUE repository_mask_info_to_value(tr1::shared_ptr<const RepositoryMaskInfo>);
         VALUE metadata_key_to_value(tr1::shared_ptr<const MetadataKey> m);
+        VALUE fetch_action_failure_to_value(const FetchActionFailure &);
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
