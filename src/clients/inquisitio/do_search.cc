@@ -33,6 +33,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <list>

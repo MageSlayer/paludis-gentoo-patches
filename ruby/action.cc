@@ -20,6 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/action.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <ruby.h>
 
 using namespace paludis;
