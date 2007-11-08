@@ -17,6 +17,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/action_TEST_dir/home";
+
 require 'test/unit'
 require 'Paludis'
 
@@ -63,6 +65,49 @@ module Paludis
             assert_kind_of FetchActionOptions, FetchActionOptions.new(false, false)
             assert_kind_of FetchActionOptions, FetchActionOptions.new(
                 {:safe_resume => false, :fetch_unneeded => false})
+        end
+    end
+
+    class TestCase_InstallActionOptions < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def hash_args
+            InstallActionOptions.new(
+                {:no_config_protect => true, :debug_build => InstallActionDebugOption::Internal,
+                    :checks => InstallActionChecksOption::Always, :destination => destination}
+            )
+        end
+
+        def long_args
+                InstallActionOptions.new(false, InstallActionDebugOption::Split,
+                                        InstallActionChecksOption::Default, destination)
+        end
+
+        def destination
+            @destination or @destination = FakeRepository.new(env, 'fake');
+        end
+
+        def test_create
+            assert_kind_of InstallActionOptions, long_args
+            assert_kind_of InstallActionOptions, hash_args
+        end
+
+        def test_methods_hash_args
+            opts = hash_args
+            assert opts.no_config_protect?
+            assert_equal InstallActionDebugOption::Internal, opts.debug_build
+            assert_equal InstallActionChecksOption::Always, opts.checks
+            assert_equal destination.name, opts.destination.name
+        end
+
+        def test_methods_long_args
+            opts = long_args
+            assert !opts.no_config_protect?
+            assert_equal InstallActionDebugOption::Split, opts.debug_build
+            assert_equal InstallActionChecksOption::Default, opts.checks
+            assert_equal destination.name, opts.destination.name
         end
     end
 
@@ -120,12 +165,12 @@ module Paludis
 
         def test_options
             a = FetchAction.new(FetchActionOptions.new(false, true))
-            assert_equal a.options.fetch_unneeded, false
-            assert_equal a.options.safe_resume, true
+            assert !a.options.fetch_unneeded?
+            assert a.options.safe_resume?
 
             a = FetchAction.new(FetchActionOptions.new({:safe_resume => false, :fetch_unneeded => true}))
-            assert_equal a.options.fetch_unneeded, true
-            assert_equal a.options.safe_resume, false
+            assert a.options.fetch_unneeded?
+            assert !a.options.safe_resume?
         end
     end
 

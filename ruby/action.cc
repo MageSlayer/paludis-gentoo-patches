@@ -34,6 +34,7 @@ namespace
     static VALUE c_supports_fetch_action_test;
     static VALUE c_supports_info_action_test;
     static VALUE c_supports_config_action_test;
+    static VALUE c_supports_install_action_test;
 
     static VALUE c_action;
     static VALUE c_fetch_action;
@@ -42,6 +43,25 @@ namespace
 
     static VALUE c_info_action;
     static VALUE c_config_action;
+
+    static VALUE c_install_action_options;
+    static VALUE c_install_action_debug_option;
+    static VALUE c_install_action_checks_option;
+    static VALUE c_install_action;
+
+    const bool
+    value_to_bool(VALUE v)
+    {
+        if (Qfalse == v || Qnil == v)
+            return false;
+        return true;
+    }
+
+    VALUE
+    bool_to_value(bool b)
+    {
+        return b ? Qtrue : Qfalse;
+    }
 
     const FetchActionOptions
     value_to_fetch_action_options(VALUE v)
@@ -65,6 +85,36 @@ namespace
         try
         {
             return Data_Wrap_Struct(c_fetch_action_options, 0, &Common<FetchActionOptions>::free, m_ptr);
+        }
+        catch (const std::exception & e)
+        {
+            delete m_ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    const InstallActionOptions
+    value_to_install_action_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_install_action_options))
+        {
+            InstallActionOptions * v_ptr;
+            Data_Get_Struct(v, InstallActionOptions, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into InstallActionOptions", rb_obj_classname(v));
+        }
+    }
+
+    VALUE
+    install_action_options_to_value(const InstallActionOptions & m)
+    {
+        InstallActionOptions * m_ptr(new InstallActionOptions(m));
+        try
+        {
+            return Data_Wrap_Struct(c_install_action_options, 0, &Common<InstallActionOptions>::free, m_ptr);
         }
         catch (const std::exception & e)
         {
@@ -179,34 +229,6 @@ namespace
     }
 
     /*
-     * Document-method: fetch_unneeded
-     *
-     * call-seq:
-     *     fetch_unneeded -> true or false
-     */
-    VALUE
-    fetch_action_options_fetch_unneeded(VALUE self)
-    {
-        FetchActionOptions * p;
-        Data_Get_Struct(self, FetchActionOptions, p);
-        return p->fetch_unneeded ? Qtrue : Qfalse;
-    }
-
-    /*
-     * Document-method: safe_resume
-     *
-     * call-seq:
-     *     safe_resume -> true or false
-     */
-    VALUE
-    fetch_action_options_safe_resume(VALUE self)
-    {
-        FetchActionOptions * p;
-        Data_Get_Struct(self, FetchActionOptions, p);
-        return p->safe_resume ? Qtrue : Qfalse;
-    }
-
-    /*
      * call-seq:
      *     FetchAction.new -> FetchAction
      */
@@ -267,17 +289,17 @@ namespace
                 VALUE v0 = (rb_hash_aref(argv[0], ID2SYM(rb_intern("target_file"))));
                 v_target_file = StringValuePtr(v0);
                 v_requires_manual_fetching =
-                    rb_hash_aref(argv[0], ID2SYM(rb_intern("requires_manual_fetching"))) != Qfalse;
+                    value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("requires_manual_fetching"))));
                 v_failed_automatic_fetching =
-                    rb_hash_aref(argv[0], ID2SYM(rb_intern("failed_automatic_fetching"))) != Qfalse;
+                    value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("failed_automatic_fetching"))));
                 VALUE v1 = rb_hash_aref(argv[0], ID2SYM(rb_intern("failed_integrity_checks")));
                 v_failed_integrity_checks = StringValuePtr(v1);
             }
             else if (4 == argc)
             {
                 v_target_file                       = StringValuePtr(argv[0]);
-                v_requires_manual_fetching          = argv[1] != Qfalse;
-                v_failed_automatic_fetching         = argv[2] != Qfalse;
+                v_requires_manual_fetching          = value_to_bool(argv[1]);
+                v_failed_automatic_fetching         = value_to_bool(argv[2]);
                 v_failed_integrity_checks           = StringValuePtr(argv[3]);
             }
             else
@@ -330,28 +352,50 @@ namespace
     };
 
     /*
+     * Document-method: fetch_unneeded?
+     *
+     * call-seq:
+     *     fetch_unneeded -> true or false
+     */
+    /*
+     * Document-method: safe_resume?
+     *
+     * call-seq:
+     *     safe_resume -> true or false
+     */
+    /*
      * Document-method: requires_manual_fetching?
      *
-     *     call-seq: requires_manual_fetching? -> true or false
+     * call-seq:
+     *     requires_manual_fetching? -> true or false
      *
      * Do we require manual fetching?
      */
     /*
      * Document-method: failed_automatic_fetching?
      *
-     *     call-seq: failed_automatic_fetching? -> true or false
+     * call-seq:
+     *     failed_automatic_fetching? -> true or false
      *
      * Did we fail automatic fetching?
      */
-    template <bool FetchActionFailure::* m_>
-    struct FailureBoolFetch
+    /*
+     * Document-method: no_config_protect?
+     *
+     * call-seq:
+     *     no_config_protect? -> true or false
+     *
+     * Do we ignore config protection.
+     */
+    template <typename T_, bool T_::* m_>
+    struct BoolFetch
     {
         static VALUE
         fetch(VALUE self)
         {
-            FetchActionFailure * ptr;
-            Data_Get_Struct(self, FetchActionFailure, ptr);
-            return (((*ptr).*m_)) != Qfalse;
+            T_ * p;
+            Data_Get_Struct(self, T_, p);
+            return bool_to_value((*p).*m_);
         }
     };
 
@@ -383,6 +427,149 @@ namespace
             return tdata;
         }
     };
+
+    /*
+     * call-seq:
+     *     InstallActionOptions.new(fetch_unneeded, safe_resume) -> InstallActionOptions
+     *     InstallActionOptions.new(Hash) -> InstallActionOptions
+     *
+     * InstallActionOptions.new can either be called with all parameters in order, or with one hash
+     * parameter, where the hash keys are symbols with the names above.
+     */
+    VALUE
+    install_action_options_new(int argc, VALUE *argv, VALUE self)
+    {
+        InstallActionOptions * ptr(0);
+        try
+        {
+            bool v_no_config_protect;
+            InstallActionDebugOption v_debug_build;
+            InstallActionChecksOption v_checks;
+            tr1::shared_ptr<Repository> v_destination;
+
+            if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
+            {
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: no_config_protect");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("debug_build"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: debug_build");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("checks"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: checks");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: destination");
+                v_no_config_protect =
+                    value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))));
+                v_debug_build = static_cast<InstallActionDebugOption>(NUM2INT(
+                            rb_hash_aref(argv[0], ID2SYM(rb_intern("debug_build")))
+                ));
+                v_checks = static_cast<InstallActionChecksOption>(NUM2INT(
+                            rb_hash_aref(argv[0], ID2SYM(rb_intern("checks")))
+                ));
+                v_destination = value_to_repository(rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))));
+            }
+            else if (4 == argc)
+            {
+                v_no_config_protect = value_to_bool(argv[0]);
+                v_debug_build = static_cast<InstallActionDebugOption>(NUM2INT(argv[1]));
+                v_checks = static_cast<InstallActionChecksOption>(NUM2INT(argv[2]));
+                v_destination = value_to_repository(argv[3]);
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "InstallActionOptions expects one or four arguments, but got %d",argc);
+            }
+
+            ptr = new InstallActionOptions(InstallActionOptions::create()
+                    .no_config_protect(v_no_config_protect)
+                    .debug_build(v_debug_build)
+                    .checks(v_checks)
+                    .destination(v_destination)
+                    );
+
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<InstallActionOptions>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * Document-method: debug_build
+     *
+     * call-seq:
+     *     debug_build -> Fixnum
+     *
+     * Our InstallActionDebugOption
+     */
+    /*
+     * Document-method: checks
+     *
+     * call-seq:
+     *     checks -> FixNum
+     *
+     * Our InstallActionChecksOption
+     *
+     */
+    template <typename T_, T_ InstallActionOptions::* m_>
+    struct IAOMember
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            InstallActionOptions * p;
+            Data_Get_Struct(self, InstallActionOptions, p);
+            return INT2FIX((*p).*m_);
+        }
+    };
+
+    /*
+     * Document-method: destination
+     *
+     * call-seq:
+     *     destination -> Repository
+     *
+     * Our destination
+     */
+    VALUE
+    install_action_options_destination(VALUE self)
+    {
+        InstallActionOptions * p;
+        Data_Get_Struct(self, InstallActionOptions, p);
+        return repository_to_value(p->destination);
+    }
+
+    /*
+     * call-seq:
+     *     InstallAction.new -> InstallAction
+     */
+    VALUE
+    install_action_new(VALUE self, VALUE opts)
+    {
+        const InstallActionOptions opts_ptr(value_to_install_action_options(opts));
+        tr1::shared_ptr<Action> * a(
+                new tr1::shared_ptr<Action>(new InstallAction(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Action> >::free, a));
+        rb_obj_call_init(tdata, 1, &self);
+        return tdata;
+    }
+
+    /*
+     * call-seq:
+     *     options -> InstallActionOptions
+     *
+     * Our InstallActionOptions.
+     */
+    VALUE
+    install_action_options(VALUE self)
+    {
+        tr1::shared_ptr<Action> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<Action>, p);
+        return install_action_options_to_value(tr1::static_pointer_cast<InstallAction>(*p)->options);
+    }
 
     void do_register_action()
     {
@@ -425,6 +612,16 @@ namespace
         rb_define_method(c_supports_config_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
+         * Document-class: Paludis::SupportsInstallActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::InstallAction.
+         */
+        c_supports_install_action_test = rb_define_class_under(paludis_module(), "SupportsInstallActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_install_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<InstallAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_install_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
          * Document-class: Paludis::Action
          *
          * Base class for actions, used by Paludis::PackageID#perform_action.
@@ -450,8 +647,10 @@ namespace
         c_fetch_action_options = rb_define_class_under(paludis_module(), "FetchActionOptions", rb_cObject);
         rb_define_singleton_method(c_fetch_action_options, "new", RUBY_FUNC_CAST(&fetch_action_options_new), -1);
         rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_fetch_action_options, "fetch_unneeded", RUBY_FUNC_CAST(&fetch_action_options_fetch_unneeded), 0);
-        rb_define_method(c_fetch_action_options, "safe_resume", RUBY_FUNC_CAST(&fetch_action_options_safe_resume), 0);
+        rb_define_method(c_fetch_action_options, "fetch_unneeded?",
+                RUBY_FUNC_CAST((&BoolFetch<FetchActionOptions, &FetchActionOptions::fetch_unneeded>::fetch)), 0);
+        rb_define_method(c_fetch_action_options, "safe_resume?",
+                RUBY_FUNC_CAST((&BoolFetch<FetchActionOptions, &FetchActionOptions::safe_resume>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FetchActionFailure
@@ -464,9 +663,9 @@ namespace
         rb_define_method(c_fetch_action_failure, "target_file",
                 RUBY_FUNC_CAST((&FailureStringFetch<&FetchActionFailure::target_file>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "requires_manual_fetching?",
-                RUBY_FUNC_CAST((&FailureBoolFetch<&FetchActionFailure::requires_manual_fetching>::fetch)), 0);
+                RUBY_FUNC_CAST((&BoolFetch<FetchActionFailure, &FetchActionFailure::requires_manual_fetching>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "failed_automatic_fetching?",
-                RUBY_FUNC_CAST((&FailureBoolFetch<&FetchActionFailure::failed_automatic_fetching>::fetch)), 0);
+                RUBY_FUNC_CAST((&BoolFetch<FetchActionFailure, &FetchActionFailure::failed_automatic_fetching>::fetch)), 0);
         rb_define_method(c_fetch_action_failure, "failed_integrity_checks",
                 RUBY_FUNC_CAST((&FailureStringFetch<&FetchActionFailure::failed_integrity_checks>::fetch)), 0);
 
@@ -489,6 +688,60 @@ namespace
         rb_define_singleton_method(c_config_action, "new",
                 RUBY_FUNC_CAST((&EasyActionNew<ConfigAction>::easy_action_new)), 0);
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-module: Paludis::InstallActionDebugOption
+         *
+         * Debug build mode for an InstallAction.
+         *
+         * May be ignored by some repositories, and by packages where there isn't a sensible concept of debugging.
+         *
+         */
+        c_install_action_debug_option = rb_define_module_under(paludis_module(), "InstallActionDebugOption");
+        for (InstallActionDebugOption l(static_cast<InstallActionDebugOption>(0)), l_end(last_iado) ; l != l_end ;
+                l = static_cast<InstallActionDebugOption>(static_cast<int>(l) + 1))
+            rb_define_const(c_install_action_debug_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/action-se.hh, InstallActionDebugOption, c_install_action_debug_option>
+
+        /*
+         * Document-module: Paludis::InstallActionChecksOption
+         *
+         * Whether to run post-build checks (for example, 'make check' or 'src_test'), if they are available.
+         *
+         */
+        c_install_action_checks_option = rb_define_module_under(paludis_module(), "InstallActionChecksOption");
+        for (InstallActionChecksOption l(static_cast<InstallActionChecksOption>(0)), l_end(last_iaco) ; l != l_end ;
+                l = static_cast<InstallActionChecksOption>(static_cast<int>(l) + 1))
+            rb_define_const(c_install_action_checks_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/action-se.hh, InstallActionChecksOption, c_install_action_checks_option>
+
+        /*
+         * Document-class: Paludis::InstallActionOptions
+         *
+         * Options for Paludis::InstallAction.
+         */
+        c_install_action_options = rb_define_class_under(paludis_module(), "InstallActionOptions", rb_cObject);
+        rb_define_singleton_method(c_install_action_options, "new", RUBY_FUNC_CAST(&install_action_options_new), -1);
+        rb_define_method(c_install_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_install_action_options, "no_config_protect?",
+                RUBY_FUNC_CAST((&BoolFetch<InstallActionOptions, &InstallActionOptions::no_config_protect>::fetch)), 0);
+        rb_define_method(c_install_action_options, "debug_build",
+                RUBY_FUNC_CAST((&IAOMember<InstallActionDebugOption, &InstallActionOptions::debug_build>::fetch)), 0);
+        rb_define_method(c_install_action_options, "checks",
+                RUBY_FUNC_CAST((&IAOMember<InstallActionChecksOption, &InstallActionOptions::checks>::fetch)), 0);
+        rb_define_method(c_install_action_options, "destination", RUBY_FUNC_CAST(&install_action_options_destination), 0);
+
+        /*
+         * Document-class: Paludis::InstallAction
+         *
+         * An InstallAction is used by InstallTask to perform a build / install on a PackageID.
+         */
+        c_install_action = rb_define_class_under(paludis_module(), "InstallAction", c_action);
+        rb_define_singleton_method(c_install_action, "new", RUBY_FUNC_CAST(&install_action_new), 1);
+        rb_define_method(c_install_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_install_action, "options", RUBY_FUNC_CAST(&install_action_options), 0);
     }
 }
 

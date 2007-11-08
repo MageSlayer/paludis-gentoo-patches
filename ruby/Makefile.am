@@ -67,7 +67,8 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
-	repository_TEST_setup.sh repository_TEST_cleanup.sh
+	repository_TEST_setup.sh repository_TEST_cleanup.sh \
+	action_TEST_setup.sh action_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	TEST_OUTPUT_WRAPPER="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/outputwrapper`" \
