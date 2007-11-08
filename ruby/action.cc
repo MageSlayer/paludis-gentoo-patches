@@ -160,6 +160,14 @@ namespace
      *
      * Create new SupportsInfoActionTest object.
      */
+    /*
+     * Document-method: SupportsInstallActionTest.new
+     *
+     * call-seq:
+     *     SupportsInstallActionTest.new -> SupportsInstallActionTest
+     *
+     * Create new SupportsInstallActionTest object.
+     */
     template <typename A_>
     struct SupportsActionTestNew
     {
