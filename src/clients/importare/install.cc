@@ -98,6 +98,21 @@ namespace
                 return CommandLine::get_instance()->install_args.want_use_summary();
             }
 
+            virtual bool want_compact() const
+            {
+                return CommandLine::get_instance()->install_args.want_compact();
+            }
+
+            virtual bool want_new_descriptions() const
+            {
+                return CommandLine::get_instance()->install_args.want_new_descriptions();
+            }
+
+            virtual bool want_existing_descriptions() const
+            {
+                return CommandLine::get_instance()->install_args.want_existing_descriptions();
+            }
+
             virtual std::string make_resume_command(const PackageIDSequence &) const
             {
                 return "";

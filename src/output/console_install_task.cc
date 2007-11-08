@@ -360,7 +360,6 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     display_merge_list_entry_start(d, m);
     display_merge_list_entry_package_name(d, m);
-    display_merge_list_entry_version(d, m);
     display_merge_list_entry_repository(d, m);
 
     if (d.package_id->virtual_for_key())
@@ -369,8 +368,12 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_slot(d, m);
 
     display_merge_list_entry_status_and_update_counts(d, existing_repo, existing_slot_repo, m);
+    if (! want_compact())
+        display_merge_list_entry_tags(d, m);
+    display_merge_list_entry_description(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
-    display_merge_list_entry_tags(d, m);
+    if (want_compact())
+        display_merge_list_entry_tags(d, m);
     display_merge_list_entry_end(d, m);
 
     if (d.kind == dlk_masked)
@@ -914,14 +917,6 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const Disp
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_version(const DepListEntry & d, const DisplayMode)
-{
-    if ((VersionSpec("0") != d.package_id->version()) ||
-            CategoryNamePart("virtual") != d.package_id->name().category)
-        output_no_endl("-" + stringify(d.package_id->version()));
-}
-
-void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode)
 {
     if (environment()->package_database()->favourite_repository() != d.package_id->repository()->name())
@@ -931,19 +926,22 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
 void
 ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const DisplayMode m)
 {
+    if (d.package_id->slot() == SlotName("0"))
+        return;
+
     switch (m)
     {
         case normal_entry:
         case suggested_entry:
-            output_no_endl(render_as_slot_name(" {:" + stringify(d.package_id->slot()) + "}"));
+            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id->slot())));
             break;
 
         case unimportant_entry:
-            output_no_endl(render_as_unimportant(" {:" + stringify(d.package_id->slot()) + "}"));
+            output_no_endl(render_as_unimportant(" :" + stringify(d.package_id->slot())));
             break;
 
         case error_entry:
-            output_no_endl(render_as_slot_name(" {:" + stringify(d.package_id->slot()) + "}"));
+            output_no_endl(render_as_slot_name(" :" + stringify(d.package_id->slot())));
             break;
     }
 }
@@ -954,27 +952,26 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
         tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
         const DisplayMode m)
 {
-    bool need_comma(false);
     switch (m)
     {
         case unimportant_entry:
             if (d.kind == dlk_provided)
-                output_no_endl(render_as_unimportant(" [provided]"));
+                output_no_endl(render_as_unimportant(" [provided " +
+                            stringify(d.package_id->canonical_form(idcf_version)) + "]"));
             else
-                output_no_endl(render_as_unimportant(" [-]"));
+                output_no_endl(render_as_unimportant(" [- " +
+                            stringify(d.package_id->canonical_form(idcf_version)) + "]"));
             break;
 
         case suggested_entry:
-            output_no_endl(render_as_update_mode(" [suggestion]"));
+            output_no_endl(render_as_update_mode(" [suggestion " +
+                        stringify(d.package_id->canonical_form(idcf_version)) + "]"));
             set_count<suggested_count>(count<suggested_count>() + 1);
             break;
 
         case normal_entry:
             {
                 output_no_endl(render_as_update_mode(" ["));
-
-                if (need_comma)
-                    output_no_endl(render_as_update_mode(", "));
 
                 std::string destination_str;
                 tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
@@ -983,33 +980,36 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 
                 if (existing_repo->empty())
                 {
-                    output_no_endl(render_as_update_mode("N" + destination_str));
+                    output_no_endl(render_as_update_mode("N " + stringify(d.package_id->canonical_form(idcf_version) + destination_str)));
                     set_count<new_count>(count<new_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
                 else if (existing_slot_repo->empty())
                 {
-                    output_no_endl(render_as_update_mode("S" + destination_str));
+                    output_no_endl(render_as_update_mode("S " + d.package_id->canonical_form(idcf_version) + destination_str));
                     set_count<new_slot_count>(count<new_slot_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
                 else if ((*existing_slot_repo->last())->version() < d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("U " +
-                                stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + destination_str));
+                            stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + " -> " +
+                            stringify(d.package_id->canonical_form(idcf_version))));
                     set_count<upgrade_count>(count<upgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
                 else if ((*existing_slot_repo->last())->version() > d.package_id->version())
                 {
                     output_no_endl(render_as_update_mode("D " +
-                                stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + destination_str));
+                            stringify((*existing_slot_repo->last())->canonical_form(idcf_version)) + " -> " +
+                            stringify(d.package_id->canonical_form(idcf_version))));
                     set_count<downgrade_count>(count<downgrade_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
                 else
                 {
-                    output_no_endl(render_as_update_mode("R" + destination_str));
+                    output_no_endl(render_as_update_mode("R " + stringify(d.package_id->canonical_form(idcf_version)) +
+                                destination_str));
                     set_count<rebuild_count>(count<rebuild_count>() + 1);
                     set_count<max_count>(count<max_count>() + 1);
                 }
@@ -1044,6 +1044,45 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 
                 throw InternalError(PALUDIS_HERE, "Bad d.kind");
             } while (false);
+            break;
+    }
+}
+
+void
+ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
+        tr1::shared_ptr<const PackageIDSequence> existing_slot_repo,
+        tr1::shared_ptr<const PackageIDSequence>,
+        const DisplayMode m)
+{
+    if ((! d.package_id->short_description_key()) || d.package_id->short_description_key()->value().empty())
+        return;
+
+    if (existing_slot_repo->empty())
+    {
+        if (! want_new_descriptions())
+            return;
+    }
+    else
+    {
+        if (! want_existing_descriptions())
+            return;
+    }
+
+    switch (m)
+    {
+        case unimportant_entry:
+        case error_entry:
+            break;
+
+        case suggested_entry:
+        case normal_entry:
+            if (want_compact())
+                output_no_endl(" \"" + d.package_id->short_description_key()->value() + "\"");
+            else
+            {
+                output_endl();
+                output_no_endl("    \"" + d.package_id->short_description_key()->value() + "\"");
+            }
             break;
     }
 }
@@ -1090,7 +1129,16 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     if (normal_entry != m && suggested_entry != m)
         return;
 
-    output_no_endl(" ");
+    if ((! d.package_id->iuse_key()) || d.package_id->iuse_key()->value()->empty())
+        return;
+
+    if (want_compact())
+        output_no_endl(" ");
+    else
+    {
+        output_endl();
+        output_no_endl("    ");
+    }
 
     tr1::shared_ptr<const PackageID> old_id;
     if (! existing_slot_repo->empty())
@@ -1099,17 +1147,10 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         old_id = *existing_repo->last();
 
     ColourFormatter formatter(old_id ? false : true);
-    if (d.package_id->iuse_key())
-    {
-        if (old_id)
-        {
-            output_stream() << d.package_id->iuse_key()->pretty_print_flat_with_comparison(environment(), old_id, formatter);
-        }
-        else
-        {
-            output_stream() << d.package_id->iuse_key()->pretty_print_flat(formatter);
-        }
-    }
+    if (old_id)
+        output_stream() << d.package_id->iuse_key()->pretty_print_flat_with_comparison(environment(), old_id, formatter);
+    else
+        output_stream() << d.package_id->iuse_key()->pretty_print_flat(formatter);
 
     _add_descriptions(formatter.seen_new_use_flag_names(), d.package_id, uds_new);
     _add_descriptions(formatter.seen_changed_use_flag_names(), d.package_id, uds_changed);
@@ -1125,6 +1166,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
         return;
 
     std::string tag_titles;
+    std::stringstream s;
 
     for (Set<DepTagEntry>::ConstIterator
             tag(d.tags->begin()),
@@ -1147,18 +1189,20 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
         tag_titles.erase(tag_titles.length() - 2);
 
         if (! tag_titles.empty())
+        {
             switch (m)
             {
                 case normal_entry:
                 case suggested_entry:
                 case error_entry:
-                    output_no_endl(" " + render_as_tag("<" + tag_titles + ">"));
+                    s << render_as_tag("<" + tag_titles + ">") << " ";
                     break;
 
                 case unimportant_entry:
-                    output_no_endl(" " + render_as_unimportant("<" + tag_titles + ">"));
+                    s << render_as_unimportant("<" + tag_titles + ">") << " ";
                     break;
             }
+        }
     }
 
     if (! want_install_reasons())
@@ -1214,18 +1258,38 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             deps.erase(deps.length() - 2);
 
         if (! deps.empty())
+        {
             switch (m)
             {
                 case normal_entry:
                 case suggested_entry:
                 case error_entry:
-                    output_no_endl(" " + render_as_tag("<" + deps + ">"));
+                    s << render_as_tag("Reasons: " + deps) << " ";
                     break;
 
                 case unimportant_entry:
-                    output_no_endl(" " + render_as_unimportant("<" + deps + ">"));
+                    s << render_as_unimportant("Reasons: " + deps) << " ";
                     break;
             }
+        }
+    }
+
+    if (! s.str().empty())
+    {
+        std::string t(s.str());
+        t.erase(t.length() - 1);
+        if (want_compact())
+            output_no_endl(" " + t);
+        else
+        {
+            if (std::string::npos != t.find_first_of(" :"))
+            {
+                output_endl();
+                output_no_endl("    " + t);
+            }
+            else
+                output_no_endl(" " + t);
+        }
     }
 }
 

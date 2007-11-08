@@ -86,6 +86,21 @@ namespace
                 return false;
             }
 
+            virtual bool want_new_descriptions() const
+            {
+                return false;
+            }
+
+            virtual bool want_existing_descriptions() const
+            {
+                return false;
+            }
+
+            virtual bool want_compact() const
+            {
+                return false;
+            }
+
             virtual std::string make_resume_command(const PackageIDSequence &) const
             {
                 return "";

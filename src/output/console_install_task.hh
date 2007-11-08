@@ -214,11 +214,13 @@ namespace paludis
 
             virtual void display_merge_list_entry_start(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_package_name(const DepListEntry &, const DisplayMode);
-            virtual void display_merge_list_entry_version(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_repository(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_for(const PackageID &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
+                    tr1::shared_ptr<const PackageIDSequence>,
+                    tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
+            virtual void display_merge_list_entry_description(const DepListEntry &,
                     tr1::shared_ptr<const PackageIDSequence>,
                     tr1::shared_ptr<const PackageIDSequence>, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
@@ -289,6 +291,11 @@ namespace paludis
             virtual bool want_unchanged_use_flags() const = 0;
             virtual bool want_changed_use_flags() const = 0;
             virtual bool want_new_use_flags() const = 0;
+
+            virtual bool want_new_descriptions() const = 0;
+            virtual bool want_existing_descriptions() const = 0;
+
+            virtual bool want_compact() const = 0;
 
             ///\}
 

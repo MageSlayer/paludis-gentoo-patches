@@ -10,6 +10,8 @@ trunk/:
 
     * inquisitio --all-versions, --not.
 
+    * paludis, reconcilio, importare --compact, --show-package-descriptions.
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
