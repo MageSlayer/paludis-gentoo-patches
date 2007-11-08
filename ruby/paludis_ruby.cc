@@ -71,6 +71,7 @@ namespace
     static VALUE c_info_action_error;
     static VALUE c_config_action_error;
     static VALUE c_install_action_error;
+    static VALUE c_uninstall_action_error;
     static VALUE c_action_error;
 
     static VALUE c_environment;
@@ -191,6 +192,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_config_action_error, dynamic_cast<const paludis::ConfigActionError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::InstallActionError *>(&ee))
         rb_raise(c_install_action_error, dynamic_cast<const paludis::InstallActionError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::UninstallActionError *>(&ee))
+        rb_raise(c_uninstall_action_error, dynamic_cast<const paludis::UninstallActionError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ActionError *>(&ee))
         rb_raise(c_action_error, dynamic_cast<const paludis::ActionError *>(&ee)->message().c_str());
 
@@ -387,6 +390,13 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      * Thrown if a PackageID fails to perform a InstallAction.
      */
     c_install_action_error = rb_define_class_under(c_paludis_module, "InstallActionError", c_action_error);
+
+    /*
+     * Document-class: Paludis::UninstallActionError
+     *
+     * Thrown if a PackageID fails to perform a InstallAction.
+     */
+    c_uninstall_action_error = rb_define_class_under(c_paludis_module, "UninstallActionError", c_action_error);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 

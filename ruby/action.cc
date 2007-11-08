@@ -35,6 +35,7 @@ namespace
     static VALUE c_supports_info_action_test;
     static VALUE c_supports_config_action_test;
     static VALUE c_supports_install_action_test;
+    static VALUE c_supports_uninstall_action_test;
 
     static VALUE c_action;
     static VALUE c_fetch_action;
@@ -48,6 +49,9 @@ namespace
     static VALUE c_install_action_debug_option;
     static VALUE c_install_action_checks_option;
     static VALUE c_install_action;
+
+    static VALUE c_uninstall_action_options;
+    static VALUE c_uninstall_action;
 
     const bool
     value_to_bool(VALUE v)
@@ -123,6 +127,36 @@ namespace
         }
     }
 
+    const UninstallActionOptions
+    value_to_uninstall_action_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_uninstall_action_options))
+        {
+            UninstallActionOptions * v_ptr;
+            Data_Get_Struct(v, UninstallActionOptions, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into UninstallActionOptions", rb_obj_classname(v));
+        }
+    }
+
+    VALUE
+    uninstall_action_options_to_value(const UninstallActionOptions & m)
+    {
+        UninstallActionOptions * m_ptr(new UninstallActionOptions(m));
+        try
+        {
+            return Data_Wrap_Struct(c_uninstall_action_options, 0, &Common<UninstallActionOptions>::free, m_ptr);
+        }
+        catch (const std::exception & e)
+        {
+            delete m_ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
     const FetchActionFailure
     value_to_fetch_action_failure(VALUE v)
     {
@@ -161,12 +195,28 @@ namespace
      * Create new SupportsInfoActionTest object.
      */
     /*
+     * Document-method: SupportsConfigActionTest.new
+     *
+     * call-seq:
+     *     SupportsConfigActionTest.new -> SupportsInfoActionTest
+     *
+     * Create new SupportsConfigActionTest object.
+     */
+    /*
      * Document-method: SupportsInstallActionTest.new
      *
      * call-seq:
      *     SupportsInstallActionTest.new -> SupportsInstallActionTest
      *
      * Create new SupportsInstallActionTest object.
+     */
+    /*
+     * Document-method: SupportsUninstallActionTest.new
+     *
+     * call-seq:
+     *     SupportsUninstallActionTest.new -> SupportsUninstallActionTest
+     *
+     * Create new SupportsUninstallActionTest object.
      */
     template <typename A_>
     struct SupportsActionTestNew
@@ -438,7 +488,7 @@ namespace
 
     /*
      * call-seq:
-     *     InstallActionOptions.new(fetch_unneeded, safe_resume) -> InstallActionOptions
+     *     InstallActionOptions.new(no_config_protect, debug_build, checks, destination) -> InstallActionOptions
      *     InstallActionOptions.new(Hash) -> InstallActionOptions
      *
      * InstallActionOptions.new can either be called with all parameters in order, or with one hash
@@ -579,6 +629,82 @@ namespace
         return install_action_options_to_value(tr1::static_pointer_cast<InstallAction>(*p)->options);
     }
 
+    /*
+     * call-seq:
+     *     UninstallActionOptions.new(no_config_protect) -> UninstallActionOptions
+     *     UninstallActionOptions.new(Hash) -> UninstallActionOptions
+     *
+     * UninstallActionOptions.new can either be called with all parameters in order, or with one hash
+     * parameter, where the hash keys are symbols with the names above.
+     */
+    VALUE
+    uninstall_action_options_new(int argc, VALUE *argv, VALUE self)
+    {
+        UninstallActionOptions * ptr(0);
+        try
+        {
+            bool v_no_config_protect;
+
+            if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
+            {
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: no_config_protect");
+                v_no_config_protect =
+                    value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))));
+            }
+            else if (1 == argc)
+            {
+                v_no_config_protect = value_to_bool(argv[0]);
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "UninstallActionOptions expects one argument, but got %d",argc);
+            }
+
+            ptr = new UninstallActionOptions(UninstallActionOptions::create()
+                    .no_config_protect(v_no_config_protect)
+                    );
+
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UninstallActionOptions>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     UninstallAction.new -> UninstallAction
+     */
+    VALUE
+    uninstall_action_new(VALUE self, VALUE opts)
+    {
+        const UninstallActionOptions opts_ptr(value_to_uninstall_action_options(opts));
+        tr1::shared_ptr<Action> * a(
+                new tr1::shared_ptr<Action>(new UninstallAction(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<tr1::shared_ptr<Action> >::free, a));
+        rb_obj_call_init(tdata, 1, &self);
+        return tdata;
+    }
+
+    /*
+     * call-seq:
+     *     options -> UninstallActionOptions
+     *
+     * Our UninstallActionOptions.
+     */
+    VALUE
+    uninstall_action_options(VALUE self)
+    {
+        tr1::shared_ptr<Action> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<Action>, p);
+        return uninstall_action_options_to_value(tr1::static_pointer_cast<UninstallAction>(*p)->options);
+    }
+
     void do_register_action()
     {
         /*
@@ -628,6 +754,16 @@ namespace
         rb_define_singleton_method(c_supports_install_action_test, "new",
                 RUBY_FUNC_CAST((&SupportsActionTestNew<InstallAction>::supports_action_test_new)), 0);
         rb_define_method(c_supports_install_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::SupportsUninstallActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::UninstallAction.
+         */
+        c_supports_uninstall_action_test = rb_define_class_under(paludis_module(), "SupportsUninstallActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_uninstall_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<UninstallAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_uninstall_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
          * Document-class: Paludis::Action
@@ -744,12 +880,33 @@ namespace
         /*
          * Document-class: Paludis::InstallAction
          *
-         * An InstallAction is used by InstallTask to perform a build / install on a PackageID.
+         * An InstallAction is used by InstallTask to install a PackageID.
          */
         c_install_action = rb_define_class_under(paludis_module(), "InstallAction", c_action);
         rb_define_singleton_method(c_install_action, "new", RUBY_FUNC_CAST(&install_action_new), 1);
         rb_define_method(c_install_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_install_action, "options", RUBY_FUNC_CAST(&install_action_options), 0);
+
+        /*
+         * Document-class: Paludis::UninstallActionOptions
+         *
+         * Options for Paludis::UninstallAction.
+         */
+        c_uninstall_action_options = rb_define_class_under(paludis_module(), "UninstallActionOptions", rb_cObject);
+        rb_define_singleton_method(c_uninstall_action_options, "new", RUBY_FUNC_CAST(&uninstall_action_options_new), -1);
+        rb_define_method(c_uninstall_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_uninstall_action_options, "no_config_protect?",
+                RUBY_FUNC_CAST((&BoolFetch<UninstallActionOptions, &UninstallActionOptions::no_config_protect>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::UninstallAction
+         *
+         * An UninstallAction is used by UninstallTask to uninstall a PackageID.
+         */
+        c_uninstall_action = rb_define_class_under(paludis_module(), "UninstallAction", c_action);
+        rb_define_singleton_method(c_uninstall_action, "new", RUBY_FUNC_CAST(&uninstall_action_new), 1);
+        rb_define_method(c_uninstall_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
     }
 }
 

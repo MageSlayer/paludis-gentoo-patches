@@ -23,6 +23,28 @@ require 'test/unit'
 require 'Paludis'
 
 module Paludis
+    module InstallActionModule
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
+        def hash_args
+            InstallActionOptions.new(
+                {:no_config_protect => true, :debug_build => InstallActionDebugOption::Internal,
+                    :checks => InstallActionChecksOption::Always, :destination => destination}
+            )
+        end
+
+        def long_args
+                InstallActionOptions.new(false, InstallActionDebugOption::Split,
+                                        InstallActionChecksOption::Default, destination)
+        end
+
+        def destination
+            @destination or @destination = FakeRepository.new(env, 'fake');
+        end
+    end
+
     class TestCase_SupportsActionTestBase < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
@@ -52,6 +74,20 @@ module Paludis
         end
     end
 
+    class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
+        end
+    end
+
+    class TestCase_SupportsUninstallActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsUninstallActionTest, SupportsUninstallActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsUninstallActionTest.new
+        end
+    end
+
     class TestCase_Action < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
@@ -69,25 +105,7 @@ module Paludis
     end
 
     class TestCase_InstallActionOptions < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentMaker.instance.make_from_spec("")
-        end
-
-        def hash_args
-            InstallActionOptions.new(
-                {:no_config_protect => true, :debug_build => InstallActionDebugOption::Internal,
-                    :checks => InstallActionChecksOption::Always, :destination => destination}
-            )
-        end
-
-        def long_args
-                InstallActionOptions.new(false, InstallActionDebugOption::Split,
-                                        InstallActionChecksOption::Default, destination)
-        end
-
-        def destination
-            @destination or @destination = FakeRepository.new(env, 'fake');
-        end
+        include InstallActionModule
 
         def test_create
             assert_kind_of InstallActionOptions, long_args
@@ -108,6 +126,22 @@ module Paludis
             assert_equal InstallActionDebugOption::Split, opts.debug_build
             assert_equal InstallActionChecksOption::Default, opts.checks
             assert_equal destination.name, opts.destination.name
+        end
+    end
+
+    class TestCase_UninstallActionOptions < Test::Unit::TestCase
+        def test_create
+            assert_kind_of UninstallActionOptions, UninstallActionOptions.new(true)
+            assert_kind_of UninstallActionOptions, UninstallActionOptions.new(
+                {:no_config_protect => false})
+        end
+
+        def test_methods
+            uao = UninstallActionOptions.new(true)
+            assert uao.no_config_protect?
+
+            uao = UninstallActionOptions.new({:no_config_protect => false})
+            assert !uao.no_config_protect?
         end
     end
 
@@ -165,10 +199,12 @@ module Paludis
 
         def test_options
             a = FetchAction.new(FetchActionOptions.new(false, true))
+            assert_kind_of FetchActionOptions, a.options
             assert !a.options.fetch_unneeded?
             assert a.options.safe_resume?
 
             a = FetchAction.new(FetchActionOptions.new({:safe_resume => false, :fetch_unneeded => true}))
+            assert_kind_of FetchActionOptions, a.options
             assert a.options.fetch_unneeded?
             assert !a.options.safe_resume?
         end
@@ -197,6 +233,61 @@ module Paludis
             assert_raise ArgumentError do
                 ConfigAction.new('')
             end
+        end
+    end
+
+    class TestCase_InstallAction < Test::Unit::TestCase
+        include InstallActionModule
+
+        def test_create
+            assert_kind_of InstallAction, InstallAction.new(hash_args)
+            assert_kind_of Action, InstallAction.new(hash_args)
+
+            assert_kind_of InstallAction, InstallAction.new(long_args)
+        end
+
+        def test_bad_create
+            assert_raise TypeError do
+                InstallAction.new("foo")
+            end
+
+            assert_raise ArgumentError do
+                InstallAction.new(InstallActionOptions.new({:monkey => false}))
+            end
+        end
+
+        def test_options_hash_args
+            action = InstallAction.new(hash_args)
+            assert_kind_of InstallActionOptions, action.options
+            assert action.options.no_config_protect?
+            assert_equal InstallActionDebugOption::Internal, action.options.debug_build
+            assert_equal InstallActionChecksOption::Always, action.options.checks
+            assert_equal destination.name, action.options.destination.name
+        end
+    end
+
+    class TestCase_UninstallAction < Test::Unit::TestCase
+        def test_create
+            assert_kind_of UninstallAction, UninstallAction.new(UninstallActionOptions.new(true))
+            assert_kind_of Action, UninstallAction.new(UninstallActionOptions.new(true))
+
+            assert_kind_of UninstallAction, UninstallAction.new(UninstallActionOptions.new({:no_config_protect => false}))
+        end
+
+        def test_bad_create
+            assert_raise TypeError do
+                UninstallAction.new("foo")
+            end
+
+            assert_raise ArgumentError do
+                InstallAction.new(InstallActionOptions.new({:monkey => false}))
+            end
+        end
+
+        def test_options_hash_args
+            action = UninstallAction.new(UninstallActionOptions.new(false))
+            assert_kind_of UninstallActionOptions, action.options
+            assert !action.options.no_config_protect?
         end
     end
 end
