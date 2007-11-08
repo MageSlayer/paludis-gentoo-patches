@@ -277,7 +277,8 @@ do_search(const Environment & env)
             );
 
     std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches,
-                CommandLine::get_instance()->a_all_versions.specified()));
+                CommandLine::get_instance()->a_all_versions.specified(),
+                CommandLine::get_instance()->a_not.specified()));
 
     bool any(false);
     InquisitioQueryTask task(&env);
