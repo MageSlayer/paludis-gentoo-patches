@@ -10,6 +10,9 @@ make_class_UnpackagedRepositoryParams()
     key name QualifiedPackageName
     key version VersionSpec
     key slot SlotName
+    key build_dependencies std::string
+    key run_dependencies std::string
+    key description std::string
 
     allow_named_args
 }

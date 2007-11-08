@@ -47,7 +47,8 @@ namespace paludis
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
-            id(new UnpackagedID(params.environment, params.name, params.version, params.slot, n, params.location)),
+            id(new UnpackagedID(params.environment, params.name, params.version, params.slot, n, params.location,
+                        params.build_dependencies, params.run_dependencies, params.description)),
             ids(new PackageIDSequence),
             package_names(new QualifiedPackageNameSet),
             category_names(new CategoryNamePartSet)
@@ -87,6 +88,9 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
     config_info->add_kv("version", stringify(_imp->params.version));
     config_info->add_kv("slot", stringify(_imp->params.slot));
     config_info->add_kv("format", "unpackaged");
+    config_info->add_kv("build_dependencies", _imp->params.build_dependencies);
+    config_info->add_kv("run_dependencies", _imp->params.run_dependencies);
+    config_info->add_kv("description", _imp->params.description);
 
     _info->add_section(config_info);
 }

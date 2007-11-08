@@ -46,6 +46,13 @@ CommandLine::CommandLine() :
             "Options affecting the source image"),
     a_location(&source_args, "location", 'l', "Location of source image (default: current directory)"),
 
+    metadata_args(this, "Metadata options",
+            "Options affecting generated metadata"),
+    a_description(&metadata_args, "description", 'D', "Specify a package description"),
+    a_build_dependency(&metadata_args, "build-dependency", 'B', "Specify a build dependency"),
+    a_run_dependency(&metadata_args, "run-dependency", 'R', "Specify a run dependency"),
+    a_preserve_metadata(&metadata_args, "preserve-metadata", 'P', "If replacing a package, copy its description and dependencies"),
+
     install_args(this, "Install options",
             "Options which are relevant for --install"),
 
@@ -77,6 +84,14 @@ CommandLine::CommandLine() :
             "Install the contents of img/ (which could be produced, for example, using 'sudo make DESTDIR=img/ install' "
             "from an autotools package) as 'unpackaged/myapp' version 1.23. If 'unpackaged/myapp' is already installed, "
             "it will be replaced.");
+    add_example(
+            "importare --location img/ unpackaged/myapp 1.23 --run-dependency dev-libs/mpfr --run-dependency dev-libs/gmp",
+            "As above, and add dependencies. Dependencies are used for resolution and to provide correct output for "
+            "paludis --uninstall(-unused).");
+    add_example(
+            "importare --location img/ unpackaged/myapp 1.23 --preserve-metadata",
+            "If an existing version of unpackaged/myapp was installed using importare, copies metadata (build and run "
+            "dependencies, and description) from that version.");
     add_example(
             "importare --location /var/empty sys-apps/portage 2.2",
             "Install an empty fake package named 'sys-apps/portage', version 2.2. DANGEROUS!");

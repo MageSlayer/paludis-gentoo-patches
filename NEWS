@@ -19,6 +19,8 @@ trunk/:
 
     * Paludis now protects further against sandbox clobbering the PATH.
 
+    * Metadata options for importare.
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

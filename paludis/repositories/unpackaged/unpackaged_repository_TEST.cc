@@ -52,6 +52,9 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -77,6 +80,9 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -107,6 +113,9 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -132,6 +141,9 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
                         ));
             env.package_database()->add_repository(1, repo);
 
@@ -170,6 +182,9 @@ namespace test_cases
                         .version(VersionSpec("1.0"))
                         .slot(SlotName("foo"))
                         .location(FSEntry("unpackaged_repository_TEST_dir/pkg"))
+                        .build_dependencies("")
+                        .run_dependencies("")
+                        .description("")
                         ));
             env.package_database()->add_repository(1, repo);
 

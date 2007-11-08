@@ -21,6 +21,8 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/ndbam.hh>
 #include <paludis/repositories/unpackaged/ndbam_unmerger.hh>
+#include <paludis/repositories/unpackaged/dep_parser.hh>
+#include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
@@ -164,6 +166,55 @@ namespace
                 return *_v;
             }
     };
+
+    class InstalledUnpackagedDependencyKey :
+        public MetadataSpecTreeKey<DependencySpecTree>
+    {
+        private:
+            mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> _v;
+            mutable Mutex _mutex;
+            const FSEntry _f;
+
+        public:
+            InstalledUnpackagedDependencyKey(const std::string & r, const std::string & h, const FSEntry & f) :
+                MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_normal),
+                _f(f)
+            {
+            }
+
+            const tr1::shared_ptr<const DependencySpecTree::ConstItem> value() const
+            {
+                Lock l(_mutex);
+                if (_v)
+                    return _v;
+
+                Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedDependencyKey:");
+
+                std::ifstream f(stringify(_f).c_str());
+                if (! f)
+                    throw FSError("Couldn't open '" + stringify(_f) + "' for read");
+
+                _v = DepParser::parse(strip_trailing(
+                            std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
+                return _v;
+            }
+
+            std::string
+            pretty_print(const DependencySpecTree::ItemFormatter & f) const
+            {
+                DepPrinter p(f, false);
+                value()->accept(p);
+                return p.result();
+            }
+
+            std::string
+            pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
+            {
+                DepPrinter p(f, true);
+                value()->accept(p);
+                return p.result();
+            }
+    };
 }
 
 namespace paludis
@@ -184,6 +235,9 @@ namespace paludis
         tr1::shared_ptr<InstalledUnpackagedTimeKey> installed_time_key;
         tr1::shared_ptr<InstalledUnpackagedStringKey> source_origin_key;
         tr1::shared_ptr<InstalledUnpackagedStringKey> binary_origin_key;
+        tr1::shared_ptr<InstalledUnpackagedStringKey> description_key;
+        tr1::shared_ptr<InstalledUnpackagedDependencyKey> build_dependencies_key;
+        tr1::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_key;
 
         Implementation(
                 const Environment * const e,
@@ -215,6 +269,17 @@ namespace paludis
 
             if ((l / "binary_repository").exists())
                 binary_origin_key.reset(new InstalledUnpackagedStringKey("binary_repository", "Binary repository", l / "binary_repository"));
+
+            if ((l / "description").exists())
+                description_key.reset(new InstalledUnpackagedStringKey("description", "Description", l / "description"));
+
+            if ((l / "build_dependencies").exists())
+                build_dependencies_key.reset(new InstalledUnpackagedDependencyKey(
+                            "build_dependencies", "Build dependencies", l / "build_dependencies"));
+
+            if ((l / "run_dependencies").exists())
+                run_dependencies_key.reset(new InstalledUnpackagedDependencyKey(
+                            "run_dependencies", "Run dependencies", l / "run_dependencies"));
         }
     };
 }
@@ -234,6 +299,12 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
         add_metadata_key(_imp->source_origin_key);
     if (_imp->binary_origin_key)
         add_metadata_key(_imp->binary_origin_key);
+    if (_imp->description_key)
+        add_metadata_key(_imp->description_key);
+    if (_imp->build_dependencies_key)
+        add_metadata_key(_imp->build_dependencies_key);
+    if (_imp->run_dependencies_key)
+        add_metadata_key(_imp->run_dependencies_key);
 }
 
 InstalledUnpackagedID::~InstalledUnpackagedID()
@@ -336,13 +407,13 @@ InstalledUnpackagedID::contained_in_key() const
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::build_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->build_dependencies_key;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::run_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->run_dependencies_key;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -372,7 +443,7 @@ InstalledUnpackagedID::homepage_key() const
 const tr1::shared_ptr<const MetadataStringKey>
 InstalledUnpackagedID::short_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return _imp->description_key;
 }
 
 const tr1::shared_ptr<const MetadataStringKey>

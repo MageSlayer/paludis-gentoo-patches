@@ -23,6 +23,8 @@ paludis_repositories_unpackaged_includedir = $(includedir)/paludis-$(PALUDIS_PC_
 libpaludisunpackagedrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_unpackaged_include_HEADERS = \
+	dep_parser.hh \
+	dep_printer.hh \
 	exceptions.hh \
 	ndbam.hh \
 	ndbam-fwd.hh \
@@ -34,17 +36,21 @@ paludis_repositories_unpackaged_include_HEADERS = \
 	unpackaged_id.hh \
 	unpackaged_repository.hh \
 	unpackaged_repository-sr.hh \
+	unpackaged_key.hh \
 	installed_repository.hh \
 	installed_repository-sr.hh \
 	installed_id.hh
 
 libpaludisunpackagedrepository_la_SOURCES = \
+	dep_parser.cc \
+	dep_printer.cc \
 	exceptions.cc \
 	ndbam.cc \
 	ndbam_merger.cc \
 	ndbam_unmerger.cc \
 	unpackaged_id.cc \
 	unpackaged_repository.cc \
+	unpackaged_key.cc \
 	installed_repository.cc \
 	installed_id.cc \
 	registration.cc \

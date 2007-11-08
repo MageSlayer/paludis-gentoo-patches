@@ -44,7 +44,8 @@ namespace paludis
 
             public:
                 UnpackagedID(const Environment * const, const QualifiedPackageName &, const VersionSpec &,
-                        const SlotName &, const RepositoryName &, const FSEntry &);
+                        const SlotName &, const RepositoryName &, const FSEntry &,
+                        const std::string &, const std::string &, const std::string &);
 
                 ~UnpackagedID();
 

@@ -18,6 +18,9 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
+#include <paludis/repositories/unpackaged/unpackaged_key.hh>
+#include <paludis/repositories/unpackaged/dep_parser.hh>
+#include <paludis/repositories/unpackaged/dep_printer.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -34,28 +37,6 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-namespace
-{
-    class UnpackagedFSEntryKey :
-        public MetadataFSEntryKey
-    {
-        private:
-            const FSEntry _location;
-
-        public:
-            UnpackagedFSEntryKey(const FSEntry & l) :
-                MetadataFSEntryKey("location", "Location", mkt_normal),
-                _location(l)
-            {
-            }
-
-            const FSEntry value() const
-            {
-                return _location;
-            }
-    };
-}
-
 namespace paludis
 {
     template <>
@@ -67,31 +48,44 @@ namespace paludis
         const SlotName slot;
         const RepositoryName repository_name;
 
-        tr1::shared_ptr<UnpackagedFSEntryKey> fs_location_key;
+        const tr1::shared_ptr<UnpackagedFSEntryKey> fs_location_key;
+        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
+        const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
+        const tr1::shared_ptr<const MetadataStringKey> description_key;
 
         Implementation(const Environment * const e,
                 const QualifiedPackageName & q,
                 const VersionSpec & v,
                 const SlotName & s,
-                const RepositoryName & r,
-                const FSEntry & l) :
+                const RepositoryName & n,
+                const FSEntry & l,
+                const std::string & b,
+                const std::string & r,
+                const std::string & d) :
             env(e),
             name(q),
             version(v),
             slot(s),
-            repository_name(r),
-            fs_location_key(new UnpackagedFSEntryKey(l))
+            repository_name(n),
+            fs_location_key(new UnpackagedFSEntryKey("location", "Location", mkt_normal, l)),
+            build_dependencies_key(new UnpackagedDependencyKey("build_dependencies", "Build dependencies", mkt_dependencies, b)),
+            run_dependencies_key(new UnpackagedDependencyKey("run_dependencies", "Run dependencies", mkt_dependencies, r)),
+            description_key(new UnpackagedStringKey("description", "Description", mkt_significant, d))
         {
         }
     };
 }
 
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
-        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l) :
-    PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l)),
+        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
+        const std::string & b, const std::string & r, const std::string & d) :
+    PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d)),
     _imp(PrivateImplementationPattern<UnpackagedID>::_imp.get())
 {
     add_metadata_key(_imp->fs_location_key);
+    add_metadata_key(_imp->build_dependencies_key);
+    add_metadata_key(_imp->run_dependencies_key);
+    add_metadata_key(_imp->description_key);
 }
 
 UnpackagedID::~UnpackagedID()
@@ -194,13 +188,13 @@ UnpackagedID::contained_in_key() const
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::build_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->build_dependencies_key;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::run_dependencies_key() const
 {
-    return tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->run_dependencies_key;
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -230,7 +224,7 @@ UnpackagedID::homepage_key() const
 const tr1::shared_ptr<const MetadataStringKey>
 UnpackagedID::short_description_key() const
 {
-    return tr1::shared_ptr<const MetadataStringKey>();
+    return _imp->description_key;
 }
 
 const tr1::shared_ptr<const MetadataStringKey>

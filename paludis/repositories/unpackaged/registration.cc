@@ -52,13 +52,28 @@ namespace
         if (m->end() == m->find("slot") || ((slot = m->find("slot")->second)).empty())
             throw unpackaged_repositories::RepositoryConfigurationError("Key 'slot' not specified or empty");
 
+        std::string build_dependencies;
+        if (m->end() != m->find("build_dependencies"))
+            build_dependencies = m->find("build_dependencies")->second;
+
+        std::string run_dependencies;
+        if (m->end() != m->find("run_dependencies"))
+            run_dependencies = m->find("run_dependencies")->second;
+
+        std::string description;
+        if (m->end() != m->find("description"))
+            description = m->find("description")->second;
+
         return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
                     unpackaged_repositories::UnpackagedRepositoryParams::create()
                     .environment(env)
                     .location(location)
                     .name(QualifiedPackageName(name))
                     .version(VersionSpec(version))
-                    .slot(SlotName(slot))));
+                    .slot(SlotName(slot))
+                    .build_dependencies(build_dependencies)
+                    .run_dependencies(run_dependencies)
+                    .description(description)));
     }
 
     tr1::shared_ptr<Repository>

@@ -31,6 +31,10 @@
 #include <paludis/about.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/fuzzy_finder.hh>
+#include <paludis/query.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/stringify_formatter.hh>
 
 #include <algorithm>
 #include <iterator>
@@ -121,6 +125,46 @@ main(int argc, char *argv[])
             VersionSpec v(params.size() >= 2 ? params[1] : "0");
             SlotName s(params.size() >= 3 ? params[2] : "0");
 
+            std::string build_dependencies, run_dependencies, description;
+
+            if (CommandLine::get_instance()->a_preserve_metadata.specified())
+            {
+                tr1::shared_ptr<const PackageIDSequence> old_ids(
+                        env->package_database()->query(query::Package(q), qo_order_by_version));
+                tr1::shared_ptr<const PackageID> old_id;
+                for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
+                        i != i_end ; ++i)
+                {
+                    if ((*i)->repository()->format() != "installed_unpackaged")
+                        continue;
+                    old_id = *i;
+                    break;
+                }
+
+                if (! old_id)
+                    throw args::DoHelp("--" + CommandLine::get_instance()->a_preserve_metadata.long_name() + " specified but "
+                            "no old ID available");
+
+                StringifyFormatter f;
+                if (old_id->short_description_key())
+                    description = old_id->short_description_key()->value();
+                if (old_id->build_dependencies_key())
+                    build_dependencies = old_id->build_dependencies_key()->pretty_print_flat(f);
+                if (old_id->run_dependencies_key())
+                    run_dependencies = old_id->run_dependencies_key()->pretty_print_flat(f);
+            }
+
+            if (CommandLine::get_instance()->a_description.specified())
+                description = CommandLine::get_instance()->a_description.argument();
+            if (CommandLine::get_instance()->a_build_dependency.specified())
+                build_dependencies = join(
+                        CommandLine::get_instance()->a_build_dependency.begin_args(),
+                        CommandLine::get_instance()->a_build_dependency.end_args(), ", ");
+            if (CommandLine::get_instance()->a_run_dependency.specified())
+                run_dependencies = join(
+                        CommandLine::get_instance()->a_run_dependency.begin_args(),
+                        CommandLine::get_instance()->a_run_dependency.end_args(), ", ");
+
             tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("location", stringify(
                         CommandLine::get_instance()->a_location.specified() ?
@@ -130,6 +174,9 @@ main(int argc, char *argv[])
             keys->insert("name", stringify(q));
             keys->insert("version", stringify(v));
             keys->insert("slot", stringify(s));
+            keys->insert("description", description);
+            keys->insert("build_dependencies", build_dependencies);
+            keys->insert("run_dependencies", run_dependencies);
             tr1::shared_ptr<Repository> repo((*RepositoryMaker::get_instance()->find_maker("unpackaged"))(env.get(), keys));
             env->package_database()->add_repository(10, repo);
             tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));

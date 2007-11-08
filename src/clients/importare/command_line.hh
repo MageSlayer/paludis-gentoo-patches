@@ -56,6 +56,12 @@ class CommandLine :
         paludis::args::ArgsGroup source_args;
         paludis::args::StringArg a_location;
 
+        paludis::args::ArgsGroup metadata_args;
+        paludis::args::StringArg a_description;
+        paludis::args::StringSetArg a_build_dependency;
+        paludis::args::StringSetArg a_run_dependency;
+        paludis::args::SwitchArg a_preserve_metadata;
+
         paludis::args::InstallArgsGroup install_args;
         paludis::args::DepListArgsGroup dl_args;
 };
