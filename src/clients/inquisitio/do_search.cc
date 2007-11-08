@@ -114,7 +114,8 @@ namespace
             const QualifiedPackageName & q,
             const tr1::function<bool (const PackageID &)> & e,
             const tr1::function<bool (const PackageID &)> & m,
-            const bool all_versions)
+            const bool all_versions,
+            const bool invert_match)
     {
         tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
         if (ids->empty())
@@ -129,7 +130,7 @@ namespace
                     i != i_end ; ++i)
                 if (e(**i))
                 {
-                    if (m(**i))
+                    if (invert_match ^ m(**i))
                         return *i;
                     else if (! all_versions)
                         return tr1::shared_ptr<const PackageID>();
@@ -145,13 +146,14 @@ namespace
             std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> > & q,
             const tr1::function<bool (const PackageID &)> & e,
             const tr1::function<bool (const PackageID &)> & m,
-            const bool all_versions)
+            const bool all_versions,
+            const bool invert_match)
     {
         tr1::shared_ptr<const PackageID> best_id;
         for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions));
+            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match));
             if (id)
             {
                 if (best_id)

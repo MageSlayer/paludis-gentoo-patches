@@ -74,6 +74,7 @@ class CommandLine :
         paludis::args::EnumArg a_matcher;
         paludis::args::SwitchArg a_flatten;
         paludis::args::SwitchArg a_enabled_only;
+        paludis::args::SwitchArg a_not;
 
         ///\}
 

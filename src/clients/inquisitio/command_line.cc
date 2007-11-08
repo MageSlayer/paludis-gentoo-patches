@@ -53,6 +53,7 @@ CommandLine::CommandLine() :
             "text"),
     a_flatten(&match_args, "flatten", 'f', "Flatten spec trees, rather than matching against individual items"),
     a_enabled_only(&match_args, "enabled-only", 'e', "When searching spec trees, only look in enabled subtrees"),
+    a_not(&match_args, "not", 'n', "Select packages that do not match"),
 
     filter_args(this, "Filter options",
             "Options that control whether or not a package is considered for matching."),
