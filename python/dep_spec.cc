@@ -31,6 +31,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tr1_type_traits.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_shared_ptr.hh>
 
 #include <list>
 
@@ -253,12 +254,12 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
                 deep_copy(p.package_ptr()),
                 deep_copy(p.category_name_part_ptr()),
                 deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
+                make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
                 deep_copy(p.use_requirements_ptr()),
-                tr1::shared_ptr<const DepTag>(p.tag()),
+                p.tag(),
                 stringify(p)))
 {
     if (p.version_requirements_ptr())
@@ -274,12 +275,12 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
                 deep_copy(p.package_ptr()),
                 deep_copy(p.category_name_part_ptr()),
                 deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
+                make_shared_ptr(new VersionRequirements),
                 p.version_requirements_mode(),
                 deep_copy(p.slot_ptr()),
                 deep_copy(p.repository_ptr()),
                 deep_copy(p.use_requirements_ptr()),
-                tr1::shared_ptr<const DepTag>(p.tag()),
+                p.tag(),
                 p.py_str()))
 {
     std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
@@ -293,7 +294,37 @@ PythonPackageDepSpec::~PythonPackageDepSpec()
 tr1::shared_ptr<const PythonPackageDepSpec>
 PythonPackageDepSpec::make_from_string(const std::string & ss, const PackageDepSpecParseMode p)
 {
-    return tr1::shared_ptr<PythonPackageDepSpec>(new PythonPackageDepSpec(PackageDepSpec(ss, p)));
+    return make_shared_ptr(new PythonPackageDepSpec(PackageDepSpec(ss, p)));
+}
+
+PythonPackageDepSpec::operator PackageDepSpec() const
+{
+    PackageDepSpec p
+        (
+         deep_copy(package_ptr()),
+         deep_copy(category_name_part_ptr()),
+         deep_copy(package_name_part_ptr()),
+         make_shared_ptr(new VersionRequirements),
+         version_requirements_mode(),
+         deep_copy(slot_ptr()),
+         deep_copy(repository_ptr()),
+         deep_copy(use_requirements_ptr()),
+         tag()
+        );
+
+    if (version_requirements_ptr())
+    {
+        std::copy(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
+                p.version_requirements_ptr()->back_inserter());
+    }
+
+    return p;
+}
+
+
+PythonPackageDepSpec::operator tr1::shared_ptr<PackageDepSpec>() const
+{
+    return make_shared_ptr(new PackageDepSpec(*this));
 }
 
 const PythonPackageDepSpec *
@@ -305,25 +336,9 @@ PythonPackageDepSpec::as_package_dep_spec() const
 const tr1::shared_ptr<const PythonPackageDepSpec>
 PythonPackageDepSpec::without_use_requirements() const
 {
-    PackageDepSpec p(
-            deep_copy(package_ptr()),
-            deep_copy(category_name_part_ptr()),
-            deep_copy(package_name_part_ptr()),
-            tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
-            version_requirements_mode(),
-            deep_copy(slot_ptr()),
-            deep_copy(repository_ptr()),
-            deep_copy(use_requirements_ptr()),
-            tr1::shared_ptr<const DepTag>(tag())
-            );
+    PackageDepSpec p(*this);
 
-    if (version_requirements_ptr())
-    {
-        std::copy(version_requirements_ptr()->begin(), version_requirements_ptr()->end(),
-                p.version_requirements_ptr()->back_inserter());
-    }
-
-    return tr1::shared_ptr<PythonPackageDepSpec>(new PythonPackageDepSpec(*p.without_use_requirements()));
+    return make_shared_ptr(new PythonPackageDepSpec(*p.without_use_requirements()));
 }
 
 tr1::shared_ptr<const QualifiedPackageName>
@@ -459,7 +474,7 @@ PythonBlockDepSpec::PythonBlockDepSpec(tr1::shared_ptr<const PythonPackageDepSpe
 
 PythonBlockDepSpec::PythonBlockDepSpec(const BlockDepSpec & d) :
     PythonStringDepSpec(d.text()),
-    _spec(tr1::shared_ptr<const PythonPackageDepSpec>(new PythonPackageDepSpec(*d.blocked_spec())))
+    _spec(make_shared_ptr(new PythonPackageDepSpec(*d.blocked_spec())))
 {
 }
 
@@ -560,83 +575,61 @@ SpecTreeToPython::visit_sequence(const UseDepSpec & d,
 void
 SpecTreeToPython::visit_leaf(const PackageDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonPackageDepSpec>(new PythonPackageDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonPackageDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const PlainTextDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonPlainTextDepSpec>(new PythonPlainTextDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonPlainTextDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const NamedSetDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonNamedSetDepSpec>(new PythonNamedSetDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonNamedSetDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const LicenseDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonLicenseDepSpec>(new PythonLicenseDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonLicenseDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const SimpleURIDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonSimpleURIDepSpec>(new PythonSimpleURIDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonSimpleURIDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const FetchableURIDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonFetchableURIDepSpec>(new PythonFetchableURIDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonFetchableURIDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const BlockDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonBlockDepSpec>(new PythonBlockDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonBlockDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const URILabelsDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonURILabelsDepSpec>(new PythonURILabelsDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonURILabelsDepSpec(d)));
 }
 
 void
 SpecTreeToPython::visit_leaf(const DependencyLabelsDepSpec & d)
 {
-    _current_parent->add_child(tr1::shared_ptr<PythonDependencyLabelsDepSpec>(new PythonDependencyLabelsDepSpec(d)));
+    _current_parent->add_child(make_shared_ptr(new PythonDependencyLabelsDepSpec(d)));
 }
 
 const tr1::shared_ptr<const PythonDepSpec>
 SpecTreeToPython::result() const
 {
     return *_current_parent->begin();
-}
-
-PackageDepSpec *
-package_dep_spec_from_python(const PythonPackageDepSpec & p)
-{
-    PackageDepSpec * result(new PackageDepSpec(
-                deep_copy(p.package_ptr()),
-                deep_copy(p.category_name_part_ptr()),
-                deep_copy(p.package_name_part_ptr()),
-                tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
-                p.version_requirements_mode(),
-                deep_copy(p.slot_ptr()),
-                deep_copy(p.repository_ptr()),
-                deep_copy(p.use_requirements_ptr()),
-                tr1::shared_ptr<const DepTag>(p.tag())
-                ));
-    if (p.version_requirements_ptr())
-    {
-        std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                result->version_requirements_ptr()->back_inserter());
-    }
-    return result;
 }
 
 template <typename H_>
@@ -846,8 +839,8 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAllDepSpec & d)
 {
-    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> >(
-                new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec()))));
+    tr1::shared_ptr<ConstTreeSequence<H_, AllDepSpec> > cds(
+                new ConstTreeSequence<H_, AllDepSpec>(make_shared_ptr(new AllDepSpec())));
 
     _add(cds);
 
@@ -862,8 +855,8 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
 {
-    tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> >(
-                new ConstTreeSequence<H_, AnyDepSpec>(tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec()))));
+    tr1::shared_ptr<ConstTreeSequence<H_, AnyDepSpec> > cds(
+                new ConstTreeSequence<H_, AnyDepSpec>(make_shared_ptr(new AnyDepSpec())));
 
     _add(cds);
 
@@ -878,9 +871,9 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonUseDepSpec & d)
 {
-    tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > cds(tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> >(
-                new ConstTreeSequence<H_, UseDepSpec>(tr1::shared_ptr<UseDepSpec>(
-                        new UseDepSpec(d.flag(), d.inverse())))));
+    tr1::shared_ptr<ConstTreeSequence<H_, UseDepSpec> > cds(
+                new ConstTreeSequence<H_, UseDepSpec>(make_shared_ptr(
+                        new UseDepSpec(d.flag(), d.inverse()))));
 
     _add(cds);
 
@@ -895,71 +888,57 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonPackageDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, PackageDepSpec> >(
-                new TreeLeaf<H_, PackageDepSpec>(tr1::shared_ptr<PackageDepSpec>(
-                        package_dep_spec_from_python(d)))));
+    _add(make_shared_ptr(new TreeLeaf<H_, PackageDepSpec>(make_shared_ptr(new PackageDepSpec(d)))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonLicenseDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, LicenseDepSpec> >(
-               new TreeLeaf<H_, LicenseDepSpec>(tr1::shared_ptr<LicenseDepSpec>(
-                       new LicenseDepSpec(d.text())))));
+    _add(make_shared_ptr(new TreeLeaf<H_, LicenseDepSpec>(make_shared_ptr(new LicenseDepSpec(d.text())))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonSimpleURIDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, SimpleURIDepSpec> >(
-               new TreeLeaf<H_, SimpleURIDepSpec>(tr1::shared_ptr<SimpleURIDepSpec>(
-                       new SimpleURIDepSpec(d.text())))));
+    _add(make_shared_ptr(new TreeLeaf<H_, SimpleURIDepSpec>(make_shared_ptr(new SimpleURIDepSpec(d.text())))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonPlainTextDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, PlainTextDepSpec> >(
-               new TreeLeaf<H_, PlainTextDepSpec>(tr1::shared_ptr<PlainTextDepSpec>(
-                       new PlainTextDepSpec(d.text())))));
+    _add(make_shared_ptr(new TreeLeaf<H_, PlainTextDepSpec>(make_shared_ptr(new PlainTextDepSpec(d.text())))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonNamedSetDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, NamedSetDepSpec> >(
-               new TreeLeaf<H_, NamedSetDepSpec>(tr1::shared_ptr<NamedSetDepSpec>(
-                       new NamedSetDepSpec(d.name())))));
+    _add(make_shared_ptr(new TreeLeaf<H_, NamedSetDepSpec>(make_shared_ptr(new NamedSetDepSpec(d.name())))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonFetchableURIDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, FetchableURIDepSpec> >(
-                new TreeLeaf<H_, FetchableURIDepSpec>(tr1::shared_ptr<FetchableURIDepSpec>(
-                        new FetchableURIDepSpec(d.text())))));
+    _add(make_shared_ptr(new TreeLeaf<H_, FetchableURIDepSpec>(
+                    make_shared_ptr(new FetchableURIDepSpec(d.text())))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonURILabelsDepSpec &)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, URILabelsDepSpec> >(
-                new TreeLeaf<H_, URILabelsDepSpec>(tr1::shared_ptr<LabelsDepSpec<URILabelVisitorTypes> >(
-                        new URILabelsDepSpec))));
+    _add(make_shared_ptr(new TreeLeaf<H_, URILabelsDepSpec>(make_shared_ptr(new URILabelsDepSpec))));
 }
 
 template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonDependencyLabelsDepSpec &)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, DependencyLabelsDepSpec> >(
-                new TreeLeaf<H_, DependencyLabelsDepSpec>(tr1::shared_ptr<DependencyLabelsDepSpec>(
+    _add(make_shared_ptr(new TreeLeaf<H_, DependencyLabelsDepSpec>(make_shared_ptr(
                         new DependencyLabelsDepSpec))));
 }
 
@@ -967,10 +946,8 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 {
-    _add(tr1::shared_ptr<TreeLeaf<H_, BlockDepSpec> >(
-                new TreeLeaf<H_, BlockDepSpec>(tr1::shared_ptr<BlockDepSpec>(
-                        new BlockDepSpec(tr1::shared_ptr<PackageDepSpec>(
-                                package_dep_spec_from_python(*d.blocked_spec())))))));
+    _add(make_shared_ptr(new TreeLeaf<H_, BlockDepSpec>(make_shared_ptr(
+                        new BlockDepSpec(make_shared_ptr(new PackageDepSpec(*d.blocked_spec())))))));
 }
 
 template <typename H_>
@@ -980,11 +957,16 @@ SpecTreeFromPython<H_>::result() const
     return _result;
 }
 
-template <typename N_>
-struct tree_to_python
+template <typename T_>
+struct RegisterSpecTreeToPython
 {
+    RegisterSpecTreeToPython()
+    {
+        bp::to_python_converter<tr1::shared_ptr<typename T_::ConstItem>, RegisterSpecTreeToPython<T_> >();
+    }
+
     static PyObject *
-    convert(const N_ & n)
+    convert(const tr1::shared_ptr<typename T_::ConstItem> & n)
     {
         SpecTreeToPython v;
         n->accept(v);
@@ -992,55 +974,34 @@ struct tree_to_python
     }
 };
 
-template <typename T_>
-void register_tree_to_python()
+template <typename From_, typename To_>
+struct RegisterDepSpecToPython
 {
-    bp::to_python_converter<tr1::shared_ptr<typename T_::ConstItem>,
-            tree_to_python<tr1::shared_ptr<typename T_::ConstItem> > >();
-}
-
-struct package_dep_spec_to_python
-{
-    static PyObject *
-    convert(const PackageDepSpec & d)
+    RegisterDepSpecToPython()
     {
-        PythonPackageDepSpec pyd(d);
+        bp::to_python_converter<From_, RegisterDepSpecToPython<From_, To_> >();
+        bp::to_python_converter<tr1::shared_ptr<const From_>, RegisterDepSpecToPython<From_, To_> >();
+    }
+
+    static PyObject *
+    convert(const From_ & d)
+    {
+        To_ pyd(d);
         return bp::incref(bp::object(pyd).ptr());
     }
 
     static PyObject *
-    convert(const tr1::shared_ptr<const PackageDepSpec> & d)
+    convert(const tr1::shared_ptr<const From_> & d)
     {
-        PythonPackageDepSpec pyd(*d);
-        return bp::incref(bp::object(pyd).ptr());
-    }
-};
-
-void register_package_dep_spec_to_python()
-{
-    bp::to_python_converter<PackageDepSpec, package_dep_spec_to_python>();
-    bp::to_python_converter<tr1::shared_ptr<const PackageDepSpec>, package_dep_spec_to_python>();
-}
-
-struct plain_text_dep_spec_to_python
-{
-    static PyObject *
-    convert(const PlainTextDepSpec & d)
-    {
-        PythonPlainTextDepSpec pyd(d);
+        To_ pyd(*d);
         return bp::incref(bp::object(pyd).ptr());
     }
 };
-
-void register_plain_text_dep_spec_to_python()
-{
-    bp::to_python_converter<PlainTextDepSpec, plain_text_dep_spec_to_python>();
-}
 
 template <typename H_>
-struct RegisterSpecTreeSPTRFromPython
+struct RegisterSpecTreeSharedPtrFromPython
 {
-    RegisterSpecTreeSPTRFromPython()
+    RegisterSpecTreeSharedPtrFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
                 boost::python::type_id<tr1::shared_ptr<const typename H_::ConstItem> >());
@@ -1070,95 +1031,6 @@ struct RegisterSpecTreeSPTRFromPython
     }
 };
 
-struct RegisterPackageDepSpecFromPython
-{
-    RegisterPackageDepSpecFromPython()
-    {
-        bp::converter::registry::push_back(&convertible, &construct,
-                boost::python::type_id<PackageDepSpec>());
-    }
-
-    static void *
-    convertible(PyObject * obj_ptr)
-    {
-        if (bp::extract<PythonPackageDepSpec *>(obj_ptr).check())
-            return obj_ptr;
-        else
-            return 0;
-    }
-
-    static void
-    construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
-    {
-        typedef bp::converter::rvalue_from_python_storage<PackageDepSpec> Storage;
-        void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
-        PythonPackageDepSpec p = bp::extract<PythonPackageDepSpec>(obj_ptr);
-        new (storage) PackageDepSpec(
-                    deep_copy(p.package_ptr()),
-                    deep_copy(p.category_name_part_ptr()),
-                    deep_copy(p.package_name_part_ptr()),
-                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
-                    p.version_requirements_mode(),
-                    deep_copy(p.slot_ptr()),
-                    deep_copy(p.repository_ptr()),
-                    deep_copy(p.use_requirements_ptr()),
-                    tr1::shared_ptr<const DepTag>(p.tag())
-                );
-
-        if (p.version_requirements_ptr())
-        {
-            std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                    reinterpret_cast<PackageDepSpec *>(storage)->version_requirements_ptr()->back_inserter());
-        }
-        data->convertible = storage;
-    }
-};
-
-struct RegisterPackageDepSpecSPTRFromPython
-{
-    RegisterPackageDepSpecSPTRFromPython()
-    {
-        bp::converter::registry::push_back(&convertible, &construct,
-                boost::python::type_id<tr1::shared_ptr<const PackageDepSpec> >());
-    }
-
-    static void *
-    convertible(PyObject * obj_ptr)
-    {
-        if (bp::extract<PythonPackageDepSpec *>(obj_ptr).check())
-            return obj_ptr;
-        else
-            return 0;
-    }
-
-    static void
-    construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
-    {
-        typedef bp::converter::rvalue_from_python_storage<tr1::shared_ptr<PackageDepSpec> > Storage;
-        void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
-
-        PythonPackageDepSpec p = bp::extract<PythonPackageDepSpec>(obj_ptr);
-
-        new (storage) tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                    deep_copy(p.package_ptr()),
-                    deep_copy(p.category_name_part_ptr()),
-                    deep_copy(p.package_name_part_ptr()),
-                    tr1::shared_ptr<VersionRequirements>(new VersionRequirements),
-                    p.version_requirements_mode(),
-                    deep_copy(p.slot_ptr()),
-                    deep_copy(p.repository_ptr()),
-                    deep_copy(p.use_requirements_ptr()),
-                    tr1::shared_ptr<const DepTag>(p.tag())
-                    ));
-        if (p.version_requirements_ptr())
-        {
-            std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-                    (*reinterpret_cast<tr1::shared_ptr<PackageDepSpec> *>(storage))->version_requirements_ptr()->back_inserter());
-        }
-        data->convertible = storage;
-    }
-};
-
 void expose_dep_spec()
 {
     /**
@@ -1178,21 +1050,21 @@ void expose_dep_spec()
     enum_auto("PackageDepSpecParseMode", last_pds_pm,
             "How to parse a PackageDepSpec string.");
 
-    register_tree_to_python<DependencySpecTree>();
-    register_tree_to_python<ProvideSpecTree>();
-    register_tree_to_python<RestrictSpecTree>();
-    register_tree_to_python<FetchableURISpecTree>();
-    register_tree_to_python<SimpleURISpecTree>();
-    register_tree_to_python<LicenseSpecTree>();
-    register_tree_to_python<SetSpecTree>();
+    RegisterSpecTreeToPython<DependencySpecTree>();
+    RegisterSpecTreeToPython<ProvideSpecTree>();
+    RegisterSpecTreeToPython<RestrictSpecTree>();
+    RegisterSpecTreeToPython<FetchableURISpecTree>();
+    RegisterSpecTreeToPython<SimpleURISpecTree>();
+    RegisterSpecTreeToPython<LicenseSpecTree>();
+    RegisterSpecTreeToPython<SetSpecTree>();
 
-    RegisterSpecTreeSPTRFromPython<DependencySpecTree>();
-    RegisterSpecTreeSPTRFromPython<ProvideSpecTree>();
-    RegisterSpecTreeSPTRFromPython<RestrictSpecTree>();
-    RegisterSpecTreeSPTRFromPython<FetchableURISpecTree>();
-    RegisterSpecTreeSPTRFromPython<SimpleURISpecTree>();
-    RegisterSpecTreeSPTRFromPython<LicenseSpecTree>();
-    RegisterSpecTreeSPTRFromPython<SetSpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<DependencySpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<ProvideSpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<RestrictSpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<FetchableURISpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<SimpleURISpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<LicenseSpecTree>();
+    RegisterSpecTreeSharedPtrFromPython<SetSpecTree>();
 
     /**
      * DepSpec
@@ -1310,11 +1182,10 @@ void expose_dep_spec()
     /**
      * PackageDepSpec
      */
-    RegisterPackageDepSpecFromPython();
-    RegisterPackageDepSpecSPTRFromPython();
-
-    bp::implicitly_convertible<PackageDepSpec, PythonPackageDepSpec>();
-    register_package_dep_spec_to_python();
+    bp::implicitly_convertible<PythonPackageDepSpec, PackageDepSpec>();
+    bp::implicitly_convertible<PythonPackageDepSpec, tr1::shared_ptr<PackageDepSpec> >();
+    bp::implicitly_convertible<tr1::shared_ptr<PackageDepSpec>, tr1::shared_ptr<const PackageDepSpec> >();
+    RegisterDepSpecToPython<PackageDepSpec, PythonPackageDepSpec>();
 
     bp::class_<PythonPackageDepSpec, tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
         (
@@ -1378,8 +1249,7 @@ void expose_dep_spec()
     /**
      * PlainTextDepSpec
      */
-    bp::implicitly_convertible<PlainTextDepSpec, PythonPlainTextDepSpec>();
-    register_plain_text_dep_spec_to_python();
+    RegisterDepSpecToPython<PlainTextDepSpec, PythonPlainTextDepSpec>();
     bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec> >
         (
          "PlainTextDepSpec",
@@ -1392,6 +1262,7 @@ void expose_dep_spec()
     /**
      * NamedSetDepSpec
      */
+    RegisterDepSpecToPython<NamedSetDepSpec, PythonNamedSetDepSpec>();
     bp::class_<PythonNamedSetDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
          "NamedSetDepSpec",
@@ -1407,6 +1278,7 @@ void expose_dep_spec()
     /**
      * LicenseDepSpec
      */
+    RegisterDepSpecToPython<LicenseDepSpec, PythonLicenseDepSpec>();
     bp::class_<PythonLicenseDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
          "LicenseDepSpec",
@@ -1419,6 +1291,7 @@ void expose_dep_spec()
     /**
      * SimpleURIDepSpec
      */
+    RegisterDepSpecToPython<SimpleURIDepSpec, PythonSimpleURIDepSpec>();
     bp::class_<PythonSimpleURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
          "SimpleURIDepSpec",
@@ -1431,6 +1304,7 @@ void expose_dep_spec()
     /**
      * FetchableURIDepSpec
      */
+    RegisterDepSpecToPython<FetchableURIDepSpec, PythonFetchableURIDepSpec>();
     bp::class_<PythonFetchableURIDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable>
         (
          "FetchableURIDepSpec",
@@ -1449,6 +1323,7 @@ void expose_dep_spec()
     /**
      * URILabelsDepSpec
      */
+    RegisterDepSpecToPython<URILabelsDepSpec, PythonURILabelsDepSpec>();
     bp::class_<PythonURILabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
         (
          "URILabelsDepSpec",
@@ -1460,6 +1335,7 @@ void expose_dep_spec()
     /**
      * DependencyLabelsDepSpec
      */
+    RegisterDepSpecToPython<DependencyLabelsDepSpec, PythonDependencyLabelsDepSpec>();
     bp::class_<PythonDependencyLabelsDepSpec, bp::bases<PythonDepSpec>, boost::noncopyable>
         (
          "DependencyLabelsDepSpec",
@@ -1471,6 +1347,7 @@ void expose_dep_spec()
     /**
      * BlockDepSpec
      */
+    RegisterDepSpecToPython<BlockDepSpec, PythonBlockDepSpec>();
     bp::class_<PythonBlockDepSpec, bp::bases<PythonStringDepSpec>, boost::noncopyable >
         (
          "BlockDepSpec",
