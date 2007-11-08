@@ -30,7 +30,7 @@ DebugBuildArg::DebugBuildArg(ArgsGroup * const grp, const std::string & ln,
             ("none",              "Discard debug information")
             ("split",             "Split debug information")
             ("internal",          "Keep debug information"),
-            "none")
+            "split")
 {
 }
 

@@ -12,6 +12,11 @@ trunk/:
 
     * paludis, reconcilio, importare --compact, --show-package-descriptions.
 
+    * New defaults: --debug-build split, --dl-blocks
+      accumulate, --dl-override-masks tilde-keyword license (and use 'none' to
+      ignore defaults), --show-reasons summary, --show-use-descriptions changed,
+      --show-package-descriptions new, --dl-downgrade warning
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.

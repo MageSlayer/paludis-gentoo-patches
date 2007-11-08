@@ -45,20 +45,20 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
             ("none",    "Don't show any information")
             ("summary", "Show a summary")
             ("full",    "Show full output (can be very verbose)"),
-            "none"),
+            "summary"),
     a_show_use_descriptions(this, "show-use-descriptions", '\0', "Show descriptions of USE flags",
             args::EnumArg::EnumArgOptions
             ("none",       "Don't show any descriptions")
             ("new",        "Show for new use flags")
             ("changed",    "Show for new and changed flags")
             ("all",        "Show for all flags"),
-            "none"),
+            "changed"),
     a_show_package_descriptions(this, "show-package-descriptions", '\0', "Show package descriptions",
             args::EnumArg::EnumArgOptions
             ("none",       "Don't show any descriptions")
             ("new",        "Show descriptions for new packages")
             ("all",        "Show descriptions for all packages"),
-            "none"),
+            "new"),
     a_continue_on_failure(this, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
             args::EnumArg::EnumArgOptions
             ("if-fetch-only",       "If fetching only")

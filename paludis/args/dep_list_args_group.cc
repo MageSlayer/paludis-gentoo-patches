@@ -89,7 +89,7 @@ DepListArgsGroup::DepListArgsGroup(ArgsHandler * h) :
             ("as-needed",     "As needed")
             ("warning",       "As needed, but warn when doing so")
             ("error",         "Downgrades should be treated as errors"),
-            "as-needed"),
+            "warning"),
 
     dl_deps_default(this, "dl-deps-default", '\0',
             "Override default behaviour for all dependency classes",
@@ -134,10 +134,11 @@ DepListArgsGroup::DepListArgsGroup(ArgsHandler * h) :
             ("accumulate",         "Accumulate and show in the dependency list")
             ("error",              "Error straight away")
             ("discard",            "Discard (dangerous)"),
-            "error"),
+            "accumulate"),
     dl_override_masks(this, "dl-override-masks", '\0',
-            "Zero or more mask kinds that can be overridden as necessary",
+            "Zero or more mask kinds that can be overridden as necessary (default: tilde-keyword and license)",
             args::StringSetArg::StringSetArgOptions
+            ("none",                    "None (overrides defaults, not user selections)")
             ("tilde-keyword",           "Keyword masks where accepting ~ would work")
             ("unkeyworded",             "Keyword masks where a package is unkeyworded")
             ("repository",              "Repository masks")
@@ -160,6 +161,8 @@ DepListArgsGroup::~DepListArgsGroup()
 void
 DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOptions & options) const
 {
+    using namespace tr1::placeholders;
+
     if (dl_reinstall.argument() == "never")
         options.reinstall = dl_reinstall_never;
     else if (dl_reinstall.argument() == "always")
@@ -228,16 +231,21 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
     else
         throw args::DoHelp("bad value for --dl-blocks");
 
+    if (! options.override_masks)
+        options.override_masks.reset(new DepListOverrideMasksFunctions);
+    options.override_masks->push_back(tr1::bind(&override_tilde_keywords, env, _1, _2));
+    options.override_masks->push_back(tr1::bind(&override_license, _2));
+
     if (dl_override_masks.specified())
     {
         for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
-        {
-            if (! options.override_masks)
+            if (*a == "none")
                 options.override_masks.reset(new DepListOverrideMasksFunctions);
 
-            using namespace tr1::placeholders;
-
+        for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
+                a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
+        {
             if (*a == "tilde-keyword")
                 options.override_masks->push_back(tr1::bind(&override_tilde_keywords, env, _1, _2));
             else if (*a == "unkeyworded")
@@ -248,8 +256,12 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
                 options.override_masks->push_back(tr1::bind(&override_license, _2));
             else if (*a == "profile")
             {
-                Log::get_instance()->message(ll_warning, lc_no_context, "--dl-override-masks profile is deprecated, use --dl-override-masks repository");
+                Log::get_instance()->message(ll_warning, lc_no_context) <<
+                    "--dl-override-masks profile is deprecated, use --dl-override-masks repository";
                 options.override_masks->push_back(tr1::bind(&override_repository_masks, _2));
+            }
+            else if (*a == "none")
+            {
             }
             else
                 throw args::DoHelp("bad value for --dl-override-masks");
