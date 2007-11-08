@@ -36,6 +36,8 @@ namespace
     static VALUE c_supports_config_action_test;
     static VALUE c_supports_install_action_test;
     static VALUE c_supports_uninstall_action_test;
+    static VALUE c_supports_pretend_action_test;
+    static VALUE c_supports_installed_action_test;
 
     static VALUE c_action;
     static VALUE c_fetch_action;
@@ -52,6 +54,8 @@ namespace
 
     static VALUE c_uninstall_action_options;
     static VALUE c_uninstall_action;
+
+    static VALUE c_pretend_action;
 
     const bool
     value_to_bool(VALUE v)
@@ -217,6 +221,22 @@ namespace
      *     SupportsUninstallActionTest.new -> SupportsUninstallActionTest
      *
      * Create new SupportsUninstallActionTest object.
+     */
+    /*
+     * Document-method: SupportsPretendActionTest.new
+     *
+     * call-seq:
+     *     SupportsPretendActionTest.new -> SupportsPretendActionTest
+     *
+     * Create new SupportsPretendActionTest object.
+     */
+    /*
+     * Document-method: SupportsInstalledActionTest.new
+     *
+     * call-seq:
+     *     SupportsInstalledActionTest.new -> SupportsInstalledActionTest
+     *
+     * Create new SupportsInstalledActionTest object.
      */
     template <typename A_>
     struct SupportsActionTestNew
@@ -473,6 +493,14 @@ namespace
      *
      * Create new ConfigAction
      */
+    /*
+     * Document-method PretendAction.new
+     *
+     * call-seq:
+     *     PretendAction.new -> PretendAction
+     *
+     * Create new PretendAction
+     */
     template <typename A_>
     struct EasyActionNew
     {
@@ -705,6 +733,35 @@ namespace
         return uninstall_action_options_to_value(tr1::static_pointer_cast<UninstallAction>(*p)->options);
     }
 
+    /*
+     * call-seq:
+     *     failed? -> true or false
+     *
+     * Did our pretend phase fail?
+     */
+    VALUE
+    pretend_action_failed(VALUE self)
+    {
+        tr1::shared_ptr<Action> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<Action>, p);
+        return bool_to_value(tr1::static_pointer_cast<PretendAction>(*p)->failed());
+    }
+
+    /*
+     * call-seq:
+     *     set_failed -> Qnil
+     *
+     * Mark the action as failed.
+     */
+    VALUE
+    pretend_action_set_failed(VALUE self)
+    {
+        tr1::shared_ptr<Action> * p;
+        Data_Get_Struct(self, tr1::shared_ptr<Action>, p);
+        tr1::static_pointer_cast<PretendAction>(*p)->set_failed();
+        return Qnil;
+    }
+
     void do_register_action()
     {
         /*
@@ -764,6 +821,26 @@ namespace
         rb_define_singleton_method(c_supports_uninstall_action_test, "new",
                 RUBY_FUNC_CAST((&SupportsActionTestNew<UninstallAction>::supports_action_test_new)), 0);
         rb_define_method(c_supports_uninstall_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::SupportsPretendActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::PretendAction.
+         */
+        c_supports_pretend_action_test = rb_define_class_under(paludis_module(), "SupportsPretendActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_pretend_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<PretendAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_pretend_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
+         * Document-class: Paludis::SupportsInstalledActionTest
+         *
+         * Tests whether a Paludis::PackageID supports a Paludis::InstalledAction.
+         */
+        c_supports_installed_action_test = rb_define_class_under(paludis_module(), "SupportsInstalledActionTest", c_supports_action_test_base);
+        rb_define_singleton_method(c_supports_installed_action_test, "new",
+                RUBY_FUNC_CAST((&SupportsActionTestNew<InstalledAction>::supports_action_test_new)), 0);
+        rb_define_method(c_supports_installed_action_test, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
 
         /*
          * Document-class: Paludis::Action
@@ -907,6 +984,18 @@ namespace
         rb_define_singleton_method(c_uninstall_action, "new", RUBY_FUNC_CAST(&uninstall_action_new), 1);
         rb_define_method(c_uninstall_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
+
+        /*
+         * Document-class: Paludis::PretendAction
+         *
+         * A PretendAction is used by InstallTask to handle install-pretend-phase checks on a PackageID.
+         */
+        c_pretend_action = rb_define_class_under(paludis_module(), "PretendAction", c_action);
+        rb_define_singleton_method(c_pretend_action, "new",
+                RUBY_FUNC_CAST((&EasyActionNew<PretendAction>::easy_action_new)), 0);
+        rb_define_method(c_pretend_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_pretend_action, "failed?", RUBY_FUNC_CAST(&pretend_action_failed), 0);
+        rb_define_method(c_pretend_action, "set_failed", RUBY_FUNC_CAST(&pretend_action_set_failed), 0);
     }
 }
 

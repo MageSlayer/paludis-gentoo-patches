@@ -88,6 +88,20 @@ module Paludis
         end
     end
 
+    class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
+        end
+    end
+
+    class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
+        def test_create
+            assert_kind_of SupportsInstallActionTest, SupportsInstallActionTest.new
+            assert_kind_of SupportsActionTestBase, SupportsInstallActionTest.new
+        end
+    end
+
     class TestCase_Action < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
@@ -288,6 +302,30 @@ module Paludis
             action = UninstallAction.new(UninstallActionOptions.new(false))
             assert_kind_of UninstallActionOptions, action.options
             assert !action.options.no_config_protect?
+        end
+    end
+
+    class TestCase_PretendAction < Test::Unit::TestCase
+        def test_create
+            assert_kind_of PretendAction, PretendAction.new
+            assert_kind_of Action, PretendAction.new
+        end
+
+        def test_bad_create
+            assert_raise ArgumentError do
+                PretendAction.new('')
+            end
+        end
+
+        def test_methods
+            action = PretendAction.new
+            assert !action.failed?
+
+            assert_nothing_raised do
+                action.set_failed
+            end
+
+            assert action.failed?
         end
     end
 end
