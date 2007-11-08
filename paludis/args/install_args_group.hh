@@ -98,9 +98,6 @@ namespace paludis
                 /// --show-package-descriptions
                 paludis::args::EnumArg a_show_package_descriptions;
 
-                /// --compact
-                paludis::args::SwitchArg a_compact;
-
                 /// --continue-on-failure
                 paludis::args::EnumArg a_continue_on_failure;
 
@@ -133,7 +130,6 @@ namespace paludis
                 bool want_changed_use_flags() const;
                 bool want_new_use_flags() const;
 
-                bool want_compact() const;
                 bool want_new_descriptions() const;
                 bool want_existing_descriptions() const;
 

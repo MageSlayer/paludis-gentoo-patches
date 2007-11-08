@@ -8,7 +8,7 @@ trunk/:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
 
-    * inquisitio --all-versions, --not.
+    * inquisitio --all-versions, --not, --compact.
 
     * paludis, reconcilio, importare --compact, --show-package-descriptions.
 

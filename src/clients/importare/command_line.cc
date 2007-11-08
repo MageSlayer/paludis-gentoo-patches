@@ -40,6 +40,7 @@ CommandLine::CommandLine() :
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
     a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
+    a_compact(&general_args, "compact", '\0', "Display output using one line per entry"),
 
     source_args(this, "Source options",
             "Options affecting the source image"),

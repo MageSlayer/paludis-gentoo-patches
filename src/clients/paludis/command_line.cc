@@ -79,6 +79,7 @@ CommandLine::CommandLine() :
     a_parallel(&general_args, "parallel", 'P', "Does nothing. (For compatibility with Paludis when built with thread "
             "support, which you shouldn't be using.)"),
 #endif
+    a_compact(&general_args, "compact", '\0', "Display output using one line per entry (--install, --query)"),
 
     query_args(this, "Query options",
             "Options which are relevant for --query."),

@@ -57,6 +57,11 @@ namespace
             {
                 return CommandLine::get_instance()->a_show_metadata.specified();
             }
+
+            bool want_compact() const
+            {
+                return CommandLine::get_instance()->a_compact.specified();
+            }
     };
 }
 
@@ -69,7 +74,6 @@ void do_one_package_query(
     query.show(*spec);
     std::copy(query.masks_to_explain()->begin(), query.masks_to_explain()->end(),
             masks_to_explain->inserter());
-    cout << endl;
 }
 
 namespace

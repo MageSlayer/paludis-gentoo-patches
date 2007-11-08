@@ -59,7 +59,6 @@ InstallArgsGroup::InstallArgsGroup(ArgsHandler * h, const std::string & our_name
             ("new",        "Show descriptions for new packages")
             ("all",        "Show descriptions for all packages"),
             "none"),
-    a_compact(this, "compact", '\0', "Display output using one line per entry"),
     a_continue_on_failure(this, "continue-on-failure", '\0', "Whether to continue after a fetch or install error",
             args::EnumArg::EnumArgOptions
             ("if-fetch-only",       "If fetching only")
@@ -193,12 +192,6 @@ bool
 InstallArgsGroup::want_existing_descriptions() const
 {
     return "all" == a_show_package_descriptions.argument();
-}
-
-bool
-InstallArgsGroup::want_compact() const
-{
-    return a_compact.specified();
 }
 
 std::string

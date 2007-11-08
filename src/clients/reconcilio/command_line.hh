@@ -55,6 +55,7 @@ class CommandLine :
         paludis::args::SwitchArg a_exact;
         paludis::args::SwitchArg a_verbose;
         paludis::args::StringArg a_resume_command_template;
+        paludis::args::SwitchArg a_compact;
 
         paludis::args::ArgsGroup fix_linkage_args;
         paludis::args::StringArg a_library;

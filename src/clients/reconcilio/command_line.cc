@@ -45,6 +45,7 @@ CommandLine::CommandLine() :
     a_verbose(&general_args,        "verbose",        'v',  "Display more detailed output"),
     a_resume_command_template(&general_args, "resume-command-template", '\0',
             "Save the resume command to a file. If the filename contains 'XXXXXX', use mkstemp(3) to generate the filename"),
+    a_compact(&general_args, "compact", '\0', "Display output using one line per entry"),
 
     fix_linkage_args(this, "Fix Linkage options",
             "Options which are relevant for --fix-linkage."),

@@ -55,6 +55,9 @@ namespace paludis
 
             virtual void display_masks(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
 
+            virtual void display_compact(const PackageDepSpec &, const tr1::shared_ptr<const PackageID> &) const;
+
+            virtual bool want_compact() const = 0;
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;
 

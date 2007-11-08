@@ -103,7 +103,7 @@ namespace
 
             virtual bool want_compact() const
             {
-                return CommandLine::get_instance()->install_args.want_compact();
+                return CommandLine::get_instance()->a_compact.specified();
             }
 
             virtual bool want_new_descriptions() const

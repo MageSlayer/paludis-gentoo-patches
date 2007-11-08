@@ -169,6 +169,9 @@ class CommandLine :
         /// --parallel
         paludis::args::SwitchArg a_parallel;
 
+        /// --compact
+        paludis::args::SwitchArg a_compact;
+
         ///}
 
         /// \name Query arguments

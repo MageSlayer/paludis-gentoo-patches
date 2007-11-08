@@ -96,7 +96,7 @@ class CommandLine :
         ///\{
 
         paludis::args::ArgsGroup output_args;
-        paludis::args::SwitchArg a_list;
+        paludis::args::SwitchArg a_compact;
         paludis::args::SwitchArg a_show_dependencies;
         paludis::args::SwitchArg a_show_metadata;
 

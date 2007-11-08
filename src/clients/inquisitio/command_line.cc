@@ -77,7 +77,7 @@ CommandLine::CommandLine() :
     output_args(this, "Output options",
             "Options that control how output is generated."),
 
-    a_list(&output_args, "list", 'l', "Output a package name list only"),
+    a_compact(&output_args, "compact", '\0', "Display output using one line per entry"),
     a_show_dependencies(&output_args, "show-dependencies", 'D', "Show dependencies"),
     a_show_metadata(&output_args, "show-metadata", 'M', "Show raw metadata"),
 
