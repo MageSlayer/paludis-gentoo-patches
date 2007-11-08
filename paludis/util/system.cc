@@ -307,6 +307,7 @@ paludis::run_command(const Command & cmd)
 
             for (Command::ConstIterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
                 setenv(s->first.c_str(), s->second.c_str(), 1);
+            setenv("PATH_NOT_CLOBBERED_BY_SANDBOX", getenv_with_default("PATH", "").c_str(), 1);
 
             if (-1 != stdout_write_fd)
             {

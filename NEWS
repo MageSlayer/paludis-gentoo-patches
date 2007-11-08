@@ -17,6 +17,8 @@ trunk/:
       ignore defaults), --show-reasons summary, --show-use-descriptions changed,
       --show-package-descriptions new, --dl-downgrade warning
 
+    * Paludis now protects further against sandbox clobbering the PATH.
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
