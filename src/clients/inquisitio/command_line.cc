@@ -65,6 +65,7 @@ CommandLine::CommandLine() :
     a_package(&filter_args,    "package",    '\0', "Matches with this package name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
     a_visible_only(&filter_args, "visible-only", 'v', "Only consider visible packages"),
+    a_all_versions(&filter_args, "all-versions", 'a', "Check all versions, rather than only one (slower)"),
     a_kind(&filter_args, "kind", 'K', "Packages of this kind only",
             paludis::args::EnumArg::EnumArgOptions
             ("installable",        "Installable packages")

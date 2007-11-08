@@ -113,7 +113,8 @@ namespace
             const tr1::shared_ptr<const Repository> & r,
             const QualifiedPackageName & q,
             const tr1::function<bool (const PackageID &)> & e,
-            const tr1::function<bool (const PackageID &)> & m)
+            const tr1::function<bool (const PackageID &)> & m,
+            const bool all_versions)
     {
         tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
         if (ids->empty())
@@ -130,7 +131,7 @@ namespace
                 {
                     if (m(**i))
                         return *i;
-                    else
+                    else if (! all_versions)
                         return tr1::shared_ptr<const PackageID>();
                 }
 
@@ -143,13 +144,14 @@ namespace
             const std::list<tr1::shared_ptr<const Repository> > & repos,
             std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageID> > & q,
             const tr1::function<bool (const PackageID &)> & e,
-            const tr1::function<bool (const PackageID &)> & m)
+            const tr1::function<bool (const PackageID &)> & m,
+            const bool all_versions)
     {
         tr1::shared_ptr<const PackageID> best_id;
         for (std::list<tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m));
+            tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions));
             if (id)
             {
                 if (best_id)
@@ -272,7 +274,8 @@ do_search(const Environment & env)
             extractors
             );
 
-    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches));
+    std::for_each(ids.begin(), ids.end(), tr1::bind(&set_id, tr1::cref(env), tr1::cref(repos), _1, eligible, matches,
+                CommandLine::get_instance()->a_all_versions.specified()));
 
     bool any(false);
     InquisitioQueryTask task(&env);

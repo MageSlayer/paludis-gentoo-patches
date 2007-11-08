@@ -86,6 +86,7 @@ class CommandLine :
         paludis::args::StringSetArg a_category;
         paludis::args::StringSetArg a_package;
         paludis::args::SwitchArg a_visible_only;
+        paludis::args::SwitchArg a_all_versions;
         paludis::args::EnumArg a_kind;
 
         ///\}

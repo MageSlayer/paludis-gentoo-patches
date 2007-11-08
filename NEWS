@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+trunk/:
+    * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
+      dep specs.
+
+    * inquisitio --all-versions.
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
