@@ -156,7 +156,7 @@ main(int argc, char *argv[])
 
                         for (std::string::size_type p(0) ; p < to_write.length() ; ++p)
                         {
-                            if (to_write.at(p) != '\n')
+                            if (to_write.at(p) != '\n' && to_write.at(p) != '\r')
                             {
                                 if (! stdout_had_non_blanks)
                                 {
@@ -171,7 +171,8 @@ main(int argc, char *argv[])
                             }
                             else if (! stdout_had_non_blanks)
                             {
-                                ++stdout_blanks;
+                                if (to_write.at(p) == '\n')
+                                    ++stdout_blanks;
                                 continue;
                             }
 
@@ -182,7 +183,7 @@ main(int argc, char *argv[])
                                 stdout_prefix_shown = true;
                             }
 
-                            if (to_write.at(p) == '\n')
+                            if (to_write.at(p) == '\n' || to_write.at(p) == '\r')
                             {
                                 stdout_had_interesting_char = false;
                                 stdout_prefix_shown = false;
@@ -206,7 +207,7 @@ main(int argc, char *argv[])
 
                         for (std::string::size_type p(0) ; p < to_write.length() ; ++p)
                         {
-                            if (to_write.at(p) != '\n')
+                            if (to_write.at(p) != '\n' && to_write.at(p) != '\r')
                             {
                                 if (! stderr_had_non_blanks)
                                 {
@@ -221,7 +222,8 @@ main(int argc, char *argv[])
                             }
                             else if (! stderr_had_non_blanks)
                             {
-                                ++stderr_blanks;
+                                if (to_write.at(p) == '\n')
+                                    ++stderr_blanks;
                                 continue;
                             }
 
@@ -232,7 +234,7 @@ main(int argc, char *argv[])
                                 stderr_prefix_shown = true;
                             }
 
-                            if (to_write.at(p) == '\n')
+                            if (to_write.at(p) == '\n' || to_write.at(p) == '\r')
                             {
                                 stderr_had_interesting_char = false;
                                 stderr_prefix_shown = false;

@@ -106,4 +106,34 @@ echo monkey
 echo
 END
 
+cat <<END > carriage_return.bash
+echo -e 'foo\rbar'
+echo -e 'foo\r'
+echo -e 'foo\r\rbar'
+echo -e '\rfoo'
+echo -e '\r'
+echo -e 'foo\rbar' 1>&2
+echo -e 'foo\r' 1>&2
+echo -e 'foo\r\rbar' 1>&2
+echo -e '\rfoo' 1>&2
+echo -e '\r' 1>&2
+END
+
+cat <<END > carriage_return_blank.bash
+echo
+echo -e '\r'
+echo
+echo 1>&2
+echo -e '\r' 1>&2
+echo 1>&2
+END
+
+cat <<END > carriage_return_nonblank.bash
+echo
+echo -e '\r'
+echo hello
+echo 1>&2
+echo -e '\r' 1>&2
+echo hello 1>&2
+END
 

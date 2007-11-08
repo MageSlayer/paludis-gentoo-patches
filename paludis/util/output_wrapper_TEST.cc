@@ -269,5 +269,171 @@ namespace test_cases
             TEST_CHECK_EQUAL(0, p.exit_status());
         }
     } test_discard_wrap_blank_output_not_blank;
+
+    struct CarriageReturnTest : TestCase
+    {
+        CarriageReturnTest() : TestCase("carriage return") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' -- "
+                        "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(10));
+            TEST_CHECK(lines.count("o p foo\\ro p bar"));
+            TEST_CHECK(lines.count("o p foo\\r"));
+            TEST_CHECK(lines.count("o p foo\\r\\ro p bar"));
+            TEST_CHECK(lines.count("\\ro p foo"));
+            TEST_CHECK(lines.count("e p foo\\re p bar"));
+            TEST_CHECK(lines.count("e p foo\\r"));
+            TEST_CHECK(lines.count("e p foo\\r\\re p bar"));
+            TEST_CHECK(lines.count("\\re p foo"));
+            TEST_CHECK_EQUAL(lines.count("\\r"), static_cast<std::size_t>(2));
+            TEST_CHECK_EQUAL(0, p.exit_status());
+        }
+    } test_carriage_return;
+
+    struct CarriageReturnWrapBlankTest : TestCase
+    {
+        CarriageReturnWrapBlankTest() : TestCase("carriage return wrap blank") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --wrap-blanks -- "
+                        "bash output_wrapper_TEST_dir/carriage_return.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(10));
+            TEST_CHECK(lines.count("o p foo\\ro p bar"));
+            TEST_CHECK(lines.count("o p foo\\ro p "));
+            TEST_CHECK(lines.count("o p foo\\ro p \\ro p bar"));
+            TEST_CHECK(lines.count("o p \\ro p foo"));
+            TEST_CHECK(lines.count("o p \\ro p "));
+            TEST_CHECK(lines.count("e p foo\\re p bar"));
+            TEST_CHECK(lines.count("e p foo\\re p "));
+            TEST_CHECK(lines.count("e p foo\\re p \\re p bar"));
+            TEST_CHECK(lines.count("e p \\re p foo"));
+            TEST_CHECK(lines.count("e p \\re p "));
+            TEST_CHECK_EQUAL(0, p.exit_status());
+        }
+    } test_carriage_return_wrap_blank;
+
+    struct CarriageReturnDiscardBlankOutputBlankTest : TestCase
+    {
+        CarriageReturnDiscardBlankOutputBlankTest() : TestCase("carriage return discard blank output blank") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                        "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(0));
+        }
+    } test_carriage_return_discard_blank_output_blank;
+
+    struct CarriageReturnDiscardBlankWrapBlankOutputBlankTest : TestCase
+    {
+        CarriageReturnDiscardBlankWrapBlankOutputBlankTest() : TestCase("carriage return discard blank wrap blank output blank") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                        "bash output_wrapper_TEST_dir/carriage_return_blank.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(0));
+        }
+    } test_carriage_return_discard_blank_wrap_blank_output_blank;
+
+    struct CarriageReturnDiscardBlankOutputNotBlankTest : TestCase
+    {
+        CarriageReturnDiscardBlankOutputNotBlankTest() : TestCase("carriage return discard blank output not blank") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output -- "
+                        "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(6));
+            TEST_CHECK_EQUAL(lines.count(""), static_cast<std::size_t>(4));
+            TEST_CHECK(lines.count("o p hello"));
+            TEST_CHECK(lines.count("e p hello"));
+        }
+    } test_carriage_return_discard_blank_output_not_blank;
+
+    struct CarriageReturnDiscardBlankWrapBlankOutputNotBlankTest : TestCase
+    {
+        CarriageReturnDiscardBlankWrapBlankOutputNotBlankTest() : TestCase("carriage return discard blank wrap blank output not blank") { }
+
+        void run()
+        {
+            PStream p(Command("./outputwrapper --stdout-prefix 'o p ' --stderr-prefix 'e p ' --discard-blank-output --wrap-blanks -- "
+                        "bash output_wrapper_TEST_dir/carriage_return_nonblank.bash 2>&1"));
+            std::multiset<std::string> lines;
+            std::string line;
+            while (std::getline(p, line))
+            {
+                std::string::size_type c(line.length());
+                while (std::string::npos != (c = line.rfind('\r', c)))
+                    line.replace(c, 1, "\\r");
+                lines.insert(line);
+            }
+
+            TestMessageSuffix s("lines=(" + join(lines.begin(), lines.end(), ",") + ")");
+            TEST_CHECK_EQUAL(lines.size(), static_cast<std::size_t>(6));
+            TEST_CHECK_EQUAL(lines.count("o p "), static_cast<std::size_t>(2));
+            TEST_CHECK_EQUAL(lines.count("e p "), static_cast<std::size_t>(2));
+            TEST_CHECK(lines.count("o p hello"));
+            TEST_CHECK(lines.count("e p hello"));
+        }
+    } test_carriage_return_discard_blank_wrap_blank_output_not_blank;
 }
 
