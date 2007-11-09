@@ -59,11 +59,6 @@ namespace
     struct BarNode :
         Node
     {
-        std::string c_bar() const
-        {
-            return "c_bar";
-        }
-
         std::string bar()
         {
             return "bar";
