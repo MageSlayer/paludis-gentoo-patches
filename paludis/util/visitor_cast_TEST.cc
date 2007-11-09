@@ -50,11 +50,6 @@ namespace
     struct FooNode :
         Node
     {
-        std::string c_foo() const
-        {
-            return "c_foo";
-        }
-
         std::string foo()
         {
             return "foo";
