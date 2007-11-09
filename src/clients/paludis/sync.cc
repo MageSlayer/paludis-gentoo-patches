@@ -124,7 +124,7 @@ int do_sync(tr1::shared_ptr<Environment> env)
 
     bool parallel(false);
 #ifdef PALUDIS_ENABLE_THREADS
-    parallel = CommandLine::get_instance()->a_parallel.specified();
+    parallel = CommandLine::get_instance()->a_multitask.specified();
 #endif
 
     OurSyncTask task(env, parallel);

@@ -166,8 +166,8 @@ class CommandLine :
         /// --resume-command-template
         paludis::args::StringArg a_resume_command_template;
 
-        /// --parallel
-        paludis::args::SwitchArg a_parallel;
+        /// --multitask
+        paludis::args::SwitchArg a_multitask;
 
         /// --compact
         paludis::args::SwitchArg a_compact;
