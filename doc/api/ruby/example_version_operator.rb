@@ -31,7 +31,7 @@ versions.each do |v1|
 
         #Apply all of our operators, and show the results
         operators.each do |operator|
-            print " | " + (Paludis::version_operator(operator, v1, v2) ? 'true' : 'false').ljust(8)
+            print " | " + (Paludis::version_spec_comparator(operator, v1, v2) ? 'true' : 'false').ljust(8)
         end
         puts
     end

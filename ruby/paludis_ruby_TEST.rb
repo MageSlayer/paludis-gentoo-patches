@@ -61,24 +61,24 @@ module Paludis
             end
         end
 
-        def test_version_operator
+        def test_version_spec_comparator
             one = VersionSpec.new('1')
             two = VersionSpec.new('2')
-            assert Paludis::version_operator('<', one, two)
-            assert Paludis::version_operator('<=', one, two)
-            assert !Paludis::version_operator('>=', one, two)
-            assert !Paludis::version_operator('>', one, two)
+            assert Paludis::version_spec_comparator('<', one, two)
+            assert Paludis::version_spec_comparator('<=', one, two)
+            assert !Paludis::version_spec_comparator('>=', one, two)
+            assert !Paludis::version_spec_comparator('>', one, two)
         end
 
         def test_bad_version_operator
             one = VersionSpec.new('1')
             two = VersionSpec.new('2')
             assert_raise BadVersionOperatorError do
-                Paludis::version_operator('throw an error', one, two)
+                Paludis::version_spec_comparator('throw an error', one, two)
             end
 
             assert_raise ArgumentError do
-                Paludis::version_operator('throw an error')
+                Paludis::version_spec_comparator('throw an error')
             end
         end
     end

@@ -147,7 +147,7 @@ how concepts map on to different language bindings.</p>
     <tr>
         <td>example_version_operator</td>
         <td><a href="cplusplus/example__version__operator_8cc-example.html">C++</a></td>
-        <td></td>
+        <td><a href="ruby/example_version_operator.html">Ruby</a></td>
         <td></td>
     </tr>
     <tr>

@@ -104,14 +104,14 @@ namespace
     }
 
     /*
-     * Document-method: version_operator
+     * Document-method: version_spec_comparator
      *
      * call-seq:
-     *     version_operator(operator, left_version_spec, right_version_spec) -> true of false
+     *     version_spec_comparator(operator, left_version_spec, right_version_spec) -> true of false
      *
-     * Applies operator to left_version_spec andn right_version_spec
+     * Applies operator to left_version_spec and right_version_spec
      */
-    VALUE paludis_version_operator(VALUE, VALUE op, VALUE left, VALUE right)
+    VALUE paludis_version_spec_comparator(VALUE, VALUE op, VALUE left, VALUE right)
     {
         try
         {
@@ -435,7 +435,7 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_bad_version_operator_error = rb_define_class_under(c_paludis_module, "BadVersionOperatorError", rb_eRuntimeError);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
-    rb_define_module_function(c_paludis_module, "version_operator", RUBY_FUNC_CAST(&paludis_version_operator), 3);
+    rb_define_module_function(c_paludis_module, "version_spec_comparator", RUBY_FUNC_CAST(&paludis_version_spec_comparator), 3);
 
     rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                     + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
