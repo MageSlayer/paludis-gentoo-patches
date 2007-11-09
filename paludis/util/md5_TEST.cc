@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,42 +23,6 @@
 
 using namespace paludis;
 using namespace test;
-
-namespace
-{
-    /**
-     * \name Test utilities
-     * \{
-     */
-
-    unsigned char dehex_c(unsigned char c)
-    {
-        if (c >= '0' && c <= '9')
-            return c - '0';
-        else if (c >= 'a' && c <= 'f')
-            return c + 10 - 'a';
-        else
-            throw "meh!";
-    }
-
-    std::string dehex(const std::string & s)
-    {
-        std::string result;
-        std::string::size_type p(0);
-        while (p < s.length())
-        {
-            unsigned char c;
-            c = (dehex_c(s.at(p)) << 4) + dehex_c(s.at(p + 1));
-            result.append(1, c);
-            p += 2;
-        }
-        return result;
-    }
-
-    /**
-     * \}
-     */
-}
 
 namespace test_cases
 {
