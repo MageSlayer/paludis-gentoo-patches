@@ -76,7 +76,8 @@ class SymbolSection :
 
         void resolve_symbols(Section<ElfType_> &);
 
-        typedef paludis::WrappedForwardIterator<enum SymbolIteratorTag { }, const Symbol<ElfType_ > > SymbolIterator;
+        struct SymbolIteratorTag;
+        typedef paludis::WrappedForwardIterator<SymbolIteratorTag, const Symbol<ElfType_ > > SymbolIterator;
         SymbolIterator symbol_begin() const;
         SymbolIterator symbol_end() const;
 };

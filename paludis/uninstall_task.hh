@@ -70,7 +70,8 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const PackageID> > ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const PackageID> > ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 

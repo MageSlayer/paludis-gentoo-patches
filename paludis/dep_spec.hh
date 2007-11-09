@@ -224,7 +224,8 @@ namespace paludis
             ///\name Iterate over our USE requirements
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { },
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag,
                     const std::pair<const UseFlagName, UseFlagState> > ConstIterator;
 
             ConstIterator begin() const;
@@ -587,8 +588,11 @@ namespace paludis
             ///\{
 
             void add_label(const tr1::shared_ptr<const typename SpecTree_::BasicNode> &);
-            typedef WrappedForwardIterator<enum ConstIteratorTag { },
+
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag,
                     const tr1::shared_ptr<const typename SpecTree_::BasicNode> > ConstIterator;
+
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

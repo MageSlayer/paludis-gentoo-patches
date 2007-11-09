@@ -53,7 +53,8 @@ namespace paludis
                 bool option(const std::string &) const;
                 bool option_contains(const std::string &, const std::string &) const;
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
                 ConstIterator begin_commands() const;
                 ConstIterator end_commands() const;
 
@@ -82,7 +83,8 @@ namespace paludis
                 ///\name Information about the phases
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const EAPIPhase> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const EAPIPhase> ConstIterator;
                 ConstIterator begin_phases() const;
                 ConstIterator end_phases() const;
 

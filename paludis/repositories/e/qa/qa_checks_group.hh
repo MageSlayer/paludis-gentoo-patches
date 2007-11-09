@@ -42,7 +42,8 @@ namespace paludis
                 QAChecksGroup();
                 ~QAChecksGroup();
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, T_> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, T_> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

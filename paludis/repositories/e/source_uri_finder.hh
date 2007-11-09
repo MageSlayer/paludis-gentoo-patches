@@ -50,7 +50,8 @@ namespace paludis
 
                 ~SourceURIFinder();
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<std::string, std::string> > ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::pair<std::string, std::string> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

@@ -261,7 +261,8 @@ namespace paludis
                 ///\name Iterate over our args.
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
                 ConstIterator begin_args() const;
 
@@ -277,7 +278,8 @@ namespace paludis
                 ///\name Iterate over our allowed arguments and associated descriptions
                 ///\{
 
-                typedef WrappedForwardIterator<enum AllowedArgConstIteratorTag { },
+                struct AllowedArgConstIteratorTag;
+                typedef WrappedForwardIterator<AllowedArgConstIteratorTag, 
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
@@ -439,7 +441,8 @@ namespace paludis
                 ///\name Iterate over our allowed arguments and associated descriptions
                 ///\{
 
-                typedef WrappedForwardIterator<enum AllowedArgConstIteratorTag { },
+                struct AllowedArgConstIteratorTag;
+                typedef WrappedForwardIterator<AllowedArgConstIteratorTag, 
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;

@@ -239,7 +239,8 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const ContentsEntry> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

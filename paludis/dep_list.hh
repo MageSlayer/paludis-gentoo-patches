@@ -202,8 +202,11 @@ namespace paludis
             ///\name Iterate over our dependency list entries.
             ///\{
 
-            typedef WrappedForwardIterator<enum IteratorTag { }, DepListEntry> Iterator;
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const DepListEntry> ConstIterator;
+            struct IteratorTag;
+            typedef WrappedForwardIterator<IteratorTag, DepListEntry> Iterator;
+
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const DepListEntry> ConstIterator;
 
             Iterator begin();
             Iterator end();

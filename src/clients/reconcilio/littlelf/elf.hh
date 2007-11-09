@@ -88,7 +88,8 @@ class ElfObject :
             return _hdr.e_shnum;
         }
 
-        typedef paludis::WrappedForwardIterator<enum SectionIteratorTag { }, Section<ElfType_> > SectionIterator;
+        struct SectionIteratorTag;
+        typedef paludis::WrappedForwardIterator<SectionIteratorTag, Section<ElfType_> > SectionIterator;
         SectionIterator section_begin() const;
         SectionIterator section_end() const;
 

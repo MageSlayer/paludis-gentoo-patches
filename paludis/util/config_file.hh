@@ -198,7 +198,8 @@ namespace paludis
             ///\name Iterate over our lines
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -289,7 +290,8 @@ namespace paludis
                     ///\name Iterate over our default keys
                     ///\{
 
-                    typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                    struct ConstIteratorTag;
+                    typedef WrappedForwardIterator<ConstIteratorTag,
                             const std::pair<const std::string, std::string> > ConstIterator;
                     ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                     ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -322,7 +324,8 @@ namespace paludis
             ///\name Iterate over our keys
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { },
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag,
                     const std::pair<const std::string, std::string> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));

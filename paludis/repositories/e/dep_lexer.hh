@@ -105,7 +105,8 @@ namespace paludis
                 ///\name Iterate over our items
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::pair<DepLexerLexeme, std::string> > ConstIterator;
 
                 ConstIterator begin() const;

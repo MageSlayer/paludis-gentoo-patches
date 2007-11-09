@@ -38,7 +38,8 @@ namespace broken_linkage_finder
             Configuration(const paludis::FSEntry &);
             ~Configuration();
 
-            typedef paludis::WrappedForwardIterator<enum DirsIteratorTag { }, const paludis::FSEntry> DirsIterator;
+            struct DirsIteratorTag;
+            typedef paludis::WrappedForwardIterator<DirsIteratorTag, const paludis::FSEntry> DirsIterator;
             DirsIterator begin_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator begin_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -83,7 +83,8 @@ namespace paludis
             ///\name Iterate over USE_EXPAND, USE_EXPAND_HIDDEN
             ///\{
 
-            typedef WrappedForwardIterator<enum UseExpandConstIteratorTag { }, const UseFlagName> UseExpandConstIterator;
+            struct UseExpandConstIteratorTag;
+            typedef WrappedForwardIterator<UseExpandConstIteratorTag, const UseFlagName> UseExpandConstIterator;
 
             UseExpandConstIterator begin_use_expand() const;
             UseExpandConstIterator end_use_expand() const;
@@ -117,7 +118,8 @@ namespace paludis
             ///\name Virtuals
             ///\{
 
-            typedef WrappedForwardIterator<enum VirtualsConstIteratorTag { },
+            struct VirtualsConstIteratorTag;
+            typedef WrappedForwardIterator<VirtualsConstIteratorTag,
                 const std::pair<const QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> > > VirtualsConstIterator;
 
             VirtualsConstIterator begin_virtuals() const;

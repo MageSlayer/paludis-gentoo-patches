@@ -93,8 +93,8 @@ namespace paludis
 
                 void add_child(const tr1::shared_ptr<const PythonDepSpec>);
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { },
-                        const tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
 
                 ConstIterator begin() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

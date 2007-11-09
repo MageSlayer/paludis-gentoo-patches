@@ -52,7 +52,8 @@ namespace paludis
                 ///\name Iterate over our mask lines.
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::pair<const std::string, tr1::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;

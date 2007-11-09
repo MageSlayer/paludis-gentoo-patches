@@ -58,7 +58,8 @@ namespace paludis
                 ///\name Iterate over our profile lines.
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, typename F_::ConstIterator::value_type> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, typename F_::ConstIterator::value_type> ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
 

@@ -88,7 +88,8 @@ class RelocationSection :
             return Relocation_::type_name;
         }
 
-        typedef paludis::WrappedForwardIterator<enum RelocationIteratorTag { }, const typename Relocation_::Entry> RelocationIterator;
+        struct RelocationIteratorTag;
+        typedef paludis::WrappedForwardIterator<RelocationIteratorTag, const typename Relocation_::Entry> RelocationIterator;
         RelocationIterator relocation_begin() const;
         RelocationIterator relocation_end() const;
 };

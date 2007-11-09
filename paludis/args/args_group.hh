@@ -82,7 +82,8 @@ namespace paludis
                 ///\name Iterate over our ArgsOptions.
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, ArgsOption * const> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, ArgsOption * const> ConstIterator;
 
                 ConstIterator begin() const;
                 ConstIterator end() const;

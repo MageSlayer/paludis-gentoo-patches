@@ -75,16 +75,19 @@ namespace paludis
             ///\name Iteration
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const T_> ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const T_> ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator last() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef WrappedForwardIterator<enum ReverseConstIteratorTag { }, const T_> ReverseConstIterator;
+            struct ReverseConstIteratorTag;
+            typedef WrappedForwardIterator<ReverseConstIteratorTag, const T_> ReverseConstIterator;
             ReverseConstIterator rbegin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ReverseConstIterator rend() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef WrappedOutputIterator<enum InserterTag { }, T_> Inserter;
+            struct InserterTag;
+            typedef WrappedOutputIterator<InserterTag, T_> Inserter;
             Inserter back_inserter();
             Inserter front_inserter();
 

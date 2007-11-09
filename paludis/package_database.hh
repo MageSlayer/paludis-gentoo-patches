@@ -123,7 +123,8 @@ namespace paludis
             ///\name Iterate over possible matches
             ///\{
 
-            typedef WrappedForwardIterator<enum OptionsConstIteratorTag { },
+            struct OptionsConstIteratorTag;
+            typedef WrappedForwardIterator<OptionsConstIteratorTag,
                     const std::string> OptionsConstIterator;
 
             OptionsConstIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -320,7 +321,8 @@ namespace paludis
             ///\name Iterate over our repositories
             ///\{
 
-            typedef WrappedForwardIterator<enum RepositoryConstIteratorTag { }, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
+            struct RepositoryConstIteratorTag;
+            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const tr1::shared_ptr<Repository> > RepositoryConstIterator;
 
             RepositoryConstIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

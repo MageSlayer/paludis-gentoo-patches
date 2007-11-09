@@ -194,7 +194,8 @@ namespace paludis
             ///\name Iterate over our dep specs
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const tr1::shared_ptr<const Item_> > ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const tr1::shared_ptr<const Item_> > ConstIterator;
 
             ConstIterator begin() const;
             ConstIterator end() const;

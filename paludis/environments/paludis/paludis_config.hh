@@ -125,7 +125,8 @@ namespace paludis
                 ///\name Iterate over our repositories
                 ///\{
 
-                typedef WrappedForwardIterator<enum RepositoryConstIteratorTag { }, const RepositoryConfigEntry> RepositoryConstIterator;
+                struct RepositoryConstIteratorTag;
+                typedef WrappedForwardIterator<RepositoryConstIteratorTag, const RepositoryConfigEntry> RepositoryConstIterator;
 
                 RepositoryConstIterator begin_repositories() const;
 

@@ -38,19 +38,22 @@ class BrokenLinkageFinder :
         BrokenLinkageFinder(const paludis::Environment *, const std::string &);
         ~BrokenLinkageFinder();
 
-        typedef paludis::WrappedForwardIterator<enum BrokenPackageConstIteratorTag { },
+        struct BrokenPackageConstIteratorTag;
+        typedef paludis::WrappedForwardIterator<BrokenPackageConstIteratorTag,
                 const paludis::tr1::shared_ptr<const paludis::PackageID>
                     > BrokenPackageConstIterator;
         BrokenPackageConstIterator begin_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
         BrokenPackageConstIterator end_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-        typedef paludis::WrappedForwardIterator<enum BrokenFileConstIteratorTag { }, const paludis::FSEntry> BrokenFileConstIterator;
+        struct BrokenFileConstIteratorTag;
+        typedef paludis::WrappedForwardIterator<BrokenFileConstIteratorTag, const paludis::FSEntry> BrokenFileConstIterator;
         BrokenFileConstIterator begin_broken_files(const paludis::tr1::shared_ptr<const paludis::PackageID> &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));
         BrokenFileConstIterator end_broken_files(const paludis::tr1::shared_ptr<const paludis::PackageID> &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-        typedef paludis::WrappedForwardIterator<enum MissingRequirementConstIteratorTag { }, const std::string> MissingRequirementConstIterator;
+        struct MissingRequirementConstIteratorTag;
+        typedef paludis::WrappedForwardIterator<MissingRequirementConstIteratorTag, const std::string> MissingRequirementConstIterator;
         MissingRequirementConstIterator begin_missing_requirements(
             const paludis::tr1::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
             const PALUDIS_ATTRIBUTE((warn_unused_result));

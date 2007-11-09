@@ -87,7 +87,8 @@ namespace paludis
             ///\name Iterate over environment data
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const std::string, std::string> > ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::pair<const std::string, std::string> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

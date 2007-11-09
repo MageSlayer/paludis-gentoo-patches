@@ -85,7 +85,8 @@ namespace paludis
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
-            typedef WrappedForwardIterator<enum DisplayIfInstalledConstIteratorTag { },
+            struct DisplayIfInstalledConstIteratorTag;
+            typedef WrappedForwardIterator<DisplayIfInstalledConstIteratorTag,
                     const std::string> DisplayIfInstalledConstIterator;
 
             DisplayIfInstalledConstIterator begin_display_if_installed() const;
@@ -97,7 +98,8 @@ namespace paludis
             ///\name Iterate over our Display-If-Keyword headers
             ///\{
 
-            typedef WrappedForwardIterator<enum DisplayIfKeywordConstIteratorTag { },
+            struct DisplayIfKeywordConstIteratorTag;
+            typedef WrappedForwardIterator<DisplayIfKeywordConstIteratorTag,
                     const std::string> DisplayIfKeywordConstIterator;
 
             DisplayIfKeywordConstIterator begin_display_if_keyword() const;
@@ -109,7 +111,8 @@ namespace paludis
             ///\name Iterate over our Display-If-Profile headers
             ///\{
 
-            typedef WrappedForwardIterator<enum DisplayIfProfileConstIteratorTag { },
+            struct DisplayIfProfileConstIteratorTag;
+            typedef WrappedForwardIterator<DisplayIfProfileConstIteratorTag,
                     const std::string> DisplayIfProfileConstIterator;
 
             DisplayIfProfileConstIterator begin_display_if_profile() const;

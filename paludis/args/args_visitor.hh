@@ -75,7 +75,8 @@ namespace paludis
             public Visitor<ArgsVisitorTypes>
         {
             public:
-                typedef WrappedForwardIterator<enum ArgsIteratorTag { }, std::string> ArgsIterator;
+                struct ArgsIteratorTag;
+                typedef WrappedForwardIterator<ArgsIteratorTag, std::string> ArgsIterator;
 
             private:
                 ArgsIterator * _args_index, _args_end;

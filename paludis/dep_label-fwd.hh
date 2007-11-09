@@ -35,12 +35,24 @@ namespace paludis
     struct URILabel;
 
     template <typename T_> struct ConcreteURILabel;
-    typedef ConcreteURILabel<enum URIMirrorsThenListedLabelTag { }> URIMirrorsThenListedLabel;
-    typedef ConcreteURILabel<enum URIMirrorsOnlyLabelTag { }> URIMirrorsOnlyLabel;
-    typedef ConcreteURILabel<enum URIListedOnlyLabelTag { }> URIListedOnlyLabel;
-    typedef ConcreteURILabel<enum URIListedThenMirrorsLabelTag { }> URIListedThenMirrorsLabel;
-    typedef ConcreteURILabel<enum URILocalMirrorsOnlyLabelTag { }> URILocalMirrorsOnlyLabel;
-    typedef ConcreteURILabel<enum URIManualOnlyLabelTag { }> URIManualOnlyLabel;
+
+    struct URIMirrorsThenListedLabelTag;
+    typedef ConcreteURILabel<URIMirrorsThenListedLabelTag> URIMirrorsThenListedLabel;
+
+    struct URIMirrorsOnlyLabelTag;
+    typedef ConcreteURILabel<URIMirrorsOnlyLabelTag> URIMirrorsOnlyLabel;
+
+    struct URIListedOnlyLabelTag;
+    typedef ConcreteURILabel<URIListedOnlyLabelTag> URIListedOnlyLabel;
+
+    struct URIListedThenMirrorsLabelTag;
+    typedef ConcreteURILabel<URIListedThenMirrorsLabelTag> URIListedThenMirrorsLabel;
+
+    struct URILocalMirrorsOnlyLabelTag;
+    typedef ConcreteURILabel<URILocalMirrorsOnlyLabelTag> URILocalMirrorsOnlyLabel;
+
+    struct URIManualOnlyLabelTag;
+    typedef ConcreteURILabel<URIManualOnlyLabelTag> URIManualOnlyLabel;
 
     /**
      * A URILabel can be written to a stream.
@@ -59,14 +71,17 @@ namespace paludis
 
     template <typename T_, typename Category_> struct ConcreteDependencyLabel;
 
+    struct DependencyHostLabelTag;
+
     /**
      * A DependencyHostLabel specifies host requirements for building a package.
      *
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyHostLabelTag { },
-            DependencySystemLabel> DependencyHostLabel;
+    typedef ConcreteDependencyLabel<DependencyHostLabelTag, DependencySystemLabel> DependencyHostLabel;
+
+    struct DependencyTargetLabelTag;
 
     /**
      * A DependencyTargetLabel specifies target requirements for building a package.
@@ -74,8 +89,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyTargetLabelTag { },
-            DependencySystemLabel> DependencyTargetLabel;
+    typedef ConcreteDependencyLabel<DependencyTargetLabelTag, DependencySystemLabel> DependencyTargetLabel;
+
+    struct DependencyBuildLabelTag;
 
     /**
      * A DependencyBuildLabel specifies build-time requirements for building a package.
@@ -83,8 +99,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyBuildLabelTag { },
-            DependencyTypeLabel> DependencyBuildLabel;
+    typedef ConcreteDependencyLabel<DependencyBuildLabelTag, DependencyTypeLabel> DependencyBuildLabel;
+
+    struct DependencyRunLabelTag;
 
     /**
      * A DependencyRunLabel specifies runtime requirements for building a package.
@@ -92,8 +109,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyRunLabelTag { },
-            DependencyTypeLabel> DependencyRunLabel;
+    typedef ConcreteDependencyLabel<DependencyRunLabelTag, DependencyTypeLabel> DependencyRunLabel;
+
+    struct DependencyInstallLabelTag;
 
     /**
      * A DependencyInstallLabel specifies install-time requirements for building a package.
@@ -101,8 +119,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyInstallLabelTag { },
-            DependencyTypeLabel> DependencyInstallLabel;
+    typedef ConcreteDependencyLabel<DependencyInstallLabelTag, DependencyTypeLabel> DependencyInstallLabel;
+
+    struct DependencyCompileLabelTag;
 
     /**
      * A DependencyCompileLabel specifies compiled-against requirements for building a package.
@@ -110,8 +129,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyCompileLabelTag { },
-            DependencyTypeLabel> DependencyCompileLabel;
+    typedef ConcreteDependencyLabel<DependencyCompileLabelTag, DependencyTypeLabel> DependencyCompileLabel;
+
+    struct DependencySuggestedLabelTag;
 
     /**
      * A DependencySuggestLabel specifies that a dependency is suggested.
@@ -119,8 +139,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencySuggestedLabelTag { },
-            DependencySuggestLabel> DependencySuggestedLabel;
+    typedef ConcreteDependencyLabel<DependencySuggestedLabelTag, DependencySuggestLabel> DependencySuggestedLabel;
+
+    struct DependencyRecommendedLabelTag;
 
     /**
      * A DependencyRecommendedLabel specifies that a dependency is recommended.
@@ -128,8 +149,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyRecommendedLabelTag { },
-            DependencySuggestLabel> DependencyRecommendedLabel;
+    typedef ConcreteDependencyLabel<DependencyRecommendedLabelTag, DependencySuggestLabel> DependencyRecommendedLabel;
+
+    struct DependencyRequiredLabelTag;
 
     /**
      * A DependencyRequiredLabel specifies that a dependency is required.
@@ -137,8 +159,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyRequiredLabelTag { },
-            DependencySuggestLabel> DependencyRequiredLabel;
+    typedef ConcreteDependencyLabel<DependencyRequiredLabelTag, DependencySuggestLabel> DependencyRequiredLabel;
+
+    struct DependencyAnyLabelTag;
 
     /**
      * A DependencyAnyLabel specifies that a dependency can be satisfied by
@@ -147,8 +170,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyAnyLabelTag { },
-            DependencyABIsLabel> DependencyAnyLabel;
+    typedef ConcreteDependencyLabel<DependencyAnyLabelTag, DependencyABIsLabel> DependencyAnyLabel;
+
+    struct DependencyMineLabelTag;
 
     /**
      * A DependencyMineLabel specifies that a dependency is satisfied by
@@ -157,8 +181,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyMineLabelTag { },
-            DependencyABIsLabel> DependencyMineLabel;
+    typedef ConcreteDependencyLabel<DependencyMineLabelTag, DependencyABIsLabel> DependencyMineLabel;
+
+    struct DependencyPrimaryLabelTag;
 
     /**
      * A DependencyPrimaryLabel specifies that a dependency can be satisfied by
@@ -167,8 +192,9 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyPrimaryLabelTag { },
-            DependencyABIsLabel> DependencyPrimaryLabel;
+    typedef ConcreteDependencyLabel<DependencyPrimaryLabelTag, DependencyABIsLabel> DependencyPrimaryLabel;
+
+    struct DependencyABILabelTag;
 
     /**
      * A DependencyABILabel specifies that a dependency can be satisfied by
@@ -177,8 +203,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.26
      */
-    typedef ConcreteDependencyLabel<enum DependencyABILabelTag { },
-            DependencyABIsLabel> DependencyABILabel;
+    typedef ConcreteDependencyLabel<DependencyABILabelTag, DependencyABIsLabel> DependencyABILabel;
 
     /**
      * A DependencyLabel can be written to a stream.

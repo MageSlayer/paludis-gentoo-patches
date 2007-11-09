@@ -637,8 +637,11 @@ namespace paludis
             ///\name Visitor operations
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const ConstAcceptInterface<H_> > ConstIterator;
-            typedef WrappedForwardIterator<enum IteratorTag { }, AcceptInterface<H_> > Iterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const ConstAcceptInterface<H_> > ConstIterator;
+
+            struct IteratorTag;
+            typedef WrappedForwardIterator<IteratorTag, AcceptInterface<H_> > Iterator;
 
             ///\}
         };

@@ -54,7 +54,8 @@ namespace paludis
             ///\name Iterate over the candidates
             ///\{
 
-            typedef WrappedForwardIterator<enum CandidatesConstIteratorTag { }, const QualifiedPackageName>
+            struct CandidatesConstIteratorTag;
+            typedef WrappedForwardIterator<CandidatesConstIteratorTag, const QualifiedPackageName>
                 CandidatesConstIterator;
 
             CandidatesConstIterator begin() const;
@@ -83,7 +84,8 @@ namespace paludis
             ///\name Iterate over the candidates
             ///\{
 
-            typedef WrappedForwardIterator<enum RepositoriesConstIteratorTag { }, const RepositoryName>
+            struct RepositoriesConstIteratorTag;
+            typedef WrappedForwardIterator<RepositoriesConstIteratorTag, const RepositoryName>
                 RepositoriesConstIterator;
 
             RepositoriesConstIterator begin() const;

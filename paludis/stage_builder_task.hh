@@ -121,7 +121,8 @@ namespace paludis
             ///\name Iterate over our stages
             ///\{
 
-            typedef WrappedForwardIterator<enum StageConstIteratorTag { }, const tr1::shared_ptr<const StageBase> > StageConstIterator;
+            struct StageConstIteratorTag;
+            typedef WrappedForwardIterator<StageConstIteratorTag, const tr1::shared_ptr<const StageBase> > StageConstIterator;
             StageConstIterator begin_stages() const;
             StageConstIterator end_stages() const;
 

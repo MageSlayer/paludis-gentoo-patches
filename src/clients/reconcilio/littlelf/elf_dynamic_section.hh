@@ -203,7 +203,8 @@ class DynamicSection :
 
         void resolve_entry_names(Section<ElfType_> &);
 
-        typedef paludis::WrappedForwardIterator<enum EntryIteratorTag { }, DynamicEntry<ElfType_> > EntryIterator;
+        struct EntryIteratorTag;
+        typedef paludis::WrappedForwardIterator<EntryIteratorTag, DynamicEntry<ElfType_> > EntryIterator;
         EntryIterator entry_begin() const;
         EntryIterator entry_end() const;
 };

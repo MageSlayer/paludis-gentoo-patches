@@ -111,7 +111,8 @@ namespace paludis
             bool had_package_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             void override_target_type(const DepListTargetType);
 
-            typedef WrappedForwardIterator<enum TargetsConstIteratorTag { }, const std::string> TargetsConstIterator;
+            struct TargetsConstIteratorTag;
+            typedef WrappedForwardIterator<TargetsConstIteratorTag, const std::string> TargetsConstIterator;
             TargetsConstIterator begin_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
             TargetsConstIterator end_targets() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

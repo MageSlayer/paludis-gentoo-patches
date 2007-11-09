@@ -286,7 +286,9 @@ namespace paludis
             ///\name Finding and iterating over metadata keys
             ///\{
 
-            typedef WrappedForwardIterator<enum MetadataConstIteratorTag { }, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+            struct MetadataConstIteratorTag;
+            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+
             MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -317,7 +319,9 @@ namespace paludis
             ///\name Masks
             ///\{
 
-            typedef WrappedForwardIterator<enum MasksConstIteratorTag { }, tr1::shared_ptr<const Mask> > MasksConstIterator;
+            struct MasksConstIteratorTag;
+            typedef WrappedForwardIterator<MasksConstIteratorTag, tr1::shared_ptr<const Mask> > MasksConstIterator;
+
             MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

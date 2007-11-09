@@ -58,7 +58,8 @@ namespace paludis
                 ///\name Iterate over our specifications
                 ///\{
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { },
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, tr1::shared_ptr<const GemSpecification> > >
                             ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));

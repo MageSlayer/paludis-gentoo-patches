@@ -62,7 +62,8 @@ namespace paludis
             ///\name Iterate over our key/values
             ///\{
 
-            typedef WrappedForwardIterator<enum KeyValueConstIteratorTag { },
+            struct KeyValueConstIteratorTag;
+            typedef WrappedForwardIterator<KeyValueConstIteratorTag, 
                     const std::pair<const std::string, std::string> > KeyValueConstIterator;
 
             KeyValueConstIterator begin_kvs() const
@@ -101,7 +102,8 @@ namespace paludis
             ///\name ConstIterator over our sections
             ///\{
 
-            typedef WrappedForwardIterator<enum SectionConstIteratorTag { },
+            struct SectionConstIteratorTag;
+            typedef WrappedForwardIterator<SectionConstIteratorTag,
                     const tr1::shared_ptr<const RepositoryInfoSection> > SectionConstIterator;
 
             SectionConstIterator begin_sections() const

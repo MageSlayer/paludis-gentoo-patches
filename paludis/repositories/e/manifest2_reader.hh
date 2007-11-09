@@ -73,7 +73,8 @@ namespace paludis
 
                 /// \name Iterator functions
 
-                typedef WrappedForwardIterator<enum ConstIteratorTag { }, const Manifest2Entry> ConstIterator;
+                struct ConstIteratorTag;
+                typedef WrappedForwardIterator<ConstIteratorTag, const Manifest2Entry> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

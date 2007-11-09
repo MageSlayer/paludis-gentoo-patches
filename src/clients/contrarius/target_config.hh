@@ -47,7 +47,8 @@ class TargetConfig :
     private:
         typedef std::list<std::pair<std::string, std::string> > SpecEntryList;
 
-        typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
+        struct ConstIteratorTag;
+        typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
         SpecEntryList _binutils_list;
 

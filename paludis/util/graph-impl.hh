@@ -60,7 +60,8 @@ namespace paludis
             ///\name Iterate over our nodes
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::string> ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
             ConstIterator begin() const
             {

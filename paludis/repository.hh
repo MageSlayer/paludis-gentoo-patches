@@ -476,7 +476,8 @@ namespace paludis
             ///\name Iterate over our mirrors
             ///\{
 
-            typedef WrappedForwardIterator<enum MirrorsConstIteratorTag { },
+            struct MirrorsConstIteratorTag;
+            typedef WrappedForwardIterator<MirrorsConstIteratorTag,
                     const std::pair<const std::string, std::string> > MirrorsConstIterator;
 
             virtual MirrorsConstIterator begin_mirrors(const std::string & s) const
@@ -643,7 +644,8 @@ namespace paludis
 
             typedef RepositoryEInterfaceProfilesDescLine ProfilesDescLine;
 
-            typedef WrappedForwardIterator<enum ProfilesConstIteratorTag { }, const ProfilesDescLine> ProfilesConstIterator;
+            struct ProfilesConstIteratorTag;
+            typedef WrappedForwardIterator<ProfilesConstIteratorTag, const ProfilesDescLine> ProfilesConstIterator;
             virtual ProfilesConstIterator begin_profiles() const = 0;
             virtual ProfilesConstIterator end_profiles() const = 0;
 

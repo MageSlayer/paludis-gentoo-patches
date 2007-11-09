@@ -69,12 +69,14 @@ namespace paludis
             ///\name Iteration
             ///\{
 
-            typedef WrappedForwardIterator<enum ConstIteratorTag { }, const std::pair<const K_, V_> > ConstIterator;
+            struct ConstIteratorTag;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::pair<const K_, V_> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const K_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            typedef WrappedOutputIterator<enum InserterTag { }, std::pair<const K_, V_> > Inserter;
+            struct InserterTag;
+            typedef WrappedOutputIterator<InserterTag, std::pair<const K_, V_> > Inserter;
             Inserter inserter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

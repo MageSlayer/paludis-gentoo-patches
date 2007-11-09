@@ -75,7 +75,8 @@ namespace paludis
             ///\name Iterate over our archs.
             ///\{
 
-            typedef WrappedForwardIterator<enum ArchsConstIteratorTag { }, const UseFlagName> ArchsConstIterator;
+            struct ArchsConstIteratorTag;
+            typedef WrappedForwardIterator<ArchsConstIteratorTag, const UseFlagName> ArchsConstIterator;
             ArchsConstIterator begin_archs() const;
             ArchsConstIterator end_archs() const;
 
@@ -89,7 +90,8 @@ namespace paludis
             ///\name Iterate over our ranges.
             ///\{
 
-            typedef WrappedForwardIterator<enum RangesConstIteratorTag { }, const GLSARange> RangesConstIterator;
+            struct RangesConstIteratorTag;
+            typedef WrappedForwardIterator<RangesConstIteratorTag, const GLSARange> RangesConstIterator;
             RangesConstIterator begin_unaffected() const;
             RangesConstIterator end_unaffected() const;
             RangesConstIterator begin_vulnerable() const;
@@ -139,7 +141,8 @@ namespace paludis
             ///\name Iterate over our packages.
             ///\{
 
-            typedef WrappedForwardIterator<enum PackagesConstIteratorTag { }, const GLSAPackage> PackagesConstIterator;
+            struct PackagesConstIteratorTag;
+            typedef WrappedForwardIterator<PackagesConstIteratorTag, const GLSAPackage> PackagesConstIterator;
             PackagesConstIterator begin_packages() const;
             PackagesConstIterator end_packages() const;
 

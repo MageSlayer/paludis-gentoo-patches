@@ -91,7 +91,8 @@ namespace paludis
             ///\name Target iteration
             ///\{
 
-            typedef WrappedForwardIterator<enum TargetsConstIteratorTag { }, const RepositoryName> TargetsConstIterator;
+            struct TargetsConstIteratorTag;
+            typedef WrappedForwardIterator<TargetsConstIteratorTag, const RepositoryName> TargetsConstIterator;
             TargetsConstIterator begin_targets() const;
             TargetsConstIterator end_targets() const;
 

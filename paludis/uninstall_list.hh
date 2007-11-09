@@ -104,7 +104,8 @@ namespace paludis
             ///\name Iterate over our items to remove
             ///\{
 
-            typedef WrappedForwardIterator<enum UninstallListTag { }, const UninstallListEntry> ConstIterator;
+            struct UninstallListTag;
+            typedef WrappedForwardIterator<UninstallListTag, const UninstallListEntry> ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 
