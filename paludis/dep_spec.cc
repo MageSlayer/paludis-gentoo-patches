@@ -1088,7 +1088,9 @@ FetchableURIDepSpec::clone() const
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename T_>
     struct Implementation<LabelsDepSpec<T_ > >
     {

@@ -43,7 +43,9 @@ URILabel::~URILabel()
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename T_>
     struct Implementation<ConcreteURILabel<T_> >
     {
@@ -93,7 +95,9 @@ DependencyLabel::~DependencyLabel()
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename T_, typename C_>
     struct Implementation<ConcreteDependencyLabel<T_, C_> >
     {

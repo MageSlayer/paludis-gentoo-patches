@@ -171,6 +171,20 @@ using n::r_x;
 	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
 dnl }}}
 
+dnl {{{ check for whether we want an extra template<> for Implementation
+AC_MSG_CHECKING([whether your compiler wants template<> for template specialisations of template classes])
+AC_COMPILE_IFELSE([
+template <typename T_> struct S;
+template <typename T_> struct T;
+template <> template <typename T_> struct S<T<T_> > { };
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_DOUBLE_TEMPLATE=1"
+	])
+dnl }}}
+
 dnl {{{ check for static_assert
 AC_MSG_CHECKING([for compiler support for static_assert])
 AC_COMPILE_IFELSE([
@@ -566,6 +580,7 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-wd383])
 	CHECK_CXXFLAG([-wd444])
 	CHECK_CXXFLAG([-wd488])
+	CHECK_CXXFLAG([-wd810])
 	CHECK_CXXFLAG([-wd981])
 	CHECK_CXXFLAG([-wd1125])
 	CHECK_CXXFLAG([-wd1418])

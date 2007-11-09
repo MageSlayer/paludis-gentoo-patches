@@ -53,7 +53,9 @@ namespace paludis
      * \ingroup g_data_structures
      * \nosubgrouping
      */
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename K_, typename V_, typename C_>
     struct Implementation<Map<K_, V_, C_> >
     {

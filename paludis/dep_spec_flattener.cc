@@ -33,7 +33,9 @@ using namespace paludis;
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename Heirarchy_, typename Item_>
     struct Implementation<DepSpecFlattener<Heirarchy_, Item_> >
     {
@@ -105,7 +107,9 @@ dep_spec_flattener_internals::VisitUseDepSpec<Heirarchy_, Item_, true>::visit_se
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename Heirarchy_, typename Item_>
     struct Implementation<dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true> >
     {
