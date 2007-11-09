@@ -63,7 +63,8 @@ namespace paludis
                 Implementation<UnpackagedDependencyKey> * const _imp;
 
             public:
-                UnpackagedDependencyKey(const std::string & r, const std::string & h, const MetadataKeyType t,
+                UnpackagedDependencyKey(const Environment * const env,
+                        const std::string & r, const std::string & h, const MetadataKeyType t,
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 

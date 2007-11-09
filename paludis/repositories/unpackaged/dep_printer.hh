@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/formatter.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
@@ -37,7 +38,7 @@ namespace paludis
             private PrivateImplementationPattern<DepPrinter>
         {
             public:
-                DepPrinter(const DependencySpecTree::ItemFormatter &, const bool);
+                DepPrinter(const Environment * const, const DependencySpecTree::ItemFormatter &, const bool);
                 ~DepPrinter();
 
                 const std::string result() const;

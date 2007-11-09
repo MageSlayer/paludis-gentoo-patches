@@ -95,19 +95,22 @@ namespace paludis
     template <>
     struct Implementation<UnpackagedDependencyKey>
     {
+        const Environment * const env;
         const tr1::shared_ptr<const DependencySpecTree::ConstItem> value;
 
-        Implementation(const std::string & v) :
+        Implementation(const Environment * const e, const std::string & v) :
+            env(e),
             value(DepParser::parse(v))
         {
         }
     };
 }
 
-UnpackagedDependencyKey::UnpackagedDependencyKey(const std::string & r, const std::string & h, const MetadataKeyType t,
+UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
+        const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::string & v) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
-    PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(v)),
+    PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v)),
     _imp(PrivateImplementationPattern<UnpackagedDependencyKey>::_imp.get())
 {
 }
@@ -125,7 +128,7 @@ UnpackagedDependencyKey::value() const
 std::string
 UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
-    DepPrinter p(f, false);
+    DepPrinter p(_imp->env, f, false);
     _imp->value->accept(p);
     return p.result();
 }
@@ -133,7 +136,7 @@ UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & 
 std::string
 UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
-    DepPrinter p(f, true);
+    DepPrinter p(_imp->env, f, true);
     _imp->value->accept(p);
     return p.result();
 }

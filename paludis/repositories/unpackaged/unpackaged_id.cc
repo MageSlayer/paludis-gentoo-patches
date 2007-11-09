@@ -68,8 +68,8 @@ namespace paludis
             slot(s),
             repository_name(n),
             fs_location_key(new UnpackagedFSEntryKey("location", "Location", mkt_normal, l)),
-            build_dependencies_key(new UnpackagedDependencyKey("build_dependencies", "Build dependencies", mkt_dependencies, b)),
-            run_dependencies_key(new UnpackagedDependencyKey("run_dependencies", "Run dependencies", mkt_dependencies, r)),
+            build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies, b)),
+            run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies, r)),
             description_key(new UnpackagedStringKey("description", "Description", mkt_significant, d))
         {
         }

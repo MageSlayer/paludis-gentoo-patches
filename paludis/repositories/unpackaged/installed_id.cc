@@ -144,8 +144,8 @@ namespace
             const FSEntry _f;
 
         public:
-            InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSEntry & f) :
-                MetadataStringKey(r, h, mkt_normal),
+            InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
+                MetadataStringKey(r, h, t),
                 _f(f)
             {
             }
@@ -171,13 +171,16 @@ namespace
         public MetadataSpecTreeKey<DependencySpecTree>
     {
         private:
+            const Environment * const _env;
             mutable tr1::shared_ptr<const DependencySpecTree::ConstItem> _v;
             mutable Mutex _mutex;
             const FSEntry _f;
 
         public:
-            InstalledUnpackagedDependencyKey(const std::string & r, const std::string & h, const FSEntry & f) :
-                MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_normal),
+            InstalledUnpackagedDependencyKey(const Environment * const e,
+                    const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
+                MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
+                _env(e),
                 _f(f)
             {
             }
@@ -202,7 +205,7 @@ namespace
             std::string
             pretty_print(const DependencySpecTree::ItemFormatter & f) const
             {
-                DepPrinter p(f, false);
+                DepPrinter p(_env, f, false);
                 value()->accept(p);
                 return p.result();
             }
@@ -210,7 +213,7 @@ namespace
             std::string
             pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
             {
-                DepPrinter p(f, true);
+                DepPrinter p(_env, f, true);
                 value()->accept(p);
                 return p.result();
             }
@@ -265,21 +268,23 @@ namespace paludis
             }
 
             if ((l / "source_repository").exists())
-                source_origin_key.reset(new InstalledUnpackagedStringKey("source_repository", "Source repository", l / "source_repository"));
+                source_origin_key.reset(new InstalledUnpackagedStringKey("source_repository", "Source repository", l / "source_repository",
+                            mkt_normal));
 
             if ((l / "binary_repository").exists())
-                binary_origin_key.reset(new InstalledUnpackagedStringKey("binary_repository", "Binary repository", l / "binary_repository"));
+                binary_origin_key.reset(new InstalledUnpackagedStringKey("binary_repository", "Binary repository", l / "binary_repository",
+                            mkt_normal));
 
             if ((l / "description").exists())
-                description_key.reset(new InstalledUnpackagedStringKey("description", "Description", l / "description"));
+                description_key.reset(new InstalledUnpackagedStringKey("description", "Description", l / "description", mkt_significant));
 
             if ((l / "build_dependencies").exists())
-                build_dependencies_key.reset(new InstalledUnpackagedDependencyKey(
-                            "build_dependencies", "Build dependencies", l / "build_dependencies"));
+                build_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
+                            "build_dependencies", "Build dependencies", l / "build_dependencies", mkt_dependencies));
 
             if ((l / "run_dependencies").exists())
-                run_dependencies_key.reset(new InstalledUnpackagedDependencyKey(
-                            "run_dependencies", "Run dependencies", l / "run_dependencies"));
+                run_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
+                            "run_dependencies", "Run dependencies", l / "run_dependencies", mkt_dependencies));
         }
     };
 }
