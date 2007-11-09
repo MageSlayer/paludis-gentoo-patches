@@ -174,7 +174,7 @@ void
 LineConfigFile::_parse(const Source & s, const LineConfigFileOptions & opts)
 {
     Context context("When parsing line configuration file" + (s.filename().empty() ? ":" :
-                "'" + s.filename() + "':"));
+                " '" + s.filename() + "':"));
 
     if (! s.stream())
         throw ConfigFileError(s.filename(), "Cannot read input");
