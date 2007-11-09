@@ -50,19 +50,11 @@ namespace
     struct FooNode :
         Node
     {
-        std::string foo()
-        {
-            return "foo";
-        }
     };
 
     struct BarNode :
         Node
     {
-        std::string bar()
-        {
-            return "bar";
-        }
     };
 }
 
