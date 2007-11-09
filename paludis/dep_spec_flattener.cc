@@ -145,7 +145,7 @@ dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::vis
         return;
     }
 
-    if (! _imp->recursing_sets.insert(s.name()).second)
+    if (! this->_imp->recursing_sets.insert(s.name()).second)
     {
         Log::get_instance()->message(ll_warning, lc_context) << "Recursively defined set '" << s.name() << "'";
         return;
@@ -153,7 +153,7 @@ dep_spec_flattener_internals::VisitNamedSetDepSpec<Heirarchy_, Item_, true>::vis
 
     set->accept(*f);
 
-    _imp->recursing_sets.erase(s.name());
+    this->_imp->recursing_sets.erase(s.name());
 }
 
 template <typename Heirarchy_, typename Item_>
