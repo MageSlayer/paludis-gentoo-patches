@@ -1333,6 +1333,7 @@ EntryDepTagDisplayer::visit(const DependencyDepTag &)
 void
 EntryDepTagDisplayer::visit(const TargetDepTag &)
 {
+    text() = "target";
 }
 
 void
