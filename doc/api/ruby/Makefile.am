@@ -28,6 +28,7 @@ examples = \
 	example_contents.rb \
 	example_dep_spec.rb \
 	example_query.rb \
+	example_version_operator.rb \
 	example_version_spec.rb
 
 EXTRA_DIST = $(examples)
