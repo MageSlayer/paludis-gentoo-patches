@@ -368,12 +368,13 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_slot(d, m);
 
     display_merge_list_entry_status_and_update_counts(d, existing_repo, existing_slot_repo, m);
+    display_merge_list_entry_non_package_tags(d, m);
     if (! want_compact())
-        display_merge_list_entry_tags(d, m);
+        display_merge_list_entry_package_tags(d, m);
     display_merge_list_entry_description(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
     if (want_compact())
-        display_merge_list_entry_tags(d, m);
+        display_merge_list_entry_package_tags(d, m);
     display_merge_list_entry_end(d, m);
 
     if (d.kind == dlk_masked)
@@ -1160,7 +1161,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const DisplayMode m)
+ConsoleInstallTask::display_merge_list_entry_non_package_tags(const DepListEntry & d, const DisplayMode m)
 {
     if (d.tags->empty())
         return;
@@ -1204,6 +1205,22 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             }
         }
     }
+
+    if (! s.str().empty())
+    {
+        std::string t(s.str());
+        t.erase(t.length() - 1);
+        output_no_endl(" " + t);
+    }
+}
+
+void
+ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d, const DisplayMode m)
+{
+    if (d.tags->empty())
+        return;
+
+    std::stringstream s;
 
     if (! want_install_reasons())
         if (d.kind != dlk_block)
@@ -1282,13 +1299,8 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             output_no_endl(" " + t);
         else
         {
-            if (std::string::npos != t.find_first_of(" :"))
-            {
-                output_endl();
-                output_no_endl("    " + t);
-            }
-            else
-                output_no_endl(" " + t);
+            output_endl();
+            output_no_endl("    " + t);
         }
     }
 }
