@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_PTR_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/tr1_memory.hh>
 
 /** \file
  * Forward declarations for paludis/make_shared_ptr.hh .
@@ -30,12 +31,6 @@
 
 namespace paludis
 {
-    namespace tr1
-    {
-        template <typename T_>
-        class shared_ptr;
-    }
-
     /**
      * Convenience function for creating a tr1::shared_ptr<> from a newly
      * constructed object.
