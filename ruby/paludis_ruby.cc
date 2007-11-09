@@ -73,14 +73,16 @@ namespace
     static VALUE c_install_action_error;
     static VALUE c_uninstall_action_error;
     static VALUE c_action_error;
+    static VALUE c_bad_version_operator_error;
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
 
-    /* Document-method: match_package
+    /*
+     * Document-method: match_package
      *
      * call-seq:
-     *     match_package (environment, package_dep_spec, target) -> true or false
+     *     match_package(environment, package_dep_spec, target) -> true or false
      *
      * Return whether the specified spec matches the specified target.
      *
@@ -99,6 +101,31 @@ namespace
             exception_to_ruby_exception(e);
         }
 
+    }
+
+    /*
+     * Document-method: version_operator
+     *
+     * call-seq:
+     *     version_operator(operator, left_version_spec, right_version_spec) -> true of false
+     *
+     * Applies operator to left_version_spec andn right_version_spec
+     */
+    VALUE paludis_version_operator(VALUE, VALUE op, VALUE left, VALUE right)
+    {
+        try
+        {
+            const VersionOperator vo = VersionOperator(StringValuePtr(op));
+            const VersionSpec l = value_to_version_spec(left);
+            const VersionSpec r = value_to_version_spec(right);
+            if (vo.as_version_spec_comparator()(l, r))
+                return true;
+            return false;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
 }
@@ -196,6 +223,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_uninstall_action_error, dynamic_cast<const paludis::UninstallActionError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ActionError *>(&ee))
         rb_raise(c_action_error, dynamic_cast<const paludis::ActionError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::BadVersionOperatorError *>(&ee))
+        rb_raise(c_bad_version_operator_error, dynamic_cast<const paludis::BadVersionOperatorError *>(&ee)->message().c_str());
 
     else if (0 != dynamic_cast<const paludis::Exception *>(&ee))
         rb_raise(rb_eRuntimeError, "Caught paludis::Exception: %s (%s)",
@@ -398,7 +427,15 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      */
     c_uninstall_action_error = rb_define_class_under(c_paludis_module, "UninstallActionError", c_action_error);
 
+    /*
+     * Document-class: Paludis::BadVersionOperatorError
+     *
+     * Thrown if a bad version operator is encountered
+     */
+    c_bad_version_operator_error = rb_define_class_under(c_paludis_module, "BadVersionOperatorError", rb_eRuntimeError);
+
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
+    rb_define_module_function(c_paludis_module, "version_operator", RUBY_FUNC_CAST(&paludis_version_operator), 3);
 
     rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                     + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));

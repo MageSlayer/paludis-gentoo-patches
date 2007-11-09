@@ -60,6 +60,27 @@ module Paludis
                 Paludis::match_package(env,spec,spec)
             end
         end
+
+        def test_version_operator
+            one = VersionSpec.new('1')
+            two = VersionSpec.new('2')
+            assert Paludis::version_operator('<', one, two)
+            assert Paludis::version_operator('<=', one, two)
+            assert !Paludis::version_operator('>=', one, two)
+            assert !Paludis::version_operator('>', one, two)
+        end
+
+        def test_bad_version_operator
+            one = VersionSpec.new('1')
+            two = VersionSpec.new('2')
+            assert_raise BadVersionOperatorError do
+                Paludis::version_operator('throw an error', one, two)
+            end
+
+            assert_raise ArgumentError do
+                Paludis::version_operator('throw an error')
+            end
+        end
     end
 
 end
