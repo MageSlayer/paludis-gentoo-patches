@@ -8,6 +8,7 @@
     <li><a href="general.html#cplusplus">Why C++?</a></li>
     <li><a href="general.html#butcplusplusis">But C++ is ...</a></li>
     <li><a href="general.html#contribute">Contributing</a></li>
+    <li><a href="general.html#compilers">Known compiler issues</a></li>
 </ul>
 
 <h2 id="ihaveaquestion">I have an Unanswered Question</h2>
@@ -59,5 +60,35 @@ the code now does.</p>
     fair bit of effort.</li>
 
     <li>We don't need or desire assistance with hosting etc. at present.</li>
+</ul>
+
+<h2 id="compilers">Known compiler issues</h2>
+
+<p>The primary supported compiler for building Paludis is GCC, version
+4.1 or later; 3.4 can be used on most platforms if the Boost library
+is installed.  Some versions of GCC, and some compiler flags, are
+known to have problems:</p>
+
+<ul>
+    <li>GCC 3.4.6 on the x86_64 architecture segfaults while building
+    Paludis.</li>
+
+    <li>GCC 4.1.1 segfaults while building Paludis.</li>
+
+    <li>GCC 4.2.2 segfaults while building Paludis if
+    the <code>-g</code> compiler flag is used.</li>
+
+    <li>The <code>-O3</code> compiler flag causes linker errors when
+    building some versions of Paludis (note that the Gentoo and
+    paludis-overlay ebuilds remove this flag automatically).</li>
+
+    <li>The <code>-Os</code> compiler flag has been known to cause GCC
+    to miscompile Paludis at least on x86_64, and possibly others
+    (note that the Gentoo and paludis-overlay ebuilds remove this flag
+    automatically).</li>
+
+    <li>The <code>-O0</code> flag (or equivalently, absense of
+    any <code>-O</code>x flag) has been known to cause GCC to
+    miscompile Paludis in the past at least on x86_64.</li>
 </ul>
 
