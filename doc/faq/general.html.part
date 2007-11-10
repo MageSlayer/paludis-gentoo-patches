@@ -75,8 +75,8 @@ known to have problems:</p>
 
     <li>GCC 4.1.1 segfaults while building Paludis.</li>
 
-    <li>GCC 4.2.2 segfaults while building Paludis if
-    the <code>-g</code> compiler flag is used.</li>
+    <li>GCC 4.2.2 fails with an internal error while building Paludis
+    if the <code>-g</code> compiler flag is used.</li>
 
     <li>The <code>-O3</code> compiler flag causes linker errors when
     building some versions of Paludis (note that the Gentoo and
