@@ -68,7 +68,8 @@ _paludis() {
         --no-colour \
         --no-color \
         --environment -E \
-        --resume-command-template"
+        --resume-command-template \
+        --multitask"
 
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
@@ -91,7 +92,8 @@ _paludis() {
         --dl-fall-back"
 
     query_opts="--show-deps -D \
-        --show-metadata -M"
+        --show-metadata -M \
+        --compact"
     install_opts="--pretend -p \
         --destinations -d \
         --preserve-world -1 \
@@ -103,7 +105,9 @@ _paludis() {
         --no-safe-resume \
         --show-reasons \
         --show-use-descriptions \
+        --show-package-descriptions \
         --continue-on-failure \
+        --compact \
         ${deplist_opts}"
     uninstall_opts="--pretend -p \
         --destinations -d \
@@ -111,6 +115,7 @@ _paludis() {
         --no-config-protection \
         --show-reasons \
         --show-use-descriptions \
+        --show-package-descriptions \
         --with-unused-dependencies \
         --permit-unsafe-uninstalls \
         --with-dependencies \
@@ -227,8 +232,12 @@ _paludis() {
                     COMPREPLY=($(compgen -W "none new changed all" -- "${cur}"))
                     return 0
                     ;;
+                --show-package-descriptions)
+                    COMPREPLY=($(compgen -W "none new all" -- "${cur}"))
+                    return 0
+                    ;;
                 --continue-on-failure)
-                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied always" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied if-independent always" -- "${cur}"))
                     return 0
                     ;;
 
