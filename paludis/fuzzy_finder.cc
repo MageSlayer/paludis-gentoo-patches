@@ -24,8 +24,11 @@
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_id.hh>
 #include <paludis/name.hh>
+#include <paludis/query.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -63,11 +66,10 @@ namespace paludis
     };
 }
 
-FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name) :
+FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Query & generator) :
     PrivateImplementationPattern<FuzzyCandidatesFinder>(new Implementation<FuzzyCandidatesFinder>)
 {
-    std::string cat;
-    std::string repo;
+    Query real_generator(generator);
     std::string package(name);
 
     if (std::string::npos != name.find('/'))
@@ -76,12 +78,12 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
         if (pds.package_ptr())
         {
-            cat = stringify(pds.package_ptr()->category);
+            real_generator = real_generator & query::Category(pds.package_ptr()->category);
             package = stringify(pds.package_ptr()->package);
         }
 
         if (pds.repository_ptr())
-            repo = stringify(*pds.repository_ptr());
+            real_generator = real_generator & query::Repository(*pds.repository_ptr());
     }
 
     std::string package_0_cost(tolower_0_cost(package));
@@ -91,30 +93,14 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
     QualifiedPackageNameSet potential_candidates;
 
-    for (PackageDatabase::RepositoryConstIterator r(e.package_database()->begin_repositories()),
-            r_end(e.package_database()->end_repositories()) ; r != r_end ; ++r)
+    tr1::shared_ptr<const PackageIDSequence> ids(e.package_database()->query(real_generator, qo_whatever));
+
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
+            ; i != i_end ; ++i)
     {
-        if (! repo.empty() && repo != stringify((*r)->name()))
+        if (tolower(stringify((*i)->name().package)[0]) != tolower(package[0]))
             continue;
-
-        tr1::shared_ptr<const Repository> rr(e.package_database()->fetch_repository((*r)->name()));
-
-        tr1::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());
-        for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
-                c != c_end ; ++c)
-        {
-            if (! cat.empty() && cat != stringify(*c))
-                continue;
-
-            tr1::shared_ptr<const QualifiedPackageNameSet> packages(rr->package_names(*c));
-            for (QualifiedPackageNameSet::ConstIterator p(packages->begin()), p_end(packages->end()) ;
-                    p != p_end ; ++p)
-            {
-                if (tolower(stringify(p->package)[0]) != tolower(package[0]))
-                    continue;
-                potential_candidates.insert(*p);
-            }
-        }
+        potential_candidates.insert((*i)->name());
     }
 
     for (QualifiedPackageNameSet::ConstIterator p(potential_candidates.begin()), p_end(potential_candidates.end()) ;

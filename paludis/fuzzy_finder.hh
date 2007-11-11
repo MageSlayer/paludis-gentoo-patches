@@ -23,6 +23,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/query-fwd.hh>
 #include <paludis/name.hh>
 #include <string>
 
@@ -46,7 +47,7 @@ namespace paludis
             ///\name Basic Operations
             ///\{
 
-            FuzzyCandidatesFinder(const Environment & e, const std::string & name);
+            FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Query & generator);
             ~FuzzyCandidatesFinder();
 
             ///\}

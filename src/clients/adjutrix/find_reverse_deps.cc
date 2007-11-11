@@ -286,7 +286,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         cerr << "  * " << e.backtrace("\n  * ");
         cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
 
-        FuzzyCandidatesFinder f(env, e.name());
+        FuzzyCandidatesFinder f(env, e.name(), query::All());
 
         if (f.begin() == f.end())
             cerr << "No suggestions found." << endl;

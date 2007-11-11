@@ -155,7 +155,7 @@ do_contents(tr1::shared_ptr<Environment> env)
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Could not find '" << e.name() << "'. Looking for suggestions:" << endl;
 
-            FuzzyCandidatesFinder f(*env, e.name());
+            FuzzyCandidatesFinder f(*env, e.name(), query::InstalledAtRoot(env->root()));
 
             if (f.begin() == f.end())
                 cerr << "No suggestions found." << endl;
