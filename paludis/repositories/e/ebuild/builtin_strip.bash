@@ -35,6 +35,12 @@ builtin_strip()
         fi
     fi
 
+    if [[ -d "${ROOT}/usr/lib" ]] ; then
+        LIBDIR=$(basename "$(canonicalise "${ROOT}/usr/lib")")
+    else
+        LIBDIR="lib"
+    fi
+
     for fn in $(find "${D}" -type f \
             \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \)); do
         local ft=$(file "${fn}")
@@ -49,7 +55,7 @@ builtin_strip()
             fi
         elif [[ ${ft} == *"SB executable"* || ${ft} == *"SB shared object"* ]]; then
             if [[ "${PALUDIS_DEBUG_BUILD}" == "split" ]] ; then
-                local fd="${D}usr/lib/debug/${fn:${#D}}.debug"
+                local fd="${D}usr/${LIBDIR}/debug/${fn:${#D}}.debug"
                 mkdir -p "$(dirname "${fd}" )"
                 echo ${OBJCOPY} --only-keep-debug "${fn}" "${fd}"
                 ${OBJCOPY} --only-keep-debug "${fn}" "${fd}"
