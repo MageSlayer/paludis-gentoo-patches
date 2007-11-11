@@ -14,16 +14,25 @@ _inquisitio() {
     opts="--search -s \
         --version -V \
         --help -h \
-        --log-level -L \
-        --no-colour -C \
+        --log-level \
+        --no-colour \
         --no-color \
-        --config-suffix -c \
+        --environment -E \
+        --keys -k \
         --matcher -m \
-        --extractors -e \
-        --repository \
+        --flatten -f \
+        --enabled-only -e \
+        --not -n \
+        --repository -r \
         --repository-format \
         --category \
-        --package"
+        --package \
+        --visible-only -v \
+        --all-versions -a \
+        --kind -K \
+        --compact \
+        --show-dependencies -D \
+        --show-metadata -M"
 
     case "${cur}" in
         -*)
@@ -33,21 +42,17 @@ _inquisitio() {
         *)
             case "${prev}" in
                 ## Enum operators
-                --log-level|-L)
+                --log-level)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
                     return 0
                     ;;
 
                 --matcher|-m)
-                    COMPREPLY=($(compgen -W "text pcre" -- "${cur}"))
-                    return 0
-                    ;;
-                --extractors|-e)
-                    COMPREPLY=($(compgen -W "description name homepage" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "text pcre exact" -- "${cur}"))
                     return 0
                     ;;
 
-                --repository)
+                --repository|-r)
                     COMPREPLY=($(compgen -W "$(paludis --log-level silent --list-repositories |sed -n 's,^\* \(.*\),\1,p')" -- "${cur}"))
                     return 0
                     ;;
@@ -57,6 +62,10 @@ _inquisitio() {
                     ;;
                 --category)
                     COMPREPLY=($(compgen -W "$(paludis --log-level silent --list-categories |sed -n 's,^\* \(.*\),\1,p')" -- "${cur}"))
+                    return 0
+                    ;;
+                --kind|-K)
+                    COMPREPLY=($(compgen -W "installable installed all" -- "${cur}"))
                     return 0
                     ;;
 

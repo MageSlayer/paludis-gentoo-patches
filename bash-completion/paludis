@@ -280,7 +280,7 @@ _paludis() {
                     return 0
                     ;;
                 --dl-override-masks)
-                    COMPREPLY=($(compgen -W "tilde-keyword unkeyworded profile repository license" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "none tilde-keyword unkeyworded repository license" -- "${cur}"))
                     return 0
                     ;;
 

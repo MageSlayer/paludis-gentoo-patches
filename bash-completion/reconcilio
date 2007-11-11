@@ -23,7 +23,8 @@ _reconcilio() {
         --environment -E \
         --exact \
         --verbose -v \
-        --resume-command-template"
+        --resume-command-template \
+        --compact"
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \
@@ -50,6 +51,7 @@ _reconcilio() {
         --no-safe-resume \
         --show-reasons \
         --show-use-descriptions \
+        --show-package-descriptions \
         --continue-on-failure \
         ${deplist_opts}"
     linkage_opts="--library \
@@ -83,7 +85,7 @@ _reconcilio() {
         *)
             case "${prev}" in
                 ## Enum operators
-                --log-level|-L)
+                --log-level)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
                     return 0
                     ;;
@@ -103,8 +105,12 @@ _reconcilio() {
                     COMPREPLY=($(compgen -W "none new changed all" -- "${cur}"))
                     return 0
                     ;;
+                --show-package-descriptions)
+                    COMPREPLY=($(compgen -W "none new all" -- "${cur}"))
+                    return 0
+                    ;;
                 --continue-on-failure)
-                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied always" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied if-independent always" -- "${cur}"))
                     return 0
                     ;;
 
@@ -146,7 +152,7 @@ _reconcilio() {
                     return 0
                     ;;
                 --dl-override-masks)
-                    COMPREPLY=($(compgen -W "tilde-keyword unkeyworded profile repository license" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "none tilde-keyword unkeyworded repository license" -- "${cur}"))
                     return 0
                     ;;
                 --dl-fall-back)

@@ -20,8 +20,13 @@ _importare() {
     general_opts="--log-level \
         --no-colour \
         --no-color \
-        --environment -E"
+        --environment -E \
+        --compact"
     source_opts="--location -l"
+    metadata_opts="--description -D \
+        --build-dependency -B \
+        --run-dependency -R \
+        --preserve-metadata -P"
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \
@@ -45,11 +50,13 @@ _importare() {
         --no-config-protection \
         --show-reasons \
         --show-use-descriptions \
+        --show-package-descriptions \
         --continue-on-failure \
         ${source_opts} \
+        ${metadata_opts} \
         ${deplist_opts}"
 
-    all_opts="${action_opts} ${general_opts} ${source_opts} ${deplist_opts} ${install_opts} ${install_opts}"
+    all_opts="${action_opts} ${general_opts} ${source_opts} ${metadata_opts} ${deplist_opts} ${install_opts} ${install_opts}"
 
     local x
     for x in "${COMP_WORDS[@]}" ; do
@@ -77,7 +84,7 @@ _importare() {
         *)
             case "${prev}" in
                 ## Enum operators
-                --log-level|-L)
+                --log-level)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
                     return 0
                     ;;
@@ -89,8 +96,12 @@ _importare() {
                     COMPREPLY=($(compgen -W "none new changed all" -- "${cur}"))
                     return 0
                     ;;
+                --show-package-descriptions)
+                    COMPREPLY=($(compgen -W "none new all" -- "${cur}"))
+                    return 0
+                    ;;
                 --continue-on-failure)
-                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied always" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "if-fetch-only never if-satisfied if-independent always" -- "${cur}"))
                     return 0
                     ;;
 
@@ -137,7 +148,7 @@ _importare() {
                     return 0
                     ;;
                 --dl-override-masks)
-                    COMPREPLY=($(compgen -W "tilde-keyword unkeyworded profile repository license" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "none tilde-keyword unkeyworded repository license" -- "${cur}"))
                     return 0
                     ;;
                 --dl-fall-back)
