@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=100 :
 
+=begin description
+This example demonstrates how to use contents. It displays details about
+the files installed by 'sys-apps/paludis'.
+=end
+
 require 'Paludis'
 require 'example_command_line'
 

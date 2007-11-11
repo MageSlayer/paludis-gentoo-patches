@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=100 :
 
+=begin description
+This example demonstarates how to use actions. It uses FetchAction to fetch source
+files for all versions of sys-apps/paludis that support fetching
+=end
+
 require 'Paludis'
 require 'example_command_line'
 

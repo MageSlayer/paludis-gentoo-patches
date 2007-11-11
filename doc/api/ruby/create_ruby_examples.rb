@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+# vim: set sw=4 sts=4 et tw=80 :
+
+require 'syntax/convertors/html'
+
+convertor = Syntax::Convertors::HTML.for_syntax('ruby')
+
+topuri = '../../'
+toplinks = File.read('../toplinks.html.part.in')
+header = File.read('../../header.html.part.in')
+footer = File.read('../../footer.html.part.in')
+css = '<link rel="stylesheet" href="ruby_syntax.css" type="text/css" />'
+header.gsub!('###TOPLINKS###', toplinks)
+header.gsub!('###TOPURI###', topuri)
+header.gsub!("</head>", "#{css}</head>")
+
+ARGV.each do |example_file|
+    html = convertor.convert(File.read(example_file), false)
+    File.open('ruby/' + example_file.gsub(/rb$/,'html'), 'w') do |output|
+        output.write header
+        output.write "<h1>#{example_file}</h1>"
+
+        #Grab examples description
+        html.scan(/=begin description(.*?)=end/m) {|desc| output.puts "<p>#{desc}</p>"}
+
+        #enclose each line of an =begin block in a comment span
+        html.gsub!(/=begin description.*?=end/m) do |match|
+            match.gsub("\n", "</span>\n<span class=\"comment\">")
+        end
+        output.write '<pre>';
+        i = 0
+        html.each_line do |line|
+            i += 1
+            output.print '<span class="lineno">' + i.to_s.rjust(5,'0') + '</span> <span class="ruby_code">' + line + '</span>'
+        end
+        output.write '</pre>'
+        output.write footer
+    end
+end
+

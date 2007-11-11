@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 
+=begin description
+Basic command line handling for most examples.
+=end
+
 require 'getoptlong'
 require 'singleton'
 require 'Paludis'

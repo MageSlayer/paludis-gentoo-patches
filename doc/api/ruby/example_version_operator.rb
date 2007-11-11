@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=100 :
 
+=begin description
+This example demonstrates how use Paludis::version_spec_comparator.
+=end
+
 require 'Paludis'
 require 'example_command_line'
 
