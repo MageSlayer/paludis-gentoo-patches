@@ -484,7 +484,7 @@ namespace
          * Represents a working environment, which contains an available packages database and provides 
          * various methods for querying package visibility and options.
          */
-        c_environment = environment_class();
+        c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), 2);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
@@ -511,7 +511,7 @@ namespace
          *
          * An environment that uses a single repository, with no user configuration.
          */
-        c_no_config_environment = no_config_environment_class();
+        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
         rb_define_method(c_no_config_environment, "main_repository", RUBY_FUNC_CAST(&no_config_environment_main_repository), 0);
@@ -525,7 +525,6 @@ namespace
          * existing Environment, e.g. the state of a USE flag for a
          * package.
          */
-
         c_adapted_environment = rb_define_class_under(paludis_module(), "AdaptedEnvironment", c_environment);
         rb_define_singleton_method(c_adapted_environment, "new", RUBY_FUNC_CAST(&adapted_environment_new), -1);
         rb_define_method(c_adapted_environment, "initialize", RUBY_FUNC_CAST(&adapted_environment_init), -1);

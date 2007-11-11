@@ -69,8 +69,6 @@ namespace paludis
         std::string value_case_to_RubyCase(const std::string & s);
 
         VALUE paludis_module();
-        VALUE environment_class();
-        VALUE no_config_environment_class();
 
         bool is_kind_of_query(VALUE query);
 

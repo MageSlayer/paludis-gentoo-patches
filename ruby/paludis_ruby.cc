@@ -75,9 +75,6 @@ namespace
     static VALUE c_action_error;
     static VALUE c_bad_version_operator_error;
 
-    static VALUE c_environment;
-    static VALUE c_no_config_environment;
-
     /*
      * Document-method: match_package
      *
@@ -263,18 +260,6 @@ paludis::ruby::paludis_module()
     return c_paludis_module;
 }
 
-VALUE
-paludis::ruby::environment_class()
-{
-    return c_environment;
-}
-
-VALUE
-paludis::ruby::no_config_environment_class()
-{
-    return c_no_config_environment;
-}
-
 static VALUE
 has_query_property_error_init(int argc, VALUE* argv, VALUE self)
 {
@@ -324,15 +309,9 @@ fetch_action_error_failures(VALUE self)
 void PALUDIS_VISIBLE paludis::ruby::init()
 {
     /*
-     * Document-module: Paludis
-     *
-     * <b>Paludis</b> is the other package mangler, this is the doc to the ruby binding. The C++ library
-     * documentation may also help.
-     *
+     * Defined in create_ruby_doc.rb
      */
     c_paludis_module = rb_define_module("Paludis");
-    c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
-    c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
     c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
     c_set_name_error = rb_define_class_under(c_paludis_module, "SetNameError", c_name_error);
     c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);
