@@ -37,6 +37,7 @@ namespace paludis
 #elif defined(PALUDIS_TR1_MEMORY_IS_BOOST)
 
 #include  <boost/shared_ptr.hpp>
+#include  <boost/enable_shared_from_this.hpp>
 
 namespace paludis
 {

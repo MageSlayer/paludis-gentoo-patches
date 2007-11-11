@@ -629,7 +629,7 @@ InstallTask::_main_actions()
 
     /* fetch / install our entire list */
     int x(0), y(std::count_if(_imp->dep_list.begin(), _imp->dep_list.end(),
-                tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, tr1::bind<DepListEntryKind>(&DepListEntry::kind, _1)))),
+                tr1::bind(std::equal_to<DepListEntryKind>(), dlk_package, tr1::bind<DepListEntryKind>(tr1::mem_fn(&DepListEntry::kind), _1)))),
         s(0), f(0);
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;

@@ -405,7 +405,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
             case qo_order_by_version:
                 {
                     PackageIDComparator c(this);
-                    result->sort(tr1::cref(c));
+                    result->sort(tr1::bind(tr1::mem_fn(&PackageIDComparator::operator()), &c, _1, _2));
                 }
                 continue;
 
@@ -472,7 +472,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 
                     result.reset(new PackageIDSequence);
                     std::copy(second_iterator(best.begin()), second_iterator(best.end()), result->back_inserter());
-                    result->sort(tr1::cref(c));
+                    result->sort(tr1::bind(tr1::mem_fn(&PackageIDComparator::operator()), &c, _1, _2));
                 }
                 continue;
 
