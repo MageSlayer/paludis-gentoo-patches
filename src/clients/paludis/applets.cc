@@ -256,6 +256,7 @@ int do_list_sync_protocols(tr1::shared_ptr<Environment> env)
                         .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))))
                 Log::get_instance()->message(ll_warning, lc_context, "Syncer help command '" +
                         s->second + " --help' failed");
+            std::cout << std::endl;
         }
     }
 
