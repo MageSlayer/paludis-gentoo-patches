@@ -37,19 +37,17 @@ EXTRA_DIST = $(examples) \
 
 if ENABLE_RUBY
 
-all-local : ruby
+all-local : rdoc
 
-ruby : rdoc examples
+rdoc : ruby
 
-examples : rdoc $(examples)
-	$(RUBY) $(srcdir)/create_ruby_examples.rb $(srcdir) $(examples)
-	cp $(srcdir)/ruby_syntax.css ruby
-
-rdoc : create_ruby_doc.rb
-	rm -rf ruby
+ruby : create_ruby_doc.rb create_ruby_examples.rb ruby_syntax.css $(examples)
+	rm -fr ruby
 	env TOP_SRCDIR="$(top_srcdir)" $(RUBY) \
 	    $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op ruby \
 		$(top_srcdir)/ruby/*.cc
+	$(RUBY) $(srcdir)/create_ruby_examples.rb $(srcdir) $(examples)
+	cp $(srcdir)/ruby_syntax.css ruby
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api
