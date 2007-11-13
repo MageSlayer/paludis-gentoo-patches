@@ -61,6 +61,17 @@ class TestCase_VersionSpec(unittest.TestCase):
 
     def test_08_is_scm(self):
         self.assert_(VersionSpec("scm").is_scm)
+        self.assert_(VersionSpec("9999").is_scm)
+        self.assert_(not VersionSpec("1").is_scm)
+
+    def test_09_has_scm_part(self):
+        self.assert_(VersionSpec("1-scm").has_scm_part)
+        self.assert_(not VersionSpec("1").has_scm_part)
+
+    def test_09_has_scm_part(self):
+        self.assert_(VersionSpec("1-try").has_try_part)
+        self.assert_(not VersionSpec("1").has_try_part)
+
 
 if __name__ == "__main__":
     unittest.main()

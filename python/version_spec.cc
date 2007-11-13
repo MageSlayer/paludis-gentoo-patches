@@ -58,6 +58,16 @@ void expose_version_spec()
                 "Are we an -scm package, or something pretending to be one?"
                 )
 
+        .add_property("has_scm_part", &VersionSpec::has_scm_part,
+                "[ro] bool\n"
+                "Do we have an -scm part?"
+                )
+
+        .add_property("has_try_part", &VersionSpec::has_try_part,
+                "[ro] bool\n"
+                "Do we have a -try part?"
+                )
+
         .def("remove_revision", &VersionSpec::remove_revision,
                 "remove_revision() -> VersionSpec\n"
                 "Remove the revision part."

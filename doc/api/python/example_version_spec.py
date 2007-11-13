@@ -17,4 +17,6 @@ for v in versions:
     print "    Revision only:               %s" % v.revision_only()
     print "    Bump:                        %s" % v.bump()
     print "    Is SCM?                      %s" % v.is_scm
+    print "    Has -try?                    %s" % v.has_try_part
+    print "    Has -scm?                    %s" % v.has_scm_part
     print
