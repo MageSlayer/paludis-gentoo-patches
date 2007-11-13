@@ -78,6 +78,9 @@ namespace paludis
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                ConstIterator find(const std::string & type, const std::string & name) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                ConstIterator find(const std::pair<const std::string, const std::string> & p) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 ///}
         };
     }

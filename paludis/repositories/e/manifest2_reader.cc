@@ -28,8 +28,10 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/member_iterator-impl.hh>
 
 #include <list>
+#include <map>
 
 #include <paludis/repositories/e/manifest2_entry-sr.cc>
 
@@ -44,7 +46,7 @@ namespace paludis
     struct Implementation<Manifest2Reader>
     {
         FSEntry manifest;
-        std::list<Manifest2Entry> entries;
+        std::map<std::pair<std::string, std::string>, Manifest2Entry> entries;
 
         Implementation(const FSEntry & f) :
             manifest(f)
@@ -121,7 +123,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
                     << "Skipping unknown checksum type " << checksum_type;
         }
 
-        _imp->entries.push_back(Manifest2Entry::create()
+        _imp->entries.insert(std::make_pair(std::make_pair(type,name), Manifest2Entry::create()
             .type(type)
             .size(size)
             .name(name)
@@ -129,7 +131,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
             .sha256(sha256)
             .rmd160(rmd160)
             .md5(md5)
-            );
+            ));
     }
 }
 
@@ -140,11 +142,23 @@ Manifest2Reader::~Manifest2Reader()
 Manifest2Reader::ConstIterator
 Manifest2Reader::begin() const
 {
-    return ConstIterator(_imp->entries.begin());
+    return ConstIterator(second_iterator(_imp->entries.begin()));
 }
 
 Manifest2Reader::ConstIterator
 Manifest2Reader::end() const
 {
-    return ConstIterator(_imp->entries.end());
+    return ConstIterator(second_iterator(_imp->entries.end()));
+}
+
+Manifest2Reader::ConstIterator
+Manifest2Reader::find(const std::string & type, const std::string & name) const
+{
+    return ConstIterator(second_iterator(_imp->entries.find(std::make_pair(type,name))));
+}
+
+Manifest2Reader::ConstIterator
+Manifest2Reader::find(const std::pair<const std::string, const std::string> & p) const
+{
+    return ConstIterator(second_iterator(_imp->entries.find(p)));
 }
