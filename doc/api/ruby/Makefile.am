@@ -42,8 +42,8 @@ all-local : ruby
 ruby : rdoc examples
 
 examples : rdoc $(examples)
-	$(RUBY) $(srcdir)/create_ruby_examples.rb $(examples)
-	cp ruby_syntax.css ruby
+	$(RUBY) $(srcdir)/create_ruby_examples.rb $(srcdir) $(examples)
+	cp $(srcdir)/ruby_syntax.css ruby
 
 rdoc : create_ruby_doc.rb
 	rm -rf ruby

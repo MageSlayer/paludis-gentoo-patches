@@ -6,17 +6,19 @@ require 'syntax/convertors/html'
 
 convertor = Syntax::Convertors::HTML.for_syntax('ruby')
 
+srcdir = ARGV.shift
+
 topuri = '../../'
-toplinks = File.read('../toplinks.html.part.in')
-header = File.read('../../header.html.part.in')
-footer = File.read('../../footer.html.part.in')
+toplinks = File.read(srcdir + '/../toplinks.html.part.in')
+header = File.read(srcdir + '/../../header.html.part.in')
+footer = File.read(srcdir + '/../../footer.html.part.in')
 css = '<link rel="stylesheet" href="ruby_syntax.css" type="text/css" />'
 header.gsub!('###TOPLINKS###', toplinks)
 header.gsub!('###TOPURI###', topuri)
 header.gsub!("</head>", "#{css}</head>")
 
 ARGV.each do |example_file|
-    html = convertor.convert(File.read(example_file), false)
+    html = convertor.convert(File.read(srcdir + '/' + example_file), false)
     File.open('ruby/' + example_file.gsub(/rb$/,'html'), 'w') do |output|
         output.write header
         output.write "<h1>#{example_file}</h1>"
