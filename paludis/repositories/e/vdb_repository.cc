@@ -257,6 +257,9 @@ VDBRepository::query_use(const UseFlagName & f, const PackageID & e) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
+    if (this != e.repository().get())
+        return use_unspecified;
+
     if (! static_cast<const VDBID *>(&e)->use_key())
         return use_unspecified;
 
