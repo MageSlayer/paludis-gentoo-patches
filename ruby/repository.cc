@@ -422,6 +422,21 @@ namespace
 
     /*
      * call-seq:
+     *     some_ids_might_support_action(action_test) -> true or false
+     *
+     * Might some of our IDs support a particular action?
+     */
+    VALUE
+    repository_some_ids_might_support_action(VALUE self, VALUE test)
+    {
+        tr1::shared_ptr<Repository> * self_ptr;
+        tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
+        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
+        return (*self_ptr)->some_ids_might_support_action(*test_ptr) ? Qtrue : Qfalse;
+    }
+
+    /*
+     * call-seq:
      *     info(verbose) -> RepositoryInfo
      *
      * Fetch our RepositoryInfo
@@ -988,6 +1003,8 @@ namespace
                         &Repository::e_interface>::fetch)), 0);
         rb_define_method(c_repository, "qa_interface", RUBY_FUNC_CAST((&Interface<RepositoryQAInterface,
                         &Repository::qa_interface>::fetch)), 0);
+
+        rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), -1);
