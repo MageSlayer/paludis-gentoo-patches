@@ -24,7 +24,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/tr1_functional.hh>
 #include <paludis/name.hh>
+#include <list>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -103,6 +106,62 @@ MetadataPackageIDKey::MetadataPackageIDKey(const std::string & r, const std::str
 MetadataRepositoryMaskInfoKey::MetadataRepositoryMaskInfoKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
+}
+
+namespace paludis
+{
+    template <>
+    struct Implementation<MetadataSectionKey>
+    {
+        mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
+    };
+}
+
+MetadataSectionKey::MetadataSectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+    MetadataKey(r, h, t),
+    PrivateImplementationPattern<MetadataSectionKey>(new Implementation<MetadataSectionKey>),
+    _imp(PrivateImplementationPattern<MetadataSectionKey>::_imp.get())
+{
+}
+
+MetadataSectionKey::~MetadataSectionKey()
+{
+}
+
+void
+MetadataSectionKey::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
+{
+    using namespace tr1::placeholders;
+
+    if (_imp->keys.end() != std::find_if(_imp->keys.begin(), _imp->keys.end(),
+                tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
+        throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
+
+    _imp->keys.push_back(k);
+}
+
+MetadataSectionKey::MetadataConstIterator
+MetadataSectionKey::begin_metadata() const
+{
+    need_keys_added();
+    return MetadataConstIterator(_imp->keys.begin());
+}
+
+MetadataSectionKey::MetadataConstIterator
+MetadataSectionKey::end_metadata() const
+{
+    need_keys_added();
+    return MetadataConstIterator(_imp->keys.end());
+}
+
+MetadataSectionKey::MetadataConstIterator
+MetadataSectionKey::find_metadata(const std::string & s) const
+{
+    using namespace tr1::placeholders;
+
+    need_keys_added();
+    return std::find_if(begin_metadata(), end_metadata(),
+            tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
 }
 
 template <typename C_>

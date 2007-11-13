@@ -75,7 +75,8 @@ namespace paludis
             MetadataContentsKey,
             MetadataTimeKey,
             MetadataRepositoryMaskInfoKey,
-            MetadataFSEntryKey
+            MetadataFSEntryKey,
+            MetadataSectionKey
             >
     {
     };
@@ -301,6 +302,76 @@ namespace paludis
              */
             virtual const tr1::shared_ptr<const RepositoryMaskInfo> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * A MetadataSectionKey is a MetadataKey that has a title and holds a number of other
+     * MetadataKey instances.
+     *
+     * \ingroup g_metadata_key
+     * \since 0.26
+     * \nosubgrouping
+     */
+    class PALUDIS_VISIBLE MetadataSectionKey :
+        public MetadataKey,
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSectionKey>,
+        private PrivateImplementationPattern<MetadataSectionKey>
+    {
+        private:
+            Implementation<MetadataSectionKey> * const _imp;
+
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            MetadataSectionKey(const std::string &, const std::string &, const MetadataKeyType);
+
+            ///\}
+
+            /**
+             * Add a new MetadataKey, which must not use the same raw name as
+             * any previous MetadataKey added to this key.
+             */
+            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
+
+            /**
+             * This method will be called before any of the metadata key
+             * iteration methods does its work. It can be used by subclasses to
+             * implement as-needed loading of keys.
+             */
+            virtual void need_keys_added() const = 0;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            virtual ~MetadataSectionKey();
+
+            ///\}
+
+            ///\name Specific metadata keys
+            ///\{
+
+            /**
+             * Our title key.
+             *
+             * May be a zero pointer for untitled sections.
+             */
+            virtual const tr1::shared_ptr<const MetadataStringKey> title_key() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
+            ///\name Finding and iterating over metadata keys
+            ///\{
+
+            struct MetadataConstIteratorTag;
+            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+
+            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
     };
 
     /**

@@ -122,6 +122,11 @@ namespace
             value = Qnil;
         }
 
+        void visit(const MetadataSectionKey &)
+        {
+            value = Qnil;
+        }
+
         void visit(const MetadataRepositoryMaskInfoKey &)
         {
             value = Data_Wrap_Struct(c_metadata_repository_mask_info_key, 0, &Common<tr1::shared_ptr<const MetadataContentsKey> >::free,

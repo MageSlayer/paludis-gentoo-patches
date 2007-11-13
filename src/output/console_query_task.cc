@@ -242,14 +242,17 @@ namespace
             const Environment * const env;
             const tr1::shared_ptr<const PackageID> id;
             const MetadataKeyType type;
+            const unsigned in;
 
         public:
             Displayer(const ConsoleQueryTask * const t, const Environment * const e,
-                    const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k) :
+                    const tr1::shared_ptr<const PackageID> & i, const MetadataKeyType k,
+                    const unsigned ind = 0) :
                 task(t),
                 env(e),
                 id(i),
-                type(k)
+                type(k),
+                in(ind)
             {
             }
 
@@ -260,12 +263,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
@@ -278,12 +281,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
@@ -296,12 +299,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
@@ -314,12 +317,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                 }
@@ -332,12 +335,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
                     }
@@ -351,12 +354,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_stream() << k.pretty_print_flat(formatter);
                         task->output_right_column("");
                     }
@@ -370,12 +373,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_stream() << k.pretty_print_flat(formatter);
                         task->output_right_column("");
                     }
@@ -389,12 +392,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         ComplexLicenseFinder is_complex;
                         k.value()->accept(is_complex);
                         if (is_complex)
@@ -415,12 +418,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
                     }
@@ -434,12 +437,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print(formatter);
                     }
@@ -453,12 +456,12 @@ namespace
                     ColourFormatter formatter;
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(k.pretty_print_flat(formatter));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
                         task->output_stream() << k.pretty_print_flat(formatter);
                         task->output_endl();
@@ -472,12 +475,12 @@ namespace
                 {
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(stringify(*k.value()));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(stringify(*k.value()));
                     }
                 }
@@ -489,14 +492,37 @@ namespace
                 {
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(stringify(k.value()));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(stringify(k.value()));
                     }
+                }
+            }
+
+            void visit(const MetadataSectionKey & k)
+            {
+                if (k.type() == type)
+                {
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column("");
+                    }
+                    else
+                    {
+                        task->output_left_column((k.title_key() ? k.title_key()->value() : k.human_name()) + ":", in);
+                        task->output_right_column("");
+                    }
+
+                    Displayer v(task, env, id, type, in + 4);
+                    for (MetadataSectionKey::MetadataConstIterator kk(k.begin_metadata()), kk_end(k.end_metadata()) ;
+                            kk != kk_end ; ++kk)
+                        if (*kk != k.title_key())
+                            (*kk)->accept(v);
                 }
             }
 
@@ -514,12 +540,12 @@ namespace
                 {
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(stringify(buf));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(stringify(buf));
                     }
                 }
@@ -531,18 +557,18 @@ namespace
                 {
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(stringify(k.value()->mask_file) + ": " +
                                 join(k.value()->comment->begin(), k.value()->comment->end(), " "));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(stringify(k.value()->mask_file) + ":");
                         for (Sequence<std::string>::ConstIterator it(k.value()->comment->begin()),
                                 it_end(k.value()->comment->end()); it_end != it; ++it)
                         {
-                            task->output_left_column("");
+                            task->output_left_column("", in);
                             task->output_right_column(*it);
                         }
                     }
@@ -555,12 +581,12 @@ namespace
                 {
                     if (task->want_raw())
                     {
-                        task->output_left_column(k.raw_name() + ":");
+                        task->output_left_column(k.raw_name() + ":", in);
                         task->output_right_column(stringify(k.value()));
                     }
                     else
                     {
-                        task->output_left_column(k.human_name() + ":");
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column(stringify(k.value()));
                     }
                 }

@@ -133,6 +133,11 @@ class MetadataKeySptrToPythonVisitor :
         {
             obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<PackageIDSequence> >(_m_ptr));
         }
+
+        void visit(const MetadataSectionKey & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSectionKey>(_m_ptr));
+        }
 };
 
 struct MetadataKeySptrToPython
@@ -190,6 +195,46 @@ struct MetadataStringKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataStringKey", "value");
+    }
+};
+
+struct MetadataSectionKeyWrapper :
+    MetadataSectionKey,
+    bp::wrapper<MetadataSectionKey>
+{
+    MetadataSectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataSectionKey(r, h, t)
+    {
+    }
+
+    static PyObject *
+    find_metadata(const MetadataSectionKey & self, const std::string & key)
+    {
+        MetadataSectionKey::MetadataConstIterator i(self.find_metadata(key));
+        if (i != self.end_metadata())
+            return bp::incref(bp::object(*i).ptr());
+        else
+            return Py_None;
+    }
+
+    virtual void need_keys_added() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("need_keys_added"))
+            f();
+        else
+            throw PythonMethodNotImplemented("MetadataSectionKey", "need_keys_added");
+    }
+
+    virtual const tr1::shared_ptr<const MetadataStringKey> title_key() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("title_key"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("MetadataSectionKey", "title_key");
     }
 };
 
@@ -724,6 +769,35 @@ void expose_metadata_key()
                 "value() -> string\n"
                 "Fetch our value."
                 )
+        ;
+
+    /**
+     * MetadataSectionKey
+     */
+    bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSectionKey> >();
+    bp::implicitly_convertible<tr1::shared_ptr<MetadataSectionKeyWrapper>,
+            tr1::shared_ptr<MetadataKey> >();
+    bp::class_<MetadataSectionKeyWrapper, tr1::shared_ptr<MetadataSectionKeyWrapper>,
+            bp::bases<MetadataKey>, boost::noncopyable>
+        (
+         "MetadataSectionKey",
+         "A MetadataSectionKey holds a number of other MetadataKey instances, and\n"
+         "may have a title.\n\n"
+
+         "This class can be subclassed in Python.",
+         bp::init<const std::string &, const std::string &, MetadataKeyType>(
+             "__init__(raw_name, human_name, MetadataKeyType)"
+             )
+        )
+        .add_property("metadata", bp::range(&MetadataSectionKey::begin_metadata, &MetadataSectionKey::end_metadata),
+                "[ro] Iterable of MetadataKey\n"
+                "NEED_DOC"
+                )
+
+        .def("find_metadata", &MetadataSectionKeyWrapper::find_metadata,
+                "find_metadata(string) -> MetadataKey\n"
+                "NEED_DOC"
+            )
         ;
 
     /**

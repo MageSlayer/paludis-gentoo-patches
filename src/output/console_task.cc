@@ -168,9 +168,9 @@ ConsoleTask::render_plural(int c, const std::string & s, const std::string & p) 
 }
 
 void
-ConsoleTask::output_left_column(const std::string & s) const
+ConsoleTask::output_left_column(const std::string & s, const unsigned indent) const
 {
-    output_stream() << "    " << std::setw(left_column_width()) << std::left << s << " ";
+    output_stream() << "    " << std::string(indent, ' ') << std::setw(left_column_width()) << std::left << s << " ";
 }
 
 void

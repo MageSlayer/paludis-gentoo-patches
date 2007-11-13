@@ -57,7 +57,7 @@ namespace paludis
             virtual void output_no_endl(const std::string &) const;
             virtual void output_endl() const;
 
-            virtual void output_left_column(const std::string &) const;
+            virtual void output_left_column(const std::string &, const unsigned indent = 0) const;
             virtual void output_right_column(const std::string &) const;
 
             ///\}

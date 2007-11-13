@@ -41,6 +41,7 @@ namespace paludis
     class MetadataTimeKey;
     class MetadataRepositoryMaskInfoKey;
     class MetadataFSEntryKey;
+    class MetadataSectionKey;
     template <typename C_> class MetadataSetKey;
     template <> class MetadataSetKey<IUseFlagSet>;
     template <typename C_> class MetadataSpecTreeKey;

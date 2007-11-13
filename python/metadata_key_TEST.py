@@ -298,6 +298,20 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_simple_uri_spec_tree_key(TestKey())
 
+    def test_16_section(self):
+        class TestKey(MetadataSectionKey):
+            def __init__(self):
+                MetadataSectionKey.__init__(self, "raw", "human", MetadataKeyType.NORMAL)
+
+            def need_keys_added(self):
+                return
+
+            def title_key(self):
+                return None
+
+        test_metadata_section_key(TestKey())
+
+
 
 if __name__ == "__main__":
     unittest.main()

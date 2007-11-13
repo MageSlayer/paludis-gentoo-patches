@@ -385,6 +385,12 @@ namespace
                     result = v.result;
                 }
             }
+
+            void visit(const MetadataSectionKey & k)
+            {
+                std::for_each(indirect_iterator(k.begin_metadata()),
+                        indirect_iterator(k.end_metadata()), accept_visitor(*this));
+            }
     };
 }
 

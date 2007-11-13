@@ -144,8 +144,17 @@ namespace
                 stream << k.raw_name() << "\n";
         }
 
-        void visit(const MetadataContentsKey &)
+        void visit(const MetadataContentsKey & k)
         {
+            stream << k.raw_name() << "\n";
+        }
+
+        void visit(const MetadataSectionKey & k)
+        {
+            if (k.title_key())
+                stream << k.raw_name() << ": " << k.title_key()->value() << "\n";
+            else
+                stream << k.raw_name() << "\n";
         }
     };
 

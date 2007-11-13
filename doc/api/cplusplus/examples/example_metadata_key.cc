@@ -30,6 +30,8 @@ using std::setw;
 
 namespace
 {
+    void show_key(const MetadataKey & key, const std::string & indent = "");
+
     /* We use this visitor to display extra information about a MetadataKey,
      * depending upon its type. */
     class MetadataKeyInformationVisitor :
@@ -40,40 +42,49 @@ namespace
              * "example_stringify_formatter.cc" for more details. */
             StringifyFormatter formatter;
 
+            /* Because of MetadataSectionKey, we can be called recursively. We add a level
+             * of indenting each time. */
+            std::string indent;
+
         public:
+            MetadataKeyInformationVisitor(const std::string & i = "") :
+                indent(i)
+            {
+            }
+
             void visit(const MetadataStringKey & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataStringKey" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataStringKey" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
             void visit(const MetadataFSEntryKey & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataFSEntryKey" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataFSEntryKey" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
             void visit(const MetadataPackageIDKey & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataPackageIDKey" << endl;
-                cout << left << setw(30) << "    Value:" << " " << *key.value() << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataPackageIDKey" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << *key.value() << endl;
             }
 
             void visit(const MetadataTimeKey & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataTimeKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataTimeKey" << endl;
 
                 /* Yay horrible C formatting routines! */
                 time_t t(key.value());
                 char buf[255];
                 if (! strftime(buf, 254, "%c", gmtime(&t)))
                     buf[0] = '\0';
-                cout << left << setw(30) << "    Value:" << " " << buf << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << buf << endl;
             }
 
             void visit(const MetadataContentsKey &)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataContentsKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataContentsKey" << endl;
                 /* We won't display the contents of the contents key here, since
                  * it involves creating another visitor. See \ref
                  * example_contents.cc "example_contents.cc" for that. */
@@ -81,23 +92,23 @@ namespace
 
             void visit(const MetadataRepositoryMaskInfoKey & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataRepositoryMaskInfoKey" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataRepositoryMaskInfoKey" << endl;
 
                 /* MetadataRepositoryMaskInfoKey::value() can return a zero
                  * pointer. Other keys can't. */
                 if (key.value())
                 {
-                    cout << left << setw(30) << "    Mask file:" << " " << key.value()->mask_file << endl;
+                    cout << indent << left << setw(30) << "    Mask file:" << " " << key.value()->mask_file << endl;
                     /* Comment looks best if it's outputted over multiple lines,
                      * as that's how it tends to be stored in package.mask. */
-                    cout << left << setw(30) << "    Comment:" << " ";
+                    cout << indent << left << setw(30) << "    Comment:" << " ";
                     bool first(true);
                     for (Sequence<std::string>::ConstIterator i(key.value()->comment->begin()),
                             i_end(key.value()->comment->end()) ;
                             i != i_end ; ++i)
                     {
                         if (! first)
-                            cout << left << setw(30) << "        ..." << " ";
+                            cout << indent << left << setw(30) << "        ..." << " ";
                         cout << *i << endl;
                         first = false;
                     }
@@ -106,75 +117,111 @@ namespace
 
             void visit(const MetadataSpecTreeKey<RestrictSpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<RestrictSpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<RestrictSpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<ProvideSpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<ProvideSpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<ProvideSpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<LicenseSpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<LicenseSpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<SimpleURISpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<SimpleURISpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<DependencySpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<DependencySpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<FetchableURISpecTree>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
-                cout << left << setw(30) << "    Initial label:" << " " << key.initial_label()->text() << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<FetchableURISpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Initial label:" << " " << key.initial_label()->text() << endl;
             }
 
             void visit(const MetadataSetKey<IUseFlagSet> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<IUseFlagSet>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<IUseFlagSet>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSetKey<KeywordNameSet> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<KeywordNameSet>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<KeywordNameSet>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSetKey<UseFlagNameSet> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<UseFlagNameSet>" << endl;
-                cout << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<UseFlagNameSet>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
             void visit(const MetadataSetKey<Set<std::string> > & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<Set<std::string> >" << endl;
-                cout << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<Set<std::string> >" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
             void visit(const MetadataSetKey<PackageIDSequence> & key)
             {
-                cout << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PackageIDSequence>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PackageIDSequence>" << endl;
                 /* Slight trickery: a PackageIDSequence stores shared pointers
                  * to PackageID instances, so we need indirect_iterator to get
                  * an extra level of dereferencing. */
-                cout << left << setw(30) << "    Value:" << " " << join(indirect_iterator(key.value()->begin()),
+                cout << indent << left << setw(30) << "    Value:" << " " << join(indirect_iterator(key.value()->begin()),
                         indirect_iterator(key.value()->end()), " ") << endl;
             }
+
+            void visit(const MetadataSectionKey & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSectionKey" << endl;
+
+                /* A MetadataSectionKey contains other keys. It has one potentially special
+                 * key, for the title, which if it exists is always a MetadataStringKey. */
+                if (key.title_key())
+                    cout << indent << left << setw(30) << "    Title:" << " " << key.title_key()->value() << endl;
+
+                for (MetadataSectionKey::MetadataConstIterator k(key.begin_metadata()), k_end(key.end_metadata()) ;
+                        k != k_end ; ++k)
+                    show_key(**k, indent + "  ");
+            }
     };
+
+    /* Display as much as we can about a key. */
+    void show_key(const MetadataKey & key, const std::string & indent)
+    {
+        /* All MetadataKey instances have a raw name, a human readable
+         * name and a type. The type is a hint to clients as to whether
+         * the key should be displayed when outputting the package (for
+         * example, 'paludis --query' shows mkt_significant keys first,
+         * then mkt_normal keys, and doesn't show mkt_dependencies
+         * without '--show-deps' or mkt_internal without
+         * '--show-metadata'. */
+        cout << indent << left << setw(30) << "    Raw name:" << " " << key.raw_name() << endl;
+        cout << indent << left << setw(30) << "    Human name:" << " " << key.human_name() << endl;
+        cout << indent << left << setw(30) << "    Type:" << " " << key.type() << endl;
+
+        /* To get any more information out of a MetadataKey we have to
+         * use a visitor. This lets us write type-safe handling code for
+         * the appropriate MetadataKey subclass without the need for any
+         * runtime type information queries. */
+        MetadataKeyInformationVisitor v;
+        key.accept(v);
+    }
 }
 
 int main(int argc, char * argv[])
@@ -205,24 +252,9 @@ int main(int argc, char * argv[])
             for (PackageID::MetadataConstIterator k((*i)->begin_metadata()), k_end((*i)->end_metadata()) ;
                     k != k_end ; ++k)
             {
-                /* All MetadataKey instances have a raw name, a human readable
-                 * name and a type. The type is a hint to clients as to whether
-                 * the key should be displayed when outputting the package (for
-                 * example, 'paludis --query' shows mkt_significant keys first,
-                 * then mkt_normal keys, and doesn't show mkt_dependencies
-                 * without '--show-deps' or mkt_internal without
-                 * '--show-metadata'. */
-                cout << left << setw(30) << "    Raw name:" << " " << (*k)->raw_name() << endl;
-                cout << left << setw(30) << "    Human name:" << " " << (*k)->human_name() << endl;
-                cout << left << setw(30) << "    Type:" << " " << (*k)->type() << endl;
-
-                /* To get any more information out of a MetadataKey we have to
-                 * use a visitor. This lets us write type-safe handling code for
-                 * the appropriate MetadataKey subclass without the need for any
-                 * runtime type information queries. */
-                MetadataKeyInformationVisitor v;
-                (*k)->accept(v);
-
+                /* Display it. Note that PackageID::MetadataConstIterator returns a tr1::shared_ptr
+                 * to a key, so we dereference twice (or we could have used IndirectIterator). */
+                show_key(**k);
                 cout << endl;
             }
 

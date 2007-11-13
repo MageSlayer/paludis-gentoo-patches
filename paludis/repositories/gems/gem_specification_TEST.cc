@@ -23,6 +23,8 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/set.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
@@ -30,84 +32,6 @@
 using namespace test;
 using namespace paludis;
 using namespace paludis::gems;
-
-namespace
-{
-    struct ExtractValueVisitor :
-        ConstVisitor<MetadataKeyVisitorTypes>
-    {
-        std::string s;
-
-        void visit(const MetadataStringKey & k)
-        {
-            s = k.value();
-        }
-
-        void visit(const MetadataPackageIDKey &)
-        {
-        }
-
-        void visit(const MetadataSetKey<KeywordNameSet> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<UseFlagNameSet> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<IUseFlagSet> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<Set<std::string> > &)
-        {
-        }
-
-        void visit(const MetadataSetKey<PackageIDSequence> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
-        {
-        }
-
-        void visit(const MetadataContentsKey &)
-        {
-        }
-
-        void visit(const MetadataTimeKey &)
-        {
-        }
-
-        void visit(const MetadataRepositoryMaskInfoKey &)
-        {
-        }
-
-        void visit(const MetadataFSEntryKey &)
-        {
-        }
-    };
-}
 
 namespace test_cases
 {
@@ -146,9 +70,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(spec.long_description_key()->value(), "A longer description");
 
             TEST_CHECK(spec.find_metadata("authors") != spec.end_metadata());
-            ExtractValueVisitor v;
-            (*spec.find_metadata("authors"))->accept(v);
-            TEST_CHECK_EQUAL(v.s, "Fred, Barney");
+            TEST_CHECK(visitor_cast<const MetadataStringKey>(**spec.find_metadata("authors")));
+            TEST_CHECK_EQUAL(visitor_cast<const MetadataStringKey>(**spec.find_metadata("authors"))->value(), "Fred, Barney");
 
 #if 0
             TEST_CHECK_EQUAL(spec.homepage(), "");

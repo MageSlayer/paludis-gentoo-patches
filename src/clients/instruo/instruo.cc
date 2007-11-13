@@ -30,6 +30,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/tr1_functional.hh>
 #include <paludis/util/visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
@@ -46,88 +47,6 @@ using std::endl;
 
 namespace
 {
-    struct EAPIFinder :
-        ConstVisitor<MetadataKeyVisitorTypes>
-    {
-        bool ok;
-        std::string s;
-
-        EAPIFinder() :
-            ok(false)
-        {
-        }
-
-        void visit(const MetadataStringKey & k)
-        {
-            s = k.value();
-            ok = true;
-        }
-
-        void visit(const MetadataPackageIDKey &)
-        {
-        }
-
-        void visit(const MetadataTimeKey &)
-        {
-        }
-
-        void visit(const MetadataContentsKey &)
-        {
-        }
-
-        void visit(const MetadataFSEntryKey &)
-        {
-        }
-
-        void visit(const MetadataRepositoryMaskInfoKey &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<RestrictSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<PackageIDSequence> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<Set<std::string> > &)
-        {
-        }
-
-        void visit(const MetadataSetKey<KeywordNameSet> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<IUseFlagSet> &)
-        {
-        }
-
-        void visit(const MetadataSetKey<UseFlagNameSet> &)
-        {
-        }
-    };
-
     struct KeyValidator :
         ConstVisitor<MetadataKeyVisitorTypes>
     {
@@ -214,6 +133,12 @@ namespace
         void visit(const MetadataSetKey<UseFlagNameSet> & k)
         {
             const tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
+        void visit(const MetadataSectionKey & k)
+        {
+            std::for_each(indirect_iterator(k.begin_metadata()),
+                    indirect_iterator(k.end_metadata()), accept_visitor(*this));
         }
     };
 }
@@ -315,17 +240,15 @@ main(int argc, char *argv[])
                     continue;
                 }
 
-                EAPIFinder f;
-                (*eapi_i)->accept(f);
-                if (! f.ok)
+                if (! visitor_cast<const MetadataStringKey>(**eapi_i))
                 {
                     results.insert(std::make_pair(*i, "EAPI metadata key is not a string key"));
                     continue;
                 }
 
-                if (f.s == "UNKNOWN")
+                if (visitor_cast<const MetadataStringKey>(**eapi_i)->value() == "UNKNOWN")
                 {
-                    results.insert(std::make_pair(*i, "EAPI is '" + f.s + "'"));
+                    results.insert(std::make_pair(*i, "EAPI is 'UNKNOWN'"));
                     continue;
                 }
 

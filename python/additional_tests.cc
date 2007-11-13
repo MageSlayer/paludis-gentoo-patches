@@ -23,6 +23,8 @@
 
 #include <paludis/util/tr1_memory.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/package_database.hh>
@@ -136,45 +138,52 @@ namespace mask
 
 namespace metadata_key
 {
-    void test_metadata_key(MetadataKey & m)
+    void test_metadata_key(const MetadataKey & m)
     {
         m.raw_name();
         m.human_name();
         MetadataKeyType foo(m.type());
     }
 
-    void test_metadata_package_id_key(MetadataPackageIDKey & m)
+    void test_metadata_package_id_key(const MetadataPackageIDKey & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_string_key(MetadataStringKey & m)
+    void test_metadata_string_key(const MetadataStringKey & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_time_key(MetadataTimeKey & m)
+    void test_metadata_section_key(const MetadataSectionKey & m)
+    {
+        test_metadata_key(m);
+        std::for_each(indirect_iterator(m.begin_metadata()), indirect_iterator(m.end_metadata()),
+                &test_metadata_key);
+    }
+
+    void test_metadata_time_key(const MetadataTimeKey & m)
     {
         test_metadata_key(m);
         time_t PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
-    void test_metadata_contents_key(MetadataContentsKey & m)
+    void test_metadata_contents_key(const MetadataContentsKey & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_repository_mask_info_key(MetadataRepositoryMaskInfoKey & m)
+    void test_metadata_repository_mask_info_key(const MetadataRepositoryMaskInfoKey & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
     template <typename C_>
-    void test_metadata_set_key(MetadataSetKey<C_> & m)
+    void test_metadata_set_key(const MetadataSetKey<C_> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -183,7 +192,7 @@ namespace metadata_key
     }
 
     template <>
-    void test_metadata_set_key(MetadataSetKey<IUseFlagSet> & m)
+    void test_metadata_set_key(const MetadataSetKey<IUseFlagSet> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -198,7 +207,7 @@ namespace metadata_key
     }
 
     template <typename C_>
-    void test_metadata_spec_tree_key(MetadataSpecTreeKey<C_> & m)
+    void test_metadata_spec_tree_key(const MetadataSpecTreeKey<C_> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -208,7 +217,7 @@ namespace metadata_key
     }
 
     template <>
-    void test_metadata_spec_tree_key(MetadataSpecTreeKey<FetchableURISpecTree> & m)
+    void test_metadata_spec_tree_key(const MetadataSpecTreeKey<FetchableURISpecTree> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -314,6 +323,7 @@ void expose_additional_tests()
     bp::def("test_metadata_restrict_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<RestrictSpecTree>);
     bp::def("test_metadata_fetchable_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<FetchableURISpecTree>);
     bp::def("test_metadata_simple_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<SimpleURISpecTree>);
+    bp::def("test_metadata_section_key", &metadata_key::test_metadata_section_key);
 
     /**
      * Formatter tests
@@ -325,3 +335,4 @@ void expose_additional_tests()
     bp::def("test_package_roles", &formatter::test_package_roles);
     bp::def("test_can_space", &formatter::test_can_space);
 }
+

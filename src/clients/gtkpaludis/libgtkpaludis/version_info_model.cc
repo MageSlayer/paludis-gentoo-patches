@@ -196,6 +196,10 @@ namespace gtkpaludis
         void visit(const MetadataContentsKey &)
         {
         }
+
+        void visit(const MetadataSectionKey &)
+        {
+        }
     };
 
     struct VersionInfoModel::KeyMetadataPopulator :

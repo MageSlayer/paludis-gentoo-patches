@@ -306,6 +306,12 @@ namespace
         {
         }
 
+        void visit(const MetadataSectionKey & k)
+        {
+            std::for_each(indirect_iterator(k.begin_metadata()),
+                    indirect_iterator(k.end_metadata()), accept_visitor(*this));
+        }
+
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             try
