@@ -2,7 +2,16 @@ SUBDIRS = .
 
 CLEANFILES = *~ python/*
 MAINTAINERCLEANFILES = Makefile.in
-EXTRA_DIST = epydoc.css
+
+examples = \
+	example_command_line.py \
+	example_version_spec.py
+
+EXTRA_DIST = epydoc.css \
+	     python_syntax.css \
+	     $(examples)
+
+dist_noinst_SCRIPTS = create_python_examples.py
 
 if ENABLE_PYTHON
 
@@ -10,9 +19,9 @@ all-local : epydoc
 
 epydoc : python
 
-python : epydoc.css
+python : epydoc.css python_syntax.css create_python_examples.py $(examples)
 	rm -fr python
-	mkdir -p python
+	mkdir python
 	env \
 	    LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
 	    \`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
@@ -26,6 +35,9 @@ python : epydoc.css
 	    PYTHONPATH="./.libs" \
 	    epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
 	        $(top_builddir)/python/paludis.so
+	$(PYTHON) $(srcdir)/create_python_examples.py $(srcdir) $(examples)
+	cp $(srcdir)/python_syntax.css python/
+
 
 install-data-local :
 	mkdir -p $(DESTDIR)$(htmldir)/api

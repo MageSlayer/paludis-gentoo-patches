@@ -22,139 +22,172 @@ how concepts map on to different language bindings.</p>
     <tr>
         <th>Example</th>
         <th colspan="3">Language</th>
+        <th>Description</th>
     </tr>
 
+    <tr>
+        <td>example_command_line</td>
+        <td>C++:
+            <a href="cplusplus/example__command__line_8hh-source.html">hh</a>
+            <a href="cplusplus/example__command__line_8cc.html">cc</a>
+        </td>
+        <td><a href="ruby/example_command_line.html">Ruby</a></td>
+        <td><a href="python/example_command_line.html">Python</a></td>
+        <td>Common command line code (not a standalone example)</td>
+    </tr>
     <tr>
         <td>example_about</td>
         <td><a href="cplusplus/example__about_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_about.html">Ruby</a></td>
         <td></td>
+        <td>How to use Paludis version macros</td>
     </tr>
     <tr>
         <td>example_action</td>
         <td><a href="cplusplus/example__action_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_action.html">Ruby</a></td>
         <td></td>
+        <td>How to use actions</td>
     </tr>
     <tr>
         <td>example_contents</td>
         <td><a href="cplusplus/example__contents_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_contents.html">Ruby</a></td>
         <td></td>
+        <td>How to use contents</td>
     </tr>
     <tr>
         <td>example_dep_label</td>
         <td><a href="cplusplus/example__dep__label_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to handle dependency labels</td>
     </tr>
     <tr>
         <td>example_dep_spec</td>
         <td><a href="cplusplus/example__dep__spec_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_dep_spec.html">Ruby</a></td>
         <td></td>
+        <td>How to handle dependency specs</td>
     </tr>
     <tr>
         <td>example_dep_spec_flattener</td>
         <td><a href="cplusplus/example__dep__spec__flattener_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use DepSpecFlattener</td>
     </tr>
     <tr>
         <td>example_dep_tag</td>
         <td><a href="cplusplus/example__dep__tag_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to handle dependency tags</td>
     </tr>
     <tr>
         <td>example_dep_tree</td>
         <td><a href="cplusplus/example__dep__tree_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to handle dependency specs</td>
     </tr>
     <tr>
         <td>example_environment</td>
         <td><a href="cplusplus/example__environment_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use EnvironmentMaker and the resultant Environment</td>
     </tr>
     <tr>
         <td>example_formatter</td>
         <td><a href="cplusplus/example__formatter_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to create a formatter</td>
     </tr>
     <tr>
         <td>example_mask</td>
         <td><a href="cplusplus/example__mask_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use Mask</td>
     </tr>
     <tr>
         <td>example_match_package</td>
         <td><a href="cplusplus/example__match__package_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use paludis::match_package and paludis::match_package_in_set</td>
     </tr>
     <tr>
         <td>example_metadata_key</td>
         <td><a href="cplusplus/example__metadata__key_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use MetadataKey</td>
     </tr>
     <tr>
         <td>example_name</td>
         <td><a href="cplusplus/example__name_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use name classes</td>
     </tr>
     <tr>
         <td>example_package_database</td>
         <td><a href="cplusplus/example__package__database_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use PackageDatabase</td>
     </tr>
     <tr>
         <td>example_package_id</td>
         <td><a href="cplusplus/example__package__id_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use PackageID</td>
     </tr>
     <tr>
         <td>example_query</td>
         <td><a href="cplusplus/example__query_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_query.html">Ruby</a></td>
         <td></td>
+        <td>How to use the standard Query classes</td>
     </tr>
     <tr>
         <td>example_query_delegate</td>
         <td><a href="cplusplus/example__query__delegate_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to implement a new Query classes</td>
     </tr>
     <tr>
         <td>example_repository</td>
         <td><a href="cplusplus/example__repository_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use Repository</td>
     </tr>
     <tr>
         <td>example_stringify_formatter</td>
         <td><a href="cplusplus/example__stringify__formatter_8cc-example.html">C++</a></td>
         <td></td>
         <td></td>
+        <td>How to use StringifyFormatter</td>
     </tr>
     <tr>
         <td>example_version_operator</td>
         <td><a href="cplusplus/example__version__operator_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_version_operator.html">Ruby</a></td>
         <td></td>
+        <td>How to use VersionOperator</td>
     </tr>
     <tr>
         <td>example_version_spec</td>
         <td><a href="cplusplus/example__version__spec_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_version_spec.html">Ruby</a></td>
-        <td></td>
+        <td><a href="python/example_version_spec.html">Python</a></td>
+        <td>How to use VersionSpec</td>
     </tr>
 </table>
 
