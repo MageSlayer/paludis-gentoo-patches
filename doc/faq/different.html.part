@@ -67,7 +67,7 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
 <p>Paludis ships with a demo hook showing how to get a summary of messages after
 all packages have been installed. It can be found in
 <code>SHAREDIR/paludis/hooks/demos/elog.bash</code>. See <a
-    href="hooks.html">the hooks documentation</a> for more information about
+    href="../configuration/hooks.html">the hooks documentation</a> for more information about
 hooks.</p>
 
 <p>This hook is not enabled by default because it is highly annoying. If you use
