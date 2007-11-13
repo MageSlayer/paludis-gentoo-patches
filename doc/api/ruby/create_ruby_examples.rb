@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 
+require 'rubygems'
 require 'syntax/convertors/html'
 
 convertor = Syntax::Convertors::HTML.for_syntax('ruby')
