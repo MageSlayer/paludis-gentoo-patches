@@ -64,15 +64,19 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.VERSION), "1")
         self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "cat-one/pkg-one::installed")
 
-    def test_08_find_metadata(self):
+    def test_08_str(self):
+        self.assertEquals(str(self.pid), "foo/bar-1.0::testrepo")
+        self.assertEquals(str(self.ipid), "cat-one/pkg-one-1::installed")
+
+    def test_09_find_metadata(self):
         self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
 
-    def test_09_perform_action(self):
+    def test_10_perform_action(self):
         self.pid.perform_action(PretendAction())
         self.assertRaises(UnsupportedActionError, self.pid.perform_action, ConfigAction())
         self.assertRaises(UnsupportedActionError, self.ipid.perform_action, PretendAction())
 
-    def test_10_supports_action(self):
+    def test_11_supports_action(self):
         self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
         self.assert_(self.pid.supports_action(SupportsInstallActionTest()))
         self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
@@ -89,11 +93,11 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(not self.ipid.supports_action(SupportsPretendActionTest()))
         self.assert_(self.ipid.supports_action(SupportsConfigActionTest()))
 
-    def test_11_masked(self):
+    def test_12_masked(self):
         self.assert_(not self.pid.masked)
         self.assert_(self.mpid.masked)
 
-    def test_12_masks(self):
+    def test_13_masks(self):
         mask = iter(self.mpid.masks).next()
         self.assert_(isinstance(mask, UnacceptedMask))
 

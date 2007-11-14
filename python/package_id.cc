@@ -115,6 +115,8 @@ void expose_package_id()
         .def("__eq__", &py_eq<PackageID>)
 
         .def("__ne__", &py_ne<PackageID>)
+
+        .def(bp::self_ns::str(bp::self))
         ;
 
     /**
