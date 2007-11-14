@@ -25,7 +25,43 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
-class TestCase_01_Formatters_suclassing(unittest.TestCase):
+class TestCase_01_StringifyFormatter(unittest.TestCase):
+    def test_01_create(self):
+        StringifyFormatter()
+
+    def test_02_passing_to_cpp(self):
+        f = StringifyFormatter()
+
+        test_formatter_string(f)
+        test_formmater_keyword_name(f)
+        test_formatter_use_flag_name(f)
+        test_formatter_iuse_flag(f)
+        test_formatter_license_spec_tree(f)
+        test_formatter_provide_spec_tree(f)
+        test_formatter_dependency_spec_tree(f)
+        test_formatter_restrict_spec_tree(f)
+        test_formatter_simple_uri_spec_tree(f)
+        test_formatter_fetchable_uri_spec_tree(f)
+
+class TestCase_02_PythonFormatter(unittest.TestCase):
+    def test_01_create(self):
+        PythonFormatter()
+
+    def test_02_passing_to_cpp(self):
+        f = PythonFormatter()
+
+        test_formatter_string(f)
+        test_formmater_keyword_name(f)
+        test_formatter_use_flag_name(f)
+        test_formatter_iuse_flag(f)
+        test_formatter_license_spec_tree(f)
+        test_formatter_provide_spec_tree(f)
+        test_formatter_dependency_spec_tree(f)
+        test_formatter_restrict_spec_tree(f)
+        test_formatter_simple_uri_spec_tree(f)
+        test_formatter_fetchable_uri_spec_tree(f)
+
+class TestCase_03_Formatters_suclassing(unittest.TestCase):
     def test_python_can_formats(self):
 
         class TestCanFormatPlain(CanFormatPlainTextDepSpec):
@@ -181,6 +217,18 @@ class TestCase_01_Formatters_suclassing(unittest.TestCase):
         test_iuse_roles(f)
         test_package_roles(f)
         test_can_space(f)
+
+        test_formatter_string(f)
+        test_formmater_keyword_name(f)
+        test_formatter_use_flag_name(f)
+        test_formatter_iuse_flag(f)
+        test_formatter_license_spec_tree(f)
+        test_formatter_provide_spec_tree(f)
+        test_formatter_dependency_spec_tree(f)
+        test_formatter_restrict_spec_tree(f)
+        test_formatter_simple_uri_spec_tree(f)
+        test_formatter_fetchable_uri_spec_tree(f)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -343,6 +343,7 @@ struct PythonCanSpaceWrapper :
 };
 
 class PythonFormatterWrapper :
+    public PythonCanFormat<std::string>,
     public PythonCanFormat<UseFlagName>,
     public PythonCanFormat<IUseFlag>,
     public PythonCanFormat<KeywordName>,
@@ -713,6 +714,16 @@ void expose_formatter()
     /**
      * StringifyFormatter
      */
+    bp::implicitly_convertible<StringifyFormatter, Formatter<std::string> >();
+    bp::implicitly_convertible<StringifyFormatter, Formatter<KeywordName> >();
+    bp::implicitly_convertible<StringifyFormatter, Formatter<UseFlagName> >();
+    bp::implicitly_convertible<StringifyFormatter, Formatter<IUseFlag> >();
+    bp::implicitly_convertible<StringifyFormatter, LicenseSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, ProvideSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, DependencySpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, RestrictSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, SimpleURISpecTree::ItemFormatter>();
+    bp::implicitly_convertible<StringifyFormatter, FetchableURISpecTree::ItemFormatter>();
     bp::class_<StringifyFormatter,
             bp::bases<
                 CanFormat<std::string>,
@@ -747,6 +758,16 @@ void expose_formatter()
     /**
      * PythonFormatter
      */
+    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<std::string> >();
+    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<KeywordName> >();
+    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<UseFlagName> >();
+    bp::implicitly_convertible<PythonFormatterWrapper, Formatter<IUseFlag> >();
+    bp::implicitly_convertible<PythonFormatterWrapper, LicenseSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, ProvideSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, DependencySpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, RestrictSpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, SimpleURISpecTree::ItemFormatter>();
+    bp::implicitly_convertible<PythonFormatterWrapper, FetchableURISpecTree::ItemFormatter>();
     bp::class_<PythonFormatterWrapper,
             bp::bases<
                 CanFormat<std::string>,

@@ -287,6 +287,46 @@ namespace formatter
         f.newline();
         f.indent(1);
     }
+
+    void test_formatter_string(const Formatter<std::string> &)
+    {
+    }
+
+    void test_formmater_keyword_name(const Formatter<KeywordName> &)
+    {
+    }
+
+    void test_formatter_use_flag_name(const Formatter<UseFlagName> &)
+    {
+    }
+
+    void test_formatter_iuse_flag(const Formatter<IUseFlag> &)
+    {
+    }
+
+    void test_formatter_license_spec_tree(const LicenseSpecTree::ItemFormatter &)
+    {
+    }
+
+    void test_formatter_provide_spec_tree(const ProvideSpecTree::ItemFormatter &)
+    {
+    }
+
+    void test_formatter_dependency_spec_tree(const DependencySpecTree::ItemFormatter &)
+    {
+    }
+
+    void test_formatter_restrict_spec_tree(const RestrictSpecTree::ItemFormatter &)
+    {
+    }
+
+    void test_formatter_simple_uri_spec_tree(const SimpleURISpecTree::ItemFormatter &)
+    {
+    }
+
+    void test_formatter_fetchable_uri_spec_tree(const FetchableURISpecTree::ItemFormatter &)
+    {
+    }
 }
 
 void expose_additional_tests()
@@ -334,5 +374,16 @@ void expose_additional_tests()
     bp::def("test_iuse_roles", &formatter::test_iuse_roles);
     bp::def("test_package_roles", &formatter::test_package_roles);
     bp::def("test_can_space", &formatter::test_can_space);
+
+    bp::def("test_formatter_string", &formatter::test_formatter_string);
+    bp::def("test_formmater_keyword_name", &formatter::test_formmater_keyword_name);
+    bp::def("test_formatter_use_flag_name", &formatter::test_formatter_use_flag_name);
+    bp::def("test_formatter_iuse_flag", &formatter::test_formatter_iuse_flag);
+    bp::def("test_formatter_license_spec_tree", &formatter::test_formatter_license_spec_tree);
+    bp::def("test_formatter_provide_spec_tree", &formatter::test_formatter_provide_spec_tree);
+    bp::def("test_formatter_dependency_spec_tree", &formatter::test_formatter_dependency_spec_tree);
+    bp::def("test_formatter_restrict_spec_tree", &formatter::test_formatter_restrict_spec_tree);
+    bp::def("test_formatter_simple_uri_spec_tree", &formatter::test_formatter_simple_uri_spec_tree);
+    bp::def("test_formatter_fetchable_uri_spec_tree", &formatter::test_formatter_fetchable_uri_spec_tree);
 }
 
