@@ -17,42 +17,22 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
-
-#include <boost/python.hpp>
-#include <boost/version.hpp>
 #include <python/paludis_python.hh>
 
-BOOST_PYTHON_MODULE(paludis)
+#include <paludis/about.hh>
+
+using namespace paludis;
+using namespace paludis::python;
+namespace bp = boost::python;
+
+void expose_about()
 {
-#if BOOST_VERSION >= 103400
-    boost::python::docstring_options doc_options(true, false);
-#endif
-
-    expose_about();
-    expose_exception();
-    expose_version_spec();
-    expose_version_operator();
-    expose_version_requirements();
-    expose_fs_entry();
-    expose_contents();
-    expose_dep_spec();
-    expose_dep_tag();
-    expose_dep_label();
-    expose_dep_list();
-    expose_name();
-    expose_log();
-    expose_query();
-    expose_environment();
-    expose_metadata_key();
-    expose_mask();
-    expose_package_id();
-    expose_action();
-    expose_package_database();
-    expose_repository();
-    expose_formatter();
-#ifdef ENABLE_QA
-    expose_qa();
-#endif
+    bp::scope s;
+    s.attr("VERSION_MAJOR") = stringify(PALUDIS_VERSION_MAJOR);
+    s.attr("VERSION_MINOR") = stringify(PALUDIS_VERSION_MINOR);
+    s.attr("VERSION_MICRO") = stringify(PALUDIS_VERSION_MICRO);
+    s.attr("VERSION") = stringify(PALUDIS_VERSION_MAJOR) + "."
+        + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO);
+    s.attr("VERSION_SUFFIX") = stringify(PALUDIS_VERSION_SUFFIX);
+    s.attr("SUBVERSION_REVISION") = stringify(PALUDIS_SUBVERSION_REVISION);
 }
-

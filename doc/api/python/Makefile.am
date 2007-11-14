@@ -4,6 +4,7 @@ CLEANFILES = *~ python/*
 MAINTAINERCLEANFILES = Makefile.in
 
 examples = \
+	example_about.py \
 	example_command_line.py \
 	example_version_spec.py
 

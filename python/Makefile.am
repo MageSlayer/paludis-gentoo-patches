@@ -51,6 +51,7 @@ IF_PYTHON_SOURCES = \
 	options.hh \
 	iterable.hh \
 	validated.hh \
+	about.cc \
 	action.cc \
 	contents.cc \
 	dep_label.cc \

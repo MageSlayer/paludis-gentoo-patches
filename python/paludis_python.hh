@@ -157,6 +157,7 @@ namespace paludis
     } // namespace paludis::python
 } // namespace paludis
 
+void expose_about() PALUDIS_VISIBLE;
 void expose_action() PALUDIS_VISIBLE;
 void expose_contents() PALUDIS_VISIBLE;
 void expose_dep_label() PALUDIS_VISIBLE;
