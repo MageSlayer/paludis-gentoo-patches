@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-CLEANFILES = *~ python/*
+CLEANFILES = *~ python/*/*
 MAINTAINERCLEANFILES = Makefile.in
 
 examples = \
@@ -20,7 +20,7 @@ all-local : epydoc
 
 epydoc : python
 
-python : epydoc.css python_syntax.css create_python_examples.py $(examples)
+python : $(top_builddir)/python/paludis.so epydoc.css python_syntax.css create_python_examples.py $(examples)
 	rm -fr python
 	mkdir python
 	env \
@@ -37,6 +37,7 @@ python : epydoc.css python_syntax.css create_python_examples.py $(examples)
 	    epydoc -n Paludis -o python -u http://paludis.pioto.org --no-frames -c $(srcdir)/epydoc.css \
 	        $(top_builddir)/python/paludis.so
 	$(PYTHON) $(srcdir)/create_python_examples.py $(srcdir) $(examples)
+	find python/ -type f | xargs sed -i -e 's@http://###EX###@@'
 	cp $(srcdir)/python_syntax.css python/
 
 

@@ -43,7 +43,9 @@ void expose_version_spec()
     bp::class_<VersionSpec>
         (
          "VersionSpec",
-         "A VersionSpec represents a version number (for example, 1.2.3b-r1).",
+         "A VersionSpec represents a version number (for example, 1.2.3b-r1).\n\n"
+
+         "See U{example_version_spec<###EX###../example_version_spec.html>}",
          bp::init<const std::string &>("__init__(string)")
         )
         .def("bump", &VersionSpec::bump,
