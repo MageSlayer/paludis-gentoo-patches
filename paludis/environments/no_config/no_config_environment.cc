@@ -146,22 +146,29 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         if (FSEntry("/var/empty") != params.master_repository_dir)
         {
-            tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            if (params.repository_dir.realpath() == params.master_repository_dir.realpath())
+                Log::get_instance()->message(ll_warning, lc_context, "Ignoring master_repository_dir '" +
+                        stringify(params.master_repository_dir) + "' because it is the same as repository_dir");
 
-            if (params.extra_params)
-                std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
+            else
+            {
+                tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
 
-            keys->insert("format", "ebuild");
-            keys->insert("location", stringify(params.master_repository_dir));
-            keys->insert("profiles", "/var/empty");
-            keys->insert("ignore_deprecated_profiles", "true");
-            keys->insert("write_cache", stringify(params.write_cache));
-            keys->insert("names_cache", "/var/empty");
-            if (params.disable_metadata_cache)
-                keys->insert("cache", "/var/empty");
+                if (params.extra_params)
+                    std::copy(params.extra_params->begin(), params.extra_params->end(), keys->inserter());
 
-            package_database->add_repository(1, ((master_repo =
-                            RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
+                keys->insert("format", "ebuild");
+                keys->insert("location", stringify(params.master_repository_dir));
+                keys->insert("profiles", "/var/empty");
+                keys->insert("ignore_deprecated_profiles", "true");
+                keys->insert("write_cache", stringify(params.write_cache));
+                keys->insert("names_cache", "/var/empty");
+                if (params.disable_metadata_cache)
+                    keys->insert("cache", "/var/empty");
+
+                package_database->add_repository(1, ((master_repo =
+                                RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
+            }
         }
 
         tr1::shared_ptr<Map<std::string, std::string> > keys( new Map<std::string, std::string>);
@@ -179,7 +186,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if (params.disable_metadata_cache)
             keys->insert("cache", "/var/empty");
 
-        if (FSEntry("/var/empty") != params.master_repository_dir)
+        if (master_repo)
             keys->insert("master_repository", stringify(master_repo->name()));
 
         if ((params.repository_dir / "metadata" / "profiles_desc.conf").exists())

@@ -21,6 +21,10 @@ trunk/:
 
     * Metadata options for importare.
 
+    * adjutrix, qualudis and friends ignore --master-repository-dir if
+      it is the same as the main repository directory, allowing it to
+      be more usefully specified in {ADJUTRIX,QUALUDIS}_OPTIONS.
+
 0.26.0_alpha3:
     * STILL BROKEN, wait for 0.26.0 if you use these: CRAN, Ruby bindings for
       dep specs.
