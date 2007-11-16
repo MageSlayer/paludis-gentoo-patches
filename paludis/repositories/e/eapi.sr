@@ -134,6 +134,7 @@ make_class_EAPIEbuildOptions()
 
     key restrict_fetch "tr1::shared_ptr<Set<std::string> >"
     key restrict_mirror "tr1::shared_ptr<Set<std::string> >"
+    key restrict_primaryuri "tr1::shared_ptr<Set<std::string> >"
 
     doxygen_comment << "END"
         /**

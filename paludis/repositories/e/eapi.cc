@@ -108,6 +108,7 @@ namespace paludis
                                                 .use_expand_separator(destringify<char>(k.get("use_expand_separator")))
                                                 .restrict_fetch(make_shared_ptr(new Set<std::string>))
                                                 .restrict_mirror(make_shared_ptr(new Set<std::string>))
+                                                .restrict_primaryuri(make_shared_ptr(new Set<std::string>))
                                                 )))
 
                                                 .ebuild_phases(make_shared_ptr(new EAPIEbuildPhases(
@@ -179,6 +180,8 @@ namespace paludis
                         eapi->supported->ebuild_options->restrict_fetch->inserter());
                 WhitespaceTokeniser::tokenise(k.get("restrict_mirror"),
                         eapi->supported->ebuild_options->restrict_mirror->inserter());
+                WhitespaceTokeniser::tokenise(k.get("restrict_primaryuri"),
+                        eapi->supported->ebuild_options->restrict_primaryuri->inserter());
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"), eapi));
             }

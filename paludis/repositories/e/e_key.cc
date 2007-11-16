@@ -307,6 +307,11 @@ EFetchableURIKey::initial_label() const
                     std::find(_imp->id->eapi()->supported->ebuild_options->restrict_fetch->begin(),
                         _imp->id->eapi()->supported->ebuild_options->restrict_fetch->end(), (*i)->text()))
                 _imp->initial_label = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
+
+            else if (_imp->id->eapi()->supported->ebuild_options->restrict_primaryuri->end() !=
+                    std::find(_imp->id->eapi()->supported->ebuild_options->restrict_primaryuri->begin(),
+                        _imp->id->eapi()->supported->ebuild_options->restrict_primaryuri->end(), (*i)->text()))
+                _imp->initial_label = *parse_uri_label("default-restrict-primaryuri:", *_imp->id->eapi())->begin();
         }
 
         if (! _imp->initial_label)
