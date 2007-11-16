@@ -156,16 +156,16 @@ UnpackagedID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnpackagedID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 UnpackagedID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
@@ -174,10 +174,10 @@ UnpackagedID::provide_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 UnpackagedID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>

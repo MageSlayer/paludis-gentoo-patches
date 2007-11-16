@@ -282,27 +282,27 @@ namespace
         {
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> &)
+        void visit(const MetadataCollectionKey<IUseFlagSet> &)
         {
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> &)
+        void visit(const MetadataCollectionKey<KeywordNameSet> &)
         {
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > &)
+        void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> &)
+        void visit(const MetadataCollectionKey<FSEntrySequence> &)
         {
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> &)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> &)
         {
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> &)
+        void visit(const MetadataCollectionKey<PackageIDSequence> &)
         {
         }
 

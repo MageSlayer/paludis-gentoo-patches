@@ -61,7 +61,7 @@ SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) cons
 
 PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
         const std::string & r, const std::string & h, const MetadataKeyType t) :
-    MetadataSetKey<PackageIDSequence>(r, h, t),
+    MetadataCollectionKey<PackageIDSequence>(r, h, t),
     _env(e),
     _v(new PackageIDSequence)
 {

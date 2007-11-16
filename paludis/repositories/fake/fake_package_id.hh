@@ -31,24 +31,24 @@ namespace paludis
     class FakeRepositoryBase;
 
     template <typename C_>
-    class PALUDIS_VISIBLE FakeMetadataSetKey :
-        public MetadataSetKey<C_>,
-        private PrivateImplementationPattern<FakeMetadataSetKey<C_> >
+    class PALUDIS_VISIBLE FakeMetadataCollectionKey :
+        public MetadataCollectionKey<C_>,
+        private PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >
     {
         protected:
-            typename PrivateImplementationPattern<FakeMetadataSetKey<C_> >::ImpPtr & _imp;
+            typename PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::ImpPtr & _imp;
 
-            FakeMetadataSetKey(const std::string &, const std::string &, const MetadataKeyType,
+            FakeMetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType,
                     const PackageID * const, const Environment * const);
 
         public:
-            ~FakeMetadataSetKey();
+            ~FakeMetadataCollectionKey();
 
             virtual const tr1::shared_ptr<const C_> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataKeywordSetKey :
-        public FakeMetadataSetKey<KeywordNameSet>
+        public FakeMetadataCollectionKey<KeywordNameSet>
     {
         public:
             FakeMetadataKeywordSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType,
@@ -61,7 +61,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE FakeMetadataIUseSetKey :
-        public FakeMetadataSetKey<IUseFlagSet>
+        public FakeMetadataCollectionKey<IUseFlagSet>
     {
         public:
             FakeMetadataIUseSetKey(const std::string &, const std::string &, const std::string &, const IUseFlagParseMode,
@@ -172,8 +172,8 @@ namespace paludis
             virtual const tr1::shared_ptr<const Repository> repository() const;
 
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
-            virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
-            virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
             virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
@@ -187,7 +187,7 @@ namespace paludis
             virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
             virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
-            virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
             virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
             virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
 

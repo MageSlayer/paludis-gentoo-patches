@@ -104,27 +104,27 @@ namespace gtkpaludis
 
         virtual void got_key(const MetadataKey & k, const std::string & s) = 0;
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }
@@ -159,7 +159,7 @@ namespace gtkpaludis
             got_key(k, k.pretty_print_flat(formatter));
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             got_key(k, k.pretty_print_flat(formatter));
         }

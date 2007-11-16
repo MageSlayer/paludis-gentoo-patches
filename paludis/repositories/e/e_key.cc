@@ -532,7 +532,7 @@ EIUseKey::EIUseKey(
         const Environment * const e,
         const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSetKey<IUseFlagSet>(r, h, t),
+    MetadataCollectionKey<IUseFlagSet>(r, h, t),
     PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EIUseKey>::_imp)
 {
@@ -761,7 +761,7 @@ namespace paludis
 
 EKeywordsKey::EKeywordsKey(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSetKey<KeywordNameSet>(r, h, t),
+    MetadataCollectionKey<KeywordNameSet>(r, h, t),
     PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EKeywordsKey>::_imp)
 {
@@ -834,7 +834,7 @@ namespace paludis
 
 EUseKey::EUseKey(const Environment * const e, const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSetKey<UseFlagNameSet>(r, h, t),
+    MetadataCollectionKey<UseFlagNameSet>(r, h, t),
     PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, e, v)),
     _imp(PrivateImplementationPattern<EUseKey>::_imp)
 {
@@ -906,7 +906,7 @@ namespace paludis
 
 EInheritedKey::EInheritedKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataSetKey<Set<std::string> >(r, h, t),
+    MetadataCollectionKey<Set<std::string> >(r, h, t),
     PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
     _imp(PrivateImplementationPattern<EInheritedKey>::_imp)
 {

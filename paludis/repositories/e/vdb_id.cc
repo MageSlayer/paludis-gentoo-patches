@@ -74,9 +74,9 @@ namespace paludis
         tr1::shared_ptr<const EAPI> eapi;
 
         tr1::shared_ptr<const MetadataFSEntryKey> fs_location;
-        tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > use;
-        tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > inherited;
-        tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse;
+        tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > use;
+        tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
+        tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse;
         tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
         tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -442,27 +442,27 @@ VDBID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 VDBID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >
 VDBID::use_key() const
 {
     need_keys_added();
     return _imp->use;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 VDBID::iuse_key() const
 {
     need_keys_added();
     return _imp->iuse;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >
+const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 VDBID::inherited_key() const
 {
     need_keys_added();
@@ -707,10 +707,10 @@ VDBID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 VDBID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>

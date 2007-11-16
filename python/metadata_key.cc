@@ -79,29 +79,29 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataFSEntryKey>(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<KeywordNameSet> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<UseFlagNameSet> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<FSEntrySequence> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -134,9 +134,9 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<PackageIDSequence> >(_m_ptr));
+            obj = bp::object(tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(_m_ptr));
         }
 
         void visit(const MetadataSectionKey & k)
@@ -328,12 +328,12 @@ struct MetadataRepositoryMaskInfoKeyWrapper :
 };
 
 template <typename C_>
-struct MetadataSetKeyWrapper :
-    MetadataSetKey<C_>,
-    bp::wrapper<MetadataSetKey<C_> >
+struct MetadataCollectionKeyWrapper :
+    MetadataCollectionKey<C_>,
+    bp::wrapper<MetadataCollectionKey<C_> >
 {
-    MetadataSetKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSetKey<C_>(r, h, t)
+    MetadataCollectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataCollectionKey<C_>(r, h, t)
     {
     }
 
@@ -345,7 +345,7 @@ struct MetadataSetKeyWrapper :
         if (bp::override f = this->get_override("value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSetKey", "value");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
     }
 
     std::string pretty_print_flat(const Formatter<typename C_::value_type> & formatter) const
@@ -356,17 +356,17 @@ struct MetadataSetKeyWrapper :
         if (bp::override f = this->get_override("pretty_print_flat"))
             return f(boost::cref(formatter));
         else
-            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat");
     }
 };
 
 template <>
-struct MetadataSetKeyWrapper<IUseFlagSet> :
-    MetadataSetKey<IUseFlagSet>,
-    bp::wrapper<MetadataSetKey<IUseFlagSet> >
+struct MetadataCollectionKeyWrapper<IUseFlagSet> :
+    MetadataCollectionKey<IUseFlagSet>,
+    bp::wrapper<MetadataCollectionKey<IUseFlagSet> >
 {
-    MetadataSetKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
-        MetadataSetKey<IUseFlagSet>(r, h, t)
+    MetadataCollectionKeyWrapper(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        MetadataCollectionKey<IUseFlagSet>(r, h, t)
     {
     }
 
@@ -378,7 +378,7 @@ struct MetadataSetKeyWrapper<IUseFlagSet> :
         if (bp::override f = this->get_override("value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSetKey", "value");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
     }
 
     std::string pretty_print_flat(const Formatter<IUseFlag> & formatter) const
@@ -389,7 +389,7 @@ struct MetadataSetKeyWrapper<IUseFlagSet> :
         if (bp::override f = this->get_override("pretty_print_flat"))
             return f(boost::cref(formatter));
         else
-            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat");
     }
 
     std::string pretty_print_flat_with_comparison(
@@ -403,7 +403,7 @@ struct MetadataSetKeyWrapper<IUseFlagSet> :
         if (bp::override f = this->get_override("pretty_print_flat_with_comparison"))
             return f(boost::cref(e), pid, boost::cref(formatter));
         else
-            throw PythonMethodNotImplemented("MetadataSetKey", "pretty_print_flat_with_comparison");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat_with_comparison");
     }
 };
 
@@ -508,14 +508,14 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
 
 template <typename C_>
 struct class_set_key :
-    bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
+    bp::class_<MetadataCollectionKeyWrapper<C_>, tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<MetadataSetKeyWrapper<C_>, tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
+        bp::class_<MetadataCollectionKeyWrapper<C_>, tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
-                    "A MetadataSetKey is a MetadataKey that holds a Set of some kind of item\n"
+                    "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
                     "as its value.\n\n"
 
                     "This class can be subclassed in Python.",
@@ -524,16 +524,16 @@ struct class_set_key :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSetKey<C_> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataSetKeyWrapper<C_> >,
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataCollectionKey<C_> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
                 tr1::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataSetKey<C_>::value),
+        def("value", bp::pure_virtual(&MetadataCollectionKey<C_>::value),
                 ("value() -> " + set + "\n"
                  "Fetch our value.").c_str()
            );
 
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSetKey<C_>::pretty_print_flat),
+        def("pretty_print_flat", bp::pure_virtual(&MetadataCollectionKey<C_>::pretty_print_flat),
                 ("pretty_print_flat(" + set +"Formatter) -> string\n"
                  "Return a single-line formatted version of our value, using the\n"
                  "supplied Formatter to format individual items.").c_str()
@@ -543,14 +543,14 @@ struct class_set_key :
 
 template <>
 struct class_set_key<IUseFlagSet> :
-    bp::class_<MetadataSetKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+    bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
     class_set_key(const std::string & set) :
-        bp::class_<MetadataSetKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+        bp::class_<MetadataCollectionKeyWrapper<IUseFlagSet>, tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
                     ("Metadata" + set + "Key").c_str(),
-                    "A MetadataSetKey is a MetadataKey that holds a Set of some kind of item\n"
+                    "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
                     "as its value.\n\n"
 
                     "This class can be subclassed in Python.",
@@ -559,23 +559,23 @@ struct class_set_key<IUseFlagSet> :
                         )
                     )
     {
-        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > >();
-        bp::implicitly_convertible<tr1::shared_ptr<MetadataSetKeyWrapper<IUseFlagSet> >,
+        bp::register_ptr_to_python<tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >();
+        bp::implicitly_convertible<tr1::shared_ptr<MetadataCollectionKeyWrapper<IUseFlagSet> >,
                 tr1::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::value),
+        def("value", bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::value),
                 ("value() -> " + set + "\n"
                  "Fetch our value.").c_str()
            );
 
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::pretty_print_flat),
+        def("pretty_print_flat", bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::pretty_print_flat),
                 ("pretty_print_flat(" + set +"Formatter) -> string\n"
                  "Return a single-line formatted version of our value, using the\n"
                  "supplied Formatter to format individual items.").c_str()
            );
 
         def("pretty_print_flat_with_comparison",
-                bp::pure_virtual(&MetadataSetKey<IUseFlagSet>::pretty_print_flat_with_comparison),
+                bp::pure_virtual(&MetadataCollectionKey<IUseFlagSet>::pretty_print_flat_with_comparison),
                 ("pretty_print_flat_with_comparison(Environment, PackageID, " + set +"Formatter) -> string\n"
                  "Return a single-line formatted version of our value, using the\n"
                  "supplied Formatter to format individual items, and the supplied\n"
@@ -917,7 +917,7 @@ void expose_metadata_key()
         ;
 
     /**
-     * MetadataSetKeys
+     * MetadataCollectionKeys
      */
     class_set_key<KeywordNameSet>("KeywordNameIterable");
     class_set_key<UseFlagNameSet>("UseFlagNameIterable");

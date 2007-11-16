@@ -143,7 +143,7 @@ LiteralMetadataPackageIDKey::value() const
 
 LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & h, const std::string & r,
         const MetadataKeyType t, const tr1::shared_ptr<const FSEntrySequence> & v) :
-    MetadataSetKey<FSEntrySequence>(h, r, t),
+    MetadataCollectionKey<FSEntrySequence>(h, r, t),
     PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>(new Implementation<LiteralMetadataFSEntrySequenceKey>(v)),
     _imp(PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::_imp)
 {
@@ -176,7 +176,7 @@ LiteralMetadataFSEntrySequenceKey::pretty_print_flat(const Formatter<FSEntry> & 
 
 LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & h, const std::string & r,
         const MetadataKeyType t, const tr1::shared_ptr<const Set<std::string> > & v) :
-    MetadataSetKey<Set<std::string> >(h, r, t),
+    MetadataCollectionKey<Set<std::string> >(h, r, t),
     PrivateImplementationPattern<LiteralMetadataStringSetKey>(new Implementation<LiteralMetadataStringSetKey>(v)),
     _imp(PrivateImplementationPattern<LiteralMetadataStringSetKey>::_imp)
 {

@@ -74,7 +74,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE LiteralMetadataFSEntrySequenceKey :
-        public MetadataSetKey<FSEntrySequence>,
+        public MetadataCollectionKey<FSEntrySequence>,
         private PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>
     {
         private:
@@ -92,7 +92,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE LiteralMetadataStringSetKey :
-        public MetadataSetKey<Set<std::string> >,
+        public MetadataCollectionKey<Set<std::string> >,
         private PrivateImplementationPattern<LiteralMetadataStringSetKey>
     {
         private:

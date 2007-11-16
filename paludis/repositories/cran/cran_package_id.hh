@@ -58,8 +58,8 @@ namespace paludis
                 virtual const tr1::shared_ptr<const Repository> repository() const;
 
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> virtual_for_key() const;
-                virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const;
-                virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
@@ -73,7 +73,7 @@ namespace paludis
                 virtual const tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> source_origin_key() const;
                 virtual const tr1::shared_ptr<const MetadataStringKey> binary_origin_key() const;
-                virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const;
+                virtual const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const tr1::shared_ptr<const MetadataPackageIDKey> contained_in_key() const;
                 virtual const tr1::shared_ptr<const MetadataFSEntryKey> fs_location_key() const;
 

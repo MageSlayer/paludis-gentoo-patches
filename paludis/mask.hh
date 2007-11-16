@@ -119,7 +119,7 @@ namespace paludis
 
     /**
      * An UnacceptedMask is a Mask that signifies that a particular value or
-     * combination of values in (for example) a MetadataSetKey or
+     * combination of values in (for example) a MetadataCollectionKey or
      * MetadataSpecTreeKey is not accepted by user configuration.
      *
      * \ingroup g_mask

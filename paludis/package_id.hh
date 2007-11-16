@@ -174,14 +174,14 @@ namespace paludis
              * The keywords_key, if non-zero, is used by FindUnusedPackagesTask
              * to determine whether a package is unused.
              */
-            virtual const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > keywords_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const = 0;
 
             /**
              * The iuse_key, if non-zero, is used when displaying single-line
              * install-pretend output, and when resolving where DepList's
              * DepListReinstallOption is dl_reinstall_if_use_changed.
              */
-            virtual const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > iuse_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > iuse_key() const = 0;
 
             /**
              * The provide_key, if non-zero, indicates that a package provides
@@ -192,7 +192,7 @@ namespace paludis
             /**
              * The contains_key, if non-zero, indicates that a package contains
              * other packages. This affects dependency resolution. */
-            virtual const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > contains_key() const = 0;
+            virtual const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const = 0;
 
             /**
              * The contained_in_key, if non-zero, indicates that a package is

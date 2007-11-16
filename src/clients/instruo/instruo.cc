@@ -110,32 +110,32 @@ namespace
             const tr1::shared_ptr<DependencySpecTree::ConstItem> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             const tr1::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             const tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             const tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             const tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
             const tr1::shared_ptr<const IUseFlagSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             const tr1::shared_ptr<const UseFlagNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }

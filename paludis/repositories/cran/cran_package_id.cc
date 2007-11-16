@@ -319,16 +319,16 @@ CRANPackageID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 CRANPackageID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 CRANPackageID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
@@ -510,7 +510,7 @@ CRANPackageID::perform_action(Action & a) const
     throw UnsupportedActionError(*this, a);
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 CRANPackageID::contains_key() const
 {
     return _imp->contains_key;

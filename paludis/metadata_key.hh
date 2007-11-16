@@ -62,12 +62,12 @@ namespace paludis
             MetadataKeyVisitorTypes,
             MetadataKey,
             MetadataPackageIDKey,
-            MetadataSetKey<UseFlagNameSet>,
-            MetadataSetKey<IUseFlagSet>,
-            MetadataSetKey<KeywordNameSet>,
-            MetadataSetKey<Set<std::string> >,
-            MetadataSetKey<PackageIDSequence>,
-            MetadataSetKey<FSEntrySequence>,
+            MetadataCollectionKey<UseFlagNameSet>,
+            MetadataCollectionKey<IUseFlagSet>,
+            MetadataCollectionKey<KeywordNameSet>,
+            MetadataCollectionKey<Set<std::string> >,
+            MetadataCollectionKey<PackageIDSequence>,
+            MetadataCollectionKey<FSEntrySequence>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,
             MetadataSpecTreeKey<FetchableURISpecTree>,
@@ -367,7 +367,7 @@ namespace paludis
     };
 
     /**
-     * A MetadataSetKey is a MetadataKey that holds a Set of some kind of item
+     * A MetadataCollectionKey is a MetadataKey that holds a Set of some kind of item
      * as its value.
      *
      * \ingroup g_metadata_key
@@ -375,15 +375,15 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename C_>
-    class PALUDIS_VISIBLE MetadataSetKey :
+    class PALUDIS_VISIBLE MetadataCollectionKey :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSetKey<C_> >
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<C_> >
     {
         protected:
             ///\name Basic operations
             ///\{
 
-            MetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
+            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
 
             ///\}
 
@@ -404,10 +404,10 @@ namespace paludis
     };
 
     /**
-     * A MetadataSetKey<IUseFlagSet> is a MetadataKey that holds an IUseFlagSet
+     * A MetadataCollectionKey<IUseFlagSet> is a MetadataKey that holds an IUseFlagSet
      * as its value.
      *
-     * This specialisation of MetadataSetKey provides an additional
+     * This specialisation of MetadataCollectionKey provides an additional
      * pretty_print_flat_with_comparison method.
      *
      * \ingroup g_metadata_key
@@ -415,15 +415,15 @@ namespace paludis
      * \nosubgrouping
      */
     template <>
-    class PALUDIS_VISIBLE MetadataSetKey<IUseFlagSet> :
+    class PALUDIS_VISIBLE MetadataCollectionKey<IUseFlagSet> :
         public MetadataKey,
-        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataSetKey<IUseFlagSet> >
+        public ConstAcceptInterfaceVisitsThis<MetadataKeyVisitorTypes, MetadataCollectionKey<IUseFlagSet> >
     {
         protected:
             ///\name Basic operations
             ///\{
 
-            MetadataSetKey(const std::string &, const std::string &, const MetadataKeyType);
+            MetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType);
 
             ///\}
 

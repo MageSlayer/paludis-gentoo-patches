@@ -225,7 +225,7 @@ namespace
                 result = _m(stringify(*s.value()));
             }
 
-            void visit(const MetadataSetKey<UseFlagNameSet> & s)
+            void visit(const MetadataCollectionKey<UseFlagNameSet> & s)
             {
                 using namespace tr1::placeholders;
 
@@ -236,7 +236,7 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<UseFlagName>, _1)));
             }
 
-            void visit(const MetadataSetKey<IUseFlagSet> & s)
+            void visit(const MetadataCollectionKey<IUseFlagSet> & s)
             {
                 using namespace tr1::placeholders;
 
@@ -247,7 +247,7 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<IUseFlag>, _1)));
             }
 
-            void visit(const MetadataSetKey<KeywordNameSet> & s)
+            void visit(const MetadataCollectionKey<KeywordNameSet> & s)
             {
                 using namespace tr1::placeholders;
 
@@ -258,7 +258,7 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<KeywordName>, _1)));
             }
 
-            void visit(const MetadataSetKey<Set<std::string> > & s)
+            void visit(const MetadataCollectionKey<Set<std::string> > & s)
             {
                 using namespace tr1::placeholders;
 
@@ -269,7 +269,7 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), _1));
             }
 
-            void visit(const MetadataSetKey<FSEntrySequence> & s)
+            void visit(const MetadataCollectionKey<FSEntrySequence> & s)
             {
                 using namespace tr1::placeholders;
 
@@ -280,7 +280,7 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<FSEntry>, _1)));
             }
 
-            void visit(const MetadataSetKey<PackageIDSequence> & s)
+            void visit(const MetadataCollectionKey<PackageIDSequence> & s)
             {
                 using namespace tr1::placeholders;
 

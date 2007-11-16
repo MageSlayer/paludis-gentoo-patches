@@ -51,7 +51,7 @@ namespace paludis
         };
 
         class PackageIDSequenceKey :
-            public MetadataSetKey<PackageIDSequence>
+            public MetadataCollectionKey<PackageIDSequence>
         {
             private:
                 const Environment * const _env;

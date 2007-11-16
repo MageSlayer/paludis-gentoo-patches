@@ -134,43 +134,43 @@ namespace
                     new tr1::shared_ptr<const MetadataRepositoryMaskInfoKey>(tr1::static_pointer_cast<const MetadataRepositoryMaskInfoKey>(mm)));
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> &)
+        void visit(const MetadataCollectionKey<KeywordNameSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >(tr1::static_pointer_cast<const MetadataSetKey<KeywordNameSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_keyword_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > >::free,
+                    new tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(mm)));
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> &)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<UseFlagNameSet> >(tr1::static_pointer_cast<const MetadataSetKey<UseFlagNameSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_use_flag_name_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> > >::free,
+                    new tr1::shared_ptr<const MetadataCollectionKey<UseFlagNameSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<UseFlagNameSet> >(mm)));
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> &)
+        void visit(const MetadataCollectionKey<IUseFlagSet> &)
         {
-            value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >(tr1::static_pointer_cast<const MetadataSetKey<IUseFlagSet> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_iuse_flag_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> > >::free,
+                    new tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >(tr1::static_pointer_cast<const MetadataCollectionKey<IUseFlagSet> >(mm)));
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > &)
+        void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
-            value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >(
-                        tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(mm)));
+            value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > >::free,
+                    new tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >(
+                        tr1::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(mm)));
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> &)
+        void visit(const MetadataCollectionKey<FSEntrySequence> &)
         {
             value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<tr1::shared_ptr<const FSEntrySequence> >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> >(
-                        tr1::static_pointer_cast<const MetadataSetKey<FSEntrySequence> >(mm)));
+                    new tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> >(
+                        tr1::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(mm)));
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> &)
+        void visit(const MetadataCollectionKey<PackageIDSequence> &)
         {
-            value = Data_Wrap_Struct(c_metadata_package_id_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > >::free,
-                    new tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
-                    (tr1::static_pointer_cast<const MetadataSetKey<PackageIDSequence> >(mm)));
+            value = Data_Wrap_Struct(c_metadata_package_id_sequence_key, 0, &Common<tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > >::free,
+                    new tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+                    (tr1::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(mm)));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
@@ -286,8 +286,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataSetKey<T_> > * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<T_> >, self_ptr);
+            tr1::shared_ptr<const MetadataCollectionKey<T_> > * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataCollectionKey<T_> >, self_ptr);
             tr1::shared_ptr<const T_> c = (*self_ptr)->value();
             VALUE result (rb_ary_new());
             for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
@@ -302,8 +302,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> > * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >, self_ptr);
+            tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > * self_ptr;
+            Data_Get_Struct(self, tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >, self_ptr);
             tr1::shared_ptr<const PackageIDSequence> c = (*self_ptr)->value();
             VALUE result (rb_ary_new());
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)

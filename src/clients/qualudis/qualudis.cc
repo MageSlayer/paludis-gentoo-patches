@@ -59,27 +59,27 @@ namespace
         std::ostringstream stream;
         StringifyFormatter formatter;
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
@@ -114,7 +114,7 @@ namespace
             stream << k.raw_name() << ": " << k.pretty_print_flat(formatter) << "\n";
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             stream << k.raw_name() << ": "
                 << join(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()), " ") << "\n";

@@ -191,7 +191,7 @@ namespace paludis
         };
 
         class EIUseKey :
-            public MetadataSetKey<IUseFlagSet>,
+            public MetadataCollectionKey<IUseFlagSet>,
             private PrivateImplementationPattern<EIUseKey>
         {
             private:
@@ -219,7 +219,7 @@ namespace paludis
         };
 
         class EKeywordsKey :
-            public MetadataSetKey<KeywordNameSet>,
+            public MetadataCollectionKey<KeywordNameSet>,
             private PrivateImplementationPattern<EKeywordsKey>
         {
             private:
@@ -240,7 +240,7 @@ namespace paludis
         };
 
         class EUseKey :
-            public MetadataSetKey<UseFlagNameSet>,
+            public MetadataCollectionKey<UseFlagNameSet>,
             private PrivateImplementationPattern<EUseKey>
         {
             private:
@@ -261,7 +261,7 @@ namespace paludis
         };
 
         class EInheritedKey :
-            public MetadataSetKey<Set<std::string> >,
+            public MetadataCollectionKey<Set<std::string> >,
             private PrivateImplementationPattern<EInheritedKey>
         {
             private:

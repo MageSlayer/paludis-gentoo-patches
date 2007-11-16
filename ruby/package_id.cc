@@ -188,7 +188,7 @@ namespace
      * Document-method: keywords_key
      *
      * call-seq:
-     *     keywords_key -> MetadataSetKey
+     *     keywords_key -> MetadataCollectionKey
      *
      * Our keywords
      */
@@ -196,7 +196,7 @@ namespace
      * Document-method: use_key
      *
      * call-seq:
-     *     use_key -> MetadataSetKey
+     *     use_key -> MetadataCollectionKey
      *
      * Our use flags
      */
@@ -204,7 +204,7 @@ namespace
      * Document-method: iuse_key
      *
      * call-seq:
-     *     iuse_key -> MetadataSetKey
+     *     iuse_key -> MetadataCollectionKey
      *
      * Our iuse flags
      */
@@ -212,7 +212,7 @@ namespace
      * Document-method: inherited_key
      *
      * call-seq:
-     *     inherited_key -> MetadataSetKey
+     *     inherited_key -> MetadataCollectionKey
      *
      * Our inherited
      */
@@ -310,8 +310,8 @@ namespace
         rb_define_method(c_package_id, "supports_action", RUBY_FUNC_CAST(&package_id_supports_action), 1);
         rb_define_method(c_package_id, "perform_action", RUBY_FUNC_CAST(&package_id_perform_action), 1);
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
-        rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
-        rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataSetKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
+        rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
+        rb_define_method(c_package_id, "iuse_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<IUseFlagSet>,&PackageID::iuse_key>::fetch)), 0);
         rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::short_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataStringKey,&PackageID::long_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataContentsKey,&PackageID::contents_key>::fetch)), 0);

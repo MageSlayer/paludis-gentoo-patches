@@ -48,7 +48,7 @@ namespace paludis
 {
     template <>
     template <typename C_>
-    struct Implementation<FakeMetadataSetKey<C_> >
+    struct Implementation<FakeMetadataCollectionKey<C_> >
     {
         tr1::shared_ptr<C_> collection;
         const PackageID * const id;
@@ -63,23 +63,23 @@ namespace paludis
 }
 
 template <typename C_>
-FakeMetadataSetKey<C_>::FakeMetadataSetKey(
+FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const PackageID * const i,
         const Environment * const e) :
-    MetadataSetKey<C_>(r, h, t),
-    PrivateImplementationPattern<FakeMetadataSetKey<C_> >(new Implementation<FakeMetadataSetKey<C_> >(i, e)),
-    _imp(PrivateImplementationPattern<FakeMetadataSetKey<C_> >::_imp)
+    MetadataCollectionKey<C_>(r, h, t),
+    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(new Implementation<FakeMetadataCollectionKey<C_> >(i, e)),
+    _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp)
 {
 }
 
 template <typename C_>
-FakeMetadataSetKey<C_>::~FakeMetadataSetKey()
+FakeMetadataCollectionKey<C_>::~FakeMetadataCollectionKey()
 {
 }
 
 template <typename C_>
 const tr1::shared_ptr<const C_>
-FakeMetadataSetKey<C_>::value() const
+FakeMetadataCollectionKey<C_>::value() const
 {
     return _imp->collection;
 }
@@ -87,7 +87,7 @@ FakeMetadataSetKey<C_>::value() const
 FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
         const std::string & h, const std::string & v, const MetadataKeyType t,
         const PackageID * const i, const Environment * const e) :
-    FakeMetadataSetKey<KeywordNameSet>(r, h, t, i, e)
+    FakeMetadataCollectionKey<KeywordNameSet>(r, h, t, i, e)
 {
     set_from_string(v);
 }
@@ -102,7 +102,7 @@ FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 FakeMetadataIUseSetKey::FakeMetadataIUseSetKey(const std::string & r,
         const std::string & h, const std::string & v, const IUseFlagParseMode m, const MetadataKeyType t,
         const PackageID * const i, const Environment * const e) :
-    FakeMetadataSetKey<IUseFlagSet>(r, h, t, i, e)
+    FakeMetadataCollectionKey<IUseFlagSet>(r, h, t, i, e)
 {
     set_from_string(v, m);
 }
@@ -421,13 +421,13 @@ FakePackageID::virtual_for_key() const
     return _imp->virtual_for;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 FakePackageID::keywords_key() const
 {
     return _imp->keywords;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 FakePackageID::iuse_key() const
 {
     return _imp->iuse;
@@ -778,10 +778,10 @@ FakePackageID::breaks_portage() const
     return (version().has_try_part() || version().has_scm_part());
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 FakePackageID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>
@@ -905,6 +905,6 @@ template class FakeMetadataSpecTreeKey<RestrictSpecTree>;
 template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
 template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
-template class FakeMetadataSetKey<KeywordNameSet>;
-template class FakeMetadataSetKey<IUseFlagSet>;
+template class FakeMetadataCollectionKey<KeywordNameSet>;
+template class FakeMetadataCollectionKey<IUseFlagSet>;
 

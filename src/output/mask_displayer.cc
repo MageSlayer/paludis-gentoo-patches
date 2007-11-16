@@ -114,31 +114,31 @@ namespace
             s << k.value();
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);
@@ -168,7 +168,7 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);

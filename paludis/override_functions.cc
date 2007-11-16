@@ -39,7 +39,7 @@ paludis::override_tilde_keywords(const Environment * const e, const PackageID & 
     if (! mm)
         return false;
 
-    const MetadataSetKey<KeywordNameSet> * const k(visitor_cast<const MetadataSetKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    const MetadataCollectionKey<KeywordNameSet> * const k(visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
     if (! k)
         return false;
 
@@ -64,7 +64,7 @@ paludis::override_unkeyworded(const Environment * const e, const PackageID & id,
     if (! mm)
         return false;
 
-    const MetadataSetKey<KeywordNameSet> * const k(visitor_cast<const MetadataSetKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    const MetadataCollectionKey<KeywordNameSet> * const k(visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
     if (! k)
         return false;
 

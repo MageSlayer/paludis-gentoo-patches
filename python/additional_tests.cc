@@ -183,7 +183,7 @@ namespace metadata_key
     }
 
     template <typename C_>
-    void test_metadata_set_key(const MetadataSetKey<C_> & m)
+    void test_metadata_set_key(const MetadataCollectionKey<C_> & m)
     {
         test_metadata_key(m);
         m.value();
@@ -192,7 +192,7 @@ namespace metadata_key
     }
 
     template <>
-    void test_metadata_set_key(const MetadataSetKey<IUseFlagSet> & m)
+    void test_metadata_set_key(const MetadataCollectionKey<IUseFlagSet> & m)
     {
         test_metadata_key(m);
         m.value();

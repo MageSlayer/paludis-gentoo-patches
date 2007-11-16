@@ -379,16 +379,16 @@ InstalledUnpackagedID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 InstalledUnpackagedID::keywords_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 InstalledUnpackagedID::iuse_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >();
 }
 
 const tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
@@ -397,10 +397,10 @@ InstalledUnpackagedID::provide_key() const
     return tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 InstalledUnpackagedID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>

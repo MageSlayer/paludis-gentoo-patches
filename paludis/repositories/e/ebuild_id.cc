@@ -469,14 +469,14 @@ EbuildID::virtual_for_key() const
     return tr1::shared_ptr<const MetadataPackageIDKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<KeywordNameSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EbuildID::keywords_key() const
 {
     need_keys_added();
     return _imp->keywords;
 }
 
-const tr1::shared_ptr<const MetadataSetKey<IUseFlagSet> >
+const tr1::shared_ptr<const MetadataCollectionKey<IUseFlagSet> >
 EbuildID::iuse_key() const
 {
     need_keys_added();
@@ -582,7 +582,7 @@ EbuildID::binary_origin_key() const
     return tr1::shared_ptr<const MetadataStringKey>();
 }
 
-const tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >
+const tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::inherited_key() const
 {
     return _imp->inherited;
@@ -861,10 +861,10 @@ EbuildID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >
+const tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 EbuildID::contains_key() const
 {
-    return tr1::shared_ptr<const MetadataSetKey<PackageIDSequence> >();
+    return tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
 const tr1::shared_ptr<const MetadataPackageIDKey>

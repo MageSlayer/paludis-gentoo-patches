@@ -235,14 +235,14 @@ namespace paludis
         tr1::shared_ptr<const MetadataStringKey> format_key;
         tr1::shared_ptr<const MetadataStringKey> layout_key;
         tr1::shared_ptr<const MetadataFSEntryKey> location_key;
-        tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> > profiles_key;
+        tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
         tr1::shared_ptr<const MetadataFSEntryKey> cache_key;
         tr1::shared_ptr<const MetadataFSEntryKey> write_cache_key;
         tr1::shared_ptr<const MetadataStringKey> append_repository_name_to_write_cache_key;
         tr1::shared_ptr<const MetadataStringKey> ignore_deprecated_profiles;
         tr1::shared_ptr<const MetadataFSEntryKey> names_cache_key;
         tr1::shared_ptr<const MetadataFSEntryKey> distdir_key;
-        tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> > eclassdirs_key;
+        tr1::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > eclassdirs_key;
         tr1::shared_ptr<const MetadataFSEntryKey> securitydir_key;
         tr1::shared_ptr<const MetadataFSEntryKey> setsdir_key;
         tr1::shared_ptr<const MetadataFSEntryKey> newsdir_key;

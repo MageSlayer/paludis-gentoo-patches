@@ -165,12 +165,12 @@ MetadataSectionKey::find_metadata(const std::string & s) const
 }
 
 template <typename C_>
-MetadataSetKey<C_>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+MetadataCollectionKey<C_>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
 }
 
-MetadataSetKey<IUseFlagSet>::MetadataSetKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
+MetadataCollectionKey<IUseFlagSet>::MetadataCollectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t)
 {
 }
@@ -186,12 +186,12 @@ MetadataSpecTreeKey<FetchableURISpecTree>::MetadataSpecTreeKey(const std::string
 {
 }
 
-template class MetadataSetKey<KeywordNameSet>;
-template class MetadataSetKey<IUseFlagSet>;
-template class MetadataSetKey<Set<std::string> >;
-template class MetadataSetKey<UseFlagNameSet>;
-template class MetadataSetKey<PackageIDSequence>;
-template class MetadataSetKey<FSEntrySequence>;
+template class MetadataCollectionKey<KeywordNameSet>;
+template class MetadataCollectionKey<IUseFlagSet>;
+template class MetadataCollectionKey<Set<std::string> >;
+template class MetadataCollectionKey<UseFlagNameSet>;
+template class MetadataCollectionKey<PackageIDSequence>;
+template class MetadataCollectionKey<FSEntrySequence>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;

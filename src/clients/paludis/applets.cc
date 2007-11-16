@@ -116,37 +116,37 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        void visit(const MetadataCollectionKey<IUseFlagSet> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        void visit(const MetadataCollectionKey<UseFlagNameSet> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataSetKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
