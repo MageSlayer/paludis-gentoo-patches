@@ -25,6 +25,12 @@
 
 namespace paludis
 {
+    /**
+     * A CreateInsertIterator creates a value of type Value_ from the assigned value
+     * and inserts it into Iter_.
+     *
+     * \ingroup g_iterator
+     */
     template <typename Value_, typename Iter_>
     class CreateInsertIterator
     {
