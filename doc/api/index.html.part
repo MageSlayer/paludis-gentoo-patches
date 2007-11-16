@@ -3,6 +3,7 @@
 <h1>API</h1>
 
 <ul>
+    <li>There are <a href="#examples">examples of how to use the API and bindings</a>.</li>
     <li>The core library code is written in <a href="cplusplus/index.html">C++</a>.</li>
     <li>
         <p>Bindings are available for:</p>

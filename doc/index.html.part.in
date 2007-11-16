@@ -89,6 +89,7 @@
 <h2>API Documentation</h2>
 
 <ul>
+    <li>There are <a href="api/index.html#examples">examples of how to use the API and bindings</a>.</li>
     <li>The core library code is written in <a href="api/cplusplus/index.html">C++</a>.</li>
     <li>
         <p>Bindings are available for:</p>
