@@ -28,7 +28,7 @@ AC_LANG([C++])
 PALUDIS_CXXFLAGS=
 
 PALUDIS_PC_CFLAGS=
-PALUDIS_PC_LIBS="-lpaludis -lpaludisutil"
+PALUDIS_PC_LIBS="-lpaludis -lpaludisutil -lpaludisargs"
 PALUDIS_PC_VERSION=
 dnl }}}
 
