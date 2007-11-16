@@ -28,7 +28,7 @@ using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
     PrivateImplementationPattern<StringifyFormatter>(new Implementation<StringifyFormatter>(
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 {
 }
 
@@ -189,6 +189,30 @@ StringifyFormatter::format(const PackageDepSpec & s, const format::Installable &
 }
 
 std::string
+StringifyFormatter::format(const PackageID & s, const format::Plain & k) const
+{
+    if (_imp->f_package_id)
+        return _imp->f_package_id->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const PackageID & s, const format::Installed & k) const
+{
+    if (_imp->f_package_id)
+        return _imp->f_package_id->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const PackageID & s, const format::Installable & k) const
+{
+    if (_imp->f_package_id)
+        return _imp->f_package_id->format(s, k);
+    return stringify(s);
+}
+
+std::string
 StringifyFormatter::format(const BlockDepSpec & s, const format::Plain & k) const
 {
     if (_imp->f_block)
@@ -289,6 +313,14 @@ StringifyFormatter::format(const UseDepSpec & s, const format::Masked & k) const
 {
     if (_imp->f_use_dep)
         return _imp->f_use_dep->format(s, k);
+    return stringify(s);
+}
+
+std::string
+StringifyFormatter::format(const FSEntry & s, const format::Plain & k) const
+{
+    if (_imp->f_fsentry)
+        return _imp->f_fsentry->format(s, k);
     return stringify(s);
 }
 

@@ -22,7 +22,6 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <paludis/repository_info-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tree.hh>
 #include <paludis/name.hh>
@@ -35,6 +34,7 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/metadata_key-fwd.hh>
 #include <string>
 
 /** \file
@@ -129,30 +129,34 @@ namespace paludis
      */
     class PALUDIS_VISIBLE Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<Repository>,
         public RepositoryCapabilities
     {
-        private:
-            const RepositoryName _name;
-            std::string _format;
-
         protected:
-            ///\name Implementation data
-            ///\{
-
-            /**
-             * Our information.
-             */
-            mutable tr1::shared_ptr<RepositoryInfo> _info;
-
-            ///\}
-
             ///\name Basic operations
             ///\{
 
-            Repository(const RepositoryName &, const RepositoryCapabilities &,
-                    const std::string & our_format);
+            Repository(const RepositoryName &, const RepositoryCapabilities &);
 
             ///\}
+
+            /**
+             * Add a new MetadataKey, which must not use the same raw name as
+             * any previous MetadataKey added to this repository.
+             */
+            virtual void add_metadata_key(const tr1::shared_ptr<const MetadataKey> &) const;
+
+            /**
+             * Clear all MetadataKey instances added using add_metadata_key.
+             */
+            virtual void clear_metadata_keys() const;
+
+            /**
+             * This method will be called before any of the metadata key
+             * iteration methods does its work. It can be used by subclasses to
+             * implement as-needed loading of keys.
+             */
+            virtual void need_keys_added() const = 0;
 
         public:
             ///\name Basic operations
@@ -166,27 +170,48 @@ namespace paludis
             ///\{
 
             /**
-             * Fetch information about the repository.
-             */
-            virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
              * Return our name.
              */
-            const RepositoryName & name() const PALUDIS_ATTRIBUTE((nothrow))
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Return our format.
-             */
-            std::string format() const
+            const RepositoryName name() const PALUDIS_ATTRIBUTE((nothrow))
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Are we allowed to be favourite repository?
              */
             virtual bool can_be_favourite_repository() const;
+
+            ///\}
+
+            ///\name Specific metadata keys
+            ///\{
+
+            /**
+             * The format_key, if non-zero, holds our repository's format. Repository
+             * implementations should not return zero here, but clients should still
+             * check.
+             */
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const = 0;
+
+            /**
+             * The installed_root_key, if non-zero, specifies that we contain installed
+             * packages at the specified root.
+             *
+             * This key is currently used in various places to determine whether a repository is
+             * an 'installed' repository or not.
+             */
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const = 0;
+
+            ///\}
+
+            ///\name Finding and iterating over metadata keys
+            ///\{
+
+            struct MetadataConstIteratorTag;
+            typedef WrappedForwardIterator<MetadataConstIteratorTag, tr1::shared_ptr<const MetadataKey> > MetadataConstIterator;
+
+            MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
@@ -319,30 +344,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryUseInterface();
-    };
-
-    /**
-     * Interface for handling actions for installed repositories.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryInstalledInterface
-    {
-        public:
-            ///\name Installed content queries
-            ///\{
-
-            /**
-             * What is our filesystem root?
-             */
-            virtual FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-            virtual ~RepositoryInstalledInterface();
     };
 
     /**

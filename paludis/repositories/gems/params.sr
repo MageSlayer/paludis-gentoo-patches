@@ -22,6 +22,7 @@ make_class_InstalledRepositoryParams()
     key environment "Environment *"
     key builddir FSEntry
     key install_dir FSEntry
+    key root FSEntry
 
     allow_named_args
 }

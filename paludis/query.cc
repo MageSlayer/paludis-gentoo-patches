@@ -30,6 +30,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <set>
 
@@ -286,8 +287,8 @@ namespace
 
             for (PackageDatabase::RepositoryConstIterator i(e.package_database()->begin_repositories()),
                     i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
-                if ((*i)->installed_interface)
-                    if (root == (*i)->installed_interface->root())
+                if ((*i)->installed_root_key())
+                    if (root == (*i)->installed_root_key()->value())
                         result->push_back((*i)->name());
 
             return result;

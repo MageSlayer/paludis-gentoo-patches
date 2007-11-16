@@ -58,7 +58,7 @@ DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         const PackageID & pkg) :
     PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(
             new Implementation<DepSpecFlattener<Heirarchy_, Item_> >(env, &pkg)),
-    _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp.get())
+    _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
 {
 }
 
@@ -70,7 +70,7 @@ DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         NoType<0u>, Empty>::Type &) :
     PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(
             new Implementation<DepSpecFlattener<Heirarchy_, Item_> >(e, 0)),
-    _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp.get())
+    _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
 {
 }
 

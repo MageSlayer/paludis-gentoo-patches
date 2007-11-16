@@ -39,7 +39,7 @@ namespace paludis
             private PrivateImplementationPattern<EbuildID>
         {
             private:
-                Implementation<EbuildID> * const _imp;
+                PrivateImplementationPattern<EbuildID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

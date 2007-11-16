@@ -52,10 +52,6 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assertEquals(str(repo.name), "testrepo")
         self.assertEquals(str(irepo.name), "installed")
 
-    def test_04_format(self):
-        self.assertEquals(str(repo.format), "ebuild")
-        self.assertEquals(str(irepo.format), "vdb")
-
     def test_05_has_category_named(self):
         self.assert_(repo.has_category_named("foo"))
         self.assert_(not repo.has_category_named("bar"))
@@ -82,26 +78,6 @@ class TestCase_01_Repository(unittest.TestCase):
         for (i, qpn) in enumerate(repo.package_names("bar")):
             self.assertEquals(i, 0)
             self.assertEquals(str(qpn), "foo/bar")
-
-    def test_11_repository_info(self):
-        self.assert_(isinstance(repo.info(True), RepositoryInfo))
-        self.assert_(isinstance(repo.info(False), RepositoryInfo))
-
-        for (i, section) in enumerate(repo.info(False).sections):
-            self.assert_(isinstance(section, RepositoryInfoSection))
-            if i == 0:
-                self.assertEquals(section.heading, "Configuration information")
-                for (k, v) in section.kvs:
-                    if k == "format":
-                        self.assertEquals(v, "ebuild")
-
-        for (i, section) in enumerate(irepo.info(False).sections):
-            self.assert_(isinstance(section, RepositoryInfoSection))
-            if i == 0:
-                self.assertEquals(section.heading, "Configuration information")
-                for (k, v) in section.kvs:
-                    if k == "format":
-                        self.assertEquals(v, "vdb")
 
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):

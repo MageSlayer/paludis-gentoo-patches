@@ -40,6 +40,130 @@
 
 using namespace paludis;
 
+namespace
+{
+    struct ValuePrinter :
+        ConstVisitor<MetadataKeyVisitorTypes>
+    {
+        int return_code;
+
+        ValuePrinter() :
+            return_code(0)
+        {
+        }
+
+        void visit(const MetadataStringKey & k)
+        {
+            std::cout << k.value() << std::endl;
+        }
+
+        void visit(const MetadataFSEntryKey & k)
+        {
+            std::cout << k.value() << std::endl;
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey &)
+        {
+            std::cout << "(unprintable)" << std::endl;
+            return_code |= 1;
+        }
+
+        void visit(const MetadataSectionKey &)
+        {
+            std::cout << "(unprintable)" << std::endl;
+            return_code |= 1;
+        }
+
+        void visit(const MetadataContentsKey &)
+        {
+            std::cout << "(unprintable)" << std::endl;
+            return_code |= 1;
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataSetKey<Set<std::string> > & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
+        void visit(const MetadataPackageIDKey & k)
+        {
+            std::cout << *k.value() << std::endl;
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            std::cout << k.value() << std::endl;
+        }
+    };
+}
+
 int do_has_version(tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
@@ -174,29 +298,21 @@ int do_environment_variable(tr1::shared_ptr<Environment> env)
 
 int do_configuration_variable(tr1::shared_ptr<Environment> env)
 {
-    int return_code(0);
-
     Context context("When performing configuration-variable action from command line:");
 
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
 
-    tr1::shared_ptr<const RepositoryInfo> info(env->package_database()->fetch_repository(
-                RepositoryName(repo_str))->info(false));
-
-    return_code = 1;
-    for (RepositoryInfo::SectionConstIterator s(info->begin_sections()),
-            s_end(info->end_sections()) ; s != s_end ; ++s)
-        for (RepositoryInfoSection::KeyValueConstIterator k((*s)->begin_kvs()),
-                k_end((*s)->end_kvs()) ; k != k_end ; ++k)
-            if (var_str == k->first)
-            {
-                std::cout << k->second << std::endl;
-                return_code = 0;
-                break;
-            }
-
-    return return_code;
+    const tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(repo_str)));
+    Repository::MetadataConstIterator i(repo->find_metadata(var_str));
+    if (i == repo->end_metadata())
+        return 1;
+    else
+    {
+        ValuePrinter v;
+        (*i)->accept(v);
+        return v.return_code;
+    }
 }
 
 int do_list_repository_formats()
@@ -303,8 +419,18 @@ int do_regenerate_cache(tr1::shared_ptr<Environment> env, bool installed)
         for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                 r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
         {
-            if (installed != (0 != (*r)->installed_interface))
-                continue;
+            if (installed)
+            {
+                SupportsActionTest<InstalledAction> action_test;
+                if (! (*r)->some_ids_might_support_action(action_test))
+                    continue;
+            }
+            else
+            {
+                SupportsActionTest<InstallAction> action_test;
+                if (! (*r)->some_ids_might_support_action(action_test))
+                    continue;
+            }
 
             std::cout << "Regenerating cache for " << (*r)->name() << "..." << std::endl;
             (*r)->regenerate_cache();

@@ -10,7 +10,7 @@
 /** \example example_metadata_key.cc
  *
  * This example demonstrates how to use MetadataKey. It displays all the
- * metadata keys for a particular PackageID.
+ * metadata keys for a particular PackageID and all repositories.
  */
 
 #include <paludis/paludis.hh>
@@ -176,6 +176,12 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
+            void visit(const MetadataSetKey<FSEntrySequence> & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<FSEntrySequence>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+            }
+
             void visit(const MetadataSetKey<PackageIDSequence> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PackageIDSequence>" << endl;
@@ -189,15 +195,15 @@ namespace
             void visit(const MetadataSectionKey & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSectionKey" << endl;
+                cout << indent << left << setw(30) << "    Keys:" << endl;
 
-                /* A MetadataSectionKey contains other keys. It has one potentially special
-                 * key, for the title, which if it exists is always a MetadataStringKey. */
-                if (key.title_key())
-                    cout << indent << left << setw(30) << "    Title:" << " " << key.title_key()->value() << endl;
-
+                /* A MetadataSectionKey contains other keys. */
                 for (MetadataSectionKey::MetadataConstIterator k(key.begin_metadata()), k_end(key.end_metadata()) ;
                         k != k_end ; ++k)
-                    show_key(**k, indent + "  ");
+                {
+                    show_key(**k, indent + "    ");
+                    cout << endl;
+                }
             }
     };
 
@@ -219,7 +225,7 @@ namespace
          * use a visitor. This lets us write type-safe handling code for
          * the appropriate MetadataKey subclass without the need for any
          * runtime type information queries. */
-        MetadataKeyInformationVisitor v;
+        MetadataKeyInformationVisitor v(indent);
         key.accept(v);
     }
 }
@@ -254,6 +260,26 @@ int main(int argc, char * argv[])
             {
                 /* Display it. Note that PackageID::MetadataConstIterator returns a tr1::shared_ptr
                  * to a key, so we dereference twice (or we could have used IndirectIterator). */
+                show_key(**k);
+                cout << endl;
+            }
+
+            cout << endl;
+        }
+
+        /* And for each repository: */
+        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            cout << (*r)->name() << ":" << endl;
+
+            /* For each metadata key: */
+            for (Repository::MetadataConstIterator k((*r)->begin_metadata()), k_end((*r)->end_metadata()) ;
+                    k != k_end ; ++k)
+            {
+                /* Display it. Repository::MetadataConstIterator also returns a
+                 * tr1::shared_ptr to the key. */
                 show_key(**k);
                 cout << endl;
             }

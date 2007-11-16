@@ -35,9 +35,15 @@ namespace paludis
         private PrivateImplementationPattern<InstalledUnpackagedRepository>,
         public Repository,
         public RepositoryDestinationInterface,
-        public RepositoryInstalledInterface,
         public RepositorySetsInterface
     {
+        private:
+            PrivateImplementationPattern<InstalledUnpackagedRepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             InstalledUnpackagedRepository(
                     const RepositoryName &,
@@ -58,9 +64,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeOptions &);
-
-            virtual FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void deindex(const QualifiedPackageName &) const;
 
@@ -92,6 +95,11 @@ namespace paludis
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

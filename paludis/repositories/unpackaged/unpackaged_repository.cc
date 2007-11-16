@@ -25,8 +25,9 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/package_id.hh>
-#include <paludis/repository_info.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -44,6 +45,14 @@ namespace paludis
         tr1::shared_ptr<QualifiedPackageNameSet> package_names;
         tr1::shared_ptr<CategoryNamePartSet> category_names;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataStringKey> name_key;
+        tr1::shared_ptr<const MetadataStringKey> slot_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataStringKey> build_dependencies_key;
+        tr1::shared_ptr<const MetadataStringKey> run_dependencies_key;
+        tr1::shared_ptr<const MetadataStringKey> description_key;
+
         Implementation(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
@@ -51,7 +60,21 @@ namespace paludis
                         params.build_dependencies, params.run_dependencies, params.description)),
             ids(new PackageIDSequence),
             package_names(new QualifiedPackageNameSet),
-            category_names(new CategoryNamePartSet)
+            category_names(new CategoryNamePartSet),
+            location_key(new LiteralMetadataFSEntryKey("location", "location",
+                        mkt_significant, params.location)),
+            name_key(new LiteralMetadataStringKey("name", "name",
+                        mkt_normal, stringify(params.name))),
+            slot_key(new LiteralMetadataStringKey("slot", "slot",
+                        mkt_normal, stringify(params.slot))),
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "unpackaged")),
+            build_dependencies_key(new LiteralMetadataStringKey(
+                        "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies)),
+            run_dependencies_key(new LiteralMetadataStringKey(
+                        "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies)),
+            description_key(new LiteralMetadataStringKey(
+                        "description", "description", mkt_normal, params.description))
         {
             ids->push_back(id);
             package_names->insert(id->name());
@@ -64,7 +87,6 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
         const UnpackagedRepositoryParams & params) :
     PrivateImplementationPattern<UnpackagedRepository>(new Implementation<UnpackagedRepository>(n, params)),
     Repository(n, RepositoryCapabilities::create()
-            .installed_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
             .use_interface(0)
@@ -78,25 +100,27 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
             .e_interface(0)
             .hook_interface(0)
             .qa_interface(0)
-            .manifest_interface(0),
-            "unpackaged")
+            .manifest_interface(0)),
+    _imp(PrivateImplementationPattern<UnpackagedRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("name", stringify(_imp->params.name));
-    config_info->add_kv("version", stringify(_imp->params.version));
-    config_info->add_kv("slot", stringify(_imp->params.slot));
-    config_info->add_kv("format", "unpackaged");
-    config_info->add_kv("build_dependencies", _imp->params.build_dependencies);
-    config_info->add_kv("run_dependencies", _imp->params.run_dependencies);
-    config_info->add_kv("description", _imp->params.description);
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 UnpackagedRepository::~UnpackagedRepository()
 {
+}
+
+void
+UnpackagedRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->name_key);
+    add_metadata_key(_imp->slot_key);
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->build_dependencies_key);
+    add_metadata_key(_imp->run_dependencies_key);
+    add_metadata_key(_imp->description_key);
 }
 
 tr1::shared_ptr<const PackageIDSequence>
@@ -145,10 +169,28 @@ void
 UnpackagedRepository::invalidate()
 {
     _imp.reset(new Implementation<UnpackagedRepository>(name(), _imp->params));
+    _add_metadata_keys();
 }
 
 void
 UnpackagedRepository::invalidate_masks()
 {
+}
+
+void
+UnpackagedRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+UnpackagedRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+UnpackagedRepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 

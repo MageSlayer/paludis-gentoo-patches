@@ -64,7 +64,7 @@ namespace paludis
             public PackageID
         {
             private:
-                Implementation<GemSpecification> * const _imp;
+                PrivateImplementationPattern<GemSpecification>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

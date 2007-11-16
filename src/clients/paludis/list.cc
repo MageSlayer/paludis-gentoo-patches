@@ -22,11 +22,11 @@
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/metadata_key.hh>
 #include <src/output/colour.hh>
 
 #include <paludis/util/tr1_memory.hh>
@@ -59,24 +59,12 @@ do_list_repositories(tr1::shared_ptr<Environment> env)
             if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
                         CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        r->format()))
+                        r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
         ret_code = 0;
 
         std::cout << "* " << colour(cl_repository_name, r->name()) << std::endl;
-
-        tr1::shared_ptr<const RepositoryInfo> ii(r->info(false));
-        for (RepositoryInfo::SectionConstIterator i(ii->begin_sections()),
-                i_end(ii->end_sections()) ; i != i_end ; ++i)
-        {
-            std::cout << "    " << colour(cl_heading, (*i)->heading() + ":") << std::endl;
-            for (RepositoryInfoSection::KeyValueConstIterator k((*i)->begin_kvs()),
-                    k_end((*i)->end_kvs()) ; k != k_end ; ++k)
-                std::cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
-                    << std::setw(0) << " " << k->second << std::endl;
-            std::cout << std::endl;
-        }
     }
 
     return ret_code;
@@ -105,7 +93,7 @@ do_list_categories(tr1::shared_ptr<Environment> env)
             if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
                         CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        r->format()))
+                        r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
@@ -158,7 +146,7 @@ do_list_packages(tr1::shared_ptr<Environment> env)
             if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
                         CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        r->format()))
+                        r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
@@ -226,7 +214,7 @@ do_list_sets(tr1::shared_ptr<Environment> env)
             if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
                         CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        r->format()))
+                        r->format_key() ? r->format_key()->value() : "?"))
                 continue;
 
         tr1::shared_ptr<const SetNameSet> set_names(r->sets_interface->sets_list());

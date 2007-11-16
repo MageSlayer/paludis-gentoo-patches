@@ -30,68 +30,10 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
+#include <paludis/literal_metadata_key.hh>
 
 using namespace paludis;
 using namespace paludis::gems;
-
-namespace
-{
-    class GemMetadataStringKey :
-        public MetadataStringKey
-    {
-        private:
-            const std::string _value;
-
-        public:
-            GemMetadataStringKey(const std::string &, const std::string &, const std::string &,
-                    const MetadataKeyType);
-
-            virtual const std::string value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-
-    GemMetadataStringKey::GemMetadataStringKey(const std::string & r, const std::string & h, const std::string & v,
-            const MetadataKeyType t) :
-        MetadataStringKey(r, h, t),
-        _value(v)
-    {
-    }
-
-    const std::string
-    GemMetadataStringKey::value() const
-    {
-        return _value;
-    }
-
-    class GemMetadataFSEntryKey :
-        public MetadataFSEntryKey
-    {
-        private:
-            const FSEntry _value;
-
-        public:
-            GemMetadataFSEntryKey(const std::string &, const std::string &, const FSEntry &,
-                    const MetadataKeyType);
-
-            virtual const FSEntry value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-
-    GemMetadataFSEntryKey::GemMetadataFSEntryKey(const std::string & r, const std::string & h,
-            const FSEntry & v, const MetadataKeyType t) :
-        MetadataFSEntryKey(r, h, t),
-        _value(v)
-    {
-    }
-
-    const FSEntry
-    GemMetadataFSEntryKey::value() const
-    {
-        return _value;
-    }
-}
 
 namespace paludis
 {
@@ -106,11 +48,11 @@ namespace paludis
         std::string platform;
         std::string homepage;
 
-        tr1::shared_ptr<GemMetadataStringKey> description_key;
-        tr1::shared_ptr<GemMetadataStringKey> summary_key;
-        tr1::shared_ptr<GemMetadataStringKey> authors_key;
-        tr1::shared_ptr<GemMetadataStringKey> rubyforge_project_key;
-        tr1::shared_ptr<GemMetadataFSEntryKey> fs_location_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> description_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> summary_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> authors_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> rubyforge_project_key;
+        tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
 
         tr1::shared_ptr<const FSEntry> load_from_file;
 
@@ -263,20 +205,20 @@ namespace
         {
             std::string summary(required_text_only_key(n, "summary"));
             if (! summary.empty())
-                _imp->summary_key.reset(new GemMetadataStringKey("summary", "Summary", summary, mkt_significant));
+                _imp->summary_key.reset(new LiteralMetadataStringKey("summary", "Summary", mkt_significant, summary));
 
             std::string description(optional_text_only_key(n, "description"));
             if (! description.empty())
-                _imp->description_key.reset(new GemMetadataStringKey("description", "Description", description, mkt_normal));
+                _imp->description_key.reset(new LiteralMetadataStringKey("description", "Description", mkt_normal, description));
 
             std::string authors(optional_text_sequence_key(n, "authors"));
             if (! authors.empty())
-                _imp->authors_key.reset(new GemMetadataStringKey("authors", "Authors", authors, mkt_normal));
+                _imp->authors_key.reset(new LiteralMetadataStringKey("authors", "Authors", mkt_normal, authors));
 
             std::string rubyforge_project(optional_text_sequence_key(n, "rubyforge_project"));
             if (! rubyforge_project.empty())
-                _imp->rubyforge_project_key.reset(new GemMetadataStringKey("rubyforge_project", "Rubyforge Project", rubyforge_project,
-                            mkt_normal));
+                _imp->rubyforge_project_key.reset(new LiteralMetadataStringKey("rubyforge_project", "Rubyforge Project",
+                            mkt_normal, rubyforge_project));
 
             _imp->date = required_text_only_key(n, "date");
             _imp->platform = required_text_only_key(n, "platform");
@@ -303,9 +245,9 @@ namespace
 GemSpecification::GemSpecification(const Environment * const e,
         const tr1::shared_ptr<const Repository> & r, const yaml::Node & node) :
     PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
-    _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
+    _imp(PrivateImplementationPattern<GemSpecification>::_imp)
 {
-    TopVisitor v(_imp);
+    TopVisitor v(_imp.get());
     node.accept(v);
 
     if (_imp->summary_key)
@@ -325,12 +267,12 @@ GemSpecification::GemSpecification(const Environment * const e,
 GemSpecification::GemSpecification(const Environment * const e, const tr1::shared_ptr<const Repository> & r,
         const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
     PrivateImplementationPattern<GemSpecification>(new Implementation<GemSpecification>(e, r)),
-    _imp(PrivateImplementationPattern<GemSpecification>::_imp.get())
+    _imp(PrivateImplementationPattern<GemSpecification>::_imp)
 {
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);
     _imp->load_from_file.reset(new FSEntry(f));
-    _imp->fs_location_key.reset(new GemMetadataFSEntryKey("GEM", "Gem Location", f, mkt_internal));
+    _imp->fs_location_key.reset(new LiteralMetadataFSEntryKey("GEM", "Gem Location", mkt_internal, f));
     add_metadata_key(_imp->fs_location_key);
 }
 

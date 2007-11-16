@@ -293,7 +293,7 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string &, const FSEntry & ro, const NDBAM * const d) :
     PrivateImplementationPattern<InstalledUnpackagedID>(new Implementation<InstalledUnpackagedID>(e, this, q, v, s, n, l, ro, d)),
-    _imp(PrivateImplementationPattern<InstalledUnpackagedID>::_imp.get())
+    _imp(PrivateImplementationPattern<InstalledUnpackagedID>::_imp)
 {
     add_metadata_key(_imp->fs_location_key);
     if (_imp->contents_key)

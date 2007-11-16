@@ -24,10 +24,10 @@
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
 #include <paludis/repository_maker.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -50,12 +50,6 @@
 #include <functional>
 #include <algorithm>
 
-/** \file
- * Implementation CRANRepository.
- *
- * \ingroup grpcranrepository
- */
-
 using namespace paludis;
 
 #include <paludis/repositories/cran/cran_repository-sr.cc>
@@ -64,11 +58,6 @@ typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const cranrepository
 
 namespace paludis
 {
-    /**
-     * Implementation data for a CRANRepository.
-     *
-     * \ingroup grperepository
-     */
     template <>
     struct Implementation<CRANRepository>
     {
@@ -80,13 +69,26 @@ namespace paludis
 
         Implementation(const CRANRepositoryParams &, const tr1::shared_ptr<Mutex> &);
         ~Implementation();
+
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> distdir_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> library_key;
+        tr1::shared_ptr<const MetadataStringKey> sync_key;
     };
 }
 
 Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, const tr1::shared_ptr<Mutex> & m) :
     params(p),
     big_nasty_mutex(m),
-    has_ids(false)
+    has_ids(false),
+    location_key(new LiteralMetadataFSEntryKey("location", "location", mkt_significant, params.location)),
+    distdir_key(new LiteralMetadataFSEntryKey("distdir", "distdir", mkt_normal, params.distdir)),
+    format_key(new LiteralMetadataStringKey("format", "format", mkt_significant, "cran")),
+    builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir", mkt_normal, params.builddir)),
+    library_key(new LiteralMetadataFSEntryKey("library", "library", mkt_normal, params.library)),
+    sync_key(new LiteralMetadataStringKey("sync", "sync", mkt_normal, params.sync))
 {
 }
 
@@ -98,7 +100,6 @@ Implementation<CRANRepository>::~Implementation()
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     Repository(CRANRepository::fetch_repo_name(stringify(p.location)),
             RepositoryCapabilities::create()
-            .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
             .use_interface(0)
@@ -112,24 +113,27 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .e_interface(0)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "cran"),
-    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex)))
+            .manifest_interface(0)),
+    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex))),
+    _imp(PrivateImplementationPattern<CRANRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("distdir", stringify(_imp->params.distdir));
-    config_info->add_kv("format", "cran");
-    config_info->add_kv("builddir", stringify(_imp->params.builddir));
-    config_info->add_kv("library", stringify(_imp->params.library));
-    config_info->add_kv("sync", _imp->params.sync);
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 CRANRepository::~CRANRepository()
 {
+}
+
+void
+CRANRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->distdir_key);
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->library_key);
+    add_metadata_key(_imp->sync_key);
 }
 
 bool
@@ -446,6 +450,7 @@ void
 CRANRepository::invalidate()
 {
     _imp.reset(new Implementation<CRANRepository>(_imp->params, _imp->big_nasty_mutex));
+    _add_metadata_keys();
 }
 
 void
@@ -503,5 +508,22 @@ CRANRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+void
+CRANRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+CRANRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+CRANRepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 

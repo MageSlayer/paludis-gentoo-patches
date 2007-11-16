@@ -45,7 +45,8 @@ int main(int argc, char * argv[])
         if (env->package_database()->has_repository_named(RepositoryName("gentoo")))
         {
             tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName("gentoo")));
-            cout << "Repository 'gentoo' exists, and has format '" << repo->format() << "'" << endl;
+            cout << "Repository 'gentoo' exists, and has format '" <<
+                (repo->format_key() ? repo->format_key()->value() : "") << "'" << endl;
         }
 
         /* Our favourite repository is the least important non-special (e.g.

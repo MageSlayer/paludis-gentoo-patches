@@ -32,6 +32,7 @@
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/hashed_containers.hh>
 
 using namespace paludis;
@@ -48,7 +49,7 @@ namespace paludis
         const SlotName slot;
         const RepositoryName repository_name;
 
-        const tr1::shared_ptr<UnpackagedFSEntryKey> fs_location_key;
+        const tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
         const tr1::shared_ptr<const MetadataStringKey> description_key;
@@ -67,10 +68,10 @@ namespace paludis
             version(v),
             slot(s),
             repository_name(n),
-            fs_location_key(new UnpackagedFSEntryKey("location", "Location", mkt_normal, l)),
+            fs_location_key(new LiteralMetadataFSEntryKey("location", "Location", mkt_normal, l)),
             build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies, b)),
             run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies, r)),
-            description_key(new UnpackagedStringKey("description", "Description", mkt_significant, d))
+            description_key(new LiteralMetadataStringKey("description", "Description", mkt_significant, d))
         {
         }
     };
@@ -80,7 +81,7 @@ UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageNa
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string & b, const std::string & r, const std::string & d) :
     PrivateImplementationPattern<UnpackagedID>(new Implementation<UnpackagedID>(e, q, v, s, n, l, b, r, d)),
-    _imp(PrivateImplementationPattern<UnpackagedID>::_imp.get())
+    _imp(PrivateImplementationPattern<UnpackagedID>::_imp)
 {
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->build_dependencies_key);

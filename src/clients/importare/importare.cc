@@ -135,7 +135,9 @@ main(int argc, char *argv[])
                 for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                         i != i_end ; ++i)
                 {
-                    if ((*i)->repository()->format() != "installed_unpackaged")
+                    if (! (*i)->repository()->format_key())
+                        continue;
+                    if ((*i)->repository()->format_key()->value() != "installed_unpackaged")
                         continue;
                     old_id = *i;
                     break;

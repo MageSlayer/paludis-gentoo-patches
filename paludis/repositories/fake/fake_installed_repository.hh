@@ -31,15 +31,14 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeInstalledRepository :
         public FakeRepositoryBase,
-        public RepositoryInstalledInterface,
         public RepositoryDestinationInterface,
-        public RepositoryProvidesInterface
+        public RepositoryProvidesInterface,
+        private PrivateImplementationPattern<FakeInstalledRepository>
     {
+        private:
+            PrivateImplementationPattern<FakeInstalledRepository>::ImpPtr & _imp;
+
         protected:
-            /* RepositoryInstalledInterface */
-
-            virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /* RepositoryDestinationInterface */
 
             virtual bool is_suitable_destination_for(const PackageID &) const
@@ -68,6 +67,11 @@ namespace paludis
             ///\}
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            /* Keys */
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
+
     };
 }
 

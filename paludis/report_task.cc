@@ -171,7 +171,7 @@ ReportTask::execute()
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
-        if (! rr->installed_interface)
+        if (! rr->installed_root_key())
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());

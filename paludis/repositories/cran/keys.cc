@@ -27,6 +27,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/formatter.hh>
@@ -58,31 +59,6 @@ SimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) cons
     return f.format(_v, format::Plain());
 }
 
-StringKey::StringKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataStringKey(r, h, t),
-    _v(v)
-{
-}
-
-const std::string
-StringKey::value() const
-{
-    return _v;
-}
-
-FSLocationKey::FSLocationKey(const std::string & r, const std::string & h,
-        const FSEntry & v, const MetadataKeyType t) :
-    MetadataFSEntryKey(r, h, t),
-    _v(v)
-{
-}
-
-const FSEntry
-FSLocationKey::value() const
-{
-    return _v;
-}
-
 PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
         const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataSetKey<PackageIDSequence>(r, h, t),
@@ -104,13 +80,12 @@ PackageIDSequenceKey::push_back(const tr1::shared_ptr<const PackageID> & i)
 }
 
 std::string
-PackageIDSequenceKey::pretty_print_flat(const Formatter<tr1::shared_ptr<const PackageID> > & f) const
+PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
 {
     using namespace tr1::placeholders;
-    return join(value()->begin(), value()->end(), " ", tr1::bind(
-                static_cast<std::string (Formatter<tr1::shared_ptr<const PackageID> >::*)(
-                    const tr1::shared_ptr<const PackageID> &, const format::Plain &) const>(
-                        &Formatter<tr1::shared_ptr<const PackageID> >::format),
+    return join(indirect_iterator(value()->begin()), indirect_iterator(value()->end()), " ",
+            tr1::bind(static_cast<std::string (Formatter<PackageID>::*)(const PackageID &, const format::Plain &) const>(
+                    &Formatter<PackageID>::format),
                 tr1::cref(f), _1, format::Plain()));
 }
 

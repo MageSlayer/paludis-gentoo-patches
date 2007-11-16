@@ -26,6 +26,7 @@
 #include <paludis/environment.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/formatter.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/stringify.hh>
@@ -67,7 +68,7 @@ FakeMetadataSetKey<C_>::FakeMetadataSetKey(
         const Environment * const e) :
     MetadataSetKey<C_>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSetKey<C_> >(new Implementation<FakeMetadataSetKey<C_> >(i, e)),
-    _imp(PrivateImplementationPattern<FakeMetadataSetKey<C_> >::_imp.get())
+    _imp(PrivateImplementationPattern<FakeMetadataSetKey<C_> >::_imp)
 {
 }
 
@@ -154,7 +155,7 @@ FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, cons
         const tr1::function<const tr1::shared_ptr<const typename C_::ConstItem> (const std::string &)> & f, const MetadataKeyType t) :
     MetadataSpecTreeKey<C_>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f)),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp.get())
+    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
 {
     set_from_string(v);
 }
@@ -198,7 +199,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std
     MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
             new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f)),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp.get())
+    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
 {
     set_from_string(v);
 }
@@ -236,34 +237,6 @@ const tr1::shared_ptr<const URILabel>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 {
     return _imp->initial_label;
-}
-
-namespace paludis
-{
-    template <>
-    struct Implementation<FakeMetadataPackageIDKey>
-    {
-        tr1::shared_ptr<const PackageID> value;
-    };
-}
-
-FakeMetadataPackageIDKey::FakeMetadataPackageIDKey(const std::string & r, const std::string & h,
-        const tr1::shared_ptr<const PackageID> & v, const MetadataKeyType t) :
-    MetadataPackageIDKey(r, h, t),
-    PrivateImplementationPattern<FakeMetadataPackageIDKey>(new Implementation<FakeMetadataPackageIDKey>),
-    _imp(PrivateImplementationPattern<FakeMetadataPackageIDKey>::_imp.get())
-{
-    _imp->value = v;
-}
-
-FakeMetadataPackageIDKey::~FakeMetadataPackageIDKey()
-{
-}
-
-const tr1::shared_ptr<const PackageID>
-FakeMetadataPackageIDKey::value() const
-{
-    return _imp->value;
 }
 
 namespace paludis
@@ -326,8 +299,8 @@ namespace paludis
         const VersionSpec version;
         SlotName slot;
 
-        tr1::shared_ptr<FakeMetadataPackageIDKey> package_id;
-        tr1::shared_ptr<FakeMetadataPackageIDKey> virtual_for;
+        tr1::shared_ptr<LiteralMetadataPackageIDKey> package_id;
+        tr1::shared_ptr<LiteralMetadataPackageIDKey> virtual_for;
         tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
         tr1::shared_ptr<FakeMetadataIUseSetKey> iuse;
         tr1::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
@@ -381,7 +354,7 @@ namespace paludis
 FakePackageID::FakePackageID(const Environment * const e, const tr1::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
     PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v, this)),
-    _imp(PrivateImplementationPattern<FakePackageID>::_imp.get())
+    _imp(PrivateImplementationPattern<FakePackageID>::_imp)
 {
     add_metadata_key(_imp->keywords);
     add_metadata_key(_imp->iuse);

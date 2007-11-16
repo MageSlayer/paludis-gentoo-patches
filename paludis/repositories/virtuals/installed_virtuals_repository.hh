@@ -34,13 +34,17 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
-        public RepositoryInstalledInterface,
         public RepositoryHookInterface,
         public tr1::enable_shared_from_this<InstalledVirtualsRepository>,
         private PrivateImplementationPattern<InstalledVirtualsRepository>
     {
         private:
+            PrivateImplementationPattern<InstalledVirtualsRepository>::ImpPtr & _imp;
+
             void need_ids() const;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
@@ -68,8 +72,6 @@ namespace paludis
 
             virtual bool can_be_favourite_repository() const;
 
-            virtual FSEntry root() const;
-
             HookResult perform_hook(const Hook &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -94,6 +96,10 @@ namespace paludis
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

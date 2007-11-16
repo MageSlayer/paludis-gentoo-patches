@@ -274,6 +274,24 @@ namespace
                 }
             }
 
+            void visit(const MetadataSetKey<FSEntrySequence> & k)
+            {
+                if (k.type() == type)
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
+            }
+
             void visit(const MetadataSetKey<Set<std::string> > & k)
             {
                 if (k.type() == type)
@@ -514,15 +532,13 @@ namespace
                     }
                     else
                     {
-                        task->output_left_column((k.title_key() ? k.title_key()->value() : k.human_name()) + ":", in);
+                        task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
                     }
 
                     Displayer v(task, env, id, type, in + 4);
-                    for (MetadataSectionKey::MetadataConstIterator kk(k.begin_metadata()), kk_end(k.end_metadata()) ;
-                            kk != kk_end ; ++kk)
-                        if (*kk != k.title_key())
-                            (*kk)->accept(v);
+                    std::for_each(indirect_iterator(k.begin_metadata()), indirect_iterator(k.end_metadata()),
+                            accept_visitor(v));
                 }
             }
 

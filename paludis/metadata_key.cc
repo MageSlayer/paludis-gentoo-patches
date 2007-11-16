@@ -120,7 +120,7 @@ namespace paludis
 MetadataSectionKey::MetadataSectionKey(const std::string & r, const std::string & h, const MetadataKeyType t) :
     MetadataKey(r, h, t),
     PrivateImplementationPattern<MetadataSectionKey>(new Implementation<MetadataSectionKey>),
-    _imp(PrivateImplementationPattern<MetadataSectionKey>::_imp.get())
+    _imp(PrivateImplementationPattern<MetadataSectionKey>::_imp)
 {
 }
 
@@ -191,6 +191,7 @@ template class MetadataSetKey<IUseFlagSet>;
 template class MetadataSetKey<Set<std::string> >;
 template class MetadataSetKey<UseFlagNameSet>;
 template class MetadataSetKey<PackageIDSequence>;
+template class MetadataSetKey<FSEntrySequence>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;

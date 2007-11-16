@@ -18,6 +18,9 @@
  */
 
 #include <paludis/util/mutex.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
+#include <cstring>
 
 using namespace paludis;
 
@@ -34,7 +37,9 @@ Mutex::Mutex() :
 
 Mutex::~Mutex()
 {
-    pthread_mutex_destroy(_mutex);
+    int r(0);
+    if (0 != ((r = pthread_mutex_destroy(_mutex))))
+        throw InternalError(PALUDIS_HERE, "mutex destory failed: " + stringify(strerror(r)));
     pthread_mutexattr_destroy(_attr);
 
     delete _mutex;
@@ -50,19 +55,26 @@ Mutex::posix_mutex()
 Lock::Lock(Mutex & m) :
     _mutex(&m)
 {
-    pthread_mutex_lock(_mutex->posix_mutex());
+    int r(0);
+    if (0 != ((r = pthread_mutex_lock(_mutex->posix_mutex()))))
+        throw InternalError(PALUDIS_HERE, "mutex lock failed: " + stringify(strerror(r)));
 }
 
 Lock::~Lock()
 {
-    pthread_mutex_unlock(_mutex->posix_mutex());
+    int r(0);
+    if (0 != ((r = pthread_mutex_unlock(_mutex->posix_mutex()))))
+        throw InternalError(PALUDIS_HERE, "mutex unlock failed: " + stringify(strerror(r)));
 }
 
 void
 Lock::acquire_then_release_old(Mutex & m)
 {
-    pthread_mutex_lock(m.posix_mutex());
-    pthread_mutex_unlock(_mutex->posix_mutex());
+    int r(0);
+    if (0 != ((r = pthread_mutex_lock(m.posix_mutex()))))
+        throw InternalError(PALUDIS_HERE, "mutex lock failed: " + stringify(strerror(r)));
+    if (0 != ((r = pthread_mutex_unlock(_mutex->posix_mutex()))))
+        throw InternalError(PALUDIS_HERE, "mutex unlock failed: " + stringify(strerror(r)));
     _mutex = &m;
 }
 
@@ -75,8 +87,10 @@ TryLock::TryLock(Mutex & m) :
 
 TryLock::~TryLock()
 {
+    int r(0);
     if (_mutex)
-        pthread_mutex_unlock(_mutex->posix_mutex());
+        if (0 != ((r = pthread_mutex_unlock(_mutex->posix_mutex()))))
+            throw InternalError(PALUDIS_HERE, "mutex unlock failed: " + stringify(strerror(r)));
 }
 
 bool

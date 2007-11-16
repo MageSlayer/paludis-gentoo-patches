@@ -235,7 +235,7 @@ int main(int argc, char * argv[])
 
         /* Display our results */
         cout << left << setw(60) << "Package" << "| " << left << setw(4) << "Dep" << "| " << "Ext" << endl;
-        cout << std::string(60, '-') << "+" << std::string(4, '-') << "+" << std::string(4, '-') << endl;
+        cout << std::string(60, '-') << "+" << std::string(5, '-') << "+" << std::string(5, '-') << endl;
         for (ResultsMap::const_iterator r(results.begin()), r_end(results.end()) ;
                 r != r_end ; ++r)
             cout << left << setw(60) << r->first << "| "

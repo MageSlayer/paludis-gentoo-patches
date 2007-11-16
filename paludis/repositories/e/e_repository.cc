@@ -37,11 +37,11 @@
 #  include <paludis/repositories/e/qa/qa_controller.hh>
 #endif
 
-#include <paludis/repository_info.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/distribution.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
@@ -99,10 +99,81 @@
 
 using namespace paludis;
 
-typedef MakeHashedMap<QualifiedPackageName, std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type RepositoryMaskMap;
+typedef MakeHashedMap<QualifiedPackageName,
+        std::list<std::pair<tr1::shared_ptr<const PackageDepSpec>, tr1::shared_ptr<const RepositoryMaskInfo> > > >::Type RepositoryMaskMap;
 typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
 typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
 typedef std::list<RepositoryEInterface::ProfilesDescLine> ProfilesDesc;
+
+namespace
+{
+    class PkgInfoSectionKey :
+        public MetadataSectionKey
+    {
+        private:
+            mutable Mutex _mutex;
+            mutable bool _added;
+
+            const Environment * const _env;
+            const FSEntry _f;
+
+        protected:
+            virtual void need_keys_added() const
+            {
+                Lock l(_mutex);
+                if (_added)
+                    return;
+                _added = true;
+
+                // don't inherit from master_repository, just causes clutter
+                std::set<std::string> info_pkgs;
+                if (_f.exists())
+                {
+                    LineConfigFile vars(_f, LineConfigFileOptions());
+                    info_pkgs.insert(vars.begin(), vars.end());
+                }
+
+                if (! info_pkgs.empty())
+                {
+                    for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
+                            i_end(info_pkgs.end()) ; i != i_end ; ++i)
+                    {
+                        tr1::shared_ptr<MetadataKey> key;
+                        tr1::shared_ptr<const PackageIDSequence> q(
+                                _env->package_database()->query(
+                                    query::Matches(PackageDepSpec(*i, pds_pm_eapi_0)) &
+                                    query::InstalledAtRoot(_env->root()),
+                                    qo_order_by_version));
+                        if (q->empty())
+                            key.reset(new LiteralMetadataStringKey(*i, *i, mkt_normal, "(none)"));
+                        else
+                        {
+                            using namespace tr1::placeholders;
+                            tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
+                            std::transform(q->begin(), q->end(), s->inserter(),
+                                    tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
+                            key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
+                        }
+
+                        add_metadata_key(key);
+                    }
+                }
+            }
+
+        public:
+            PkgInfoSectionKey(const Environment * const e, const FSEntry & f) :
+                MetadataSectionKey("info_pkgs", "Package information", mkt_normal),
+                _added(false),
+                _env(e),
+                _f(f)
+            {
+            }
+
+            ~PkgInfoSectionKey()
+            {
+            }
+    };
+}
 
 namespace paludis
 {
@@ -160,6 +231,29 @@ namespace paludis
 
         void need_profiles() const;
         void need_profiles_desc() const;
+
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataStringKey> layout_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> > profiles_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> cache_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> write_cache_key;
+        tr1::shared_ptr<const MetadataStringKey> append_repository_name_to_write_cache_key;
+        tr1::shared_ptr<const MetadataStringKey> ignore_deprecated_profiles;
+        tr1::shared_ptr<const MetadataFSEntryKey> names_cache_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> distdir_key;
+        tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> > eclassdirs_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> securitydir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> setsdir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> newsdir_key;
+        tr1::shared_ptr<const MetadataStringKey> sync_key;
+        tr1::shared_ptr<const MetadataStringKey> sync_options_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
+        tr1::shared_ptr<const MetadataStringKey> master_repository_key;
+        tr1::shared_ptr<const MetadataStringKey> eapi_when_unknown_key;
+        tr1::shared_ptr<const MetadataStringKey> eapi_when_unspecified_key;
+        tr1::shared_ptr<const MetadataStringKey> profile_eapi_key;
+        tr1::shared_ptr<const MetadataSectionKey> info_pkgs_key;
     };
 
     Implementation<ERepository>::Implementation(ERepository * const r,
@@ -177,7 +271,57 @@ namespace paludis
         layout(erepository::LayoutMaker::get_instance()->find_maker(
                     params.layout)(r, params.location, entries_ptr, params.master_repository ?
                         make_shared_ptr(new FSEntry(params.master_repository->params().location)) :
-                        tr1::shared_ptr<FSEntry>()))
+                        tr1::shared_ptr<FSEntry>())),
+        format_key(new LiteralMetadataStringKey("format", "format",
+                    mkt_significant, params.entry_format)),
+        layout_key(new LiteralMetadataStringKey("layout", "layout",
+                    mkt_normal, params.layout)),
+        location_key(new LiteralMetadataFSEntryKey("location", "location",
+                    mkt_significant, params.location)),
+        profiles_key(new LiteralMetadataFSEntrySequenceKey(
+                    "profiles", "profiles", mkt_normal, params.profiles)),
+        cache_key(new LiteralMetadataFSEntryKey("cache", "cache",
+                    mkt_normal, params.cache)),
+        write_cache_key(new LiteralMetadataFSEntryKey("write_cache", "write_cache",
+                    mkt_normal, params.write_cache)),
+        append_repository_name_to_write_cache_key(new LiteralMetadataStringKey(
+                    "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
+                    mkt_normal, stringify(params.append_repository_name_to_write_cache))),
+        ignore_deprecated_profiles(new LiteralMetadataStringKey(
+                    "ignore_deprecated_profiles", "ignore_deprecated_profiles",
+                    mkt_normal, stringify(params.ignore_deprecated_profiles))),
+        names_cache_key(new LiteralMetadataFSEntryKey(
+                    "names_cache", "names_cache", mkt_normal, params.names_cache)),
+        distdir_key(new LiteralMetadataFSEntryKey(
+                    "distdir", "distdir", mkt_normal, params.distdir)),
+        eclassdirs_key(new LiteralMetadataFSEntrySequenceKey(
+                    "eclassdirs", "eclassdirs", mkt_normal, params.eclassdirs)),
+        securitydir_key(new LiteralMetadataFSEntryKey(
+                    "securitydir", "securitydir", mkt_normal, params.securitydir)),
+        setsdir_key(new LiteralMetadataFSEntryKey(
+                    "setsdir", "setsdir", mkt_normal, params.setsdir)),
+        newsdir_key(new LiteralMetadataFSEntryKey(
+                    "newsdir", "newsdir", mkt_normal, params.newsdir)),
+        sync_key(new LiteralMetadataStringKey(
+                    "sync", "sync", mkt_normal, params.sync)),
+        sync_options_key(new LiteralMetadataStringKey(
+                    "sync_options", "sync_options", mkt_normal, params.sync_options)),
+        builddir_key(new LiteralMetadataFSEntryKey(
+                    "builddir", "builddir", mkt_normal, params.builddir)),
+        master_repository_key(params.master_repository ?
+                tr1::shared_ptr<MetadataStringKey>(new LiteralMetadataStringKey(
+                        "master_repository", "master_repository", mkt_normal, stringify(params.master_repository->name()))) :
+                tr1::shared_ptr<MetadataStringKey>()),
+        eapi_when_unknown_key(new LiteralMetadataStringKey(
+                    "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown)),
+        eapi_when_unspecified_key(new LiteralMetadataStringKey(
+                    "eapi_when_unspecified", "eapi_when_unspecified", mkt_normal, params.eapi_when_unspecified)),
+        profile_eapi_key(new LiteralMetadataStringKey(
+                    "profile_eapi", "profile_eapi", mkt_normal, params.profile_eapi)),
+        info_pkgs_key((layout->info_packages_file(params.location / "profiles")).exists() ?
+                tr1::shared_ptr<MetadataSectionKey>(new PkgInfoSectionKey(
+                        params.environment, layout->info_packages_file(params.location / "profiles"))) :
+                tr1::shared_ptr<MetadataSectionKey>())
     {
     }
 
@@ -292,7 +436,6 @@ namespace
 ERepository::ERepository(const ERepositoryParams & p) :
     Repository(fetch_repo_name(p.location),
             RepositoryCapabilities::create()
-            .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(this)
             .use_interface(this)
@@ -311,46 +454,45 @@ ERepository::ERepository(const ERepositoryParams & p) :
             .qa_interface(0)
 #endif
             .hook_interface(this)
-            .manifest_interface(this),
-            p.entry_format),
-    PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p))
+            .manifest_interface(this)),
+    PrivateImplementationPattern<ERepository>(new Implementation<ERepository>(this, p)),
+    _imp(PrivateImplementationPattern<ERepository>::_imp)
 {
-    // the info_vars and info_pkgs info is only added on demand, since it's
-    // fairly slow to calculate.
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("entry_format", _imp->params.entry_format);
-    config_info->add_kv("layout", _imp->params.layout);
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("profiles", join(_imp->params.profiles->begin(),
-                _imp->params.profiles->end(), " "));
-    config_info->add_kv("cache", stringify(_imp->params.cache));
-    config_info->add_kv("write_cache", stringify(_imp->params.write_cache));
-    config_info->add_kv("append_repository_name_to_write_cache", stringify(_imp->params.append_repository_name_to_write_cache));
-    config_info->add_kv("ignore_deprecated_profiles", stringify(_imp->params.ignore_deprecated_profiles));
-    config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
-    config_info->add_kv("distdir", stringify(_imp->params.distdir));
-    config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),
-                _imp->params.eclassdirs->end(), " "));
-    config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
-    config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
-    config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
-    config_info->add_kv("sync", _imp->params.sync);
-    config_info->add_kv("sync_options", _imp->params.sync_options);
-    config_info->add_kv("builddir", stringify(_imp->params.builddir));
-    if (_imp->params.master_repository)
-        config_info->add_kv("master_repository", stringify(_imp->params.master_repository->name()));
-    config_info->add_kv("format", _imp->params.entry_format);
-    config_info->add_kv("layout", _imp->params.layout);
-    config_info->add_kv("eapi_when_unknown", _imp->params.eapi_when_unknown);
-    config_info->add_kv("eapi_when_unspecified", _imp->params.eapi_when_unspecified);
-    config_info->add_kv("profile_eapi", _imp->params.profile_eapi);
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 ERepository::~ERepository()
 {
+}
+
+void
+ERepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->layout_key);
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->profiles_key);
+    add_metadata_key(_imp->cache_key);
+    add_metadata_key(_imp->write_cache_key);
+    add_metadata_key(_imp->append_repository_name_to_write_cache_key);
+    add_metadata_key(_imp->ignore_deprecated_profiles);
+    add_metadata_key(_imp->names_cache_key);
+    add_metadata_key(_imp->distdir_key);
+    add_metadata_key(_imp->eclassdirs_key);
+    add_metadata_key(_imp->securitydir_key);
+    add_metadata_key(_imp->setsdir_key);
+    add_metadata_key(_imp->newsdir_key);
+    add_metadata_key(_imp->sync_key);
+    add_metadata_key(_imp->sync_options_key);
+    add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->eapi_when_unknown_key);
+    add_metadata_key(_imp->eapi_when_unspecified_key);
+    add_metadata_key(_imp->profile_eapi_key);
+    if (_imp->master_repository_key)
+        add_metadata_key(_imp->master_repository_key);
+    if (_imp->info_pkgs_key)
+        add_metadata_key(_imp->info_pkgs_key);
 }
 
 bool
@@ -611,6 +753,7 @@ void
 ERepository::invalidate()
 {
     _imp.reset(new Implementation<ERepository>(this, _imp->params, _imp->mutexes));
+    _add_metadata_keys();
 }
 
 void
@@ -666,56 +809,6 @@ ERepository::get_environment_variable(
 
     return _imp->entries_ptr->get_environment_variable(tr1::static_pointer_cast<const erepository::ERepositoryID>(for_package),
             var, _imp->profile_ptr);
-}
-
-tr1::shared_ptr<const RepositoryInfo>
-ERepository::info(bool verbose) const
-{
-    tr1::shared_ptr<const RepositoryInfo> result_non_verbose(Repository::info(verbose));
-    if (! verbose)
-        return result_non_verbose;
-
-    tr1::shared_ptr<RepositoryInfo> result(new RepositoryInfo);
-
-    for (RepositoryInfo::SectionConstIterator s(result_non_verbose->begin_sections()),
-            s_end(result_non_verbose->end_sections()) ; s != s_end ; ++s)
-        result->add_section(*s);
-
-    // don't inherit from master_repository, just causes clutter
-    std::set<std::string> info_pkgs;
-    if ((_imp->layout->info_packages_file(_imp->params.location / "profiles")).exists())
-    {
-        LineConfigFile vars(_imp->layout->info_packages_file(_imp->params.location / "profiles"), LineConfigFileOptions());
-        info_pkgs.insert(vars.begin(), vars.end());
-    }
-
-    if (! info_pkgs.empty())
-    {
-        tr1::shared_ptr<RepositoryInfoSection> package_info(new RepositoryInfoSection("Package information"));
-        for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
-                i_end(info_pkgs.end()) ; i != i_end ; ++i)
-        {
-            tr1::shared_ptr<const PackageIDSequence> q(
-                    _imp->params.environment->package_database()->query(
-                        query::Matches(PackageDepSpec(*i, pds_pm_eapi_0)) &
-                        query::InstalledAtRoot(_imp->params.environment->root()),
-                        qo_order_by_version));
-            if (q->empty())
-                package_info->add_kv(*i, "(none)");
-            else
-            {
-                using namespace tr1::placeholders;
-                std::set<VersionSpec> versions;
-                std::transform(q->begin(), q->end(), std::inserter(versions, versions.begin()),
-                        tr1::bind<const VersionSpec>(tr1::mem_fn(&PackageID::version), _1));
-                package_info->add_kv(*i, join(versions.begin(), versions.end(), ", "));
-            }
-        }
-
-        result->add_section(package_info);
-    }
-
-    return result;
 }
 
 std::string
@@ -935,7 +1028,7 @@ ERepository::params() const
 bool
 ERepository::is_suitable_destination_for(const PackageID & e) const
 {
-    std::string f(e.repository()->format());
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     return f == "ebuild" || f == "ebin";
 }
 
@@ -1215,5 +1308,22 @@ FSEntry
 ERepository::info_variables_file(const FSEntry & f) const
 {
     return layout()->info_variables_file(f);
+}
+
+void
+ERepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+ERepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+ERepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 

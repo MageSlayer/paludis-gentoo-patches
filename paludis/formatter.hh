@@ -355,7 +355,7 @@ namespace paludis
         };
 
         /**
-         * A tr1::shared_ptr<T_> supports the same roles as T_.
+         * A tr1::shared_ptr<T_> shouldn't be specified.
          *
          * \ingroup g_formatters
          * \since 0.26
@@ -364,8 +364,22 @@ namespace paludis
         template <typename T_>
         struct CategorySelector<tr1::shared_ptr<T_> >
         {
-            /// The roles this type supports.
-            typedef typename CategorySelector<T_>::Category Category;
+            /// This role is wrong.
+            typedef typename CategorySelector<T_>::ThisRoleIsWrong ThisRoleIsWrong;
+        };
+
+        /**
+         * A tr1::shared_ptr<const T_> shouldn't be specified.
+         *
+         * \ingroup g_formatters
+         * \since 0.26
+         * \nosubgrouping
+         */
+        template <typename T_>
+        struct CategorySelector<tr1::shared_ptr<const T_> >
+        {
+            /// This role is wrong.
+            typedef typename CategorySelector<T_>::ThisRoleIsWrong ThisRoleIsWrong;
         };
 
         /**

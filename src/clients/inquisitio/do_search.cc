@@ -30,6 +30,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -208,7 +209,7 @@ do_search(const Environment & env)
             if (CommandLine::get_instance()->a_repository_format.end_args() ==
                     std::find_if(CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        tr1::bind(std::equal_to<std::string>(), _1, stringify((*r)->format()))))
+                        tr1::bind(std::equal_to<std::string>(), _1, (*r)->format_key() ? (*r)->format_key()->value() : "?")))
                 continue;
 
         if (CommandLine::get_instance()->a_kind.argument() == "installable")

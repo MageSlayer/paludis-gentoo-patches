@@ -21,7 +21,6 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/options.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -39,8 +38,6 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_repository;
-    static VALUE c_repository_info;
-    static VALUE c_repository_info_section;
     static VALUE c_profiles_desc_line;
     static VALUE c_fake_repository_base;
     static VALUE c_fake_repository;
@@ -81,27 +78,6 @@ namespace
             tr1::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->name()).c_str());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     format -> String
-     *
-     * Returns our format.
-     */
-    VALUE
-    repository_format(VALUE self)
-    {
-        try
-        {
-            tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-            return rb_str_new2(stringify((*self_ptr)->format()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -433,91 +409,6 @@ namespace
         tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
         Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
         return (*self_ptr)->some_ids_might_support_action(*test_ptr) ? Qtrue : Qfalse;
-    }
-
-    /*
-     * call-seq:
-     *     info(verbose) -> RepositoryInfo
-     *
-     * Fetch our RepositoryInfo
-     */
-    VALUE
-    repository_info(VALUE self, VALUE verbose)
-    {
-        tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<Repository>, self_ptr);
-
-        tr1::shared_ptr<const RepositoryInfo> * p = new tr1::shared_ptr<const RepositoryInfo>((*self_ptr)->info(Qfalse != verbose));
-        return Data_Wrap_Struct(c_repository_info, 0, &Common<tr1::shared_ptr<const RepositoryInfo> >::free, p);
-    }
-
-    /*
-     * call-seq:
-     *     info_sections -> Array
-     *
-     * Fetch an array of our sections.
-     */
-    VALUE
-    repository_info_sections(VALUE self)
-    {
-        try
-        {
-            tr1::shared_ptr<const RepositoryInfo> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const RepositoryInfo>, self_ptr);
-
-            VALUE result(rb_ary_new());
-            for (RepositoryInfo::SectionConstIterator i((*self_ptr)->begin_sections()),
-                    i_end((*self_ptr)->end_sections()) ; i != i_end ; ++i)
-            {
-                tr1::shared_ptr<const RepositoryInfoSection> * s(new tr1::shared_ptr<const RepositoryInfoSection>(*i));
-                rb_ary_push(result, Data_Wrap_Struct(c_repository_info_section, 0, &Common<tr1::shared_ptr<const RepositoryInfo> >::free, s));
-            }
-            return result;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     kvs -> Hash
-     *
-     * Returns the key/value pairs within the section.
-     */
-    VALUE
-    repository_info_section_kvs(VALUE self)
-    {
-        try
-        {
-            tr1::shared_ptr<const RepositoryInfoSection> * self_ptr;
-            Data_Get_Struct(self, tr1::shared_ptr<const RepositoryInfoSection>, self_ptr);
-
-            VALUE result(rb_hash_new());
-            for (RepositoryInfoSection::KeyValueConstIterator i((*self_ptr)->begin_kvs()),
-                    i_end((*self_ptr)->end_kvs()) ; i != i_end ; ++i)
-                rb_hash_aset(result, rb_str_new2(i->first.c_str()), rb_str_new2(i->second.c_str()));
-            return result;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     header -> String
-     *
-     * Our heading
-     */
-    VALUE
-    repository_info_section_header(VALUE self)
-    {
-        tr1::shared_ptr<const RepositoryInfoSection> * self_ptr;
-        Data_Get_Struct(self, tr1::shared_ptr<const RepositoryInfoSection>, self_ptr);
-        return rb_str_new2((*self_ptr)->heading().c_str());
     }
 
     /*
@@ -970,7 +861,6 @@ namespace
         c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
         rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository, "name", RUBY_FUNC_CAST(&repository_name), 0);
-        rb_define_method(c_repository, "format", RUBY_FUNC_CAST(&repository_format), 0);
 
         rb_define_method(c_repository, "has_category_named?", RUBY_FUNC_CAST(&repository_has_category_named), 1);
         rb_define_method(c_repository, "has_package_named?", RUBY_FUNC_CAST(&repository_has_package_named), 1);
@@ -981,8 +871,6 @@ namespace
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "package_ids", RUBY_FUNC_CAST(&repository_package_ids), 1);
 
-        rb_define_method(c_repository, "installed_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstalledInterface,
-                        &Repository::installed_interface>::fetch)), 0);
         rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<RepositorySetsInterface,
                         &Repository::sets_interface>::fetch)), 0);
         rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,
@@ -1006,7 +894,6 @@ namespace
 
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
-        rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "query_use", RUBY_FUNC_CAST((&QueryUse<UseFlagState, use_enabled, use_disabled, &RepositoryUseInterface::query_use>::query)), -1);
         rb_define_method(c_repository, "query_use_mask", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_mask>::query)), -1);
         rb_define_method(c_repository, "query_use_force", RUBY_FUNC_CAST((&QueryUse<bool, true, false, &RepositoryUseInterface::query_use_force>::query)), -1);
@@ -1021,31 +908,12 @@ namespace
         rb_define_method(c_repository, "check_qa", RUBY_FUNC_CAST(&repository_check_qa),5);
 
         /*
-         * Document-class: Paludis::RepositoryInfo
-         *
-         * Information about a Repository, for the end user.
-         */
-        c_repository_info = rb_define_class_under(paludis_module(), "RepositoryInfo", rb_cObject);
-        rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_repository_info, "sections", RUBY_FUNC_CAST(&repository_info_sections), 0);
-
-        /*
-         * Document-class: Paludis::RepositoryInfoSection
-         *
-         * A section of information about a Repository.
-         */
-        c_repository_info_section = rb_define_class_under(paludis_module(), "RepositoryInfoSection", rb_cObject);
-        rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
-        rb_define_method(c_repository_info_section, "header", RUBY_FUNC_CAST(&repository_info_section_header), 0);
-
-        /*
          * Document-class: Paludis::ProfilesDescLine
          *
          *
          */
         c_profiles_desc_line = rb_define_class_under(paludis_module(), "ProfilesDescLine", rb_cObject);
-        rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_funcall(c_profiles_desc_line, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_profiles_desc_line, "path",
                 RUBY_FUNC_CAST((&DescLineValue<FSEntry,&RepositoryEInterface::ProfilesDescLine::path>::fetch)), 0);
         rb_define_method(c_profiles_desc_line, "arch",

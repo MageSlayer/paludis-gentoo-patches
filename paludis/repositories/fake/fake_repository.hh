@@ -36,7 +36,7 @@ namespace paludis
         public RepositoryMirrorsInterface
     {
         private:
-            Implementation<FakeRepository> * const _imp;
+            PrivateImplementationPattern<FakeRepository>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -65,6 +65,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

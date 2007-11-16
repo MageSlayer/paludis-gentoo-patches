@@ -21,7 +21,6 @@
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/stringify.hh>
@@ -37,6 +36,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
 
@@ -60,12 +60,25 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> install_dir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation(const gems::InstalledRepositoryParams p,
                        tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             big_nasty_mutex(m),
             params(p),
             has_category_names(false),
-            has_ids(false)
+            has_ids(false),
+            install_dir_key(new LiteralMetadataFSEntryKey("install_dir", "install_dir",
+                        mkt_normal, params.install_dir)),
+            builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+                        mkt_normal, params.builddir)),
+            root_key(new LiteralMetadataFSEntryKey(
+                        "root", "root", mkt_normal, params.root)),
+            format_key(new LiteralMetadataStringKey("format", "format",
+                        mkt_significant, "gems"))
         {
         }
     };
@@ -74,7 +87,6 @@ namespace paludis
 InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepositoryParams & params) :
     Repository(RepositoryName("installed-gems"),
             RepositoryCapabilities::create()
-            .installed_interface(this)
             .sets_interface(0)
             .syncable_interface(0)
             .use_interface(0)
@@ -88,16 +100,11 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
             .qa_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "installed_gems"),
-    PrivateImplementationPattern<InstalledGemsRepository>(new Implementation<InstalledGemsRepository>(params))
+            .manifest_interface(0)),
+    PrivateImplementationPattern<InstalledGemsRepository>(new Implementation<InstalledGemsRepository>(params)),
+    _imp(PrivateImplementationPattern<InstalledGemsRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("install_dir", stringify(_imp->params.install_dir));
-    config_info->add_kv("builddir", stringify(_imp->params.builddir));
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 InstalledGemsRepository::~InstalledGemsRepository()
@@ -105,11 +112,21 @@ InstalledGemsRepository::~InstalledGemsRepository()
 }
 
 void
+InstalledGemsRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->install_dir_key);
+    add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->root_key);
+}
+
+void
 InstalledGemsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-
     _imp.reset(new Implementation<InstalledGemsRepository>(_imp->params, _imp->big_nasty_mutex));
+    _add_metadata_keys();
 }
 
 void
@@ -243,7 +260,7 @@ InstalledGemsRepository::is_suitable_destination_for(const PackageID & e) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    std::string f(e.repository()->format());
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     return f == "gems";
 }
 
@@ -263,12 +280,6 @@ void
 InstalledGemsRepository::merge(const MergeOptions &)
 {
     throw InternalError(PALUDIS_HERE, "Invalid target for merge");
-}
-
-FSEntry
-InstalledGemsRepository::root() const
-{
-    return FSEntry("/");
 }
 
 #if 0
@@ -336,5 +347,22 @@ InstalledGemsRepository::some_ids_might_support_action(const SupportsActionTestB
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+void
+InstalledGemsRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+InstalledGemsRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+InstalledGemsRepository::installed_root_key() const
+{
+    return _imp->root_key;
 }
 

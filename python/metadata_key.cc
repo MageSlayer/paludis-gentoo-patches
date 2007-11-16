@@ -99,6 +99,11 @@ class MetadataKeySptrToPythonVisitor :
             obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(_m_ptr));
         }
 
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        {
+            obj = bp::object(tr1::static_pointer_cast<const MetadataSetKey<FSEntrySequence> >(_m_ptr));
+        }
+
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             obj = bp::object(tr1::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(_m_ptr));
@@ -918,6 +923,7 @@ void expose_metadata_key()
     class_set_key<UseFlagNameSet>("UseFlagNameIterable");
     class_set_key<IUseFlagSet>("IUseFlagIterable");
     class_set_key<Set<std::string> >("StringIterable");
+    class_set_key<FSEntrySequence>("FSEntryIterable");
 
     /**
      * MetadataSpecTreeKeys

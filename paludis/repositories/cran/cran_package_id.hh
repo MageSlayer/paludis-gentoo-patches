@@ -37,7 +37,7 @@ namespace paludis
             public tr1::enable_shared_from_this<CRANPackageID>
         {
             private:
-                Implementation<CRANPackageID> * const _imp;
+                PrivateImplementationPattern<CRANPackageID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

@@ -27,7 +27,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/repository_info.hh>
 #include <map>
 
 /** \file
@@ -75,16 +74,12 @@ namespace paludis
 }
 
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
-        const RepositoryName & our_name, const RepositoryCapabilities & caps,
-        const std::string & f) :
-    Repository(our_name, caps, f),
+        const RepositoryName & our_name, const RepositoryCapabilities & caps) :
+    Repository(our_name, caps),
     RepositoryUseInterface(),
-    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e))
+    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e)),
+    _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-    config_info->add_kv("format", "fake");
-
-    _info->add_section(config_info);
 }
 
 FakeRepositoryBase::~FakeRepositoryBase()
@@ -252,5 +247,10 @@ const Environment *
 FakeRepositoryBase::environment() const
 {
     return _imp->env;
+}
+
+void
+FakeRepositoryBase::need_keys_added() const
+{
 }
 

@@ -22,7 +22,6 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/gem_specifications.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -33,6 +32,8 @@
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/action.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <fstream>
 
 using namespace paludis;
@@ -53,11 +54,30 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> install_dir_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
+        tr1::shared_ptr<const MetadataStringKey> sync_key;
+        tr1::shared_ptr<const MetadataStringKey> sync_options_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation(const gems::RepositoryParams p, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             params(p),
             big_nasty_mutex(m),
             has_category_names(false),
-            has_ids(false)
+            has_ids(false),
+            location_key(new LiteralMetadataFSEntryKey("location", "location",
+                        mkt_significant, params.location)),
+            install_dir_key(new LiteralMetadataFSEntryKey("install_dir", "install_dir",
+                        mkt_normal, params.install_dir)),
+            builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+                        mkt_normal, params.builddir)),
+            sync_key(new LiteralMetadataStringKey("sync", "sync",
+                        mkt_normal, params.sync)),
+            sync_options_key(new LiteralMetadataStringKey(
+                        "sync_options", "sync_options", mkt_normal, params.sync_options)),
+            format_key(new LiteralMetadataStringKey("format", "format",
+                        mkt_significant, "gems"))
         {
         }
     };
@@ -66,7 +86,6 @@ namespace paludis
 GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
     Repository(RepositoryName("gems"),
             RepositoryCapabilities::create()
-            .installed_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
             .use_interface(0)
@@ -80,23 +99,27 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
             .qa_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "gems"),
-    PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(params))
+            .manifest_interface(0)),
+    PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(params)),
+    _imp(PrivateImplementationPattern<GemsRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("install_dir", stringify(_imp->params.install_dir));
-    config_info->add_kv("builddir", stringify(_imp->params.builddir));
-    config_info->add_kv("sync", _imp->params.sync);
-    config_info->add_kv("sync_options", _imp->params.sync_options);
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 GemsRepository::~GemsRepository()
 {
+}
+
+void
+GemsRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->install_dir_key);
+    add_metadata_key(_imp->builddir_key);
+    add_metadata_key(_imp->sync_key);
+    add_metadata_key(_imp->sync_options_key);
+    add_metadata_key(_imp->format_key);
 }
 
 void
@@ -105,6 +128,7 @@ GemsRepository::invalidate()
     Lock l(*_imp->big_nasty_mutex);
 
     _imp.reset(new Implementation<GemsRepository>(_imp->params, _imp->big_nasty_mutex));
+    _add_metadata_keys();
 }
 
 void
@@ -303,5 +327,22 @@ GemsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) 
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+void
+GemsRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+GemsRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+GemsRepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 

@@ -46,21 +46,16 @@ int main(int argc, char * argv[])
             /* A repository is identified by its name. */
             cout << left << (*r)->name() << ":" << endl;
 
-            /* Configuration and possibly additional information is available
-             * via Repository::info. */
-            tr1::shared_ptr<const RepositoryInfo> info((*r)->info(true));
-
-            cout << left << setw(30) << "    Info:" << " " << endl;
-            /* RepositoryInfo is made up of a number of sections... */
-            for (RepositoryInfo::SectionConstIterator s(info->begin_sections()), s_end(info->end_sections()) ;
-                    s != s_end ; ++s)
-            {
-                cout << left << setw(30) << ("        " + (*s)->heading() + ":") << " " << endl;
-                /* And a section is made up of key+value pairs */
-                for (RepositoryInfoSection::KeyValueConstIterator v((*s)->begin_kvs()), v_end((*s)->end_kvs()) ;
-                        v != v_end ; ++v)
-                    cout << left << setw(30) << ("            " + v->first + ":") << " " << v->second << endl;
-            }
+            /* Like a PackageID, a Repository has metadata. Usually metadata
+             * keys will be available for all of the configuration options for
+             * that repository; some repositories also provide more (ebuild
+             * format repositories, for example, provide info_pkgs too). See
+             * \ref example_metadata_key.cc "example_metadata_key.cc" for how to
+             * display a metadata key in detail. */
+            cout << left << setw(30) << "    Metadata keys:" << endl;
+            for (Repository::MetadataConstIterator k((*r)->begin_metadata()), k_end((*r)->end_metadata()) ;
+                    k != k_end ; ++k)
+                cout << "        " << (*k)->human_name() << endl;
 
             /* Repositories support various methods for querying categories,
              * packages, IDs and so on. These methods are used by
@@ -71,18 +66,6 @@ int main(int argc, char * argv[])
             tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis")));
             cout << left << setw(30) << "    IDs for sys-apps/paludis:" << " " <<
                 join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " ") << endl;
-
-            /* Much of the Repository functionality is optional -- for example,
-             * not all repositories support use flags as a concept, and not all
-             * repositories are syncable, and merging only makes sense to
-             * certain repositories. We gain access to optional functionality
-             * via interface methods, all of which may return a zero pointer.
-             * Many Repository interfaces are of little direct use to clients;
-             * we cover only those that are here. */
-            if ((*r)->installed_interface)
-                cout << left << setw(30) << "    Root:" << " " << (*r)->installed_interface->root() << endl;
-            if ((*r)->syncable_interface)
-                cout << left << setw(30) << "    Syncable:" << " " << "yes" << endl;
 
             cout << endl;
         }

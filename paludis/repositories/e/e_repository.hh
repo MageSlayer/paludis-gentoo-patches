@@ -66,11 +66,15 @@ namespace paludis
         private PrivateImplementationPattern<ERepository>
     {
         private:
+            PrivateImplementationPattern<ERepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
             void need_mirrors() const;
 
-        public:
-            virtual tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
+        protected:
+            virtual void need_keys_added() const;
 
+        public:
             /**
              * Constructor.
              */
@@ -233,6 +237,11 @@ namespace paludis
             tr1::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
 
             void regenerate_cache() const;
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

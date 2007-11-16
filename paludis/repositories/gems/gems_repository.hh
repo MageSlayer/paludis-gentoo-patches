@@ -39,8 +39,14 @@ namespace paludis
         public tr1::enable_shared_from_this<GemsRepository>
     {
         private:
+            PrivateImplementationPattern<GemsRepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
             void need_category_names() const;
             void need_ids() const;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             /**
@@ -77,6 +83,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

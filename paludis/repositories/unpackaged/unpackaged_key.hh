@@ -27,40 +27,12 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
-        class UnpackagedFSEntryKey :
-            public MetadataFSEntryKey,
-            private PrivateImplementationPattern<UnpackagedFSEntryKey>
-        {
-            private:
-                Implementation<UnpackagedFSEntryKey> * const _imp;
-
-            public:
-                UnpackagedFSEntryKey(const std::string &, const std::string &, const MetadataKeyType, const FSEntry & l);
-                ~UnpackagedFSEntryKey();
-
-                const FSEntry value() const;
-        };
-
-        class UnpackagedStringKey :
-            public MetadataStringKey,
-            private PrivateImplementationPattern<UnpackagedStringKey>
-        {
-            private:
-                Implementation<UnpackagedStringKey> * const _imp;
-
-            public:
-                UnpackagedStringKey(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v);
-                ~UnpackagedStringKey();
-
-                const std::string value() const;
-        };
-
         class UnpackagedDependencyKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
             private PrivateImplementationPattern<UnpackagedDependencyKey>
         {
             private:
-                Implementation<UnpackagedDependencyKey> * const _imp;
+                PrivateImplementationPattern<UnpackagedDependencyKey>::ImpPtr & _imp;
 
             public:
                 UnpackagedDependencyKey(const Environment * const env,

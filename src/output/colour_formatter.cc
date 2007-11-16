@@ -387,21 +387,27 @@ ColourFormatter::format(const BlockDepSpec & f, const format::Plain &) const
 }
 
 std::string
-ColourFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Plain &) const
+ColourFormatter::format(const PackageID & f, const format::Plain &) const
 {
-    return stringify(*f);
+    return stringify(f);
 }
 
 std::string
-ColourFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Installed &) const
+ColourFormatter::format(const PackageID & f, const format::Installed &) const
 {
-    return colour(cl_package_name, *f);
+    return colour(cl_package_name, f);
 }
 
 std::string
-ColourFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Installable &) const
+ColourFormatter::format(const PackageID & f, const format::Installable &) const
 {
-    return colour(cl_installable_package_name, *f);
+    return colour(cl_installable_package_name, f);
+}
+
+std::string
+ColourFormatter::format(const FSEntry & f, const format::Plain &) const
+{
+    return stringify(f);
 }
 
 std::string

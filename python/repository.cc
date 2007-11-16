@@ -21,7 +21,6 @@
 #include <python/iterable.hh>
 
 #include <paludis/repository.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -40,20 +39,6 @@ struct RepositoryWrapper :
     Repository,
     bp::wrapper<Repository>
 {
-    tr1::shared_ptr<const RepositoryInfo>
-    info(bool verbose) const
-    {
-        if (bp::override info = this->get_override("info"))
-            return info(verbose);
-        return Repository::info(verbose);
-    }
-
-    tr1::shared_ptr<const RepositoryInfo>
-    default_info(bool verbose) const
-    {
-        return Repository::info(verbose);
-    }
-
     static RepositorySetsInterface *
     get_sets_interface(const Repository & self)
     {
@@ -179,44 +164,6 @@ void expose_repository()
         );
 
     /**
-     * RepositoryInfoSection
-     */
-    bp::to_python_converter<std::pair<const std::string, std::string>,
-            pair_to_tuple<const std::string, std::string> >();
-    register_shared_ptrs_to_python<RepositoryInfoSection>();
-    bp::class_<RepositoryInfoSection, boost::noncopyable>
-        (
-         "RepositoryInfoSection",
-         "A section of information about a Repository.",
-         bp::init<const std::string &>()
-        )
-        .add_property("heading", &RepositoryInfoSection::heading,
-                "[ro] string\n"
-                "Heading."
-                )
-
-        .add_property("kvs", bp::range(&RepositoryInfoSection::begin_kvs, &RepositoryInfoSection::end_kvs),
-                "[ro] Iterable of tuples\n"
-                "Key-value pairs."
-                )
-        ;
-
-    /**
-     * RepositoryInfo
-     */
-    register_shared_ptrs_to_python<RepositoryInfo>();
-    bp::class_<RepositoryInfo, boost::noncopyable>
-        (
-         "RepositoryInfo",
-         "Information about a Repository, for the end user.",
-         bp::no_init
-        )
-        .add_property("sections", bp::range(&RepositoryInfo::begin_sections, &RepositoryInfo::end_sections),
-                "[ro] Iterable of RepositoryInfoSection."
-                )
-        ;
-
-    /**
      * Repository
      */
     register_shared_ptrs_to_python<Repository>(rsp_const);
@@ -226,20 +173,10 @@ void expose_repository()
          "A Repository provides a representation of a physical repository to a PackageDatabase.",
          bp::no_init
         )
-        .def("info", &Repository::info, &RepositoryWrapper::default_info,
-                "info() -> RepositoryInfo\n"
-                "Fetch information about the repository."
-            )
 
-        .add_property("name", bp::make_function(&Repository::name,
-                    bp::return_value_policy<bp::copy_const_reference>()),
+        .add_property("name", &Repository::name,
                 "[ro] RepositoryName\n"
                 "Our name."
-                )
-
-        .add_property("format", &Repository::format,
-                "[ro] string\n"
-                "Our format."
                 )
 
         .def("has_category_named", &Repository::has_category_named,
@@ -380,20 +317,6 @@ void expose_repository()
                 "Describe a use flag."
             )
         ;
-
-    /**
-     * RepositoryInstalledInterface
-     */
-    bp::class_<RepositoryInstalledInterface, boost::noncopyable>
-        (
-         "RepositoryInstalledInterface",
-         "Interface for handling actions for installed repositories.",
-         bp::no_init
-        )
-        .def("root", bp::pure_virtual(&RepositoryInstalledInterface::root),
-            "What is our filesystem root?"
-            )
-    ;
 
     /**
      * RepositorySetsInterface

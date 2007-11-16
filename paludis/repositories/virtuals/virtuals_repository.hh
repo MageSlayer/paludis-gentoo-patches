@@ -38,8 +38,13 @@ namespace paludis
         public tr1::enable_shared_from_this<VirtualsRepository>
     {
         private:
+            PrivateImplementationPattern<VirtualsRepository>::ImpPtr & _imp;
+
             void need_names() const;
             void need_ids() const;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
@@ -93,6 +98,10 @@ namespace paludis
                     const QualifiedPackageName & virtual_name, const tr1::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

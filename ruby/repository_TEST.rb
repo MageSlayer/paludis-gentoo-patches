@@ -73,11 +73,6 @@ module Paludis
             assert_equal "installed", installed_repo.name
             assert_equal "testrepo", repo.name
         end
-
-        def test_format
-            assert_equal "vdb", installed_repo.format
-            assert_equal "ebuild", repo.format
-        end
     end
 
     class TestCase_RepositoryHasCategoryNamed < Test::Unit::TestCase
@@ -173,7 +168,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.main_repository
-            [:installed_interface, :sets_interface, :syncable_interface, :use_interface,
+            [:sets_interface, :syncable_interface, :use_interface,
                 :world_interface, :mirrors_interface, :environment_variable_interface,
                 :provides_interface, :virtuals_interface, :e_interface,
                 :qa_interface].each do |sym|
@@ -183,8 +178,6 @@ module Paludis
 
         def test_interfaces
             assert_equal repo.name, repo.use_interface.name
-            assert_nil repo.installed_interface
-
             assert_equal installed_repo.name, installed_repo.provides_interface.name
             assert_nil installed_repo.syncable_interface
         end
@@ -384,31 +377,6 @@ module Paludis
 ###            assert_raise ArgumentError do
 ###                repo.query_repository_masks("foo/bar","1.0","baz")
 ###            end
-        end
-    end
-
-    class TestCase_RepositoryInfo < Test::Unit::TestCase
-        include RepositoryTestCase
-
-        def test_info
-            assert_kind_of RepositoryInfo, repo.info(false)
-            assert_kind_of RepositoryInfo, repo.info(true)
-        end
-
-        def test_sections
-            assert_kind_of Array, repo.info(false).sections
-            assert_equal 1, repo.info(false).sections.length
-        end
-
-        def test_section_header
-            assert_kind_of String, repo.info(false).sections.first.header
-            assert_equal 'Configuration information', repo.info(false).sections.first.header
-        end
-
-        def test_section_kvs
-            assert_kind_of Hash, repo.info(false).sections.first.kvs
-            assert_equal 'ebuild', repo.info(false).sections.first.kvs['format']
-            assert_equal 'vdb', installed_repo.info(false).sections.first.kvs['format']
         end
     end
 

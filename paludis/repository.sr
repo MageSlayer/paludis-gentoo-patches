@@ -5,7 +5,6 @@ make_class_RepositoryCapabilities()
 {
     visible
 
-    key installed_interface "RepositoryInstalledInterface *"
     key sets_interface "RepositorySetsInterface *"
     key syncable_interface "RepositorySyncableInterface *"
     key use_interface "RepositoryUseInterface *"

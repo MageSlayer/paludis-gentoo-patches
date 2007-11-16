@@ -49,12 +49,17 @@ namespace paludis
         private PrivateImplementationPattern<FakeRepositoryBase>,
         public tr1::enable_shared_from_this<FakeRepositoryBase>
     {
+        private:
+            PrivateImplementationPattern<FakeRepositoryBase>::ImpPtr & _imp;
+
         protected:
             /**
              * Constructor.
              */
             FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
-                    const RepositoryCapabilities & caps, const std::string &);
+                    const RepositoryCapabilities & caps);
+
+            virtual void need_keys_added() const;
 
         public:
             /**
@@ -155,7 +160,6 @@ namespace paludis
 
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-
     };
 }
 

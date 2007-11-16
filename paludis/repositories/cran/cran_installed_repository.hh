@@ -46,16 +46,21 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
-        public RepositoryInstalledInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
         public RepositoryDestinationInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
         private:
+            PrivateImplementationPattern<CRANInstalledRepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
             void need_ids() const;
             void add_string_to_world(const std::string & n) const;
             void remove_string_from_world(const std::string &) const;
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             /**
@@ -77,10 +82,6 @@ namespace paludis
 
             virtual void invalidate();
             virtual void invalidate_masks();
-
-            /* RepositoryInstalledInterface */
-
-            virtual FSEntry root() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositorySetsInterface */
 
@@ -132,6 +133,11 @@ namespace paludis
 
             virtual tr1::shared_ptr<SetSpecTree::ConstItem> package_set(const SetName & id) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 
     /**

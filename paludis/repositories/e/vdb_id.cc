@@ -36,6 +36,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <iterator>
 #include <fstream>
 
@@ -119,7 +120,7 @@ VDBID::VDBID(const QualifiedPackageName & q, const VersionSpec & v,
         const tr1::shared_ptr<const Repository> & r,
         const FSEntry & f) :
     PrivateImplementationPattern<VDBID>(new Implementation<VDBID>(q, v, e, r, f)),
-    _imp(PrivateImplementationPattern<VDBID>::_imp.get())
+    _imp(PrivateImplementationPattern<VDBID>::_imp)
 {
 }
 
@@ -140,8 +141,8 @@ VDBID::need_keys_added() const
     // fs_location key could have been loaded by the ::fs_location_key() already.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "VDBDIR", "VDB Location",
-                    _imp->dir, mkt_internal));
+        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("VDBDIR", "VDB Location",
+                    mkt_internal, _imp->dir));
         add_metadata_key(_imp->fs_location);
     }
 
@@ -245,8 +246,8 @@ VDBID::need_keys_added() const
     if (! vars->metadata_description.empty())
         if ((_imp->dir / vars->metadata_description).exists())
         {
-            _imp->short_description.reset(new EStringKey(shared_from_this(), vars->metadata_description,
-                        vars->description_description, file_contents(_imp->dir / vars->metadata_description), mkt_significant));
+            _imp->short_description.reset(new LiteralMetadataStringKey(vars->metadata_description,
+                        vars->description_description, mkt_significant, file_contents(_imp->dir / vars->metadata_description)));
             add_metadata_key(_imp->short_description);
         }
 
@@ -268,71 +269,71 @@ VDBID::need_keys_added() const
 
     if ((_imp->dir / "REPOSITORY").exists())
     {
-        _imp->source_origin.reset(new EStringKey(shared_from_this(), "REPOSITORY", "Source repository",
-                    file_contents(_imp->dir / "REPOSITORY"), mkt_normal));
+        _imp->source_origin.reset(new LiteralMetadataStringKey("REPOSITORY", "Source repository",
+                    mkt_normal, file_contents(_imp->dir / "REPOSITORY")));
         add_metadata_key(_imp->source_origin);
     }
 
     if ((_imp->dir / "BINARY_REPOSITORY").exists())
     {
-        _imp->binary_origin.reset(new EStringKey(shared_from_this(), "BINARY_REPOSITORY", "Binary repository",
-                    file_contents(_imp->dir / "BINARY_REPOSITORY"), mkt_normal));
+        _imp->binary_origin.reset(new LiteralMetadataStringKey("BINARY_REPOSITORY", "Binary repository",
+                    mkt_normal, file_contents(_imp->dir / "BINARY_REPOSITORY")));
         add_metadata_key(_imp->binary_origin);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
     {
-        _imp->asflags.reset(new EStringKey(shared_from_this(), "ASFLAGS", "ASFLAGS",
-                    file_contents(_imp->dir / "ASFLAGS"), mkt_internal));
+        _imp->asflags.reset(new LiteralMetadataStringKey("ASFLAGS", "ASFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "ASFLAGS")));
         add_metadata_key(_imp->asflags);
     }
 
     if ((_imp->dir / "CBUILD").exists())
     {
-        _imp->cbuild.reset(new EStringKey(shared_from_this(), "CBUILD", "CBUILD",
-                    file_contents(_imp->dir / "CBUILD"), mkt_internal));
+        _imp->cbuild.reset(new LiteralMetadataStringKey("CBUILD", "CBUILD",
+                    mkt_internal, file_contents(_imp->dir / "CBUILD")));
         add_metadata_key(_imp->cbuild);
     }
 
     if ((_imp->dir / "CFLAGS").exists())
     {
-        _imp->cflags.reset(new EStringKey(shared_from_this(), "CFLAGS", "CFLAGS",
-                    file_contents(_imp->dir / "CFLAGS"), mkt_internal));
+        _imp->cflags.reset(new LiteralMetadataStringKey("CFLAGS", "CFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "CFLAGS")));
         add_metadata_key(_imp->cflags);
     }
 
     if ((_imp->dir / "CHOST").exists())
     {
-        _imp->chost.reset(new EStringKey(shared_from_this(), "CHOST", "CHOST",
-                    file_contents(_imp->dir / "CHOST"), mkt_internal));
+        _imp->chost.reset(new LiteralMetadataStringKey("CHOST", "CHOST",
+                    mkt_internal, file_contents(_imp->dir / "CHOST")));
         add_metadata_key(_imp->chost);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
     {
-        _imp->cxxflags.reset(new EStringKey(shared_from_this(), "CXXFLAGS", "CXXFLAGS",
-                    file_contents(_imp->dir / "CXXFLAGS"), mkt_internal));
+        _imp->cxxflags.reset(new LiteralMetadataStringKey("CXXFLAGS", "CXXFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "CXXFLAGS")));
         add_metadata_key(_imp->cxxflags);
     }
 
     if ((_imp->dir / "LDFLAGS").exists())
     {
-        _imp->ldflags.reset(new EStringKey(shared_from_this(), "LDFLAGS", "LDFLAGS",
-                    file_contents(_imp->dir / "LDFLAGS"), mkt_internal));
+        _imp->ldflags.reset(new LiteralMetadataStringKey("LDFLAGS", "LDFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "LDFLAGS")));
         add_metadata_key(_imp->ldflags);
     }
 
     if ((_imp->dir / "PKGMANAGER").exists())
     {
-        _imp->pkgmanager.reset(new EStringKey(shared_from_this(), "PKGMANAGER", "Installed using",
-                    file_contents(_imp->dir / "PKGMANAGER"), mkt_normal));
+        _imp->pkgmanager.reset(new LiteralMetadataStringKey("PKGMANAGER", "Installed using",
+                    mkt_normal, file_contents(_imp->dir / "PKGMANAGER")));
         add_metadata_key(_imp->pkgmanager);
     }
 
     if ((_imp->dir / "VDB_FORMAT").exists())
     {
-        _imp->vdb_format.reset(new EStringKey(shared_from_this(), "VDB_FORMAT", "VDB Format",
-                    file_contents(_imp->dir / "VDB_FORMAT"), mkt_internal));
+        _imp->vdb_format.reset(new LiteralMetadataStringKey("VDB_FORMAT", "VDB Format",
+                    mkt_internal, file_contents(_imp->dir / "VDB_FORMAT")));
         add_metadata_key(_imp->vdb_format);
     }
 }
@@ -572,8 +573,7 @@ VDBID::fs_location_key() const
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "VDBDIR", "VDB Location",
-                    _imp->dir, mkt_internal));
+        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("VDBDIR", "VDB Location", mkt_internal, _imp->dir));
         add_metadata_key(_imp->fs_location);
     }
 

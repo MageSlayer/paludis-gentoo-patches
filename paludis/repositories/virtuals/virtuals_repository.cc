@@ -25,8 +25,8 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -61,11 +61,15 @@ namespace paludis
         mutable IDMap ids;
         mutable bool has_ids;
 
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation(const Environment * const e, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             big_nasty_mutex(m),
             has_names(false),
-            has_ids(false)
+            has_ids(false),
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "virtuals"))
         {
         }
     };
@@ -110,7 +114,6 @@ namespace
 
 VirtualsRepository::VirtualsRepository(const Environment * const env) :
     Repository(RepositoryName("virtuals"), RepositoryCapabilities::create()
-            .installed_interface(0)
             .use_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
@@ -124,14 +127,12 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             .make_virtuals_interface(this)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "virtuals"),
+            .manifest_interface(0)),
     PrivateImplementationPattern<VirtualsRepository>(
-            new Implementation<VirtualsRepository>(env))
+            new Implementation<VirtualsRepository>(env)),
+    _imp(PrivateImplementationPattern<VirtualsRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-    config_info->add_kv("format", "virtuals");
-    _info->add_section(config_info);
+    add_metadata_key(_imp->format_key);
 }
 
 VirtualsRepository::~VirtualsRepository()
@@ -319,7 +320,6 @@ void
 VirtualsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-
     _imp.reset(new Implementation<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
 }
 
@@ -408,5 +408,22 @@ VirtualsRepository::unimportant_category_names() const
     tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VirtualsRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+VirtualsRepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
+}
+
+void
+VirtualsRepository::need_keys_added() const
+{
 }
 

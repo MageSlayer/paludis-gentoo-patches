@@ -69,6 +69,11 @@ namespace
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
         }
 
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        {
+            stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
+        }
+
         void visit(const MetadataSetKey<UseFlagNameSet> & k)
         {
             stream << k.raw_name() << ": " << join(k.value()->begin(), k.value()->end(), " ") << "\n";
@@ -151,10 +156,7 @@ namespace
 
         void visit(const MetadataSectionKey & k)
         {
-            if (k.title_key())
-                stream << k.raw_name() << ": " << k.title_key()->value() << "\n";
-            else
-                stream << k.raw_name() << "\n";
+            stream << k.raw_name() << "\n";
         }
     };
 

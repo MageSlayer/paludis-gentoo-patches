@@ -269,6 +269,17 @@ namespace
                             tr1::bind(&Matcher::operator(), tr1::cref(_m), _1));
             }
 
+            void visit(const MetadataSetKey<FSEntrySequence> & s)
+            {
+                using namespace tr1::placeholders;
+
+                if (_flatten)
+                    result = _m(join(s.value()->begin(), s.value()->end(), " "));
+                else
+                    result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            tr1::bind(&Matcher::operator(), tr1::cref(_m), tr1::bind(&stringify<FSEntry>, _1)));
+            }
+
             void visit(const MetadataSetKey<PackageIDSequence> & s)
             {
                 using namespace tr1::placeholders;

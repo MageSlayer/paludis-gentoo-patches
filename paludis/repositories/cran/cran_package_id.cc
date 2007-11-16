@@ -33,6 +33,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
@@ -61,10 +62,10 @@ namespace paludis
         QualifiedPackageName name;
         VersionSpec version;
 
-        tr1::shared_ptr<FSLocationKey> fs_location_key;
+        tr1::shared_ptr<LiteralMetadataFSEntryKey> fs_location_key;
         tr1::shared_ptr<SimpleURIKey> homepage_key;
-        tr1::shared_ptr<StringKey> short_description_key;
-        tr1::shared_ptr<StringKey> long_description_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> short_description_key;
+        tr1::shared_ptr<LiteralMetadataStringKey> long_description_key;
         tr1::shared_ptr<PackageIDKey> contained_in_key;
         tr1::shared_ptr<PackageIDSequenceKey> contains_key;
         tr1::shared_ptr<DepKey> depends_key;
@@ -95,7 +96,7 @@ namespace paludis
 
 CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
     PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(env, r, f)),
-    _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
+    _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
 
@@ -106,8 +107,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         return;
     }
 
-    _imp->fs_location_key.reset(new FSLocationKey("DescriptionFileLocation", "Description File Location",
-                f, mkt_internal));
+    _imp->fs_location_key.reset(new LiteralMetadataFSEntryKey("DescriptionFileLocation", "Description File Location",
+                mkt_internal, f));
     add_metadata_key(_imp->fs_location_key);
 
     try
@@ -158,33 +159,33 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
         if (! file.get("Title").empty())
         {
             Context local_context("When handling Title: key:");
-            _imp->short_description_key.reset(new StringKey("Title", "Title", file.get("Title"), mkt_significant));
+            _imp->short_description_key.reset(new LiteralMetadataStringKey("Title", "Title", mkt_significant, file.get("Title")));
             add_metadata_key(_imp->short_description_key);
         }
 
         if (! file.get("Description").empty())
         {
             Context local_context("When handling Description: key:");
-            _imp->long_description_key.reset(new StringKey("Description", "Description", file.get("Description"), mkt_normal));
+            _imp->long_description_key.reset(new LiteralMetadataStringKey("Description", "Description", mkt_normal, file.get("Description")));
             add_metadata_key(_imp->long_description_key);
         }
         else if (! file.get("BundleDescription").empty())
         {
             Context local_context("When handling BundleDescription: key:");
-            _imp->long_description_key.reset(new StringKey("BundleDescription", "Bundle Description",
-                        file.get("BundleDescription"), mkt_normal));
+            _imp->long_description_key.reset(new LiteralMetadataStringKey("BundleDescription", "Bundle Description",
+                        mkt_normal, file.get("BundleDescription")));
         }
 
         if (! file.get("Author").empty())
         {
             Context local_context("When handling Author: key:");
-            add_metadata_key(make_shared_ptr(new StringKey("Author", "Author", file.get("Author"), mkt_normal)));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Author", "Author", mkt_normal, file.get("Author"))));
         }
 
         if (! file.get("Maintainer").empty())
         {
             Context local_context("When handling Maintainer: key:");
-            add_metadata_key(make_shared_ptr(new StringKey("Maintainer", "Maintainer", file.get("Maintainer"), mkt_normal)));
+            add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("Maintainer", "Maintainer", mkt_normal, file.get("Maintainer"))));
         }
 
         if (! file.get("Contains").empty())
@@ -266,7 +267,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const tr1::shared_pt
 CRANPackageID::CRANPackageID(const Environment * const e,
         const tr1::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
     PrivateImplementationPattern<CRANPackageID>(new Implementation<CRANPackageID>(e, c, r, t)),
-    _imp(PrivateImplementationPattern<CRANPackageID>::_imp.get())
+    _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");
 

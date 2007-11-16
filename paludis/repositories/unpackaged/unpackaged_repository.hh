@@ -35,6 +35,13 @@ namespace paludis
         private PrivateImplementationPattern<UnpackagedRepository>,
         public Repository
     {
+        private:
+            PrivateImplementationPattern<UnpackagedRepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
+        protected:
+            virtual void need_keys_added() const;
+
         public:
             UnpackagedRepository(
                     const RepositoryName &,
@@ -67,6 +74,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            /* Keys */
+
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 }
 

@@ -226,7 +226,7 @@ UninstallList::collect_all_installed() const
     for (PackageDatabase::RepositoryConstIterator i(_imp->env->package_database()->begin_repositories()),
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
     {
-        if (! (*i)->installed_interface)
+        if (! (*i)->installed_root_key())
             continue;
 
         tr1::shared_ptr<const CategoryNamePartSet> cats((*i)->category_names());

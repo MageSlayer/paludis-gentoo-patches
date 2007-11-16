@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2007 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,19 +17,40 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_INFO_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORY_INFO_FWD_HH 1
-
-/** \file
- * Forward declarations for paludis/repository_info.hh .
- *
- * \ingroup g_package_database
- */
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH 1
 
 namespace paludis
 {
-    class RepositoryInfo;
-    class RepositoryInfoSection;
+    template <typename T_>
+    struct RemoveSharedPtr
+    {
+        typedef T_ Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPtr<tr1::shared_ptr<T_> >
+    {
+        typedef T_ Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPtr<tr1::shared_ptr<const T_> >
+    {
+        typedef const T_ Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPtr<const T_>
+    {
+        typedef const typename RemoveSharedPtr<T_>::Type Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPtr<T_ &>
+    {
+        typedef typename RemoveSharedPtr<T_>::Type Type;
+    };
 }
 
 #endif

@@ -120,6 +120,11 @@ namespace
             const tr1::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        {
+            const tr1::shared_ptr<const FSEntrySequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
         void visit(const MetadataSetKey<KeywordNameSet> & k)
         {
             const tr1::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());

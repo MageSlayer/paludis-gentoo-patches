@@ -36,7 +36,7 @@ namespace paludis
             public tr1::enable_shared_from_this<UnpackagedID>
         {
             private:
-                Implementation<UnpackagedID> * const _imp;
+                PrivateImplementationPattern<UnpackagedID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

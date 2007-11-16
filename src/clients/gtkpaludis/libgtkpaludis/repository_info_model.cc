@@ -5,7 +5,6 @@
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -39,13 +38,16 @@ RepositoryInfoModel::~RepositoryInfoModel()
 }
 
 void
-RepositoryInfoModel::set_repository(const RepositoryName & name)
+RepositoryInfoModel::set_repository(const RepositoryName &)
 {
+#if 0
     _imp->main_window->paludis_thread_action(
             sigc::bind(sigc::mem_fun(this, &RepositoryInfoModel::set_repository_in_paludis_thread), name),
             "Populating repository information model");
+#endif
 }
 
+#if 0
 void
 RepositoryInfoModel::set_repository_in_paludis_thread(const RepositoryName & name)
 {
@@ -76,6 +78,7 @@ RepositoryInfoModel::set_repository_in_gui_thread(tr1::shared_ptr<const Reposito
         }
     }
 }
+#endif
 
 RepositoryInfoModel::Columns::Columns()
 {

@@ -36,7 +36,7 @@ namespace paludis
         private PrivateImplementationPattern<FakeMetadataSetKey<C_> >
     {
         protected:
-            Implementation<FakeMetadataSetKey> * const _imp;
+            typename PrivateImplementationPattern<FakeMetadataSetKey<C_> >::ImpPtr & _imp;
 
             FakeMetadataSetKey(const std::string &, const std::string &, const MetadataKeyType,
                     const PackageID * const, const Environment * const);
@@ -86,7 +86,7 @@ namespace paludis
         private PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >
     {
         private:
-            Implementation<FakeMetadataSpecTreeKey<C_> > * const _imp;
+            typename PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::ImpPtr & _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
@@ -111,7 +111,7 @@ namespace paludis
         private PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
         private:
-            Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> > * const _imp;
+            PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::ImpPtr & _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
@@ -134,22 +134,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE FakeMetadataPackageIDKey :
-        public MetadataPackageIDKey,
-        private PrivateImplementationPattern<FakeMetadataPackageIDKey>
-    {
-        private:
-            Implementation<FakeMetadataPackageIDKey> * const _imp;
-
-        public:
-            FakeMetadataPackageIDKey(const std::string &, const std::string &,
-                    const tr1::shared_ptr<const PackageID> &, const MetadataKeyType);
-            ~FakeMetadataPackageIDKey();
-
-            virtual const tr1::shared_ptr<const PackageID> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
     class PALUDIS_VISIBLE FakeUnacceptedMask :
         public UnacceptedMask,
         private PrivateImplementationPattern<FakeUnacceptedMask>
@@ -168,7 +152,7 @@ namespace paludis
         private PrivateImplementationPattern<FakePackageID>
     {
         private:
-            Implementation<FakePackageID> * const _imp;
+            PrivateImplementationPattern<FakePackageID>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;

@@ -155,7 +155,7 @@ namespace paludis
             Heirarchy_, Item_, ConstVisitor<Heirarchy_>::template Contains<const ConstTreeSequence<Heirarchy_, UseDepSpec> >::value>;
 
         private:
-            Implementation<DepSpecFlattener<Heirarchy_, Item_> > * const _imp;
+            typename PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
 
         public:
             ///\name Visit methods

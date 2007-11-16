@@ -28,27 +28,12 @@ namespace paludis
 {
     namespace virtuals
     {
-        class VirtualsPackageIDKey :
-            public MetadataPackageIDKey,
-            private PrivateImplementationPattern<VirtualsPackageIDKey>
-        {
-            private:
-                Implementation<VirtualsPackageIDKey> * const _imp;
-
-            public:
-                VirtualsPackageIDKey(const tr1::shared_ptr<const PackageID> &);
-                ~VirtualsPackageIDKey();
-
-                virtual const tr1::shared_ptr<const PackageID> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class VirtualsDepKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
             private PrivateImplementationPattern<VirtualsDepKey>
         {
             private:
-                Implementation<VirtualsDepKey> * const _imp;
+                PrivateImplementationPattern<VirtualsDepKey>::ImpPtr & _imp;
 
             public:
                 VirtualsDepKey(const Environment * const, const std::string &, const std::string &,
@@ -70,7 +55,7 @@ namespace paludis
             public PackageID
         {
             private:
-                Implementation<VirtualsPackageID> * const _imp;
+                PrivateImplementationPattern<VirtualsPackageID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

@@ -29,12 +29,12 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <fstream>
 #include <sstream>
 #include <sys/time.h>
@@ -60,9 +60,19 @@ namespace paludis
         const InstalledUnpackagedRepositoryParams params;
         mutable NDBAM ndbam;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
-            ndbam(p.location, &supported_installed_unpackaged, "installed_unpackaged-1")
+            ndbam(p.location, &supported_installed_unpackaged, "installed_unpackaged-1"),
+            location_key(new LiteralMetadataFSEntryKey("location", "location",
+                        mkt_significant, params.location)),
+            root_key(new LiteralMetadataFSEntryKey("root", "root",
+                        mkt_normal, params.root)),
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "installed_unpackaged"))
         {
         }
     };
@@ -72,7 +82,6 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
     PrivateImplementationPattern<InstalledUnpackagedRepository>(new Implementation<InstalledUnpackagedRepository>(p)),
     Repository(n, RepositoryCapabilities::create()
-            .installed_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(0)
@@ -86,20 +95,23 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
             .e_interface(0)
             .hook_interface(0)
             .qa_interface(0)
-            .manifest_interface(0),
-            "installed_unpackaged")
+            .manifest_interface(0)),
+    _imp(PrivateImplementationPattern<InstalledUnpackagedRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("root", stringify(_imp->params.root));
-    config_info->add_kv("format", "installed_unpackage");
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 InstalledUnpackagedRepository::~InstalledUnpackagedRepository()
 {
+}
+
+void
+InstalledUnpackagedRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->root_key);
+    add_metadata_key(_imp->format_key);
 }
 
 tr1::shared_ptr<const PackageIDSequence>
@@ -114,7 +126,7 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
         Lock l(*e->mutex);
         if (! e->package_id)
             e->package_id.reset(new InstalledUnpackagedID(_imp->params.environment, e->name, e->version,
-                        e->slot, name(), e->fs_location, e->magic, root(), &_imp->ndbam));
+                        e->slot, name(), e->fs_location, e->magic, installed_root_key()->value(), &_imp->ndbam));
         result->push_back(e->package_id);
     }
 
@@ -291,7 +303,7 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
             NDBAMMergerOptions::create()
             .environment(_imp->params.environment)
             .image(m.image_dir)
-            .root(root())
+            .root(installed_root_key()->value())
             .contents_file(target_ver_dir / "contents")
             .config_protect(getenv_with_default("CONFIG_PROTECT", ""))
             .config_protect_mask(getenv_with_default("CONFIG_PROTECT_MASK", ""))
@@ -320,14 +332,14 @@ InstalledUnpackagedRepository::merge(const MergeOptions & m)
 bool
 InstalledUnpackagedRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    std::string f(e.repository()->format());
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     return f == "unpackaged";
 }
 
 bool
 InstalledUnpackagedRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == root();
+    return _imp->params.environment->root() == installed_root_key()->value();
 }
 
 bool
@@ -336,16 +348,11 @@ InstalledUnpackagedRepository::want_pre_post_phases() const
     return true;
 }
 
-FSEntry
-InstalledUnpackagedRepository::root() const
-{
-    return _imp->params.root;
-}
-
 void
 InstalledUnpackagedRepository::invalidate()
 {
     _imp.reset(new Implementation<InstalledUnpackagedRepository>(_imp->params));
+    _add_metadata_keys();
 }
 
 void
@@ -403,4 +410,22 @@ InstalledUnpackagedRepository::sets_list() const
     result->insert(SetName("ununused"));
     return result;
 }
+
+void
+InstalledUnpackagedRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+InstalledUnpackagedRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+InstalledUnpackagedRepository::installed_root_key() const
+{
+    return _imp->root_key;
+}
+
 

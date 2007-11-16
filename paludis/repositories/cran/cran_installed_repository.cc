@@ -21,12 +21,12 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/set_file.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
@@ -64,17 +64,21 @@ namespace paludis
         mutable bool has_ids;
         mutable IDMap ids;
 
-        /// Constructor.
         Implementation(const CRANInstalledRepositoryParams &);
-
-        /// Destructor.
         ~Implementation();
+
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
     };
 }
 
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
     params(p),
-    has_ids(false)
+    has_ids(false),
+    location_key(new LiteralMetadataFSEntryKey("location", "location", mkt_significant, params.location)),
+    installed_root_key(new LiteralMetadataFSEntryKey("root", "root", mkt_normal, params.root)),
+    format_key(new LiteralMetadataStringKey("format", "format", mkt_significant, "installed_cran"))
 {
 }
 
@@ -149,7 +153,6 @@ Implementation<CRANInstalledRepository>::need_ids() const
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("installed-cran"),
             RepositoryCapabilities::create()
-            .installed_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(0)
@@ -163,21 +166,24 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .qa_interface(0)
             .make_virtuals_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "installed_cran"),
-    PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
+            .manifest_interface(0)),
+    PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p)),
+    _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("root", stringify(_imp->params.root));
-    config_info->add_kv("format", "installed_cran");
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 CRANInstalledRepository::~CRANInstalledRepository()
 {
+}
+
+void
+CRANInstalledRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->installed_root_key);
+    add_metadata_key(_imp->format_key);
 }
 
 bool
@@ -486,6 +492,7 @@ void
 CRANInstalledRepository::invalidate()
 {
     _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
+    _add_metadata_keys();
 }
 
 void
@@ -541,7 +548,7 @@ CRANInstalledRepository::remove_string_from_world(const std::string & n) const
 bool
 CRANInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    std::string f(e.repository()->format());
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     return f == "cran";
 }
 
@@ -569,16 +576,10 @@ CRANInstalledRepository::remove_from_world(const SetName & n) const
     remove_string_from_world(stringify(n));
 }
 
-FSEntry
-CRANInstalledRepository::root() const
-{
-    return _imp->params.root;
-}
-
 bool
 CRANInstalledRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == root();
+    return _imp->params.environment->root() == installed_root_key()->value();
 }
 
 bool
@@ -654,4 +655,22 @@ void
 CRANInstalledRepository::need_ids() const
 {
 }
+
+void
+CRANInstalledRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+CRANInstalledRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+CRANInstalledRepository::installed_root_key() const
+{
+    return _imp->installed_root_key;
+}
+
 

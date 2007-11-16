@@ -45,6 +45,7 @@ namespace
     static VALUE c_metadata_iuse_flag_set_key;
     static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_package_id_sequence_key;
+    static VALUE c_metadata_fsentry_sequence_key;
     static VALUE c_metadata_key_type;
     static VALUE c_metadata_provide_spec_tree_key;
     static VALUE c_metadata_license_spec_tree_key;
@@ -156,6 +157,13 @@ namespace
             value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<tr1::shared_ptr<const MetadataSetKey<Set<std::string> > > >::free,
                     new tr1::shared_ptr<const MetadataSetKey<Set<std::string> > >(
                         tr1::static_pointer_cast<const MetadataSetKey<Set<std::string> > >(mm)));
+        }
+
+        void visit(const MetadataSetKey<FSEntrySequence> &)
+        {
+            value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<tr1::shared_ptr<const FSEntrySequence> >::free,
+                    new tr1::shared_ptr<const MetadataSetKey<FSEntrySequence> >(
+                        tr1::static_pointer_cast<const MetadataSetKey<FSEntrySequence> >(mm)));
         }
 
         void visit(const MetadataSetKey<PackageIDSequence> &)
@@ -396,10 +404,18 @@ namespace
         /*
          * Document-class: Paludis::MetadataPackageIDSequenceKey
          *
-         * Metadata class for Use flag names
+         * Metadata class for package IDs
          */
         c_metadata_package_id_sequence_key = rb_define_class_under(paludis_module(), "MetadataPackageIDSequenceKey", c_metadata_key);
         rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataPackageIDSequenceKey
+         *
+         * Metadata class for filesystem sequences
+         */
+        c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSEntrySequenceKey", c_metadata_key);
+        rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSEntrySequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataIUseFlagSetKey

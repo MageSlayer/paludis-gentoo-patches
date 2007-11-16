@@ -36,7 +36,7 @@ namespace paludis
             private PrivateImplementationPattern<VDBID>
         {
             private:
-                Implementation<VDBID> * const _imp;
+                PrivateImplementationPattern<VDBID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

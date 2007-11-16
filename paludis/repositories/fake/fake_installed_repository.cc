@@ -30,12 +30,30 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 
 using namespace paludis;
 
+namespace paludis
+{
+    template <>
+    struct Implementation<FakeInstalledRepository>
+    {
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key;
+
+        Implementation() :
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "installed_fake")),
+            installed_root_key(new LiteralMetadataFSEntryKey(
+                        "installed_root", "installed_root", mkt_normal, FSEntry("/")))
+        {
+        }
+    };
+}
+
 FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name) :
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
-            .installed_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(this)
@@ -49,9 +67,12 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "fake-installed")
+            .manifest_interface(0)),
+    PrivateImplementationPattern<FakeInstalledRepository>(new Implementation<FakeInstalledRepository>),
+    _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
 {
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->installed_root_key);
 }
 
 FakeInstalledRepository::~FakeInstalledRepository()
@@ -98,16 +119,10 @@ FakeInstalledRepository::provided_packages() const
     return result;
 }
 
-FSEntry
-FakeInstalledRepository::root() const
-{
-    return FSEntry("/");
-}
-
 bool
 FakeInstalledRepository::is_default_destination() const
 {
-    return environment()->root() == root();
+    return environment()->root() == installed_root_key()->value();
 }
 
 bool
@@ -170,5 +185,17 @@ FakeInstalledRepository::some_ids_might_support_action(const SupportsActionTestB
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+FakeInstalledRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+FakeInstalledRepository::installed_root_key() const
+{
+    return _imp->installed_root_key;
 }
 

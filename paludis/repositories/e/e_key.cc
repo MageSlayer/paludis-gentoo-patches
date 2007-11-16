@@ -50,23 +50,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-EStringKey::EStringKey(const tr1::shared_ptr<const ERepositoryID> &,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    MetadataStringKey(r, h, t),
-    _value(v)
-{
-}
-
-EStringKey::~EStringKey()
-{
-}
-
-const std::string
-EStringKey::value() const
-{
-    return _value;
-}
-
 EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const tr1::shared_ptr<const ERepositoryID> &,
         const std::string & r, const std::string & h, tr1::shared_ptr<const RepositoryMaskInfo> v, const MetadataKeyType t) :
     MetadataRepositoryMaskInfoKey(r, h, t),
@@ -119,7 +102,7 @@ EDependenciesKey::EDependenciesKey(
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<EDependenciesKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EDependenciesKey>::_imp)
 {
 }
 
@@ -192,7 +175,7 @@ ELicenseKey::ELicenseKey(
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<LicenseSpecTree>(r, h, t),
     PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<ELicenseKey>::_imp.get())
+    _imp(PrivateImplementationPattern<ELicenseKey>::_imp)
 {
 }
 
@@ -263,7 +246,7 @@ EFetchableURIKey::EFetchableURIKey(const Environment * const e,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<FetchableURISpecTree>(r, h, t),
     PrivateImplementationPattern<EFetchableURIKey>(new Implementation<EFetchableURIKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<EFetchableURIKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EFetchableURIKey>::_imp)
 {
 }
 
@@ -358,7 +341,7 @@ ESimpleURIKey::ESimpleURIKey(const Environment * const e,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<SimpleURISpecTree>(r, h, t),
     PrivateImplementationPattern<ESimpleURIKey>(new Implementation<ESimpleURIKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<ESimpleURIKey>::_imp.get())
+    _imp(PrivateImplementationPattern<ESimpleURIKey>::_imp)
 {
 }
 
@@ -422,7 +405,7 @@ ERestrictKey::ERestrictKey(const Environment * const e,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<RestrictSpecTree>(r, h, t),
     PrivateImplementationPattern<ERestrictKey>(new Implementation<ERestrictKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<ERestrictKey>::_imp.get())
+    _imp(PrivateImplementationPattern<ERestrictKey>::_imp)
 {
 }
 
@@ -485,7 +468,7 @@ EProvideKey::EProvideKey(const Environment * const e, const tr1::shared_ptr<cons
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSpecTreeKey<ProvideSpecTree>(r, h, t),
     PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(e, id, v)),
-    _imp(PrivateImplementationPattern<EProvideKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EProvideKey>::_imp)
 {
 }
 
@@ -551,7 +534,7 @@ EIUseKey::EIUseKey(
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<IUseFlagSet>(r, h, t),
     PrivateImplementationPattern<EIUseKey>(new Implementation<EIUseKey>(id, e, v)),
-    _imp(PrivateImplementationPattern<EIUseKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EIUseKey>::_imp)
 {
 }
 
@@ -780,7 +763,7 @@ EKeywordsKey::EKeywordsKey(const Environment * const e, const tr1::shared_ptr<co
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<KeywordNameSet>(r, h, t),
     PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, e, v)),
-    _imp(PrivateImplementationPattern<EKeywordsKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EKeywordsKey>::_imp)
 {
 }
 
@@ -853,7 +836,7 @@ EUseKey::EUseKey(const Environment * const e, const tr1::shared_ptr<const ERepos
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<UseFlagNameSet>(r, h, t),
     PrivateImplementationPattern<EUseKey>(new Implementation<EUseKey>(id, e, v)),
-    _imp(PrivateImplementationPattern<EUseKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EUseKey>::_imp)
 {
 }
 
@@ -925,7 +908,7 @@ EInheritedKey::EInheritedKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     MetadataSetKey<Set<std::string> >(r, h, t),
     PrivateImplementationPattern<EInheritedKey>(new Implementation<EInheritedKey>(id, v)),
-    _imp(PrivateImplementationPattern<EInheritedKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EInheritedKey>::_imp)
 {
 }
 
@@ -975,7 +958,7 @@ EContentsKey::EContentsKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
     MetadataContentsKey(r, h, t),
     PrivateImplementationPattern<EContentsKey>(new Implementation<EContentsKey>(id, v)),
-    _imp(PrivateImplementationPattern<EContentsKey>::_imp.get())
+    _imp(PrivateImplementationPattern<EContentsKey>::_imp)
 {
 }
 
@@ -1060,7 +1043,7 @@ ECTimeKey::ECTimeKey(const tr1::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
     MetadataTimeKey(r, h, t),
     PrivateImplementationPattern<ECTimeKey>(new Implementation<ECTimeKey>(id, v)),
-    _imp(PrivateImplementationPattern<ECTimeKey>::_imp.get())
+    _imp(PrivateImplementationPattern<ECTimeKey>::_imp)
 {
 }
 
@@ -1090,22 +1073,5 @@ ECTimeKey::value() const
     }
 
     return *_imp->value;
-}
-
-EFSLocationKey::EFSLocationKey(const tr1::shared_ptr<const ERepositoryID> &,
-        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    MetadataFSEntryKey(r, h, t),
-    _value(v)
-{
-}
-
-EFSLocationKey::~EFSLocationKey()
-{
-}
-
-const FSEntry
-EFSLocationKey::value() const
-{
-    return _value;
 }
 

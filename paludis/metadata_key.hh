@@ -34,6 +34,8 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/util/remove_shared_ptr.hh>
+#include <paludis/util/tr1_type_traits.hh>
 #include <string>
 
 /** \file
@@ -65,6 +67,7 @@ namespace paludis
             MetadataSetKey<KeywordNameSet>,
             MetadataSetKey<Set<std::string> >,
             MetadataSetKey<PackageIDSequence>,
+            MetadataSetKey<FSEntrySequence>,
             MetadataSpecTreeKey<DependencySpecTree>,
             MetadataSpecTreeKey<LicenseSpecTree>,
             MetadataSpecTreeKey<FetchableURISpecTree>,
@@ -83,7 +86,7 @@ namespace paludis
 
     /**
      * A MetadataKey is a generic key that contains a particular piece of
-     * information about a PackageID instance.
+     * information about a PackageID or Repository instance.
      *
      * A basic MetadataKey has:
      *
@@ -91,13 +94,14 @@ namespace paludis
      *   represent the internal name. For example, ebuilds and VDB IDs use
      *   raw names like 'DESCRIPTION' and 'KEYWORDS', whereas CRAN uses names
      *   like 'Title' and 'BundleDescription'. The raw name is unique in a
-     *   PackageID.
+     *   PackageID or Repository.
      *
      * - A human name. This is the name that should be used when outputting
      *   normally for a human to read.
      *
      * - A MetadataKeyType. This is a hint to clients as to whether the key
-     *   should be displayed when outputting information about a package ID.
+     *   should be displayed when outputting information about a package ID
+     *   or Repository.
      *
      * Subclasses provide additional information, including the 'value' of the
      * key. A ConstVisitor using MetadataKeyVisitorTypes can be used to get more
@@ -305,7 +309,7 @@ namespace paludis
     };
 
     /**
-     * A MetadataSectionKey is a MetadataKey that has a title and holds a number of other
+     * A MetadataSectionKey is a MetadataKey that holds a number of other
      * MetadataKey instances.
      *
      * \ingroup g_metadata_key
@@ -318,7 +322,7 @@ namespace paludis
         private PrivateImplementationPattern<MetadataSectionKey>
     {
         private:
-            Implementation<MetadataSectionKey> * const _imp;
+            PrivateImplementationPattern<MetadataSectionKey>::ImpPtr & _imp;
 
         protected:
             ///\name Basic operations
@@ -346,18 +350,6 @@ namespace paludis
             ///\{
 
             virtual ~MetadataSectionKey();
-
-            ///\}
-
-            ///\name Specific metadata keys
-            ///\{
-
-            /**
-             * Our title key.
-             *
-             * May be a zero pointer for untitled sections.
-             */
-            virtual const tr1::shared_ptr<const MetadataStringKey> title_key() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
@@ -406,7 +398,8 @@ namespace paludis
              * Return a single-line formatted version of our value, using the
              * supplied Formatter to format individual items.
              */
-            virtual std::string pretty_print_flat(const Formatter<typename C_::value_type> &) const
+            virtual std::string pretty_print_flat(const Formatter<
+                    typename tr1::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 

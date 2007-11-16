@@ -27,6 +27,7 @@
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 
 #include <map>
@@ -41,8 +42,12 @@ namespace paludis
         tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
         std::map<std::string, std::string> mirrors;
 
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation() :
-            virtual_packages(new FakeRepository::VirtualsSequence)
+            virtual_packages(new FakeRepository::VirtualsSequence),
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "fake"))
         {
             mirrors.insert(std::make_pair("example", "http://fake-example/fake-example/"));
             mirrors.insert(std::make_pair("repo", "http://fake-repo/fake-repo/"));
@@ -53,7 +58,6 @@ namespace paludis
 FakeRepository::FakeRepository(const Environment * const e, const RepositoryName & our_name) :
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>),
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
-            .installed_interface(0)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(this)
@@ -68,10 +72,10 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(0)
-            .manifest_interface(0),
-            "fake"),
-            _imp(PrivateImplementationPattern<FakeRepository>::_imp.get())
+            .manifest_interface(0)),
+            _imp(PrivateImplementationPattern<FakeRepository>::_imp)
 {
+    add_metadata_key(_imp->format_key);
 }
 
 FakeRepository::~FakeRepository()
@@ -165,5 +169,17 @@ FakeRepository::MirrorsConstIterator
 FakeRepository::end_mirrors(const std::string & s) const
 {
     return MirrorsConstIterator(_imp->mirrors.equal_range(s).second);
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+FakeRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+FakeRepository::installed_root_key() const
+{
+    return tr1::shared_ptr<const MetadataFSEntryKey>();
 }
 

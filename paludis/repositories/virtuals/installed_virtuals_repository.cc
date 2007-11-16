@@ -24,8 +24,8 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
@@ -55,11 +55,18 @@ namespace paludis
         mutable IDMap ids;
         mutable bool has_ids;
 
+        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+
         Implementation(const Environment * const e, const FSEntry & r, tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             root(r),
             ids_mutex(m),
-            has_ids(false)
+            has_ids(false),
+            root_key(new LiteralMetadataFSEntryKey(
+                        "root", "root", mkt_normal, root)),
+            format_key(new LiteralMetadataStringKey(
+                        "format", "format", mkt_significant, "installed_virtuals"))
         {
         }
     };
@@ -100,7 +107,6 @@ namespace
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
         const FSEntry & r) :
     Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
-            .installed_interface(this)
             .use_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
@@ -114,14 +120,13 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(this)
-            .manifest_interface(0),
-            "installed_virtuals"),
+            .manifest_interface(0)),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
-            new Implementation<InstalledVirtualsRepository>(env, r))
+            new Implementation<InstalledVirtualsRepository>(env, r)),
+    _imp(PrivateImplementationPattern<InstalledVirtualsRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-    config_info->add_kv("format", "installed_virtuals");
-    _info->add_section(config_info);
+    add_metadata_key(_imp->root_key);
+    add_metadata_key(_imp->format_key);
 }
 
 InstalledVirtualsRepository::~InstalledVirtualsRepository()
@@ -246,12 +251,6 @@ InstalledVirtualsRepository::invalidate_masks()
 {
 }
 
-FSEntry
-InstalledVirtualsRepository::root() const
-{
-    return _imp->root;
-}
-
 HookResult
 InstalledVirtualsRepository::perform_hook(const Hook & hook) const
 {
@@ -325,3 +324,21 @@ InstalledVirtualsRepository::unimportant_category_names() const
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
+
+const tr1::shared_ptr<const MetadataStringKey>
+InstalledVirtualsRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+InstalledVirtualsRepository::installed_root_key() const
+{
+    return _imp->root_key;
+}
+
+void
+InstalledVirtualsRepository::need_keys_added() const
+{
+}
+

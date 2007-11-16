@@ -30,21 +30,6 @@ namespace paludis
     {
         class ERepositoryID;
 
-        class EStringKey :
-            public MetadataStringKey
-        {
-            private:
-                const std::string _value;
-
-            public:
-                EStringKey(const tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EStringKey();
-
-                virtual const std::string value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class EMutableRepositoryMaskInfoKey :
             public MetadataRepositoryMaskInfoKey
         {
@@ -67,7 +52,7 @@ namespace paludis
             private PrivateImplementationPattern<EDependenciesKey>
         {
             private:
-                Implementation<EDependenciesKey> * const _imp;
+                PrivateImplementationPattern<EDependenciesKey>::ImpPtr & _imp;
 
             public:
                 EDependenciesKey(
@@ -91,7 +76,7 @@ namespace paludis
             private PrivateImplementationPattern<EFetchableURIKey>
         {
             private:
-                Implementation<EFetchableURIKey> * const _imp;
+                PrivateImplementationPattern<EFetchableURIKey>::ImpPtr & _imp;
 
             public:
                 EFetchableURIKey(const Environment * const,
@@ -117,7 +102,7 @@ namespace paludis
             private PrivateImplementationPattern<ESimpleURIKey>
         {
             private:
-                Implementation<ESimpleURIKey> * const _imp;
+                PrivateImplementationPattern<ESimpleURIKey>::ImpPtr & _imp;
 
             public:
                 ESimpleURIKey(const Environment * const,
@@ -140,7 +125,7 @@ namespace paludis
             private PrivateImplementationPattern<ERestrictKey>
         {
             private:
-                Implementation<ERestrictKey> * const _imp;
+                PrivateImplementationPattern<ERestrictKey>::ImpPtr & _imp;
 
             public:
                 ERestrictKey(const Environment * const,
@@ -163,7 +148,7 @@ namespace paludis
             private PrivateImplementationPattern<EProvideKey>
         {
             private:
-                Implementation<EProvideKey> * const _imp;
+                PrivateImplementationPattern<EProvideKey>::ImpPtr & _imp;
 
             public:
                 EProvideKey(const Environment * const,
@@ -186,7 +171,7 @@ namespace paludis
             private PrivateImplementationPattern<ELicenseKey>
         {
             private:
-                Implementation<ELicenseKey> * const _imp;
+                PrivateImplementationPattern<ELicenseKey>::ImpPtr & _imp;
 
             public:
                 ELicenseKey(
@@ -210,7 +195,7 @@ namespace paludis
             private PrivateImplementationPattern<EIUseKey>
         {
             private:
-                Implementation<EIUseKey> * const _imp;
+                PrivateImplementationPattern<EIUseKey>::ImpPtr & _imp;
 
             public:
                 EIUseKey(
@@ -238,7 +223,7 @@ namespace paludis
             private PrivateImplementationPattern<EKeywordsKey>
         {
             private:
-                Implementation<EKeywordsKey> * const _imp;
+                PrivateImplementationPattern<EKeywordsKey>::ImpPtr & _imp;
 
             public:
                 EKeywordsKey(
@@ -259,7 +244,7 @@ namespace paludis
             private PrivateImplementationPattern<EUseKey>
         {
             private:
-                Implementation<EUseKey> * const _imp;
+                PrivateImplementationPattern<EUseKey>::ImpPtr & _imp;
 
             public:
                 EUseKey(
@@ -280,7 +265,7 @@ namespace paludis
             private PrivateImplementationPattern<EInheritedKey>
         {
             private:
-                Implementation<EInheritedKey> * const _imp;
+                PrivateImplementationPattern<EInheritedKey>::ImpPtr & _imp;
 
             public:
                 EInheritedKey(const tr1::shared_ptr<const ERepositoryID> &,
@@ -299,7 +284,7 @@ namespace paludis
             private PrivateImplementationPattern<EContentsKey>
         {
             private:
-                Implementation<EContentsKey> * const _imp;
+                PrivateImplementationPattern<EContentsKey>::ImpPtr & _imp;
 
             public:
                 EContentsKey(
@@ -316,7 +301,7 @@ namespace paludis
             private PrivateImplementationPattern<ECTimeKey>
         {
             private:
-                Implementation<ECTimeKey> * const _imp;
+                PrivateImplementationPattern<ECTimeKey>::ImpPtr & _imp;
 
             public:
                 ECTimeKey(const tr1::shared_ptr<const ERepositoryID> &,
@@ -324,21 +309,6 @@ namespace paludis
                 ~ECTimeKey();
 
                 time_t value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class EFSLocationKey :
-            public MetadataFSEntryKey
-        {
-            private:
-                const FSEntry _value;
-
-            public:
-                EFSLocationKey(const tr1::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
-                ~EFSLocationKey();
-
-                const FSEntry value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

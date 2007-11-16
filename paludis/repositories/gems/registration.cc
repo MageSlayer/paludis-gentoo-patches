@@ -79,9 +79,14 @@ namespace
         if (m->end() == m->find("builddir") || ((builddir = m->find("builddir")->second)).empty())
             builddir = DistributionData::get_instance()->distribution_from_string(env->default_distribution())->default_ebuild_builddir;
 
+        std::string root;
+        if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
+            root = "/";
+
         return make_shared_ptr(new InstalledGemsRepository(gems::InstalledRepositoryParams::create()
                     .environment(env)
                     .install_dir(install_dir)
+                    .root(root)
                     .builddir(builddir)));
     }
 }

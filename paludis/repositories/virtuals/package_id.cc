@@ -37,23 +37,13 @@
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>
+#include <paludis/literal_metadata_key.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
 
 namespace paludis
 {
-    template <>
-    struct Implementation<VirtualsPackageIDKey>
-    {
-        const tr1::shared_ptr<const PackageID> value;
-
-        Implementation(const tr1::shared_ptr<const PackageID> & v) :
-            value(v)
-        {
-        }
-    };
-
     template <>
     struct Implementation<VirtualsDepKey>
     {
@@ -82,28 +72,11 @@ namespace paludis
     };
 }
 
-VirtualsPackageIDKey::VirtualsPackageIDKey(const tr1::shared_ptr<const PackageID> & v) :
-    MetadataPackageIDKey("VIRTUAL_FOR", "Virtual for", mkt_normal),
-    PrivateImplementationPattern<VirtualsPackageIDKey>(new Implementation<VirtualsPackageIDKey>(v)),
-    _imp(PrivateImplementationPattern<VirtualsPackageIDKey>::_imp.get())
-{
-}
-
-VirtualsPackageIDKey::~VirtualsPackageIDKey()
-{
-}
-
-const tr1::shared_ptr<const PackageID>
-VirtualsPackageIDKey::value() const
-{
-    return _imp->value;
-}
-
 VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & r, const std::string & h,
         const tr1::shared_ptr<const PackageID> & v, const bool exact) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, mkt_dependencies),
     PrivateImplementationPattern<VirtualsDepKey>(new Implementation<VirtualsDepKey>(e, v, exact)),
-    _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp.get())
+    _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
 {
 }
 
@@ -178,7 +151,7 @@ namespace paludis
             repository(o),
             name(n),
             version(p->version()),
-            virtual_for(new virtuals::VirtualsPackageIDKey(p)),
+            virtual_for(new LiteralMetadataPackageIDKey("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
             bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, b)),
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, b)),
             has_masks(false)
@@ -195,7 +168,7 @@ VirtualsPackageID::VirtualsPackageID(
         const bool exact) :
     PrivateImplementationPattern<VirtualsPackageID>(
             new Implementation<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact)),
-    _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp.get())
+    _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp)
 {
     add_metadata_key(_imp->virtual_for);
     add_metadata_key(_imp->bdep);

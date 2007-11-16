@@ -20,15 +20,16 @@
 #include "info.hh"
 #include "command_line.hh"
 #include "src/output/colour.hh"
+#include "src/output/colour_formatter.hh"
 #include <paludis/about.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/query.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
+#include <paludis/metadata_key.hh>
 #include <iostream>
 #include <iomanip>
 #include <sys/types.h>
@@ -38,6 +39,135 @@
 using namespace paludis;
 using std::endl;
 using std::cout;
+
+namespace
+{
+    struct InfoDisplayer :
+        ConstVisitor<MetadataKeyVisitorTypes>
+    {
+        std::string indent;
+
+        InfoDisplayer(const std::string & i) :
+            indent(i)
+        {
+        }
+
+        void visit(const MetadataSectionKey & k)
+        {
+            cout << endl;
+            cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
+            InfoDisplayer i(indent + "    ");
+            std::for_each(indirect_iterator(k.begin_metadata()), indirect_iterator(k.end_metadata()), accept_visitor(i));
+        }
+
+        void visit(const MetadataStringKey & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataFSEntryKey & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataPackageIDKey & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << *k.value() << endl;
+        }
+
+        void visit(const MetadataRepositoryMaskInfoKey & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
+        }
+
+        void visit(const MetadataContentsKey & k)
+        {
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            time_t t(k.value());
+            char buf[255];
+            if (! strftime(buf, 254, "%c", gmtime(&t)))
+                buf[0] = '\0';
+
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << stringify(buf) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<RestrictSpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<PackageIDSequence> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<KeywordNameSet> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<IUseFlagSet> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<UseFlagNameSet> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
+        void visit(const MetadataSetKey<Set<std::string> > & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+    };
+}
 
 int do_one_info(
         const tr1::shared_ptr<const Environment> & env,
@@ -150,18 +280,9 @@ do_info(const tr1::shared_ptr<const Environment> & env)
             r != r_end ; ++r)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
-
-        tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
-        for (RepositoryInfo::SectionConstIterator i(ii->begin_sections()),
-                i_end(ii->end_sections()) ; i != i_end ; ++i)
-        {
-            cout << "    " << colour(cl_heading, (*i)->heading() + ":") << endl;
-            for (RepositoryInfoSection::KeyValueConstIterator k((*i)->begin_kvs()),
-                    k_end((*i)->end_kvs()) ; k != k_end ; ++k)
-                cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
-                    << std::setw(0) << " " << k->second << endl;
-            cout << endl;
-        }
+        InfoDisplayer i("    ");
+        std::for_each(indirect_iterator(r->begin_metadata()), indirect_iterator(r->end_metadata()), accept_visitor(i));
+        cout << endl;
     }
 
     if (CommandLine::get_instance()->empty())

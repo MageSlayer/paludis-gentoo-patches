@@ -31,6 +31,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/distribution.hh>
@@ -42,7 +43,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repositories/e/ebuild.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/set_file.hh>
 #include <paludis/version_operator.hh>
@@ -74,12 +74,6 @@
 #include <vector>
 #include <list>
 
-/** \file
- * Implementation for VDBRepository.
- *
- * \ingroup grpvdbrepository
- */
-
 using namespace paludis;
 using namespace paludis::erepository;
 
@@ -90,11 +84,6 @@ typedef MakeHashedMap<QualifiedPackageName, tr1::shared_ptr<PackageIDSequence> >
 
 namespace paludis
 {
-    /**
-     * Implementation data for VDBRepository.
-     *
-     * \ingroup grpvdbrepository
-     */
     template <>
     struct Implementation<VDBRepository>
     {
@@ -111,6 +100,14 @@ namespace paludis
 
         Implementation(const VDBRepository * const, const VDBRepositoryParams &, tr1::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
         ~Implementation();
+
+        tr1::shared_ptr<const MetadataFSEntryKey> location_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> root_key;
+        tr1::shared_ptr<const MetadataStringKey> format_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> world_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> provides_cache_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> names_cache_key;
+        tr1::shared_ptr<const MetadataFSEntryKey> builddir_key;
     };
 
     Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
@@ -118,7 +115,21 @@ namespace paludis
         params(p),
         big_nasty_mutex(m),
         has_category_names(false),
-        names_cache(new RepositoryNameCache(p.names_cache, r))
+        names_cache(new RepositoryNameCache(p.names_cache, r)),
+        location_key(new LiteralMetadataFSEntryKey("location", "location",
+                    mkt_significant, params.location)),
+        root_key(new LiteralMetadataFSEntryKey("root", "root",
+                    mkt_normal, params.root)),
+        format_key(new LiteralMetadataStringKey("format", "format",
+                    mkt_significant, "vdb")),
+        world_key(new LiteralMetadataFSEntryKey("world", "world",
+                    mkt_normal, params.world)),
+        provides_cache_key(new LiteralMetadataFSEntryKey("provides_cache", "provides_cache",
+                    mkt_normal, params.provides_cache)),
+        names_cache_key(new LiteralMetadataFSEntryKey("names_cache", "names_cache",
+                    mkt_normal, params.names_cache)),
+        builddir_key(new LiteralMetadataFSEntryKey("builddir", "builddir",
+                    mkt_normal, params.builddir))
     {
     }
 
@@ -130,7 +141,6 @@ namespace paludis
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed"),
             RepositoryCapabilities::create()
-            .installed_interface(this)
             .sets_interface(this)
             .syncable_interface(0)
             .use_interface(this)
@@ -144,25 +154,28 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .make_virtuals_interface(0)
             .qa_interface(0)
             .hook_interface(this)
-            .manifest_interface(0),
-            "vdb"),
-    PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
+            .manifest_interface(0)),
+    PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p)),
+    _imp(PrivateImplementationPattern<VDBRepository>::_imp)
 {
-    tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
-
-    config_info->add_kv("location", stringify(_imp->params.location));
-    config_info->add_kv("root", stringify(_imp->params.root));
-    config_info->add_kv("format", "vdb");
-    config_info->add_kv("world", stringify(_imp->params.world));
-    config_info->add_kv("provides_cache", stringify(_imp->params.provides_cache));
-    config_info->add_kv("names_cache", stringify(_imp->params.names_cache));
-    config_info->add_kv("builddir", stringify(_imp->params.builddir));
-
-    _info->add_section(config_info);
+    _add_metadata_keys();
 }
 
 VDBRepository::~VDBRepository()
 {
+}
+
+void
+VDBRepository::_add_metadata_keys() const
+{
+    clear_metadata_keys();
+    add_metadata_key(_imp->location_key);
+    add_metadata_key(_imp->root_key);
+    add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->world_key);
+    add_metadata_key(_imp->provides_cache_key);
+    add_metadata_key(_imp->names_cache_key);
+    add_metadata_key(_imp->builddir_key);
 }
 
 bool
@@ -404,7 +417,7 @@ VDBRepository::perform_uninstall(const tr1::shared_ptr<const ERepositoryID> & id
             VDBUnmerger unmerger(
                     VDBUnmergerOptions::create()
                     .environment(_imp->params.environment)
-                    .root(root())
+                    .root(installed_root_key()->value())
                     .contents_file(pkg_dir / "CONTENTS")
                     .config_protect(config_protect)
                     .config_protect_mask(config_protect_mask)
@@ -654,8 +667,8 @@ void
 VDBRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-
     _imp.reset(new Implementation<VDBRepository>(this, _imp->params, _imp->big_nasty_mutex));
+    _add_metadata_keys();
 }
 
 void
@@ -1038,26 +1051,20 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
 bool
 VDBRepository::is_suitable_destination_for(const PackageID & e) const
 {
-    std::string f(e.repository()->format());
+    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
     return f == "ebuild" || f == "ebin";
 }
 
 bool
 VDBRepository::is_default_destination() const
 {
-    return _imp->params.environment->root() == root();
+    return _imp->params.environment->root() == installed_root_key()->value();
 }
 
 std::string
 VDBRepository::describe_use_flag(const UseFlagName &, const PackageID &) const
 {
     return "";
-}
-
-FSEntry
-VDBRepository::root() const
-{
-    return _imp->params.root;
 }
 
 bool
@@ -1113,7 +1120,7 @@ VDBRepository::merge(const MergeOptions & m)
             VDBMergerOptions::create()
             .environment(_imp->params.environment)
             .image(m.image_dir)
-            .root(root())
+            .root(installed_root_key()->value())
             .contents_file(vdb_dir / "CONTENTS")
             .config_protect(config_protect)
             .config_protect_mask(config_protect_mask)
@@ -1149,7 +1156,7 @@ VDBRepository::merge(const MergeOptions & m)
 
     VDBPostMergeCommand post_merge_command(
             VDBPostMergeCommandParams::create()
-            .root(root()));
+            .root(installed_root_key()->value()));
 
     post_merge_command();
 }
@@ -1310,5 +1317,22 @@ VDBRepository::some_ids_might_support_action(const SupportsActionTestBase & a) c
     SupportsActionQuery q;
     a.accept(q);
     return q.result;
+}
+
+void
+VDBRepository::need_keys_added() const
+{
+}
+
+const tr1::shared_ptr<const MetadataStringKey>
+VDBRepository::format_key() const
+{
+    return _imp->format_key;
+}
+
+const tr1::shared_ptr<const MetadataFSEntryKey>
+VDBRepository::installed_root_key() const
+{
+    return _imp->root_key;
 }
 

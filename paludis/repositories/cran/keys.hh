@@ -50,32 +50,6 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class StringKey :
-            public MetadataStringKey
-        {
-            private:
-                const std::string _v;
-
-            public:
-                StringKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-
-                virtual const std::string value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class FSLocationKey :
-            public MetadataFSEntryKey
-        {
-            private:
-                const FSEntry _v;
-
-            public:
-                FSLocationKey(const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
-
-                virtual const FSEntry value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class PackageIDSequenceKey :
             public MetadataSetKey<PackageIDSequence>
         {
@@ -92,7 +66,7 @@ namespace paludis
 
                 void push_back(const tr1::shared_ptr<const PackageID> &);
 
-                virtual std::string pretty_print_flat(const Formatter<tr1::shared_ptr<const PackageID> > &) const
+                virtual std::string pretty_print_flat(const Formatter<PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 

@@ -294,6 +294,10 @@ namespace
         {
         }
 
+        void visit(const MetadataSetKey<FSEntrySequence> &)
+        {
+        }
+
         void visit(const MetadataSetKey<UseFlagNameSet> &)
         {
         }

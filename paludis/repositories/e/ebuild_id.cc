@@ -33,6 +33,7 @@
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
+#include <paludis/literal_metadata_key.hh>
 
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -82,8 +83,8 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
-        mutable tr1::shared_ptr<const EFSLocationKey> fs_location;
-        mutable tr1::shared_ptr<const EStringKey> short_description;
+        mutable tr1::shared_ptr<const LiteralMetadataFSEntryKey> fs_location;
+        mutable tr1::shared_ptr<const LiteralMetadataStringKey> short_description;
         mutable tr1::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable tr1::shared_ptr<const EDependenciesKey> post_dependencies;
@@ -125,7 +126,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const time_t t,
         const tr1::shared_ptr<const EclassMtimes> & m) :
     PrivateImplementationPattern<EbuildID>(new Implementation<EbuildID>(q, v, e, r, f, g, t, m)),
-    _imp(PrivateImplementationPattern<EbuildID>::_imp.get())
+    _imp(PrivateImplementationPattern<EbuildID>::_imp)
 {
 }
 
@@ -146,8 +147,8 @@ EbuildID::need_keys_added() const
     // fs_location key could have been loaded by the ::fs_location_key() already.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "EBUILD", "Ebuild Location",
-                    _imp->ebuild, mkt_internal));
+        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("EBUILD", "Ebuild Location",
+                    mkt_internal, _imp->ebuild));
         add_metadata_key(_imp->fs_location);
     }
 
@@ -251,7 +252,7 @@ EbuildID::need_keys_added() const
         }
     }
 
-    add_metadata_key(make_shared_ptr(new EStringKey(shared_from_this(), "EAPI", "EAPI", _imp->eapi->name, mkt_internal)));
+    add_metadata_key(make_shared_ptr(new LiteralMetadataStringKey("EAPI", "EAPI", mkt_internal, _imp->eapi->name)));
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
         tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
@@ -595,8 +596,7 @@ EbuildID::fs_location_key() const
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new EFSLocationKey(shared_from_this(), "EBUILD", "Ebuild Location",
-                    _imp->ebuild, mkt_internal));
+        _imp->fs_location.reset(new LiteralMetadataFSEntryKey("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild));
         add_metadata_key(_imp->fs_location);
     }
 
@@ -639,7 +639,7 @@ void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->short_description.reset(new EStringKey(shared_from_this(), r, h, v, mkt_significant));
+    _imp->short_description.reset(new LiteralMetadataStringKey(r, h, mkt_significant, v));
     add_metadata_key(_imp->short_description);
 }
 

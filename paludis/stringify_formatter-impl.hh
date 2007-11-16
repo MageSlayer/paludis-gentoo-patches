@@ -56,6 +56,8 @@ namespace paludis
         const CanFormat<PlainTextDepSpec> * const f_plain;
         const CanFormat<UseDepSpec> * const f_use_dep;
         const CanFormat<NamedSetDepSpec> * const f_named;
+        const CanFormat<FSEntry> * const f_fsentry;
+        const CanFormat<PackageID> * const f_package_id;
         const CanSpace * const f_space;
 
         Implementation(
@@ -73,6 +75,8 @@ namespace paludis
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
                 const CanFormat<UseDepSpec> * const f_use_dep_v,
                 const CanFormat<NamedSetDepSpec> * const f_named_v,
+                const CanFormat<FSEntry> * const f_fsentry_v,
+                const CanFormat<PackageID> * const f_package_id_v,
                 const CanSpace * const f_space_v
                 ) :
             f_str(f_str_v),
@@ -89,6 +93,8 @@ namespace paludis
             f_plain(f_plain_v),
             f_use_dep(f_use_dep_v),
             f_named(f_named_v),
+            f_fsentry(f_fsentry_v),
+            f_package_id(f_package_id_v),
             f_space(f_space_v)
         {
         }
@@ -203,6 +209,8 @@ namespace paludis
                         PlainTextDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<UseDepSpec> *>::value, UseDepSpec>::get(&t),
                     StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
+                    StringifyFormatterGetForwarder<tr1::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),
                     StringifyFormatterGetSpaceForwarder<tr1::is_convertible<T_ *, CanSpace *>::value>::get(&t)
                     )),
         CanSpace()

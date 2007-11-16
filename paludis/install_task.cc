@@ -499,12 +499,10 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     /* figure out whether we need to unmerge (clean) anything */
     on_build_cleanlist_pre(*dep);
 
-    // manually invalidate any installed repos, they're probably
-    // wrong now
+    // manually invalidate repos, they're probably wrong now
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        if ((*r)->installed_interface)
-            ((*r).get())->invalidate();
+        (*r)->invalidate();
 
     // look for packages with the same name in the same slot in the destination repos
     tr1::shared_ptr<const PackageIDSequence> collision_list;

@@ -50,7 +50,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VDBRepository :
         public Repository,
-        public RepositoryInstalledInterface,
         public RepositoryUseInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
@@ -62,6 +61,9 @@ namespace paludis
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
+            PrivateImplementationPattern<VDBRepository>::ImpPtr & _imp;
+            void _add_metadata_keys() const;
+
             bool load_provided_using_cache() const;
             void load_provided_the_slow_way() const;
 
@@ -80,6 +82,9 @@ namespace paludis
             const tr1::shared_ptr<const erepository::ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
                     const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        protected:
+            virtual void need_keys_added() const;
 
         public:
             /**
@@ -116,11 +121,6 @@ namespace paludis
             void perform_info(const tr1::shared_ptr<const erepository::ERepositoryID> & id) const;
 
             ///\}
-
-            /* RepositoryInstalledInterface */
-
-            virtual FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryUseInterface */
 
@@ -203,40 +203,28 @@ namespace paludis
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Override in descendents: fetch package names.
-             */
             virtual tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Override in descendents: fetch category names.
-             */
             virtual tr1::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Override in descendents if a fast implementation is available: fetch category names
-             * that contain a particular package.
-             */
             virtual tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Override in descendents: check for a package.
-             */
             virtual bool has_package_named(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Override in descendents: check for a category.
-             */
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+
+            /* Keys */
+            virtual const tr1::shared_ptr<const MetadataStringKey> format_key() const;
+            virtual const tr1::shared_ptr<const MetadataFSEntryKey> installed_root_key() const;
     };
 
     /**

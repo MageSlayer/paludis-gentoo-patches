@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repository.hh>
-#include <paludis/repository_info.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/instantiation_policy-impl.hh>
@@ -31,6 +30,8 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/tr1_functional.hh>
+#include <paludis/metadata_key.hh>
 #include <map>
 #include <list>
 #include <utility>
@@ -93,19 +94,31 @@ namespace
     };
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<Repository>
+    {
+        mutable std::list<tr1::shared_ptr<const MetadataKey> > keys;
+        const RepositoryName name;
+
+        Implementation(const RepositoryName & n) :
+            name(n)
+        {
+        }
+    };
+}
+
 Repository::Repository(
         const RepositoryName & our_name,
-        const RepositoryCapabilities & caps,
-        const std::string & f) :
-    RepositoryCapabilities(caps),
-    _name(our_name),
-    _format(f),
-    _info(new RepositoryInfo)
+        const RepositoryCapabilities & caps) :
+    PrivateImplementationPattern<Repository>(new Implementation<Repository>(our_name)),
+    RepositoryCapabilities(caps)
 {
     std::map<std::string, std::string>::const_iterator i(
-            RepositoryBlacklist::get_instance()->items.find(stringify(_name)));
+            RepositoryBlacklist::get_instance()->items.find(stringify(name())));
     if (RepositoryBlacklist::get_instance()->items.end() != i)
-        Log::get_instance()->message(ll_warning, lc_no_context, "Repository '" + stringify(_name) +
+        Log::get_instance()->message(ll_warning, lc_no_context, "Repository '" + stringify(name()) +
                 "' is blacklisted with reason '" + i->second + "'. Consult the FAQ for more details.");
 }
 
@@ -113,16 +126,52 @@ Repository::~Repository()
 {
 }
 
-const RepositoryName &
+const RepositoryName
 Repository::name() const
 {
-    return _name;
+    return _imp->name;
 }
 
-tr1::shared_ptr<const RepositoryInfo>
-Repository::info(bool) const
+void
+Repository::add_metadata_key(const tr1::shared_ptr<const MetadataKey> & k) const
 {
-    return _info;
+    using namespace tr1::placeholders;
+
+    if (_imp->keys.end() != std::find_if(_imp->keys.begin(), _imp->keys.end(),
+                tr1::bind(std::equal_to<std::string>(), k->raw_name(), tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1))))
+        throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "' to Repository '" + stringify(name()) + "'");
+
+    _imp->keys.push_back(k);
+}
+
+void
+Repository::clear_metadata_keys() const
+{
+    _imp->keys.clear();
+}
+
+Repository::MetadataConstIterator
+Repository::begin_metadata() const
+{
+    need_keys_added();
+    return MetadataConstIterator(_imp->keys.begin());
+}
+
+Repository::MetadataConstIterator
+Repository::end_metadata() const
+{
+    need_keys_added();
+    return MetadataConstIterator(_imp->keys.end());
+}
+
+Repository::MetadataConstIterator
+Repository::find_metadata(const std::string & s) const
+{
+    using namespace tr1::placeholders;
+
+    need_keys_added();
+    return std::find_if(begin_metadata(), end_metadata(),
+            tr1::bind(std::equal_to<std::string>(), s, tr1::bind(tr1::mem_fn(&MetadataKey::raw_name), _1)));
 }
 
 tr1::shared_ptr<const CategoryNamePartSet>
@@ -142,16 +191,6 @@ Repository::category_names_containing_package(const PackageNamePart & p) const
 
 void
 Repository::regenerate_cache() const
-{
-}
-
-std::string
-Repository::format() const
-{
-    return _format;
-}
-
-RepositoryInstalledInterface::~RepositoryInstalledInterface()
 {
 }
 

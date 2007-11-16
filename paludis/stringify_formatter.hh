@@ -25,6 +25,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 /** \file
  * Declarations for the StringifyFormatter class.
@@ -72,6 +73,8 @@ namespace paludis
         public CanFormat<LicenseDepSpec>,
         public CanFormat<UseDepSpec>,
         public CanFormat<NamedSetDepSpec>,
+        public CanFormat<FSEntry>,
+        public CanFormat<PackageID>,
         public CanSpace
     {
         private:
@@ -140,6 +143,12 @@ namespace paludis
             virtual std::string format(const UseDepSpec &, const format::Forced &) const;
             virtual std::string format(const UseDepSpec &, const format::Masked &) const;
             virtual std::string format(const UseDepSpec &, const format::Plain &) const;
+
+            virtual std::string format(const FSEntry &, const format::Plain &) const;
+
+            virtual std::string format(const PackageID &, const format::Plain &) const;
+            virtual std::string format(const PackageID &, const format::Installed &) const;
+            virtual std::string format(const PackageID &, const format::Installable &) const;
 
             virtual std::string newline() const;
             virtual std::string indent(const int) const;

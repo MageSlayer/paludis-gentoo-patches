@@ -29,70 +29,6 @@ using namespace paludis::unpackaged_repositories;
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedFSEntryKey>
-    {
-        const FSEntry value;
-
-        Implementation(const FSEntry & v) :
-            value(v)
-        {
-        }
-    };
-}
-
-UnpackagedFSEntryKey::UnpackagedFSEntryKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-        const FSEntry & v) :
-    MetadataFSEntryKey(r, h, t),
-    PrivateImplementationPattern<UnpackagedFSEntryKey>(new Implementation<UnpackagedFSEntryKey>(v)),
-    _imp(PrivateImplementationPattern<UnpackagedFSEntryKey>::_imp.get())
-{
-}
-
-UnpackagedFSEntryKey::~UnpackagedFSEntryKey()
-{
-}
-
-const FSEntry
-UnpackagedFSEntryKey::value() const
-{
-    return _imp->value;
-}
-
-namespace paludis
-{
-    template <>
-    struct Implementation<UnpackagedStringKey>
-    {
-        const std::string value;
-
-        Implementation(const std::string & v) :
-            value(v)
-        {
-        }
-    };
-}
-
-UnpackagedStringKey::UnpackagedStringKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-        const std::string & v) :
-    MetadataStringKey(r, h, t),
-    PrivateImplementationPattern<UnpackagedStringKey>(new Implementation<UnpackagedStringKey>(v)),
-    _imp(PrivateImplementationPattern<UnpackagedStringKey>::_imp.get())
-{
-}
-
-UnpackagedStringKey::~UnpackagedStringKey()
-{
-}
-
-const std::string
-UnpackagedStringKey::value() const
-{
-    return _imp->value;
-}
-
-namespace paludis
-{
-    template <>
     struct Implementation<UnpackagedDependencyKey>
     {
         const Environment * const env;
@@ -111,7 +47,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & v) :
     MetadataSpecTreeKey<DependencySpecTree>(r, h, t),
     PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v)),
-    _imp(PrivateImplementationPattern<UnpackagedDependencyKey>::_imp.get())
+    _imp(PrivateImplementationPattern<UnpackagedDependencyKey>::_imp)
 {
 }
 

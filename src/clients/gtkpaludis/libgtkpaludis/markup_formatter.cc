@@ -215,21 +215,27 @@ MarkupFormatter::format(const BlockDepSpec & f, const format::Plain &) const
 }
 
 std::string
-MarkupFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Plain &) const
+MarkupFormatter::format(const FSEntry & f, const format::Plain &) const
 {
-    return markup_escape(stringify(*f));
+    return markup_escape(stringify(f));
 }
 
 std::string
-MarkupFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Installed &) const
+MarkupFormatter::format(const PackageID & f, const format::Plain &) const
 {
-    return markup_foreground("blue", markup_escape(stringify(*f)));
+    return markup_escape(stringify(f));
 }
 
 std::string
-MarkupFormatter::format(const tr1::shared_ptr<const PackageID> & f, const format::Installable &) const
+MarkupFormatter::format(const PackageID & f, const format::Installed &) const
 {
-    return markup_foreground("darkblue", markup_escape(stringify(*f)));
+    return markup_foreground("blue", markup_escape(stringify(f)));
+}
+
+std::string
+MarkupFormatter::format(const PackageID & f, const format::Installable &) const
+{
+    return markup_foreground("darkblue", markup_escape(stringify(f)));
 }
 
 std::string

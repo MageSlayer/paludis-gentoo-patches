@@ -22,8 +22,10 @@ namespace gtkpaludis
         public Gtk::TreeStore
     {
         private:
+#if 0
             void set_repository_in_paludis_thread(const paludis::RepositoryName &);
             void set_repository_in_gui_thread(paludis::tr1::shared_ptr<const paludis::RepositoryInfo>);
+#endif
 
         public:
             RepositoryInfoModel(MainWindow * const);

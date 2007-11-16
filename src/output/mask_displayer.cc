@@ -71,29 +71,23 @@ namespace
 
         void visit(const MetadataSectionKey & k)
         {
-            if (k.title_key())
-                s << k.title_key()->value() << ": ";
             s << "(";
 
             bool need_comma(false);
             for (MetadataSectionKey::MetadataConstIterator m(k.begin_metadata()), m_end(k.end_metadata()) ;
                     m != m_end ; ++m)
-                if ((*m) != k.title_key())
-                {
-                    if (need_comma)
-                        s << ", ";
-                    else
-                        s << " ";
+            {
+                if (need_comma)
+                    s << ", ";
+                else
+                    s << " ";
 
-                    KeyPrettyPrinter p;
-                    (*m)->accept(p);
-                    s << p.s.str();
-                    need_comma = true;
-                }
+                KeyPrettyPrinter p;
+                (*m)->accept(p);
+                s << p.s.str();
+                need_comma = true;
+            }
             s << " )";
-
-            std::for_each(indirect_iterator(k.begin_metadata()),
-                    indirect_iterator(k.end_metadata()), accept_visitor(*this));
         }
 
         void visit(const MetadataTimeKey & k)
@@ -133,6 +127,12 @@ namespace
         }
 
         void visit(const MetadataSetKey<Set<std::string> > & k)
+        {
+            ColourFormatter formatter;
+            s << k.pretty_print_flat(formatter);
+        }
+
+        void visit(const MetadataSetKey<FSEntrySequence> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);

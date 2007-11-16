@@ -29,6 +29,7 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
+#include <paludis/metadata_key.hh>
 
 using namespace paludis;
 
@@ -58,9 +59,12 @@ paludis::make_ebuild_repository(
         tr1::shared_ptr<const Repository> master_repository_uncasted(
                 env->package_database()->fetch_repository(*master_repository_name));
 
-        if (master_repository_uncasted->format() != "ebuild")
+        std::string format("unknown");
+        if (master_repository_uncasted->format_key())
+            format = master_repository_uncasted->format_key()->value();
+        if (format != "ebuild")
             throw ERepositoryConfigurationError("Master repository format is '" +
-                    stringify(master_repository_uncasted->format()) + "', not 'ebuild'");
+                    stringify(format) + "', not 'ebuild'");
 
         master_repository = tr1::static_pointer_cast<const ERepository>(master_repository_uncasted);
 

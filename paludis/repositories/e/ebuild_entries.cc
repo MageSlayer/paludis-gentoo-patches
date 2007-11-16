@@ -187,8 +187,8 @@ namespace
         if (destinations)
             for (DestinationsSet::ConstIterator d(destinations->begin()), d_end(destinations->end()) ;
                     d != d_end ; ++d)
-                if ((*d)->installed_interface)
-                    return (*d)->installed_interface->root();
+                if ((*d)->installed_root_key())
+                    return ((*d)->installed_root_key()->value());
 
         return FSEntry("/");
     }
@@ -609,7 +609,7 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
                             .aa(all_archives)
                             .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                             .expand_vars(expand_vars)
-                            .root(o.destination->installed_interface ? stringify(o.destination->installed_interface->root()) : "/")
+                            .root(o.destination->installed_root_key() ? stringify(o.destination->installed_root_key()->value()) : "/")
                             .profiles(_imp->params.profiles)
                             .disable_cfgpro(o.no_config_protect)
                             .debug_build(o.debug_build)
