@@ -107,6 +107,9 @@ namespace paludis
      * key. A ConstVisitor using MetadataKeyVisitorTypes can be used to get more
      * detail.
      *
+     * The header \ref paludis/literal_metadata_key.hh "literal_metadata_key.hh"
+     * contains various concrete implementations of MetadataKey subclasses.
+     *
      * \ingroup g_metadata_key
      * \since 0.26
      * \nosubgrouping

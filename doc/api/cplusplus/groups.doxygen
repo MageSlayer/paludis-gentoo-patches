@@ -42,6 +42,14 @@ using namespace paludis;
  * - \ref example_contents.cc "example_contents.cc"
  */
 
+/** \defgroup g_literal_metadata_key Literal Metadata Keys
+ *
+ * \ingroup g_metadata_key
+ *
+ * Implementations of MetadataKey subclasses where the value is a literal string
+ * known at construction time.
+ */
+
 /** \defgroup g_dep_spec Dependency specifications
  *
  * \ingroup g_paludis

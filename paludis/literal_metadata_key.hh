@@ -26,8 +26,26 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 
+/** \file
+ * Declarations for literal metadata key classes.
+ *
+ * \ingroup g_literal_metadata_key
+ *
+ * \section Examples
+ *
+ * - \ref example_metadata_key.cc "example_metadata_key.cc" (for metadata keys)
+ */
+
+
 namespace paludis
 {
+    /**
+     * A LiteralMetadataStringKey is a MetadataStringKey whose value is a
+     * literal string that is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE LiteralMetadataStringKey :
         public MetadataStringKey,
         private PrivateImplementationPattern<LiteralMetadataStringKey>
@@ -36,13 +54,25 @@ namespace paludis
             PrivateImplementationPattern<LiteralMetadataStringKey>::ImpPtr & _imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LiteralMetadataStringKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::string &);
             ~LiteralMetadataStringKey();
 
+            ///\}
+
             virtual const std::string value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * A LiteralMetadataFSEntryKey is a MetadataFSEntryKey whose value is a
+     * literal FSEntry that is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE LiteralMetadataFSEntryKey :
         public MetadataFSEntryKey,
         private PrivateImplementationPattern<LiteralMetadataFSEntryKey>
@@ -51,13 +81,25 @@ namespace paludis
             PrivateImplementationPattern<LiteralMetadataFSEntryKey>::ImpPtr & _imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LiteralMetadataFSEntryKey(const std::string &, const std::string &, const MetadataKeyType,
                     const FSEntry &);
             ~LiteralMetadataFSEntryKey();
 
+            ///\}
+
             virtual const FSEntry value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * A LiteralMetadataPackageIDKey is a MetadataPackageIDKey whose value is
+     * known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE LiteralMetadataPackageIDKey :
         public MetadataPackageIDKey,
         private PrivateImplementationPattern<LiteralMetadataPackageIDKey>
@@ -66,13 +108,25 @@ namespace paludis
             PrivateImplementationPattern<LiteralMetadataPackageIDKey>::ImpPtr & _imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LiteralMetadataPackageIDKey(const std::string &, const std::string &, const MetadataKeyType,
                     const tr1::shared_ptr<const PackageID> &);
             ~LiteralMetadataPackageIDKey();
 
+            ///\}
+
             virtual const tr1::shared_ptr<const PackageID> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * A LiteralMetadataFSEntrySequenceKey is a MetadataCollectionKey<FSEntrySequence>
+     * whose value is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE LiteralMetadataFSEntrySequenceKey :
         public MetadataCollectionKey<FSEntrySequence>,
         private PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>
@@ -81,9 +135,14 @@ namespace paludis
             PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::ImpPtr & _imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LiteralMetadataFSEntrySequenceKey(const std::string &, const std::string &, const MetadataKeyType,
                     const tr1::shared_ptr<const FSEntrySequence> &);
             ~LiteralMetadataFSEntrySequenceKey();
+
+            ///\}
 
             virtual const tr1::shared_ptr<const FSEntrySequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -91,6 +150,13 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * A LiteralMetadataStringSetKey is a MetadataCollectionKey<Set<std::string> >
+     * whose value is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.26
+     */
     class PALUDIS_VISIBLE LiteralMetadataStringSetKey :
         public MetadataCollectionKey<Set<std::string> >,
         private PrivateImplementationPattern<LiteralMetadataStringSetKey>
@@ -99,9 +165,14 @@ namespace paludis
             PrivateImplementationPattern<LiteralMetadataStringSetKey>::ImpPtr & _imp;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LiteralMetadataStringSetKey(const std::string &, const std::string &, const MetadataKeyType,
                     const tr1::shared_ptr<const Set<std::string> > &);
             ~LiteralMetadataStringSetKey();
+
+            ///\}
 
             virtual const tr1::shared_ptr<const Set<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
