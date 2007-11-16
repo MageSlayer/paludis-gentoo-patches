@@ -3,14 +3,10 @@ SUBDIRS = examples .
 if HAVE_DOXYGEN_TAGS
 
 tagfiles = \
-	libstdc++.tag \
-	libwrapiter.tag
+	libstdc++.tag
 
 libstdc++.tag :
 	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
-
-libwrapiter.tag :
-	wget -O $@ http://libwrapiter.pioto.org/libwrapiter.tag
 
 endif
 
