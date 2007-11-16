@@ -22,33 +22,63 @@
 
 namespace paludis
 {
+    /**
+     * Like tr1::remove_pointer for tr1::shared_ptr.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     struct RemoveSharedPtr
     {
+        /// T_ with the tr1::shared_ptr removed.
         typedef T_ Type;
     };
 
+    /**
+     * Like tr1::remove_pointer for tr1::shared_ptr.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     struct RemoveSharedPtr<tr1::shared_ptr<T_> >
     {
+        /// T_ with the tr1::shared_ptr removed.
         typedef T_ Type;
     };
 
+    /**
+     * Like tr1::remove_pointer for tr1::shared_ptr.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     struct RemoveSharedPtr<tr1::shared_ptr<const T_> >
     {
+        /// T_ with the tr1::shared_ptr removed.
         typedef const T_ Type;
     };
 
+    /**
+     * Like tr1::remove_pointer for tr1::shared_ptr.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     struct RemoveSharedPtr<const T_>
     {
+        /// T_ with the tr1::shared_ptr removed.
         typedef const typename RemoveSharedPtr<T_>::Type Type;
     };
 
+    /**
+     * Like tr1::remove_pointer for tr1::shared_ptr.
+     *
+     * \ingroup g_utils
+     */
     template <typename T_>
     struct RemoveSharedPtr<T_ &>
     {
+        /// T_ with the tr1::shared_ptr removed.
         typedef typename RemoveSharedPtr<T_>::Type Type;
     };
 }
