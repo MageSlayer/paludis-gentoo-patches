@@ -14,6 +14,20 @@
     </li>
 </ul>
 
+<h2 id="compiling">Compiling C++ Code</h2>
+
+<p>You will need to specify various compiler flags when compiling C++ code. The usual way to do this is via
+<code>pkg-config</code>:</p>
+
+<pre>
+$ g++ -c `pkg-config --cflags paludis` -o example_command_line.o example_command_line.cc
+$ g++ -c `pkg-config --cflags paludis` -o example_action.o example_action.cc
+$ g++ `pkg-config --libs paludis` -o example_action example_command_line.o example_action.o
+</pre>
+
+<p>If you are using autotools, consider using <code>PKG_CHECK_MODULES</code> rather than calling <code>pkg-config</code>
+by hand.</p>
+
 <h2 id="examples">Examples</h2>
 
 <p>There are examples showing how to use various classes. Many examples are available in more than one language, showing
