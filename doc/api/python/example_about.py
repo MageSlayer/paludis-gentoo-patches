@@ -5,7 +5,8 @@
 
 import paludis
 
-print "Built using Paludis " + paludis.VERSION + paludis.VERSION_SUFFIX,
+print("Built using Paludis " + str(paludis.VERSION_MAJOR) + "." + str(paludis.VERSION_MINOR) +
+        "." + str(paludis.VERSION_MICRO) + paludis.VERSION_SUFFIX),
 
 if paludis.SUBVERSION_REVISION:
     print 'r' + paludis.SUBVERSION_REVISION

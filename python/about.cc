@@ -28,9 +28,9 @@ namespace bp = boost::python;
 void expose_about()
 {
     bp::scope s;
-    s.attr("VERSION_MAJOR") = stringify(PALUDIS_VERSION_MAJOR);
-    s.attr("VERSION_MINOR") = stringify(PALUDIS_VERSION_MINOR);
-    s.attr("VERSION_MICRO") = stringify(PALUDIS_VERSION_MICRO);
+    s.attr("VERSION_MAJOR") = PALUDIS_VERSION_MAJOR;
+    s.attr("VERSION_MINOR") = PALUDIS_VERSION_MINOR;
+    s.attr("VERSION_MICRO") = PALUDIS_VERSION_MICRO;
     s.attr("VERSION") = stringify(PALUDIS_VERSION_MAJOR) + "."
         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO);
     s.attr("VERSION_SUFFIX") = stringify(PALUDIS_VERSION_SUFFIX);
