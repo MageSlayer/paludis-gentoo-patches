@@ -13,7 +13,7 @@
     </li>
 </ul>
 
-<h2>Examples</h2>
+<h2 id="examples">Examples</h2>
 
 <p>There are examples showing how to use various classes. Many examples are available in more than one language, showing
 how concepts map on to different language bindings.</p>

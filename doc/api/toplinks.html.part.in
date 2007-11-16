@@ -14,7 +14,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###api/cplusplus/index.html">C++ (core)</a>
+                <a href="###TOPURI###api/index.html#examples">Examples</a>
             </td>
         </tr>
 
@@ -24,7 +24,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###/api/python/index.html">Python (bindings)</a>
+                <a href="###TOPURI###api/cplusplus/index.html">C++ (core)</a>
             </td>
         </tr>
 
@@ -44,7 +44,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###/api/python/index.html">Python (bindings)</a>
             </td>
         </tr>
 
