@@ -95,5 +95,10 @@ known to have problems (these are all GCC's fault):</p>
 <p>Recent (version 10.1) ICC will sometimes work. 10.1.008 has correctly compiled Paludis
 on x86_64, but only with most compiler optimisations disabled. With <code>-xT</code> (and
 probably others) the compiler will die with an internal error or a floating point
-exception.</p>
+exception; even without any non-standard optimisations turned on, ICC produces
+code that is measurably faster than GCC.</p>
+
+<p>ConceptGCC has been known to work -- Paludis makes limited use of concepts where compiler
+support is available. Note that ConceptGCC isn't ABI compatible with GCC, so you'll need
+all of the link dependencies built using ConceptGCC rather than GCC too.</p>
 
