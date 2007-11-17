@@ -163,14 +163,24 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
              it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
     {
         Log::get_instance()->message(ll_debug, lc_context, "Need to check for extra libraries in '" + stringify(env->root() / *it) + "'");
+#ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
+        std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
+                tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
+#else
         std::for_each(indirect_iterator(_imp->checkers.begin()), indirect_iterator(_imp->checkers.end()),
                 tr1::bind(&LinkageChecker::add_extra_lib_dir, _1, env->root() / *it));
+#endif
     }
 
     tr1::function<void (const FSEntry &, const std::string &)> callback(
         tr1::bind(&Implementation<BrokenLinkageFinder>::add_breakage, _imp.get(), _1, _2));
+#ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
+    std::for_each(_imp->checkers.begin(), _imp->checkers.end(),
+            tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
+#else
     std::for_each(indirect_iterator(_imp->checkers.begin()), indirect_iterator(_imp->checkers.end()),
             tr1::bind(&LinkageChecker::need_breakage_added, _1, callback));
+#endif
 
     _imp->checkers.clear();
 }
@@ -241,18 +251,34 @@ Implementation<BrokenLinkageFinder>::check_file(const FSEntry & file)
         {
             FSEntry target(dereference_with_root(file, env->root()));
             if (target.is_regular_file())
+            {
+#ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
+                std::for_each(checkers.begin(), checkers.end(),
+                        tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
+#else
                 std::for_each(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
                         tr1::bind(&LinkageChecker::note_symlink, _1, file, target));
+#endif
+            }
         }
 
         else if (file.is_directory())
             walk_directory(file);
 
         else if (file.is_regular_file())
+        {
+#ifndef PALUDIS_TR1_FUNCTIONAL_IS_BOOST
+            if (checkers.end() ==
+                    std::find_if(checkers.begin(), checkers.end(),
+                        tr1::bind(&LinkageChecker::check_file, _1, file)))
+                Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a recognised file type");
+#else
             if (indirect_iterator(checkers.end()) ==
                     std::find_if(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
                         tr1::bind(&LinkageChecker::check_file, _1, file)))
                 Log::get_instance()->message(ll_debug, lc_context, "'" + stringify(file) + "' is not a recognised file type");
+#endif
+        }
     }
     catch (const FSError & ex)
     {
