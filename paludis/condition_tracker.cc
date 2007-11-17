@@ -30,7 +30,7 @@ ConditionTracker::ConditionTracker(
             tr1::shared_ptr<ConstTreeSequence<DependencySpecTree, AllDepSpec> > conditions) :
     base(new ConstTreeSequence<DependencySpecTree, AllDepSpec>(
              tr1::shared_ptr<AllDepSpec>(new AllDepSpec))),
-    adder(tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, base, _1))
+    adder(tr1::bind(&ConstTreeSequence<DependencySpecTree, AllDepSpec>::add, base.get(), _1))
 {
     conditions->accept(*this);
 }
@@ -93,7 +93,7 @@ ConditionTracker::do_visit_sequence(const T_ & node,
         new ConstTreeSequence<DependencySpecTree, T_>(
             tr1::static_pointer_cast<T_>(node.clone())));
     adder(a);
-    adder = tr1::bind(&ConstTreeSequence<DependencySpecTree, T_>::add, a, _1);
+    adder = tr1::bind(&ConstTreeSequence<DependencySpecTree, T_>::add, a.get(), _1);
     if (begin != end)
     {
         begin->accept(*this);

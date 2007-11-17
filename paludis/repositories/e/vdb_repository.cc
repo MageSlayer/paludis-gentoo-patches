@@ -1258,11 +1258,11 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 
     using namespace tr1::placeholders;
 
-    PackageIDSequence::ConstIterator i(std::find_if(_imp->ids[q]->begin(), _imp->ids[q]->end(),
-                tr1::bind(std::equal_to<VersionSpec>(), v, tr1::bind(tr1::mem_fn(&PackageID::version), _1))));
-    if (_imp->ids[q]->end() == i)
-        return tr1::shared_ptr<const ERepositoryID>();
-    return tr1::static_pointer_cast<const ERepositoryID>(*i);
+    PackageIDSequence::ConstIterator i(_imp->ids[q]->begin()), i_end(_imp->ids[q]->end());
+    for ( ; i != i_end ; ++i)
+        if (v == (*i)->version())
+            return tr1::static_pointer_cast<const ERepositoryID>(*i);
+    return tr1::shared_ptr<const ERepositoryID>();
 }
 
 namespace

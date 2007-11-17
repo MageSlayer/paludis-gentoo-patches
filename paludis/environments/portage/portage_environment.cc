@@ -34,6 +34,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/repository_maker.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
@@ -271,8 +272,8 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
 
     if (f.is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), tr1::bind(tr1::mem_fn(
-                        &PortageEnvironment::_load_atom_file<I_>), this, _1, i, def_value));
+        std::for_each(DirIterator(f), DirIterator(), tr1::bind(
+                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value));
     }
     else
     {
@@ -315,8 +316,8 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 
     if (f.is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), tr1::bind(tr1::mem_fn(
-                        &PortageEnvironment::_load_lined_file<I_>), this, _1, i));
+        std::for_each(DirIterator(f), DirIterator(), tr1::bind(
+                    &PortageEnvironment::_load_lined_file<I_>, this, _1, i));
     }
     else
     {

@@ -185,6 +185,20 @@ template <> template <typename T_> struct S<T<T_> > { };
 	])
 dnl }}}
 
+dnl {{{ check whether we do explicit instantiation of fully specialised templates
+AC_MSG_CHECKING([whether we should explicitly instantiate fully specialised templates])
+AC_COMPILE_IFELSE([
+template <typename T_> struct S;
+template <> struct S<int>;
+template class S<int>;
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
+	])
+dnl }}}
+
 dnl {{{ check for static_assert
 AC_MSG_CHECKING([for compiler support for static_assert])
 AC_COMPILE_IFELSE([

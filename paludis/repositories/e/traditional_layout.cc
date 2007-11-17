@@ -38,6 +38,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <paludis/util/tr1_functional.hh>
 #include <functional>
@@ -214,7 +215,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
         try
         {
             tr1::shared_ptr<const PackageID> id(_imp->entries->make_id(n, _imp->entries->extract_package_file_version(n, *e), *e, ""));
-            if (v->end() != std::find_if(v->begin(), v->end(),
+            if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
                         tr1::bind(std::equal_to<VersionSpec>(), id->version(), tr1::bind(tr1::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message(ll_warning, lc_context, "Ignoring entry '" + stringify(*e)
                         + "' for '" + stringify(n) + "' in repository '" + stringify(_imp->repository->name())

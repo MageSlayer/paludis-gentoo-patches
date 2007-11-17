@@ -93,7 +93,7 @@ namespace
             return;
 
         std::set<SlotName> slots;
-        std::transform(packages->begin(), packages->end(),
+        std::transform(indirect_iterator(packages->begin()), indirect_iterator(packages->end()),
                 std::inserter(slots, slots.begin()),
                 tr1::mem_fn(&PackageID::slot));
 

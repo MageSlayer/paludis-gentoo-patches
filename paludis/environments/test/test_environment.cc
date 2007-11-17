@@ -105,11 +105,11 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
     using namespace tr1::placeholders;
 
     tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
-    PackageIDSequence::ConstIterator i(std::find_if(ids->begin(), ids->end(),
-                tr1::bind(std::equal_to<VersionSpec>(), tr1::bind(tr1::mem_fn(&PackageID::version), _1), v)));
-    if (i == ids->end())
-        throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
-    return *i;
+    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
+            i != i_end ; ++i)
+        if (v == (*i)->version())
+            return *i;
+    throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
 }
 
 tr1::shared_ptr<SetSpecTree::ConstItem>

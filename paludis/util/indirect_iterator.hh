@@ -94,7 +94,7 @@ namespace paludis
             typedef typename tr1::remove_reference<Value_>::type & reference;
             typedef typename tr1::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
-            typedef typename std::iterator_traits<Iter_>::iterator_category iterator_category;
+            typedef std::forward_iterator_tag iterator_category;
 
             ///\}
 

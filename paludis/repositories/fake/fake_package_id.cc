@@ -46,7 +46,9 @@ using namespace paludis;
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename C_>
     struct Implementation<FakeMetadataCollectionKey<C_> >
     {
@@ -120,7 +122,9 @@ FakeMetadataIUseSetKey::set_from_string(const std::string & s, const IUseFlagPar
 
 namespace paludis
 {
+#ifndef PALUDIS_NO_DOUBLE_TEMPLATE
     template <>
+#endif
     template <typename C_>
     struct Implementation<FakeMetadataSpecTreeKey<C_> >
     {
@@ -902,7 +906,9 @@ template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
 template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<RestrictSpecTree>;
+#ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
+#endif
 template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class FakeMetadataCollectionKey<KeywordNameSet>;

@@ -47,6 +47,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/visitor-impl.hh>
 #include <paludis/util/tr1_functional.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
 
 #include <fstream>
 #include <list>
@@ -181,18 +182,6 @@ namespace
 
 namespace
 {
-    FSEntry
-    get_root(tr1::shared_ptr<const DestinationsSet> destinations)
-    {
-        if (destinations)
-            for (DestinationsSet::ConstIterator d(destinations->begin()), d_end(destinations->end()) ;
-                    d != d_end ; ++d)
-                if ((*d)->installed_root_key())
-                    return ((*d)->installed_root_key()->value());
-
-        return FSEntry("/");
-    }
-
     std::string make_use(const Environment * const env,
             const ERepositoryID & id,
             tr1::shared_ptr<const ERepositoryProfile> profile)
@@ -446,9 +435,9 @@ EbuildEntries::install(const tr1::shared_ptr<const ERepositoryID> & id,
             id->restrict_key()->value()->accept(restricts);
 
         userpriv_restrict =
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
+            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
                     tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
 
@@ -632,19 +621,6 @@ EbuildEntries::info(const tr1::shared_ptr<const ERepositoryID> & id,
     using namespace tr1::placeholders;
 
     Context context("When infoing '" + stringify(*id) + "':");
-
-    bool userpriv_restrict;
-    {
-        DepSpecFlattener<RestrictSpecTree, PlainTextDepSpec> restricts(_imp->params.environment, *id);
-        if (id->restrict_key())
-            id->restrict_key()->value()->accept(restricts);
-
-        userpriv_restrict =
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
-            restricts.end() != std::find_if(restricts.begin(), restricts.end(),
-                    tr1::bind(std::equal_to<std::string>(), tr1::bind(tr1::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
-    }
 
     /* make use */
     std::string use(make_use(_imp->params.environment, *id, p));

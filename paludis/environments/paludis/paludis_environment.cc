@@ -51,6 +51,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/visitor-impl.hh>
 
 #include <functional>
 #include <algorithm>

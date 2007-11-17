@@ -321,65 +321,66 @@ namespace paludis
         return ! i->second.empty();
     }
 
+    template <typename Node_, typename Edge_, typename OutputConstIterator_>
+    struct DirectedGraphTopologicalSorter
+    {
+        DirectedGraph<Node_, Edge_> g;
+        std::set<Node_> done;
+
+        DirectedGraphTopologicalSorter(const DirectedGraph<Node_, Edge_> & gg) :
+            g(gg)
+        {
+        }
+
+        void do_one(OutputConstIterator_ & i, const Node_ & n)
+        {
+            if (done.end() != done.find(n))
+                return;
+
+            if (g.has_outgoing_edges(n))
+                return;
+
+            *i++ = n;
+            done.insert(n);
+
+            for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
+                if (g.has_edge(*m, n))
+                {
+                    g.delete_edge(*m, n);
+                    do_one(i, *m++);
+                }
+                else
+                    ++m;
+        }
+
+        void sort(OutputConstIterator_ & i)
+        {
+            unsigned c(0);
+            for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
+            {
+                ++c;
+                do_one(i, *n++);
+            }
+
+            if (done.size() < c)
+            {
+                tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
+                        new NoGraphTopologicalOrderExistsError::RemainingNodes);
+                for (typename DirectedGraph<Node_, Edge_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
+                    if (done.end() == done.find(*n))
+                        r->add(stringify(*n));
+
+                throw NoGraphTopologicalOrderExistsError(r);
+            }
+        }
+    };
+
     template <typename Node_, typename Edge_>
     template <typename OutputConstIterator_>
     void
     DirectedGraph<Node_, Edge_>::topological_sort(OutputConstIterator_ x) const
     {
-        struct Sorter
-        {
-            DirectedGraph g;
-            std::set<Node_> done;
-
-            Sorter(const DirectedGraph & gg) :
-                g(gg)
-            {
-            }
-
-            void do_one(OutputConstIterator_ & i, const Node_ & n)
-            {
-                if (done.end() != done.find(n))
-                    return;
-
-                if (g.has_outgoing_edges(n))
-                    return;
-
-                *i++ = n;
-                done.insert(n);
-
-                for (typename DirectedGraph::NodeConstIterator m(g.begin_nodes()), m_end(g.end_nodes()) ; m != m_end ; )
-                    if (g.has_edge(*m, n))
-                    {
-                        g.delete_edge(*m, n);
-                        do_one(i, *m++);
-                    }
-                    else
-                        ++m;
-            }
-
-            void sort(OutputConstIterator_ & i)
-            {
-                unsigned c(0);
-                for (typename DirectedGraph::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; )
-                {
-                    ++c;
-                    do_one(i, *n++);
-                }
-
-                if (done.size() < c)
-                {
-                    tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
-                            new NoGraphTopologicalOrderExistsError::RemainingNodes);
-                    for (typename DirectedGraph::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
-                        if (done.end() == done.find(*n))
-                            r->add(stringify(*n));
-
-                    throw NoGraphTopologicalOrderExistsError(r);
-                }
-            }
-        };
-
-        Sorter s(*this);
+        DirectedGraphTopologicalSorter<Node_, Edge_, OutputConstIterator_> s(*this);
         s.sort(x);
     }
 }

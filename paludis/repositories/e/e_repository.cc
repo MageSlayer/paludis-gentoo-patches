@@ -150,7 +150,7 @@ namespace
                         {
                             using namespace tr1::placeholders;
                             tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
-                            std::transform(q->begin(), q->end(), s->inserter(),
+                            std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
                                     tr1::bind(tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
                             key.reset(new LiteralMetadataStringSetKey(*i, *i, mkt_normal, s));
                         }

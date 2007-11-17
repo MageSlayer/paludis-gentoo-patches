@@ -236,7 +236,7 @@ namespace
                             new UseDepSpec(UseFlagName(f), inv))));
             stack.top().first(a);
             stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                    tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, a, _1)), false));
+                    tr1::bind(&ConstTreeSequence<H_, UseDepSpec>::add, a.get(), _1)), false));
         }
     };
 
@@ -260,7 +260,7 @@ namespace
                          tr1::shared_ptr<AnyDepSpec>(new AnyDepSpec)));
              stack.top().first(a);
              stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                     tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, a, _1)), true));
+                     tr1::bind(&ConstTreeSequence<H_, AnyDepSpec>::add, a.get(), _1)), true));
         }
     };
 
@@ -342,7 +342,7 @@ namespace
             new ConstTreeSequence<H_, AllDepSpec>(tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
         std::stack<std::pair<tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>, bool> > stack;
         stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result, _1)), false));
+                tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, result.get(), _1)), false));
 
         std::string arrow_lhs;
         DepParserState state(dps_initial);
@@ -392,7 +392,7 @@ namespace
                                                      tr1::shared_ptr<AllDepSpec>(new AllDepSpec)));
                                          stack.top().first(a);
                                          stack.push(std::make_pair(tr1::function<void (tr1::shared_ptr<ConstAcceptInterface<H_> >)>(
-                                                         tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a, _1)), false));
+                                                         tr1::bind(&ConstTreeSequence<H_, AllDepSpec>::add, a.get(), _1)), false));
                                          state = dps_had_paren;
                                      }
                                      continue;
