@@ -78,6 +78,9 @@ known to have problems (these are all GCC's fault):</p>
     <li>GCC 4.2.2 fails with an internal error while building Paludis
     if the <code>-g</code> compiler flag is used.</li>
 
+    <li>GCC 4.2.2 has been known to miscompile Paludis on the 64-bit
+    PowerPC architecture.</li>
+
     <li>The <code>-O3</code> compiler flag causes linker errors when
     building some versions of Paludis (note that the Gentoo and
     paludis-overlay ebuilds remove this flag automatically).</li>
