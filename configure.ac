@@ -189,7 +189,7 @@ dnl {{{ check whether we do explicit instantiation of fully specialised template
 AC_MSG_CHECKING([whether we should explicitly instantiate fully specialised templates])
 AC_COMPILE_IFELSE([
 template <typename T_> struct S;
-template <> struct S<int>;
+template <> struct S<int> { };
 template class S<int>;
 ],
 	[AC_MSG_RESULT([yes])],
