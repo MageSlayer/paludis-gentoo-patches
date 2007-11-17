@@ -67,7 +67,7 @@ the code now does.</p>
 <p>The primary supported compiler for building Paludis is GCC, version
 4.1 or later; 3.4 can be used on most platforms if the Boost library
 is installed.  Some versions of GCC, and some compiler flags, are
-known to have problems:</p>
+known to have problems (these are all GCC's fault):</p>
 
 <ul>
     <li>GCC 3.4.6 on the x86_64 architecture segfaults while building
@@ -91,4 +91,9 @@ known to have problems:</p>
     any <code>-O</code>x flag) has been known to cause GCC to
     miscompile Paludis in the past at least on x86_64.</li>
 </ul>
+
+<p>Recent (version 10.1) ICC will sometimes work. 10.1.008 has correctly compiled Paludis
+on x86_64, but only with most compiler optimisations disabled. With <code>-xT</code> (and
+probably others) the compiler will die with an internal error or a floating point
+exception.</p>
 
