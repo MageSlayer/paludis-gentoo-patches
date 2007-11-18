@@ -54,7 +54,7 @@ how concepts map on to different language bindings.</p>
         <td>example_about</td>
         <td><a href="cplusplus/example__about_8cc-example.html">C++</a></td>
         <td><a href="ruby/example_about.html">Ruby</a></td>
-        <td></td>
+        <td><a href="python/example_about.html">Python</a></td>
         <td>How to use Paludis version macros</td>
     </tr>
     <tr>
