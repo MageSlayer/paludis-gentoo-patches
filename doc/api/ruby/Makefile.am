@@ -27,6 +27,7 @@ examples = \
 	example_about.rb \
 	example_action.rb \
 	example_contents.rb \
+	example_environment.rb \
 	example_dep_spec.rb \
 	example_dep_tree.rb \
 	example_query.rb \
