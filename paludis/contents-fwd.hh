@@ -44,13 +44,6 @@ namespace paludis
     struct ContentsVisitorTypes;
 
     /**
-     * Write a ContentsSymEntry to a stream.
-     *
-     * \ingroup g_contents
-     */
-    std::ostream & operator<< (std::ostream &, const ContentsSymEntry &) PALUDIS_VISIBLE;
-
-    /**
      * Write a ContentsEntry to a stream.
      *
      * \ingroup g_contents

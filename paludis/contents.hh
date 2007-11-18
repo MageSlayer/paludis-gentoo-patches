@@ -71,6 +71,8 @@ namespace paludis
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
         public virtual ConstAcceptInterface<ContentsVisitorTypes>
     {
+        friend std::ostream & operator<< (std::ostream &, const ContentsEntry &);
+
         private:
             std::string _name;
 
@@ -79,6 +81,11 @@ namespace paludis
             ///\{
 
             ContentsEntry(const std::string & our_name);
+
+            /**
+             * Used to implement the ostream operator<<.
+             */
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
@@ -201,6 +208,9 @@ namespace paludis
     {
         private:
             std::string _target;
+
+        protected:
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations

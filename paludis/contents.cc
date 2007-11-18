@@ -133,15 +133,21 @@ Contents::end() const
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const ContentsSymEntry & e)
+paludis::operator<< (std::ostream & s, const ContentsEntry & e)
 {
-    s << e.name() << " -> " << e.target();
+    s << e.as_string();
     return s;
 }
 
-std::ostream &
-paludis::operator<< (std::ostream & s, const ContentsEntry & e)
+const std::string
+ContentsEntry::as_string() const
 {
-    s << e.name();
-    return s;
+    return name();
 }
+
+const std::string
+ContentsSymEntry::as_string() const
+{
+    return name() + " -> " + target();
+}
+
